@@ -1,7 +1,7 @@
 # Eclipse MOSAIC Essentials - <br> The Simulation Suite for Connected and Automated Mobility
 
 [![Build](https://github.com/eclipse/mosaic/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/eclipse/mosaic/actions?query=branch%3Amain+workflow%3A%22Java+CI+with+Maven%22) 
-![Size](https://img.shields.io/github/repo-size/eclipse/sumo.svg)
+![Size](https://img.shields.io/github/repo-size/eclipse/mosaic.svg)
 
 **Eclipse MOSAIC** is a multi-scale simulation framework in the field of smart and connected mobility. It allows to couple simulators from various domains towards a comprehensive simulation tool. 
 Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models are coupled to the RTI using HLA inspired interfaces; 
