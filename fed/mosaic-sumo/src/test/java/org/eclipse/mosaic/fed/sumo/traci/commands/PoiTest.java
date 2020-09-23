@@ -13,12 +13,15 @@
 
 package org.eclipse.mosaic.fed.sumo.traci.commands;
 
+import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.awt.Color;
 
+@RunWith(SumoRunner.class)
 public class PoiTest extends AbstractTraciCommandTest {
 
     @Test

@@ -18,15 +18,17 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.mosaic.fed.sumo.traci.TraciCommandException;
 import org.eclipse.mosaic.fed.sumo.traci.complex.AbstractSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.traci.complex.LaneAreaSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Iterables;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 
-//@RunWith(RetryRunner.class)
+@RunWith(SumoRunner.class)
 public class LaneAreaSubscribeTest extends AbstractTraciCommandTest {
     @Test
     public void readSubscription() throws TraciCommandException, InternalFederateException {
