@@ -61,16 +61,16 @@ pipeline {
             }
         }
 
-//        stage('Deploy') {
-//            when {
-//                expression { env.BRANCH_NAME == 'main' }
-//            }
-//            steps {
-//                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-//                    sh 'mvn deploy'
-//                }
-//            }
-//        }
+        stage('Deploy') {
+            when {
+                expression { env.BRANCH_NAME == 'main' }
+            }
+            steps {
+                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                    sh 'mvn deploy'
+                }
+            }
+        }
     }
 
     post {

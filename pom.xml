@@ -30,6 +30,19 @@
         <url>git@github.com:eclipse/mosaic.git</url>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>repo.eclipse.org</id>
+            <name>Project Repository - Releases</name>
+            <url>https://repo.eclipse.org/content/repositories/project-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo.eclipse.org</id>
+            <name>Project Repository - Snapshots</name>
+            <url>https://repo.eclipse.org/content/repositories/project-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <modules>
         <module>bundle</module>
 
