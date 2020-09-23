@@ -2,14 +2,14 @@ pipeline {
     agent 'any'
 
     tools {
-        maven 'Maven'
-        jdk 'JDK8'
+        maven 'apache-maven-3.6.3'
+        jdk 'adoptopenjdk-hotspot-jdk8-latest'
     }
 
     stages {
         stage('Build') {
             steps {
-                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                     sh 'mvn clean install -DskipTests -fae -T 4'
                 }
             }
@@ -17,7 +17,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                     sh 'mvn test -fae -T 4'
                 }
             }
@@ -29,23 +29,23 @@ pipeline {
             }
         }
 
-        stage('Integration Tests') {
-            steps {
-                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn test -fae -P integration-tests'
-                }
-            }
-
-            post {
-                always {
-                    junit 'test/**/surefire-reports/*.xml'
-                }
-            }
-        }
+//        stage('Integration Tests') {
+//            steps {
+//                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+//                    sh 'mvn test -fae -P integration-tests'
+//                }
+//            }
+//
+//            post {
+//                always {
+//                    junit 'test/**/surefire-reports/*.xml'
+//                }
+//            }
+//        }
 
         stage('Analysis') {
             steps {
-                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                     sh 'mvn site -T 4'
                 }
             }
@@ -61,16 +61,16 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            when {
-                expression { env.BRANCH_NAME == 'master' }
-            }
-            steps {
-                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn deploy'
-                }
-            }
-        }
+//        stage('Deploy') {
+//            when {
+//                expression { env.BRANCH_NAME == 'main' }
+//            }
+//            steps {
+//                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+//                    sh 'mvn deploy'
+//                }
+//            }
+//        }
     }
 
     post {
