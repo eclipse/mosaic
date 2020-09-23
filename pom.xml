@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.eclipse.mosaic</groupId>
+    <artifactId>mosaic-parent</artifactId>
+    <version>20.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Eclipse MOSAIC Parent</name>
+    <description>Parent Module Descriptor for Eclipse MOSAIC</description>
+
+    <inceptionYear>2020</inceptionYear>
+    <organization>
+        <name>Fraunhofer FOKUS</name>
+        <url>https://www.fokus.fraunhofer.de/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:eclipse/mosaic.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse/mosaic.git</developerConnection>
+        <url>git@github.com:eclipse/mosaic.git</url>
+    </scm>
+
+    <modules>
+        <module>bundle</module>
+
+        <module>rti/mosaic-rti-api</module>
+        <module>rti/mosaic-rti-core</module>
+        <module>rti/mosaic-starter</module>
+
+        <module>lib/mosaic-communication</module>
+        <module>lib/mosaic-database</module>
+        <module>lib/mosaic-docker</module>
+        <module>lib/mosaic-geomath</module>
+        <module>lib/mosaic-interactions</module>
+        <module>lib/mosaic-network</module>
+        <module>lib/mosaic-objects</module>
+        <module>lib/mosaic-routing</module>
+        <module>lib/mosaic-utils</module>
+
+        <module>fed/mosaic-application</module>
+        <module>fed/mosaic-environment</module>
+        <module>fed/mosaic-mapping</module>
+        <module>fed/mosaic-sns</module>
+        <module>fed/mosaic-sumo</module>
+
+        <module>test/mosaic-integration-tests</module>
+    </modules>
+
+    <properties>
+        <mosaic.version>20.0-SNAPSHOT</mosaic.version>
+        <parent.dir>.</parent.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceTarget>1.8</project.build.sourceTarget>
+        <version.commons-cli>1.4</version.commons-cli><!-- 1.4 is approved in CQ19371 -->
+        <version.commons-configuration2>2.5</version.commons-configuration2><!-- 2.5 is approved in CQ21803 -->
+        <version.commons-io>2.6</version.commons-io><!-- 2.6 is approved in CQ16712 -->
+        <version.commons-jxpath>1.3</version.commons-jxpath><!-- 1.3 is approved in CQ10790 -->
+        <version.commons-lang3>3.9</version.commons-lang3><!-- 3.9 is approved in CQ21762 -->
+        <version.commons-logging>1.2</version.commons-logging><!-- 1.2 is approved in CQ10162 -->
+        <version.commons-math3>3.6.1</version.commons-math3><!-- 3.6.1 is approved in CQ22025 -->
+        <version.commons-text>1.6</version.commons-text><!-- 1.6 is approved in CQ19028 -->
+        <version.findbugs-annotations>1.3.9-1</version.findbugs-annotations><!-- 1.3.9-1 is approved in CQ15081 -->
+        <version.graphhopper>0.13.0</version.graphhopper><!-- 0.13.0 is approved in CQ22337 (api) and CQ22338 (core) -->
+        <version.gson>2.8.6</version.gson><!-- 2.8.6 is approved in CQ21635 -->
+        <version.guava>28.2-jre</version.guava><!-- 28.2-jre is approved in CQ21952 -->
+        <version.hppc>0.8.1</version.hppc><!-- 0.8.1 is approved in CQ22339 -->
+        <version.jackson-xml>2.9.9</version.jackson-xml><!-- 2.9.9 is approved in CQ20701 -->
+        <version.janino>2.7.5</version.janino><!-- 2.7.5 is approved in CQ10307 -->
+        <version.johnzon-core>1.1.13</version.johnzon-core><!-- 1.1.13 is approved in CQ22342 -->
+        <version.jsch>0.1.51</version.jsch><!-- 0.1.51 is approved in CQ8378 -->
+        <version.junit>4.13</version.junit><!-- 4.13 is approved in CQ21439 -->
+        <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
+        <version.logback>1.2.3</version.logback><!-- 1.2.3 is approved in CQ16622 -->
+        <version.mockito>2.23.0</version.mockito><!-- 2.23.0 is approved in CQ17976 -->
+        <version.protobuf>3.8.0</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
+        <version.slf4j>1.7.30</version.slf4j><!-- 1.7.30 is approved in CQ21339 -->
+        <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
+        <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
+        <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <!-- PURPOSE: Logging API -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.slf4j}</version>
+        </dependency>
+
+        <dependency>
+            <!-- PURPOSE: Apache 2.0 licensed implementation of the findbugs annotations -->
+            <groupId>com.github.stephenc.findbugs</groupId>
+            <artifactId>findbugs-annotations</artifactId>
+            <version>${version.findbugs-annotations}</version>
+        </dependency>
+
+        <dependency>
+            <!-- PURPOSE: General Purpose functions -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${version.commons-lang3}</version>
+        </dependency>
+
+
+        <!-- testing -->
+        <dependency>
+            <!-- PURPOSE: JUnit -->
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- PURPOSE: Mocking objects for tests -->
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${version.mockito}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- PURPOSE: Logging -->
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.logback}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Logging -->
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${version.logback}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Required for providing variables in logback.xml -->
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>janino</artifactId>
+                <version>${version.janino}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: Fast and efficient data exchange protocol-->
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${version.protobuf}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: (De)serializing JSON strings to or from Java objects -->
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${version.gson}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: General purpose functions and classes -->
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${version.guava}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>listenablefuture</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.errorprone</groupId>
+                        <artifactId>error_prone_annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.checkerframework</groupId>
+                        <artifactId>checker-qual</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.j2objc</groupId>
+                        <artifactId>j2objc-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>failureaccess</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Required for reading XML based configuration files -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-configuration2</artifactId>
+                <version>${version.commons-configuration2}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Required by commons-logging -->
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${version.commons-logging}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Required by commons-configuration2 -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${version.commons-text}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Accessing XML nodes via XPATH expressions -->
+                <groupId>commons-jxpath</groupId>
+                <artifactId>commons-jxpath</artifactId>
+                <version>${version.commons-jxpath}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: Parsing command line -->
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${version.commons-cli}</version>
+            </dependency>
+            <!-- PURPOSE: Common math functions, e.g. Gamma distribution -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${version.commons-math3}</version>
+            </dependency>
+            <!-- PURPOSE: Common IO functions -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${version.commons-io}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: JSON Schema validation -->
+                <groupId>org.leadpony.justify</groupId>
+                <artifactId>justify</artifactId>
+                <version>${version.justify}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.ibm.icu</groupId>
+                        <artifactId>icu4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: JSON parser implementation for Schema validation -->
+                <groupId>org.apache.johnzon</groupId>
+                <artifactId>johnzon-core</artifactId>
+                <version>${version.johnzon-core}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: SSH client for distributed federation management -->
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${version.jsch}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: JDBC client for connecting to SQLite database -->
+                <groupId>org.xerial</groupId>
+                <artifactId>sqlite-jdbc</artifactId>
+                <version>${version.sqlite-jdbc}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: Deserialize XML to Java objects -->
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${version.jackson-xml}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Required by jackson-dataformat-xml -->
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <!-- overrides version defined in jackson-dataformat-xml -->
+                <version>${version.stax2-api}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Required by jackson-dataformat-xml -->
+                <groupId>com.fasterxml.woodstox</groupId>
+                <artifactId>woodstox-core-asl</artifactId>
+                <!-- overrides version defined in jackson-dataformat-xml -->
+                <version>${version.woodstox-core}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: Routing library -->
+                <groupId>com.graphhopper</groupId>
+                <artifactId>graphhopper-api</artifactId>
+                <version>${version.graphhopper}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Routing library -->
+                <groupId>com.graphhopper</groupId>
+                <artifactId>graphhopper-core</artifactId>
+                <version>${version.graphhopper}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: High performance data types (sets, lists, etc), required by GraphHopper -->
+                <groupId>com.carrotsearch</groupId>
+                <artifactId>hppc</artifactId>
+                <version>${version.hppc}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.4</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.8.1</version>
+                </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.commonjava.maven.plugins</groupId>
+                                        <artifactId>directory-maven-plugin</artifactId>
+                                        <versionRange>[0.3.1,)</versionRange>
+                                        <goals>
+                                            <goal>highest-basedir</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-jar-plugin</artifactId>
+                                        <versionRange>[3.2.0,)</versionRange>
+                                        <goals>
+                                            <goal>test-jar</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>3.0</version>
+                    <inherited>false</inherited>
+                    <configuration>
+                        <header>${parent.dir}/legal/templates/license-header.ftl</header>
+                        <validHeaders>
+                            <header>${parent.dir}/legal/templates/license-header-2020.txt</header>
+                        </validHeaders>
+                        <headerDefinitions>
+                        </headerDefinitions>
+                        <aggregate>true</aggregate>
+                        <quiet>false</quiet>
+                        <failIfMissing>true</failIfMissing>
+                        <strictCheck>true</strictCheck>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <excludes>
+                            <exclude>target/**</exclude>
+                            <exclude>**/ClientServerChannelProtos.java</exclude>
+                        </excludes>
+                        <useDefaultExcludes>true</useDefaultExcludes>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <mapping>
+                            <java>SLASHSTAR_STYLE</java>
+                        </mapping>
+                        <properties>
+                            <year>2020</year>
+                        </properties>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- Directory plugin to find parent root directory absolute
+            path -->
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.3.1</version>
+                <executions>
+                    <execution>
+                        <id>set-parent-dir-property-for-default-lifecycle</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <property>parent.dir</property>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>set-parent-dir-property-for-site</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>pre-site</phase>
+                        <configuration>
+                            <property>parent.dir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${project.build.sourceTarget}</source>
+                    <target>${project.build.sourceTarget}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Even though this is a report plugin, we need to add it to the build plugins as well in order
+                to specify the checkstyle-version. report plugins do not allow to change versions of plugin dependencies.-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.1.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>8.30</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.12.2</version>
+                <configuration>
+                    <excludeFilterFile>${parent.dir}/spotbugs-excludes.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+                <configuration>
+                    <configLocation>${parent.dir}/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=${parent.dir}</propertyExpansion>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <profiles>
+        <profile>
+            <id>generate-third-party-list-parent</id>
+            <activation>
+                <file>
+                    <exists>LICENSE</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>1.20</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>add-third-party</id>
+                                <goals>
+                                    <goal>aggregate-add-third-party</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>.</outputDirectory>
+                                    <includedScopes>runtime,compile</includedScopes>
+                                    <excludedGroups>org.eclipse.mosaic</excludedGroups>
+                                    <failOnMissing>true</failOnMissing>
+                                    <sortArtifactByName>true</sortArtifactByName>
+                                    <thirdPartyFilename>NOTICE-THIRD-PARTY.md</thirdPartyFilename>
+                                    <fileTemplate>${parent.dir}/legal/templates/third-party-file.ftl</fileTemplate>
+                                    <licenseMerges>${parent.dir}/legal/templates/licenses-merges-file</licenseMerges>
+                                    <missingFile>${parent.dir}/legal/templates/missing-licenses.properties</missingFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>generate-third-party-list-children</id>
+            <activation>
+                <file>
+                    <missing>LICENSE</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>add-third-party</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                                    <excludedGroups>org.eclipse.mosaic</excludedGroups>
+                                    <includedScopes>compile</includedScopes>
+                                    <failOnMissing>true</failOnMissing>
+                                    <sortArtifactByName>true</sortArtifactByName>
+                                    <thirdPartyFilename>NOTICE-THIRD-PARTY.md</thirdPartyFilename>
+                                    <fileTemplate>${parent.dir}/legal/templates/third-party-file.ftl</fileTemplate>
+                                    <licenseMerges>${parent.dir}/legal/templates/licenses-merges-file</licenseMerges>
+                                    <missingFile>${parent.dir}/legal/templates/missing-licenses.properties</missingFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-legal-information</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${parent.dir}</directory>
+                                            <filtering>false</filtering>
+                                            <includes>
+                                                <include>LICENSE</include>
+                                                <include>NOTICE.md</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>update-license-headers</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>check-license-headers</id>
+                                <goals>
+                                    <goal>format</goal>
+                                </goals>
+                                <phase>validate</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>check-license-headers</id>
+            <activation>
+                <property>
+                    <name>!skipCheckingLicenseHeaders</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>check-license-headers</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <phase>validate</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>integration-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*Test.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

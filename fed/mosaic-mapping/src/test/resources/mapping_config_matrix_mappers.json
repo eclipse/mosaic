@@ -1,0 +1,12 @@
+{
+    "matrixMappers": [
+        {
+            "types": [ { "name": "prototype" } ],
+            "points": [
+                { "name": "A", "position": { "center": { "latitude": 0, "longitude": 0 }, "radius": 200 } },
+                { "name": "B", "position": { "center": { "latitude": 0, "longitude": 0 }, "radius": 200 } }
+            ],
+            "odValues": [ [ 1, 2 ], [ 0, 4 ] ]
+        }
+    ]
+}

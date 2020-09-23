@@ -1,0 +1,108 @@
+<assembly>
+    <id>Eclipse MOSAIC</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <baseDirectory>.</baseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>src/assembly/resources/bin</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/assembly/resources/etc</directory>
+            <outputDirectory>etc</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/assembly/resources/scenarios</directory>
+            <outputDirectory>scenarios</outputDirectory>
+            <filtered>false</filtered>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.parent.basedir}</directory>
+            <outputDirectory>.</outputDirectory>
+            <filtered>false</filtered>
+            <includes>
+                <include>CONTRIBUTING.md</include>
+                <include>LICENSE</include>
+                <include>NOTICE.md</include>
+                <include>NOTICE-THIRD-PARTY.md</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <!-- MOSAIC projects -->
+        <dependencySet>
+            <outputDirectory>lib/mosaic</outputDirectory>
+            <includes>
+                <include>org.eclipse.mosaic:mosaic-*</include>
+            </includes>
+        </dependencySet>
+
+        <!-- Third-party dependencies -->
+        <dependencySet>
+            <outputDirectory>lib/third-party</outputDirectory>
+            <includes>
+                <!-- [START] Logging -->
+                <include>org.slf4j:slf4j-api</include>
+                <include>ch.qos.logback:logback-classic</include>
+                <include>ch.qos.logback:logback-core</include>
+                <include>org.codehaus.janino:janino</include>
+                <include>org.codehaus.janino:commons-compiler</include>
+                <!-- [END] Logging -->
+
+                <!-- [START] Commons -->
+                <include>com.google.guava:guava</include>
+                <include>org.apache.commons:commons-math3</include>
+                <include>org.apache.commons:commons-lang3</include>
+                <include>org.apache.commons:commons-configuration2</include>
+                <include>org.apache.commons:commons-text</include>
+                <include>commons-io:commons-io</include>
+                <include>commons-logging:commons-logging</include>
+                <include>commons-jxpath:commons-jxpath</include>
+                <include>commons-cli:commons-cli</include>
+                <!-- [END] Commons -->
+
+                <!-- [START] GSON -->
+                <include>com.google.code.gson:gson</include>
+                <include>org.leadpony.justify:justify</include>
+                <include>jakarta.json:jakarta.json-api</include>
+                <include>org.apache.johnzon:johnzon-core</include>
+                <!-- [END] GSON -->
+
+                <!-- [START] XML object binding -->
+                <include>com.fasterxml.jackson.dataformat:jackson-dataformat-xml</include>
+                <include>com.fasterxml.jackson.core:jackson-core</include>
+                <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                <include>com.fasterxml.jackson.core:jackson-databind</include>
+                <include>com.fasterxml.jackson.module:jackson-module-jaxb-annotations</include>
+                <include>jakarta.xml.bind:jakarta.xml.bind-api</include>
+                <include>jakarta.activation:jakarta.activation-api</include>
+                <include>org.codehaus.woodstox:stax2-api</include>
+                <include>com.fasterxml.woodstox:woodstox-core</include>
+                <!-- [END] XML object binding -->
+
+                <!-- [START] GraphHopper dependencies -->
+                <include>com.graphhopper:graphhopper-api</include>
+                <include>com.graphhopper:graphhopper-core</include>
+                <include>com.carrotsearch:hppc</include>
+                <!-- [END] GraphHopper dependencies -->
+
+                <include>com.jcraft:jsch</include>
+                <include>com.google.protobuf:protobuf-java</include>
+                <include>org.xerial:sqlite-jdbc</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

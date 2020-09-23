@@ -1,0 +1,22 @@
+{
+    "localHosts": [
+        {
+            "id": "local",
+            "workingDirectory": "./tmp",
+            "address": "localhost",
+            "operatingSystem": "LINUX"
+        }
+    ],
+    "remoteHosts": [
+        {
+            "id": "remote",
+            "workingDirectory": "/home/mosaic/tmp",
+            "address": "192.168.0.1",
+            "operatingSystem": "LINUX",
+            "user": "username",
+            "password": "password",
+            "port": 22
+        }
+    ]
+}
+

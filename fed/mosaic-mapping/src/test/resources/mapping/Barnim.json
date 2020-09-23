@@ -1,0 +1,68 @@
+{
+    "prototypes": [
+        {
+            "name": "PKW",
+            "accel": 2.6,
+            "decel": 4.5,
+            "length": "5m",
+            "maxSpeed": "252 km/h",
+            "minGap": "250 cm",
+            "sigma": 0.5,
+            "tau": 1
+        },
+        {
+            "name": "electricPKW",
+            "vehicleClass": "ElectricVehicle",
+            "accel": 2.6,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 40.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1
+        },
+        {
+            "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.WeatherServer" ],
+            "name": "WeatherServer"
+        }
+    ],
+    "rsus": [
+        {
+            "position": {
+                "latitude": 52.65027421760045,
+                "longitude": 13.545005321502686
+            },
+            "name": "WeatherServer"
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 5.0,
+            "targetFlow": 1200,
+            "maxNumberVehicles": 120,
+            "route": "1",
+            "types": [
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningAppCell", "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp" ],
+                    "name": "PKW",
+                    "weight": 0.1
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp", "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp" ],
+                    "name": "PKW",
+                    "weight": 0.2
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp" ],
+                    "name": "PKW",
+                    "weight": 0.6
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp" ],
+                    "name": "electricPKW",
+                    "weight": 0.1
+                }
+            ]
+        }
+    ]
+}

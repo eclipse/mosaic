@@ -1,0 +1,12 @@
+{
+    "vehicles": [
+        {
+            "origin": { },
+            "types": [
+                {
+                    "name": "NAME"
+                }
+            ]
+        }
+    ]
+}

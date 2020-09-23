@@ -1,0 +1,53 @@
+{
+    "prototypes": [ { "name": "PKW" } ],
+    "vehicles": [
+        {
+            "departSpeed": 100,
+            "departSpeedMode": "PRECISE",
+            "route": "1",
+            "types": [
+                {
+                    "name": "PKW"
+                }
+            ]
+        },
+        {
+            "departSpeed": 200,
+            "departSpeedMode": "RANDOM",
+            "route": "1",
+            "types": [
+                {
+                    "name": "PKW"
+                }
+            ]
+        },
+        {
+            "departSpeed": 300,
+            "departSpeedMode": "MAXIMUM",
+            "route": "1",
+            "types": [
+                {
+                    "name": "PKW"
+                }
+            ]
+        },
+        {
+            "departSpeedMode": "TOMATOJUICE",
+            "route": "1",
+            "types": [
+                {
+                    "name": "PKW"
+                }
+            ]
+        },
+        {
+            "departSpeed": 500,
+            "route": "1",
+            "types": [
+                {
+                    "name": "PKW"
+                }
+            ]
+        }
+    ]
+}

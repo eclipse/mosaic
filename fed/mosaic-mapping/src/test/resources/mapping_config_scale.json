@@ -1,0 +1,51 @@
+{
+	"prototypes":[
+		{
+			"name":"car"
+		}
+	],
+	"config" : {
+		"scaleTraffic": 1.3
+	},
+	"vehicles":[
+		{
+			"startingTime": 5.0,
+			"targetFlow":923,
+			"maxNumberVehicles": 1,
+			"route":"1",
+			"types":[{ "name":"car", "applications":["app1"] }]
+		},
+		{
+			"startingTime": 10.0,
+			"targetFlow":923,
+			"maxNumberVehicles": 2,
+			"route":"1",
+			"types":[{ "name":"car", "applications":["app2"] }]
+		},
+		{
+			"startingTime": 20.0,
+			"targetFlow":554,
+			"maxNumberVehicles": 1,
+			"route":"1",
+			"types":[{ "name":"car", "applications":["app3"] }]
+		},
+		{
+			"startingTime": 30.0,
+			"targetFlow":923,
+			"maxNumberVehicles": 6,
+			"route":"1",
+			"types":[{ "name":"car", "applications":["app4"] }]
+		},
+		{
+			"startingTime": 46.0,
+			"targetFlow":923,
+			"route":"1",
+			"types":[
+				{
+					"name":"unlimitedCars",
+					"applications":["app5"]
+				}
+			]
+		}
+	]
+}

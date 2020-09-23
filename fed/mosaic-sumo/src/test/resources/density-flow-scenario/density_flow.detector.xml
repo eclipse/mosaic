@@ -1,0 +1,10 @@
+<additional>
+    <inductionLoop id="area_entry_0" lane="1_1_2_1_0" pos="300" freq="300" file="out.xml" friendlyPos="true"/>
+    <inductionLoop id="area_entry_1" lane="1_1_2_1_1" pos="300" freq="300" file="out.xml" friendlyPos="true"/>
+    
+    <inductionLoop id="area_exit_0" lane="1_1_2_1_0" pos="800" freq="300" file="out.xml" friendlyPos="true"/>
+    <inductionLoop id="area_exit_1" lane="1_1_2_1_1" pos="800" freq="300" file="out.xml" friendlyPos="true"/>
+
+    <laneAreaDetector id="area_0" lanes="1_1_2_1_0" pos="300" endPos="800" freq="300" file="out.xml"/>
+    <laneAreaDetector id="area_1" lanes="1_1_2_1_1" pos="300" endPos="800" freq="300" file="out.xml"/>
+</additional>

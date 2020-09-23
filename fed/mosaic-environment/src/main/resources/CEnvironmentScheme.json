@@ -1,0 +1,101 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "events": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/event" } ]
+        }
+    },
+    "definitions": {
+        "event": {
+            "type": "object",
+            "properties": {
+                "type": { "$ref": "#/definitions/eventType" },
+                "location": { "$ref": "#/definitions/eventLocation" },
+                "time": { "$ref": "#/definitions/eventTime" }
+            },
+            "required": [ "type", "location", "time" ]
+        },
+        "eventType": {
+            "type": "object",
+            "properties": {
+                "sensorType": { "type": "string" },
+                "value": { "type": "integer", "default": 1 }
+            },
+            "required": [ "sensorType" ]
+        },
+        "eventLocation": {
+            "properties": {
+                "area": {
+                    "type": "object",
+                    "properties": {
+                        "type": { "type": "string" }
+                    },
+                    "anyOf": [
+                        { "$ref": "#/definitions/geoCircle" },
+                        { "$ref": "#/definitions/geoRectangle" },
+                        { "$ref": "#/definitions/geoPolygon" }
+                    ],
+                    "default": null
+                },
+                "roadSegmentId": { "type": "string", "default": null }
+            }
+        },
+        "geoPoint": {
+            "type": "object",
+            "properties": {
+                "longitude": { "type": "number" },
+                "latitude": { "type": "number" }
+            },
+            "required": [ "longitude", "latitude" ]
+        },
+        "geoCircle": {
+            "type": "object",
+            "properties": {
+                "center": { "$ref": "#/definitions/geoPoint" },
+                "radius": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [ "radius", "center" ]
+        },
+        "geoRectangle": {
+            "type": "object",
+            "properties": {
+                "a": { "$ref": "#/definitions/geoPoint" },
+                "b": { "$ref": "#/definitions/geoPoint" }
+            },
+            "required": [ "a", "b" ]
+        },
+        "geoPolygon": {
+            "type": "object",
+            "properties": {
+                "vertices": {
+                    "type": "array",
+                    "items": [ { "$ref": "#/definitions/geoPoint" } ]
+                },
+                "boundingBox": { "$ref": "#/definitions/geoRectangle" }
+            }
+        },
+        "eventTime": {
+            "type": "object",
+            "properties": {
+                "start": {
+                    "anyOf": [
+                        { "type": "string", "maxLength": 20 },
+                        { "type": "number", "minimum": 0 }
+                    ]
+                },
+                "end": {
+                    "anyOf": [
+                        { "type": "string", "maxLength": 20 },
+                        { "type": "number", "minimum": 0 }
+                    ]
+                }
+            },
+            "required": [ "start", "end" ]
+        }
+    }
+}

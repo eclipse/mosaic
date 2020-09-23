@@ -1,0 +1,7 @@
+<configuration>
+    <input>
+        <net-file value="scenario.net.xml"/>
+        <route-files value="scenario.rou.xml"/>
+        <additional-files value="scenario.detector.xml"/>
+    </input>
+</configuration>

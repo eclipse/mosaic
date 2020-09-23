@@ -1,0 +1,49 @@
+{
+	"prototypes":[
+		{
+			"name":"PKW",
+			"accel":2.6,
+			"decel":4.5,
+			"length":5.00,
+			"maxSpeed":70.0,
+			"minGap":2.5,
+			"sigma":0.5,
+			"tau":1
+		},
+		{
+			"name":"electricPKW",			
+			"vehicleClass": "ElectricVehicle",
+			"applications":["org.eclipse.mosaic.app.examples.eventprocessing.sampling.HelloWorldApp", "org.eclipse.mosaic.app.examples.eventprocessing.sampling.IntervalSamplingApp"],
+			"accel":2.6,
+			"decel":4.5,
+			"length":5.00,
+			"maxSpeed":40.0,
+			"minGap":2.5,
+			"sigma":0.5,
+			"tau":1
+		}
+	],
+	"vehicles":[
+		{
+			"startingTime": 5.0,
+			"targetFlow":1200,
+			"maxNumberVehicles": 120,
+			"route":"1",
+			"types":[
+				{
+					"applications":["org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp"],
+					"name":"PKW",
+					"weight":0.2
+				},
+				{
+					"name":"PKW",
+					"weight":0.7
+				},
+				{
+					"name":"electricPKW",
+					"weight":0.1
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,11 @@
+<FindBugsFilter>
+    <Match>
+        <Class name="~org\.eclipse\.mosaic\.lib\.coupling\.ClientServerChannelProtos.*"/>
+    </Match>
+
+    <Match>
+        <!-- Ignore Unwritten-Field warnings for all config classes ".e.g CMappingFramework" -->
+        <Class name="~.*\.C[A-Z]\w+.*"/>
+        <Bug code="UwF,NP,UuF,UrF"/>
+    </Match>
+</FindBugsFilter>

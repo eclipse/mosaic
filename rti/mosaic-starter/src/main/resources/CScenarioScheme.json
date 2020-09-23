@@ -1,0 +1,103 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "required": [
+        "simulation",
+        "federates"
+    ],
+    "properties": {
+        "simulation": {
+            "type": "object",
+            "required": [
+                "id",
+                "duration",
+                "projection"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "duration": {
+                    "anyOf": [
+                        { "type": "string", "maxLength": 20 },
+                        { "type": "number", "minimum": 0 }
+                    ]
+                },
+                "randomSeed": {
+                    "type": "integer"
+                },
+                "projection": {
+                    "type": "object",
+                    "required": [
+                        "centerCoordinates",
+                        "cartesianOffset"
+                    ],
+                    "properties": {
+                        "centerCoordinates": {
+                            "type": "object",
+                            "required": [
+                                "latitude",
+                                "longitude"
+                            ],
+                            "properties": {
+                                "latitude": { "type": "number" },
+                                "longitude": { "type": "number" }
+                            }
+                        },
+                        "cartesianOffset": {
+                            "type": "object",
+                            "required": [
+                                "x",
+                                "y"
+                            ],
+                            "properties": {
+                                "x": { "type": "number" },
+                                "y": { "type": "number" }
+                            }
+                        }
+                    }
+                },
+                "network": {
+                    "title": "The network schema",
+                    "properties": {
+                        "netMask": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        },
+                        "vehicleNet": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        },
+                        "rsuNet": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        },
+                        "tlNet": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        },
+                        "csNet": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        },
+                        "serverNet": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        },
+                        "tmcNet": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
+                        }
+                    }
+                }
+            }
+        },
+        "federates": {
+            "type": "object",
+            "additionalProperties" : {
+                "type" : "boolean"
+            }
+        }
+    }
+}

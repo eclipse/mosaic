@@ -1,0 +1,347 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "prototypes": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/prototype" } ]
+        },
+        "typeDistributions": {
+            "type": "object",
+            "items": [ { "$ref": "#/definitions/typeDistribution" } ]
+        },
+        "rsus": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/rsu" } ]
+        },
+        "tmcs": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/tmc" } ]
+        },
+        "trafficLights": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/tl" } ]
+        },
+        "vehicles": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/vehicle" } ]
+        },
+        "chargingStations": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/chargingStation" } ]
+        },
+        "matrixMappers": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/matrixMapper" } ]
+        },
+        "config": {
+            "type": "object",
+            "items": [ { "$ref": "#/definitions/config" } ]
+        }
+    },
+    "definitions": {
+        "prototype": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "group": { "type": "string" },
+                "accel": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "decel": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                "length": {
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "exclusiveMinimum": 0 }
+                    ]
+                },
+                "maxSpeed": {
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "exclusiveMinimum": 0 }
+                    ]
+                },
+                "minGap": {
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "exclusiveMinimum": 0 }
+                    ]
+                },
+                "sigma": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "tau": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "weight": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "pos": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "vehicleClass": {
+                    "type": "string",
+                    "enum": [
+                        "Unknown", "Car", "LightGoodsVehicle", "HeavyGoodsVehicle", "PublicTransportVehicle",
+                        "EmergencyVehicle", "WorksVehicle", "ExceptionalSizeVehicle", "VehicleWithTrailer",
+                        "HighSideVehicle", "MiniBus", "Taxi", "ElectricVehicle", "AutomatedVehicle",
+                        "Bicycle", "Motorcycle", "HighOccupancyVehicle"
+                    ]
+                },
+                "applications": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                }
+            },
+            "required": [ "name" ]
+        },
+        "typeDistribution": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": [
+                    {
+                        "$ref": "#/definitions/prototype",
+                        "required": [ "name", "weight" ]
+                    }
+                ]
+            }
+        },
+        "rsu": {
+            "type": "object",
+            "properties": {
+                "position": { "$ref": "#/definitions/geoPoint" },
+                "name": { "type": "string" },
+                "group": { "type": "string" },
+                "applicationStartOffset": { "type": "number" },
+                "applications": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                }
+            },
+            "required": [ "position" ]
+        },
+        "tmc": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "group": { "type": "string" },
+                "applications": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                },
+                "inductionLoops": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                },
+                "laneAreaDetectors": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                }
+            }
+        },
+        "tl": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "tlGroupId": { "type": "string" },
+                "group": { "type": "string" },
+                "weight": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "applications": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                }
+            },
+            "required": [ ]
+        },
+        "chargingStation": {
+            "type": "object",
+            "properties": {
+                "position": { "$ref": "#/definitions/geoPoint" },
+                "operator": { "type": "string" },
+                "group": { "type": "string" },
+                "access": { "type": "string" },
+                "name": { "type": "string" },
+                "chargingSpots": {
+                    "type": "array",
+                    "items": [ { "$ref": "#/definitions/chargingSpot" } ]
+                },
+                "applications": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                }
+            },
+            "required": [ "position", "operator", "access", "chargingSpots" ]
+        },
+        "chargingSpot": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "number" },
+                "type": {
+                    "type": "number",
+                    "maximum": 3
+                },
+                "parkingPlaces": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 4
+                }
+            },
+            "required": [ "type", "parkingPlaces" ]
+        },
+        "typeDistributions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "minItems": 1,
+                "items": [ { "$ref": "#/definitions/prototype" } ]
+            }
+        },
+        "vehicle": {
+            "type": "object",
+            "properties": {
+                "startingTime": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "maxTime": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "targetFlow": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "maxNumberVehicles": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "departSpeed": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "departSpeedMode": {
+                    "type": "string",
+                    "enum": [
+                        "PRECISE", "RANDOM", "MAXIMUM"
+                    ],
+                    "minimum": 0
+                },
+                "laneSelectionMode": {
+                    "type": "string",
+                    "enum": [
+                        "DEFAULT", "ROUNDROBIN", "ROUNDROBIN_HIGHWAY", "HIGHWAY", "RANDOM", "FREE", "ALLOWED", "BEST", "FIRST"
+                    ],
+                    "minimum": 0
+                },
+                "spawningMode": {
+                    "type": "string",
+                    "enum": [
+                        "CONSTANT", "GROW", "SHRINK", "GROW_AND_SHRINK", "GROW_EXPONENTIAL", "SHRINK_EXPONENTIAL", "GROW_AND_SHRINK_EXPONENTIAL"
+                    ],
+                    "minimum": 0
+                },
+                "route": { "type": [ "string", "number" ] },
+                "lanes": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    ]
+                },
+                "types": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": [ { "$ref": "#/definitions/prototype" } ]
+                },
+                "typeDistribution": { "type": "string" },
+                "destination": { "$ref": "#/definitions/geoCircle" },
+                "origin": { "$ref": "#/definitions/geoCircle" }
+            },
+            "oneOf": [
+                { "required": [ "types", "route" ] },
+                { "required": [ "typeDistribution", "route" ] },
+                { "required": [ "types", "origin", "destination" ] },
+                { "required": [ "typeDistribution", "origin", "destination" ] }
+            ]
+        },
+        "matrixMapper": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "type": "array",
+                    "items": [ { "$ref": "#/definitions/odPoint" } ]
+                },
+                "types": {
+                    "type": "array",
+                    "items": [ { "$ref": "#/definitions/prototype" } ]
+                },
+                "randomSeed": { "type": "number" },
+                "deterministic": { "type": "boolean" },
+                "odValues": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "array",
+                            "items": [ { "type": "number" } ]
+                        }
+                    ]
+                }
+            },
+            "required": [ "points", "odValues" ]
+        },
+        "odPoint": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "position": { "$ref": "#/definitions/geoCircle" }
+            },
+            "required": [ "name", "position" ]
+        },
+        "geoCircle": {
+            "type": "object",
+            "properties": {
+                "center": { "$ref": "#/definitions/geoPoint" },
+                "radius": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [ "radius", "center" ]
+        },
+        "geoPoint": {
+            "type": "object",
+            "properties": {
+                "longitude": { "type": "number" },
+                "latitude": { "type": "number" }
+            },
+            "required": [ "longitude", "latitude" ]
+        },
+        "config": {
+            "type": "object",
+            "properties": {
+                "start": { "type": "number" },
+                "end": { "type": "number" },
+                "scaleTraffic": { "type": "number" },
+                "adjustStartingTimes": { "type": "boolean" },
+                "randomizeFlows": { "type": "boolean" }
+            },
+            "required": [ ]
+        }
+    }
+}

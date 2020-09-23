@@ -1,0 +1,106 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "maximumTtl": { "type": "integer" },
+        "singlehopRadius": { "type": "number" },
+        "adhocTransmissionModel": {
+            "type": "object",
+            "properties": {
+                "type": { "type": "string" },
+                "simpleMultihopDelay": { "$ref": "#/definitions/delay" },
+                "simpleMultihopTransmission": { "$ref": "#/definitions/transmission" }
+            }
+        },
+        "singlehopDelay": { "$ref": "#/definitions/delay" },
+        "singlehopTransmission": {
+            "$ref": "#/definitions/transmission"
+        }
+    },
+    "definitions": {
+        "delay": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
+                        },
+                        "minDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        },
+                        "expDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "minDelay", "expDelay" ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "ConstantDelay" ]
+                        },
+                        "delay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "delay" ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "SimpleRandomDelay" ]
+                        },
+                        "steps": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "minDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        },
+                        "maxDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "steps", "minDelay", "maxDelay" ]
+                }
+            ]
+        },
+        "transmission": {
+            "type": "object",
+            "properties": {
+                "lossProbability": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                },
+                "maxRetries": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [ "lossProbability" ]
+        }
+    }
+}
+

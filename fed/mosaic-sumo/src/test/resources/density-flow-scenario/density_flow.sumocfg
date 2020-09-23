@@ -1,0 +1,7 @@
+<configuration>
+    <input>
+        <net-file value="density_flow.net.xml"/>
+        <route-files value="density_flow.rou.xml"/>
+        <additional-files value="density_flow.detector.xml"/>
+    </input>
+</configuration>

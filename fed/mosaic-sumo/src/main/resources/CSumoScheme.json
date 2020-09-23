@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "updateInterval": {
+            "type": "number",
+            "minimum": 1
+        },
+        "sumoConfigurationFile": { "type": "string" },
+        "exitOnInsertionError": { "type": "boolean" },
+        "additionalSumoParameters": { "type": "string" },
+        "trafficFlowMeasurementWindowInS": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "timeGapOffset": { "type": "number" },
+        "writeVehicleDepartures": { "type": "boolean" },
+        "subscriptions": {
+            "type": "array",
+            "items": [ { "type": "string" } ]
+        },
+        "trafficSignLaneWidth": {
+            "type": "number",
+            "minimum": 0.1
+        },
+        "highlights": {
+            "type": "array",
+            "items": [ { "type": "string" } ]
+        }
+    }
+}

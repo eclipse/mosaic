@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "messageCacheTime": {
+            "anyOf": [
+                { "type": "string", "maxLength": 20 },
+                { "type": "integer", "minimum": 0 }
+            ]
+        },
+        "minimalPayloadLength": {
+            "type": "integer"
+        },
+        "encodePayloads": {
+            "type": "boolean"
+        },
+        "eventSchedulerThreads": {
+            "type": "integer", "minimum": 1
+        },
+        "navigationConfiguration": {
+            "type": "object"
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "singlehopDelay": {
+        "type": "NonExistentDelay",
+        "steps": 5,
+        "minDelay": "0.4 ms",
+        "maxDelay": "2.4 ms"
+    },
+    "singlehopTransmission": {
+        "lossProbability": 0.0,
+        "maxRetries": 1
+    }
+}

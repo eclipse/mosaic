@@ -1,0 +1,45 @@
+{
+	"prototypes":[
+		{
+			"name":"Car1",
+			"applications":["Car1App"],
+			"accel":2.6,
+			"decel":4.5,
+			"length":5.00,
+			"maxSpeed":70.0,
+			"minGap":2.5,
+			"sigma":0.5,
+			"tau":1,
+			"weight": 20
+		},
+		{
+			"name":"Car2",
+			"vehicleClass": "ElectricVehicle",
+			"applications":["Car2App"],
+			"accel":2.6,
+			"decel":4.5,
+			"length":5.00,
+			"maxSpeed":40.0,
+			"minGap":2.5,
+			"sigma":0.5,
+			"tau":1,
+			"weight": 80
+		}
+	],
+	"vehicles":[
+		{
+			"startingTime": 5.0,
+			"targetFlow":1200,
+			"maxNumberVehicles": 10,
+			"route":"1",
+			"types":[
+				{
+					"name":"Car1"
+				},
+				{
+					"name":"Car2"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,75 @@
+{
+    "prototypes": [
+        {
+            "name": "PKW",
+            "applications": [
+                "org.eclipse.mosaic.app.tutorials.tiergarten.vehicle.TiergartenVehicle",
+                "org.eclipse.mosaic.app.tutorials.tiergarten.vehicle.TiergartenVehicleSlave"
+            ],
+            "accel": 1.5,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 10.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1
+        },
+        {
+            "name": "TLPKW",
+            "applications": [ "org.eclipse.mosaic.app.tutorials.tiergarten.vehicle.TrafficLightVehicle" ]
+        },
+        {
+            "name": "RSU",
+            "applications": [ "org.eclipse.mosaic.app.tutorials.tiergarten.rsu.TiergartenRSU" ]
+        },
+        {
+            "name": "TrafficLight",
+            "applications": [ "org.eclipse.mosaic.app.tutorials.tiergarten.trafficLight.TrafficLightApp" ]
+        }
+    ],
+    "trafficLights": [
+        {
+            "name": "TrafficLight",
+            "tlGroupId": "27011311"
+        },
+        {
+            "name": "TrafficLight",
+            "tlGroupId": "252864801"
+        }
+    ],
+    "rsus": [
+        {
+            "name": "RSU",
+            "position": {
+                "latitude": 52.513060766781614,
+                "longitude": 13.32891047000885
+            }
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 1.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "PKW" } ]
+        },
+        {
+            "startingTime": 5.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "PKW" } ]
+        },
+        {
+            "startingTime": 8.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "TLPKW" } ]
+        },
+        {
+            "startingTime": 10.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "PKW" } ]
+        }
+    ]
+}

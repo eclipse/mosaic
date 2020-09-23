@@ -1,0 +1,20 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Specific handling for script files
+*.bat text eol=crlf
+*.sh text eol=lf
+
+#
+## Binary files
+#
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.gz binary
+*.zip binary
+*.pdf binary
+*.bz2 binary

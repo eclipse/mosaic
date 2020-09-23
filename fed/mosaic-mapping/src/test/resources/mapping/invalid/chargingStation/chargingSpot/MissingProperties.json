@@ -1,0 +1,15 @@
+{
+    "chargingStations": [
+        {
+            "position": {
+                "latitude": 52.513060766781614,
+                "longitude": 13.32891047000885
+            },
+            "operator": "OPERATOR",
+            "group": "GROUP",
+            "access": "ACCESS",
+            "chargingSpots": [ { } ],
+            "applications": [ ]
+        }
+    ]
+}

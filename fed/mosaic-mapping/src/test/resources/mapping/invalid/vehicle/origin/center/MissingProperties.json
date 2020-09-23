@@ -1,0 +1,15 @@
+{
+    "vehicles": [
+        {
+            "origin": {
+                "center": { },
+                "radius": 1.0
+            },
+            "types": [
+                {
+                    "name": "NAME"
+                }
+            ]
+        }
+    ]
+}
