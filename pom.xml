@@ -34,12 +34,12 @@
         <repository>
             <id>repo.eclipse.org</id>
             <name>Project Repository - Releases</name>
-            <url>https://repo.eclipse.org/content/repositories/project-releases/</url>
+            <url>https://repo.eclipse.org/content/repositories/mosaic-releases/</url>
         </repository>
         <snapshotRepository>
             <id>repo.eclipse.org</id>
             <name>Project Repository - Snapshots</name>
-            <url>https://repo.eclipse.org/content/repositories/project-snapshots/</url>
+            <url>https://repo.eclipse.org/content/repositories/mosaic-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
