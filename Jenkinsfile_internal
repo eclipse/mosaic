@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                     sh 'mvn clean install -DskipTests -fae -T 4'
                 }
             }
@@ -17,7 +17,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                     sh 'mvn test -fae -T 4'
                 }
             }
@@ -29,23 +29,23 @@ pipeline {
             }
         }
 
-//        stage('Integration Tests') {
-//            steps {
-//                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-//                    sh 'mvn test -fae -P integration-tests'
-//                }
-//            }
-//
-//            post {
-//                always {
-//                    junit 'test/**/surefire-reports/*.xml'
-//                }
-//            }
-//        }
+        stage('Integration Tests') {
+            steps {
+                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                    sh 'mvn test -fae -P integration-tests'
+                }
+            }
+
+            post {
+                always {
+                    junit 'test/**/surefire-reports/*.xml'
+                }
+            }
+        }
 
         stage('Analysis') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                withMaven(jdk: 'JDK8', maven: 'Maven', mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                     sh 'mvn site -T 4'
                 }
             }
@@ -57,17 +57,6 @@ pipeline {
                             checkStyle(),
                             taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
                     ])
-                }
-            }
-        }
-
-        stage('Deploy') {
-            when {
-                expression { env.BRANCH_NAME == 'main' }
-            }
-            steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn deploy -DskipTests'
                 }
             }
         }
@@ -93,7 +82,7 @@ def sendMail(status) {
     emailext(
             recipientProviders: [culprits()],
             subject: status + ": ${currentBuild.fullDisplayName}",
-            body: '${JELLY_SCRIPT, template="html-with-health-and-console"}',
+            body: '${JELLY_SCRIPT, template="html-with-health-and-console-dcaiti"}',
             mimeType: 'text/html'
     )
 }
