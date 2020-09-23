@@ -148,7 +148,7 @@ public class MosaicStarter {
 
     protected void printVersionAndCopyrightInfo() {
         System.out.println("Eclipse MOSAIC [Version " + MosaicVersion.get().toString() + "]");
-        System.out.println("Copyright (c) 2020 Fraunhofer FOKUS and others.");
+        System.out.println("Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.");
         System.out.println("License EPL-2.0: Eclipse Public License Version 2 [https://eclipse.org/legal/epl-v20.html].");
         System.out.println();
     }
