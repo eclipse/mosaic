@@ -1,2 +1,2 @@
 ClientServerChannelProtos.java
-ClientServerChannelMessages.*
+**/cpp/ClientServerChannelMessages.*
