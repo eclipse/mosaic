@@ -12,11 +12,25 @@ spec:
     command:
     - cat
     tty: true
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"
   - name: maven-sumo
     image: kschrab/mosaic-ci:jdk8-sumo-1.7.0
     command:
     - cat
     tty: true
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"
 """
         }
     }
