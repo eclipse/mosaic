@@ -29,7 +29,7 @@ spec:
     stages {
         stage('Build') {
             steps {
-                container('maven') {
+                container('sumo') {
                     withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                         sh 'mvn clean install -DskipTests -fae -T 4'
                     }
@@ -69,7 +69,7 @@ spec:
 
         stage('Analysis') {
             steps {
-                container('maven') {
+                container('sumo') {
                     withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                         sh 'mvn site -T 4'
                     }
@@ -92,7 +92,7 @@ spec:
                 expression { env.BRANCH_NAME == 'main' }
             }
             steps {
-                container('maven') {
+                container('sumo') {
                     withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                         sh 'mvn deploy -DskipTests'
                     }
