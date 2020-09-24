@@ -1,5 +1,20 @@
 pipeline {
-    agent 'any'
+    agent {
+        kubernetes {
+            label 'mosaic-ci-pod'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: with-sumo
+    image: kschrab/mosaic-ci:jdk8-sumo-1.7.0
+    command:
+    - cat
+    tty: true
+"""
+        }
+    }
 
     tools {
         maven 'apache-maven-3.6.3'
@@ -17,8 +32,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn test -fae -T 4'
+                container('with-sumo') {
+                    withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                        sh 'mvn test -fae -T 4'
+                    }
                 }
             }
 
