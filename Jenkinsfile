@@ -7,7 +7,12 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: with-sumo
+  - name: maven
+    image: maven:3.6.3-adoptopenjdk-8
+    command:
+    - cat
+    tty: true
+  - name: sumo
     image: kschrab/mosaic-ci:jdk8-sumo-1.7.0
     command:
     - cat
@@ -24,15 +29,17 @@ spec:
     stages {
         stage('Build') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn clean install -DskipTests -fae -T 4'
+                container('maven') {
+                    withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                        sh 'mvn clean install -DskipTests -fae -T 4'
+                    }
                 }
             }
         }
 
         stage('Test') {
             steps {
-                container('with-sumo') {
+                container('sumo') {
                     withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
                         sh 'mvn test -fae -T 4'
                     }
@@ -62,8 +69,10 @@ spec:
 
         stage('Analysis') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn site -T 4'
+                container('maven') {
+                    withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                        sh 'mvn site -T 4'
+                    }
                 }
             }
 
@@ -83,8 +92,10 @@ spec:
                 expression { env.BRANCH_NAME == 'main' }
             }
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn deploy -DskipTests'
+                container('maven') {
+                    withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                        sh 'mvn deploy -DskipTests'
+                    }
                 }
             }
         }
