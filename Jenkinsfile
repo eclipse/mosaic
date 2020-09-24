@@ -20,57 +20,58 @@ spec:
 """
         }
     }
-
-    stage('Build') {
-        steps {
-            container('maven') {
-                sh 'mvn clean install -DskipTests -fae -T 4'
-            }
-        }
-    }
-
-    stage('Test') {
-        steps {
-            container('maven-sumo') {
-                sh 'mvn test -fae -T 4'
+    stages {
+        stage('Build') {
+            steps {
+                container('maven') {
+                    sh 'mvn clean install -DskipTests -fae -T 4'
+                }
             }
         }
 
-        post {
-            always {
-                junit '**/surefire-reports/*.xml'
+        stage('Test') {
+            steps {
+                container('maven-sumo') {
+                    sh 'mvn test -fae -T 4'
+                }
             }
-        }
-    }
 
-    stage('Integration Tests') {
-        steps {
-            container('maven-sumo') {
-                sh 'mvn test -fae -P integration-tests'
-            }
-        }
-
-        post {
-            always {
-                junit 'test/**/surefire-reports/*.xml'
-            }
-        }
-    }
-
-    stage('Analysis') {
-        steps {
-            container('maven') {
-                sh 'mvn site -T 4'
+            post {
+                always {
+                    junit '**/surefire-reports/*.xml'
+                }
             }
         }
 
-        post {
-            always {
-                recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
-                        spotBugs(),
-                        checkStyle(),
-                        taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
-                ])
+        stage('Integration Tests') {
+            steps {
+                container('maven-sumo') {
+                    sh 'mvn test -fae -P integration-tests'
+                }
+            }
+
+            post {
+                always {
+                    junit 'test/**/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Analysis') {
+            steps {
+                container('maven') {
+                    sh 'mvn site -T 4'
+                }
+            }
+
+            post {
+                always {
+                    recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
+                            spotBugs(),
+                            checkStyle(),
+                            taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
+                    ])
+                }
             }
         }
     }
