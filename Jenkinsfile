@@ -46,7 +46,7 @@ spec:
         stage('Test') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn test -fae -T 4'
+                    sh 'mvn test -fae -T 4 -P coverage'
                 }
             }
 
@@ -60,7 +60,7 @@ spec:
         stage('Integration Tests') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn test -fae -P integration-tests'
+                    sh 'mvn test -fae -P integration-tests,coverage'
                 }
             }
 
@@ -80,6 +80,7 @@ spec:
 
             post {
                 always {
+                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
                     recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
                             spotBugs(),
                             checkStyle(),

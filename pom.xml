@@ -74,6 +74,7 @@
         <parent.dir>.</parent.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceTarget>1.8</project.build.sourceTarget>
+        <skip.coverage>true</skip.coverage>
         <version.commons-cli>1.4</version.commons-cli><!-- 1.4 is approved in CQ19371 -->
         <version.commons-configuration2>2.5</version.commons-configuration2><!-- 2.5 is approved in CQ21803 -->
         <version.commons-io>2.6</version.commons-io><!-- 2.6 is approved in CQ16712 -->
@@ -539,6 +540,28 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.6</version>
+                    <configuration>
+                        <skip>${skip.coverage}</skip>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
         </plugins>
     </build>
 
@@ -747,6 +770,12 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>coverage</id>
+            <properties>
+                <skip.coverage>false</skip.coverage>
+            </properties>
         </profile>
     </profiles>
 
