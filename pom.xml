@@ -590,9 +590,7 @@
                     <!-- Generate aggregated apidocs at root level only and omit testapidocs. -->
                     <reportSet>
                         <id>default</id>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
+                        <reports/>
                     </reportSet>
                     <reportSet>
                         <id>aggregate</id>
