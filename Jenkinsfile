@@ -20,7 +20,7 @@ spec:
         memory: "2Gi"
         cpu: "1"
   - name: maven-sumo
-    image: kschrab/mosaic-ci:jdk8-sumo-1.7.0
+    image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.7.0
     command:
     - cat
     tty: true
