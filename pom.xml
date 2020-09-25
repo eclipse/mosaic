@@ -63,6 +63,8 @@
         <module>fed/mosaic-application</module>
         <module>fed/mosaic-environment</module>
         <module>fed/mosaic-mapping</module>
+        <module>fed/mosaic-ns3</module>
+        <module>fed/mosaic-omnetpp</module>
         <module>fed/mosaic-sns</module>
         <module>fed/mosaic-sumo</module>
 
