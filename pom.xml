@@ -581,6 +581,28 @@
                     <linkXRef>false</linkXRef>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
+                <reportSets>
+                    <!-- Generate aggregated apidocs at root level only and omit testapidocs. -->
+                    <reportSet>
+                        <id>default</id>
+                        <reports/>
+                    </reportSet>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
         </plugins>
     </reporting>
 
