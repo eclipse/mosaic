@@ -9,6 +9,8 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
  */
 
 package org.eclipse.mosaic.lib.geo;
