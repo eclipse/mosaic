@@ -12,17 +12,6 @@ spec:
     command:
     - cat
     tty: true
-    volumeMounts:
-    - name: m2-repo
-      mountPath: /root/.m2/repository
-    - name: "settings-security-xml" 
-      mountPath: "/root/.m2/settings-security.xml"
-      readOnly: true
-      subPath: "settings-security.xml"
-    - name: "settings-xml"
-      mountPath: "/root/.m2/settings.xml"
-      readOnly: true
-      subPath: "settings.xml"  
     resources:
       limits:
         memory: "2Gi"
@@ -87,13 +76,13 @@ spec:
         stage('Test') {
             steps {
                 container('maven-sumo') {
-                    sh 'echo "skip"'//sh 'mvn test -fae -T 4 -P coverage'
+                    sh 'mvn test -fae -T 4 -P coverage'
                 }
             }
 
             post {
                 always {
-                    sh 'echo "skip"'//junit '**/surefire-reports/*.xml'
+                    junit '**/surefire-reports/*.xml'
                 }
             }
         }
@@ -101,13 +90,13 @@ spec:
         stage('Integration Tests') {
             steps {
                 container('maven-sumo') {
-                    sh 'echo "skip"'//sh 'mvn test -fae -P integration-tests,coverage'
+                    sh 'mvn test -fae -P integration-tests,coverage'
                 }
             }
 
             post {
                 always {
-                    sh 'echo "skip"'//junit 'test/**/surefire-reports/*.xml'
+                    junit 'test/**/surefire-reports/*.xml'
                 }
             }
         }
@@ -115,41 +104,37 @@ spec:
         stage('Analysis') {
             steps {
                 container('maven-sumo') {
-                    sh 'echo "skip"'//sh 'mvn site -T 4'
+                    sh 'mvn site -T 4'
                 }
             }
 
             post {
                 always {
-                    sh 'echo "skip"'
-//                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
-//                    recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
-//                            spotBugs(),
-//                            checkStyle(),
-//                            taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
-//                    ])
+                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
+                    recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
+                            spotBugs(),
+                            checkStyle(),
+                            taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
+                    ])
                 }
             }
         }
 
-//        stage('Deploy') {
-//            when {
-//                expression { env.BRANCH_NAME == 'main' }
-//            }
-//            steps {
-//                container('maven-sumo') {
-//                    sh 'mvn deploy -DskipTests'
-//                }
-//            }
-//        }
 
         stage ('Deploy') {
             when {
                 branch 'main'
             }
             steps {
-                container('maven-sumo') {
-                    sh 'mvn -X deploy -DskipTests'
+                container('jnlp') {
+                    // it's not possible to deploy from the maven-sumo container, as there's something wrong in
+                    // finding .m2/settings.xml and .m2/repository even if mounted. executing mvn -X prints
+                    // some weird paths:
+                    // > [DEBUG] Reading user settings from ?/.m2/settings.xml
+                    // which makes it impossible to mount the correct settings.xml
+                    // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
+                    // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
+                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
                 }
             }
         }
