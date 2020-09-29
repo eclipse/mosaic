@@ -8,7 +8,7 @@ kind: Pod
 spec:
   containers:
   - name: maven-sumo
-    image: maven:alpine
+    image: maven:3.6.3-adoptopenjdk-8
     command:
     - cat
     tty: true
@@ -23,6 +23,10 @@ spec:
     - name: settings-xml
       mountPath: /home/jenkins/.m2/settings.xml
       subPath: settings.xml
+      readOnly: true
+    - name: toolchains-xml
+      mountPath: /home/jenkins/.m2/toolchains.xml
+      subPath: toolchains.xml
       readOnly: true
     - name: settings-security-xml
       mountPath: /home/jenkins/.m2/settings-security.xml
@@ -39,6 +43,12 @@ spec:
       items:
       - key: settings.xml
         path: settings.xml
+  - name: toolchains-xml
+    configMap:
+      name: m2-dir
+      items:
+      - key: toolchains.xml
+        path: toolchains.xml
   - name: settings-security-xml
     secret:
       secretName: m2-secret-dir
