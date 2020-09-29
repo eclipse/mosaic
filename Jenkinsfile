@@ -149,7 +149,7 @@ spec:
             }
             steps {
                 container('maven-sumo') {
-                    sh 'mvn deploy -DskipTests'
+                    sh 'mvn -X deploy -DskipTests'
                 }
             }
         }
