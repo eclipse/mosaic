@@ -145,7 +145,7 @@ spec:
             }
             steps {
                 container('jnlp') {
-                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
+                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests -Dmaven.repo.local=/home/jenkins/.m2/repository'
                 }
             }
         }
