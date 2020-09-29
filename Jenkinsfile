@@ -8,13 +8,21 @@ kind: Pod
 spec:
   containers:
   - name: maven-sumo
-    image: maven:3.6.3-adoptopenjdk-8
+    image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.7.0
     command:
     - cat
     tty: true
     volumeMounts:
     - name: m2-repo
       mountPath: /root/.m2/repository
+    - name: "settings-security-xml" 
+      mountPath: "/root/.m2/settings-security.xml"
+      readOnly: true
+      subPath: "settings-security.xml"
+    - name: "settings-xml"
+      mountPath: "/root/.m2/settings.xml"
+      readOnly: true
+      subPath: "settings.xml"  
     resources:
       limits:
         memory: "2Gi"
@@ -140,8 +148,8 @@ spec:
                 branch 'main'
             }
             steps {
-                container('jnlp') {
-                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests -Dmaven.repo.local=/home/jenkins/.m2/repository'
+                container('maven-sumo') {
+                    sh 'mvn deploy -DskipTests'
                 }
             }
         }
