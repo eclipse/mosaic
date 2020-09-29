@@ -19,47 +19,37 @@ spec:
       requests:
         memory: "2Gi"
         cpu: "1"
+  - name: jnlp
+    image: 'eclipsecbijenkins/basic-agent:3.35'
     volumeMounts:
-    - name: settings-xml
-      mountPath: /home/jenkins/.m2/settings.xml
-      subPath: settings.xml
+    - mountPath: "/home/jenkins/.m2/settings-security.xml"
+      name: "settings-security-xml"
       readOnly: true
-    - name: toolchains-xml
-      mountPath: /home/jenkins/.m2/toolchains.xml
-      subPath: toolchains.xml
+      subPath: "settings-security.xml"
+    - mountPath: "/home/jenkins/.m2/settings.xml"
+      name: "settings-xml"
       readOnly: true
-    - name: settings-security-xml
-      mountPath: /home/jenkins/.m2/settings-security.xml
-      subPath: settings-security.xml
-      readOnly: true
-    - name: m2-repo
-      mountPath: /home/jenkins/.m2/repository
-    - name: volume-known-hosts
-      mountPath: /home/jenkins/.ssh
+      subPath: "settings.xml"
+    - mountPath: "/opt/tools"
+      name: "volume-0"
+      readOnly: false
   volumes:
-  - name: settings-xml
+  - name: "settings-security-xml"
     secret:
-      secretName: m2-secret-dir
       items:
-      - key: settings.xml
-        path: settings.xml
-  - name: toolchains-xml
-    configMap:
-      name: m2-dir
-      items:
-      - key: toolchains.xml
-        path: toolchains.xml
-  - name: settings-security-xml
+      - key: "settings-security.xml"
+        path: "settings-security.xml"
+      secretName: "m2-secret-dir"
+  - name: "settings-xml"
     secret:
-      secretName: m2-secret-dir
       items:
-      - key: settings-security.xml
-        path: settings-security.xml
-  - name: m2-repo
-    emptyDir: {}
-  - name: volume-known-hosts
-    configMap:
-      name: known-hosts
+      - key: "settings.xml"
+        path: "settings.xml"
+      secretName: "m2-secret-dir"
+  - name: "volume-0"
+    persistentVolumeClaim:
+      claimName: "tools-claim-jiro-lemminx"
+      readOnly: true
 """
         }
     }
@@ -120,13 +110,24 @@ spec:
             }
         }
 
-        stage('Deploy') {
+//        stage('Deploy') {
+//            when {
+//                expression { env.BRANCH_NAME == 'main' }
+//            }
+//            steps {
+//                container('maven-sumo') {
+//                    sh 'mvn deploy -DskipTests'
+//                }
+//            }
+//        }
+
+        stage ('Deploy') {
             when {
-                expression { env.BRANCH_NAME == 'main' }
+                branch 'main'
             }
             steps {
-                container('maven-sumo') {
-                    sh 'mvn deploy -DskipTests'
+                container('jnlp') {
+                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests -Dcbi.jarsigner.skip=false -Dmaven.repo.local=$WORKSPACE/.m2/repository'
                 }
             }
         }
