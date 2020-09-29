@@ -7,31 +7,6 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: maven
-    image: maven:3.6.3-adoptopenjdk-8
-    command:
-    - cat
-    tty: true
-    resources:
-      limits:
-        memory: "2Gi"
-        cpu: "1"
-      requests:
-        memory: "2Gi"
-        cpu: "1"
-    volumeMounts:
-    - name: settings-xml
-      mountPath: /home/jenkins/.m2/settings.xml
-      subPath: settings.xml
-      readOnly: true
-    - name: settings-security-xml
-      mountPath: /home/jenkins/.m2/settings-security.xml
-      subPath: settings-security.xml
-      readOnly: true
-    - name: m2-repo
-      mountPath: /home/jenkins/.m2/repository
-    - name: volume-known-hosts
-      mountPath: /home/jenkins/.ssh
   - name: maven-sumo
     image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.7.0
     command:
@@ -55,6 +30,8 @@ spec:
       readOnly: true
     - name: m2-repo
       mountPath: /home/jenkins/.m2/repository
+    - name: volume-known-hosts
+      mountPath: /home/jenkins/.ssh
   volumes:
   - name: settings-xml
     secret:
@@ -79,7 +56,7 @@ spec:
     stages {
         stage('Build') {
             steps {
-                container('maven') {
+                container('maven-sumo') {
                     sh 'mvn clean install -DskipTests -fae -T 4'
                 }
             }
@@ -115,8 +92,9 @@ spec:
 
         stage('Analysis') {
             steps {
-                container('maven') {
-                    sh 'mvn site -T 4'
+                container('maven-sumo') {
+//                    sh 'mvn site -T 4'
+                    sh 'echo "skip"'
                 }
             }
 
@@ -137,7 +115,7 @@ spec:
                 expression { env.BRANCH_NAME == 'main' }
             }
             steps {
-                container('maven') {
+                container('maven-sumo') {
                     sh 'mvn deploy -DskipTests'
                 }
             }
