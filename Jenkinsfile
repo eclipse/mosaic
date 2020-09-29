@@ -1,15 +1,43 @@
 pipeline {
-    agent 'any'
-
-    tools {
-        maven 'apache-maven-3.6.3'
-        jdk 'adoptopenjdk-hotspot-jdk8-latest'
+    agent {
+        kubernetes {
+            label 'mosaic-ci-pod'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: maven
+    image: maven:3.6.3-adoptopenjdk-8
+    command:
+    - cat
+    tty: true
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+  - name: maven-sumo
+    image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.7.0
+    command:
+    - cat
+    tty: true
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+"""
+        }
     }
-
     stages {
         stage('Build') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                container('maven') {
                     sh 'mvn clean install -DskipTests -fae -T 4'
                 }
             }
@@ -17,8 +45,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn test -fae -T 4'
+                container('maven-sumo') {
+                    sh 'mvn test -fae -T 4 -P coverage'
                 }
             }
 
@@ -29,29 +57,30 @@ pipeline {
             }
         }
 
-//        stage('Integration Tests') {
-//            steps {
-//                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-//                    sh 'mvn test -fae -P integration-tests'
-//                }
-//            }
-//
-//            post {
-//                always {
-//                    junit 'test/**/surefire-reports/*.xml'
-//                }
-//            }
-//        }
+        stage('Integration Tests') {
+            steps {
+                container('maven-sumo') {
+                    sh 'mvn test -fae -P integration-tests,coverage'
+                }
+            }
+
+            post {
+                always {
+                    junit 'test/**/surefire-reports/*.xml'
+                }
+            }
+        }
 
         stage('Analysis') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                container('maven') {
                     sh 'mvn site -T 4'
                 }
             }
 
             post {
                 always {
+                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
                     recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
                             spotBugs(),
                             checkStyle(),
@@ -66,7 +95,7 @@ pipeline {
                 expression { env.BRANCH_NAME == 'main' }
             }
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                container('maven') {
                     sh 'mvn deploy -DskipTests'
                 }
             }
