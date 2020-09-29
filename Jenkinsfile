@@ -13,12 +13,8 @@ spec:
     - cat
     tty: true
     volumeMounts:
-    - mountPath: "/home/jenkins/.m2/settings.xml"
-      name: "settings-xml"
-      readOnly: true
-      subPath: "settings.xml"
     - name: m2-repo
-      mountPath: /home/jenkins/.m2/repository
+      mountPath: /root/.m2/repository
     resources:
       limits:
         memory: "2Gi"
