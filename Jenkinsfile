@@ -48,7 +48,7 @@ spec:
       secretName: "m2-secret-dir"
   - name: "volume-0"
     persistentVolumeClaim:
-      claimName: "tools-claim-jiro-lemminx"
+      claimName: "tools-claim-jiro-mosaic"
       readOnly: true
 """
         }
