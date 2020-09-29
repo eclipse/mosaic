@@ -12,13 +12,20 @@ spec:
     command:
     - cat
     tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/.m2/settings.xml"
+      name: "settings-xml"
+      readOnly: true
+      subPath: "settings.xml"
+    - name: m2-repo
+      mountPath: /home/jenkins/.m2/repository
     resources:
       limits:
         memory: "2Gi"
         cpu: "1"
       requests:
         memory: "2Gi"
-        cpu: "1"
+        cpu: "1"    
   - name: jnlp
     image: 'eclipsecbijenkins/basic-agent:3.35'
     volumeMounts:
@@ -30,9 +37,18 @@ spec:
       name: "settings-xml"
       readOnly: true
       subPath: "settings.xml"
+    - name: m2-repo
+      mountPath: /home/jenkins/.m2/repository
     - mountPath: "/opt/tools"
       name: "volume-0"
       readOnly: false
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"
   volumes:
   - name: "settings-security-xml"
     secret:
@@ -45,7 +61,9 @@ spec:
       items:
       - key: "settings.xml"
         path: "settings.xml"
-      secretName: "m2-secret-dir"
+      secretName: "m2-secret-dir"      
+  - name: m2-repo
+    emptyDir: {}
   - name: "volume-0"
     persistentVolumeClaim:
       claimName: "tools-claim-jiro-mosaic"
@@ -127,7 +145,7 @@ spec:
             }
             steps {
                 container('jnlp') {
-                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests -Dcbi.jarsigner.skip=false -Dmaven.repo.local=$WORKSPACE/.m2/repository'
+                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
                 }
             }
         }
