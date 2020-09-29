@@ -75,13 +75,13 @@ spec:
         stage('Test') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn test -fae -T 4 -P coverage'
+                    sh 'echo "skip"'//sh 'mvn test -fae -T 4 -P coverage'
                 }
             }
 
             post {
                 always {
-                    junit '**/surefire-reports/*.xml'
+                    sh 'echo "skip"'//junit '**/surefire-reports/*.xml'
                 }
             }
         }
@@ -89,13 +89,13 @@ spec:
         stage('Integration Tests') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn test -fae -P integration-tests,coverage'
+                    sh 'echo "skip"'//sh 'mvn test -fae -P integration-tests,coverage'
                 }
             }
 
             post {
                 always {
-                    junit 'test/**/surefire-reports/*.xml'
+                    sh 'echo "skip"'//junit 'test/**/surefire-reports/*.xml'
                 }
             }
         }
@@ -103,19 +103,19 @@ spec:
         stage('Analysis') {
             steps {
                 container('maven-sumo') {
-//                    sh 'mvn site -T 4'
-                    sh 'echo "skip"'
+                    sh 'echo "skip"'//sh 'mvn site -T 4'
                 }
             }
 
             post {
                 always {
-                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
-                    recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
-                            spotBugs(),
-                            checkStyle(),
-                            taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
-                    ])
+                    sh 'echo "skip"'
+//                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
+//                    recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
+//                            spotBugs(),
+//                            checkStyle(),
+//                            taskScanner(highTags: 'FIXME', normalTags: 'TODO', ignoreCase: true, includePattern: '**/*.java')
+//                    ])
                 }
             }
         }
