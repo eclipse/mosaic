@@ -30,6 +30,8 @@ spec:
       readOnly: true
     - name: m2-repo
       mountPath: /home/jenkins/.m2/repository
+    - name: volume-known-hosts
+      mountPath: /home/jenkins/.ssh
   - name: maven-sumo
     image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.7.0
     command:
@@ -68,6 +70,9 @@ spec:
         path: settings-security.xml
   - name: m2-repo
     emptyDir: {}
+  - name: volume-known-hosts
+    configMap:
+      name: known-hosts
 """
         }
     }

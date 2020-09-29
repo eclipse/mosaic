@@ -75,6 +75,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceTarget>1.8</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
+        <skip.javadoc>true</skip.javadoc>
         <version.commons-cli>1.4</version.commons-cli><!-- 1.4 is approved in CQ19371 -->
         <version.commons-configuration2>2.5</version.commons-configuration2><!-- 2.5 is approved in CQ21803 -->
         <version.commons-io>2.6</version.commons-io><!-- 2.6 is approved in CQ16712 -->
@@ -607,6 +608,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
+                    <skip>${skip.javadoc}</skip>
                     <doclint>none</doclint>
                 </configuration>
                 <reportSets>
@@ -797,6 +799,12 @@
             <id>coverage</id>
             <properties>
                 <skip.coverage>false</skip.coverage>
+            </properties>
+        </profile>
+        <profile>
+            <id>javadoc</id>
+            <properties>
+                <skip.javadoc>false</skip.javadoc>
             </properties>
         </profile>
     </profiles>
