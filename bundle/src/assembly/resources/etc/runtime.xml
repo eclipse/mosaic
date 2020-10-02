@@ -143,5 +143,43 @@
                 <subscription>TrafficLightSubscription</subscription>
             </subscriptions>
         </federate>
+
+        <federate class="org.eclipse.mosaic.fed.output.ambassador.OutputAmbassador">
+            <deploy>false</deploy>
+            <start>false</start>
+            <id>output</id>
+            <update>1</update>
+            <config>output_config.xml</config>
+            <subscriptions>
+                <subscription>ChargingStationRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>TrafficSignRegistration</subscription>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>ItefLogging</subscription>
+                <subscription>VehicleLaneChange</subscription>
+                <subscription>LanePropertyChange</subscription>
+                <subscription>VehicleRouteChange</subscription>
+                <subscription>TrafficLightStateChange</subscription>
+                <subscription>TrafficSignSpeedLimitChange</subscription>
+                <subscription>TrafficSignLaneAssignmentChange</subscription>
+                <subscription>ChargingStationUpdates</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+                <subscription>CellularCommunicationConfiguration</subscription>
+                <subscription>V2xMessageRemoval</subscription>
+                <subscription>V2xMessageReception</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>EnvironmentSensorUpdates</subscription>
+                <subscription>VehicleSlowDown</subscription>
+                <subscription>TrafficDetectorUpdates</subscription>
+                <subscription>TrafficLightUpdates</subscription>
+                <subscription>VehicleElectricityUpdates</subscription>
+                <subscription>CellularHandoverUpdates</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>VehicleRoutesInitialization</subscription>
+                <subscription>VehicleTypesInitialization</subscription>
+            </subscriptions>
+        </federate>
     </federates>
+
 </configuration>
