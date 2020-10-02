@@ -65,6 +65,7 @@
         <module>fed/mosaic-mapping</module>
         <module>fed/mosaic-ns3</module>
         <module>fed/mosaic-omnetpp</module>
+        <module>fed/mosaic-output</module>
         <module>fed/mosaic-sns</module>
         <module>fed/mosaic-sumo</module>
 

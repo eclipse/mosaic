@@ -153,6 +153,18 @@ public class MathUtils {
         }
     }
 
-
+    /**
+     * Returns the greatest common divisor of a and b (e.g. {@code gcd(12, 18) = 6})
+     * @param a first number
+     * @param b second number
+     * @return greatest common divisor of a and b.
+     */
+    public static int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        } else {
+            return gcd(b, a % b);
+        }
+    }
 
 }
