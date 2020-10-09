@@ -115,9 +115,17 @@
             <logger name="ApplicationLogDelegate" additivity="false" level="INFO">
                 <appender-ref ref="ApplicationLogDelegation"/>
             </logger>
+
+            <logger name="org.eclipse.mosaic.fed.omnetpp" additivity="false" level="INFO">
+                <appender-ref ref="CommunicationLog"/>
+            </logger>
+            <logger name="org.eclipse.mosaic.fed.ns3" additivity="false" level="INFO">
+                <appender-ref ref="CommunicationLog"/>
+            </logger>
             <logger name="org.eclipse.mosaic.fed.sns" additivity="false" level="INFO">
                 <appender-ref ref="CommunicationLog"/>
             </logger>
+
             <logger name="org.eclipse.mosaic.fed.application.ambassador.navigation" additivity="false" level="INFO">
                 <appender-ref ref="NavigationLog"/>
             </logger>
