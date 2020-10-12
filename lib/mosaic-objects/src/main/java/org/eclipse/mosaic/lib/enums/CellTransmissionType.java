@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.lib.enums;
 
 /**
- * Enumeration of destination types used by the Cell2.
+ * Enumeration of destination types used by the Cell.
  */
 public enum CellTransmissionType {
     PACKET,

@@ -31,7 +31,7 @@ public class CellModuleConfiguration implements CommunicationModuleConfiguration
 
     /**
      * DL/UL bitrates to reflect a data plan from a certain provider.
-     * (intended to be used by Cell2)
+     * (intended to be used by Cell)
      */
     private long maxDlBitrate = 900 * DATA.MEGABYTE;
     private long maxUlBitrate = 175 * DATA.MEGABYTE;
