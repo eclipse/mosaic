@@ -16,7 +16,7 @@ Each simulator is wrapped into a "Federate" object which is linked to an "Ambass
   * Eclipse MOSAIC Simple Network Simulator (communication simulation)
 
 The project is a Maven based multi-module project and has its child modules organized in three main categories:
-  * MOSAIC RTI: modules provding the runtime infrastructure API and implementation
+  * MOSAIC RTI: modules providing the runtime infrastructure API and implementation
   * MOSAIC Libraries: mathematics, spatial, routing, utilities, communication models, and data exchange
   * MOSAIC Ambassadors: simulators and couplings which integrate first bunch of simulation models to Eclipse MOSAIC
 
