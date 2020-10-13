@@ -83,7 +83,7 @@ public class CellMessageRoutingBuilder {
                 null,
                 null,
                 geoArea,
-                ProtocolType.UDP //TODO change to TCP (requires revise of ack/nack handling in cell2)
+                ProtocolType.UDP // TODO change to TCP (currently not properly supported, requires revise of ack/nack handling in cell)
         ));
     }
 
@@ -100,7 +100,7 @@ public class CellMessageRoutingBuilder {
                 null,
                 null,
                 geoArea,
-                ProtocolType.UDP //TODO change to TCP (requires revise of ack/nack handling in cell2)
+                ProtocolType.UDP // TODO change to TCP (currently not properly supported, requires revise of ack/nack handling in cell)
         ));
     }
 
@@ -117,7 +117,7 @@ public class CellMessageRoutingBuilder {
                 null,
                 null,
                 null,
-                ProtocolType.UDP //TODO change to TCP (requires revise of ack/nack handling in cell2)
+                ProtocolType.UDP // TODO change to TCP (currently not properly supported, requires revise of ack/nack handling in cell)
         ));
     }
 
