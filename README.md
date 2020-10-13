@@ -11,9 +11,12 @@
 Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models are coupled to the RTI using HLA inspired interfaces; 
 Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador" which is directly coupled with the RTI. Currently, the following simulators are coupled with the MOSAIC RTI:
   * Eclipse SUMO (traffic simulation)
-  * Eclipse MOSAIC Environment (environment simulation)
-  * Eclipse MOSAIC Application (application simulation)
-  * Eclipse MOSAIC Simple Network Simulator (communication simulation)
+  * MOSAIC Application (application simulation)
+  * MOSAIC Environment (environment and event simulation)
+  * MOSAIC Simple Network Simulator (communication simulation)
+  * OMNeT++ (communication simulation)
+  * ns-3 (communication simulation)
+  * MOSAIC Output Generator (evaluation and visualization)
 
 The project is a Maven based multi-module project and has its child modules organized in three main categories:
   * MOSAIC RTI: modules providing the runtime infrastructure API and implementation
