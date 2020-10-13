@@ -1,0 +1,122 @@
+{
+  "threads": 1,
+  "federates": [
+    {
+      "id": "application",
+      "classname": "org.eclipse.mosaic.fed.application.ambassador.ApplicationAmbassador",
+      "configuration": "application_config.json",
+      "priority": 50,
+      "host": "local",
+      "port": 0,
+      "deploy": false,
+      "start": false,
+      "subscriptions": [
+        "RsuRegistration",
+        "TmcRegistration",
+        "ChargingStationRegistration",
+        "TrafficLightRegistration",
+        "VehicleRegistration",
+        "ApplicationInteraction",
+        "ChargingStationUpdates",
+        "ChargingDenialResponse",
+        "VehicleElectricityUpdates",
+        "VehicleRouteRegistration",
+        "V2xMessageReception",
+        "V2xFullMessageReception",
+        "V2xMessageAcknowledgement",
+        "EnvironmentSensorUpdates",
+        "SumoTraciResponse",
+        "TrafficDetectorUpdates",
+        "TrafficLightUpdates",
+        "VehicleUpdates",
+        "VehicleRoutesInitialization",
+        "VehicleTypesInitialization",
+        "VehicleSeenTrafficSignsUpdate"
+      ],
+      "javaClasspathEntries": []
+    },
+    {
+      "id": "environment",
+      "classname": "org.eclipse.mosaic.fed.environment.ambassador.EnvironmentAmbassador",
+      "configuration": "environment_config.json",
+      "priority": 50,
+      "host": "local",
+      "port": 0,
+      "deploy": false,
+      "start": false,
+      "subscriptions": [
+        "EnvironmentSensorActivation",
+        "VehicleUpdates"
+      ],
+      "javaClasspathEntries": []
+    },
+    {
+      "id": "mapping",
+      "classname": "org.eclipse.mosaic.fed.mapping.ambassador.MappingAmbassador",
+      "configuration": "mapping_config.json",
+      "priority": 50,
+      "host": "local",
+      "port": 0,
+      "deploy": false,
+      "start": false,
+      "subscriptions": [
+        "VehicleRoutesInitialization",
+        "ScenarioTrafficLightRegistration",
+        "ScenarioVehicleRegistration"
+      ],
+      "javaClasspathEntries": []
+    },
+    {
+      "id": "sns",
+      "classname": "org.eclipse.mosaic.fed.sns.ambassador.SnsAmbassador",
+      "configuration": "sns_config.json",
+      "priority": 50,
+      "host": "local",
+      "port": 0,
+      "deploy": false,
+      "start": false,
+      "subscriptions": [
+        "VehicleRegistration",
+        "RsuRegistration",
+        "TrafficLightRegistration",
+        "VehicleUpdates",
+        "V2xMessageTransmission",
+        "AdHocCommunicationConfiguration"
+      ],
+      "javaClasspathEntries": []
+    },
+    {
+      "id": "sumo",
+      "classname": "org.eclipse.mosaic.fed.sumo.ambassador.SumoAmbassador",
+      "configuration": "sumo_config.json",
+      "priority": 50,
+      "host": "local",
+      "port": 0,
+      "deploy": true,
+      "start": true,
+      "subscriptions": [
+        "VehicleTypesInitialization",
+        "VehicleRoutesInitialization",
+        "VehicleRegistration",
+        "VehicleSlowDown",
+        "VehicleRouteRegistration",
+        "VehicleRouteChange",
+        "VehicleLaneChange",
+        "LanePropertyChange",
+        "TrafficLightStateChange",
+        "VehicleStop",
+        "VehicleResume",
+        "SumoTraciRequest",
+        "VehicleDistanceSensorActivation",
+        "VehicleSpeedChange",
+        "VehicleFederateAssignment",
+        "VehicleParametersChange",
+        "VehicleUpdates",
+        "InductionLoopDetectorSubscription",
+        "LaneAreaDetectorSubscription",
+        "TrafficLightSubscription"
+      ],
+      "javaClasspathEntries": []
+    }
+  ]
+}
