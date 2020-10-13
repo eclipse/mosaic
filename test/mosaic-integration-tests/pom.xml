@@ -10,10 +10,6 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
-
     <artifactId>mosaic-integration-tests</artifactId>
     <name>Eclipse MOSAIC Integration Tests</name>
 
@@ -36,6 +32,23 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-test-jar-with-rules</id>
+                        <configuration>
+                            <includes>
+                                <include>org/eclipse/mosaic/test/junit/**</include>
+                            </includes>
+                        </configuration>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
