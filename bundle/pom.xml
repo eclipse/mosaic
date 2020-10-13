@@ -107,6 +107,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-output</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-sns</artifactId>
             <version>${mosaic.version}</version>
         </dependency>
@@ -122,6 +127,27 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>org.eclipse.mosaic:mosaic-output:${mosaic.version}:jar</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>

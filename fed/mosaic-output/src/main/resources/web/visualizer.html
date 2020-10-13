@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VSimRTI WebSocket Visualizer</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://openlayers.org/en/latest/css/ol.css" type="text/css">
+  <script>
+      /**
+       * WebSocket Port
+       * Needs to be identical with the port defined for visualizer
+       * with id "websocket" in file <SCENARIO>/visualizer/visualizer_config.xml
+       */
+      window.port = 46587;
+
+      /**
+       * Update Interval
+       * Defines the interval in milli seconds
+       * in which data is fetched from VSimRTI.
+       */
+      window.updateInterval = 200;
+
+      /**
+       * Map Center Location
+       * Defines the geo location which
+       * shall be shown at the beginning.
+       */
+      window.centerLocation = {
+        longitude: 13.565019942248075,
+        latitude: 52.6315063857021
+      };
+
+      /**
+       * Map Zoom Level
+       * Defines how deep the map is zoomed into
+       * the Map Center Location at the beginning.
+       */
+      window.zoomLevel = 14;
+
+    </script>
+  <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        font-family: 'Helvetica';
+        font-size: 13px;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      #controls {
+        position: fixed;
+        z-index: 100;
+        bottom: 0;
+        left: 50%;
+        width: 200px;
+        margin-left: -109px;
+        padding: 16px;
+        border: 1px solid #dddddd;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        background-color: #ffffff;
+        transition: height 0.3s linear;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      }
+      #status-color {
+        float: left;
+        display: block;
+        background-color: blue;
+        width: 15px;
+        height: 15px;
+        border-radius: 20px;
+        margin-right: 10px;
+        border: 1px solid grey;
+      }
+      #status #status-text {
+        display: block;
+        font-weight: bold;
+        color: #333333;
+      }
+      #status #tries {
+        display: none;
+        color: #999;
+        float: left;
+        padding-left: 5px;
+      }
+      #status #tries:before {
+        content: " (";
+      }
+      #status #tries:after {
+        content: " Tries)";
+      }
+      #status #reconnect {
+        clear: both;
+        width: 100%;
+        margin-top: 5px;
+        display: none;
+        border-radius: 3px;
+        border: 1px solid #aaa;
+        border-bottom-width: 2px;
+        background-color: #eee;
+        padding: 6px 0;
+        margin-top: 11px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      #status #reconnect:hover {
+        background-color: #ddd;
+      }
+      /* Status: Connecting */
+      #status.connecting #status-text {
+        float: left;
+      }
+      #status.connecting #status-text:after {
+        content: "Connecting...";
+      }
+      #status.connecting #status-color {
+        background-color: yellow;
+      }
+      #status.connecting #tries {
+        display: block;
+      }
+      /* Status: Connected */
+      #status.connected #status-text:after {
+        content: "Simulating..."
+      }
+      #status.connected #status-color {
+        background-color: green;
+      }
+      /* Status: Closed */
+      #status.closed #status-text:after {
+        content: "Simulation finished"
+      }
+      #status.closed #status-color {
+        background-color: green;
+      }
+      #status.closed #reconnect {
+        display: block;
+      }
+      /* Status: Error */
+      #status.error #status-text:after {
+        content: "Error"
+      }
+      #status.error #status-color {
+        background-color: red;
+      }
+      #status.error #reconnect {
+        display: block;
+      }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="controls">
+  <div id="status">
+    <span id="status-color"></span>
+    <span id="status-text"></span>
+    <span id="tries"></span>
+    <button id="reconnect">Reconnect</button>
+  </div>
+</div>
+<script src="./visualizer.js"></script>
+</body>
+</html>

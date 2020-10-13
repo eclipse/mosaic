@@ -27,6 +27,10 @@ the core libraries, and various implementations of simulators or couplings to ex
 included in this version of Eclipse MOSAIC are sufficient for most use-cases in the field of smart and connected mobility.
 Additional simulators and assessment features are provided by [Fraunhofer FOKUS](https://www.fokus.fraunhofer.de/go/asct) on a commercial basis.
 
+## Contact
+
+We are available for all kind of questions regarding Eclipse MOSAIC via mosaic@fokus.fraunhofer.de
+
 ## Prerequisites
 
 For a successful build you need the following software to be installed:

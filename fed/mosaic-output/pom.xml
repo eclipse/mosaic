@@ -28,14 +28,62 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-objects</artifactId>
+            <version>${mosaic.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-utils</artifactId>
             <version>${mosaic.version}</version>
-            <scope>test</scope>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>META-INF/**/*.*</include>
+                        <include>org/**/*.*</include>
+                        <include>web/markers/*.*</include>
+                        <include>web/visualizer.html</include>
+                        <include>web/visualizer.js</include>
+                        <include>output_config.xsd</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>web/markers/*.*</include>
+                        <include>web/visualizer.html</include>
+                        <include>web/visualizer.js</include>
+                        <include>output_config.xsd</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -25,6 +25,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -68,11 +69,6 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
      */
     private static final String XML_TAG_OUTPUT = "output";
 
-    /**
-     * This runnable called on initialization phase.
-     */
-    private Runnable onInitialize;
-
     public OutputAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
     }
@@ -89,10 +85,9 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
 
     @Override
     public void initialize(long startTime, long endTime) throws InternalFederateException {
-        if (onInitialize != null) {
-            onInitialize.run();
-        }
         try {
+            createOutputGenerator(loadConfiguration());
+
             this.nextTimestep = startTime + this.globalUpdateInterval;
             this.rti.requestAdvanceTime(this.nextTimestep, this.globalUpdateInterval, (byte) 0);
         } catch (IllegalValueException e) {
@@ -100,8 +95,7 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
         }
     }
 
-    @Override
-    public void connectToFederate(String host, int port) {
+    private Collection<OutputGeneratorLoader> loadConfiguration() {
         try {
             log.info("Initialize configuration of OutputAmbassador");
 
@@ -156,11 +150,12 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
             this.globalUpdateInterval = globalUpdateIntervalInSeconds * TIME.SECOND;
 
             // do not yet create output generators. This is done when the ambassadors initialize method is called
-            onInitialize = () -> createOutputGenerator(generatorLoader.values());
+            return generatorLoader.values();
         } catch (InternalFederateException e) {
             throw new RuntimeException(e);
         } catch (Exception ex) {
             log.error("Error while initializing OutputAmbassador", ex);
+            return Lists.newArrayList();
         }
     }
 

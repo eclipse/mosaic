@@ -1,0 +1,22 @@
+{
+  "name": "ol-browserify",
+  "version": "1.0.0",
+  "description": "Using browserify and the ol package",
+  "main": "main.js",
+  "scripts": {
+    "buildUgly": "browserify -g [ babelify --presets [ \"@babel/preset-env\" ] ] -g uglifyify --entry visualizer-dev.js > visualizer.js",
+    "build": "browserify -g [ babelify --presets [ \"@babel/preset-env\" ] ] --entry visualizer-dev.js > visualizer.js",
+    "debug": "browserify --debug -g [ babelify --presets [ \"@babel/preset-env\" ] ] --entry visualizer-dev.js > visualizer.js"
+  },
+  "dependencies": {
+    "ol": "^5.1.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "babelify": "^9.0.0",
+    "browserify": "^16.5.2",
+    "eslint": "^5.15.3",
+    "uglifyify": "^5.0.2"
+  }
+}
