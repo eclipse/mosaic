@@ -94,7 +94,6 @@
         <xs:annotation>
             <xs:documentation xml:lang="en">
                 Defines, whether the content will be appended to file.
-                TODO: and what is the opposite?
                 Default value: true;
             </xs:documentation>
         </xs:annotation>

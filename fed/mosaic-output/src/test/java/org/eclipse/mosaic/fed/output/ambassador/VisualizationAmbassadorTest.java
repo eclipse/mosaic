@@ -134,7 +134,6 @@ public class VisualizationAmbassadorTest {
     @Test
     public void visualizeIntearction() throws InternalFederateException {
         //PREPARE
-        output.connectToFederate("", 0);
         output.initialize(0, Long.MAX_VALUE);
 
         AbstractOutputGenerator generator1 = output.generators.get("generator1").getGenerator();
@@ -173,7 +172,6 @@ public class VisualizationAmbassadorTest {
     @Test
     public void visualizeMessageInInterval() throws InternalFederateException {
         //PREPARE
-        output.connectToFederate("", 0);
         output.initialize(0, Long.MAX_VALUE);
 
         AbstractOutputGenerator generator4 = output.generators.get("generator4").getGenerator();
@@ -215,7 +213,7 @@ public class VisualizationAmbassadorTest {
      * Checks log output to verify that Exceptions were logged.
      */
     @Test
-    public void testFaultyConfig() {
+    public void testFaultyConfig() throws InternalFederateException {
         // PREPARE
         // adding an appender to the log, to check log messages
         ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(OutputAmbassador.class);
@@ -227,7 +225,7 @@ public class VisualizationAmbassadorTest {
 
         // RUN
         log.info("4 ERRORS are expected:");
-        outputFaulty.connectToFederate("", 0);
+        outputFaulty.initialize(0, 100);
 
         List<ILoggingEvent> logList = listAppender.list;
 
