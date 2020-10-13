@@ -22,12 +22,13 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.mosaic.lib.util.InteractionUtils;
 import org.eclipse.mosaic.starter.config.CRuntime;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import com.google.gson.Gson;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 public class CRuntimeTest {
@@ -40,11 +41,10 @@ public class CRuntimeTest {
     @Test
     public void validSubscriptionsInRuntimeConfiguration() throws IOException {
         CRuntime runtimeConfiguration;
-        try (InputStream resource = getClass().getResourceAsStream("/etc/runtime.xml")) {
+        try (InputStream resource = getClass().getResourceAsStream("/etc/runtime.json")) {
             assertNotNull(resource);
-            runtimeConfiguration = new XmlMapper()
-                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                    .readValue(resource, CRuntime.class);
+            InputStreamReader reader = new InputStreamReader(resource);
+            runtimeConfiguration = new Gson().fromJson(reader, CRuntime.class);
         }
         assertNotNull(runtimeConfiguration);
 

@@ -25,8 +25,6 @@ import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.starter.config.CScenario;
 
 import ch.qos.logback.classic.LoggerContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -35,6 +33,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+
 
 import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +42,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -57,7 +58,7 @@ import java.util.Date;
  */
 public class MosaicStarter {
 
-    private static final Path MOSAIC_CONFIG = Paths.get("etc", "runtime.xml");
+    private static final Path MOSAIC_CONFIG = Paths.get("etc", "runtime.json");
 
     private static final Path LOGBACK_CONFIG = Paths.get("etc", "logback.xml");
 
@@ -230,10 +231,9 @@ public class MosaicStarter {
 
     protected CRuntime loadRuntimeConfiguration(Path configurationPath) throws ExecutionException {
         try {
-            try (InputStream resource = loadResource(configurationPath)) {
-                return new XmlMapper()
-                        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                        .readValue(resource, CRuntime.class);
+            try (InputStream inputStream = loadResource(configurationPath)) {
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                return new Gson().fromJson(reader, CRuntime.class);
             }
         } catch (Exception e) {
             printAndLog("Could not read configuration file " + configurationPath, e);
