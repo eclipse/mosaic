@@ -1,15 +1,73 @@
 pipeline {
-    agent 'any'
-
-    tools {
-        maven 'apache-maven-3.6.3'
-        jdk 'adoptopenjdk-hotspot-jdk8-latest'
+    agent {
+        kubernetes {
+            label 'mosaic-ci-pod'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: maven-sumo
+    image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.7.0
+    command:
+    - cat
+    tty: true
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"    
+  - name: jnlp
+    image: 'eclipsecbijenkins/basic-agent:3.35'
+    volumeMounts:
+    - mountPath: "/home/jenkins/.m2/settings-security.xml"
+      name: "settings-security-xml"
+      readOnly: true
+      subPath: "settings-security.xml"
+    - mountPath: "/home/jenkins/.m2/settings.xml"
+      name: "settings-xml"
+      readOnly: true
+      subPath: "settings.xml"
+    - name: m2-repo
+      mountPath: /home/jenkins/.m2/repository
+    - mountPath: "/opt/tools"
+      name: "volume-0"
+      readOnly: false
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+  volumes:
+  - name: "settings-security-xml"
+    secret:
+      items:
+      - key: "settings-security.xml"
+        path: "settings-security.xml"
+      secretName: "m2-secret-dir"
+  - name: "settings-xml"
+    secret:
+      items:
+      - key: "settings.xml"
+        path: "settings.xml"
+      secretName: "m2-secret-dir"      
+  - name: m2-repo
+    emptyDir: {}
+  - name: "volume-0"
+    persistentVolumeClaim:
+      claimName: "tools-claim-jiro-mosaic"
+      readOnly: true
+"""
+        }
     }
-
     stages {
         stage('Build') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                container('maven-sumo') {
                     sh 'mvn clean install -DskipTests -fae -T 4'
                 }
             }
@@ -17,8 +75,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn test -fae -T 4'
+                container('maven-sumo') {
+                    sh 'mvn test -fae -T 4 -P coverage'
                 }
             }
 
@@ -29,29 +87,30 @@ pipeline {
             }
         }
 
-//        stage('Integration Tests') {
-//            steps {
-//                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-//                    sh 'mvn test -fae -P integration-tests'
-//                }
-//            }
-//
-//            post {
-//                always {
-//                    junit 'test/**/surefire-reports/*.xml'
-//                }
-//            }
-//        }
+        stage('Integration Tests') {
+            steps {
+                container('maven-sumo') {
+                    sh 'mvn test -fae -P integration-tests,coverage'
+                }
+            }
+
+            post {
+                always {
+                    junit 'test/**/surefire-reports/*.xml'
+                }
+            }
+        }
 
         stage('Analysis') {
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
+                container('maven-sumo') {
                     sh 'mvn site -T 4'
                 }
             }
 
             post {
                 always {
+                    jacoco exclusionPattern: '**/ClientServerChannelProtos*.class', skipCopyOfSrcFiles: true, sourceExclusionPattern: '**/*.*', sourceInclusionPattern: '', sourcePattern: 'x'
                     recordIssues(sourceCodeEncoding: 'UTF-8', tools: [
                             spotBugs(),
                             checkStyle(),
@@ -61,13 +120,21 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+
+        stage ('Deploy') {
             when {
-                expression { env.BRANCH_NAME == 'main' }
+                branch 'main'
             }
             steps {
-                withMaven(mavenLocalRepo: '.repository', publisherStrategy: 'EXPLICIT') {
-                    sh 'mvn deploy -DskipTests'
+                container('jnlp') {
+                    // it's not possible to deploy from the maven-sumo container, as there's something wrong in
+                    // finding .m2/settings.xml and .m2/repository even if mounted. executing mvn -X prints
+                    // some weird paths:
+                    // > [DEBUG] Reading user settings from ?/.m2/settings.xml
+                    // which makes it impossible to mount the correct settings.xml
+                    // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
+                    // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
+                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
                 }
             }
         }

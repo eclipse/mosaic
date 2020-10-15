@@ -79,6 +79,18 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-ns3</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-omnetpp</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-sns</artifactId>
             <version>${mosaic.version}</version>
             <scope>runtime</scope>

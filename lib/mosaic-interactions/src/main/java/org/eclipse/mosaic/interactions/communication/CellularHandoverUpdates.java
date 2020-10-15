@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.List;
 
 /**
- * This extension of {@link Interaction} is used by the cell2 ambassador to communicate handovers.
+ * This extension of {@link Interaction} is used by the cell ambassador to communicate handovers.
  */
 public final class CellularHandoverUpdates extends Interaction {
 

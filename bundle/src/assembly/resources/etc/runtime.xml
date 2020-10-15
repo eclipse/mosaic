@@ -59,6 +59,44 @@
             </subscriptions>
         </federate>
 
+        <federate class="org.eclipse.mosaic.fed.ns3.ambassador.Ns3Ambassador">
+            <id>ns3</id>
+            <deploy>true</deploy>
+            <start>true</start>
+            <host>local</host>
+            <port>5011</port>
+            <dockerImage></dockerImage>
+            <config>ns3_config.json</config>
+            <configDeployPath>ns3/scratch</configDeployPath>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.omnetpp.ambassador.OmnetppAmbassador">
+            <id>omnetpp</id>
+            <deploy>true</deploy>
+            <start>true</start>
+            <host>local</host>
+            <port>4998</port>
+            <dockerImage></dockerImage>
+            <config>omnetpp_config.json</config>
+            <configDeployPath>omnetpp-federate/simulations</configDeployPath>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
         <federate class="org.eclipse.mosaic.fed.sns.ambassador.SnsAmbassador">
             <id>sns</id>
             <deploy>false</deploy>
