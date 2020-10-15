@@ -59,6 +59,24 @@
             </subscriptions>
         </federate>
 
+        <federate class="org.eclipse.mosaic.fed.cell.ambassador.CellAmbassador">
+            <id>cell</id>
+            <deploy>false</deploy>
+            <start>false</start>
+            <host>local</host>
+            <config>cell_config.json</config>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TmcRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>ChargingStationRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>CellularCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
         <federate class="org.eclipse.mosaic.fed.ns3.ambassador.Ns3Ambassador">
             <id>ns3</id>
             <deploy>true</deploy>

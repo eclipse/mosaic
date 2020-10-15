@@ -1,0 +1,162 @@
+{
+    "regions": [
+        {
+            "id": "tiergarten",
+            "area": {
+                "nw": {
+                    "lat": 52.51689333461612,
+                    "lon": 13.329591751098633
+                },
+                "se": {
+                    "lat": 52.50884912705277,
+                    "lon": 13.378257751464844
+                }
+            },
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "200 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 21000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "200 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "200 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    },
+                    "usableCapacity": 0.5
+                },
+                "capacity": 42000
+            }
+        },
+        {
+            "id": "kreuzberg",
+            "area": {
+                "nw": {
+                    "lat": 52.50884912705277,
+                    "lon": 13.378257751464844
+                },
+                "se": {
+                    "lat": 52.48962064099799,
+                    "lon": 13.439369201660156
+                }
+            },
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "100 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 23000
+            },
+            "downlink": {
+                "capacity": 42000,
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "100 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "100 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    },
+                    "usableCapacity": 0.5
+                }
+            }
+        },
+        {
+            "id": "northBerlin",
+            "polygon": {
+                "coordinates": [
+                    {
+                        "lat": 52.55334009492636,
+                        "lon": 13.347980804443296
+                    },
+                    {
+                        "lat": 52.52786194521226,
+                        "lon": 13.33012802124017
+                    },
+                    {
+                        "lat": 52.52817524785539,
+                        "lon": 13.448018646240257
+                    },
+                    {
+                        "lat": 52.55678430155299,
+                        "lon": 13.414544677734398
+                    },
+                    {
+                        "lat": 52.55334009492636,
+                        "lon": 13.347980804443296
+                    }
+                ]
+            },
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "300 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 28000000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "300 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "300 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    },
+                    "usableCapacity": 0.5
+                },
+                "capacity": 42200000
+            }
+        }
+    ]
+}
