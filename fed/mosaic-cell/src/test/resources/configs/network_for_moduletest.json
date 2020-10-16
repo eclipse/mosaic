@@ -1,0 +1,68 @@
+{
+    "globalNetwork": {
+        "uplink": {
+            "delay": {
+                "type": "ConstantDelay",
+                "delay": "50 ms"
+            },
+            "transmission": {
+                "lossProbability": 0.0,
+                "maxRetries": 0
+            },
+            "capacity": 21000
+        },
+        "downlink": {
+            "unicast": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "steps": 5,
+                    "delay": "50 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 0
+                }
+            },
+            "multicast": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "50 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0
+                },
+                "usableCapacity": 0.5
+            },
+            "capacity": 42000
+        }
+    },
+    "servers": [
+        {
+            "id": "TestServer",
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "200 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.5,
+                    "maxRetries": 2
+                }
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 5,
+                        "minDelay": "100 ms",
+                        "maxDelay": "200 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.1,
+                        "maxRetries": 2
+                    }
+                }
+            }
+        }
+    ]
+}

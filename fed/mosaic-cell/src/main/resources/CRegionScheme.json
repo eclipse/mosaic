@@ -1,0 +1,180 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "regions": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "polygon": {
+                            "type": "object",
+                            "coordinates": [
+                                { "$ref": "#/definitions/geopoint" }
+                            ],
+                            "required": [ "coordinates" ]
+                        },
+                        "area": {
+                            "type": "object",
+                            "properties": {
+                                "nw": { "$ref": "#/definitions/geopoint" },
+                                "se": { "$ref": "#/definitions/geopoint" }
+                            },
+                            "required": [ "nw", "se" ]
+                        },
+                        "id": { "type": "string" },
+                        "uplink": {
+                            "type": "object",
+                            "properties": {
+                                "delay": { "$ref": "#/definitions/delay" },
+                                "transmission": { "$ref": "#/definitions/transmission" },
+                                "capacity": { "$ref": "#/definitions/capacity" }
+                            },
+                            "required": [ "delay", "transmission", "capacity" ]
+                        },
+                        "downlink": {
+                            "type": "object",
+                            "properties": {
+                                "unicast": { "$ref": "#/definitions/unicast" },
+                                "multicast": { "$ref": "#/definitions/multicast" },
+                                "capacity": { "$ref": "#/definitions/capacity" }
+                            },
+                            "required": [ "unicast", "multicast", "capacity" ]
+                        }
+                    },
+                    "anyOf": [
+                        { "required": [ "area", "id", "uplink", "downlink" ] },
+                        { "required": [ "polygon", "id", "uplink", "downlink" ] }
+                    ]
+                }
+            ]
+        }
+    },
+    "definitions": {
+        "delay": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
+                        },
+                        "minDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        },
+                        "expDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "minDelay", "expDelay" ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "ConstantDelay" ]
+                        },
+                        "delay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "delay" ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "SimpleRandomDelay" ]
+                        },
+                        "steps": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "minDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        },
+                        "maxDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "steps", "minDelay", "maxDelay" ]
+                }
+            ]
+        },
+        "transmission": {
+            "type": "object",
+            "properties": {
+                "lossProbability": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                },
+                "maxRetries": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [ "lossProbability" ]
+        },
+        "unicast": {
+            "type": "object",
+            "properties": {
+                "delay": { "$ref": "#/definitions/delay" },
+                "transmission": { "$ref": "#/definitions/transmission" }
+            },
+            "required": [ "delay", "transmission" ]
+        },
+        "multicast": {
+            "type": "object",
+            "properties": {
+                "delay": { "$ref": "#/definitions/delay" },
+                "transmission": { "$ref": "#/definitions/transmission" },
+                "usableCapacity": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                }
+            },
+            "required": [ "delay", "usableCapacity", "transmission" ]
+        },
+        "geopoint": {
+            "type": "object",
+            "properties": {
+                "lon": { "type": "number" },
+                "lat": { "type": "number" }
+            },
+            "required": [ "lon", "lat" ]
+        },
+        "capacity": {
+            "oneOf": [
+                {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                {
+                    "type": "string",
+                    "pattern": "^unlimited$"
+                }
+            ]
+        }
+    }
+}
