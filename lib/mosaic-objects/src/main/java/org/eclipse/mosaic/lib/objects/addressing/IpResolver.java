@@ -23,9 +23,7 @@ import com.google.common.collect.HashBiMap;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -59,7 +57,6 @@ public final class IpResolver {
     private final int maxRange;
 
     private final BiMap<String, Inet4Address> addressMap = HashBiMap.create();
-    private final List<Inet4Address> unassignedAddresses = new ArrayList<>();
 
     /**
      * Sets the IPResolver singleton. This can only be done once.

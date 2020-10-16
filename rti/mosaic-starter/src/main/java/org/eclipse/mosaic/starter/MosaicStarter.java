@@ -25,8 +25,6 @@ import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.starter.config.CScenario;
 
 import ch.qos.logback.classic.LoggerContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -57,7 +55,7 @@ import java.util.Date;
  */
 public class MosaicStarter {
 
-    private static final Path MOSAIC_CONFIG = Paths.get("etc", "runtime.xml");
+    private static final Path RUNTIME_CONFIG = Paths.get("etc", "runtime.json");
 
     private static final Path LOGBACK_CONFIG = Paths.get("etc", "logback.xml");
 
@@ -102,7 +100,7 @@ public class MosaicStarter {
         final Path scenarioConfigurationFile = findScenarioConfigurationFile(params);
         final Path scenarioDirectory = extractScenarioDirectory(scenarioConfigurationFile);
 
-        final Path runtimeConfigurationFile = params.runtimeConfiguration != null ? Paths.get(params.runtimeConfiguration) : MOSAIC_CONFIG;
+        final Path runtimeConfigurationFile = params.runtimeConfiguration != null ? Paths.get(params.runtimeConfiguration) : RUNTIME_CONFIG;
         final CRuntime runtimeConfiguration = loadRuntimeConfiguration(runtimeConfigurationFile);
 
         final Path hostConfigurationFile = params.hostsConfiguration != null ? Paths.get(params.hostsConfiguration) : HOSTS_CONFIG;
@@ -230,11 +228,7 @@ public class MosaicStarter {
 
     protected CRuntime loadRuntimeConfiguration(Path configurationPath) throws ExecutionException {
         try {
-            try (InputStream resource = loadResource(configurationPath)) {
-                return new XmlMapper()
-                        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                        .readValue(resource, CRuntime.class);
-            }
+            return loadJsonConfiguration(configurationPath, CRuntime.class);
         } catch (Exception e) {
             printAndLog("Could not read configuration file " + configurationPath, e);
             throw new ExecutionException();
