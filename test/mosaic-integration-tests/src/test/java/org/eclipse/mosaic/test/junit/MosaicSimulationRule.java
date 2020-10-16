@@ -29,8 +29,6 @@ import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.starter.config.CScenario;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.TemporaryFolder;
 
@@ -84,10 +82,10 @@ public class MosaicSimulationRule extends TemporaryFolder {
     }
 
     private CRuntime prepareRuntimeConfiguration() throws IOException {
-        try (InputStream resource = getClass().getResourceAsStream("/runtime.xml")) {
-            return new XmlMapper()
-                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                    .readValue(resource, CRuntime.class);
+        try (InputStream resource = getClass().getResourceAsStream("/runtime.json")) {
+            return new ObjectInstantiation<>(CRuntime.class).read(resource);
+        } catch (InstantiationException e) {
+            throw new IOException(e);
         }
     }
 
