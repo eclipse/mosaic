@@ -91,7 +91,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-                <version>1.7.0</version>
                 <configuration>
                     <includes>
                         <include>**/*.proto</include>

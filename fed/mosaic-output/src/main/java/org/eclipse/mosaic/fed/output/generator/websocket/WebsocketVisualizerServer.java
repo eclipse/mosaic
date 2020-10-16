@@ -1,0 +1,165 @@
+/*
+ * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
+
+package org. eclipse.mosaic.fed.output.generator.websocket;
+
+import com.google.common.collect.EvictingQueue;
+import com.google.common.collect.Queues;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
+import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
+import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
+import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
+import org.eclipse.mosaic.rti.api.Interaction;
+
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicReference;
+
+@SuppressWarnings("UnstableApiUsage")
+public class WebsocketVisualizerServer extends WebSocketServer implements Runnable {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private static final int MAX_MESSAGES_LIST = 1000;
+
+    private final AtomicReference<VehicleUpdates> vehicleUpdatesReference = new AtomicReference<>();
+
+    private final Queue<V2xMessageTransmission> sentV2xMessages = createQueue();
+    private final Queue<V2xMessageReception> receivedV2xMessages = createQueue();
+
+    private final Queue<VehicleRegistration> vehicleRegistrations = createQueue();
+    private final Queue<RsuRegistration> rsuRegistrations = createQueue();
+    private final Queue<TrafficLightRegistration> trafficLightRegistrations = createQueue();
+    private final Queue<ChargingStationRegistration> chargingStationRegistrations = createQueue();
+    private final Queue<ChargingStationUpdates> chargingStationUpdates = createQueue();
+
+    public WebsocketVisualizerServer(InetSocketAddress address) {
+        super(address);
+    }
+
+    @Override
+    public void onStart() {
+        log.debug("Started");
+    }
+
+    @Override
+    public void onClose(WebSocket arg0, int arg1, String arg2, boolean arg3) {
+        log.debug("Closed");
+    }
+
+    @Override
+    public void onError(WebSocket arg0, Exception ex) {
+        log.error("WebsocketError", ex);
+    }
+
+    @Override
+    public synchronized void onMessage(WebSocket socket, String arg1) {
+
+        sendInteractions(socket, vehicleRegistrations);
+        sendInteractions(socket, rsuRegistrations);
+        sendInteractions(socket, trafficLightRegistrations);
+        sendInteractions(socket, chargingStationRegistrations);
+
+        sendVehicleUpdates(socket);
+
+        sendInteractions(socket, sentV2xMessages);
+        sendInteractions(socket, receivedV2xMessages);
+
+        sendInteractions(socket, chargingStationUpdates);
+    }
+
+    private void sendVehicleUpdates(WebSocket socket) {
+        if (vehicleUpdatesReference.get() != null) {
+            Gson gson = new Gson();
+            synchronized (vehicleUpdatesReference) {
+                JsonElement jsonElement = gson.toJsonTree(vehicleUpdatesReference.get());
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.add(VehicleUpdates.TYPE_ID, jsonElement);
+                socket.send(jsonObject.toString());
+            }
+        }
+    }
+
+    private <T extends Interaction> void sendInteractions(WebSocket socket, Queue<T> interactionsQueue) {
+        for (Iterator<T> iterator = interactionsQueue.iterator(); iterator.hasNext(); ) {
+            T interaction = iterator.next();
+
+            Gson gson = new Gson();
+            JsonElement jsonElement = gson.toJsonTree(interaction);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(interaction.getTypeId(), jsonElement);
+            socket.send(jsonObject.toString());
+
+            iterator.remove();
+        }
+    }
+
+    @Override
+    public void onOpen(WebSocket arg0, ClientHandshake arg1) {
+
+    }
+
+    public synchronized void updateVehicleUpdates(VehicleUpdates interaction) {
+        vehicleUpdatesReference.set(interaction);
+    }
+
+    public synchronized void sendV2xMessage(V2xMessageTransmission interaction) {
+        sentV2xMessages.add(interaction);
+    }
+
+    public synchronized void receiveV2xMessage(V2xMessageReception interaction) {
+        receivedV2xMessages.add(interaction);
+    }
+
+    public synchronized void addRoadsideUnit(RsuRegistration interaction) {
+        rsuRegistrations.add(interaction);
+    }
+
+    public synchronized void addTrafficLight(TrafficLightRegistration interaction) {
+        trafficLightRegistrations.add(interaction);
+    }
+
+    public synchronized void addChargingStation(ChargingStationRegistration interaction) {
+        chargingStationRegistrations.add(interaction);
+    }
+
+    public synchronized void updateChargingStation(ChargingStationUpdates interaction) {
+        chargingStationUpdates.add(interaction);
+    }
+
+    public synchronized void addVehicle(VehicleRegistration interaction) {
+        vehicleRegistrations.add(interaction);
+    }
+
+    private static <T> Queue<T> createQueue() {
+        return Queues.synchronizedQueue(EvictingQueue.create(MAX_MESSAGES_LIST));
+    }
+
+}

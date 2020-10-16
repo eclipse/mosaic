@@ -148,6 +148,10 @@
                 <appender-ref ref="TrafficLog"/>
             </logger>
 
+            <logger name="org.eclipse.mosaic.fed.output" additivity="false" level="INFO">
+                <appender-ref ref="MosaicLog"/>
+            </logger>
+
             <logger name="activities" additivity="false" level="OFF">
                 <appender-ref ref="ActivityLog"/>
             </logger>

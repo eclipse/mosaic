@@ -63,7 +63,7 @@ public class MosaicStarter {
 
     private static final Path HOSTS_CONFIG = Paths.get("etc", "hosts.json");
 
-    private static final Path VISUALIZER_PATH = Paths.get("bin", "tools", "visualizer.html");
+    private static final Path VISUALIZER_PATH = Paths.get("tools", "web", "visualizer.html");
 
     private static final Path LIBRARIES = Paths.get("lib");
 

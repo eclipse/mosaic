@@ -21,6 +21,11 @@
 </#function>
 # Third-party Content
 
+Maps Icons Collection
+
+* License: Creative Commons Attribution-Share Alike 3.0 Unported license (CC BY SA 3.0)
+* Project: https://mapicons.mapsmarker.com
+
 <#list dependencyMap as e>
 ${formatDependency(e)}
 </#list>

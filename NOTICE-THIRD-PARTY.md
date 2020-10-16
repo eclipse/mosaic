@@ -1,5 +1,10 @@
 # Third-party Content
 
+Maps Icons Collection
+
+* License: Creative Commons Attribution-Share Alike 3.0 Unported license (CC BY SA 3.0)
+* Project: https://mapicons.mapsmarker.com
+
 Apache Commons CLI (1.4)
 
  * License: Apache License, Version 2.0
@@ -174,6 +179,14 @@ Janino (2.7.5)
  * Maven artifact: `org.codehaus.janino:janino:2.7.5`
  * Project: http://docs.codehaus.org/display/JANINO/Home/janino
  * Source: https://fisheye.codehaus.org/browse/janino/tags/janino_2.7.5/janino/
+
+
+Java-WebSocket (1.3.9)
+
+ * License: MIT License
+ * Maven artifact: `org.java-websocket:Java-WebSocket:1.3.9`
+ * Project: https://github.com/TooTallNate/Java-WebSocket
+ * Source: https://github.com/TooTallNate/Java-WebSocket
 
 
 Johnzon :: Core (1.1.13)
