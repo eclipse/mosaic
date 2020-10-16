@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://www.dcaiti.tu-berlin.de/research/simulation/download/get/specification/xs3p-1.1.3/xs3p.xsl"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    <!-- COUNT: [MAS](#REF004): -->
+    <xs:element name="configuration">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="output" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="output">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" ref="filename" />
+                        <xs:element ref="directory" />
+                        <xs:element ref="separator" />
+                    </xs:sequence>
+                    <xs:sequence>
+                        <xs:element ref="synchronized" />
+                        <xs:element minOccurs="0" ref="host" />
+                        <xs:element ref="port" />
+                    </xs:sequence>
+                    <xs:sequence>
+                        <xs:element name="startTime" minOccurs="0" type="xs:string"/>
+                        <xs:element name="upload">
+                            <xs:complexType>
+                                <xs:all>
+                                    <xs:element ref="target" />
+                                    <xs:element minOccurs="0" ref="scenarioId" />
+                                    <xs:element minOccurs="0" ref="user" />
+                                    <xs:element minOccurs="0" ref="password" />
+                                </xs:all>
+                                <xs:attribute name="enabled" type="xs:boolean" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:sequence>
+                        <xs:element name="statistic">
+                            <xs:complexType>
+                                <xs:choice maxOccurs="unbounded">
+                                    <xs:element minOccurs="1" ref="source" />
+                                    <xs:element minOccurs="0" ref="group-by" />
+                                    <xs:element minOccurs="0" ref="aggregation" />
+                                    <xs:element minOccurs="0" ref="filter" />
+                                </xs:choice>
+                                <xs:attribute name="filename" type="xs:string" />
+                                <xs:attribute name="output" type="xs:string" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:element ref="fences" />
+                </xs:choice>
+                <xs:element minOccurs="0" ref="append" />
+                <xs:element minOccurs="0" ref="write" />
+                <xs:element minOccurs="0" ref="clean" />
+                <xs:element minOccurs="0" ref="test" />
+                <xs:element minOccurs="0" ref="subscriptions" />
+            </xs:sequence>
+            <xs:attribute name="enabled" type="xs:boolean" />
+            <xs:attribute name="id" use="required" type="xs:NCName" />
+            <xs:attribute name="loader" use="required" />
+            <xs:attribute name="update" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="filename" type="xs:NCName">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The filename for the specific log file.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="directory" type="xs:NMTOKEN">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The directory to place the file in.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="separator" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The delimiter [.] can be escaped by a backslash [\.].
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="synchronized" type="xs:boolean" />
+    <xs:element name="host" type="xs:NCName" />
+    <xs:element name="port" type="xs:integer" />
+    <xs:element name="append" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Defines, whether the content will be appended to file.
+                Default value: true;
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="write" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Its value can be file or log, which means using normal file writer or
+                logback to handle the interaction.
+                Default value: log;
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="subscriptions">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="subscription" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="subscription">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="entries" />
+            </xs:sequence>
+            <xs:attribute name="enabled" type="xs:boolean" />
+            <xs:attribute name="id" use="required" type="xs:NCName" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="entries">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="entry" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="entry" type="xs:anyURI" />
+    <xs:element name="url" type="xs:string" />
+    <xs:element name="user" type="xs:string" />
+    <xs:element name="password" type="xs:string" />
+    <xs:element name="clean" type="xs:boolean" />
+    <xs:element name="test" type="xs:string" />
+    <xs:element name="target" type="xs:string" />
+    <xs:element name="scenarioId" type="xs:string" />
+    <xs:element name="source" type="xs:string" />
+    <xs:element name="group-by" type="xs:string" />
+    <xs:element name="aggregation" type="xs:string" />
+    <xs:element name="filter" >
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="filterType" type="xs:string" use="required" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="fences">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="rectangularFence">
+                    <xs:complexType>
+                        <xs:attribute name="north" type="xs:double" use="required" />
+                        <xs:attribute name="east" type="xs:double" use="required" />
+                        <xs:attribute name="west" type="xs:double" use="required" />
+                        <xs:attribute name="south" type="xs:double" use="required" />
+                        <xs:attribute name="start" type="xs:int" />
+                        <xs:attribute name="end" type="xs:int" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="circularFence">
+                    <xs:complexType>
+                        <xs:attribute name="centerLat" type="xs:double" use="required" />
+                        <xs:attribute name="centerLon" type="xs:double" use="required" />
+                        <xs:attribute name="radius" type="xs:int" use="required" />
+                        <xs:attribute name="start" type="xs:int" />
+                        <xs:attribute name="end" type="xs:int" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="timeFence">
+                    <xs:complexType>
+                        <xs:attribute name="start" type="xs:int" use="required" />
+                        <xs:attribute name="end" type="xs:int" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

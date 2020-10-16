@@ -10,10 +10,14 @@
 **Eclipse MOSAIC** is a multi-scale simulation framework in the field of smart and connected mobility. It allows to couple simulators from various domains towards a comprehensive simulation tool. 
 Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models are coupled to the RTI using HLA inspired interfaces; 
 Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador" which is directly coupled with the RTI. Currently, the following simulators are coupled with the MOSAIC RTI:
+  * MOSAIC Application (application simulation)
   * Eclipse SUMO (traffic simulation)
-  * Eclipse MOSAIC Environment (environment simulation)
-  * Eclipse MOSAIC Application (application simulation)
-  * Eclipse MOSAIC Simple Network Simulator (communication simulation)
+  * OMNeT++ (communication simulation)
+  * ns-3 (communication simulation)
+  * MOSAIC Cell Simulator (cellular communication simulation)
+  * MOSAIC Simple Network Simulator (communication simulation)
+  * MOSAIC Environment (environment and event simulation)  
+  * MOSAIC Output Generator (evaluation and visualization)
 
 The project is a Maven based multi-module project and has its child modules organized in three main categories:
   * MOSAIC RTI: modules providing the runtime infrastructure API and implementation
@@ -26,6 +30,10 @@ This repository contains the *Essential* edition of Eclipse MOSAIC, that is, the
 the core libraries, and various implementations of simulators or couplings to existing ones. All features 
 included in this version of Eclipse MOSAIC are sufficient for most use-cases in the field of smart and connected mobility.
 Additional simulators and assessment features are provided by [Fraunhofer FOKUS](https://www.fokus.fraunhofer.de/go/asct) on a commercial basis.
+
+## Contact
+
+We are available for all kind of questions regarding Eclipse MOSAIC via mosaic@fokus.fraunhofer.de
 
 ## Prerequisites
 

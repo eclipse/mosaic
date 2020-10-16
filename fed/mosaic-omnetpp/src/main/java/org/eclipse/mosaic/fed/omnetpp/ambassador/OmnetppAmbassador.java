@@ -52,8 +52,8 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
                         "-u", "Cmdenv",
                         "-f", omnetppConfigFilePath,
                         "-n", inetSourceDirectories,
-                        "--vsimrtieventscheduler-host=" + host,
-                        "--vsimrtieventscheduler-port=" + port
+                        "--mosaiceventscheduler-host=" + host,
+                        "--mosaiceventscheduler-port=" + port
                 );
             case WINDOWS:
             case UNKNOWN:

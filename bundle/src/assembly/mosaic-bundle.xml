@@ -21,6 +21,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.build.directory}/maven-shared-archive-resources/web</directory>
+            <outputDirectory>tools/web</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>src/assembly/resources/scenarios</directory>
             <outputDirectory>scenarios</outputDirectory>
             <filtered>false</filtered>
@@ -102,6 +109,7 @@
                 <include>com.jcraft:jsch</include>
                 <include>com.google.protobuf:protobuf-java</include>
                 <include>org.xerial:sqlite-jdbc</include>
+                <include>org.java-websocket:Java-WebSocket</include>
             </includes>
         </dependencySet>
     </dependencySets>

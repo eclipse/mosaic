@@ -81,6 +81,12 @@
                     <pattern>%date %-5level %logger{0} - %msg%n</pattern>
                 </encoder>
             </appender>
+            <appender name="CellLog" class="ch.qos.logback.core.FileAppender">
+                <file>${logDirectory}/Cell.log</file>
+                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                    <pattern>%date %-5level %logger{0} - %msg%n</pattern>
+                </encoder>
+            </appender>
 
             <appender name="ActivityLog" class="ch.qos.logback.core.FileAppender">
                 <file>${logDirectory}/RuntimeEvents.csv</file>
@@ -125,6 +131,9 @@
             <logger name="org.eclipse.mosaic.fed.sns" additivity="false" level="INFO">
                 <appender-ref ref="CommunicationLog"/>
             </logger>
+            <logger name="org.eclipse.mosaic.fed.cell" additivity="false" level="INFO">
+                <appender-ref ref="CellLog"/>
+            </logger>
 
             <logger name="org.eclipse.mosaic.fed.application.ambassador.navigation" additivity="false" level="INFO">
                 <appender-ref ref="NavigationLog"/>
@@ -146,6 +155,10 @@
 
             <logger name="org.eclipse.mosaic.fed.sumo" additivity="false" level="INFO">
                 <appender-ref ref="TrafficLog"/>
+            </logger>
+
+            <logger name="org.eclipse.mosaic.fed.output" additivity="false" level="INFO">
+                <appender-ref ref="MosaicLog"/>
             </logger>
 
             <logger name="activities" additivity="false" level="OFF">

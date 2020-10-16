@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://github.com/eclipse/mosaic/blob/main/fed/mosaic-output/src/main/resources/output_config.xsd">
+
+    <output id="generator1" enabled="true" update="10" loader="org.eclipse.mosaic.fed.output.ambassador.TestOutputGeneratorLoader">
+        <subscriptions>
+            <subscription id="VehicleUpdates"/>
+            <subscription id="V2xMessageTransmission" enabled="true"/>
+            <subscription id="V2xMessageReception" enabled="false"/>
+        </subscriptions>
+    </output>
+
+    <output id="generator2" enabled="true" update="2" loader="org.eclipse.mosaic.fed.output.ambassador.TestOutputGeneratorLoader">
+        <subscriptions>
+            <subscription id="VehicleUpdates"/>
+        </subscriptions>
+    </output>
+
+    <output id="generator3" enabled="false" update="7" loader="org.eclipse.mosaic.fed.output.ambassador.TestOutputGeneratorLoader">
+        <subscriptions>
+            <subscription id="VehicleRegistration" enabled="false"/>
+        </subscriptions>
+    </output>
+
+    <output id="generator4" enabled="true" update="2" start="2" end="6" loader="org.eclipse.mosaic.fed.output.ambassador.TestOutputGeneratorLoader">
+        <subscriptions>
+            <subscription id="VehicleRegistration"/>
+            <subscription id="VehicleUpdates"/>
+        </subscriptions>
+    </output>
+
+</configuration>

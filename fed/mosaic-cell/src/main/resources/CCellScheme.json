@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "bandwidthMeasurementInterval": { "type": "number", "minimum": 1 },
+        "bandwidthMeasurements": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "fromRegion": { "type": "string" },
+                        "toRegion": { "type": "string" },
+                        "transmissionMode": {
+                            "type": "string",
+                            "enum": [ "UplinkUnicast", "DownlinkUnicast", "DownlinkMulticast" ]
+                        }
+                    },
+                    "required": [
+                        "fromRegion", "toRegion", "transmissionMode"
+                    ]
+                }
+            ]
+        },
+        "networkConfigurationFile": { "type": "string" },
+        "regionConfigurationFile": { "type": "string" }
+    },
+    "required": [
+        "networkConfigurationFile"
+    ]
+}

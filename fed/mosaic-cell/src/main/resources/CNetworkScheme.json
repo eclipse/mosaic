@@ -1,0 +1,179 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "globalNetwork": {
+            "type": "object",
+            "properties": {
+                "uplink": {
+                    "type": "object",
+                    "properties": {
+                        "delay": { "$ref": "#/definitions/delay" },
+                        "transmission": { "$ref": "#/definitions/transmission" },
+                        "capacity": { "$ref": "#/definitions/capacity" }
+                    },
+                    "required": [ "delay", "transmission", "capacity" ]
+                },
+                "downlink": {
+                    "type": "object",
+                    "properties": {
+                        "unicast": { "$ref": "#/definitions/unicast" },
+                        "multicast": { "$ref": "#/definitions/multicast" },
+                        "capacity": { "$ref": "#/definitions/capacity" }
+                    },
+                    "required": [ "unicast", "multicast", "capacity" ]
+                }
+            }
+        },
+        "servers": {
+            "type": "array",
+            "items": [ { "$ref" :  "#/definitions/server"}]
+        }
+    },
+    "required": [ "globalNetwork" ],
+    "definitions": {
+        "delay": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
+                        },
+                        "minDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        },
+                        "expDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "minDelay", "expDelay" ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "ConstantDelay" ]
+                        },
+                        "delay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "delay" ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [ "SimpleRandomDelay" ]
+                        },
+                        "steps": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "minDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        },
+                        "maxDelay": {
+                            "oneOf": [
+                                { "type": "number", "minimum": 0 },
+                                { "type": "string", "minLength": 2 }
+                            ]
+                        }
+                    },
+                    "required": [ "type", "steps", "minDelay", "maxDelay" ]
+                }
+            ]
+        },
+        "transmission": {
+            "type": "object",
+            "properties": {
+                "lossProbability": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                },
+                "maxRetries": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [ "lossProbability" ]
+        },
+        "unicast": {
+            "type": "object",
+            "properties": {
+                "delay": { "$ref": "#/definitions/delay" },
+                "transmission": { "$ref": "#/definitions/transmission" }
+            },
+            "required": [ "delay", "transmission" ]
+        },
+        "multicast": {
+            "type": "object",
+            "properties": {
+                "delay": { "$ref": "#/definitions/delay" },
+                "transmission": { "$ref": "#/definitions/transmission" },
+                "usableCapacity": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                }
+            },
+            "required": [ "delay", "transmission", "usableCapacity" ]
+        },
+        "capacity": {
+            "oneOf": [
+                {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                {
+                    "type": "string",
+                    "pattern": "^unlimited$"
+                }
+            ]
+        },
+        "server": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "uplink": {
+                    "type": "object",
+                    "properties": {
+                        "delay": { "$ref": "#/definitions/delay" },
+                        "transmission": { "$ref": "#/definitions/transmission" }
+                    },
+                    "required": [ "delay", "transmission" ],
+                    "additionalProperties": false
+                },
+                "downlink": {
+                    "type": "object",
+                    "properties": {
+                        "unicast": { "$ref": "#/definitions/unicast" }
+                    },
+                    "required": [ "unicast" ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [ "id" ],
+            "additionalProperties": false
+        }
+    }
+}
