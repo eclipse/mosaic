@@ -1,0 +1,53 @@
+{
+    "prototypes": [
+        {
+            "name": "car",
+            "accel": 2.6,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 70.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1,
+            "deviations": {
+                "speedFactor": 0.1
+            }
+        }
+    ],
+    "tmcs": [
+        {
+            "name": "HighwayManagement",
+            "applications": [ "org.eclipse.mosaic.app.tutorial.HighwayManagementApp(\"3\", 2)" ],
+            "inductionLoops": [ "detector_0", "detector_1", "detector_2" ],
+            "laneAreaDetectors": [ ]
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 1.0,
+            "targetFlow": 6000,
+            "maxNumberVehicles": 400,
+            "route": "2",
+            "lanes": [ 1, 2 ],
+            "types": [
+                {
+                    "name": "car"
+                }
+            ]
+        },
+        {
+            "startingTime": 1.0,
+            "targetFlow": 1000,
+            "maxNumberVehicles": 50,
+            "route": "1",
+            "lanes": [ 0 ],
+            "types": [
+                {
+                    "name": "car"
+                }
+            ]
+        }
+    ]
+}
+
+

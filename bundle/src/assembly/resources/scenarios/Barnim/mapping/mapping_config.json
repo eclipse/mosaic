@@ -1,0 +1,67 @@
+{
+    "prototypes": [
+        {
+            "name": "Car",
+            "vehicleClass": "ElectricVehicle",
+            "accel": 2.6,
+            "decel": 4.5,
+            "emergencyDecel": 6.0,
+            "length": 5.00,
+            "maxSpeed": 70.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1,
+            "speedFactor": 1.0,
+            "speedMode": "DEFAULT",
+            "laneChangeMode": "DEFAULT",
+            "deviations": {
+                "speedFactor": 0.0,
+                "length": 0.0,
+                "minGap": 0.0,
+                "maxSpeed": 0.0,
+                "accel": 0.0,
+                "decel": 0.0,
+                "tau": 0.0
+            }
+        }
+    ],
+    "rsus": [
+        {
+            "position": {
+                "latitude": 52.65027,
+                "longitude": 13.54500
+            },
+            "name": "WeatherServer",
+            "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherServerApp" ]
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 5.0,
+            "targetFlow": 1800,
+            "maxNumberVehicles": 120,
+            "route": "1",
+            "lanes": [ 0, 1 ],
+            "types": [
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherWarningAppCell", "org.eclipse.mosaic.app.tutorial.SlowDownApp" ],
+                    "name": "Car",
+                    "group": "Cellular",
+                    "weight": 0.1
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherWarningApp", "org.eclipse.mosaic.app.tutorial.SlowDownApp" ],
+                    "name": "Car",
+                    "group": "AdHoc",
+                    "weight": 0.2
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.SlowDownApp" ],
+                    "name": "Car",
+                    "group": "Unequipped",
+                    "weight": 0.7
+                }
+            ]
+        }
+    ]
+}

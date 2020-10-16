@@ -1,0 +1,30 @@
+{
+    "simulation": {
+        "id": "LuST-Scenario-2.0",
+        "duration": "24h",
+        "randomSeed": 268965854,
+        "projection": {
+            "centerCoordinates": {
+                "latitude": 49.599886,
+                "longitude": 6.127108
+            },
+            "cartesianOffset": {
+                "x": -285448.66,
+                "y": -5492398.13
+            }
+        },
+        "network": {
+           "netMask": "255.248.0.0",
+           "vehicleNet": "10.0.0.0",
+           "rsuNet": "10.8.0.0",
+           "tlNet": "10.16.0.0",
+           "csNet": "10.24.0.0",
+           "serverNet": "10.32.0.0",
+           "tmcNet": "10.40.0.0"
+        }
+    },
+    "federates": {
+        "application": true,
+        "sumo": true
+    }
+}

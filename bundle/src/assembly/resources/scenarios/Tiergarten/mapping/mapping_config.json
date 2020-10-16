@@ -1,0 +1,87 @@
+{
+    "prototypes": [
+        {
+            "name": "Car",
+            "applications": [
+                "org.eclipse.mosaic.app.tutorial.EventSendingApp",
+                "org.eclipse.mosaic.app.tutorial.EventProcessingApp"
+            ],
+            "accel": 1.5,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 10.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1,
+            "color": "red"
+        },
+        {
+            "name": "TrafficLightCar",
+            "applications": [
+                "org.eclipse.mosaic.app.tutorial.VehicleToTrafficLightApp"
+            ],
+            "color": "green"
+        },
+        {
+            "name": "RSU",
+            "applications": [
+                "org.eclipse.mosaic.app.tutorial.RoadSideUnitApp"
+            ]
+        },
+        {
+            "name": "TrafficLight",
+            "applications": [
+                "org.eclipse.mosaic.app.tutorial.TrafficLightApp"
+            ]
+        }
+    ],
+    "trafficLights": [
+        {
+            "name": "TrafficLight",
+            "tlGroupId": "26704448"
+        },
+        {
+            "name": "TrafficLight",
+            "tlGroupId": "252864801"
+        },
+        {
+            "name": "TrafficLight",
+            "tlGroupId": "252864802"
+        }
+    ],
+    "rsus": [
+        {
+            "name": "RSU",
+            "position": {
+                "latitude": 52.513060766781614,
+                "longitude": 13.32891047000885
+            }
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 1.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "Car" } ]
+        },
+        {
+            "startingTime": 5.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "Car" } ]
+        },
+        {
+            "startingTime": 8.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "TrafficLightCar" } ]
+        },
+        {
+            "startingTime": 10.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [ { "name": "Car" } ]
+        }
+    ]
+}

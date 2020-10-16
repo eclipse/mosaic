@@ -71,6 +71,11 @@
         <module>fed/mosaic-sumo</module>
 
         <module>test/mosaic-integration-tests</module>
+
+        <module>app/tutorials/example-applications</module>
+        <module>app/tutorials/highway-management</module>
+        <module>app/tutorials/traffic-light-communication</module>
+        <module>app/tutorials/weather-warning</module>
     </modules>
 
     <properties>
@@ -694,6 +699,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
+                        <version>1.20</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>

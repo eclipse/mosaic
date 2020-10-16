@@ -1,0 +1,46 @@
+{
+	"prototypes":[
+		{
+            "name":"passenger1",
+            "applications":[
+                "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp"
+            ]
+		}, 
+        {
+            "name":"passenger2a",
+            "applications":[
+
+            ]
+		},
+        {
+            "name":"passenger2b",
+            "applications":[
+
+            ]
+		},
+        {
+            "name":"passenger3",
+            "applications":[
+
+            ]
+		},
+        {
+            "name":"passenger4",
+            "applications":[
+
+            ]
+		},
+        {
+            "name":"passenger5",
+            "applications":[
+
+            ]
+		},
+        {
+            "name":"bus",
+            "applications":[
+                "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp"
+            ]
+		}
+	]
+}

@@ -121,6 +121,30 @@
             <version>${mosaic.version}</version>
         </dependency>
 
+        <!-- Tutorial Applications -->
+
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>example-applications</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>highway-management</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>traffic-light-communication</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>weather-warning</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+
+
         <!-- Dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

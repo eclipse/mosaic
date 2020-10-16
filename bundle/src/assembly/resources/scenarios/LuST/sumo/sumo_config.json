@@ -1,0 +1,4 @@
+{
+	"sumoConfigurationFile" : "LuSTScenario/scenario/due.actuated.sumocfg",
+	"additionalSumoParameters": " --time-to-teleport 180  --seed 100000"
+}

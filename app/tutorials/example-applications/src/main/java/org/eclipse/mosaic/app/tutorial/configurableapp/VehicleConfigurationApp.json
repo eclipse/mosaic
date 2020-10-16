@@ -1,0 +1,5 @@
+{
+	"fooInteger": 20,
+	"fooString" : "A config for all unspecified vehicles",
+	"fooStringList" : [ "Place", "me", "in", "application", "folder" ]
+}
