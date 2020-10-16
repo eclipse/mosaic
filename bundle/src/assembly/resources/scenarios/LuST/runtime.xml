@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xsi:noNamespaceSchemaLocation="xsd/runtime.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- be careful with this option, as determinism cannot be guaranteed if more than 1 thread is active -->
+    <threads>1</threads>
+
+    <federates>
+        <federate class="org.eclipse.mosaic.fed.application.ambassador.ApplicationAmbassador">
+            <id>application</id>
+            <deploy>false</deploy>
+            <start>false</start>
+            <host>local</host>
+            <port>0</port>
+            <config>application_config.json</config>
+            <subscriptions>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TmcRegistration</subscription>
+                <subscription>ChargingStationRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>ApplicationInteraction</subscription>
+                <subscription>ChargingStationUpdates</subscription>
+                <subscription>ChargingDenialResponse</subscription>
+                <subscription>VehicleElectricityUpdates</subscription>
+                <subscription>VehicleRouteRegistration</subscription>
+                <subscription>V2xMessageReception</subscription>
+                <subscription>V2xFullMessageReception</subscription>
+                <subscription>V2xMessageAcknowledgement</subscription>
+                <subscription>EnvironmentSensorUpdates</subscription>
+                <subscription>SumoTraciResponse</subscription>
+                <subscription>TrafficDetectorUpdates</subscription>
+                <subscription>TrafficLightUpdates</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>VehicleRoutesInitialization</subscription>
+                <subscription>VehicleTypesInitialization</subscription>
+                <subscription>VehicleSeenTrafficSignsUpdate</subscription>
+            </subscriptions>
+        </federate>
+        <federate class="org.eclipse.mosaic.fed.environment.ambassador.EnvironmentAmbassador">
+            <id>environment</id>
+            <deploy>false</deploy>
+            <start>false</start>
+            <host>local</host>
+            <config>environment_config.json</config>
+            <subscriptions>
+                <subscription>EnvironmentSensorActivation</subscription>
+                <subscription>VehicleUpdates</subscription>
+            </subscriptions>
+        </federate>
+        <federate class="org.eclipse.mosaic.fed.mapping.ambassador.MappingAmbassador">
+            <id>mapping</id>
+            <deploy>false</deploy>
+            <start>false</start>
+            <host>local</host>
+            <config>mapping_config.json</config>
+            <subscriptions>
+                <subscription>VehicleRoutesInitialization</subscription>
+                <subscription>ScenarioTrafficLightRegistration</subscription>
+                <subscription>ScenarioVehicleRegistration</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.cell.ambassador.CellAmbassador">
+            <id>cell</id>
+            <deploy>false</deploy>
+            <start>false</start>
+            <host>local</host>
+            <config>cell_config.json</config>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TmcRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>ChargingStationRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>CellularCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.ns3.ambassador.Ns3Ambassador">
+            <id>ns3</id>
+            <deploy>true</deploy>
+            <start>true</start>
+            <host>local</host>
+            <port>5011</port>
+            <dockerImage></dockerImage>
+            <config>ns3_config.json</config>
+            <configDeployPath>ns3/scratch</configDeployPath>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.omnetpp.ambassador.OmnetppAmbassador">
+            <id>omnetpp</id>
+            <deploy>true</deploy>
+            <start>true</start>
+            <host>local</host>
+            <port>4998</port>
+            <dockerImage></dockerImage>
+            <config>omnetpp_config.json</config>
+            <configDeployPath>omnetpp-federate/simulations</configDeployPath>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.sns.ambassador.SnsAmbassador">
+            <id>sns</id>
+            <deploy>false</deploy>
+            <start>false</start>
+            <host>local</host>
+            <config>sns_config.json</config>
+            <subscriptions>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioGuiAmbassador">
+            <id>sumo</id>
+            <deploy>true</deploy>
+            <start>true</start>
+            <host>local</host>
+            <port>0</port>
+            <config>sumo_config.json</config>
+            <subscriptions>
+                <subscription>VehicleSlowDown</subscription>
+                <subscription>VehicleRouteChange</subscription>
+                <subscription>VehicleLaneChange</subscription>
+                <subscription>TrafficLightStateChange</subscription>
+                <subscription>VehicleStop</subscription>
+                <subscription>VehicleResume</subscription>
+                <subscription>SumoTraciRequest</subscription>
+                <subscription>VehicleDistanceSensorActivation</subscription>
+                <subscription>VehicleParametersChange</subscription>
+                <subscription>VehicleSpeedChange</subscription>
+                <subscription>VehicleFederateAssignment</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>InductionLoopDetectorSubscription</subscription>
+                <subscription>LaneAreaDetectorSubscription</subscription>
+                <subscription>TrafficLightSubscription</subscription>
+            </subscriptions>
+        </federate>
+
+        <federate class="org.eclipse.mosaic.fed.output.ambassador.OutputAmbassador">
+            <deploy>false</deploy>
+            <start>false</start>
+            <id>output</id>
+            <update>1</update>
+            <config>output_config.xml</config>
+            <subscriptions>
+                <subscription>ChargingStationRegistration</subscription>
+                <subscription>RsuRegistration</subscription>
+                <subscription>TrafficLightRegistration</subscription>
+                <subscription>TrafficSignRegistration</subscription>
+                <subscription>VehicleRegistration</subscription>
+                <subscription>ItefLogging</subscription>
+                <subscription>VehicleLaneChange</subscription>
+                <subscription>LanePropertyChange</subscription>
+                <subscription>VehicleRouteChange</subscription>
+                <subscription>TrafficLightStateChange</subscription>
+                <subscription>TrafficSignSpeedLimitChange</subscription>
+                <subscription>TrafficSignLaneAssignmentChange</subscription>
+                <subscription>ChargingStationUpdates</subscription>
+                <subscription>AdHocCommunicationConfiguration</subscription>
+                <subscription>CellularCommunicationConfiguration</subscription>
+                <subscription>V2xMessageRemoval</subscription>
+                <subscription>V2xMessageReception</subscription>
+                <subscription>V2xMessageTransmission</subscription>
+                <subscription>EnvironmentSensorUpdates</subscription>
+                <subscription>VehicleSlowDown</subscription>
+                <subscription>TrafficDetectorUpdates</subscription>
+                <subscription>TrafficLightUpdates</subscription>
+                <subscription>VehicleElectricityUpdates</subscription>
+                <subscription>CellularHandoverUpdates</subscription>
+                <subscription>VehicleUpdates</subscription>
+                <subscription>VehicleRoutesInitialization</subscription>
+                <subscription>VehicleTypesInitialization</subscription>
+            </subscriptions>
+        </federate>
+    </federates>
+
+</configuration>

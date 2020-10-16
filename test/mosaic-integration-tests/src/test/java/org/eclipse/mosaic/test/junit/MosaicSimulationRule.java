@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.test.junit;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
+import org.eclipse.mosaic.fed.sumo.ambassador.SumoGuiAmbassador;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
@@ -155,6 +156,12 @@ public class MosaicSimulationRule extends TemporaryFolder {
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "randomNumberGenerator", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configuration", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configurationPath", null);
+    }
+
+    public void activateSumoGui() {
+        getRuntimeConfiguration().federates.stream().filter(s -> s.id.equals("sumo")).forEach(
+                s -> s.classname = SumoGuiAmbassador.class.getCanonicalName()
+        );
     }
 
 

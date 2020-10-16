@@ -1,0 +1,40 @@
+{
+	"_comment": "Barnim mapping_config, changed for demonstrating interapp communication.",
+	
+    "prototypes": [
+        {
+            "name": "Car",
+            "accel": 2.6,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 70.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1,
+            "speedFactor": 1.0
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 5.0,
+            "targetFlow": 1800,
+            "maxNumberVehicles": 10,
+            "route": "1",
+            "lanes": [ 0, 1 ],
+            "types": [
+                {
+                    "applications": [ ],
+                    "name": "Car",
+                    "weight": 0.4
+                },
+                {
+                    "applications": [   "org.eclipse.mosaic.app.tutorial.interappcommunication.InterconnectApp",
+                                        "org.eclipse.mosaic.app.tutorial.interappcommunication.AdditionalProcessingApp",
+										"org.eclipse.mosaic.app.tutorial.interappcommunication.NotProcessingApp" ],
+                    "name": "Car",
+                    "weight": 0.6
+                }
+            ]
+        }
+    ]
+}
