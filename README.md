@@ -1,3 +1,5 @@
+<a href="https://eclipse.org/mosaic"><p align="center"><img width="50%" src="https://github.com/eclipse/mosaic.website/raw/main/static/img/eclipse-mosaic-logo.png"></p></a>
+
 # Eclipse MOSAIC Essentials - <br> The Simulation Suite for Connected and Automated Mobility
 
 [![License](https://img.shields.io/badge/License-EPL%202.0-green.svg)](https://opensource.org/licenses/EPL-2.0)
