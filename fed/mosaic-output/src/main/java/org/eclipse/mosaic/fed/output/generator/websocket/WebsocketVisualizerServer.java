@@ -15,12 +15,6 @@
 
 package org. eclipse.mosaic.fed.output.generator.websocket;
 
-import com.google.common.collect.EvictingQueue;
-import com.google.common.collect.Queues;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
@@ -31,6 +25,11 @@ import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.rti.api.Interaction;
 
+import com.google.common.collect.EvictingQueue;
+import com.google.common.collect.Queues;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -97,13 +96,10 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
 
     private void sendVehicleUpdates(WebSocket socket) {
         if (vehicleUpdatesReference.get() != null) {
-            Gson gson = new Gson();
-            synchronized (vehicleUpdatesReference) {
-                JsonElement jsonElement = gson.toJsonTree(vehicleUpdatesReference.get());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.add(VehicleUpdates.TYPE_ID, jsonElement);
-                socket.send(jsonObject.toString());
-            }
+            JsonElement jsonElement = new Gson().toJsonTree(vehicleUpdatesReference.get());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(VehicleUpdates.TYPE_ID, jsonElement);
+            socket.send(jsonObject.toString());
         }
     }
 
