@@ -143,7 +143,9 @@ spec:
                 }
             }
             post {
-                archiveArtifacts artifacts: 'bundle/target/eclipse-mosaic-*.zip', caseSensitive: false, onlyIfSuccessful: true
+                success {
+                    archiveArtifacts artifacts: 'bundle/target/eclipse-mosaic-*.zip', caseSensitive: false, onlyIfSuccessful: true
+                }
             }
         }
     }
