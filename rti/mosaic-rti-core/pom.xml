@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>20.0</version>
+        <version>20.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -45,15 +45,10 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>create-test-jar-with-rules</id>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>create-jar-for-federation-management</id>
                         <phase>process-test-classes</phase>
                         <configuration>
+                            <!-- We skip this by default. Otherwise this jar would be deployed to Nexus. -->
                             <skip>${skip.jar-test-creation}</skip>
                             <archive>
                                 <manifest>

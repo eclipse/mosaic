@@ -7,7 +7,7 @@ Only NodeJS (https://nodejs.org/en/download/)
 ## Install Development Requirements
 
 Change to the visualizr directory:  
-`cd <VSIMRTI_SOURCE>/core/vsimrti-all-in-one/src/main/visualizr`
+`cd <MOSAIC_SOURCE>/fed/mosaic-output/src/main/resources/web`
 
 Install required modules for development and deployment (defined in package.json):  
 `npm install`
