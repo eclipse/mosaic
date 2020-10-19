@@ -19,6 +19,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ChargingStationSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.RoadSideUnitSpawner;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ServerSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficLightSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficManagementCenterSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
@@ -28,6 +29,7 @@ import org.eclipse.mosaic.fed.mapping.config.CMappingConfiguration;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
+import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
@@ -66,6 +68,7 @@ public class SpawningFramework {
     private final List<VehicleFlowGenerator> vehicleFlowGenerators = new ArrayList<>();
     private final List<RoadSideUnitSpawner> rsus = new ArrayList<>();
     private final List<TrafficManagementCenterSpawner> tmcs = new ArrayList<>();
+    private final List<ServerSpawner> servers = new ArrayList<>();
     private final List<ChargingStationSpawner> chargingStations = new ArrayList<>();
     private final CMappingConfiguration config;
 
@@ -81,7 +84,7 @@ public class SpawningFramework {
     private RtiAmbassador rti;
     /**
      * Whether mapping already was initialized. We use it in timeAdvance method
-     * for initializing static objects such as RSUs, TMCsand charging stations.
+     * for initializing static objects such as RSUs, TMCs and charging stations.
      */
     private boolean immobileUnitsInitialized = false;
     /**
@@ -137,6 +140,14 @@ public class SpawningFramework {
             for (CTrafficManagementCenter trafficManagementCenterConfiguration : mappingConfiguration.tmcs) {
                 if (trafficManagementCenterConfiguration != null) {
                     tmcs.add(new TrafficManagementCenterSpawner(trafficManagementCenterConfiguration));
+                }
+            }
+        }
+        // Servers
+        if (mappingConfiguration.servers != null) {
+            for (CServer serverConfiguration : mappingConfiguration.servers) {
+                if (serverConfiguration != null) {
+                    servers.add(new ServerSpawner(serverConfiguration));
                 }
             }
         }
@@ -337,6 +348,10 @@ public class SpawningFramework {
             tmc.fillInPrototype(getPrototypeByName(tmc.getPrototype()));
         }
 
+        for (ServerSpawner server : servers) {
+            server.fillInPrototype(getPrototypeByName(server.getPrototype()));
+        }
+
         for (TrafficLightSpawner tl : tls.values()) {
             tl.fillInPrototype(getPrototypeByName(tl.getPrototype()));
         }
@@ -493,6 +508,9 @@ public class SpawningFramework {
         }
         for (TrafficManagementCenterSpawner tmc : tmcs) {
             tmc.init(this);
+        }
+        for (ServerSpawner server :servers) {
+            server.init(this);
         }
         for (ChargingStationSpawner chargingStation : chargingStations) {
             chargingStation.init(this);

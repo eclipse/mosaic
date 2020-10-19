@@ -36,8 +36,8 @@ public class TrafficManagementCenterSpawner extends UnitSpawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrafficManagementCenterSpawner.class);
 
-    private List<String> inductionLoopDetectors;
-    private List<String> laneAreaDetectors;
+    private final List<String> inductionLoopDetectors;
+    private final List<String> laneAreaDetectors;
 
     /**
      * Constructor for {@link TrafficManagementCenterSpawner}.
@@ -61,7 +61,7 @@ public class TrafficManagementCenterSpawner extends UnitSpawner {
      * Traffic Management Centers for the simulation.
      *
      * @param spawningFramework the framework handling the spawning
-     * @throws InternalFederateException thrown if {@link TmcRegistration} couldn't be handled by rti
+     * @throws InternalFederateException if {@link TmcRegistration} couldn't be handled by rti
      */
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getTmcName();

@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
+import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.tmc.InductionLoop;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.tmc.LaneAreaDetector;
@@ -115,12 +117,17 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
 
     @Override
     public GeoPoint getPosition() {
-        return null;
+        throw new UnsupportedOperationException("TMC's aren't mapped to a location.");
     }
 
     @Override
     public CamBuilder assembleCamMessage(CamBuilder camBuilder) {
-        return null;
+        throw new UnsupportedOperationException("TMC's can't send CAMs.");
+    }
+
+    @Override
+    public AdHocModule getAdHocModule() {
+        throw new UnsupportedOperationException("TMC's can't access AdHoc functionality.");
     }
 
     @Override
@@ -128,7 +135,7 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
         // never remove the preProcessEvent call!
         final boolean preProcessed = super.preProcessEvent(event);
 
-        // failsafe
+        // don't handle processed events
         if (preProcessed) {
             return;
         }
@@ -138,12 +145,12 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
         // failsafe
         if (resource == null) {
             getOsLog().error("Event has no resource: {}", event);
-            throw new RuntimeException("No Resource in Event for TrafficManagementCenterUnit");
+            throw new RuntimeException(ErrorRegister.TRAFFIC_MANAGEMENT_CENTER_NoEventResource.toString());
         }
 
         if (!handleEventResource(resource)) {
             getOsLog().error("Unknown event resource: {}", event);
-            throw new RuntimeException("Unknown event in TrafficManagementCenterUnit");
+            throw new RuntimeException(ErrorRegister.TRAFFIC_MANAGEMENT_CENTER_UnknownEvent.toString());
         }
     }
 

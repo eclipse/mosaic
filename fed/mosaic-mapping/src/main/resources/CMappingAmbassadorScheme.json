@@ -18,6 +18,10 @@
             "type": "array",
             "items": [ { "$ref": "#/definitions/tmc" } ]
         },
+        "servers": {
+            "type": "array",
+            "items": [ { "$ref": "#/definitions/server" } ]
+        },
         "trafficLights": {
             "type": "array",
             "items": [ { "$ref": "#/definitions/tl" } ]
@@ -149,6 +153,17 @@
                 }
             }
         },
+        "server": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "group": { "type": "string" },
+                "applications": {
+                    "type": "array",
+                    "items": [ { "type": "string" } ]
+                }
+            }
+        },
         "tl": {
             "type": "object",
             "properties": {
@@ -250,7 +265,8 @@
                 "spawningMode": {
                     "type": "string",
                     "enum": [
-                        "CONSTANT", "GROW", "SHRINK", "GROW_AND_SHRINK", "GROW_EXPONENTIAL", "SHRINK_EXPONENTIAL", "GROW_AND_SHRINK_EXPONENTIAL"
+                        "CONSTANT", "GROW", "SHRINK", "GROW_AND_SHRINK", "GROW_EXPONENTIAL", "SHRINK_EXPONENTIAL",
+                        "GROW_AND_SHRINK_EXPONENTIAL"
                     ],
                     "minimum": 0
                 },

@@ -18,11 +18,9 @@ package org.eclipse.mosaic.fed.mapping.config.units;
 import java.util.List;
 
 /**
- * Class defining a Traffic Management Center (TMC). Will be parsed against
- * JSON-Schema.
+ * Class defining Servers. Will be parsed against JSON-Schema
  */
-public class CTrafficManagementCenter {
-
+public class CServer {
     /**
      * The name of the tmc to be matched against this object. All
      * properties which are not specified will then be replaced.
@@ -30,7 +28,8 @@ public class CTrafficManagementCenter {
     public String name;
 
     /**
-     * The group name.
+     * The group name. This parameter will be used to match with configurations in the
+     * network.json-configuration in the cell-module.
      */
     public String group;
 
@@ -40,15 +39,4 @@ public class CTrafficManagementCenter {
      */
     public List<String> applications;
 
-    /**
-     * Specify the induction loops the tmc shall be matched with. If none are
-     * specified, none are used.
-     */
-    public List<String> inductionLoops;
-
-    /**
-     * Specify the lane area detectors the tmc shall be matched with. If none are
-     * specified, none are used.
-     */
-    public List<String> laneAreaDetectors;
 }

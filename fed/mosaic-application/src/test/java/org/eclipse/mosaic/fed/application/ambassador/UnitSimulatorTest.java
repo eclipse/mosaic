@@ -33,6 +33,7 @@ import org.eclipse.mosaic.fed.application.app.api.TrafficManagementCenterApplica
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -352,6 +353,20 @@ public class UnitSimulatorTest {
 
         RsuRegistration rsuRegistration = InteractionTestHelper.createRsuRegistration("rsu_0", 0, false);
         sim.registerRsu(rsuRegistration);
+        assertEquals(0, sim.getAllUnits().size());
+        assertEquals(0, sim.getRoadSideUnits().size());
+    }
+
+    /**
+     * Adds a server unit without an application. No
+     * unit should be added to the simulator
+     */
+    @Test
+    public void addServerUnitWithoutApplication() {
+        UnitSimulator sim = UnitSimulator.UnitSimulator;
+
+        ServerRegistration serverRegistration = InteractionTestHelper.createServerRegistration("server_0", 0, false);
+        sim.registerServer(serverRegistration);
         assertEquals(0, sim.getAllUnits().size());
         assertEquals(0, sim.getRoadSideUnits().size());
     }
