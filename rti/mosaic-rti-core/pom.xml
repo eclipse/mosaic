@@ -13,6 +13,10 @@
     <artifactId>mosaic-rti-core</artifactId>
     <name>Eclipse MOSAIC Runtime Infrastructure Implementation</name>
 
+    <properties>
+        <skip.jar-test-creation>true</skip.jar-test-creation>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
@@ -50,6 +54,7 @@
                         <id>create-jar-for-federation-management</id>
                         <phase>process-test-classes</phase>
                         <configuration>
+                            <skip>${skip.jar-test-creation}</skip>
                             <archive>
                                 <manifest>
                                     <mainClass>org.eclipse.mosaic.rti.junit.TestFederateProcess</mainClass>
@@ -60,7 +65,7 @@
                             </excludes>
                             <classifier/>
                             <finalName>TestFederate</finalName>
-                            <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                            <outputDirectory>${project.build.testSourceDirectory}</outputDirectory>
                         </configuration>
                         <goals>
                             <goal>test-jar</goal>
@@ -70,5 +75,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>recreate-test-jar</id>
+            <properties>
+                <skip.jar-test-creation>false</skip.jar-test-creation>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
