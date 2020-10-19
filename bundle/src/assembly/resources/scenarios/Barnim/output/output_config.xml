@@ -4,7 +4,7 @@
                xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/eclipse/mosaic/main/fed/mosaic-output/src/main/resources/output_config.xsd">
 
     <output id="fileoutput" enabled="true" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
-        <filename>visualizer.csv</filename>
+        <filename>output.csv</filename>
         <directory>.</directory>
         <separator>;</separator>
         <subscriptions>
