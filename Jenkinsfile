@@ -64,6 +64,11 @@ spec:
 """
         }
     }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -136,6 +141,9 @@ spec:
                     // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
                     sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
                 }
+            }
+            post {
+                archiveArtifacts artifacts: 'bundle/target/eclipse-mosaic-*.zip', caseSensitive: false, onlyIfSuccessful: true
             }
         }
     }
