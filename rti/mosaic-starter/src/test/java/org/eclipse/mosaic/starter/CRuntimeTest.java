@@ -20,10 +20,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.util.InteractionUtils;
+import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.starter.config.CRuntime;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -38,13 +37,11 @@ public class CRuntimeTest {
      * time the runtime.xml has been changed in the {@code bundle} project.
      */
     @Test
-    public void validSubscriptionsInRuntimeConfiguration() throws IOException {
+    public void validSubscriptionsInRuntimeConfiguration() throws IOException, InstantiationException {
         CRuntime runtimeConfiguration;
-        try (InputStream resource = getClass().getResourceAsStream("/etc/runtime.xml")) {
+        try (InputStream resource = getClass().getResourceAsStream("/etc/runtime.json")) {
             assertNotNull(resource);
-            runtimeConfiguration = new XmlMapper()
-                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                    .readValue(resource, CRuntime.class);
+            runtimeConfiguration = new ObjectInstantiation<>(CRuntime.class).read(resource);
         }
         assertNotNull(runtimeConfiguration);
 

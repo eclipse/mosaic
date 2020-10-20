@@ -21,6 +21,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>src/assembly/resources/fed</directory>
+            <outputDirectory>bin/fed</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.build.directory}/maven-shared-archive-resources/web</directory>
             <outputDirectory>tools/web</outputDirectory>
             <includes>
@@ -49,6 +56,34 @@
     </fileSets>
 
     <dependencySets>
+
+        <!-- Scenario Applications -->
+        <dependencySet>
+            <outputDirectory>scenarios/Barnim/application</outputDirectory>
+            <includes>
+                <include>org.eclipse.mosaic.app:weather-warning</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>scenarios/Tiergarten/application</outputDirectory>
+            <includes>
+                <include>org.eclipse.mosaic.app:traffic-light-communication</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>scenarios/Highway/application</outputDirectory>
+            <includes>
+                <include>org.eclipse.mosaic.app:highway-management</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>scenarios/LuST/application</outputDirectory>
+            <includes>
+                <include>org.eclipse.mosaic.app:example-applications</include>
+            </includes>
+        </dependencySet>
+
+
         <!-- MOSAIC projects -->
         <dependencySet>
             <outputDirectory>lib/mosaic</outputDirectory>

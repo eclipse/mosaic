@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>20.0-SNAPSHOT</version>
+        <version>20.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -20,13 +20,38 @@
             <version>${mosaic.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-utils</artifactId>
             <version>${mosaic.version}</version>
             <scope>test</scope>
             <type>test-jar</type>
+        </dependency>
+
+        <!-- applications -->
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>example-applications</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>weather-warning</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>traffic-light-communication</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>highway-management</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

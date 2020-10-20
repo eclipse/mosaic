@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.test.junit;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
+import org.eclipse.mosaic.fed.sumo.ambassador.SumoGuiAmbassador;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
@@ -28,8 +29,6 @@ import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.starter.config.CScenario;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.TemporaryFolder;
 
@@ -83,10 +82,10 @@ public class MosaicSimulationRule extends TemporaryFolder {
     }
 
     private CRuntime prepareRuntimeConfiguration() throws IOException {
-        try (InputStream resource = getClass().getResourceAsStream("/runtime.xml")) {
-            return new XmlMapper()
-                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                    .readValue(resource, CRuntime.class);
+        try (InputStream resource = getClass().getResourceAsStream("/runtime.json")) {
+            return new ObjectInstantiation<>(CRuntime.class).read(resource);
+        } catch (InstantiationException e) {
+            throw new IOException(e);
         }
     }
 
@@ -155,6 +154,12 @@ public class MosaicSimulationRule extends TemporaryFolder {
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "randomNumberGenerator", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configuration", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configurationPath", null);
+    }
+
+    public void activateSumoGui() {
+        getRuntimeConfiguration().federates.stream().filter(s -> s.id.equals("sumo")).forEach(
+                s -> s.classname = SumoGuiAmbassador.class.getCanonicalName()
+        );
     }
 
 

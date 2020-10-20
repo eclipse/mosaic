@@ -49,7 +49,7 @@ public class MosaicParameters implements Serializable {
     @CommandLineOption(shortOption = "o", longOption = "log-level", argName = "LOGLEVEL", description = "Overrides the log level to new value (e.g. DEBUG)")
     public String logLevel = null;
 
-    @CommandLineOption(longOption = "runtime", argName = "PATH", description = "Path to MOSAIC RTI configuration file (default: etc/runtime.xml)")
+    @CommandLineOption(longOption = "runtime", argName = "PATH", description = "Path to MOSAIC RTI configuration file (default: etc/runtime.json)")
     public String runtimeConfiguration = null;
 
     @CommandLineOption(longOption = "hosts", argName = "PATH", description = "Path to host configuration file (default: etc/hosts.json)")

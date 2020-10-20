@@ -6,12 +6,16 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>20.0-SNAPSHOT</version>
+        <version>20.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>mosaic-rti-core</artifactId>
     <name>Eclipse MOSAIC Runtime Infrastructure Implementation</name>
+
+    <properties>
+        <skip.jar-test-creation>true</skip.jar-test-creation>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -41,15 +45,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>create-test-jar-with-rules</id>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>create-jar-for-federation-management</id>
                         <phase>process-test-classes</phase>
                         <configuration>
+                            <!-- We skip this by default. Otherwise this jar would be deployed to Nexus. -->
+                            <skip>${skip.jar-test-creation}</skip>
                             <archive>
                                 <manifest>
                                     <mainClass>org.eclipse.mosaic.rti.junit.TestFederateProcess</mainClass>
@@ -60,7 +60,7 @@
                             </excludes>
                             <classifier/>
                             <finalName>TestFederate</finalName>
-                            <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                            <outputDirectory>${project.build.testSourceDirectory}</outputDirectory>
                         </configuration>
                         <goals>
                             <goal>test-jar</goal>
@@ -70,5 +70,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>recreate-test-jar</id>
+            <properties>
+                <skip.jar-test-creation>false</skip.jar-test-creation>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

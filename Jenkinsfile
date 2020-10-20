@@ -64,6 +64,11 @@ spec:
 """
         }
     }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -135,6 +140,11 @@ spec:
                     // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
                     // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
                     sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'bundle/target/eclipse-mosaic-*.zip', caseSensitive: false, onlyIfSuccessful: true
                 }
             }
         }

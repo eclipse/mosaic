@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- file version: 2013-11-26 -->
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/eclipse/mosaic/main/fed/mosaic-output/src/main/resources/output_config.xsd">
+
+    <output id="fileoutput" enabled="true" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
+        <filename>output.csv</filename>
+        <directory>.</directory>
+        <separator>;</separator>
+        <subscriptions>
+            <subscription id="VehicleUpdates">
+                <entries>
+                    <entry>"VEHICLE_UPDATES"</entry>
+                    <entry>Time</entry>
+                    <entry>Updated:Name</entry>
+                    <entry>Updated:Speed</entry>
+                    <entry>Updated:Heading</entry>
+                    <entry>Updated:Position.Latitude</entry>
+                    <entry>Updated:Position.Longitude</entry>
+                    <entry>Updated:Position.Altitude</entry>
+                    <entry>Updated:DistanceDriven</entry>
+                    <entry>Updated:LongitudinalAcceleration</entry>
+                    <entry>Updated:Slope</entry>
+                    <entry>Updated:Stopped</entry>
+                    <entry>Updated:RouteId</entry>
+                    <entry>Updated:RoadPosition.EdgeId</entry>
+                    <entry>Updated:RoadPosition.LaneIndex</entry>
+                    <entry>Updated:VehicleEmissions.CurrentEmissions.Co2</entry>
+                    <entry>Updated:VehicleEmissions.CurrentEmissions.Co</entry>
+                    <entry>Updated:VehicleEmissions.CurrentEmissions.Hc</entry>
+                    <entry>Updated:VehicleEmissions.CurrentEmissions.Pmx</entry>
+                    <entry>Updated:VehicleEmissions.CurrentEmissions.Nox</entry>
+                    <entry>Updated:VehicleConsumptions.CurrentConsumptions.Fuel</entry>
+                    <entry>Updated:VehicleEmissions.AllEmissions.Co2</entry>
+                    <entry>Updated:VehicleEmissions.AllEmissions.Co</entry>
+                    <entry>Updated:VehicleEmissions.AllEmissions.Hc</entry>
+                    <entry>Updated:VehicleEmissions.AllEmissions.Pmx</entry>
+                    <entry>Updated:VehicleEmissions.AllEmissions.Nox</entry>
+                    <entry>Updated:VehicleConsumptions.AllConsumptions.Fuel</entry>
+                    <entry>Updated:VehicleSignals.BlinkerRight</entry>
+                    <entry>Updated:VehicleSignals.BlinkerLeft</entry>
+                    <entry>Updated:VehicleSignals.BrakeLight</entry>
+                </entries>
+            </subscription>
+            <subscription id="V2xMessageReception">
+                <entries>
+                    <entry>"V2X_MESSAGE_RECEPTION"</entry>
+                    <entry>Time</entry>
+                    <entry>Type</entry>
+                    <entry>MessageId</entry>
+                    <entry>ReceiverName</entry>
+                    <entry>ReceiverInformation.ReceiveSignalStrength</entry>
+                </entries>
+            </subscription>
+            <subscription id="V2xMessageTransmission">
+                <entries>
+                    <entry>"V2X_MESSAGE_TRANSMISSION"</entry>
+                    <entry>Time</entry>
+                    <entry>Type</entry>
+                    <entry>MessageId</entry>
+                    <entry>SourceName</entry>
+                    <entry>SourcePosition.Latitude</entry>
+                    <entry>SourcePosition.Longitude</entry>
+                    <entry>SourcePosition.Altitude</entry>
+                    <entry>Message.Routing.Destination.Type</entry>
+                    <entry>Message.Routing.Destination.Address.IPv4Address</entry>
+                    <entry>Message.Routing.Destination.AdhocChannelId</entry>
+                </entries>
+            </subscription>
+            <subscription id="VehicleRegistration" enabled="true">
+                <entries>
+                    <entry>"VEHICLE_REGISTRATION"</entry>
+                    <entry>Time</entry>
+                    <entry>Mapping.Name</entry>
+                    <entry>Mapping.VehicleType.VehicleClass</entry>
+                    <entry>Mapping.VehicleType.Color</entry>
+                    <entry>Mapping.Group</entry>
+                    <entry>Mapping.VehicleType.Length</entry>
+                    <entry>Mapping.VehicleType.MinGap</entry>
+                    <entry>Mapping.VehicleType.MaxSpeed</entry>
+                    <entry>Mapping.VehicleType.Accel</entry>
+                    <entry>Mapping.VehicleType.Decel</entry>
+                    <entry>Mapping.VehicleType.Sigma</entry>
+                    <entry>Mapping.VehicleType.Tau</entry>
+                    <entry>Mapping.VehicleType.SpeedFactor</entry>
+                    <entry>Departure.RouteId</entry>
+                    <entry>Departure.DepartureLane</entry>
+                    <entry>Departure.DeparturePos</entry>
+                </entries>
+            </subscription>
+            <subscription id="TrafficLightRegistration">
+                <entries>
+                    <entry>"TRAFFICLIGHT_REGISTRATION"</entry>
+                    <entry>Time</entry>
+                    <entry>Mapping.Name</entry>
+                    <entry>Mapping.Applications</entry>
+                    <entry>TrafficLightGroup.FirstPosition.Latitude</entry>
+                    <entry>TrafficLightGroup.FirstPosition.Longitude</entry>
+                </entries>
+            </subscription>
+            <subscription id="TrafficSignRegistration">
+                <entries>
+                    <entry>"TRAFFICSIGN_REGISTRATION"</entry>
+                    <entry>Time</entry>
+                    <entry>TrafficSign.Id</entry>
+                    <entry>TrafficSign.GeoPosition.Latitude</entry>
+                    <entry>TrafficSign.GeoPosition.Longitude</entry>
+                    <entry>TrafficSign.GeoPosition.Altitude</entry>
+                    <entry>TrafficSign.Angle</entry>
+                    <entry>TrafficSign.Edge</entry>
+                    <entry>TrafficSign.Lane</entry>
+                    <entry>TrafficSign.TypeId</entry>
+                    <entry>TrafficSign.SignContents</entry>
+                </entries>
+            </subscription>
+            <subscription id="VehicleSpeedChange">
+                <entries>
+                    <entry>"CHANGE_SPEED"</entry>
+                    <entry>Time</entry>
+                    <entry>VehicleId</entry>
+                    <entry>Type</entry>
+                    <entry>Speed</entry>
+                    <entry>Interval</entry>
+                    <entry>Acceleration</entry>
+                </entries>
+            </subscription>
+            <subscription id="RsuRegistration">
+                <entries>
+                    <entry>"RSU_REGISTRATION"</entry>
+                    <entry>Time</entry>
+                    <entry>Mapping.Name</entry>
+                    <entry>Mapping.Position.Latitude</entry>
+                    <entry>Mapping.Position.Longitude</entry>
+                    <entry>Mapping.Position.Altitude</entry>
+                    <entry>Mapping.Group</entry>
+                    <entry>Mapping.Applications</entry>
+                </entries>
+            </subscription>
+            <subscription id="AdHocCommunicationConfiguration">
+                <entries>
+                    <entry>"ADHOC_CONFIGURATION"</entry>
+                    <entry>Time</entry>
+                    <entry>Configuration.NodeId</entry>
+                    <entry>Configuration.RadioMode</entry>
+                    <entry>Configuration.Conf0.NewIP</entry>
+                    <entry>Configuration.Conf0.NewPower</entry>
+                    <entry>Configuration.Conf0.Channel0</entry>
+                    <entry>Configuration.Conf0.Channel1</entry>
+                    <entry>Configuration.Conf1.NewIP</entry>
+                    <entry>Configuration.Conf1.NewPower</entry>
+                    <entry>Configuration.Conf1.Channel0</entry>
+                    <entry>Configuration.Conf1.Channel1</entry>
+                </entries>
+            </subscription>
+            <subscription id="CellularCommunicationConfiguration">
+                <entries>
+                    <entry>"CELL_CONFIGURATION"</entry>
+                    <entry>Time</entry>
+                    <entry>Configuration.NodeId</entry>
+                    <entry>Configuration.Enabled</entry>
+                    <entry>Configuration.MaxDlBitrate</entry>
+                    <entry>Configuration.MaxUlBitrate</entry>
+                </entries>
+            </subscription>
+            <subscription id="TrafficDetectorUpdates">
+                <entries>
+                    <entry>"DETECTOR_UPDATES"</entry>
+                    <entry>Time</entry>
+                    <entry>UpdatedInductionLoops:VehicleCount</entry>
+                    <entry>UpdatedInductionLoops:MeanSpeed</entry>
+                    <entry>UpdatedInductionLoops:TrafficFlow</entry>
+                    <entry>UpdatedLaneAreaDetectors:Length</entry>
+                    <entry>UpdatedLaneAreaDetectors:VehicleCount</entry>
+                    <entry>UpdatedLaneAreaDetectors:MeanSpeed</entry>
+                </entries>
+            </subscription>
+            <subscription id="LanePropertyChange">
+                <entries>
+                    <entry>"LANE_PROPERTY_CHANGE"</entry>
+                    <entry>Time</entry>
+                    <entry>EdgeId</entry>
+                    <entry>LaneIndex</entry>
+                    <entry>AllowedVehicleClasses</entry>
+                    <entry>DisallowedVehicleClasses</entry>
+                    <entry>MaxSpeed</entry>
+                </entries>
+            </subscription>
+        </subscriptions>
+    </output>
+
+    <output id="websocket" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
+        <synchronized>true</synchronized>
+        <port>46587</port>
+        <subscriptions>
+            <subscription id="VehicleUpdates" enabled="true"/>
+            <subscription id="V2xMessageReception" enabled="true"/>
+            <subscription id="V2xMessageTransmission" enabled="true"/>
+            <subscription id="VehicleRegistration" enabled="true"/>
+            <subscription id="RsuRegistration" enabled="true"/>
+        </subscriptions>
+    </output>
+
+</configuration>
+
