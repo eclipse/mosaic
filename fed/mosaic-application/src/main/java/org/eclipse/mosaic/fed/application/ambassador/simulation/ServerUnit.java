@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
+import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
@@ -29,6 +30,7 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
 
     /**
      * Constructor for {@link ServerUnit}, sets the operating system.
+     *
      * @param serverMapping mapping for the server
      */
     public ServerUnit(final ServerMapping serverMapping) {
@@ -54,5 +56,23 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
 
     @Override
     public void processEvent(Event event) throws Exception {
+        // never remove the preProcessEvent call!
+        final boolean preProcessed = super.preProcessEvent(event);
+
+        // don't handle processed events
+        if (preProcessed) {
+            return;
+        }
+
+        final Object resource = event.getResource();
+
+        // failsafe
+        if (resource == null) {
+            getOsLog().error("Event has no resource: {}", event);
+            throw new RuntimeException(ErrorRegister.SERVER_NoEventResource.toString());
+        }
+
+        getOsLog().error("Unknown event resource: {}", event);
+        throw new RuntimeException(ErrorRegister.SERVER_UnknownEvent.toString());
     }
 }
