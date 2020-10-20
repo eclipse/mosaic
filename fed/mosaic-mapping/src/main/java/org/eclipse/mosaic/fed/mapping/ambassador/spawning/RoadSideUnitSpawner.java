@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class responsible for configuring Road Side Units to be added to the simulation.
  */
-public class RoadSideUnitSpawner extends UnitSpawner {
+public class RoadSideUnitSpawner extends UnitSpawner implements InitializableSpawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoadSideUnitSpawner.class);
 
@@ -58,7 +58,6 @@ public class RoadSideUnitSpawner extends UnitSpawner {
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException thrown if {@link RsuRegistration} couldn't be handled by rti
      */
-    @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getRsuName();
         RsuRegistration interaction = new RsuRegistration(0, name, group, getAppList(), this.position);

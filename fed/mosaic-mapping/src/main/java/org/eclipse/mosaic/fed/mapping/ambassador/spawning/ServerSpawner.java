@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Class responsible for configuring Servers to be added to the simulation.
  */
-public class ServerSpawner extends UnitSpawner {
+public class ServerSpawner extends UnitSpawner implements InitializableSpawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerSpawner.class);
 
@@ -54,8 +54,8 @@ public class ServerSpawner extends UnitSpawner {
      * to construct spawning object used by specialized servers (e.g. TMCs
      *
      * @param applications list of applications
-     * @param name name of the unit
-     * @param group group of the unit
+     * @param name         name of the unit
+     * @param group        group of the unit
      */
     public ServerSpawner(List<String> applications, String name, String group) {
         super(applications, name, group);

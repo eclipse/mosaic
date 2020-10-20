@@ -104,12 +104,4 @@ abstract class UnitSpawner {
     public List<String> getAppList() {
         return applications == null ? new ArrayList<>() : new ArrayList<>(applications);
     }
-
-    /**
-     * Initializes the unit for the simulation.
-     *
-     * @param spawningFramework the framework handling the spawning
-     * @throws InternalFederateException if unit couldn't be initialized
-     */
-    public abstract void init(SpawningFramework spawningFramework) throws InternalFederateException;
 }
