@@ -13,6 +13,7 @@
             "subscriptions": [
                 "RsuRegistration",
                 "TmcRegistration",
+                "ServerRegistration",
                 "ChargingStationRegistration",
                 "TrafficLightRegistration",
                 "VehicleRegistration",
@@ -79,6 +80,7 @@
                 "VehicleRegistration",
                 "RsuRegistration",
                 "TmcRegistration",
+                "ServerRegistration",
                 "TrafficLightRegistration",
                 "ChargingStationRegistration",
                 "VehicleUpdates",
