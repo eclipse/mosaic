@@ -38,6 +38,15 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
         setRequiredOperatingSystem(ServerOperatingSystem.class);
     }
 
+    /**
+     * Constructor for {@link ServerUnit}, sets the operating system.
+     * Used by specialized servers like TMCs.
+     *
+     * @param unitName name of the unit
+     */
+    public ServerUnit(String unitName) {
+        super(unitName, null);
+    }
 
     @Override
     public GeoPoint getPosition() {

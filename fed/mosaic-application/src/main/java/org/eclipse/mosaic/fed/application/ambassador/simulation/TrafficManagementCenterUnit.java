@@ -46,7 +46,7 @@ import java.util.Map;
 /**
  * This class represents a Traffic Management Center in the application simulator.
  */
-public class TrafficManagementCenterUnit extends AbstractSimulationUnit implements TrafficManagementCenterOperatingSystem {
+public class TrafficManagementCenterUnit extends ServerUnit implements TrafficManagementCenterOperatingSystem {
 
     private final Map<String, InductionLoop> inductionLoopMap = new HashMap<>();
 
@@ -59,7 +59,7 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
      * @param applicationTmc the configuration of the tmc including traffic detectors
      */
     public TrafficManagementCenterUnit(final TmcMapping applicationTmc) {
-        super(applicationTmc.getName(), null);
+        super(applicationTmc.getName());
         setRequiredOperatingSystem(TrafficManagementCenterOperatingSystem.class);
 
         applicationTmc.getInductionLoops().forEach(inductionLoopId -> {
@@ -113,21 +113,6 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
     @Override
     public ChangeLaneState changeLaneState(String edge, int laneIndex) {
         return new ChangeLaneStateImpl(edge, laneIndex, this);
-    }
-
-    @Override
-    public GeoPoint getPosition() {
-        throw new UnsupportedOperationException("TMC's aren't mapped to a location.");
-    }
-
-    @Override
-    public CamBuilder assembleCamMessage(CamBuilder camBuilder) {
-        throw new UnsupportedOperationException("TMC's can't send CAMs.");
-    }
-
-    @Override
-    public AdHocModule getAdHocModule() {
-        throw new UnsupportedOperationException("TMC's can't access AdHoc functionality.");
     }
 
     @Override

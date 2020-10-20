@@ -58,6 +58,7 @@ public class RoadSideUnitSpawner extends UnitSpawner {
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException thrown if {@link RsuRegistration} couldn't be handled by rti
      */
+    @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getRsuName();
         RsuRegistration interaction = new RsuRegistration(0, name, group, getAppList(), this.position);

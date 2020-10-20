@@ -19,26 +19,10 @@ import java.util.List;
 
 /**
  * Class defining a Traffic Management Center (TMC). Will be parsed against
- * JSON-Schema.
+ * JSON-Schema. TMCs are specialized forms of server directly communicating with induction loops
+ * and lane are detectors.
  */
-public class CTrafficManagementCenter {
-
-    /**
-     * The name of the tmc to be matched against this object. All
-     * properties which are not specified will then be replaced.
-     */
-    public String name;
-
-    /**
-     * The group name.
-     */
-    public String group;
-
-    /**
-     * Specify the applications to be used for this object. If none are
-     * specified, none are used.
-     */
-    public List<String> applications;
+public class CTrafficManagementCenter extends CServer {
 
     /**
      * Specify the induction loops the tmc shall be matched with. If none are

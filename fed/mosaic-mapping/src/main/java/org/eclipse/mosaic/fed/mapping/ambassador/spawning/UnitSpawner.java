@@ -15,7 +15,9 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
+import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
+import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -102,4 +104,12 @@ abstract class UnitSpawner {
     public List<String> getAppList() {
         return applications == null ? new ArrayList<>() : new ArrayList<>(applications);
     }
+
+    /**
+     * Initializes the unit for the simulation.
+     *
+     * @param spawningFramework the framework handling the spawning
+     * @throws InternalFederateException if unit couldn't be initialized
+     */
+    public abstract void init(SpawningFramework spawningFramework) throws InternalFederateException;
 }

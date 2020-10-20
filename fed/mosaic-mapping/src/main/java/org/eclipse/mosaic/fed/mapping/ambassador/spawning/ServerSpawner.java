@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * Class responsible for configuring Servers to be added to the simulation.
  */
@@ -48,11 +50,24 @@ public class ServerSpawner extends UnitSpawner {
     }
 
     /**
+     * Constructor for {@link ServerSpawner} using configuration
+     * to construct spawning object used by specialized servers (e.g. TMCs
+     *
+     * @param applications list of applications
+     * @param name name of the unit
+     * @param group group of the unit
+     */
+    public ServerSpawner(List<String> applications, String name, String group) {
+        super(applications, name, group);
+    }
+
+    /**
      * Called by the {@link SpawningFramework}, used to initialize the servers for the simulation.
      *
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException if {@link ServerRegistration} couldn't be handled by rti
      */
+    @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getServerName();
         ServerRegistration interaction = new ServerRegistration(0, name, group, getAppList());

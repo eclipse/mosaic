@@ -26,7 +26,7 @@ import java.util.Collection;
  * is implemented by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit}
  * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit}.
  */
-public interface TrafficManagementCenterOperatingSystem extends OperatingSystem {
+public interface TrafficManagementCenterOperatingSystem extends ServerOperatingSystem {
 
     /**
      * Returns the lane detector, which provides various measurements, such as traffic flow.

@@ -82,6 +82,7 @@ public class ChargingStationSpawner extends UnitSpawner {
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException thrown if {@link ChargingStationRegistration} couldn't be handled by rti
      */
+    @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getChargingStationName();
         List<ChargingSpot> chargingSpots = new ArrayList<>();
