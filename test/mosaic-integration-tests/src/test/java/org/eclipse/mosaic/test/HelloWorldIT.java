@@ -29,7 +29,7 @@ import org.junit.Test;
 public class HelloWorldIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule();
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("DEBUG");
 
     private static MosaicSimulation.SimulationResult simulationResult;
 
