@@ -36,8 +36,6 @@ public final class UpstreamModule extends AbstractStreamModule {
 
     private static final Logger log = LoggerFactory.getLogger(UpstreamModule.class);
 
-    private static final String SERVER_PREFIX = "server";
-
     /**
      * Creates a new {@link UpstreamModule} object.
      *
