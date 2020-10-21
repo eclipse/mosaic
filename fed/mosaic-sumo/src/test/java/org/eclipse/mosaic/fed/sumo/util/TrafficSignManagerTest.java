@@ -111,13 +111,13 @@ public class TrafficSignManagerTest {
         );
 
         long fileSize0 = Files.size(temporaryFolder.getRoot().toPath().resolve(base.resolve("30-lane0.png")));
-        assertEquals(70d, fileSize0 / 1000d, 5d);
+        assertEquals(70d, fileSize0 / 1000d, 20d);
 
         long fileSize1 = Files.size(temporaryFolder.getRoot().toPath().resolve(base.resolve("50-lane1.png")));
-        assertEquals(70d, fileSize1 / 1000d, 5d);
+        assertEquals(70d, fileSize1 / 1000d, 20d);
 
         long fileSize2 = Files.size(temporaryFolder.getRoot().toPath().resolve(base.resolve("150-lane2.png")));
-        assertEquals(70d, fileSize2 / 1000d, 5d);
+        assertEquals(70d, fileSize2 / 1000d, 20d);
     }
 
     @Test
