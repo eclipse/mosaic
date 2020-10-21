@@ -21,10 +21,13 @@ import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.model.transmission.TransmissionModel;
 import org.eclipse.mosaic.lib.model.transmission.TransmissionResult;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * Cellular Pr/Pl utility to determine packet retransmission and loss in regions.
  * (relies on the logic of the common {@link TransmissionModel#simulateTransmission} in MOSAIC-communication)
  */
+@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by json")
 public class RetransmissionLossUtility {
 
     /**

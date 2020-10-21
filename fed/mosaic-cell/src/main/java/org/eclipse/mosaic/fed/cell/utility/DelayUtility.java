@@ -23,6 +23,7 @@ import org.eclipse.mosaic.lib.model.delay.Delay;
 import org.eclipse.mosaic.lib.model.delay.GammaSpeedDelay;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * Cellular delay utility to calculate the delay from within cell.
  * (Relies on the logic of the MOSAIC-communication Delay model)
  */
+@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by json")
 public final class DelayUtility {
 
     private static final Logger log = LoggerFactory.getLogger(DelayUtility.class);

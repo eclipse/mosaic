@@ -23,6 +23,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by json")
 public class BandwidthMeasurementManager {
 
     private final Logger log;
@@ -64,7 +66,7 @@ public class BandwidthMeasurementManager {
      * @param chainManager Object to manage the interaction between cells and MOSAIC.
      */
     public void createStreamListener(ChainManager chainManager) {
-        for (CCell.BandwidthMeasurement measurement : ConfigurationData.INSTANCE.getCellConfig().bandwidthMeasurements) {
+        for (CCell.CBandwidthMeasurement measurement : ConfigurationData.INSTANCE.getCellConfig().bandwidthMeasurements) {
             if (measurement.fromRegion.equals("SENDATE")
                     && measurement.toRegion.equals("SENDATE")
                     && measurement.applicationClass.equals("SENDATE")) {
