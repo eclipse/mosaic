@@ -806,7 +806,6 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <reuseForks>false</reuseForks>
-                            <forkCount>1</forkCount>
                             <includes>
                                 <include>**/*IT.java</include>
                             </includes>

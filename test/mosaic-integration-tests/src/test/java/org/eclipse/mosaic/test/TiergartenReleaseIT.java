@@ -15,10 +15,12 @@
 
 package org.eclipse.mosaic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.starter.MosaicSimulation;
+import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
 
 import org.junit.BeforeClass;
@@ -41,6 +43,29 @@ public class TiergartenReleaseIT {
     public void executionSuccessful() {
         assertNull(simulationResult.exception);
         assertTrue(simulationResult.success);
+    }
+
+    @Test
+    public void trafficLightChanged() throws Exception {
+        assertEquals(2, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Changing program of traffic light group '252864801' to program id '1'.*")
+        );
+        assertEquals(2, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Changing program of traffic light group '252864802' to program id '1'.*")
+        );
+        assertEquals(2, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Changing program of traffic light group '26704448' to program id '1'.*")
+        );
+
+        LogAssert.contains(simulationRule, "Traffic.log",
+                ".*Changing program of traffic light group '252864801' to program id '0'.*"
+        );
+        LogAssert.contains(simulationRule, "Traffic.log",
+                ".*Changing program of traffic light group '252864802' to program id '0'.*"
+        );
+        LogAssert.contains(simulationRule, "Traffic.log",
+                ".*Changing program of traffic light group '26704448' to program id '0'.*"
+        );
     }
 
 }
