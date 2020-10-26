@@ -15,9 +15,7 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
-import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.lang3.ObjectUtils;
 

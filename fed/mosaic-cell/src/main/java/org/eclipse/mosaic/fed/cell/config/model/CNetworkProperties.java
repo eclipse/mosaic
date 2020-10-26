@@ -131,14 +131,12 @@ public class CNetworkProperties {
 
     @Override
     public String toString() {
-        ToStringBuilder builder = new ToStringBuilder(this)
-                .append("id", id)
+        ToStringBuilder builder = new ToStringBuilder(this).append("id", id)
                 .append("uplink.delay", uplink.delay.toString())
                 .append("uplink.capacity", uplink.capacity)
                 .append("downlink.unicast.delay", downlink.unicast.delay.toString());
         if (downlink.multicast != null) {
-            builder
-                    .append("downlink.multicast.delay", downlink.multicast.delay.toString())
+            builder.append("downlink.multicast.delay", downlink.multicast.delay.toString())
                     .append("downlink.multicast.usableCapacity", downlink.multicast.usableCapacity);
         }
         builder.append("downlink.capacity", downlink.capacity);

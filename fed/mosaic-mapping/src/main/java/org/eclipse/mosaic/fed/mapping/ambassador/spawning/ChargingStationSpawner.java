@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Class responsible for configuring Charging Stations to be added to the simulation.
  */
-public class ChargingStationSpawner extends UnitSpawner implements InitializableSpawner {
+public class ChargingStationSpawner extends UnitSpawner implements Spawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ChargingStationSpawner.class);
 

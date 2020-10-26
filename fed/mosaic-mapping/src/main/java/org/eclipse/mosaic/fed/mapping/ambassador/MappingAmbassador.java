@@ -178,8 +178,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
             rti.requestAdvanceTime(0);
         } catch (IllegalValueException e) {
             InternalFederateException ex = new InternalFederateException(
-                    "InvalidValueException while sending out VehicleTypesInitialization(after construction!)",
-                    e
+                    "InvalidValueException while sending out VehicleTypesInitialization(after construction!)", e
             );
             log.error("InvalidValueException while sending out VehicleTypesInitialization(after construction!)", ex);
             throw ex;

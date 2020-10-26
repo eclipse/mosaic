@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Class responsible for configuring Servers to be added to the simulation.
  */
-public class ServerSpawner extends UnitSpawner implements InitializableSpawner {
+public class ServerSpawner extends UnitSpawner implements Spawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerSpawner.class);
 
