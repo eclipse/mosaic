@@ -283,6 +283,11 @@ public class SpawningFramework {
     }
 
 
+    /**
+     * TODO: unused, keep it?
+     * @param rng
+     * @param spawner
+     */
     private void randomizeStartingTimes(RandomNumberGenerator rng, CVehicle spawner) {
         if (spawner.spawningMode != CVehicle.SpawningMode.CONSTANT) {
             return;
