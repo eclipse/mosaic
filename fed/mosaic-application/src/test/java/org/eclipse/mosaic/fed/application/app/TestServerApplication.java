@@ -15,23 +15,24 @@
 
 package org.eclipse.mosaic.fed.application.app;
 
-import org.eclipse.mosaic.fed.application.app.api.ServerApplication;
+import org.eclipse.mosaic.fed.application.app.api.Application;
+import org.eclipse.mosaic.fed.application.app.api.OperatingSystemAccess;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
 import org.mockito.Mockito;
 
 public class TestServerApplication extends AbstractApplication<ServerOperatingSystem>
-        implements TestApplicationWithSpy<ServerApplication>, ServerApplication {
+        implements TestApplicationWithSpy<OperatingSystemAccess<ServerOperatingSystem>>, Application {
 
-    private final ServerApplication thisApplicationSpy;
+    private final OperatingSystemAccess<ServerOperatingSystem> thisApplicationSpy;
 
     public TestServerApplication() {
-        thisApplicationSpy = Mockito.mock(ServerApplication.class);
+        thisApplicationSpy = Mockito.mock(OperatingSystemAccess.class);
     }
 
     @Override
-    public ServerApplication getApplicationSpy() {
+    public OperatingSystemAccess<ServerOperatingSystem> getApplicationSpy() {
         return thisApplicationSpy;
     }
 
