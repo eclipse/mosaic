@@ -56,8 +56,7 @@ public class HighwayReleaseIT {
         LogAssert.exists(simulationRule, tmcLog);
         LogAssert.exists(simulationRule, vehLog);
         long timeOfArrivalAtVehicle = 10250000000L;
-        long timeOfArrivalAtTmc = 10500000000
-        L;
+        long timeOfArrivalAtTmc = 10500000000L;
         LogAssert.contains(
                 simulationRule,
                 vehLog,
