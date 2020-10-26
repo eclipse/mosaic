@@ -246,7 +246,7 @@ public class CentralNavigationComponent {
     private VehicleRoute requestStaticRouteChange(VehicleData vehicleData, VehicleRoute newRoute, VehicleRoute previousRoute, long time) {
         VehicleRouteChange interaction = new VehicleRouteChange(time, vehicleData.getName(), newRoute.getId());
         try {
-            log.debug("Change to route {} for vehicle {}.", newRoute.getId(), vehicleData.getName());
+            log.info("Change to route {} for vehicle {}.", newRoute.getId(), vehicleData.getName());
             rtiAmbassador.triggerInteraction(interaction);
         } catch (IllegalValueException | InternalFederateException e) {
             log.error("[CNC.switchRoute]: unable to send VehicleRouteChange message.");

@@ -15,8 +15,8 @@
 
 package org. eclipse.mosaic.fed.output.generator.file;
 
-import org.eclipse.mosaic.fed.output.ambassador.ConfigHelper;
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
+import org.eclipse.mosaic.fed.output.ambassador.ConfigHelper;
 import org.eclipse.mosaic.fed.output.ambassador.OutputGeneratorLoader;
 import org.eclipse.mosaic.fed.output.generator.file.format.InteractionFormatter;
 import org.eclipse.mosaic.fed.output.generator.file.write.Write;
@@ -138,7 +138,7 @@ public class FileOutputLoader extends OutputGeneratorLoader {
             this.interactionFormatter = this.createInteractionFormatter(config);
         } catch (Exception e) {
             log.error("Exception", e);
-            throw new Exception("Caused by Visualizer " + getId(), e);
+            throw new Exception("Caused by OutputGenerator " + getId(), e);
         }
     }
 
