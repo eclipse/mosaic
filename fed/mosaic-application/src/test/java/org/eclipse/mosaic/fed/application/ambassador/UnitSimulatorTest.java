@@ -128,13 +128,47 @@ public class UnitSimulatorTest {
     }
 
     /**
+     * Adds a server unit to the simulator and loads
+     * its application. the setup and tearDown methods of the application
+     * should be called, when the application is started by the simulator.
+     * finally, the unit will be removed and it will be checked, if
+     * the unit can be added again to the simulation.
+     */
+    @Test
+    public void addSingleServer() {
+        UnitSimulator sim = UnitSimulator.UnitSimulator;
+
+        // Add Vehicles to simulation
+        ServerRegistration serverRegistration =
+                InteractionTestHelper.createServerRegistration("server_0", 5, true);
+
+        // ADD VEHICLE
+        sim.registerServer(serverRegistration);
+
+        Application application = addAndLoadSingleUnit(sim, "server_0");
+
+        // VERIFY CALL OF: tearDown
+        verify(application, times(1)).onStartup();
+
+        // remove all units -> tearDown should not be called
+        sim.removeAllSimulationUnits();
+
+        // VERIFY still one call of tearDown
+        verify(application, times(1)).onShutdown();
+
+        // try to add the unit again
+        sim.registerServer(serverRegistration);
+        sim.removeAllSimulationUnits();
+    }
+
+    /**
      * Adds a traffic light station unit to the simulator and loads
      * its application. the setup and tearDown methods of the application
      * should be called, when the application is started by the simulator.
      * finally, the unit will be removed and it will be checked, if
      * the unit can be added again to the simulation.
      */
-     @Test
+    @Test
     public void addAndRemoveSingleTrafficLight() {
         UnitSimulator sim = UnitSimulator.UnitSimulator;
 
@@ -150,7 +184,7 @@ public class UnitSimulatorTest {
         sim.removeAllSimulationUnits();
 
         // VERIFY CALL OF: tearDown
-         verify(application, times(1)).onShutdown();
+        verify(application, times(1)).onShutdown();
 
         // try to add the unit again
         sim.registerTrafficLight(trafficLightRegistrationMessage);
