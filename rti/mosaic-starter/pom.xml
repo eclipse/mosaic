@@ -103,6 +103,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-cell</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-sumo</artifactId>
             <version>${mosaic.version}</version>
             <scope>runtime</scope>
