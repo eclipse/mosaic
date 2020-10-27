@@ -22,7 +22,9 @@ public interface Spawner {
 
     /**
      * Initializes the unit for the simulation.
-     *
+     * TODO: Right now traffic lights are the only stationary units not implementing this interface, this is due to the
+     *  way the {@link org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration} works. For more cleanliness
+     *  this can be readdressed in the future.
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException if unit couldn't be initialized
      */
