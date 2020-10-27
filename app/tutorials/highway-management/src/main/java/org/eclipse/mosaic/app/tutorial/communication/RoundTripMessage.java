@@ -32,7 +32,6 @@ public class RoundTripMessage extends V2xMessage {
      * Simple message taking a byte array as input for the payload.
      *
      * @param routing the {@link MessageRouting} for the message
-     * @param payload the byte array
      */
     public RoundTripMessage(MessageRouting routing) {
         super(routing);
