@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
+import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.tmc.InductionLoop;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.tmc.LaneAreaDetector;
@@ -44,7 +46,7 @@ import java.util.Map;
 /**
  * This class represents a Traffic Management Center in the application simulator.
  */
-public class TrafficManagementCenterUnit extends AbstractSimulationUnit implements TrafficManagementCenterOperatingSystem {
+public class TrafficManagementCenterUnit extends ServerUnit implements TrafficManagementCenterOperatingSystem {
 
     private final Map<String, InductionLoop> inductionLoopMap = new HashMap<>();
 
@@ -57,7 +59,7 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
      * @param applicationTmc the configuration of the tmc including traffic detectors
      */
     public TrafficManagementCenterUnit(final TmcMapping applicationTmc) {
-        super(applicationTmc.getName(), null);
+        super(applicationTmc.getName());
         setRequiredOperatingSystem(TrafficManagementCenterOperatingSystem.class);
 
         applicationTmc.getInductionLoops().forEach(inductionLoopId -> {
@@ -114,21 +116,11 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
     }
 
     @Override
-    public GeoPoint getPosition() {
-        return null;
-    }
-
-    @Override
-    public CamBuilder assembleCamMessage(CamBuilder camBuilder) {
-        return null;
-    }
-
-    @Override
     public void processEvent(Event event) throws Exception {
         // never remove the preProcessEvent call!
         final boolean preProcessed = super.preProcessEvent(event);
 
-        // failsafe
+        // don't handle processed events
         if (preProcessed) {
             return;
         }
@@ -138,12 +130,12 @@ public class TrafficManagementCenterUnit extends AbstractSimulationUnit implemen
         // failsafe
         if (resource == null) {
             getOsLog().error("Event has no resource: {}", event);
-            throw new RuntimeException("No Resource in Event for TrafficManagementCenterUnit");
+            throw new RuntimeException(ErrorRegister.TRAFFIC_MANAGEMENT_CENTER_NoEventResource.toString());
         }
 
         if (!handleEventResource(resource)) {
             getOsLog().error("Unknown event resource: {}", event);
-            throw new RuntimeException("Unknown event in TrafficManagementCenterUnit");
+            throw new RuntimeException(ErrorRegister.TRAFFIC_MANAGEMENT_CENTER_UnknownEvent.toString());
         }
     }
 

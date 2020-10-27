@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
 import org.eclipse.mosaic.fed.mapping.ambassador.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
+import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
@@ -32,12 +33,12 @@ import java.util.List;
 /**
  * Class responsible for configuring Traffic Management Centers to be added to the simulation.
  */
-public class TrafficManagementCenterSpawner extends UnitSpawner {
+public class TrafficManagementCenterSpawner extends ServerSpawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrafficManagementCenterSpawner.class);
 
-    private List<String> inductionLoopDetectors;
-    private List<String> laneAreaDetectors;
+    private final List<String> inductionLoopDetectors;
+    private final List<String> laneAreaDetectors;
 
     /**
      * Constructor for {@link TrafficManagementCenterSpawner}.
@@ -61,7 +62,7 @@ public class TrafficManagementCenterSpawner extends UnitSpawner {
      * Traffic Management Centers for the simulation.
      *
      * @param spawningFramework the framework handling the spawning
-     * @throws InternalFederateException thrown if {@link TmcRegistration} couldn't be handled by rti
+     * @throws InternalFederateException if {@link TmcRegistration} couldn't be handled by rti
      */
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getTmcName();
@@ -93,10 +94,5 @@ public class TrafficManagementCenterSpawner extends UnitSpawner {
      */
     private List<String> getLaneAreaList() {
         return laneAreaDetectors == null ? new ArrayList<>() : new ArrayList<>(laneAreaDetectors);
-    }
-
-    @Override
-    public String toString() {
-        return " with apps: " + StringUtils.join(applications, ",");
     }
 }

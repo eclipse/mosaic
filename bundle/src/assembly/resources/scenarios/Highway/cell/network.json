@@ -1,0 +1,61 @@
+{
+    "globalNetwork": {
+        "uplink": {
+            "delay": {
+                "type": "ConstantDelay",
+                "delay": "200 ms"
+            },
+            "transmission": {
+                "lossProbability": 0.0
+            },
+            "capacity": 28000000
+        },
+        "downlink": {
+            "unicast": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "200 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0
+                }
+            },
+            "multicast": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "200 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0
+                },
+                "usableCapacity": 0.6
+            },
+            "capacity": 42200000
+        }
+    },
+    "servers": [
+        {
+            "id": "RoundTripServer",
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "50 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0
+                }
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "50 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    }
+                }
+            }
+        }
+    ]
+}

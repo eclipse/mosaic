@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Class responsible for configuring Charging Stations to be added to the simulation.
  */
-public class ChargingStationSpawner extends UnitSpawner {
+public class ChargingStationSpawner extends UnitSpawner implements Spawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ChargingStationSpawner.class);
 
@@ -82,6 +82,7 @@ public class ChargingStationSpawner extends UnitSpawner {
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException thrown if {@link ChargingStationRegistration} couldn't be handled by rti
      */
+    @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = NameGenerator.getChargingStationName();
         List<ChargingSpot> chargingSpots = new ArrayList<>();

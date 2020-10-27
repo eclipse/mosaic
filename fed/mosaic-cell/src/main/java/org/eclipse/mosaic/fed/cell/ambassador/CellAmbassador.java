@@ -31,6 +31,7 @@ import org.eclipse.mosaic.interactions.communication.CellularHandoverUpdates;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -41,6 +42,7 @@ import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.communication.HandoverInfo;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
+import org.eclipse.mosaic.lib.objects.mapping.ServerMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TmcMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
 import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
@@ -209,6 +211,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             process((RsuRegistration) interaction);
         } else if (interaction.getTypeId().equals(TmcRegistration.TYPE_ID)) {
             process((TmcRegistration) interaction);
+        } else if (interaction.getTypeId().equals(ServerRegistration.TYPE_ID)) {
+            process((ServerRegistration) interaction);
         } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
             process((TrafficLightRegistration) interaction);
         } else if (interaction instanceof ChargingStationRegistration) {
@@ -244,8 +248,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             }
             log.info(
                     "Disabled Cell Communication for "
-                    + (isVehicle ? "vehicle" : "entity")
-                    + "={}, t={}", nodeId, TIME.format(interaction.getTime())
+                            + (isVehicle ? "vehicle" : "entity")
+                            + "={}, t={}", nodeId, TIME.format(interaction.getTime())
             );
         } else {
             if (isVehicle) { // handle vehicles
@@ -324,23 +328,39 @@ public class CellAmbassador extends AbstractFederateAmbassador {
     private void process(TmcRegistration tmcRegistration) {
         TmcMapping tmc = tmcRegistration.getMapping();
         if (tmc.hasApplication()) {
-            CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegion(tmc.getGroup());
-            if (serverProperties != null) {
-                registeredServers.put(tmc.getName(), serverProperties);
-            } else {
-                // TODO: needs to be validated if this works as a useful workaround for tmcs without server config especially
-                //  since capacity is shared and Servers capacity shouldn't be affected by region
-                registeredServers.put(tmc.getName(), ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork);
-            }
+            registerServer(tmc.getName(), tmc.getGroup());
             if (log.isDebugEnabled()) {
-                log.debug("Added TMC (id={}, with app(s)={}), t={}",
+                log.debug("Added Server (TMC) (id={}, with app(s)={}), t={}",
                         tmc.getName(), tmc.getApplications(),
                         TIME.format(tmcRegistration.getTime()));
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("TMC (id={}) has NO application and is ignored in "
+                log.debug("Server (TMC) (id={}) has NO application and is ignored in "
                         + "communication simulation", tmc.getName());
+            }
+        }
+    }
+
+    /**
+     * Registers the new Traffic Management Center (TMC) in the cell simulation.
+     *
+     * @param serverRegistration TMC object to be added to the cell simulation.
+     */
+    private void process(ServerRegistration serverRegistration) {
+        ServerMapping server = serverRegistration.getMapping();
+        if (server.hasApplication()) {
+            registerServer(server.getName(), server.getGroup());
+
+            if (log.isDebugEnabled()) {
+                log.debug("Added Server (id={}, with app(s)={}), t={}",
+                        server.getName(), server.getApplications(),
+                        TIME.format(serverRegistration.getTime()));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Server (id={}) has NO application and is ignored in "
+                        + "communication simulation", server.getName());
             }
         }
     }
@@ -548,6 +568,17 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 interaction.getConfiguration().getAvailableDlBitrate(),
                 interaction.getConfiguration().getAvailableUlBitrate()
         );
+    }
+
+    private void registerServer(String serverName, String serverGroup) {
+        CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegion(serverGroup);
+        if (serverProperties != null) {
+            registeredServers.put(serverName, serverProperties);
+        } else {
+            // TODO: needs to be validated if this works as a useful workaround for servers without server config especially
+            //  since capacity is shared with globalNetwork and servers capacity shouldn't be affected by this
+            registeredServers.put(serverName, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork);
+        }
     }
 
     /**
