@@ -16,6 +16,8 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
 import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.TrafficManagementCenterOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.CellularCommunicationConfiguration;
 import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
@@ -153,15 +155,8 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
      * @return the created builder for further configuration
      */
     public CellMessageRoutingBuilder createMessageRouting() {
-        GeoPoint position;
-        try {
-            position = getOwner().getPosition();
-        } catch (UnsupportedOperationException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Cell Message built without source position: {}", e.getMessage());
-            }
-            position = null;
-        }
+        GeoPoint position = (getOwner() instanceof ServerOperatingSystem || getOwner() instanceof TrafficManagementCenterOperatingSystem)
+                ? null : getOwner().getPosition();
         return new CellMessageRoutingBuilder(getOwner().getId(), position);
     }
 }

@@ -18,9 +18,9 @@ package org.eclipse.mosaic.fed.mapping.ambassador;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ChargingStationSpawner;
-import org.eclipse.mosaic.fed.mapping.ambassador.spawning.Spawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.RoadSideUnitSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ServerSpawner;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.Spawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficLightSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficManagementCenterSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
@@ -218,8 +218,11 @@ public class SpawningFramework {
                 }
 
                 if (mappingConfiguration.typeDistributions != null) {
-                    vehicleConfiguration.types =
-                            replaceWithTypesFromPredefinedDistribution(vehicleConfiguration, mappingConfiguration.typeDistributions);
+                    vehicleConfiguration.types = replaceWithTypesFromPredefinedDistribution(
+                            vehicleConfiguration,
+                            mappingConfiguration.typeDistributions,
+                            rng
+                    );
                 }
 
                 if (config != null && config.adjustStartingTimes && config.start != null) {
@@ -282,12 +285,6 @@ public class SpawningFramework {
         this.vehicleFlowGenerators.add(vehicleFlowGenerator);
     }
 
-
-    /**
-     * TODO: unused, keep it?
-     * @param rng
-     * @param spawner
-     */
     private void randomizeStartingTimes(RandomNumberGenerator rng, CVehicle spawner) {
         if (spawner.spawningMode != CVehicle.SpawningMode.CONSTANT) {
             return;
@@ -321,12 +318,16 @@ public class SpawningFramework {
 
 
     private List<CPrototype> replaceWithTypesFromPredefinedDistribution(
-            CVehicle spawner, Map<String, List<CPrototype>> typeDistributions
-    ) {
+            CVehicle spawner, Map<String, List<CPrototype>> typeDistributions, RandomNumberGenerator rng) {
         // return distribution given by typeDistribution
         if (spawner.typeDistribution != null) {
             return new ArrayList<>(typeDistributions.get(spawner.typeDistribution));
         }
+
+        if (config != null && config.randomizeStartingTimes) {
+            randomizeStartingTimes(rng, spawner);
+        }
+
         if (spawner.types != null) {
             List<CPrototype> newTypes = new ArrayList<>();
             for (CPrototype type : spawner.types) {
