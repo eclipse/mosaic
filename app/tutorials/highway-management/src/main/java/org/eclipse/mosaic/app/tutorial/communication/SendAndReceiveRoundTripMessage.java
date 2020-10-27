@@ -29,7 +29,9 @@ import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
+
+
 
 /**
  * This application sends an empty cell message to a vehicle and logs this. The integration test checks whether the delay was
@@ -97,7 +99,7 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
 
     private static class SendRoundTripMessageEvent extends Event {
 
-        SendRoundTripMessageEvent(long time, @NotNull EventProcessor processor) {
+        SendRoundTripMessageEvent(long time, @Nonnull EventProcessor processor) {
             super(time, processor);
         }
     }
