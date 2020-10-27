@@ -18,6 +18,7 @@ package org.eclipse.mosaic.test;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
@@ -55,17 +56,23 @@ public class HighwayReleaseIT {
         final String vehLog = "apps/veh_0/ReceiveAndReturnRoundTripMessage.log";
         LogAssert.exists(simulationRule, tmcLog);
         LogAssert.exists(simulationRule, vehLog);
-        long timeOfArrivalAtVehicle = 10250000000L;
-        long timeOfArrivalAtTmc = 10500000000L;
+        long timeOfSending = 10 * TIME.SECOND;
+        long delayTmcUpload = 50 * TIME.MILLI_SECOND;
+        long delayTmcDownload = 50 * TIME.MILLI_SECOND;
+        long delayVehUpload = 200 * TIME.MILLI_SECOND;
+        long delayVehDownload = 200 * TIME.MILLI_SECOND;
+
+        long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
+        long timeFromVehToTmc = delayVehUpload + delayTmcDownload;
         LogAssert.contains(
                 simulationRule,
                 vehLog,
-                ".*Received round trip message #0 at time " + timeOfArrivalAtVehicle + ".*"
+                ".*Received round trip message #0 at time " + (timeOfSending + timeFromTmcToVeh) + ".*"
         );
         LogAssert.contains(
                 simulationRule,
                 tmcLog,
-                ".*Received round trip message #1 at time " + timeOfArrivalAtTmc + ".*"
+                ".*Received round trip message #1 at time " + (timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + ".*"
         );
     }
 }
