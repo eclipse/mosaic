@@ -84,8 +84,9 @@ public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
 
         for (int i = 0; i < vertices.size(); i++) {
             GeoPoint geoPoint = vertices.get(i);
-            verticesXValues[i] = (float) geoPoint.toCartesian().getX();
-            verticesYValues[i] = (float) geoPoint.toCartesian().getY();
+            CartesianPoint cartesianPoint = geoPoint.toCartesian();
+            verticesXValues[i] = (float) cartesianPoint.getX();
+            verticesYValues[i] = (float) cartesianPoint.getY();
         }
 
         return MathUtils.pnpoly(
