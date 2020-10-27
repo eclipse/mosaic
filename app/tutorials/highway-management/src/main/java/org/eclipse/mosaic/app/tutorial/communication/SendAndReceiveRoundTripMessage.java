@@ -92,7 +92,7 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
     public void processEvent(Event event) throws Exception {
         if (event instanceof SendRoundTripMessageEvent) {
             MessageRouting routing = getOs().getCellModule().createMessageRouting().topoCast(RECEIVER_NAME);
-            getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing, new byte[8]));
+            getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }
     }

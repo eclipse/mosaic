@@ -45,7 +45,7 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
                 getOs().getSimulationTime()
         );
         MessageRouting routing = getOs().getCellModule().createMessageRouting().topoCast(SERVER_NAME);
-        getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing, new byte[8]));
+        getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing));
         getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", SERVER_NAME, getOs().getSimulationTime());
     }
 
