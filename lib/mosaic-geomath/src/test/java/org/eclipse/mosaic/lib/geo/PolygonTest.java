@@ -121,8 +121,10 @@ public class PolygonTest {
 
         assertTrue(polygon.contains(xy(10, 6)));
         assertTrue(polygon.contains(xy(11, 12)));
+        assertTrue(polygon.contains(xy(10, 14)));
         assertTrue(polygon.contains(xy(5, 6)));
 
+        assertFalse(polygon.contains(xy(8, 14)));
         assertFalse(polygon.contains(xy(2, 6)));
         assertFalse(polygon.contains(xy(8, 6)));
         assertFalse(polygon.contains(xy(1, 3)));
@@ -130,4 +132,39 @@ public class PolygonTest {
         assertFalse(polygon.contains(xy(9, 16)));
     }
 
+    @Test
+    public void containsPointsRectangle() {
+        CartesianPolygon polygon = new CartesianRectangle(
+                xy(3, 5),
+                xy(7, 1)
+        ).toPolygon();
+
+        // Outside x-axis
+        assertFalse(polygon.contains(xy(2, 5)));
+        assertFalse(polygon.contains(xy(2, 1)));
+        assertFalse(polygon.contains(xy(8, 1)));
+        assertFalse(polygon.contains(xy(8, 5)));
+
+        // Outside y-axis
+        assertFalse(polygon.contains(xy(7, 0)));
+        assertFalse(polygon.contains(xy(7, 6)));
+        assertFalse(polygon.contains(xy(3, 0)));
+        assertFalse(polygon.contains(xy(3, 6)));
+
+
+        // Inside polygon
+        assertTrue(polygon.contains(xy(4, 4)));
+
+        // Polygon vertices
+        assertTrue(polygon.contains(xy(3, 5)));
+        assertTrue(polygon.contains(xy(3, 1)));
+        assertTrue(polygon.contains(xy(7, 5)));
+        assertTrue(polygon.contains(xy(7, 1)));
+
+        // Polygon edges
+        assertTrue(polygon.contains(xy(6, 1))); // lower limit
+        assertTrue(polygon.contains(xy(6, 5))); // upper limit
+        assertTrue(polygon.contains(xy(3, 3))); // left limit
+        assertTrue(polygon.contains(xy(7, 3))); // right limit
+    }
 }
