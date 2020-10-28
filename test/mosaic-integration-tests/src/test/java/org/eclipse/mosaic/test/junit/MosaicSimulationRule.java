@@ -49,6 +49,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     protected CHosts hostsConfiguration;
     protected CRuntime runtimeConfiguration;
+    protected MosaicSimulation.ComponentProviderFactory componentProviderFactory = MosaicComponentProvider::new;
     protected Path logDirectory;
 
     protected String logLevelOverride = null;
@@ -63,6 +64,11 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     public MosaicSimulationRule logLevelOverride(String logLevelOverride) {
         this.logLevelOverride = logLevelOverride;
+        return this;
+    }
+
+    public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
+        this.componentProviderFactory = factory;
         return this;
     }
 
@@ -125,7 +131,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
-                    .setComponentProviderFactory(MosaicComponentProvider::new)
+                    .setComponentProviderFactory(componentProviderFactory)
                     .runSimulation(scenarioDirectory, scenarioConfiguration);
         } catch (Throwable e) {
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
