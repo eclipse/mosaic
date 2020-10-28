@@ -22,7 +22,6 @@ import org.eclipse.mosaic.lib.model.transmission.CTransmission;
 
 import com.google.gson.annotations.JsonAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * {@link CNetworkProperties} holds all coverage properties of one region of the radio access network (ran-part).
