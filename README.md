@@ -1,4 +1,4 @@
-<a href="https://eclipse.org/mosaic"><p align="center"><img width="50%" src="https://github.com/eclipse/mosaic.website/raw/main/static/img/eclipse-mosaic-logo.png"></p></a>
+<a href="https://eclipse.org/mosaic"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg"></p></a>
 
 # Eclipse MOSAIC Essentials - <br> The Simulation Suite for Connected and Automated Mobility
 
