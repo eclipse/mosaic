@@ -47,11 +47,11 @@ import java.nio.file.Paths;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
-    private CHosts hostsConfiguration;
-    private CRuntime runtimeConfiguration;
-    private Path logDirectory;
+    protected CHosts hostsConfiguration;
+    protected CRuntime runtimeConfiguration;
+    protected Path logDirectory;
 
-    private String logLevelOverride = null;
+    protected String logLevelOverride = null;
 
     @Override
     protected void before() throws Throwable {
@@ -66,14 +66,14 @@ public class MosaicSimulationRule extends TemporaryFolder {
         return this;
     }
 
-    private CHosts prepareHostsConfiguration() throws IOException {
+    protected CHosts prepareHostsConfiguration() throws IOException {
         Path tmpDirectory = newFolder("tmp").toPath();
         CHosts hostsConfiguration = new CHosts();
         hostsConfiguration.localHosts.add(new CLocalHost(tmpDirectory.toAbsolutePath().toString()));
         return hostsConfiguration;
     }
 
-    private CRuntime prepareRuntimeConfiguration() throws IOException {
+    protected CRuntime prepareRuntimeConfiguration() throws IOException {
         try (InputStream resource = getClass().getResourceAsStream("/runtime.json")) {
             return new ObjectInstantiation<>(CRuntime.class).read(resource);
         } catch (InstantiationException e) {
@@ -137,7 +137,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
         }
     }
 
-    private Path prepareLogConfiguration(Path logDirectory) throws IOException {
+    protected Path prepareLogConfiguration(Path logDirectory) throws IOException {
         FileUtils.deleteQuietly(logDirectory.toFile());
 
         Path logConfiguration = newFile("logback.xml").toPath();
@@ -153,7 +153,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
     }
 
 
-    private void resetSingletons() {
+    protected void resetSingletons() {
         TestUtils.setPrivateField(GeoProjection.class, "instance", null);
         TestUtils.setPrivateField(IpResolver.class, "singleton", null);
         TestUtils.setPrivateField(EtsiPayloadConfiguration.class, "globalConfiguration", null);
