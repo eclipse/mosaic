@@ -26,7 +26,7 @@ public class GammaSpeedDelay extends GammaRandomDelay {
     @Override
     public long generateDelay(RandomNumberGenerator randomNumberGenerator, double speedOfNode) {
         final long grDelay = super.generateDelay(randomNumberGenerator, speedOfNode);
-        final double speedPenalty = getSpeedPenalty(speedOfNode);
+        final double speedPenalty = speedOfNode == -1d ? 1 : getSpeedPenalty(speedOfNode);
 
         return (long) (grDelay * speedPenalty);
     }

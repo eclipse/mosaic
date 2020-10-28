@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.mapping.config;
 
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
+import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
@@ -52,6 +53,11 @@ public class CMappingAmbassador {
      * List of TMCs.
      */
     public List<CTrafficManagementCenter> tmcs;
+
+    /**
+     * List of Servers.
+     */
+    public List<CServer> servers;
 
     /**
      * List of the TLTypes. It can be randomly or specifically be mapped onto

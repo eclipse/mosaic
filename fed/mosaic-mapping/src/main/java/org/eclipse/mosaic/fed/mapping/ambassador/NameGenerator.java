@@ -21,12 +21,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Helper class to generate unique names for the objects in the simulation.
  */
 public class NameGenerator {
-    private static AtomicInteger vehicleCounter = new AtomicInteger(0);
-    private static AtomicInteger rsuCounter = new AtomicInteger(0);
-    private static AtomicInteger tmcCounter = new AtomicInteger(0);
-    private static AtomicInteger tlCounter = new AtomicInteger(0);
-    private static AtomicInteger chargingStationCounter = new AtomicInteger(0);
-    private static AtomicInteger prototypeCounter = new AtomicInteger(0);
+    private static final AtomicInteger vehicleCounter = new AtomicInteger(0);
+    private static final AtomicInteger rsuCounter = new AtomicInteger(0);
+    private static final AtomicInteger tmcCounter = new AtomicInteger(0);
+    private static final AtomicInteger serverCounter = new AtomicInteger(0);
+    private static final AtomicInteger tlCounter = new AtomicInteger(0);
+    private static final AtomicInteger chargingStationCounter = new AtomicInteger(0);
+    private static final AtomicInteger prototypeCounter = new AtomicInteger(0);
 
     public static String getVehicleName() {
         return "veh_" + vehicleCounter.getAndIncrement();
@@ -38,6 +39,10 @@ public class NameGenerator {
 
     public static String getTmcName() {
         return "tmc_" + tmcCounter.getAndIncrement();
+    }
+
+    public static String getServerName() {
+        return "server_" + serverCounter.getAndIncrement();
     }
 
     public static String getTlName() {

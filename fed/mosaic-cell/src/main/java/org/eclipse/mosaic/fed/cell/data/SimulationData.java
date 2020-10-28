@@ -184,7 +184,7 @@ public enum SimulationData {
         if (node != null && node.speed != null) {
             return node.speed;
         } else {
-            log.warn("Tried getting speed of node {}, but isn't there.", nodeId);
+            log.debug("Tried getting speed of node {}, but isn't there.", nodeId);
             return -1.0d;
         }
     }

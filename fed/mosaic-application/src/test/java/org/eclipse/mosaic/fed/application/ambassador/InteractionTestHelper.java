@@ -18,10 +18,12 @@ package org.eclipse.mosaic.fed.application.ambassador;
 import org.eclipse.mosaic.fed.application.app.TestApplicationWithSpy;
 import org.eclipse.mosaic.fed.application.app.TestChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.TestRoadSideUnitApplication;
+import org.eclipse.mosaic.fed.application.app.TestServerApplication;
 import org.eclipse.mosaic.fed.application.app.TestTrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.TestTrafficManagementCenterApplication;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -79,7 +81,9 @@ class InteractionTestHelper {
     static TrafficLightRegistration createTrafficLightRegistration(String id, long startTimeInSeconds, boolean withApp) {
         Map<String, TrafficLightProgram> programs = new HashMap<>();
 
-        List<TrafficLightProgramPhase> phases = Lists.newArrayList(new TrafficLightProgramPhase(0, 1000, Lists.newArrayList(new TrafficLightState(false, false, false))));
+        List<TrafficLightProgramPhase> phases = Lists.newArrayList(
+                new TrafficLightProgramPhase(0, 1000, Lists.newArrayList(new TrafficLightState(false, false, false)))
+        );
         TrafficLightProgram program = new TrafficLightProgram("0", phases, 0);
         programs.put("0", program);
 
@@ -223,6 +227,15 @@ class InteractionTestHelper {
                 getApplications(withApp, TestTrafficManagementCenterApplication.class),
                 Lists.newArrayList(),
                 Lists.newArrayList(laneAreaIds)
+        );
+    }
+
+    static ServerRegistration createServerRegistration(String name, long startTimeInSeconds, boolean withApp) {
+        return new ServerRegistration(
+                startTimeInSeconds * TIME.SECOND,
+                name,
+                "group_0",
+                getApplications(withApp, TestServerApplication.class)
         );
     }
 

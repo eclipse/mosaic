@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class responsible for configuring Road Side Units to be added to the simulation.
  */
-public class RoadSideUnitSpawner extends UnitSpawner {
+public class RoadSideUnitSpawner extends UnitSpawner implements Spawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoadSideUnitSpawner.class);
 

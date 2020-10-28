@@ -28,7 +28,7 @@ import java.util.Collection;
 public class TestTrafficManagementCenterApplication extends AbstractApplication<TrafficManagementCenterOperatingSystem>
         implements TestApplicationWithSpy<TrafficManagementCenterApplication>, TrafficManagementCenterApplication {
 
-    private TrafficManagementCenterApplication thisApplicationSpy;
+    private final TrafficManagementCenterApplication thisApplicationSpy;
 
     public TestTrafficManagementCenterApplication() {
         // We use this mock to later count calls of the class' methods

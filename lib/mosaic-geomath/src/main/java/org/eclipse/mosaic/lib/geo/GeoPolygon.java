@@ -15,8 +15,7 @@
 
 package org.eclipse.mosaic.lib.geo;
 
-import org.eclipse.mosaic.lib.math.Vector3d;
-import org.eclipse.mosaic.lib.spatial.Ray;
+import org.eclipse.mosaic.lib.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,25 +79,20 @@ public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
 
     @Override
     public boolean contains(GeoPoint point) {
-        final Ray rayFromPoint = new Ray();
-        point.toVector3d(rayFromPoint.origin);
-        rayFromPoint.origin.set(point.getLongitude(), 0, -point.getLatitude());
-        rayFromPoint.direction.set(1, 0, 0);
+        float[] verticesXValues = new float[vertices.size()];
+        float[] verticesYValues = new float[vertices.size()];
 
-        int intersections = 0;
-        final Vector3d edgeStart = new Vector3d();
-        final Vector3d edgeEnd = new Vector3d();
-        GeoPoint prev = null;
-        for (GeoPoint curr : getVertices()) {
-            if (prev != null) {
-                edgeStart.set(prev.getLongitude(), 0, -prev.getLatitude());
-                edgeEnd.set(curr.getLongitude(), 0, -curr.getLatitude());
-                boolean intersect = rayFromPoint.intersectsLineSegmentXZ(edgeStart, edgeEnd);
-                intersections += intersect ? 1 : 0;
-            }
-            prev = curr;
+        for (int i = 0; i < vertices.size(); i++) {
+            GeoPoint geoPoint = vertices.get(i);
+            CartesianPoint cartesianPoint = geoPoint.toCartesian();
+            verticesXValues[i] = (float) cartesianPoint.getX();
+            verticesYValues[i] = (float) cartesianPoint.getY();
         }
-        return intersections % 2 != 0;
+
+        return MathUtils.pnpoly(
+                vertices.size(), verticesXValues, verticesYValues,
+                (float) point.toCartesian().getX(), (float) point.toCartesian().getY()
+        );
     }
 
     public CartesianPolygon toCartesian() {

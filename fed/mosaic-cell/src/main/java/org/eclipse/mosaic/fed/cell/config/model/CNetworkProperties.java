@@ -21,6 +21,7 @@ import org.eclipse.mosaic.lib.model.gson.DelayTypeAdapterFactory;
 import org.eclipse.mosaic.lib.model.transmission.CTransmission;
 
 import com.google.gson.annotations.JsonAdapter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
@@ -131,10 +132,15 @@ public class CNetworkProperties {
 
     @Override
     public String toString() {
-        return String.format("\"%s\" uplink: %s, capacity: %d, "
-                        + "downlink {unicast: %s, multicast: %s, usableCapacity: %s, capacity: %d}",
-                id, uplink.delay.toString(), uplink.capacity,
-                downlink.unicast.delay.toString(), downlink.multicast.delay.toString(),
-                downlink.multicast.usableCapacity, downlink.capacity);
+        ToStringBuilder builder = new ToStringBuilder(this).append("id", id)
+                .append("uplink.delay", uplink.delay.toString())
+                .append("uplink.capacity", uplink.capacity)
+                .append("downlink.unicast.delay", downlink.unicast.delay.toString());
+        if (downlink.multicast != null) {
+            builder.append("downlink.multicast.delay", downlink.multicast.delay.toString())
+                    .append("downlink.multicast.usableCapacity", downlink.multicast.usableCapacity);
+        }
+        builder.append("downlink.capacity", downlink.capacity);
+        return builder.toString();
     }
 }

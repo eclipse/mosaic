@@ -21,12 +21,14 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulati
 import org.eclipse.mosaic.fed.application.ambassador.simulation.ChargingStationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.ElectricVehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.RoadSideUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.ServerUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGroupUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorActivation;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -77,6 +79,11 @@ public enum UnitSimulator implements EventProcessor {
      * Map containing all the ids with the corresponding TMCs (Traffic Management Centers).
      */
     private final Map<String, TrafficManagementCenterUnit> tmcs = new HashMap<>();
+
+    /**
+     * Map containing all the ids with the corresponding Servers.
+     */
+    private final Map<String, ServerUnit> servers = new HashMap<>();
 
     /**
      * Map containing all the ids with the corresponding vehicles.
@@ -134,6 +141,15 @@ public enum UnitSimulator implements EventProcessor {
     }
 
     /**
+     * Returns the map containing all the ids with the corresponding servers.
+     *
+     * @return the map containing all the ids with the corresponding servers.
+     */
+    public Map<String, ServerUnit> getServers() {
+        return servers;
+    }
+
+    /**
      * Returns the map containing all the ids with the corresponding {@link AbstractSimulationUnit}.
      *
      * @return the map containing all the ids with the corresponding {@link AbstractSimulationUnit}.
@@ -164,6 +180,8 @@ public enum UnitSimulator implements EventProcessor {
             trafficLights.put(unit.getId(), (TrafficLightGroupUnit) unit);
         } else if (unit instanceof TrafficManagementCenterUnit) {
             tmcs.put(unit.getId(), (TrafficManagementCenterUnit) unit);
+        } else if (unit instanceof ServerUnit) {
+            servers.put(unit.getId(), (ServerUnit) unit);
         } else if (unit instanceof VehicleUnit) {
             vehicles.put(unit.getId(), (VehicleUnit) unit);
         } else {
@@ -189,6 +207,8 @@ public enum UnitSimulator implements EventProcessor {
             trafficLights.remove(unit.getId());
         } else if (unit instanceof TrafficManagementCenterUnit) {
             tmcs.remove(unit.getId());
+        } else if (unit instanceof ServerUnit) {
+            servers.remove(unit.getId());
         } else if (unit instanceof VehicleUnit) {
             vehicles.remove(unit.getId());
         } else {
@@ -213,6 +233,7 @@ public enum UnitSimulator implements EventProcessor {
         trafficLights.clear();
         vehicles.clear();
         tmcs.clear();
+        servers.clear();
         allUnits.clear();
     }
 
@@ -279,6 +300,26 @@ public enum UnitSimulator implements EventProcessor {
         final Event event = new Event(
                 tmcRegistration.getTime(),
                 this, new StartApplications(tmc.getId(), tmcRegistration.getMapping()),
+                Event.NICE_MAX_PRIORITY
+        );
+        SimulationKernel.SimulationKernel.getEventManager().addEvent(event);
+    }
+
+    /**
+     * Registers a Server. Unit is only registered if it is equipped with an application
+     *
+     * @param serverRegistration the interaction containing the mapping of the server
+     */
+    public void registerServer(ServerRegistration serverRegistration) {
+        if (!serverRegistration.getMapping().hasApplication()) {
+            return;
+        }
+        final ServerUnit server = new ServerUnit(serverRegistration.getMapping());
+        addSimulationUnit(server);
+
+        final Event event = new Event(
+                serverRegistration.getTime(),
+                this, new StartApplications(server.getId(), serverRegistration.getMapping()),
                 Event.NICE_MAX_PRIORITY
         );
         SimulationKernel.SimulationKernel.getEventManager().addEvent(event);
