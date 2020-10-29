@@ -766,6 +766,7 @@ extract_federate() {
   else
     progress "Extracting MOSAIC OMNeT++ Federate from: '$1' ..."
     unzip --qq -o "$1"
+    mkdir ${omnetpp_federate_src_dir}
     mv omnetpp-federate-* "${omnetpp_federate_src_dir}"
   fi
   chmod 755 -R "${omnetpp_federate_src_dir}"
@@ -786,7 +787,7 @@ build_omnet_federate() {
   if [ -f ClientServerChannelMessages.pb.cc ]; then
     rm ClientServerChannelMessages.pb.cc
   fi
-
+  cd omnetpp-federate-20.0/
   sed -i -e "s|/usr/local|.|" premake5.lua
   sed -i -e "s|\"/usr/include\"|\"${omnetpp_src_dir}/include\", \"${inet_src_dir}/src\"|" premake5.lua
   sed -i -e "s|\"/usr/lib\"|\"${omnetpp_src_dir}/lib\", \"${inet_src_dir}/src\"|" premake5.lua
@@ -795,7 +796,12 @@ build_omnet_federate() {
   sed -i -e "s|'opp_msgc'|'${omnetpp_src_dir}/bin/opp_msgc'|" premake5.lua
   sed -i -e "s|/share/ned||" premake5.lua
   sed -i -e "s|local PROTO_CC_PATH = \"\.\"|local PROTO_CC_PATH = \"src/util\"|" premake5.lua
-
+  cp ../api.lua -d .
+  cp ../autoconf.lua -d .
+  cp ../clang.lua -d .
+  cp ../gcc.lua -d .
+  cp ../msc.lua -d .
+  cp ../premake5 -d .
   ./premake5 gmake --generate-opp-messages --generate-protobuf --install
 
   make config=debug clean
