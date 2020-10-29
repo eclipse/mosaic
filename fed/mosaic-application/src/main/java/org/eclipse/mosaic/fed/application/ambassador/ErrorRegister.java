@@ -68,7 +68,13 @@ public enum ErrorRegister {
     TRAFFIC_LIGHT_NoEventResource(0x01000071, "Process event with no resource."),
     // 0x01000080 to 0x0100008F vehicle
     VEHICLE_UnknownEvent(0x01000080, "Process unknown event."),
-    VEHICLE_NoEventResource(0x01000081, "Process event with no resource.");
+    VEHICLE_NoEventResource(0x01000081, "Process event with no resource."),
+    // 0x01000090 to 0x0100009F traffic management center
+    TRAFFIC_MANAGEMENT_CENTER_UnknownEvent(0x01000090, "Process unknown event."),
+    TRAFFIC_MANAGEMENT_CENTER_NoEventResource(0x01000091, "Process event with no resource."),
+    // 0x01000100 to 0x0100010F Servers
+    SERVER_UnknownEvent(0x01000100, "Process unknown event."),
+    SERVER_NoEventResource(0x0100101, "Process event with no resource.");
 
     /**
      * The code of the error.

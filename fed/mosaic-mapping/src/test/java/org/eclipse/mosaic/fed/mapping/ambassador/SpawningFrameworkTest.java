@@ -27,11 +27,13 @@ import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
+import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -135,22 +137,24 @@ public class SpawningFrameworkTest {
     }
 
     @Test
-    public void initChargingStationsTmcs() throws IllegalValueException, InternalFederateException {
+    public void initChargingStationsTmcsServers() throws IllegalValueException, InternalFederateException {
         //SETUP
-        CMappingAmbassador cMappingAmbassador = new CMappingAmbassador();
-        cMappingAmbassador.prototypes = Lists.newArrayList(newPrototype("prototype"));
-        cMappingAmbassador.chargingStations = Lists.newArrayList(newChargingStation("chType"));
-        cMappingAmbassador.tmcs = Lists.newArrayList(newTmc("tmcType"));
+        CMappingAmbassador mappingAmbassadorConfig = new CMappingAmbassador();
+        mappingAmbassadorConfig.prototypes = Lists.newArrayList(newPrototype("prototype"));
+        mappingAmbassadorConfig.chargingStations = Lists.newArrayList(newChargingStation("chType"));
+        mappingAmbassadorConfig.tmcs = Lists.newArrayList(newTmc("tmcType"));
+        mappingAmbassadorConfig.servers = Lists.newArrayList(newServer("serverType"));
 
         ScenarioTrafficLightRegistration scenarioTrafficLightRegistration = MappingAmbassadorTest.createScenarioTrafficLightRegistration();
 
         //RUN
-        SpawningFramework spawningFramework = new SpawningFramework(cMappingAmbassador, scenarioTrafficLightRegistration, rti, rng);
+        SpawningFramework spawningFramework = new SpawningFramework(mappingAmbassadorConfig, scenarioTrafficLightRegistration, rti, rng);
         spawningFramework.timeAdvance(0, rti, rng);
 
         //ASSERT
         verify(rti, times(1)).triggerInteraction(isA(ChargingStationRegistration.class));
         verify(rti, times(1)).triggerInteraction(isA(TmcRegistration.class));
+        verify(rti, times(1)).triggerInteraction(isA(ServerRegistration.class));
         verify(rti, times(1)).triggerInteraction(isA(TrafficLightRegistration.class));
 
         verify(rti, never()).triggerInteraction(isA(VehicleRegistration.class));
@@ -180,6 +184,12 @@ public class SpawningFrameworkTest {
         CTrafficManagementCenter trafficManagementCenterConfiguration = new CTrafficManagementCenter();
         trafficManagementCenterConfiguration.name = prototype;
         return trafficManagementCenterConfiguration;
+    }
+
+    private CServer newServer(String prototype) {
+        CServer serverConfiguration = new CServer();
+        serverConfiguration.name = prototype;
+        return serverConfiguration;
     }
 
     private CChargingStation newChargingStation(String prototype) {

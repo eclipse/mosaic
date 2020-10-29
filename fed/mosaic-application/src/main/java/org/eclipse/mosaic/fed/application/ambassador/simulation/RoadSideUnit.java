@@ -76,12 +76,8 @@ public class RoadSideUnit extends AbstractSimulationUnit implements RoadSideUnit
             throw new RuntimeException(ErrorRegister.ROAD_SIDE_UNIT_NoEventResource.toString());
         }
 
-        //  if (resource instanceof SomeEventClass) {
-        //      fooUpdate((SomeEventClass)resource);
-        //  } else {
         getOsLog().error("Unknown event resource: {}", event);
         throw new RuntimeException(ErrorRegister.ROAD_SIDE_UNIT_UnknownEvent.toString());
-        //  }
     }
 
     @Override

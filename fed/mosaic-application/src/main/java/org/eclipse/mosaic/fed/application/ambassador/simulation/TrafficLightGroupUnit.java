@@ -92,7 +92,7 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
         // never remove the preProcessEvent call!
         final boolean preProcessed = super.preProcessEvent(event);
 
-        // don't handel processed events
+        // don't handle processed events
         if (preProcessed) {
             return;
         }

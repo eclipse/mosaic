@@ -33,6 +33,7 @@ import org.eclipse.mosaic.fed.application.app.api.TrafficManagementCenterApplica
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -127,13 +128,47 @@ public class UnitSimulatorTest {
     }
 
     /**
+     * Adds a server unit to the simulator and loads
+     * its application. the setup and tearDown methods of the application
+     * should be called, when the application is started by the simulator.
+     * finally, the unit will be removed and it will be checked, if
+     * the unit can be added again to the simulation.
+     */
+    @Test
+    public void addSingleServer() {
+        UnitSimulator sim = UnitSimulator.UnitSimulator;
+
+        // Add Vehicles to simulation
+        ServerRegistration serverRegistration =
+                InteractionTestHelper.createServerRegistration("server_0", 5, true);
+
+        // ADD VEHICLE
+        sim.registerServer(serverRegistration);
+
+        Application application = addAndLoadSingleUnit(sim, "server_0");
+
+        // VERIFY CALL OF: tearDown
+        verify(application, times(1)).onStartup();
+
+        // remove all units -> tearDown should not be called
+        sim.removeAllSimulationUnits();
+
+        // VERIFY still one call of tearDown
+        verify(application, times(1)).onShutdown();
+
+        // try to add the unit again
+        sim.registerServer(serverRegistration);
+        sim.removeAllSimulationUnits();
+    }
+
+    /**
      * Adds a traffic light station unit to the simulator and loads
      * its application. the setup and tearDown methods of the application
      * should be called, when the application is started by the simulator.
      * finally, the unit will be removed and it will be checked, if
      * the unit can be added again to the simulation.
      */
-     @Test
+    @Test
     public void addAndRemoveSingleTrafficLight() {
         UnitSimulator sim = UnitSimulator.UnitSimulator;
 
@@ -149,7 +184,7 @@ public class UnitSimulatorTest {
         sim.removeAllSimulationUnits();
 
         // VERIFY CALL OF: tearDown
-         verify(application, times(1)).onShutdown();
+        verify(application, times(1)).onShutdown();
 
         // try to add the unit again
         sim.registerTrafficLight(trafficLightRegistrationMessage);
@@ -352,6 +387,20 @@ public class UnitSimulatorTest {
 
         RsuRegistration rsuRegistration = InteractionTestHelper.createRsuRegistration("rsu_0", 0, false);
         sim.registerRsu(rsuRegistration);
+        assertEquals(0, sim.getAllUnits().size());
+        assertEquals(0, sim.getRoadSideUnits().size());
+    }
+
+    /**
+     * Adds a server unit without an application. No
+     * unit should be added to the simulator
+     */
+    @Test
+    public void addServerUnitWithoutApplication() {
+        UnitSimulator sim = UnitSimulator.UnitSimulator;
+
+        ServerRegistration serverRegistration = InteractionTestHelper.createServerRegistration("server_0", 0, false);
+        sim.registerServer(serverRegistration);
         assertEquals(0, sim.getAllUnits().size());
         assertEquals(0, sim.getRoadSideUnits().size());
     }

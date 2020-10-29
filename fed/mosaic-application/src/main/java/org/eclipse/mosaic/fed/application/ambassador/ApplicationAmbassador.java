@@ -37,6 +37,7 @@ import org.eclipse.mosaic.interactions.electricity.VehicleElectricityUpdates;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -250,6 +251,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((RoutelessVehicleRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(TmcRegistration.TYPE_ID)) {
                 this.process((TmcRegistration) interaction);
+            } else if (interaction.getTypeId().startsWith(ServerRegistration.TYPE_ID)) {
+                this.process((ServerRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(ChargingDenialResponse.TYPE_ID)) {
                 this.process((ChargingDenialResponse) interaction);
             } else if (interaction.getTypeId().startsWith(ChargingStationUpdates.TYPE_ID)) {
@@ -325,6 +328,10 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void process(final TmcRegistration tmcRegistration) {
         UnitSimulator.UnitSimulator.registerTmc(tmcRegistration);
+    }
+
+    private void process(final ServerRegistration serverRegistration) {
+        UnitSimulator.UnitSimulator.registerServer(serverRegistration);
     }
 
     private void process(final ChargingStationRegistration chargingStationRegistration) {

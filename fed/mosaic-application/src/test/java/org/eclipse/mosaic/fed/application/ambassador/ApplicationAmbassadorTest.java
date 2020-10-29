@@ -33,6 +33,7 @@ import org.eclipse.mosaic.fed.application.app.TestApplicationWithSpy;
 import org.eclipse.mosaic.fed.application.app.TestChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.TestRoadSideUnitApplication;
+import org.eclipse.mosaic.fed.application.app.TestServerApplication;
 import org.eclipse.mosaic.fed.application.app.TestTrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.TestTrafficManagementCenterApplication;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
@@ -64,6 +65,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -113,9 +115,11 @@ public class ApplicationAmbassadorTest {
 
     /**
      * Setup and reset singletons.
+     *
+     * @throws IllegalValueException if requestAdvanceTime wasn't properly called
      */
     @Before
-    public void setup() throws Exception {
+    public void setup() throws IllegalValueException {
         rtiAmbassador = mock(RtiAmbassador.class);
 
         // Catch the latest call of "requestAdvanceTime" in order to assert the last advance time the ambassador requests
@@ -134,7 +138,7 @@ public class ApplicationAmbassadorTest {
     }
 
     @After
-    public void tearDown() throws NoSuchFieldException {
+    public void tearDown() {
         TestUtils.setPrivateField(EtsiPayloadConfiguration.class, "globalConfiguration", null);
     }
 
@@ -156,7 +160,7 @@ public class ApplicationAmbassadorTest {
                     "load.from.jar.VehicleApplication"
             );
             fail();
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             //ok
         }
 
@@ -488,7 +492,6 @@ public class ApplicationAmbassadorTest {
     public void processInteraction_UnableToDeliverV2xMessage() throws InternalFederateException, IOException {
         final ApplicationAmbassador ambassador = createAmbassador();
 
-
         // SETUP init ambassador
         ambassador.initialize(0L, 100 * TIME.SECOND);
 
@@ -682,7 +685,6 @@ public class ApplicationAmbassadorTest {
         // ASSERT route has been propagated
         assertSame(route, SimulationKernel.SimulationKernel.getRoutes().get("0"));
 
-
         // tears down all applications
         ambassador.finishSimulation();
     }
@@ -714,9 +716,9 @@ public class ApplicationAmbassadorTest {
     }
 
     /**
-     * The ApplicationAmbassador receives an TrafficLightRegistration interaction. The application of the traffic light will
-     * be added to the simulator and initialized. After the simulation has been finished, the application
-     * will tear down.
+     * The ApplicationAmbassador receives an {@link org.eclipse.mosaic.interactions.mapping.TmcRegistration} interaction.
+     * The application of the traffic management center will be added to the simulator and initialized.
+     * After the simulation has been finished, the application will tear down.
      */
     @Test
     public void processInteraction_AddedTrafficManagementCenter() throws InternalFederateException, IOException {
@@ -858,6 +860,32 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+    }
+
+    /**
+     * The ApplicationAmbassador receives an {@link org.eclipse.mosaic.interactions.mapping.ServerRegistration} interaction.
+     * The application of the server will be added to the simulator and initialized.
+     * After the simulation has been finished, the application will tear down.
+     */
+    @Test
+    public void processInteraction_ServerRegistration() throws InternalFederateException, IOException {
+        final ApplicationAmbassador ambassador = createAmbassador();
+
+        // init ambassador
+        ambassador.initialize(0L, 100 * TIME.SECOND);
+
+        TestServerApplication app = testAddUnit(
+                ambassador,
+                "server_0",
+                InteractionTestHelper.createServerRegistration("server_0", 5, true)
+        );
+
+        // verify that setUp has been called on the application of the unit
+        Mockito.verify(app.getApplicationSpy()).onStartup();
+
+        // tears down all applications
+        ambassador.finishSimulation();
+        Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
     private <TEST_APP extends TestApplicationWithSpy<? extends Application>> TEST_APP testAddUnit(final ApplicationAmbassador ambassador, final String unitId, final Interaction interaction) throws InternalFederateException {

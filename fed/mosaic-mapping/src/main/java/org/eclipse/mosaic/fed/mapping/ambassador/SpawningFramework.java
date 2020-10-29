@@ -19,6 +19,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ChargingStationSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.RoadSideUnitSpawner;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ServerSpawner;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.Spawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficLightSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficManagementCenterSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
@@ -28,6 +30,7 @@ import org.eclipse.mosaic.fed.mapping.config.CMappingConfiguration;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
+import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
@@ -66,7 +69,9 @@ public class SpawningFramework {
     private final List<VehicleFlowGenerator> vehicleFlowGenerators = new ArrayList<>();
     private final List<RoadSideUnitSpawner> rsus = new ArrayList<>();
     private final List<TrafficManagementCenterSpawner> tmcs = new ArrayList<>();
+    private final List<ServerSpawner> servers = new ArrayList<>();
     private final List<ChargingStationSpawner> chargingStations = new ArrayList<>();
+    private final List<Spawner> spawners = new ArrayList<>();
     private final CMappingConfiguration config;
 
     private ScenarioTrafficLightRegistration scenarioTrafficLightRegistration;
@@ -81,7 +86,7 @@ public class SpawningFramework {
     private RtiAmbassador rti;
     /**
      * Whether mapping already was initialized. We use it in timeAdvance method
-     * for initializing static objects such as RSUs, TMCsand charging stations.
+     * for initializing static objects such as RSUs, TMCs and charging stations.
      */
     private boolean immobileUnitsInitialized = false;
     /**
@@ -128,7 +133,9 @@ public class SpawningFramework {
         if (mappingConfiguration.rsus != null) {
             for (CRoadSideUnit roadSideUnitConfiguration : mappingConfiguration.rsus) {
                 if (roadSideUnitConfiguration != null) {
-                    rsus.add(new RoadSideUnitSpawner(roadSideUnitConfiguration));
+                    RoadSideUnitSpawner roadSideUnitSpawner = new RoadSideUnitSpawner(roadSideUnitConfiguration);
+                    rsus.add(roadSideUnitSpawner);
+                    spawners.add(roadSideUnitSpawner);
                 }
             }
         }
@@ -136,7 +143,20 @@ public class SpawningFramework {
         if (mappingConfiguration.tmcs != null) {
             for (CTrafficManagementCenter trafficManagementCenterConfiguration : mappingConfiguration.tmcs) {
                 if (trafficManagementCenterConfiguration != null) {
-                    tmcs.add(new TrafficManagementCenterSpawner(trafficManagementCenterConfiguration));
+                    TrafficManagementCenterSpawner trafficManagementCenterSpawner =
+                            new TrafficManagementCenterSpawner(trafficManagementCenterConfiguration);
+                    tmcs.add(trafficManagementCenterSpawner);
+                    spawners.add(trafficManagementCenterSpawner);
+                }
+            }
+        }
+        // Servers
+        if (mappingConfiguration.servers != null) {
+            for (CServer serverConfiguration : mappingConfiguration.servers) {
+                if (serverConfiguration != null) {
+                    ServerSpawner serverSpawner = new ServerSpawner(serverConfiguration);
+                    servers.add(serverSpawner);
+                    spawners.add(serverSpawner);
                 }
             }
         }
@@ -144,7 +164,10 @@ public class SpawningFramework {
         if (mappingConfiguration.chargingStations != null) {
             for (CChargingStation chargingStationConfiguration : mappingConfiguration.chargingStations) {
                 if (chargingStationConfiguration != null) {
-                    chargingStations.add(new ChargingStationSpawner(chargingStationConfiguration));
+                    ChargingStationSpawner chargingStationSpawner =
+                            new ChargingStationSpawner(chargingStationConfiguration);
+                    chargingStations.add(chargingStationSpawner);
+                    spawners.add(chargingStationSpawner);
                 }
             }
         }
@@ -153,7 +176,7 @@ public class SpawningFramework {
                 && mappingConfiguration.config != null
                 && mappingConfiguration.config.randomizeWeights
         ) {
-            for (List<CPrototype> prototypes: mappingConfiguration.typeDistributions.values()) {
+            for (List<CPrototype> prototypes : mappingConfiguration.typeDistributions.values()) {
                 randomizeWeights(rng, prototypes);
             }
         }
@@ -195,8 +218,11 @@ public class SpawningFramework {
                 }
 
                 if (mappingConfiguration.typeDistributions != null) {
-                    vehicleConfiguration.types =
-                            replaceWithTypesFromPredefinedDistribution(vehicleConfiguration, mappingConfiguration.typeDistributions);
+                    vehicleConfiguration.types = replaceWithTypesFromPredefinedDistribution(
+                            vehicleConfiguration,
+                            mappingConfiguration.typeDistributions,
+                            rng
+                    );
                 }
 
                 if (config != null && config.adjustStartingTimes && config.start != null) {
@@ -259,7 +285,6 @@ public class SpawningFramework {
         this.vehicleFlowGenerators.add(vehicleFlowGenerator);
     }
 
-
     private void randomizeStartingTimes(RandomNumberGenerator rng, CVehicle spawner) {
         if (spawner.spawningMode != CVehicle.SpawningMode.CONSTANT) {
             return;
@@ -293,12 +318,16 @@ public class SpawningFramework {
 
 
     private List<CPrototype> replaceWithTypesFromPredefinedDistribution(
-            CVehicle spawner, Map<String, List<CPrototype>> typeDistributions
-    ) {
+            CVehicle spawner, Map<String, List<CPrototype>> typeDistributions, RandomNumberGenerator rng) {
         // return distribution given by typeDistribution
         if (spawner.typeDistribution != null) {
             return new ArrayList<>(typeDistributions.get(spawner.typeDistribution));
         }
+
+        if (config != null && config.randomizeStartingTimes) {
+            randomizeStartingTimes(rng, spawner);
+        }
+
         if (spawner.types != null) {
             List<CPrototype> newTypes = new ArrayList<>();
             for (CPrototype type : spawner.types) {
@@ -335,6 +364,10 @@ public class SpawningFramework {
 
         for (TrafficManagementCenterSpawner tmc : tmcs) {
             tmc.fillInPrototype(getPrototypeByName(tmc.getPrototype()));
+        }
+
+        for (ServerSpawner server : servers) {
+            server.fillInPrototype(getPrototypeByName(server.getPrototype()));
         }
 
         for (TrafficLightSpawner tl : tls.values()) {
@@ -487,15 +520,9 @@ public class SpawningFramework {
     }
 
     private void initImmobileUnits() throws InternalFederateException {
-        // First time-advance. We need to process RSUs and charging stations:
-        for (RoadSideUnitSpawner rsu : rsus) {
-            rsu.init(this);
-        }
-        for (TrafficManagementCenterSpawner tmc : tmcs) {
-            tmc.init(this);
-        }
-        for (ChargingStationSpawner chargingStation : chargingStations) {
-            chargingStation.init(this);
+        // First time-advance. We need to process RSUs, ChargingStations, TMCs and Servers:
+        for (Spawner spawner : spawners) {
+            spawner.init(this);
         }
     }
 }

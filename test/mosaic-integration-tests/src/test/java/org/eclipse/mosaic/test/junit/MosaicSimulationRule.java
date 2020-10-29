@@ -29,6 +29,8 @@ import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.starter.config.CScenario;
 
+import com.google.common.base.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.TemporaryFolder;
 
@@ -45,43 +47,39 @@ import java.nio.file.Paths;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
-    private CHosts hostsConfiguration;
-    private CRuntime runtimeConfiguration;
-    private Path logDirectory;
-    private Path logConfiguration;
+    protected CHosts hostsConfiguration;
+    protected CRuntime runtimeConfiguration;
+    protected MosaicSimulation.ComponentProviderFactory componentProviderFactory = MosaicComponentProvider::new;
+    protected Path logDirectory;
 
+    protected String logLevelOverride = null;
 
     @Override
     protected void before() throws Throwable {
         super.before();
 
-        logDirectory = newFolder("log").toPath();
-        logConfiguration = prepareLogConfiguration(logDirectory);
         hostsConfiguration = prepareHostsConfiguration();
         runtimeConfiguration = prepareRuntimeConfiguration();
     }
 
-    private Path prepareLogConfiguration(Path logDirectory) throws IOException {
-        Path logConfiguration = logDirectory.resolve("logback.xml");
-
-        try (BufferedReader resource = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/logback.xml"), "UTF-8"));
-             Writer writer = new OutputStreamWriter(new FileOutputStream(logConfiguration.toFile()), StandardCharsets.UTF_8)) {
-            String line;
-            while ((line = resource.readLine()) != null) {
-                writer.write(StringUtils.replace(line, "${logDirectory}", logDirectory.toAbsolutePath().toString()));
-            }
-        }
-        return logConfiguration;
+    public MosaicSimulationRule logLevelOverride(String logLevelOverride) {
+        this.logLevelOverride = logLevelOverride;
+        return this;
     }
 
-    private CHosts prepareHostsConfiguration() throws IOException {
+    public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
+        this.componentProviderFactory = factory;
+        return this;
+    }
+
+    protected CHosts prepareHostsConfiguration() throws IOException {
         Path tmpDirectory = newFolder("tmp").toPath();
         CHosts hostsConfiguration = new CHosts();
         hostsConfiguration.localHosts.add(new CLocalHost(tmpDirectory.toAbsolutePath().toString()));
         return hostsConfiguration;
     }
 
-    private CRuntime prepareRuntimeConfiguration() throws IOException {
+    protected CRuntime prepareRuntimeConfiguration() throws IOException {
         try (InputStream resource = getClass().getResourceAsStream("/runtime.json")) {
             return new ObjectInstantiation<>(CRuntime.class).read(resource);
         } catch (InstantiationException e) {
@@ -125,12 +123,15 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     public MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory, CScenario scenarioConfiguration) {
         try {
+            logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
+            final Path logConfiguration = prepareLogConfiguration(logDirectory);
+
             return new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
-                    .setLogLevelOverride("DEBUG")
-                    .setComponentProviderFactory(MosaicComponentProvider::new)
+                    .setLogLevelOverride(logLevelOverride)
+                    .setComponentProviderFactory(componentProviderFactory)
                     .runSimulation(scenarioDirectory, scenarioConfiguration);
         } catch (Throwable e) {
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
@@ -142,7 +143,23 @@ public class MosaicSimulationRule extends TemporaryFolder {
         }
     }
 
-    private void resetSingletons() {
+    protected Path prepareLogConfiguration(Path logDirectory) throws IOException {
+        FileUtils.deleteQuietly(logDirectory.toFile());
+
+        Path logConfiguration = newFile("logback.xml").toPath();
+
+        try (BufferedReader resource = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/logback.xml"), Charsets.UTF_8));
+             Writer writer = new OutputStreamWriter(new FileOutputStream(logConfiguration.toFile()), StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = resource.readLine()) != null) {
+                writer.write(StringUtils.replace(line, "${logDirectory}", logDirectory.toAbsolutePath().toString()));
+            }
+        }
+        return logConfiguration;
+    }
+
+
+    protected void resetSingletons() {
         TestUtils.setPrivateField(GeoProjection.class, "instance", null);
         TestUtils.setPrivateField(IpResolver.class, "singleton", null);
         TestUtils.setPrivateField(EtsiPayloadConfiguration.class, "globalConfiguration", null);
@@ -156,11 +173,13 @@ public class MosaicSimulationRule extends TemporaryFolder {
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configurationPath", null);
     }
 
+    /**
+     * Debug feature: activate SUMO GUI to visualize vehicle movements.
+     * DO NOT commit test with having this activated.
+     */
     public void activateSumoGui() {
         getRuntimeConfiguration().federates.stream().filter(s -> s.id.equals("sumo")).forEach(
                 s -> s.classname = SumoGuiAmbassador.class.getCanonicalName()
         );
     }
-
-
 }

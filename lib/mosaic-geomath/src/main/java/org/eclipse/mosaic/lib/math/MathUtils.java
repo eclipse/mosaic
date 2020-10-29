@@ -167,4 +167,51 @@ public class MathUtils {
         }
     }
 
+    /** Point Inclusion in Polygon Test.
+     * Defines if a points lies within a polygon
+     * @param nvert Number of vertices in the polygon. Whether to repeat the first vertex at the end is discussed below.
+     * @param vertx Array containing the x-coordinates of the polygon's vertices.
+     * @param verty Array containing the y-coordinates of the polygon's vertices.
+     * @param testx X-coordinate of the test point.
+     * @param testy Y-coordinate of the test point.
+     * @return true if point lies within the polygon, false otherwise
+     */
+    public static boolean pnpoly(int nvert, float[] vertx, float[] verty, float testx, float testy) {
+        float minXValue = getMinValue(vertx);
+        float minYValue = getMinValue(verty);
+
+        boolean c = false;
+        for (int i = 0, j = nvert - 1; i < nvert; j = i++) {
+            boolean conditionXAxis;
+            boolean conditionYAxis;
+
+            if (testx <= minXValue) {
+                conditionXAxis = testx < (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i];
+            } else {
+                conditionXAxis = testx <= (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i];
+            }
+
+            if (testy <= minYValue) {
+                conditionYAxis = verty[i] > testy != verty[j] > testy;
+            } else {
+                conditionYAxis = verty[i] >= testy != verty[j] >= testy;
+            }
+
+            if (conditionYAxis && conditionXAxis) {
+                c = !c;
+            }
+        }
+        return c;
+    }
+
+    private static float getMinValue(float[] numbers) {
+        float minValue = numbers[0];
+        for (int i = 1; i < numbers.length; i++) {
+            if (numbers[i] < minValue) {
+                minValue = numbers[i];
+            }
+        }
+        return minValue;
+    }
+
 }
