@@ -106,6 +106,32 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-tiergarten-network-config</id>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/target/test-classes/Tiergarten</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.basedir}/bundle/src/assembly/resources/scenarios/Tiergarten/ns3</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>${project.parent.basedir}/bundle/src/assembly/resources/scenarios/Tiergarten/omnetpp</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
     </build>
