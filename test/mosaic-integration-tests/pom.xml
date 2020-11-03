@@ -57,13 +57,17 @@
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-rti-core</artifactId>
-            <version>20.0-SNAPSHOT</version>
+            <version>${mosaic.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-application</artifactId>
-            <version>20.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-objects</artifactId>
+            <version>${mosaic.version}</version>
         </dependency>
 
     </dependencies>
