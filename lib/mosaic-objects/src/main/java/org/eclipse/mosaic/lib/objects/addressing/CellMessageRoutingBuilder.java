@@ -160,8 +160,7 @@ public class CellMessageRoutingBuilder {
      * @return the {@link CellMessageRoutingBuilder}
      */
     public CellMessageRoutingBuilder tcp() {
-        this.protocolType = ProtocolType.TCP;
-        return this;
+        return protocol(ProtocolType.TCP);
     }
 
 
@@ -171,8 +170,7 @@ public class CellMessageRoutingBuilder {
      * @return the {@link CellMessageRoutingBuilder}
      */
     public CellMessageRoutingBuilder udp() {
-        this.protocolType = ProtocolType.UDP;
-        return this;
+        return protocol(ProtocolType.UDP);
     }
 
 }
