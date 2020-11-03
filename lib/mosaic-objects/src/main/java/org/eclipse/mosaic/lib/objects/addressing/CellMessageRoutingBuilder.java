@@ -154,4 +154,25 @@ public class CellMessageRoutingBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@link ProtocolType} for the routing to {@link ProtocolType#TCP}.
+     *
+     * @return the {@link CellMessageRoutingBuilder}
+     */
+    public CellMessageRoutingBuilder tcp() {
+        this.protocolType = ProtocolType.TCP;
+        return this;
+    }
+
+
+    /**
+     * Sets the {@link ProtocolType} for the routing to {@link ProtocolType#UDP}.
+     *
+     * @return the {@link CellMessageRoutingBuilder}
+     */
+    public CellMessageRoutingBuilder udp() {
+        this.protocolType = ProtocolType.UDP;
+        return this;
+    }
+
 }

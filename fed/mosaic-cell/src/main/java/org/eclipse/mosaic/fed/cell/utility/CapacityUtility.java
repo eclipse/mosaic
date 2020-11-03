@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * Static methods for handling the bandwidth calculation.
  */
-@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by json")
+@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by GSON")
 public final class CapacityUtility {
 
     private static final Logger log = LoggerFactory.getLogger(CapacityUtility.class);

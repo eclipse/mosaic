@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * Cellular delay utility to calculate the delay from within cell.
  * (Relies on the logic of the MOSAIC-communication Delay model)
  */
-@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by json")
+@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by GSON")
 public final class DelayUtility {
 
     private static final Logger log = LoggerFactory.getLogger(DelayUtility.class);
