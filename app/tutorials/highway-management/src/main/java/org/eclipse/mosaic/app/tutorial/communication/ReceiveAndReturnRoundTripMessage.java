@@ -40,18 +40,24 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         getLog().infoSimTime(
                 this,
-                "Received round trip message #{} at time {}",
+                "Received round trip message #{} at time {} using protocol {}",
                 receivedV2xMessage.getMessage().getId(),
-                getOs().getSimulationTime()
+                getOs().getSimulationTime(),
+                receivedV2xMessage.getMessage().getRouting().getDestination().getProtocolType()
         );
-        MessageRouting routing = getOs().getCellModule().createMessageRouting().topoCast(SERVER_NAME);
+        MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(SERVER_NAME);
         getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing));
         getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", SERVER_NAME, getOs().getSimulationTime());
     }
 
     @Override
     public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
-
+        getLog().infoSimTime(
+                this,
+                "Received acknowledgement for round trip message #{} and [acknowledged={}]",
+                acknowledgement.getSentMessage().getId(),
+                acknowledgement.isAcknowledged()
+        );
     }
 
     @Override
@@ -70,7 +76,7 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
+    public void processEvent(Event event) {
 
     }
 }

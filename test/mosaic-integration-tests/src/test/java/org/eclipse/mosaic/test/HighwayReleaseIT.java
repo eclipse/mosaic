@@ -64,6 +64,7 @@ public class HighwayReleaseIT {
 
         long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
         long timeFromVehToTmc = delayVehUpload + delayTmcDownload;
+        // message receives
         LogAssert.contains(
                 simulationRule,
                 vehLog,
@@ -73,6 +74,19 @@ public class HighwayReleaseIT {
                 simulationRule,
                 tmcLog,
                 ".*Received round trip message #1 at time " + (timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + ".*"
+        );
+        // acknowledgements
+        LogAssert.contains(
+                simulationRule,
+                tmcLog,
+                ".*Received acknowledgement for round trip message #0 and \\[acknowledged=true\\] \\(at simulation time "
+                        + TIME.format(timeOfSending + timeFromTmcToVeh) + "\\).*"
+        );
+        LogAssert.contains(
+                simulationRule,
+                vehLog,
+                ".*Received acknowledgement for round trip message #1 and \\[acknowledged=true\\] \\(at simulation time "
+                        + TIME.format(timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + "\\).*"
         );
     }
 }
