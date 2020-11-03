@@ -44,49 +44,4 @@ public class HighwayReleaseIT {
         assertNull(simulationResult.exception);
         assertTrue(simulationResult.success);
     }
-
-    /**
-     * This checks whether a cell message takes the expected amount to be send from tmc to vehicle
-     * and from vehicle to tmc.
-     * Should be 50ms for tmc uplink + 200ms for vehicle downlink + 200ms for vehicle uplink + 50ms for tmc downlink.
-     */
-    @Test
-    public void roundTripMessageTakesRightAmountOfTime() throws Exception {
-        final String tmcLog = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
-        final String vehLog = "apps/veh_0/ReceiveAndReturnRoundTripMessage.log";
-        LogAssert.exists(simulationRule, tmcLog);
-        LogAssert.exists(simulationRule, vehLog);
-        long timeOfSending = 10 * TIME.SECOND;
-        long delayTmcUpload = 50 * TIME.MILLI_SECOND;
-        long delayTmcDownload = 50 * TIME.MILLI_SECOND;
-        long delayVehUpload = 200 * TIME.MILLI_SECOND;
-        long delayVehDownload = 200 * TIME.MILLI_SECOND;
-
-        long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
-        long timeFromVehToTmc = delayVehUpload + delayTmcDownload;
-        // message receives
-        LogAssert.contains(
-                simulationRule,
-                vehLog,
-                ".*Received round trip message #0 at time " + (timeOfSending + timeFromTmcToVeh) + ".*"
-        );
-        LogAssert.contains(
-                simulationRule,
-                tmcLog,
-                ".*Received round trip message #1 at time " + (timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + ".*"
-        );
-        // acknowledgements
-        LogAssert.contains(
-                simulationRule,
-                tmcLog,
-                ".*Received acknowledgement for round trip message #0 and \\[acknowledged=true\\] \\(at simulation time "
-                        + TIME.format(timeOfSending + timeFromTmcToVeh) + "\\).*"
-        );
-        LogAssert.contains(
-                simulationRule,
-                vehLog,
-                ".*Received acknowledgement for round trip message #1 and \\[acknowledged=true\\] \\(at simulation time "
-                        + TIME.format(timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + "\\).*"
-        );
-    }
 }

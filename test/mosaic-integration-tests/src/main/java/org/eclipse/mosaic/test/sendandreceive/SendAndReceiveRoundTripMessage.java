@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.communication;
+package org.eclipse.mosaic.test.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
@@ -28,19 +28,19 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.test.sendandreceive.messages.RoundTripMessage;
 
 import javax.annotation.Nonnull;
-
-
 
 /**
  * This application sends an empty cell message to a vehicle and logs this. The integration test checks whether the delay was
  * properly calculated.
  */
 public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
-
-    final static String RECEIVER_NAME = "veh_0";
+    final static String RECEIVER_NAME = "veh_2";
     final static String SERVER_NAME = "tmc_0";
+
+    private final static long SEND_TIME = 310 * TIME.SECOND;
 
     /**
      * Setup {@link org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule} and send message to
@@ -55,7 +55,7 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
         );
         getLog().infoSimTime(this, "Setup TMC server {} at time {}", getOs().getId(), getOs().getSimulationTime());
 
-        getOs().getEventManager().addEvent(new SendRoundTripMessageEvent(10 * TIME.SECOND, this));
+        getOs().getEventManager().addEvent(new SendRoundTripMessageEvent(SEND_TIME, this));
     }
 
     @Override
