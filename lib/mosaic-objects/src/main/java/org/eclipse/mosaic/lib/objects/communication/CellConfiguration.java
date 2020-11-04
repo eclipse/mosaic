@@ -53,7 +53,7 @@ public class CellConfiguration implements Serializable {
      * Creates a CellConfiguration for the node with the given {@param nodeId} and sets whether it is {@param enabled}.
      * The maximum download and upload rates are set to Long.MAX_VALUE for this node.
      *
-     * @param nodeId The id of the node
+     * @param nodeId  The id of the node
      * @param enabled Tells whether the node is enabled
      */
     public CellConfiguration(String nodeId, boolean enabled) {
@@ -65,8 +65,8 @@ public class CellConfiguration implements Serializable {
      * The maximum download rate for the node is as set with {@param maxDlBitrate}.
      * The maximum upload rate for the node is as set with {@param maxUlBitrate}.
      *
-     * @param nodeId The id of the node
-     * @param enabled Tells whether the node is enabled
+     * @param nodeId       The id of the node
+     * @param enabled      Tells whether the node is enabled
      * @param maxDlBitrate The maximum download rate for this node
      * @param maxUlBitrate The maximum upload rate for this node
      */
@@ -75,12 +75,14 @@ public class CellConfiguration implements Serializable {
         this.enabled = enabled;
 
         if (maxDlBitrate < 0) {
+            // FIXME: Remove sysout; throw meaningful exception and handle it
             System.out.println("The maximum Dl bitrate is too small");
             this.maxDlBitrate = Long.MAX_VALUE;
         } else {
             this.maxDlBitrate = maxDlBitrate;
         }
         if (maxUlBitrate < 0) {
+            // FIXME: Remove sysout; throw meaningful exception and handle it
             System.out.println("The maximum Ul bitrate is too small");
             this.maxUlBitrate = Long.MAX_VALUE;
         } else {
