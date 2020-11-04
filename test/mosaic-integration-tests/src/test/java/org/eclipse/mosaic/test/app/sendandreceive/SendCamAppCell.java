@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contact: mosaic@fokus.fraunhofer.de
+ *
  */
 package org.eclipse.mosaic.test.app.sendandreceive;
 
@@ -22,6 +23,7 @@ public class SendCamAppCell extends AbstractSenderApp {
 
     private final CellModuleConfiguration cellModuleConfiguration;
 
+    @SuppressWarnings("unused") // used in mapping
     public SendCamAppCell(int durationInS) {
         this(durationInS, DestinationType.CELL_GEOCAST.toString(), 50d);
     }
