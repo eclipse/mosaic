@@ -46,7 +46,7 @@ import org.junit.Test;
  *     <li/> veh2: Sending Cams
  * </ul>
  */
-public class CommunicationSimulatorsIT {
+public class SendAndReceiveIT {
 
     @ClassRule
     public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("TRACE");
@@ -67,7 +67,7 @@ public class CommunicationSimulatorsIT {
 
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeTestScenario("CommunicationSimulators");
+        simulationResult = simulationRule.executeTestScenario("SendAndReceive");
     }
 
     @Test

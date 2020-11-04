@@ -12,8 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
-
-package org.eclipse.mosaic.test.sendandreceive;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.RoadSideUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
@@ -27,7 +26,7 @@ import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Cam;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.test.sendandreceive.messages.TestMessage;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.TestMessage;
 
 public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUnit> implements CommunicationApplication {
 

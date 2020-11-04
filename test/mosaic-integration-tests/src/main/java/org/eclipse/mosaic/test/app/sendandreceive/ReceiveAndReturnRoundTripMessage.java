@@ -12,11 +12,10 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+package org.eclipse.mosaic.test.app.sendandreceive;
 
-package org.eclipse.mosaic.test.sendandreceive;
-
-import static org.eclipse.mosaic.test.sendandreceive.SendAndReceiveRoundTripMessage.RECEIVER_NAME;
-import static org.eclipse.mosaic.test.sendandreceive.SendAndReceiveRoundTripMessage.SERVER_NAME;
+import static org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage.RECEIVER_NAME;
+import static org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage.SERVER_NAME;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
@@ -28,7 +27,7 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.test.sendandreceive.messages.SimpleV2xMessage;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 /**
  * Simple app expecting V2xMessage from server and returning it when received.

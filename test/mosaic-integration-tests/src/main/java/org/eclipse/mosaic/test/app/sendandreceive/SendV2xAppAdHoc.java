@@ -12,8 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
-
-package org.eclipse.mosaic.test.sendandreceive;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
@@ -21,7 +20,7 @@ import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.test.sendandreceive.messages.TestMessage;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.TestMessage;
 
 import java.nio.charset.StandardCharsets;
 

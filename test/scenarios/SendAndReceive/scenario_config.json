@@ -1,6 +1,6 @@
 {
     "simulation": {
-        "id": "CommunicationSimulators",
+        "id": "SendAndReceive",
         "duration": "400s",
         "randomSeed": 268965854,
         "projection": {

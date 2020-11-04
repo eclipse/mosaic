@@ -12,22 +12,17 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+package org.eclipse.mosaic.test.app.sendandreceive;
 
-package org.eclipse.mosaic.test.sendandreceive;
-
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
-import org.eclipse.mosaic.lib.enums.AdHocChannel;
-
-public class ReceiveMsgAppAdHoc extends AbstractReceiverApp {
+public class ReceiveMsgAppCell extends AbstractReceiverApp {
 
     @Override
     protected void configureCommunication() {
-        getOs().getAdHocModule().enable(new AdHocModuleConfiguration()
-                .addRadio().channel(AdHocChannel.CCH).power(50).create());
+        getOs().getCellModule().enable();
     }
 
     @Override
     protected void disableCommunication() {
-        getOs().getAdHocModule().disable();
+        getOs().getCellModule().disable();
     }
 }

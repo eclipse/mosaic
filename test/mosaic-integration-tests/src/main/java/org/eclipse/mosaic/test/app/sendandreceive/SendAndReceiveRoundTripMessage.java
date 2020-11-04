@@ -12,8 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
-
-package org.eclipse.mosaic.test.sendandreceive;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
@@ -28,21 +27,24 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.test.sendandreceive.messages.SimpleV2xMessage;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 import javax.annotation.Nonnull;
 
 /**
- * Server App sending messages to different servers via TCP to assert for negative acknowledgements.
+ * This application sends an empty cell message to a vehicle and logs this. The integration test checks whether the delay was
+ * properly calculated.
  */
-public class NackReceivingServer extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
+public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
+    final static String RECEIVER_NAME = "veh_2";
+    final static String SERVER_NAME = "tmc_0";
 
-    private static final String NACK_RECEIVER_SERVER = "server_0";
-    private static final String LIMITED_CAPACITY_SERVER = "server_1";
-    private static final String LOSSY_SERVER = "server_2";
+    private final static long SEND_TIME = 310 * TIME.SECOND;
 
-    private final static long SEND_TIME = 5 * TIME.SECOND;
-
+    /**
+     * Setup {@link org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule} and send message to
+     * vehicle.
+     */
     @Override
     public void onStartup() {
         getOs().getCellModule().enable(
@@ -50,27 +52,30 @@ public class NackReceivingServer extends AbstractApplication<ServerOperatingSyst
                         .maxDlBitrate(10 * DATA.GIGABYTE)
                         .maxUlBitrate(10 * DATA.GIGABYTE)
         );
-        getLog().infoSimTime(this, "Setup server {} at time {}", getOs().getId(), getOs().getSimulationTime());
+        getLog().infoSimTime(this, "Setup TMC server {} at time {}", getOs().getId(), getOs().getSimulationTime());
 
-        getOs().getEventManager().addEvent(new SendSimpleMessage(SEND_TIME, this, LIMITED_CAPACITY_SERVER));
-        getOs().getEventManager().addEvent(new SendSimpleMessage(SEND_TIME, this, LOSSY_SERVER));
-
+        getOs().getEventManager().addEvent(new SendRoundTripMessageEvent(SEND_TIME, this));
     }
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-
+        getLog().infoSimTime(
+                this,
+                "Received round trip message #{} at time {} using protocol {}",
+                receivedV2xMessage.getMessage().getId(),
+                getOs().getSimulationTime(),
+                receivedV2xMessage.getMessage().getRouting().getDestination().getProtocolType()
+        );
     }
 
     @Override
     public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
         getLog().infoSimTime(
                 this,
-                "Received acknowledgement={} for message={} from={} with nackReasons={}",
-                acknowledgement.isAcknowledged(),
+                "Received acknowledgement for round trip message #{} and [acknowledged={}]",
                 acknowledgement.getSentMessage().getId(),
-                acknowledgement.getSentMessage().getRouting().getDestination().getAddress(),
-                acknowledgement.getNegativeAckReasons());
+                acknowledgement.isAcknowledged()
+        );
     }
 
     @Override
@@ -90,20 +95,17 @@ public class NackReceivingServer extends AbstractApplication<ServerOperatingSyst
 
     @Override
     public void processEvent(Event event) {
-        if (event instanceof SendSimpleMessage) {
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(((SendSimpleMessage) event).receiver);
+        if (event instanceof SendRoundTripMessageEvent) {
+            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(RECEIVER_NAME);
             getOs().getCellModule().sendV2xMessage(new SimpleV2xMessage(routing));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }
     }
 
-    private static class SendSimpleMessage extends Event {
+    private static class SendRoundTripMessageEvent extends Event {
 
-        private final String receiver;
-
-        SendSimpleMessage(long time, @Nonnull EventProcessor processor, String receiver) {
+        SendRoundTripMessageEvent(long time, @Nonnull EventProcessor processor) {
             super(time, processor);
-            this.receiver = receiver;
         }
     }
 }

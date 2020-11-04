@@ -12,8 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
-
-package org.eclipse.mosaic.test.sendandreceive;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
@@ -25,7 +24,7 @@ import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.DATA;
-import org.eclipse.mosaic.test.sendandreceive.messages.SimpleV2xMessage;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 /**
  * Server app, that is setup with a very small bandwidth (1 bit up/down).

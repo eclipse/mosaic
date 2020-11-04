@@ -19,18 +19,6 @@
         </subscriptions>
     </output>
 
-    <output id="eworld" enabled="false" loader="com.dcaiti.vsimrti.fed.visualizer.eworldvisualizer.config.EworldVisualizerConfig">
-        <synchronized>true</synchronized>
-        <host>local</host>
-        <port>50500</port>
-        <subscriptions>
-        <subscription id="TrafficLightRegistration"></subscription>
-        <subscription id="RsuRegistration"></subscription>
-        <subscription id="VehicleRegistration"></subscription>
-        <subscription id="VehicleUpdates"></subscription>
-        </subscriptions>
-    </output>
-
     <output id="websocket" enabled="false" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
         <synchronized>true</synchronized>
         <port>46587</port>
@@ -46,26 +34,6 @@
             <subscription id="ChargingStartResponse" enabled="false"></subscription>
         </subscriptions>
     </output>
-    
-    <output id="ASCTVisualizer" enabled="false" loader="com.dcaiti.vsimrti.fed.asct.ASCTVisualizerConfig">
-        <directory>ITEFVisualizer_Logs</directory>
-        <separator>,</separator>
-        <drehbuchid>4000</drehbuchid>
-        <websceconnect>false</websceconnect>
-        <subscriptions>
-            <subscription id="VehicleUpdates">
-                <entries>
-                    <entry>Updated:Name</entry>
-                    <entry convertvalue="vsimrti_time_converter">Updated:Time</entry>
-                    <entry>"1004000000100000001"</entry>
-                    <entry convertvalue="1000000">Updated:Position.Latitude</entry>
-                    <entry convertvalue="1000000">Updated:Position.Longitude</entry>
-                    <entry convertvalue="10000">Updated:Direction</entry>
-                    <entry convertvalue="1000">Updated:Speed</entry>
-                </entries>
-            </subscription>
-        </subscriptions>
-    </output>
-    
+
 </configuration>
 

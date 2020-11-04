@@ -11,18 +11,18 @@
             "tau": 1
         },
         {
-            "applications": [ "org.eclipse.mosaic.test.sendandreceive.ReceiveMsgAppCell" ],
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.ReceiveMsgAppCell" ],
             "name": "CRSU"
         },
         {
-            "applications": [ "org.eclipse.mosaic.test.sendandreceive.ReceiveMsgAppAdHoc" ],
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.ReceiveMsgAppAdHoc" ],
             "name": "ARSU"
         }
     ],
     "tmcs": [
         {
             "group": "RoundTripServer",
-            "applications": [ "org.eclipse.mosaic.test.sendandreceive.SendAndReceiveRoundTripMessage" ],
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage" ],
             "inductionLoops": [ ],
             "laneAreaDetectors": [ ]
         }
@@ -31,16 +31,16 @@
         {
             "name": "NackReceiver",
             "group": "PerfectTransmissionServer",
-            "applications": [ "org.eclipse.mosaic.test.sendandreceive.NackReceivingServer" ]
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.NackReceivingServer" ]
         },
         {
             "name": "LimitedCapacityServer",
             "group": "PerfectTransmissionServer",
-            "applications": [ "org.eclipse.mosaic.test.sendandreceive.LimitedCapacityServer" ]
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LimitedCapacityServer" ]
         },
         {
             "group": "LossyServer",
-            "applications": [ "org.eclipse.mosaic.test.sendandreceive.LossyServer" ]
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LossyServer" ]
         }
     ],
     "rsus": [
@@ -81,7 +81,7 @@
             "types": [
                 {
                     "name": "VEH",
-                    "applications": [ "org.eclipse.mosaic.test.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST\", 150d)" ]
+                    "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST\", 150d)" ]
                 }
             ]
         },
@@ -93,7 +93,7 @@
                 {
                     "name": "VEH",
                     "applications": [
-                        "org.eclipse.mosaic.test.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST_MBMS\", 150d, 300l, 400l)"
+                        "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST_MBMS\", 150d, 300l, 400l)"
                     ]
                 }
             ]
@@ -105,7 +105,7 @@
             "types": [
                 {
                     "name": "VEH",
-                    "applications": [ "org.eclipse.mosaic.test.sendandreceive.ReceiveAndReturnRoundTripMessage" ]
+                    "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.ReceiveAndReturnRoundTripMessage" ]
                 }
             ]
         }

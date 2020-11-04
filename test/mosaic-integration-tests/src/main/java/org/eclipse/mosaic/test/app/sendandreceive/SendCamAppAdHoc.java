@@ -12,8 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
-
-package org.eclipse.mosaic.test.sendandreceive;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
