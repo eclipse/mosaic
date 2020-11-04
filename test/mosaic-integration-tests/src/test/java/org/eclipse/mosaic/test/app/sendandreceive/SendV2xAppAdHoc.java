@@ -13,6 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  *
  */
+
 package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
