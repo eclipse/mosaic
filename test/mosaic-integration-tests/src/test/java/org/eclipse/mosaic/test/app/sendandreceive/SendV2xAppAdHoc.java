@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contact: mosaic@fokus.fraunhofer.de
+ *
  */
 package org.eclipse.mosaic.test.app.sendandreceive;
 
@@ -30,6 +31,27 @@ public class SendV2xAppAdHoc extends AbstractSenderApp {
     private final SendMode sendMode;
 
     private int sequenceNbr = 0;
+
+    @SuppressWarnings("unused") // used in mapping
+    public SendV2xAppAdHoc() {
+        this(SendMode.topo.toString());
+    }
+
+    @SuppressWarnings("unused") // used in mapping
+    public SendV2xAppAdHoc(int power) {
+        this(SendMode.topo.toString(), power);
+    }
+
+    public SendV2xAppAdHoc(String sendMode) {
+        super(TIME.SECOND, Long.MAX_VALUE);
+
+        this.adHocModuleConfiguration = null;
+        this.sendMode = SendMode.valueOf(sendMode);
+    }
+
+    public SendV2xAppAdHoc(String sendMode, int power) {
+        this(sendMode, AdHocChannel.CCH.toString(), power);
+    }
 
     public SendV2xAppAdHoc(String sendMode, String channel, int power) {
         super(TIME.SECOND, Long.MAX_VALUE);
