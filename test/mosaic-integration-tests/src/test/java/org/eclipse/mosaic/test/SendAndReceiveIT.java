@@ -64,6 +64,7 @@ public class SendAndReceiveIT {
     private final static String RSU_3_RECEIVE_MSG_APP_ADHOC_LOG = "apps/rsu_3/ReceiveMsgAppAdhoc.log";
     private final static String TMC_ROUND_TRIP = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
     private final static String VEH_ROUND_TRIP = "apps/veh_2/ReceiveAndReturnRoundTripMessage.log";
+    private final static String SERVER_NACK_RECEIVER = "apps/server_0/NackReceivingServer.log";
 
     @BeforeClass
     public static void runSimulation() {
@@ -136,14 +137,15 @@ public class SendAndReceiveIT {
 
     @Test
     public void cellMessagesHandledInModules() throws Exception {
-        // send 150 uplink messages from veh_0 and veh_1 + 2*RoundTripMessage + 2*Messages for nack = 304
-        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Upstream\\] Processed messages: 304.*");
+        // send 150 uplink messages from veh_0 and veh_1 + 2*RoundTripMessage + 2*Messages for nack + 1*Nack-test = 305
+        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Upstream\\] Processed messages: 305.*");
         /* received (26 rsu_0 + 40 rsu_1 + 31 rsu_2 + 130 self) messages from veh_0 = 227
         and (150 broadcast + 11 region overlap) - (112 messages not sendable due to capacity limit) messages from veh_1 = 49
         and 2*RoundTripMessage = 2
-        and 2*Messages for nack test = 2==> total 280
+        and 2*Messages for nack test = 2
+        and 1*Nack-Test ==> total 281
         FIXME: Not sure if listed amounts are correct, since the test went through multiple iterations without the comment being updated */
-        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Downstream\\] Processed messages: 280.*");
+        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Downstream\\] Processed messages: 281.*");
     }
 
     @Test
@@ -201,40 +203,54 @@ public class SendAndReceiveIT {
         long timeOfSending = 310 * TIME.SECOND;
         long delayTmcUpload = 50 * TIME.MILLI_SECOND;
         long delayTmcDownload = 50 * TIME.MILLI_SECOND;
-        long delayVehUpload = 66 * TIME.MILLI_SECOND;
+        long delayVehUpload = 106 * TIME.MILLI_SECOND;
         long delayVehDownload = 57 * TIME.MILLI_SECOND;
 
         long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
         long timeFromVehToTmc = delayVehUpload + delayTmcDownload;
 
-        int firstMessageId = 300;
-        int secondMessageId = 302;
         // message receives
         LogAssert.contains(
                 simulationRule,
                 VEH_ROUND_TRIP,
-                ".*Received round trip message #" + firstMessageId + " at time " + (timeOfSending + timeFromTmcToVeh) + ".*"
+                ".*Received round trip message #[0-9]+ at time " + (timeOfSending + timeFromTmcToVeh) + ".*"
         );
         LogAssert.contains(
                 simulationRule,
                 TMC_ROUND_TRIP,
-                ".*Received round trip message #" + secondMessageId + " at time "
+                ".*Received round trip message #[0-9]+ at time "
                         + (timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + ".*"
         );
         // acknowledgements
         LogAssert.contains(
                 simulationRule,
                 TMC_ROUND_TRIP,
-                ".*Received acknowledgement for round trip message #" + firstMessageId
-                        + " and \\[acknowledged=true\\] \\(at simulation time "
+                ".*Received acknowledgement for round trip message #[0-9]+ and \\[acknowledged=true\\] \\(at simulation time "
                         + TIME.format(timeOfSending + timeFromTmcToVeh) + "\\).*"
         );
         LogAssert.contains(
                 simulationRule,
                 VEH_ROUND_TRIP,
-                ".*Received acknowledgement for round trip message #" + secondMessageId
-                        + " and \\[acknowledged=true\\] \\(at simulation time "
+                ".*Received acknowledgement for round trip message #[0-9]+ and \\[acknowledged=true\\] \\(at simulation time "
                         + TIME.format(timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + "\\).*"
+        );
+    }
+
+    @Test
+    public void tcpNacksAreSent() throws Exception {
+        // packet loss nack
+        LogAssert.contains(
+                simulationRule,
+                SERVER_NACK_RECEIVER,
+                ".*Received acknowledgement=false for message=[0-9]+ "
+                        + "from=NetworkAddress\\{address=/10\\.5\\.0\\.[0-9]+\\} with nackReasons=\\[PACKET_LOSS\\].*"
+        );
+        // node capacity exceeded nack
+        LogAssert.contains(
+                simulationRule,
+                SERVER_NACK_RECEIVER,
+                ".*Received acknowledgement=false for message=[0-9]+ "
+                        + "from=NetworkAddress\\{address=/10\\.5\\.0\\.[0-9]+\\} with nackReasons=\\[NODE_CAPACITY_EXCEEDED\\].*"
         );
     }
 

@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
@@ -35,8 +36,8 @@ public class LimitedCapacityServer extends AbstractApplication<ServerOperatingSy
     public void onStartup() {
         getOs().getCellModule().enable(
                 new CellModuleConfiguration()
-                        .maxDlBitrate(DATA.BIT)
-                        .maxUlBitrate(DATA.BIT)
+                        .maxDlBitrate(5 * DATA.BYTE)
+                        .maxUlBitrate(5 * DATA.BYTE)
         );
         getLog().infoSimTime(this, "Setup limited capacity server {} at time {}", getOs().getId(), getOs().getSimulationTime());
     }
@@ -56,26 +57,21 @@ public class LimitedCapacityServer extends AbstractApplication<ServerOperatingSy
 
     @Override
     public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
-        getLog().infoSimTime(this, "Why are we here?");
     }
 
     @Override
     public void onCamBuilding(CamBuilder camBuilder) {
-
     }
 
     @Override
     public void onMessageTransmitted(V2xMessageTransmission v2xMessageTransmission) {
-
     }
 
     @Override
     public void onShutdown() {
-
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
-
+    public void processEvent(Event event) {
     }
 }
