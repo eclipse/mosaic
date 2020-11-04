@@ -11,7 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contact: mosaic@fokus.fraunhofer.de
- *
  */
 
 package org.eclipse.mosaic.test.app.sendandreceive;
