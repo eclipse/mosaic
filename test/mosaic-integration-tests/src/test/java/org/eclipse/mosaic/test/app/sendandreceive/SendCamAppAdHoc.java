@@ -23,6 +23,17 @@ public class SendCamAppAdHoc extends AbstractSenderApp {
 
     private final AdHocModuleConfiguration adHocModuleConfiguration;
 
+    @SuppressWarnings("unused") // used by mapping
+    public SendCamAppAdHoc() {
+        super(TIME.SECOND, Long.MAX_VALUE);
+        adHocModuleConfiguration = null;
+    }
+
+    @SuppressWarnings("unused") // used by mapping
+    public SendCamAppAdHoc(int power) {
+        this(AdHocChannel.CCH.toString(), power);
+    }
+
     public SendCamAppAdHoc(String channel, int power) {
         super(TIME.SECOND, Long.MAX_VALUE);
 
