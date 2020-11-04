@@ -62,6 +62,8 @@ public class CommunicationSimulatorsIT {
     private final static String RSU_1_RECEIVE_MSG_APP_CELL_LOG = "apps/rsu_1/ReceiveMsgAppCell.log";
     private final static String RSU_2_RECEIVE_MSG_APP_CELL_LOG = "apps/rsu_2/ReceiveMsgAppCell.log";
     private final static String RSU_3_RECEIVE_MSG_APP_ADHOC_LOG = "apps/rsu_3/ReceiveMsgAppAdhoc.log";
+    private final static String TMC_ROUND_TRIP = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
+    private final static String VEH_ROUND_TRIP = "apps/veh_2/ReceiveAndReturnRoundTripMessage.log";
 
     @BeforeClass
     public static void runSimulation() {
@@ -87,6 +89,8 @@ public class CommunicationSimulatorsIT {
         LogAssert.exists(simulationRule, RSU_1_RECEIVE_MSG_APP_CELL_LOG);
         LogAssert.exists(simulationRule, RSU_2_RECEIVE_MSG_APP_CELL_LOG);
         LogAssert.exists(simulationRule, RSU_3_RECEIVE_MSG_APP_ADHOC_LOG);
+        LogAssert.exists(simulationRule, TMC_ROUND_TRIP);
+        LogAssert.exists(simulationRule, VEH_ROUND_TRIP);
     }
 
     @Test
@@ -132,13 +136,14 @@ public class CommunicationSimulatorsIT {
 
     @Test
     public void cellMessagesHandledInModules() throws Exception {
-        // send 150 uplink messages from veh_0 and veh_1 + 2x RoundTripMessage 302
-        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Upstream\\] Processed messages: 302.*");
+        // send 150 uplink messages from veh_0 and veh_1 + 2*RoundTripMessage + 2*Messages for nack = 304
+        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Upstream\\] Processed messages: 304.*");
         /* received (26 rsu_0 + 40 rsu_1 + 31 rsu_2 + 130 self) messages from veh_0 = 227
         and (150 broadcast + 11 region overlap) - (112 messages not sendable due to capacity limit) messages from veh_1 = 49
-        and 2*RoundTripMessage = 2 ==> total 278
+        and 2*RoundTripMessage = 2
+        and 2*Messages for nack test = 2==> total 280
         FIXME: Not sure if listed amounts are correct, since the test went through multiple iterations without the comment being updated */
-        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Downstream\\] Processed messages: 278.*");
+        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Downstream\\] Processed messages: 280.*");
     }
 
     @Test
@@ -193,40 +198,42 @@ public class CommunicationSimulatorsIT {
      */
     @Test
     public void roundTripMessageTakesRightAmountOfTime() throws Exception {
-        final String tmcLog = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
-        final String vehLog = "apps/veh_2/ReceiveAndReturnRoundTripMessage.log";
-        LogAssert.exists(simulationRule, tmcLog);
-        LogAssert.exists(simulationRule, vehLog);
         long timeOfSending = 310 * TIME.SECOND;
         long delayTmcUpload = 50 * TIME.MILLI_SECOND;
         long delayTmcDownload = 50 * TIME.MILLI_SECOND;
         long delayVehUpload = 66 * TIME.MILLI_SECOND;
-        long delayVehDownload = 67 * TIME.MILLI_SECOND;
+        long delayVehDownload = 57 * TIME.MILLI_SECOND;
 
         long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
         long timeFromVehToTmc = delayVehUpload + delayTmcDownload;
+
+        int firstMessageId = 300;
+        int secondMessageId = 302;
         // message receives
         LogAssert.contains(
                 simulationRule,
-                vehLog,
-                ".*Received round trip message #298 at time " + (timeOfSending + timeFromTmcToVeh) + ".*"
+                VEH_ROUND_TRIP,
+                ".*Received round trip message #" + firstMessageId + " at time " + (timeOfSending + timeFromTmcToVeh) + ".*"
         );
         LogAssert.contains(
                 simulationRule,
-                tmcLog,
-                ".*Received round trip message #300 at time " + (timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + ".*"
+                TMC_ROUND_TRIP,
+                ".*Received round trip message #" + secondMessageId + " at time "
+                        + (timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + ".*"
         );
         // acknowledgements
         LogAssert.contains(
                 simulationRule,
-                tmcLog,
-                ".*Received acknowledgement for round trip message #298 and \\[acknowledged=true\\] \\(at simulation time "
+                TMC_ROUND_TRIP,
+                ".*Received acknowledgement for round trip message #" + firstMessageId
+                        + " and \\[acknowledged=true\\] \\(at simulation time "
                         + TIME.format(timeOfSending + timeFromTmcToVeh) + "\\).*"
         );
         LogAssert.contains(
                 simulationRule,
-                vehLog,
-                ".*Received acknowledgement for round trip message #300 and \\[acknowledged=true\\] \\(at simulation time "
+                VEH_ROUND_TRIP,
+                ".*Received acknowledgement for round trip message #" + secondMessageId
+                        + " and \\[acknowledged=true\\] \\(at simulation time "
                         + TIME.format(timeOfSending + timeFromTmcToVeh + timeFromVehToTmc) + "\\).*"
         );
     }

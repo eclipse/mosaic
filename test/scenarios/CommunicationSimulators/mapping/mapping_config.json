@@ -29,9 +29,18 @@
     ],
     "servers": [
         {
-            "name": "server",
-            "group": "TestServer",
-            "applications": [ ]
+            "name": "NackReceiver",
+            "group": "PerfectTransmissionServer",
+            "applications": [ "org.eclipse.mosaic.test.sendandreceive.NackReceivingServer" ]
+        },
+        {
+            "name": "LimitedCapacityServer",
+            "group": "PerfectTransmissionServer",
+            "applications": [ "org.eclipse.mosaic.test.sendandreceive.LimitedCapacityServer" ]
+        },
+        {
+            "group": "LossyServer",
+            "applications": [ "org.eclipse.mosaic.test.sendandreceive.LossyServer" ]
         }
     ],
     "rsus": [

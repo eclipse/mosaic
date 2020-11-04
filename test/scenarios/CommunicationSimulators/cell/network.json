@@ -37,20 +37,11 @@
             },
             "capacity": 42200000
         }
-    },    "servers": [
-    {
-        "id": "RoundTripServer",
-        "uplink": {
-            "delay": {
-                "type": "ConstantDelay",
-                "delay": "50 ms"
-            },
-            "transmission": {
-                "lossProbability": 0.0
-            }
-        },
-        "downlink": {
-            "unicast": {
+    },
+    "servers": [
+        {
+            "id": "RoundTripServer",
+            "uplink": {
                 "delay": {
                     "type": "ConstantDelay",
                     "delay": "50 ms"
@@ -58,8 +49,64 @@
                 "transmission": {
                     "lossProbability": 0.0
                 }
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "50 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    }
+                }
+            }
+        },
+        {
+            "id": "PerfectTransmissionServer",
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "1 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0
+                }
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "1 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    }
+                }
+            }
+        },
+        {
+            "id": "LossyServer",
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "1 ms"
+                },
+                "transmission": {
+                    "lossProbability": 1.0
+                }
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "1 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 1.0
+                    }
+                }
             }
         }
-    }
-]
+    ]
 }

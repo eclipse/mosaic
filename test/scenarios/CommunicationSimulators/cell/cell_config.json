@@ -1,4 +1,4 @@
 {
     "networkConfigurationFile": "network.json",
-	"regionConfigurationFile":  "regions.json"
+    "regionConfigurationFile": "regions.json"
 }

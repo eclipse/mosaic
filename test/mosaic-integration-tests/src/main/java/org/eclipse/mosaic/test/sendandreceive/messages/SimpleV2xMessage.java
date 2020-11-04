@@ -21,7 +21,7 @@ import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 
 import javax.annotation.Nonnull;
 
-public class RoundTripMessage extends V2xMessage {
+public class SimpleV2xMessage extends V2xMessage {
 
     /**
      * The encoded message.
@@ -33,7 +33,7 @@ public class RoundTripMessage extends V2xMessage {
      *
      * @param routing the {@link MessageRouting} for the message
      */
-    public RoundTripMessage(MessageRouting routing) {
+    public SimpleV2xMessage(MessageRouting routing) {
         super(routing);
         this.encodedPayload = new EncodedPayload(8);
     }
