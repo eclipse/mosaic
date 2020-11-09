@@ -42,9 +42,9 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     private CellModuleConfiguration configuration = null;
 
     /**
-     * Default radius for geographic cam dissemination over the cellular network.
+     * Default radius for geographic cam dissemination over the cellular network [m].
      */
-    private final static long CAM_GEO_RADIUS = 300;
+    private final static long DEFAULT_CAM_GEO_RADIUS = 300;
 
     public CellModule(OperatingSystem owner, Logger log) {
         super(owner, log);
@@ -73,10 +73,17 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     }
 
     /**
-     * Convenience method to enable the cell module with default values.
+     * Convenience method to enable the cell module with bare minimum default values.
      */
     public void enable() {
-        enable(new CellModuleConfiguration().camConfiguration(CAM_GEO_RADIUS));
+        enable(new CellModuleConfiguration());
+    }
+
+    /**
+     * Convenience method to enable the cell module using default CAM configuration.
+     */
+    public void enableWithCam() {
+        enable(new CellModuleConfiguration().camConfiguration(DEFAULT_CAM_GEO_RADIUS));
     }
 
     /**
