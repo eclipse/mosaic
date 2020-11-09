@@ -580,8 +580,6 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         if (serverProperties != null) {
             registeredServers.put(serverName, serverProperties);
         } else {
-            // TODO: needs to be validated if this works as a useful workaround for servers without server config especially
-            //  since capacity is shared with globalNetwork and servers capacity shouldn't be affected by this
             registeredServers.put(serverName, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork);
         }
     }
