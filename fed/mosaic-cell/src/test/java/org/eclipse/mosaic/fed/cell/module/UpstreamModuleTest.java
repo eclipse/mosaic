@@ -54,7 +54,6 @@ import org.eclipse.mosaic.lib.objects.addressing.NetworkAddress;
 import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
-import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
@@ -93,13 +92,6 @@ public class UpstreamModuleTest {
 
     @Mock
     private DestinationAddressContainer destinationAddressContainer;
-
-    @Mock
-    private DestinationAddressContainer destinationAddressContainerStream;
-
-    @Mock
-    private V2xMessage v2XMessage;
-
     @Mock
     public RtiAmbassador rti;
 
@@ -124,7 +116,8 @@ public class UpstreamModuleTest {
     private final static long SEED = 182931861823L;
     private final RandomNumberGenerator rng = new DefaultRandomNumberGenerator(SEED);
     private final List<CellModuleMessage> cellModuleMessages = new ArrayList<>();
-    private final List<Interaction> rtiMessagesSent = new ArrayList<>();
+    private final List<Interaction> rtiInteractionsSent = new ArrayList<>();
+    private final List<Interaction> rtiV2xAcknowledgementsSent = new ArrayList<>();
     private final AtomicReference<MessageRouting> routing = new AtomicReference<>();
     private static final long DELAY_VALUE_IN_MS = 50 * TIME.MILLI_SECOND;
 
@@ -132,7 +125,7 @@ public class UpstreamModuleTest {
     private UpstreamModule upstreamModule;
 
     @Before
-    public void setup() throws IllegalValueException, InternalFederateException, UnknownHostException {
+    public void setup() throws IllegalValueException, InternalFederateException {
         File ambassadorConfiguration = new File("cell_config.json");
         ambassadorParameter = new AmbassadorParameter(null, ambassadorConfiguration);
         ChainManager chainManager = new ChainManager(rti, rng, ambassadorParameter) {
@@ -141,22 +134,16 @@ public class UpstreamModuleTest {
                 cellModuleMessages.add(cellModuleMessage);
             }
         };
-        when(sourceAddressContainerMock.getSourceName()).thenReturn("veh_0");
-        when(destinationAddressContainer.getProtocolType()).thenReturn(ProtocolType.TCP);
-        Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName("10.2.0.0");
-        when(destinationAddressContainer.getAddress()).thenReturn(mock(NetworkAddress.class));
-        when(destinationAddressContainer.getAddress().getIPv4Address()).thenReturn(inet4Address);
-        when(destinationAddressContainer.getType()).thenReturn(DestinationType.CELL_TOPOCAST);
-        when(v2XMessage.getRouting()).thenAnswer(x -> routing.get());
-
-        when(destinationAddressContainerStream.getProtocolType()).thenReturn(ProtocolType.TCP);
-        when(destinationAddressContainerStream.getAddress()).thenReturn(mock(NetworkAddress.class));
-        when(destinationAddressContainerStream.getAddress().getIPv4Address()).thenReturn(inet4Address);
-        when(destinationAddressContainerStream.getType()).thenReturn(DestinationType.CELL_TOPOCAST);
-        when(v2XMessage.getRouting()).thenAnswer(x -> routing.get());
 
         doAnswer(
-                invocationOnMock -> rtiMessagesSent.add((Interaction) invocationOnMock.getArguments()[0])
+                invocationOnMock -> {
+                    Interaction interaction = (Interaction) invocationOnMock.getArguments()[0];
+                    rtiInteractionsSent.add(interaction);
+                    if (interaction.getTypeId().equals(V2xMessageAcknowledgement.TYPE_ID)) {
+                        rtiV2xAcknowledgementsSent.add((V2xMessageAcknowledgement) invocationOnMock.getArguments()[0]);
+                    }
+                    return null;
+                }
         ).when(rti).triggerInteraction(ArgumentMatchers.isA(Interaction.class));
 
         upstreamModule = new UpstreamModule(chainManager);
@@ -182,7 +169,7 @@ public class UpstreamModuleTest {
         upstreamModule.processEvent(event);
 
         // ASSERT
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
         checkNotifyOnFinishMessage(notifyOnFinishMessage, 400 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
@@ -200,18 +187,19 @@ public class UpstreamModuleTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
 
-        SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
-        Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
         CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400 * DATA.BIT, 400 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 600 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 600 * DATA.BIT;
 
+        SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
+        Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
+
         // RUN
         upstreamModule.processEvent(event);
 
         // ASSERT
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
         checkNotifyOnFinishMessage(notifyOnFinishMessage, 400 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
@@ -229,18 +217,19 @@ public class UpstreamModuleTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
 
-        SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
-        Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
         CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400 * DATA.BIT, 400 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 200 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 200 * DATA.BIT;
 
+        SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
+        Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
+
         // RUN
         upstreamModule.processEvent(event);
 
         // ASSERT
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
         checkNotifyOnFinishMessage(notifyOnFinishMessage, 200, 10 * TIME.SECOND, (long) (10.4 * TIME.SECOND));
@@ -256,7 +245,11 @@ public class UpstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimitedRegionBlocked() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
@@ -271,7 +264,8 @@ public class UpstreamModuleTest {
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.CHANNEL_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -293,7 +287,7 @@ public class UpstreamModuleTest {
         upstreamModule.processEvent(event);
 
         // ASSERT
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
 
         long expectedBandwidth = (long) (messageLength / (DELAY_VALUE_IN_MS / (double) TIME.SECOND));
 
@@ -333,16 +327,17 @@ public class UpstreamModuleTest {
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 200 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 200 * DATA.BIT;
-        long expectedBandwidth = 200 * DATA.BIT;
 
         // RUN
         upstreamModule.processEvent(event);
 
         // ASSERT
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
 
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
+
+        long expectedBandwidth = 200 * DATA.BIT;
         checkNotifyOnFinishMessage(notifyOnFinishMessage, expectedBandwidth, 10 * TIME.SECOND, (long) (10.4 * TIME.SECOND));
 
         CellModuleMessage resultMessage = cellModuleMessages.get(1);
@@ -361,7 +356,11 @@ public class UpstreamModuleTest {
     public void testProcessMessage_packetLossTcp() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
@@ -381,7 +380,8 @@ public class UpstreamModuleTest {
         checkNotifyOnFinishMessage(notifyOnFinishMessage, expectedBandwidth, 10 * TIME.SECOND,
                 10 * TIME.SECOND + DELAY_VALUE_IN_MS);
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.PACKET_LOSS);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -403,18 +403,18 @@ public class UpstreamModuleTest {
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.transmission.lossProbability = 2d;
 
-        double delayInS = ((ConstantDelay) ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.delay).delay
-                / (double) TIME.SECOND;
-        long expectedBandwidth = (long) (messageLength / delayInS);
-
         // RUN
         upstreamModule.processEvent(event);
 
         // ASSERT
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
 
         assertEquals(1, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
+
+        double delayInS = ((ConstantDelay) ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.delay).delay
+                / (double) TIME.SECOND;
+        long expectedBandwidth = (long) (messageLength / delayInS);
         checkNotifyOnFinishMessage(notifyOnFinishMessage, expectedBandwidth, 10 * TIME.SECOND,
                 10 * TIME.SECOND + DELAY_VALUE_IN_MS);
 
@@ -429,7 +429,11 @@ public class UpstreamModuleTest {
     public void testProcessMessage_nodeCapacityExceededRegionUnlimited() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
@@ -442,7 +446,8 @@ public class UpstreamModuleTest {
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.NODE_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -454,14 +459,19 @@ public class UpstreamModuleTest {
     public void testProcessMessage_nodeCapacityExceededRegionLimited() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
-        SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
-        Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0");
         cellConfiguration.consumeUl(Long.MAX_VALUE * DATA.BIT);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 200 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 200 * DATA.BIT;
+
+        SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
+        Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
 
         // RUN
         upstreamModule.processEvent(event);
@@ -469,7 +479,8 @@ public class UpstreamModuleTest {
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.NODE_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -481,7 +492,11 @@ public class UpstreamModuleTest {
     public void testProcessMessage_channelCapacityExceededTcp() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
@@ -493,7 +508,8 @@ public class UpstreamModuleTest {
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.CHANNEL_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -505,7 +521,11 @@ public class UpstreamModuleTest {
     public void testProcessMessage_channelNodeCapacityExceeded() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
@@ -520,7 +540,8 @@ public class UpstreamModuleTest {
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons =
                 Arrays.asList(NegativeAckReason.CHANNEL_CAPACITY_EXCEEDED, NegativeAckReason.NODE_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
@@ -533,7 +554,11 @@ public class UpstreamModuleTest {
     public void testProcessMessage_nodeDeactivatedTcp() throws InternalFederateException {
         // SETUP
         // TCP
-        routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
+        routing.set(
+                new CellMessageRoutingBuilder("veh_0", null)
+                        .protocol(ProtocolType.TCP)
+                        .topoCast(new byte[]{10, 2, 0, 0})
+        );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
@@ -547,7 +572,8 @@ public class UpstreamModuleTest {
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Arrays.asList(NegativeAckReason.NODE_DEACTIVATED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -572,13 +598,20 @@ public class UpstreamModuleTest {
 
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
     }
 
     @Test
-    public void testProcessMessage_nodeNotRegisteredTcp() throws InternalFederateException {
+    public void testProcessMessage_nodeNotRegisteredTcp() throws InternalFederateException, UnknownHostException {
         // SETUP
         // TCP
+        when(sourceAddressContainerMock.getSourceName()).thenReturn("veh_0");
+        when(destinationAddressContainer.getProtocolType()).thenReturn(ProtocolType.TCP);
+        Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName("10.2.0.0");
+        when(destinationAddressContainer.getAddress()).thenReturn(mock(NetworkAddress.class));
+        when(destinationAddressContainer.getAddress().getIPv4Address()).thenReturn(inet4Address);
+        when(destinationAddressContainer.getType()).thenReturn(DestinationType.CELL_TOPOCAST);
+
         routing.set(new MessageRouting(destinationAddressContainer, sourceAddressContainerMock));
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
@@ -591,7 +624,8 @@ public class UpstreamModuleTest {
 
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
-        assertEquals(1, rtiMessagesSent.size());
+        assertEquals(1, rtiInteractionsSent.size());
+        assertEquals(1, rtiV2xAcknowledgementsSent.size());
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.NODE_DEACTIVATED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
@@ -614,7 +648,7 @@ public class UpstreamModuleTest {
 
         // ASSERT
         assertEquals(0, cellModuleMessages.size());
-        assertEquals(0, rtiMessagesSent.size());
+        assertEquals(0, rtiInteractionsSent.size());
     }
 
     @Test
@@ -654,8 +688,8 @@ public class UpstreamModuleTest {
     // helper methods to analyze the messages generated by the UpstreamModule
 
     private void checkRtiMessages(List<NegativeAckReason> negativeAckReasons, SampleV2xMessage sampleV2XMessage) {
-        assertTrue(rtiMessagesSent.get(0) instanceof V2xMessageAcknowledgement);
-        V2xMessageAcknowledgement ackV2xMessage = (V2xMessageAcknowledgement) rtiMessagesSent.get(0);
+        assertTrue(rtiInteractionsSent.get(0) instanceof V2xMessageAcknowledgement);
+        V2xMessageAcknowledgement ackV2xMessage = (V2xMessageAcknowledgement) rtiInteractionsSent.get(0);
         assertEquals(sampleV2XMessage.getId(), ackV2xMessage.getOriginatingMessageId());
         assertEquals(negativeAckReasons, ackV2xMessage.getNegativeReasons());
         assertFalse(ackV2xMessage.isAcknowledged());

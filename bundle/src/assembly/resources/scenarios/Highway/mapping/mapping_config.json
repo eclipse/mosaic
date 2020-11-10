@@ -11,17 +11,14 @@
             "tau": 1,
             "deviations": {
                 "speedFactor": 0.1
-            },
-            "applications": [ "org.eclipse.mosaic.app.tutorial.communication.ReceiveAndReturnRoundTripMessage" ]
+            }
         }
     ],
     "tmcs": [
         {
             "name": "HighwayManagement",
-            "group": "RoundTripServer",
             "applications": [
-                "org.eclipse.mosaic.app.tutorial.HighwayManagementApp(\"3\", 2)",
-                "org.eclipse.mosaic.app.tutorial.communication.SendAndReceiveRoundTripMessage"
+                "org.eclipse.mosaic.app.tutorial.HighwayManagementApp(\"3\", 2)"
             ],
             "inductionLoops": [ "detector_0", "detector_1", "detector_2" ],
             "laneAreaDetectors": [ ]

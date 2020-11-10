@@ -1,0 +1,24 @@
+{
+    "adhocTransmissionModel": {
+        "type": "SimpleAdhocTransmissionModel",
+        "simpleMultihopDelay": {
+            "type": "GammaSpeedDelay",
+            "minDelay": "10 ms",
+            "expDelay": "30 ms"
+        },
+        "simpleMultihopTransmission": {
+            "lossProbability": 0.1,
+            "maxRetries": 2
+        }
+    },
+    "singlehopDelay": {
+        "type": "SimpleRandomDelay",
+        "steps": 5,
+        "minDelay": "1.5 ms",
+        "maxDelay": "2.5 ms"
+    },
+    "singlehopTransmission": {
+        "lossProbability": 0.0,
+        "maxRetries": 0
+    }
+}

@@ -1,16 +1,16 @@
 {
     "simulation": {
-        "id": "Highway",
-        "duration": "1000s",
+        "id": "SendAndReceive",
+        "duration": "400s",
         "randomSeed": 268965854,
         "projection": {
             "centerCoordinates": {
-                "latitude": 52.23,
-                "longitude": 11.82
+                "latitude": 52.0,
+                "longitude": 13.0
             },
             "cartesianOffset": {
-                "x": -691174.08,
-                "y": -5789894.65
+                "x": -385769.05,
+                "y": -5819239.15
             }
         },
         "network": {
@@ -25,9 +25,9 @@
     },
     "federates": {
         "application": true,
-        "output": true,
-        "sns": false,
-        "cell": false,
-        "sumo": true
+        "cell": true,
+        "sns": true,
+        "sumo": true,
+        "output": true
     }
 }

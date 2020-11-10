@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 /**
  * Ambassador for the Cell network simulator which handles the interaction with Eclipse MOSAIC.
@@ -533,17 +534,21 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             log.info("Enabled (Configured) Cell Communication for vehicle={}, t={}",
                     nodeId, TIME.format(interaction.getTime()));
 
-            // Register vehicle if its CellularCommunicationConfiguration arrives within the same time step after VehicleUpdates
-            if (latestVehicleUpdates != null && latestVehicleUpdates.getTime() == interaction.getTime()) {
-                Optional<VehicleData> vehInfo = latestVehicleUpdates.getAdded().stream()
-                        .filter(v -> v.getName().equals(nodeId))
-                        .findFirst();
-                if (vehInfo.isPresent()) {
-                    handoverInfo = registerOrUpdateVehicle(interaction.getTime(), vehInfo.get());
+            if (latestVehicleUpdates != null) {
+                Optional<VehicleData> vehicleData = fetchVehicleDataFromLastUpdate(nodeId);
+                if (vehicleData.isPresent()) {
+                    handoverInfo = registerOrUpdateVehicle(interaction.getTime(), vehicleData.get());
                 }
             }
         }
         return handoverInfo;
+    }
+
+    private Optional<VehicleData> fetchVehicleDataFromLastUpdate(String vehicleId) {
+        // see if vehicle was added or updated within the last vehicle update
+        return Stream.concat(latestVehicleUpdates.getAdded().stream(), latestVehicleUpdates.getUpdated().stream())
+                .filter(v -> v.getName().equals(vehicleId))
+                .findFirst();
     }
 
     private void handleEntityCellConfiguration(String nodeId, CellularCommunicationConfiguration interaction) {

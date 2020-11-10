@@ -13,64 +13,65 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.communication;
-
-import static org.eclipse.mosaic.app.tutorial.communication.SendAndReceiveRoundTripMessage.RECEIVER_NAME;
-import static org.eclipse.mosaic.app.tutorial.communication.SendAndReceiveRoundTripMessage.SERVER_NAME;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
-import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
+import org.eclipse.mosaic.rti.DATA;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
-public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<VehicleOperatingSystem> implements CommunicationApplication {
+/**
+ * Server app, that is setup with a very small bandwidth (1 bit up/down).
+ */
+public class LimitedCapacityServer extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
+
     @Override
     public void onStartup() {
-        if (getOs().getId().equals(RECEIVER_NAME)) {
-            getOs().getCellModule().enable();
-        }
+        getOs().getCellModule().enable(
+                new CellModuleConfiguration()
+                        .maxDlBitrate(5 * DATA.BYTE)
+                        .maxUlBitrate(5 * DATA.BYTE)
+        );
+        getLog().infoSimTime(this, "Setup limited capacity server {} at time {}", getOs().getId(), getOs().getSimulationTime());
     }
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        getLog().infoSimTime(
-                this,
-                "Received round trip message #{} at time {}",
-                receivedV2xMessage.getMessage().getId(),
-                getOs().getSimulationTime()
-        );
-        MessageRouting routing = getOs().getCellModule().createMessageRouting().topoCast(SERVER_NAME);
-        getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing));
-        getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", SERVER_NAME, getOs().getSimulationTime());
+        if (receivedV2xMessage.getMessage() instanceof SimpleV2xMessage) {
+            getLog().infoSimTime(
+                    this,
+                    "Received message #{} at time {} using protocol {}",
+                    receivedV2xMessage.getMessage().getId(),
+                    getOs().getSimulationTime(),
+                    receivedV2xMessage.getMessage().getRouting().getDestination().getProtocolType()
+            );
+        }
     }
 
     @Override
     public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
-
     }
 
     @Override
     public void onCamBuilding(CamBuilder camBuilder) {
-
     }
 
     @Override
     public void onMessageTransmitted(V2xMessageTransmission v2xMessageTransmission) {
-
     }
 
     @Override
     public void onShutdown() {
-
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
-
+    public void processEvent(Event event) {
     }
 }

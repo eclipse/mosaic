@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.cell.utility;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ import javax.annotation.Nonnull;
 /**
  * Static methods for handling the bandwidth calculation.
  */
+@SuppressWarnings(value = {"NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"}, justification = "filled by GSON")
 public final class RegionCapacityUtility {
 
     private static final Logger log = LoggerFactory.getLogger(RegionCapacityUtility.class);

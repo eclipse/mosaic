@@ -40,8 +40,8 @@ public class CNetworkProperties {
     /**
      * Up- and downlink module.
      */
-    public Uplink uplink;
-    public Downlink downlink;
+    public CUplink uplink;
+    public CDownlink downlink;
 
     /**
      * The uplink direction only allows point-to-point communication (unicast).
@@ -52,9 +52,9 @@ public class CNetworkProperties {
      *     <li/> Capacity
      * </ul>
      */
-    public static class Uplink {
+    public static class CUplink {
         /**
-         * The delay used by {@link Uplink}.
+         * The delay used by {@link CUplink}.
          */
         @JsonAdapter(DelayTypeAdapterFactory.class)
         public Delay delay;
@@ -80,15 +80,15 @@ public class CNetworkProperties {
      *     <li/> Point-to-multipoint communication (multicast)
      * </ul>
      */
-    public static class Downlink {
+    public static class CDownlink {
         /**
          * Point-to-point communication (unicast).
          */
-        public Unicast unicast;
+        public CUnicast unicast;
         /**
          * Point-to-multipoint communication (multicast).
          */
-        public Multicast multicast;
+        public CMulticast multicast;
         /**
          * Shared capacity between unicast and multicast.
          */
@@ -99,7 +99,7 @@ public class CNetworkProperties {
          */
         public transient long maxCapacity;
 
-        public static class Unicast {
+        public static class CUnicast {
             /**
              * Delay to be used by unicast.
              */
@@ -111,7 +111,7 @@ public class CNetworkProperties {
             public CTransmission transmission;
         }
 
-        public static class Multicast {
+        public static class CMulticast {
             /**
              * Delay to be used by multicast.
              */
