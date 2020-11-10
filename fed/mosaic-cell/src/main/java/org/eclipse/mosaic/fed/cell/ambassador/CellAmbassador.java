@@ -334,9 +334,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      * Registers the new Traffic Management Center (TMC) in the cell simulation.
      *
      * @param tmcRegistration TMC object to be added to the cell simulation.
-     * @throws InternalFederateException if no server configuration was found for the server
      */
-    private void process(TmcRegistration tmcRegistration) throws InternalFederateException {
+    private void process(TmcRegistration tmcRegistration) {
         TmcMapping tmc = tmcRegistration.getMapping();
         if (tmc.hasApplication()) {
             registerServer(tmc.getName(), tmc.getGroup());
@@ -357,9 +356,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      * Registers the new Traffic Management Center (TMC) in the cell simulation.
      *
      * @param serverRegistration TMC object to be added to the cell simulation.
-     * @throws InternalFederateException if no server configuration was found for the server
      */
-    private void process(ServerRegistration serverRegistration) throws InternalFederateException {
+    private void process(ServerRegistration serverRegistration) {
         ServerMapping server = serverRegistration.getMapping();
         if (server.hasApplication()) {
             registerServer(server.getName(), server.getGroup());
@@ -587,14 +585,15 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         );
     }
 
-    private void registerServer(String serverName, String serverGroup) throws InternalFederateException {
+    private void registerServer(String serverName, String serverGroup) {
         CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegion(serverGroup);
         if (serverProperties != null) {
             registeredServers.put(serverName, serverProperties);
         } else {
-            throw new InternalFederateException(
-                    String.format("No server properties for server group %s found in %s config-file",
-                            serverGroup, ConfigurationData.INSTANCE.getCellConfig().networkConfigurationFile)
+            log.info(
+                    "No server properties for server group \"{}\" found in \"{}\" config-file."
+                            + " If you intend to use cell-communication with this unit please add a configuration.",
+                    serverGroup, ConfigurationData.INSTANCE.getCellConfig().networkConfigurationFile
             );
         }
     }
