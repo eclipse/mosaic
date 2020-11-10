@@ -86,8 +86,8 @@ public final class CapacityUtility {
      */
     public static boolean isCapacitySufficient(TransmissionMode mode, CNetworkProperties region,
                                                CellConfiguration nodeCellConfiguration, long neededBandwidth) {
-        return RegionCapacityUtility.isCapacitySufficient(mode, region, neededBandwidth)
-                && NodeCapacityUtility.isCapacitySufficient(mode, nodeCellConfiguration, neededBandwidth);
+        return NodeCapacityUtility.isCapacitySufficient(mode, nodeCellConfiguration, neededBandwidth)
+                && RegionCapacityUtility.isCapacitySufficient(mode, region, neededBandwidth);
     }
 
     /**
@@ -197,11 +197,11 @@ public final class CapacityUtility {
         long bandwidth2;
         switch (mode) {
             case UplinkUnicast:
-                bandwidth1 = nodeCellConfiguration.getAvailableUlBitrate();
+                bandwidth1 = nodeCellConfiguration.getAvailableUplinkBitrate();
                 bandwidth2 = region.uplink.capacity;
                 break;
             case DownlinkUnicast:
-                bandwidth1 = nodeCellConfiguration.getAvailableDlBitrate();
+                bandwidth1 = nodeCellConfiguration.getAvailableDownlinkBitrate();
                 bandwidth2 = region.downlink.capacity;
                 break;
             case DownlinkMulticast:
