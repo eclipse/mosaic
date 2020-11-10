@@ -133,6 +133,7 @@ public class ApplicationAmbassadorTest {
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.anyByte()
         );
+        Mockito.doAnswer((i) -> lastAdvanceTime).when(rtiAmbassador).getNextEventTimestamp();
 
         lastAdvanceTime = 0;
     }
@@ -197,6 +198,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -225,6 +227,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -251,6 +254,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -277,6 +281,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -337,6 +342,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -415,6 +421,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
 
         // ASSERT that tear down of application is not called again
         Mockito.verify(app.getApplicationSpy()).onShutdown();
@@ -453,6 +460,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -481,6 +489,7 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onInteractionReceived(ArgumentMatchers.same(applicationInteraction));
 
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -523,6 +532,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -544,6 +554,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -567,6 +578,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -609,6 +621,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -635,6 +648,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -661,6 +675,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -687,6 +702,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -712,6 +728,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -738,6 +755,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -779,6 +797,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     @Test
@@ -815,6 +834,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     @Test
@@ -860,6 +880,7 @@ public class ApplicationAmbassadorTest {
 
         // finish simulation
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -885,6 +906,7 @@ public class ApplicationAmbassadorTest {
 
         // tears down all applications
         ambassador.finishSimulation();
+        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
