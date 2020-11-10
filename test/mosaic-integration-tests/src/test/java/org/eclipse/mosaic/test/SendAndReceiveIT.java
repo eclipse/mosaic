@@ -61,7 +61,7 @@ public class SendAndReceiveIT {
     private final static String RSU_0_RECEIVE_MSG_APP_CELL_LOG = "apps/rsu_0/ReceiveMsgAppCell.log";
     private final static String RSU_1_RECEIVE_MSG_APP_CELL_LOG = "apps/rsu_1/ReceiveMsgAppCell.log";
     private final static String RSU_2_RECEIVE_MSG_APP_CELL_LOG = "apps/rsu_2/ReceiveMsgAppCell.log";
-    private final static String RSU_3_RECEIVE_MSG_APP_ADHOC_LOG = "apps/rsu_3/ReceiveMsgAppAdhoc.log";
+    private final static String RSU_3_RECEIVE_MSG_APP_ADHOC_LOG = "apps/rsu_3/ReceiveMsgAppAdHoc.log";
     private final static String TMC_ROUND_TRIP = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
     private final static String VEH_ROUND_TRIP = "apps/veh_2/ReceiveAndReturnRoundTripMessage.log";
     private final static String SERVER_NACK_RECEIVER = "apps/server_0/NackReceivingServer.log";
