@@ -15,10 +15,10 @@
 
 package org.eclipse.mosaic.fed.cell.config.model;
 
-import org.eclipse.mosaic.fed.cell.config.gson.CapacityTypeAdapter;
 import org.eclipse.mosaic.lib.model.delay.Delay;
 import org.eclipse.mosaic.lib.model.gson.DelayTypeAdapterFactory;
 import org.eclipse.mosaic.lib.model.transmission.CTransmission;
+import org.eclipse.mosaic.lib.util.gson.DataFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -65,7 +65,7 @@ public class CNetworkProperties {
         /**
          * Current capacity.
          */
-        @JsonAdapter(CapacityTypeAdapter.class)
+        @JsonAdapter(DataFieldAdapter.Bandwidth.class)
         public long capacity;
         /**
          * The maximal Capacity (when no transmission is ongoing).
@@ -92,7 +92,7 @@ public class CNetworkProperties {
         /**
          * Shared capacity between unicast and multicast.
          */
-        @JsonAdapter(CapacityTypeAdapter.class)
+        @JsonAdapter(DataFieldAdapter.Bandwidth.class)
         public long capacity;
         /**
          * The maximal Capacity (when no transmission is ongoing).

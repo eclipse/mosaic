@@ -29,13 +29,14 @@ import org.eclipse.mosaic.rti.DATA;
  */
 public class CellModuleConfiguration implements CommunicationModuleConfiguration {
 
+    private final static long DEFAULT_MAX_DL_BITRATE = 900 * DATA.MEGABYTE;
+    private final static long DEFAULT_MAX_UL_BITRATE = 175 * DATA.MEGABYTE;
     /**
      * DL/UL bitrates to reflect a data plan from a certain provider.
      * (intended to be used by Cell)
      */
-    private long maxDlBitrate = 900 * DATA.MEGABYTE;
-    private long maxUlBitrate = 175 * DATA.MEGABYTE;
-
+    private Long maxDlBitrate;
+    private Long maxUlBitrate;
     /**
      * Configuration for CAM messaging over cellular communication.
      * (intended for application ambassador)
@@ -52,31 +53,58 @@ public class CellModuleConfiguration implements CommunicationModuleConfiguration
         return this;
     }
 
+    /**
+     * Convenience method creating CAM config using default bitrates.
+     *
+     * @param camReceiver id of receiving entity
+     * @return the built {@link CellModuleConfiguration}
+     */
     public CellModuleConfiguration camConfigurationTopocast(String camReceiver) {
+        useDefaultBitrates();
         this.camConfiguration = new CellCamConfiguration(camReceiver);
         return this;
     }
 
+    /**
+     * Convenience method creating CAM config using default bitrates.
+     *
+     * @param addressingMode addressing mode to be used
+     * @param geoRadius      reception radius for CAM
+     * @return the built {@link CellModuleConfiguration}
+     */
     public CellModuleConfiguration camConfiguration(DestinationType addressingMode, double geoRadius) {
+        useDefaultBitrates();
         this.camConfiguration = new CellCamConfiguration(addressingMode, geoRadius);
         return this;
     }
 
+    /**
+     * Convenience method creating CAM config using default bitrates.
+     *
+     * @param geoRadius reception radius for CAM
+     * @return the built {@link CellModuleConfiguration}
+     */
     public CellModuleConfiguration camConfiguration(double geoRadius) {
+        useDefaultBitrates();
         this.camConfiguration = new CellCamConfiguration(DestinationType.CELL_GEOCAST, geoRadius);
         return this;
     }
 
-    public long getMaxDlBitrate() {
+    public Long getMaxDlBitrate() {
         return maxDlBitrate;
     }
 
-    public long getMaxUlBitrate() {
+    public Long getMaxUlBitrate() {
         return maxUlBitrate;
     }
 
     public CellCamConfiguration getCamConfiguration() {
         return camConfiguration;
+    }
+
+    private void useDefaultBitrates() {
+        maxDlBitrate = DEFAULT_MAX_DL_BITRATE;
+        maxUlBitrate = DEFAULT_MAX_UL_BITRATE;
     }
 
     /**
