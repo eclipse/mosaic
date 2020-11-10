@@ -40,8 +40,8 @@ public class NodeCapacityUtilityTest {
     @Test
     public void testCellConfigurationInitialisation() {
         assertEquals(config.getNodeId(), "veh0");
-        assertEquals(config.getAvailableDlBitrate(), 1000 * DATA.BIT);
-        assertEquals(config.getAvailableUlBitrate(), 2000 * DATA.BIT);
+        assertEquals(config.getAvailableDownlinkBitrate(), 1000 * DATA.BIT);
+        assertEquals(config.getAvailableUplinkBitrate(), 2000 * DATA.BIT);
     }
 
     @Test
@@ -65,28 +65,28 @@ public class NodeCapacityUtilityTest {
     public void testConsumeCapacityUp() {
         // Test behaviour when the consume value is larger than the available capacity
         NodeCapacityUtility.consumeCapacityUp(config, 3000 * DATA.BIT);
-        assertEquals(-1000, config.getAvailableUlBitrate());
+        assertEquals(-1000, config.getAvailableUplinkBitrate());
         // Test the behaviour when the consume value is smaller than the available capacity
         NodeCapacityUtility.freeCapacityUp(config, 3000 * DATA.BIT);
         NodeCapacityUtility.consumeCapacityUp(config, 200 * DATA.BIT);
-        assertEquals(1800, config.getAvailableUlBitrate());
+        assertEquals(1800, config.getAvailableUplinkBitrate());
         NodeCapacityUtility.consumeCapacityUp(null, 200 * DATA.BIT);
         NodeCapacityUtility.consumeCapacityUp(config, -200 * DATA.BIT);
-        assertEquals(1800, config.getAvailableUlBitrate());
+        assertEquals(1800, config.getAvailableUplinkBitrate());
     }
 
     @Test
     public void testConsumeCapacityDown() {
         // Test behaviour when the consume value is larger than the available capacity
         NodeCapacityUtility.consumeCapacityDown(config, 2000 * DATA.BIT);
-        assertEquals(-1000, config.getAvailableDlBitrate());
+        assertEquals(-1000, config.getAvailableDownlinkBitrate());
         // Test behaviour when the consume value is smaller than the available capacity
         NodeCapacityUtility.freeCapacityDown(config, 2000 * DATA.BIT);
         NodeCapacityUtility.consumeCapacityDown(config, 300 * DATA.BIT);
-        assertEquals(700, config.getAvailableDlBitrate());
+        assertEquals(700, config.getAvailableDownlinkBitrate());
         NodeCapacityUtility.consumeCapacityDown(null, 300 * DATA.BIT);
         NodeCapacityUtility.consumeCapacityDown(config, -300 * DATA.BIT);
-        assertEquals(700, config.getAvailableDlBitrate());
+        assertEquals(700, config.getAvailableDownlinkBitrate());
 
     }
 
@@ -97,15 +97,15 @@ public class NodeCapacityUtilityTest {
     public void testFreeCapacityUp() {
         // free more capacity than available
         NodeCapacityUtility.freeCapacityUp(config, 200 * DATA.BIT);
-        assertEquals(2000, config.getAvailableUlBitrate());
+        assertEquals(2000, config.getAvailableUplinkBitrate());
         // free available capacity
         NodeCapacityUtility.consumeCapacityUp(config, 600 * DATA.BIT);
         NodeCapacityUtility.freeCapacityUp(config, 200 * DATA.BIT);
-        assertEquals(1600, config.getAvailableUlBitrate());
+        assertEquals(1600, config.getAvailableUplinkBitrate());
         // other tests
         NodeCapacityUtility.freeCapacityUp(null, 200 * DATA.BIT);
         NodeCapacityUtility.freeCapacityUp(config, -100 * DATA.BIT);
-        assertEquals(1600, config.getAvailableUlBitrate());
+        assertEquals(1600, config.getAvailableUplinkBitrate());
     }
 
     /*
@@ -115,15 +115,15 @@ public class NodeCapacityUtilityTest {
     public void testFreeCapacityDown() {
         // free more capacity than available
         NodeCapacityUtility.freeCapacityDown(config, 200 * DATA.BIT);
-        assertEquals(1000, config.getAvailableDlBitrate());
+        assertEquals(1000, config.getAvailableDownlinkBitrate());
         // free available capacity
         NodeCapacityUtility.consumeCapacityDown(config, 800 * DATA.BIT);
         NodeCapacityUtility.freeCapacityDown(config, 200 * DATA.BIT);
-        assertEquals(400, config.getAvailableDlBitrate());
+        assertEquals(400, config.getAvailableDownlinkBitrate());
         // other tests
         NodeCapacityUtility.freeCapacityDown(null, 200 * DATA.BIT);
         NodeCapacityUtility.freeCapacityDown(config, -100 * DATA.BIT);
-        assertEquals(400, config.getAvailableDlBitrate());
+        assertEquals(400, config.getAvailableDownlinkBitrate());
 
     }
 
@@ -147,7 +147,7 @@ public class NodeCapacityUtilityTest {
 
     @Test
     public void testGetAvailableDlCapacity() {
-        assertEquals(1000 * DATA.BIT, NodeCapacityUtility.getAvailableDlCapacity(config));
-        assertEquals(0L, NodeCapacityUtility.getAvailableDlCapacity(null));
+        assertEquals(1000 * DATA.BIT, NodeCapacityUtility.getAvailableDownlinkCapacity(config));
+        assertEquals(0L, NodeCapacityUtility.getAvailableDownlinkCapacity(null));
     }
 }

@@ -33,11 +33,8 @@ import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 public class LossyServer extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
     @Override
     public void onStartup() {
-        getOs().getCellModule().enable(
-                new CellModuleConfiguration()
-                        .maxDlBitrate(DATA.GIGABYTE)
-                        .maxUlBitrate(DATA.GIGABYTE)
-        );
+        getOs().getCellModule().enable();
+
         getLog().infoSimTime(this, "Setup lossy server {} at time {}", getOs().getId(), getOs().getSimulationTime());
     }
 

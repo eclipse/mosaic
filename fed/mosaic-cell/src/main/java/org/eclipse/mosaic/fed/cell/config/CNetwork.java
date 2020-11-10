@@ -16,6 +16,10 @@
 package org.eclipse.mosaic.fed.cell.config;
 
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
+import org.eclipse.mosaic.lib.util.gson.DataFieldAdapter;
+import org.eclipse.mosaic.rti.DATA;
+
+import com.google.gson.annotations.JsonAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,21 @@ import java.util.List;
  * which is a {@link CNetworkProperties} and has no geographic extensions.
  */
 public final class CNetwork {
+
+    /**
+     * This <b>downlink</b> capacity value will be used for node-specific capacity calculation,
+     * if it wasn't set in the {@link org.eclipse.mosaic.lib.objects.communication.CellConfiguration}.
+     */
+    @JsonAdapter(DataFieldAdapter.Bandwidth.class)
+    public long defaultDownlinkCapacity = 100 * DATA.GIGABIT;
+
+    /**
+     * This <b>uplink</b> capacity value will be used for node-specific capacity calculation,
+     * if it wasn't set in the {@link org.eclipse.mosaic.lib.objects.communication.CellConfiguration}.
+     */
+    @JsonAdapter(DataFieldAdapter.Bandwidth.class)
+    public long defaultUplinkCapacity = 100 * DATA.GIGABIT;
+
 
     /**
      * global network definition.

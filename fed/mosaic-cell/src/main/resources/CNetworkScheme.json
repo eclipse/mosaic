@@ -2,6 +2,8 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
+        "defaultDownlinkCapacity": { "$ref": "#/definitions/capacity" },
+        "defaultUplinkCapacity": { "$ref": "#/definitions/capacity" },
         "globalNetwork": {
             "type": "object",
             "properties": {
@@ -27,7 +29,7 @@
         },
         "servers": {
             "type": "array",
-            "items": [ { "$ref" :  "#/definitions/server"}]
+            "items": [ { "$ref": "#/definitions/server" } ]
         }
     },
     "required": [ "globalNetwork" ],
@@ -143,8 +145,7 @@
                     "minimum": 0
                 },
                 {
-                    "type": "string",
-                    "pattern": "^unlimited$"
+                    "type": "string"
                 }
             ]
         },

@@ -173,7 +173,7 @@ public class UpstreamModuleStreamingTest {
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), MESSAGE_SIZE);
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400, 400);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400L, 400L);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
 
         // RUN
@@ -183,7 +183,7 @@ public class UpstreamModuleStreamingTest {
         assertEquals(0, rtiInteractionsSent.size());
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(400, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(400, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(21000, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -196,7 +196,7 @@ public class UpstreamModuleStreamingTest {
                 .topoCast(new byte[]{10, 2, 0, 0})
         );
 
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400, 400);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400L, 400L);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 600;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 600;
@@ -210,7 +210,7 @@ public class UpstreamModuleStreamingTest {
         assertEquals(0, rtiInteractionsSent.size());
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(400, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(400, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(600, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -223,7 +223,7 @@ public class UpstreamModuleStreamingTest {
                 .topoCast(new byte[]{10, 2, 0, 0})
         );
 
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400, 400);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400L, 400L);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 200;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 200;
@@ -237,7 +237,7 @@ public class UpstreamModuleStreamingTest {
         assertEquals(0, rtiInteractionsSent.size());
         assertEquals(0, cellModuleMessages.size());
 
-        assertEquals(400, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(400, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(200, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -258,7 +258,7 @@ public class UpstreamModuleStreamingTest {
         int smallerStreamSize = 10;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), smallerStreamSize);
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400, 400);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400L, 400L);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         // because the default maxCapacity of the region is 21000 setting the capacity to 600 bps results in a blocking of the region
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 600;
@@ -278,7 +278,7 @@ public class UpstreamModuleStreamingTest {
 
         assertEquals(0, rtiInteractionsSent.size());
 
-        assertEquals(400 - smallerStreamSize, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(400 - smallerStreamSize, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(600 - smallerStreamSize, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -309,7 +309,7 @@ public class UpstreamModuleStreamingTest {
                 10 * TIME.SECOND + DELAY_VALUE);
 
         assertEquals(Long.MAX_VALUE - EXPECTED_BANDWIDTH, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0")
-                .getAvailableUlBitrate());
+                .getAvailableUplinkBitrate());
         assertEquals(21000 - EXPECTED_BANDWIDTH, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
 
         // FREE
@@ -320,7 +320,7 @@ public class UpstreamModuleStreamingTest {
         upstreamModule.processEvent(freeEvent);
 
         // ASSERT
-        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(21000, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -348,7 +348,7 @@ public class UpstreamModuleStreamingTest {
         // no nack reasons because the default transmission mode is UDP
         assertEquals(0, rtiInteractionsSent.size());
 
-        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(200, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
 
     }
@@ -384,7 +384,7 @@ public class UpstreamModuleStreamingTest {
                 10 * TIME.SECOND + (long) lossProbability * DELAY_VALUE);
 
         assertEquals(Long.MAX_VALUE - EXPECTED_BANDWIDTH, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0")
-                .getAvailableUlBitrate());
+                .getAvailableUplinkBitrate());
         assertEquals(21000 - EXPECTED_BANDWIDTH, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -418,7 +418,7 @@ public class UpstreamModuleStreamingTest {
                 10 * TIME.SECOND + 2 * DELAY_VALUE);
 
         assertEquals(Long.MAX_VALUE - EXPECTED_BANDWIDTH, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0")
-                .getAvailableUlBitrate());
+                .getAvailableUplinkBitrate());
         assertEquals(21000 - EXPECTED_BANDWIDTH, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -436,7 +436,7 @@ public class UpstreamModuleStreamingTest {
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
         Event event = new Event(10, upstreamModule, sampleV2XMessage);
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0");
-        cellConfiguration.consumeUl(Long.MAX_VALUE);
+        cellConfiguration.consumeUplink(Long.MAX_VALUE);
 
         // RUN
         upstreamModule.processEvent(event);
@@ -449,7 +449,7 @@ public class UpstreamModuleStreamingTest {
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.NODE_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
-        assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(21000, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -465,7 +465,7 @@ public class UpstreamModuleStreamingTest {
         );
 
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0");
-        cellConfiguration.consumeUl(Long.MAX_VALUE);
+        cellConfiguration.consumeUplink(Long.MAX_VALUE);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = EXPECTED_BANDWIDTH;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 2 * EXPECTED_BANDWIDTH;
 
@@ -482,7 +482,7 @@ public class UpstreamModuleStreamingTest {
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.NODE_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
-        assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(EXPECTED_BANDWIDTH, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -512,7 +512,7 @@ public class UpstreamModuleStreamingTest {
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.CHANNEL_CAPACITY_EXCEEDED);
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
-        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(0, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -532,7 +532,7 @@ public class UpstreamModuleStreamingTest {
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 0;
 
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0");
-        cellConfiguration.consumeUl(Long.MAX_VALUE);
+        cellConfiguration.consumeUplink(Long.MAX_VALUE);
 
         // RUN
         upstreamModule.processEvent(event);
@@ -547,7 +547,7 @@ public class UpstreamModuleStreamingTest {
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
         assertEquals(0, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
-        assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
     }
 
     @Test
@@ -579,7 +579,7 @@ public class UpstreamModuleStreamingTest {
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
         assertEquals(21000, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
-        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
     }
 
     @Test
@@ -633,7 +633,7 @@ public class UpstreamModuleStreamingTest {
         checkRtiMessages(nackReasons, sampleV2XMessage);
 
         assertEquals(21000, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
-        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUlBitrate());
+        assertEquals(Long.MAX_VALUE, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
     }
 
     @Test

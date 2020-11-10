@@ -66,7 +66,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             owner.sendInteractionToRti(
                     new CellularCommunicationConfiguration(
                             owner.getSimulationTime(), new CellConfiguration(
-                            owner.getId(), true, configuration.getMaxDlBitrate(), configuration.getMaxUlBitrate())));
+                            owner.getId(), true, configuration.getMaxDownlinkBitrate(), configuration.getMaxUplinkBitrate())));
         } else {
             logEnableConfigurationNull();
         }
@@ -95,7 +95,9 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     @Override
     public void disable() {
         configuration = null;
-        owner.sendInteractionToRti(new CellularCommunicationConfiguration(owner.getSimulationTime(), new CellConfiguration(owner.getId(), false)));
+        owner.sendInteractionToRti(
+                new CellularCommunicationConfiguration(owner.getSimulationTime(), new CellConfiguration(owner.getId(), false))
+        );
     }
 
     /**
