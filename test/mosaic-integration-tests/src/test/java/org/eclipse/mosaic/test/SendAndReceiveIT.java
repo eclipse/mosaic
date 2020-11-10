@@ -65,6 +65,8 @@ public class SendAndReceiveIT {
     private final static String TMC_ROUND_TRIP = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
     private final static String VEH_ROUND_TRIP = "apps/veh_2/ReceiveAndReturnRoundTripMessage.log";
     private final static String SERVER_NACK_RECEIVER = "apps/server_0/NackReceivingServer.log";
+    private final static String SERVER_NO_CELL = "apps/server_3/NoCellCommunicationServer.log";
+    private final static String SERVER_NO_GROUP = "apps/server_4/NoCellCommunicationServer.log";
 
     @BeforeClass
     public static void runSimulation() {
@@ -92,6 +94,9 @@ public class SendAndReceiveIT {
         LogAssert.exists(simulationRule, RSU_3_RECEIVE_MSG_APP_ADHOC_LOG);
         LogAssert.exists(simulationRule, TMC_ROUND_TRIP);
         LogAssert.exists(simulationRule, VEH_ROUND_TRIP);
+        LogAssert.exists(simulationRule, SERVER_NACK_RECEIVER);
+        LogAssert.exists(simulationRule, SERVER_NO_CELL);
+        LogAssert.exists(simulationRule, SERVER_NO_GROUP);
     }
 
     @Test
@@ -252,6 +257,16 @@ public class SendAndReceiveIT {
                 ".*Received acknowledgement=false for message=[0-9]+ "
                         + "from=NetworkAddress\\{address=/10\\.5\\.0\\.[0-9]+\\} with nackReasons=\\[NODE_CAPACITY_EXCEEDED\\].*"
         );
+    }
+
+    @Test
+    public void noCellServerNotRegistered() throws Exception {
+        LogAssert.contains(simulationRule, CELL_LOG,
+                ".*No server properties for server group \"NoCellCommunication\" found in \"network\\.json\" config-file.*");
+        LogAssert.contains(simulationRule, SERVER_NO_CELL, ".*NoCellCommunicationServer setup\\..*");
+        LogAssert.contains(simulationRule, CELL_LOG,
+                ".*Server \\(id\\=server_4\\) has NO application or group and is ignored in communication simulation.*");
+        LogAssert.contains(simulationRule, SERVER_NO_GROUP, ".*NoCellCommunicationServer setup\\..*");
     }
 
     private void assertOccurrences(String logFile, String logPattern, int amount) throws Exception {

@@ -359,7 +359,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      */
     private void process(ServerRegistration serverRegistration) {
         ServerMapping server = serverRegistration.getMapping();
-        if (server.hasApplication()) {
+        // only register servers that have applications and the group parameter set
+        if (server.hasApplication() && server.getGroup() != null) {
             registerServer(server.getName(), server.getGroup());
 
             if (log.isDebugEnabled()) {
@@ -369,7 +370,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Server (id={}) has NO application and is ignored in "
+                log.debug("Server (id={}) has NO application or group and is ignored in "
                         + "communication simulation", server.getName());
             }
         }
