@@ -21,8 +21,8 @@ import org.eclipse.mosaic.lib.enums.DestinationType;
 /**
  * <pre>
  * CellModuleConfiguration cellConfiguration = new CellModuleConfiguration()
- *     .maxDlBitrate(7200000000)
- *     .maxUlBitrate(1400000000)
+ *     .maxDownlinkBitrate(7200000000)
+ *     .maxUplinkBitrate(1400000000)
  *     .camConfiguration(new CAMConfiguration(DestinationType.CellGeoUnicast, 300));
  * </pre>
  */

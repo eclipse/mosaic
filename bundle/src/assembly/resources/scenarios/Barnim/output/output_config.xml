@@ -158,8 +158,8 @@
                     <entry>Time</entry>
                     <entry>Configuration.NodeId</entry>
                     <entry>Configuration.Enabled</entry>
-                    <entry>Configuration.MaxDlBitrate</entry>
-                    <entry>Configuration.MaxUlBitrate</entry>
+                    <entry>Configuration.MaxDownlinkBitrate</entry>
+                    <entry>Configuration.MaxUplinkBitrate</entry>
                 </entries>
             </subscription>
             <subscription id="TrafficDetectorUpdates">
