@@ -36,7 +36,7 @@
         {
             "name": "LimitedCapacityServer",
             "group": "PerfectTransmissionServer",
-            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LimitedCapacityServer" ]S
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LimitedCapacityServer" ]
         },
         {
             "group": "LossyServer",
