@@ -195,15 +195,13 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     @Override
     public void finishSimulation() {
         try {
-            addEvent(new Event(this.rti.getNextEventTimestamp(),
-                    (e) -> {
-                        log.debug("remaining events: {}", eventScheduler.getAllEvents());
-                        UnitSimulator.UnitSimulator.removeAllSimulationUnits();
+            SimulationKernel.SimulationKernel.setCurrentSimulationTime(this.rti.getNextEventTimestamp());
 
-                        log.debug("inform about finishSimulation");
-                        SimulationKernel.SimulationKernel.finishSimulation();
-                    }
-            ));
+            log.debug("remaining events: {}", eventScheduler.getAllEvents());
+            UnitSimulator.UnitSimulator.removeAllSimulationUnits();
+
+            log.debug("inform about finishSimulation");
+            SimulationKernel.SimulationKernel.finishSimulation();
         } catch (IllegalValueException e) {
             log.error("Could not shutdown applications.", e);
         }
