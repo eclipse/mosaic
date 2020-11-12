@@ -45,7 +45,7 @@ arg_federate_file=""
 arg_integration_testing=false
 arg_make_parallel=""
 
-required_programs=( python2 gcc unzip tar )
+required_programs=( python3 gcc unzip tar )
 required_libraries=( "libprotobuf-dev (or equal) 3.3.0" "libxml2-dev (or equal)" "libsqlite3-dev (or equal)" )
 
 ####### configurable parameters ##########
@@ -361,7 +361,7 @@ build_ns3()
   cd "${ns3_installation_path}/ns-allinone-${ns3_version}"
 
   # ns-3 prior to 3.28.1 does not compile without warnings using g++ 10.2.0
-  CXXFLAGS="-Wno-error" python2 ./build.py --disable-netanim
+  CXXFLAGS="-Wno-error" python3 ./build.py --disable-netanim
 
   log "Build ns3-federate"
   cd ${current_dir}/federate
