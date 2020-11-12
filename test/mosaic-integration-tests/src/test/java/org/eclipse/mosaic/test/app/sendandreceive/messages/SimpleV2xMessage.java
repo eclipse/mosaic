@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.communication;
+package org.eclipse.mosaic.test.app.sendandreceive.messages;
 
 import org.eclipse.mosaic.lib.objects.v2x.EncodedPayload;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
@@ -21,7 +21,7 @@ import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 
 import javax.annotation.Nonnull;
 
-public class RoundTripMessage extends V2xMessage {
+public class SimpleV2xMessage extends V2xMessage {
 
     /**
      * The encoded message.
@@ -33,7 +33,7 @@ public class RoundTripMessage extends V2xMessage {
      *
      * @param routing the {@link MessageRouting} for the message
      */
-    public RoundTripMessage(MessageRouting routing) {
+    public SimpleV2xMessage(MessageRouting routing) {
         super(routing);
         this.encodedPayload = new EncodedPayload(8);
     }

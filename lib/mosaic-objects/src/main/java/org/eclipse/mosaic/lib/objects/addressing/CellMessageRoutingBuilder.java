@@ -37,6 +37,18 @@ public class CellMessageRoutingBuilder {
     private long streamDuration = -1;
     private long streamBandwidthInBitPs = -1;
 
+    /**
+     * The {@link ProtocolType} for the {@link MessageRouting}, on default this will be
+     * {@link ProtocolType#UDP}.
+     */
+    private ProtocolType protocolType = ProtocolType.UDP;
+
+    /**
+     * Constructor for {@link CellMessageRoutingBuilder} to set required fields.
+     *
+     * @param hostName       name of host (source)
+     * @param sourcePosition position of source
+     */
     public CellMessageRoutingBuilder(String hostName, GeoPoint sourcePosition) {
         Inet4Address address = IpResolver.getSingleton().lookup(hostName);
         if (address == null) {
@@ -83,7 +95,7 @@ public class CellMessageRoutingBuilder {
                 null,
                 null,
                 geoArea,
-                ProtocolType.UDP // TODO change to TCP (currently not properly supported, requires revise of ack/nack handling in cell)
+                protocolType
         ));
     }
 
@@ -100,7 +112,7 @@ public class CellMessageRoutingBuilder {
                 null,
                 null,
                 geoArea,
-                ProtocolType.UDP // TODO change to TCP (currently not properly supported, requires revise of ack/nack handling in cell)
+                protocolType
         ));
     }
 
@@ -108,7 +120,7 @@ public class CellMessageRoutingBuilder {
      * Creates topoCast to specified ip address.
      *
      * @param ipAddress recipient's ip address
-     * @return MessageRouting
+     * @return the {@link MessageRouting}
      */
     public MessageRouting topoCast(byte[] ipAddress) {
         return build(new DestinationAddressContainer(
@@ -117,7 +129,7 @@ public class CellMessageRoutingBuilder {
                 null,
                 null,
                 null,
-                ProtocolType.UDP // TODO change to TCP (currently not properly supported, requires revise of ack/nack handling in cell)
+                protocolType
         ));
     }
 
@@ -131,5 +143,34 @@ public class CellMessageRoutingBuilder {
         return topoCast(IpResolver.getSingleton().nameToIp(name).getAddress());
     }
 
+    /**
+     * Sets the {@link ProtocolType} for the routing.
+     *
+     * @param protocolType the {@link ProtocolType} to be used
+     * @return the {@link CellMessageRoutingBuilder}
+     */
+    public CellMessageRoutingBuilder protocol(ProtocolType protocolType) {
+        this.protocolType = protocolType;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ProtocolType} for the routing to {@link ProtocolType#TCP}.
+     *
+     * @return the {@link CellMessageRoutingBuilder}
+     */
+    public CellMessageRoutingBuilder tcp() {
+        return protocol(ProtocolType.TCP);
+    }
+
+
+    /**
+     * Sets the {@link ProtocolType} for the routing to {@link ProtocolType#UDP}.
+     *
+     * @return the {@link CellMessageRoutingBuilder}
+     */
+    public CellMessageRoutingBuilder udp() {
+        return protocol(ProtocolType.UDP);
+    }
 
 }

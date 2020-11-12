@@ -1,0 +1,268 @@
+{
+    "regions": [
+        {
+            "id": "erpwest",
+            "polygon": {
+                "coordinates": [
+                    {
+                        "lon": 13.31959,
+                        "lat": 52.513628
+                    },
+                    {
+                        "lon": 13.31959,
+                        "lat": 52.511545
+                    },
+                    {
+                        "lon": 13.32188,
+                        "lat": 52.511545
+                    },
+                    {
+                        "lon": 13.32188,
+                        "lat": 52.513628
+                    },
+                    {
+                        "lon": 13.31959,
+                        "lat": 52.513628
+                    }
+                ]
+            },
+            "uplink": {
+                "delay": {
+                    "type": "SimpleRandomDelay",
+                    "steps": 3,
+                    "minDelay": "50 ms",
+                    "maxDelay": "150 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 28000000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 3,
+                        "minDelay": "41 ms",
+                        "maxDelay": "81 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 3,
+                        "minDelay": "82 ms",
+                        "maxDelay": "182 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    },
+                    "usableCapacity": 0.6
+                },
+                "capacity": 42200000
+            }
+        },
+        {
+            "id": "erpost",
+            "polygon": {
+                "coordinates": [
+                    {
+                        "lon": 13.32188,
+                        "lat": 52.51335
+                    },
+                    {
+                        "lon": 13.32188,
+                        "lat": 52.51178
+                    },
+                    {
+                        "lon": 13.3249,
+                        "lat": 52.51178
+                    },
+                    {
+                        "lon": 13.3249,
+                        "lat": 52.51335
+                    },
+                    {
+                        "lon": 13.32188,
+                        "lat": 52.51335
+                    }
+                ]
+            },
+            "uplink": {
+                "delay": {
+                    "type": "SimpleRandomDelay",
+                    "steps": 3,
+                    "minDelay": "43 ms",
+                    "maxDelay": "123 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 28000000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 3,
+                        "minDelay": "44 ms",
+                        "maxDelay": "64 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 3,
+                        "minDelay": "85 ms",
+                        "maxDelay": "105 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    },
+                    "usableCapacity": 0.6
+                },
+                "capacity": 42200000
+            }
+        },
+        {
+            "id": "tuberlin",
+            "area": {
+                "nw": { "lon": 13.3249, "lat": 52.5132 },
+                "se": { "lon": 13.3273, "lat": 52.5123 }
+            },
+            "uplink": {
+                "delay": {
+                    "type": "SimpleRandomDelay",
+                    "steps": 3,
+                    "minDelay": "66 ms",
+                    "maxDelay": "106 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 28000000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 3,
+                        "minDelay": "57 ms",
+                        "maxDelay": "77 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "SimpleRandomDelay",
+                        "steps": 3,
+                        "minDelay": "78 ms",
+                        "maxDelay": "118 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    },
+                    "usableCapacity": 0.6
+                },
+                "capacity": 42200000
+            }
+        },
+        {
+            "id": "charlottenbtor",
+            "area": {
+                "nw": { "lon": 13.3273, "lat": 52.51359 },
+                "se": { "lon": 13.3334, "lat": 52.5127 }
+            },
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "109 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 28000000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "79 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "99 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    },
+                    "usableCapacity": 0.6
+                },
+                "capacity": 42200000
+            }
+        },
+        {
+            "id": "stiergarten",
+            "area": {
+                "nw": { "lon": 13.3334, "lat": 52.51381 },
+                "se": { "lon": 13.3394, "lat": 52.51302 }
+            },
+            "uplink": {
+                "delay": {
+                    "type": "ConstantDelay",
+                    "delay": "50 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
+                },
+                "capacity": 28000000
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "41 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
+                    }
+                },
+                "multicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "42 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    },
+                    "usableCapacity": 0.6
+                },
+                "capacity": 42200000
+            }
+        }
+    ]
+}

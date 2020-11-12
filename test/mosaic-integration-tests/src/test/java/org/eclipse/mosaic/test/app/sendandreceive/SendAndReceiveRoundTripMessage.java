@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.communication;
+package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
@@ -28,19 +28,19 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 import javax.annotation.Nonnull;
-
-
 
 /**
  * This application sends an empty cell message to a vehicle and logs this. The integration test checks whether the delay was
  * properly calculated.
  */
 public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
-
-    final static String RECEIVER_NAME = "veh_0";
+    final static String RECEIVER_NAME = "veh_2";
     final static String SERVER_NAME = "tmc_0";
+
+    private final static long SEND_TIME = 310 * TIME.SECOND;
 
     /**
      * Setup {@link org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule} and send message to
@@ -55,22 +55,28 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
         );
         getLog().infoSimTime(this, "Setup TMC server {} at time {}", getOs().getId(), getOs().getSimulationTime());
 
-        getOs().getEventManager().addEvent(new SendRoundTripMessageEvent(10 * TIME.SECOND, this));
+        getOs().getEventManager().addEvent(new SendRoundTripMessageEvent(SEND_TIME, this));
     }
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         getLog().infoSimTime(
                 this,
-                "Received round trip message #{} at time {}",
+                "Received round trip message #{} at time {} using protocol {}",
                 receivedV2xMessage.getMessage().getId(),
-                getOs().getSimulationTime()
+                getOs().getSimulationTime(),
+                receivedV2xMessage.getMessage().getRouting().getDestination().getProtocolType()
         );
     }
 
     @Override
     public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
-
+        getLog().infoSimTime(
+                this,
+                "Received acknowledgement for round trip message #{} and [acknowledged={}]",
+                acknowledgement.getSentMessage().getId(),
+                acknowledgement.isAcknowledged()
+        );
     }
 
     @Override
@@ -89,10 +95,10 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
     }
 
     @Override
-    public void processEvent(Event event) throws Exception {
+    public void processEvent(Event event) {
         if (event instanceof SendRoundTripMessageEvent) {
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().topoCast(RECEIVER_NAME);
-            getOs().getCellModule().sendV2xMessage(new RoundTripMessage(routing));
+            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(RECEIVER_NAME);
+            getOs().getCellModule().sendV2xMessage(new SimpleV2xMessage(routing));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }
     }

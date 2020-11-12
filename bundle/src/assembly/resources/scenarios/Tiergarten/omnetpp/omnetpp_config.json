@@ -14,8 +14,8 @@
             "ipv4AnycastAddress" : false
         },
         "protocolType": {
-            "udp": true,
-            "tcp": false
+            "UDP": true,
+            "TCP": false
         }
     }
 }

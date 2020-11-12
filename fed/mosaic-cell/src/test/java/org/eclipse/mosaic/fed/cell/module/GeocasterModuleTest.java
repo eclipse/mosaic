@@ -84,15 +84,6 @@ public class GeocasterModuleTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
-    private SourceAddressContainer sourceAddressContainerMock;
-
-    @Mock
-    private DestinationAddressContainer destinationAddressContainer;
-
-    @Mock
-    private V2xMessage v2XMessage;
-
-    @Mock
     public RtiAmbassador rti;
 
     private AmbassadorParameter ambassadorParameter;
@@ -120,13 +111,12 @@ public class GeocasterModuleTest {
     private final static long SEED = 182931861823L;
     private final RandomNumberGenerator rng = new DefaultRandomNumberGenerator(SEED);
     private final List<CellModuleMessage> cellModuleMessages = new ArrayList<>();
-    private final List<Interaction> rtiInteractionsSent = new ArrayList<>();
     private final AtomicReference<MessageRouting> routing = new AtomicReference<>();
 
     private GeocasterModule geocasterModule;
 
     @Before
-    public void setup() throws IllegalValueException, InternalFederateException {
+    public void setup() {
         File ambassadorConfiguration = new File("cell_config.json");
         ambassadorParameter = new AmbassadorParameter(null, ambassadorConfiguration);
         ChainManager chainManager = new ChainManager(rti, rng, ambassadorParameter) {
@@ -135,14 +125,6 @@ public class GeocasterModuleTest {
                 cellModuleMessages.add(cellModuleMessage);
             }
         };
-
-        when(sourceAddressContainerMock.getSourceName()).thenReturn("veh_0");
-        when(destinationAddressContainer.getProtocolType()).thenReturn(ProtocolType.TCP);
-        when(v2XMessage.getRouting()).thenAnswer(x -> routing.get());
-
-        doAnswer(
-                invocationOnMock -> rtiInteractionsSent.add((Interaction) invocationOnMock.getArguments()[0])
-        ).when(rti).triggerInteraction(ArgumentMatchers.isA(Interaction.class));
 
         geocasterModule = new GeocasterModule(chainManager);
 
@@ -200,21 +182,22 @@ public class GeocasterModuleTest {
         GeoPoint offRectangleTempelhof = GeoPoint.lonLat(13.386154174804688, 52.47065170749479);
 
         final Multimap<CNetworkProperties, String> receiverMap = ArrayListMultimap.create();
+
         String[] receivers = {"veh_0", "veh_1", "veh_2", "veh_3"};
-        SimulationData.INSTANCE.setPositionOfNode("veh_0", inRectangleKreuzberg.toCartesian());
-        SimulationData.INSTANCE.setPositionOfNode("veh_1", inRectangleGrosserStern.toCartesian());
-        SimulationData.INSTANCE.setPositionOfNode("veh_2", offRectangleKreuzberg.toCartesian());
-        SimulationData.INSTANCE.setPositionOfNode("veh_3", offRectangleTempelhof.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[0], inRectangleKreuzberg.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[1], inRectangleGrosserStern.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[2], offRectangleKreuzberg.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[3], offRectangleTempelhof.toCartesian());
 
         for (String receiver : receivers) {
             CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 400 * DATA.BIT, 400 * DATA.BIT);
             SimulationData.INSTANCE.setCellConfigurationOfNode(receiver, cellConfiguration);
         }
 
-        CNetworkProperties region_0 = RegionUtility.getRegionForNode("veh_0");
-        receiverMap.put(region_0, "veh_0");
-        CNetworkProperties region_1 = RegionUtility.getRegionForNode("veh_1");
-        receiverMap.put(region_1, "veh_1");
+        CNetworkProperties region0 = RegionUtility.getRegionForNode("veh_0");
+        receiverMap.put(region0, "veh_0");
+        CNetworkProperties region1 = RegionUtility.getRegionForNode("veh_1");
+        receiverMap.put(region1, "veh_1");
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         StreamResult streamResult =
@@ -255,24 +238,22 @@ public class GeocasterModuleTest {
 
         final Multimap<CNetworkProperties, String> receiverMap = ArrayListMultimap.create();
         String[] receivers = {"veh_0", "veh_1", "veh_2", "veh_3"};
-        SimulationData.INSTANCE.setPositionOfNode("veh_0", inRectangleKreuzberg.toCartesian());
-        SimulationData.INSTANCE.setPositionOfNode("veh_1", inRectangleGrosserStern.toCartesian());
-        SimulationData.INSTANCE.setPositionOfNode("veh_2", offRectangleKreuzberg.toCartesian());
-        SimulationData.INSTANCE.setPositionOfNode("veh_3", offRectangleTempelhof.toCartesian());
-
-
+        SimulationData.INSTANCE.setPositionOfNode(receivers[0], inRectangleKreuzberg.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[1], inRectangleGrosserStern.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[2], offRectangleKreuzberg.toCartesian());
+        SimulationData.INSTANCE.setPositionOfNode(receivers[3], offRectangleTempelhof.toCartesian());
 
         for (String receiver : receivers) {
             CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 400 * DATA.BIT, 400 * DATA.BIT);
             SimulationData.INSTANCE.setCellConfigurationOfNode(receiver, cellConfiguration);
         }
 
-        CNetworkProperties region_0 = RegionUtility.getRegionForNode("veh_0");
-        receiverMap.put(region_0, "veh_0");
-        CNetworkProperties region_1 = RegionUtility.getRegionForNode("veh_1");
-        receiverMap.put(region_1, "veh_1");
-        CNetworkProperties region_2 = RegionUtility.getRegionForNode("veh_2");
-        receiverMap.put(region_2, "veh_2");
+        CNetworkProperties region0 = RegionUtility.getRegionForNode("veh_0");
+        receiverMap.put(region0, "veh_0");
+        CNetworkProperties region1 = RegionUtility.getRegionForNode("veh_1");
+        receiverMap.put(region1, "veh_1");
+        CNetworkProperties region2 = RegionUtility.getRegionForNode("veh_2");
+        receiverMap.put(region2, "veh_2");
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         StreamResult streamResult =

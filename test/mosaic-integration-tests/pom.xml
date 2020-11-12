@@ -53,6 +53,23 @@
             <version>${mosaic.version}</version>
             <scope>test</scope>
         </dependency>
+        <!--For applications-->
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-rti-core</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-application</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-objects</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -65,6 +82,7 @@
                         <id>create-test-jar-with-rules</id>
                         <configuration>
                             <includes>
+                                <include>org/eclipse/mosaic/test/app/**</include>
                                 <include>org/eclipse/mosaic/test/junit/**</include>
                             </includes>
                         </configuration>

@@ -32,30 +32,5 @@
             },
             "capacity": 42200000
         }
-    },
-    "servers": [
-        {
-            "id": "RoundTripServer",
-            "uplink": {
-                "delay": {
-                    "type": "ConstantDelay",
-                    "delay": "50 ms"
-                },
-                "transmission": {
-                    "lossProbability": 0.0
-                }
-            },
-            "downlink": {
-                "unicast": {
-                    "delay": {
-                        "type": "ConstantDelay",
-                        "delay": "50 ms"
-                    },
-                    "transmission": {
-                        "lossProbability": 0.0
-                    }
-                }
-            }
-        }
-    ]
+    }
 }

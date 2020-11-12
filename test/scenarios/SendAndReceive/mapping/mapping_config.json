@@ -1,0 +1,113 @@
+{
+    "prototypes": [
+        {
+            "name": "VEH",
+            "accel": 1.5,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 10.0,
+            "minGap": 2.5,
+            "sigma": 0,
+            "tau": 1
+        },
+        {
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.ReceiveMsgAppCell" ],
+            "name": "CRSU"
+        },
+        {
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.ReceiveMsgAppAdHoc" ],
+            "name": "ARSU"
+        }
+    ],
+    "tmcs": [
+        {
+            "group": "RoundTripServer",
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage" ],
+            "inductionLoops": [ ],
+            "laneAreaDetectors": [ ]
+        }
+    ],
+    "servers": [
+        {
+            "name": "NackReceiver",
+            "group": "PerfectTransmissionServer",
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.NackReceivingServer" ]
+        },
+        {
+            "name": "LimitedCapacityServer",
+            "group": "PerfectTransmissionServer",
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LimitedCapacityServer" ]
+        },
+        {
+            "group": "LossyServer",
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LossyServer" ]
+        }
+    ],
+    "rsus": [
+        {
+            "position": {
+                "latitude": 52.51274898868233,
+                "longitude": 13.325380682945251
+            },
+            "name": "CRSU"
+        },
+        {
+            "position": {
+                "latitude": 52.51284856203302,
+                "longitude": 13.326853215694427
+            },
+            "name": "CRSU"
+        },
+        {
+            "position": {
+                "latitude": 52.51294895133039,
+                "longitude": 13.328324407339096
+            },
+            "name": "CRSU"
+        },
+        {
+            "position": {
+                "latitude": 52.512787961065634,
+                "longitude": 13.326853215694427
+            },
+            "name": "ARSU"
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 0.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [
+                {
+                    "name": "VEH",
+                    "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST\", 150d)" ]
+                }
+            ]
+        },
+        {
+            "startingTime": 160.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [
+                {
+                    "name": "VEH",
+                    "applications": [
+                        "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST_MBMS\", 150d, 300l, 400l)"
+                    ]
+                }
+            ]
+        },
+        {
+            "startingTime": 300.0,
+            "route": 0,
+            "maxNumberVehicles": 1,
+            "types": [
+                {
+                    "name": "VEH",
+                    "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.ReceiveAndReturnRoundTripMessage" ]
+                }
+            ]
+        }
+    ]
+}

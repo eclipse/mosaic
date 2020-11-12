@@ -43,7 +43,7 @@ public final class CCell {
     /**
      * Measure the bandwidth between regions.
      */
-    public List<BandwidthMeasurement> bandwidthMeasurements = new ArrayList<>();
+    public List<CBandwidthMeasurement> bandwidthMeasurements = new ArrayList<>();
 
     /**
      * relative path to the network configuration file (default: network.json)
@@ -61,7 +61,7 @@ public final class CCell {
                 networkConfigurationFile, regionConfigurationFile);
     }
 
-    public static class BandwidthMeasurement {
+    public static class CBandwidthMeasurement {
 
         /**
          * Measure the bandwidth of messages which originate in this region (use wildcard * for all regions).

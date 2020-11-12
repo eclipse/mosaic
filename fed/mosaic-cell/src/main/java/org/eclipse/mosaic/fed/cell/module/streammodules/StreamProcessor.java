@@ -201,15 +201,16 @@ public class StreamProcessor {
 
         // When the bandwidth is sufficient go on and send the packet
         if (!CapacityUtility.isCapacitySufficient(input.mode, input.region, input.nodeConfiguration, neededBandwidth)) {
+            // FIXME: maybe add log for slower transmission
             // When the bandwidth is not sufficient, check whether enough bandwidth is available to start a new transmission
             if (CapacityUtility.isAvailable(input.mode, input.region, input.nodeConfiguration)) {
-                StreamModulesDebugLogger.logChannelCapacityExceeded(log, input, result.messageEndTime, neededBandwidth);
                 // Adapt the delay/the bandwidth and send packet
                 long availableBandwidthInBps = CapacityUtility.availableCapacity(input.mode, input.region, input.nodeConfiguration);
                 long actualDelayInNs = CapacityUtility.calculateNeededDelay(messageSize * prPlAttempts, availableBandwidthInBps);
                 neededBandwidth = availableBandwidthInBps;
                 result.messageEndTime = input.messageStartTime + actualDelayInNs;
             } else {
+                StreamModulesDebugLogger.logChannelCapacityExceeded(log, input, result.messageEndTime, neededBandwidth);
                 // Drop packet since not enough bandwidth is available
                 result.disableProcessing();
                 if (!RegionCapacityUtility.isAvailable(input.mode, input.region)) {

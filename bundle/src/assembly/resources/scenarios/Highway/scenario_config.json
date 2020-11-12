@@ -27,7 +27,7 @@
         "application": true,
         "output": true,
         "sns": false,
-        "cell": true,
+        "cell": false,
         "sumo": true
     }
 }
