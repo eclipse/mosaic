@@ -54,6 +54,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.io.File;
@@ -239,12 +240,17 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         Validate.notNull(interaction.getConfiguration(), "CellConfiguration is null");
         long interactionTime = interaction.getTime();
         CellConfiguration cellConfiguration = interaction.getConfiguration();
-        if (cellConfiguration.getMaxDownlinkBitrate() == null || cellConfiguration.getMaxUplinkBitrate() == null) {
-            cellConfiguration.setBitrates(
-                    ConfigurationData.INSTANCE.getNetworkConfig().defaultDownlinkCapacity,
-                    ConfigurationData.INSTANCE.getNetworkConfig().defaultUplinkCapacity
-            );
-        }
+
+        cellConfiguration.setBitrates(
+                ObjectUtils.defaultIfNull(
+                        cellConfiguration.getMaxDownlinkBitrate(),
+                        ConfigurationData.INSTANCE.getNetworkConfig().defaultDownlinkCapacity
+                ),
+                ObjectUtils.defaultIfNull(
+                        cellConfiguration.getMaxUplinkBitrate(),
+                        ConfigurationData.INSTANCE.getNetworkConfig().defaultUplinkCapacity
+                )
+        );
 
         final String nodeId = cellConfiguration.getNodeId();
         final boolean isVehicle = registeredVehicles.containsKey(nodeId);
@@ -591,7 +597,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         if (serverProperties != null) {
             registeredServers.put(serverName, serverProperties);
         } else {
-            log.info(
+            log.warn(
                     "No server properties for server group \"{}\" found in \"{}\" config-file."
                             + " If you intend to use cell-communication with this unit please add a configuration.",
                     serverGroup, ConfigurationData.INSTANCE.getCellConfig().networkConfigurationFile

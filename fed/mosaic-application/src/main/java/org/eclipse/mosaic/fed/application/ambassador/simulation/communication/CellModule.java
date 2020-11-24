@@ -74,7 +74,8 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
 
     /**
      * Convenience method to enable the cell module with bare minimum default values.
-     * Note: When using this method, no bitrates will be set. This could cause issues.
+     * Note: When using this method, no bitrates will be set. You won't be able to send
+     * CAMs, however when configuring servers default bitrates will be set in the Cell-module.
      * If you want to set these values use {@link #enable(CellModuleConfiguration)}
      * or {@link #enableWithCamDefaults()} to use CAM defaults.
      */
@@ -122,16 +123,17 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             log.warn("sendCAM: Cell communication disabled (!cellModule.isEnabled()).");
             return null;
         }
-        if (configuration == null) {
+        CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
+        if (configuration == null || camConfiguration == null) {
             log.warn("sendCAM: No camConfiguration with addressingMode and geoRadius given.");
             return null;
         }
         final MessageRouting routing;
-        if (configuration.getCamConfiguration().getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
-            routing = createMessageRouting().topoCast(configuration.getCamConfiguration().getTopocastReceiver());
+        if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
+            routing = createMessageRouting().topoCast(camConfiguration.getTopocastReceiver());
         } else {
-            final GeoCircle destination = new GeoCircle(owner.getPosition(), configuration.getCamConfiguration().getGeoRadius());
-            if (configuration.getCamConfiguration().getAddressingMode().equals(DestinationType.CELL_GEOCAST)) {
+            final GeoCircle destination = new GeoCircle(owner.getPosition(), camConfiguration.getGeoRadius());
+            if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_GEOCAST)) {
                 routing = createMessageRouting().geoBroadcastBasedOnUnicast(destination);
             } else {
                 routing = createMessageRouting().geoBroadcastMbms(destination);

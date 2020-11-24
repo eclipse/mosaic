@@ -87,7 +87,7 @@ public class CellConfiguration implements Serializable {
             this.availableDownlinkBitrate = this.maxDownlinkBitrate;
             this.minDownlinkBitrate = (long) (this.maxDownlinkBitrate * MIN_BITRATE_PORTION);
             if (this.minDownlinkBitrate == 0) {
-                throw new IllegalArgumentException("Maxim downlink bitrate too small");
+                throw new IllegalArgumentException("Maximum downlink bitrate too small");
             }
         }
         if (maxUplinkBitrate != null) {
@@ -97,7 +97,7 @@ public class CellConfiguration implements Serializable {
             this.availableUplinkBitrate = this.maxUplinkBitrate;
             this.minUplinkBitrate = (long) (this.maxUplinkBitrate * MIN_BITRATE_PORTION);
             if (this.minUplinkBitrate == 0) {
-                throw new IllegalArgumentException("Maxim uplink bitrate too small.");
+                throw new IllegalArgumentException("Maximum uplink bitrate too small.");
             }
         }
     }
