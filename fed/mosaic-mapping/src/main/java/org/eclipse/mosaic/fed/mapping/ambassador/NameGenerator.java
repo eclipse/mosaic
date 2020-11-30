@@ -60,4 +60,14 @@ public class NameGenerator {
             return "prot_" + prototypeCounter.getAndIncrement();
         }
     }
+
+    static void reset() {
+        vehicleCounter.set(0);
+        rsuCounter.set(0);
+        tmcCounter.set(0);
+        serverCounter.set(0);
+        tlCounter.set(0);
+        chargingStationCounter.set(0);
+        prototypeCounter.set(0);
+    }
 }
