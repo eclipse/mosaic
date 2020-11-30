@@ -593,7 +593,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
     }
 
     private void registerServer(String serverName, String serverGroup) {
-        CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegion(serverGroup);
+        CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegionFromConfiguration(serverGroup);
         if (serverProperties != null) {
             registeredServers.put(serverName, serverProperties);
         } else {

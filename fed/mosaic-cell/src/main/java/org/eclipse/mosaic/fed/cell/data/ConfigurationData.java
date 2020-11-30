@@ -95,14 +95,20 @@ public enum ConfigurationData {
     /**
      * Checks if server has been configured in network.json and
      * return it.
+     * Note: This returns a copy of the configuration in case multiple servers
+     * use the same configuration.
      *
      * @param serverGroupName name of the defined group in mapping
      * @return the configured {@code CNetworkProperties} if server region exists, else {@code null}
      */
-    public CNetworkProperties getServerRegion(String serverGroupName) {
+    public CNetworkProperties getServerRegionFromConfiguration(String serverGroupName) {
         for (CNetworkProperties server: networkConfig.servers) {
             if (server.id.equals(serverGroupName)) {
-                return server;
+                try {
+                    return (CNetworkProperties) server.clone();
+                } catch (CloneNotSupportedException e) {
+                    break;
+                }
             }
         }
         return null;

@@ -73,20 +73,13 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     }
 
     /**
-     * Convenience method to enable the cell module with bare minimum default values.
-     * Note: When using this method, no bitrates will be set. You won't be able to send
-     * CAMs, however when configuring servers default bitrates will be set in the Cell-module.
+     * Convenience method to enable the cell module with bare minimum default values
+     * and a default configuration for CAMs using the {@link #DEFAULT_CAM_GEO_RADIUS}
+     * Note: When using this method, no bitrates will be set and default values
+     * configured in the Cell module will be used.
      * If you want to set these values use {@link #enable(CellModuleConfiguration)}
-     * or {@link #enableWithCamDefaults()} to use CAM defaults.
      */
     public void enable() {
-        enable(new CellModuleConfiguration());
-    }
-
-    /**
-     * Convenience method to enable the cell module using default CAM configuration.
-     */
-    public void enableWithCamDefaults() {
         enable(new CellModuleConfiguration().camConfiguration(DEFAULT_CAM_GEO_RADIUS));
     }
 
