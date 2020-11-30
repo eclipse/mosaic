@@ -112,6 +112,9 @@ public class SpawningFramework {
         // config refers to meta parameters like start-/end-time, flow noise etc.
         this.config = mappingConfiguration.config;
 
+        // initialize Name Generator
+        NameGenerator.reset();
+
         // Prototypes
         if (mappingConfiguration.prototypes != null) {
             for (CPrototype prototypeConfiguration : mappingConfiguration.prototypes) {
