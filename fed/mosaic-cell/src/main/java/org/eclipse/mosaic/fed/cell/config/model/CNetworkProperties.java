@@ -142,9 +142,4 @@ public class CNetworkProperties implements Cloneable {
         builder.append("downlink.capacity", downlink.capacity);
         return builder.toString();
     }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 }

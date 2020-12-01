@@ -130,18 +130,6 @@ public final class CapacityUtility {
     }
 
     /**
-     * Frees the capacity in the region and for the node. This method is normally called when a transmission is finished.
-     *
-     * @param region                The region where the capacity is freed.
-     * @param nodeCellConfiguration The cell configuration of the node where the capacity is freed.
-     * @param freed                 The capacity that should be freed.
-     */
-    public static void freeCapacityUp(@Nonnull CNetworkProperties region, CellConfiguration nodeCellConfiguration, long freed) {
-        RegionCapacityUtility.freeCapacityUp(region, freed);
-        NodeCapacityUtility.freeCapacityUp(nodeCellConfiguration, freed);
-    }
-
-    /**
      * Helper-function to get the effective message length in bits.
      *
      * @param msg V2X message.
