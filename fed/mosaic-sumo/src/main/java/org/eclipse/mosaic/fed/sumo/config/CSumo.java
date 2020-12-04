@@ -84,6 +84,12 @@ public class CSumo implements Serializable {
     public boolean writeVehicleDepartures = false;
 
     /**
+     * If set to true, the ambassador subscribes only to vehicles with mapped applications. Otherwise,
+     * all vehicles are subscribed, regardless of their mapped applications.
+     */
+    public boolean subscribeOnlyVehiclesWithApps = false;
+
+    /**
      * A optional list of subscriptions for each vehicle in the simulation. The less subscriptions given,
      * the faster the simulation. Per default (if this list is set to null), all subscriptions are activated.
      * Please note, that some components expect specific information, such as the road position. If those information

@@ -247,7 +247,6 @@ public class SumoRouteFileCreator {
             if (vehicleTypesEntry.getValue().getVehicleClass() == VehicleClass.ElectricVehicle) {
                 attributes.putIfAbsent("emissionClass", "Energy/unknown");
             }
-
         }
         return mergedTypes;
     }

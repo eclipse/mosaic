@@ -13,7 +13,19 @@
     <artifactId>mosaic-sumo</artifactId>
     <name>Eclipse MOSAIC SUMO Ambassador</name>
 
+    <repositories>
+        <repository>
+            <id>sumo-maven-repository</id>
+            <url>file://${basedir}/lib</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>org.eclipse.sumo</groupId>
+            <artifactId>libsumojni</artifactId>
+            <version>1.7.0</version>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-rti-api</artifactId>

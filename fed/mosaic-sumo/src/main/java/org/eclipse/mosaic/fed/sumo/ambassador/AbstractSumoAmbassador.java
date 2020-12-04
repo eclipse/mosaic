@@ -31,14 +31,15 @@ import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SLOWD
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SPEED_CHANGE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_STOP_REQ;
 
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.SumoVersion;
+import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoLaneChangeMode;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoSpeedMode;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
+import org.eclipse.mosaic.fed.sumo.bridge.traci.VehicleSetMoveToXY;
+import org.eclipse.mosaic.fed.sumo.bridge.traci.VehicleSetRemove;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
-import org.eclipse.mosaic.fed.sumo.traci.SumoVersion;
-import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSetMoveToXY;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSetRemove;
-import org.eclipse.mosaic.fed.sumo.traci.complex.SumoLaneChangeMode;
-import org.eclipse.mosaic.fed.sumo.traci.complex.SumoSpeedMode;
-import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
 import org.eclipse.mosaic.fed.sumo.util.TrafficSignManager;
 import org.eclipse.mosaic.interactions.application.SumoTraciRequest;
@@ -140,9 +141,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     long nextTimeStep;
 
     /**
-     * Connection to SUMO TraCI.
+     * Connection to SUMO.
      */
-    TraciClient traci;
+    Bridge bridge;
 
     /**
      * Socket with which data is exchanged with SUMO.
@@ -388,7 +389,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         // Else connect to the TraCI server, if Sumo is already started no
         // change of the route file is necessary
         if (descriptor == null) {
-            initTraci();
+            initSumoConnection();
         }
 
         try {
@@ -404,25 +405,25 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      *
      * @throws InternalFederateException Exception is thrown if an error is occurred while execution of a federate.
      */
-    protected void initTraci() throws InternalFederateException {
-        if (traci != null) {
+    protected void initSumoConnection() throws InternalFederateException {
+        if (bridge != null) {
             return;
         }
 
         try {
             // whenever initTraci is called the cached paths SHOULD be available
             // just to be sure make a failsafe
-            traci = new TraciClient(sumoConfig, socket);
+            bridge = new TraciClientBridge(sumoConfig, socket);
 
-            if (traci.getCurrentVersion().getApiVersion() < SumoVersion.LOWEST.getApiVersion()) {
+            if (bridge.getCurrentVersion().getApiVersion() < SumoVersion.LOWEST.getApiVersion()) {
                 throw new InternalFederateException(
                         String.format("The installed version of SUMO ( <= %s) is not compatible with Eclipse MOSAIC."
                                         + " SUMO version >= %s is required.",
-                                traci.getCurrentVersion().getSumoVersion(),
+                                bridge.getCurrentVersion().getSumoVersion(),
                                 SumoVersion.LOWEST.getSumoVersion())
                 );
             }
-            log.info("Current API version of SUMO is {} (=SUMO {})", traci.getCurrentVersion().getApiVersion(), traci.getCurrentVersion().getSumoVersion());
+            log.info("Current API version of SUMO is {} (=SUMO {})", bridge.getCurrentVersion().getApiVersion(), bridge.getCurrentVersion().getSumoVersion());
         } catch (IOException e) {
             log.error("Error while trying to initialize SUMO ambassador.", e);
             throw new InternalFederateException("Could not initialize SUMO ambassador. Please see Traffic.log for details.", e);
@@ -430,7 +431,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
         try {
             File sumoWorkingDir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
-            trafficSignManager.configure(traci, sumoWorkingDir);
+            trafficSignManager.configure(bridge, sumoWorkingDir);
         } catch (Exception e) {
             log.error("Could not load TraffiSignManager. No traffic signs will be displayed.");
         }
@@ -541,7 +542,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
         for (String removed : vehicleUpdates.getRemovedNames()) {
             if (externalVehicleMap.containsKey(removed)) {
-                traci.getSimulationControl().removeVehicle(removed, VehicleSetRemove.Reason.ARRIVED);
+                bridge.getSimulationControl().removeVehicle(removed, VehicleSetRemove.Reason.ARRIVED);
             }
         }
     }
@@ -565,7 +566,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     vehicleSlowDown.getInterval()
             );
         }
-        traci.getVehicleControl().slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
+        bridge.getVehicleControl().slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
     }
 
     /**
@@ -624,7 +625,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     VEHICLE_RESUME_REQ, TIME.format(vehicleResume.getTime()), vehicleResume.getVehicleId());
         }
 
-        traci.getVehicleControl().resume(vehicleResume.getVehicleId());
+        bridge.getVehicleControl().resume(vehicleResume.getVehicleId());
     }
 
     /**
@@ -634,7 +635,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      */
     private synchronized void receiveInteraction(SumoTraciRequest sumoTraciRequest) throws InternalFederateException {
         try {
-            if (log.isInfoEnabled()) {
+            if (bridge instanceof TraciClientBridge) {
                 log.info(
                         "{} at simulation time {}: " + "length=\"{}\", id=\"{}\" data={}",
                         SUMO_TRACI_BYTE_ARRAY_MESSAGE,
@@ -643,10 +644,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         sumoTraciRequest.getRequestId(),
                         sumoTraciRequest.getCommand()
                 );
-            }
 
-            SumoTraciResult sumoTraciResult = traci.writeByteArrayMessage(sumoTraciRequest.getRequestId(), sumoTraciRequest.getCommand());
-            rti.triggerInteraction(new SumoTraciResponse(sumoTraciRequest.getTime(), sumoTraciResult));
+                SumoTraciResult sumoTraciResult =
+                        ((TraciClientBridge) bridge).writeByteArrayMessage(sumoTraciRequest.getRequestId(), sumoTraciRequest.getCommand());
+                rti.triggerInteraction(new SumoTraciResponse(sumoTraciRequest.getTime(), sumoTraciResult));
+            } else {
+                log.warn("SumoTraciRequests are not supported.");
+            }
         } catch (InternalFederateException | IllegalValueException e) {
             throw new InternalFederateException(e);
         }
@@ -659,7 +663,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      */
     private synchronized void receiveInteraction(VehicleRouteChange vehicleRouteChange) throws InternalFederateException {
         if (log.isInfoEnabled()) {
-            VehicleData lastKnownVehicleData = traci.getSimulationControl().getLastKnownVehicleData(vehicleRouteChange.getVehicleId());
+            VehicleData lastKnownVehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleRouteChange.getVehicleId());
             log.info(
                     "{} at simulation time {}: vehicleId=\"{}\", newRouteId={}, current edge: {}",
                     VEHICLE_ROUTE_CHANGE_REQ, TIME.format(vehicleRouteChange.getTime()),
@@ -668,10 +672,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
 
-        traci.getVehicleControl().setRouteById(vehicleRouteChange.getVehicleId(), vehicleRouteChange.getRouteId());
+        bridge.getVehicleControl().setRouteById(vehicleRouteChange.getVehicleId(), vehicleRouteChange.getRouteId());
 
         if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_ROUTE)) {
-            traci.getVehicleControl().highlight(vehicleRouteChange.getVehicleId(), Color.BLUE);
+            bridge.getVehicleControl().highlight(vehicleRouteChange.getVehicleId(), Color.BLUE);
         }
     }
 
@@ -723,12 +727,12 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     return;
             }
 
-            traci.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, vehicleLaneChange.getDuration());
+            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, vehicleLaneChange.getDuration());
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
-                VehicleData vehicleData = traci.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
+                VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
                 if (vehicleData.getRoadPosition().getLaneIndex() != targetLaneId) {
-                    traci.getVehicleControl().highlight(vehicleLaneChange.getVehicleId(), Color.RED);
+                    bridge.getVehicleControl().highlight(vehicleLaneChange.getVehicleId(), Color.RED);
                 }
             }
 
@@ -757,7 +761,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                             "Changing the current phase of traffic light group '{}' to phase with index '{}'",
                             trafficLightGroupId, trafficLightStateChange.getPhaseIndex()
                     );
-                    traci.getTrafficLightControl().setPhaseIndex(trafficLightGroupId, trafficLightStateChange.getPhaseIndex());
+                    bridge.getTrafficLightControl().setPhaseIndex(trafficLightGroupId, trafficLightStateChange.getPhaseIndex());
                     break;
 
                 case RemainingDuration:
@@ -766,7 +770,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                             "Changing remaining phase duration of traffic light group='{}' to '{}' seconds",
                             trafficLightGroupId, durationInSeconds
                     );
-                    traci.getTrafficLightControl().setPhaseRemainingDuration(trafficLightGroupId, durationInSeconds);
+                    bridge.getTrafficLightControl().setPhaseRemainingDuration(trafficLightGroupId, durationInSeconds);
                     break;
 
                 case ProgramId:
@@ -774,7 +778,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                             "Changing program of traffic light group '{}' to program id '{}'",
                             trafficLightGroupId, trafficLightStateChange.getProgramId()
                     );
-                    traci.getTrafficLightControl().setProgramById(trafficLightGroupId, trafficLightStateChange.getProgramId());
+                    bridge.getTrafficLightControl().setProgramById(trafficLightGroupId, trafficLightStateChange.getProgramId());
                     break;
 
                 case ChangeProgramWithPhase:
@@ -782,23 +786,23 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                             "Changing program of traffic light group '{}' to program id '{}' and setting the phase to '{}'",
                             trafficLightGroupId, trafficLightStateChange.getProgramId(), trafficLightStateChange.getPhaseIndex()
                     );
-                    traci.getTrafficLightControl().setProgramById(trafficLightGroupId, trafficLightStateChange.getProgramId());
-                    traci.getTrafficLightControl().setPhaseIndex(trafficLightGroupId, trafficLightStateChange.getPhaseIndex());
+                    bridge.getTrafficLightControl().setProgramById(trafficLightGroupId, trafficLightStateChange.getProgramId());
+                    bridge.getTrafficLightControl().setPhaseIndex(trafficLightGroupId, trafficLightStateChange.getPhaseIndex());
                     break;
 
                 case ChangeToCustomState:
                     log.info("Changing to custom states for traffic light group '{}'.", trafficLightGroupId);
-                    traci.getTrafficLightControl().setPhase(trafficLightGroupId, trafficLightStateChange.getCustomStateList());
+                    bridge.getTrafficLightControl().setPhase(trafficLightGroupId, trafficLightStateChange.getCustomStateList());
                     break;
                 default:
                     log.warn("Discard this TrafficLightStateChange interaction (paramType={}).", trafficLightStateChange.getParameterType());
                     return;
             }
 
-            String programId = traci.getTrafficLightControl().getCurrentProgram(trafficLightGroupId);
-            int phaseIndex = traci.getTrafficLightControl().getCurrentPhase(trafficLightGroupId);
-            long assumedNextTimeSwitch = (long) (traci.getTrafficLightControl().getNextSwitchTime(trafficLightGroupId) * TIME.SECOND);
-            List<TrafficLightState> currentStates = traci.getTrafficLightControl().getCurrentStates(trafficLightGroupId);
+            String programId = bridge.getTrafficLightControl().getCurrentProgram(trafficLightGroupId);
+            int phaseIndex = bridge.getTrafficLightControl().getCurrentPhase(trafficLightGroupId);
+            long assumedNextTimeSwitch = (long) (bridge.getTrafficLightControl().getNextSwitchTime(trafficLightGroupId) * TIME.SECOND);
+            List<TrafficLightState> currentStates = bridge.getTrafficLightControl().getCurrentStates(trafficLightGroupId);
 
             Map<String, TrafficLightGroupInfo> changedTrafficLightGroupInfo = new HashMap<>();
             changedTrafficLightGroupInfo.put(trafficLightGroupId, new TrafficLightGroupInfo(
@@ -841,14 +845,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         switch (vehicleSpeedChange.getType()) {
             case RESET:
                 // reset speed to car-following rules
-                traci.getVehicleControl().setSpeed(vehicleSpeedChange.getVehicleId(), -1.0);
+                bridge.getVehicleControl().setSpeed(vehicleSpeedChange.getVehicleId(), -1.0);
                 break;
             case WITH_INTERVAL:
                 if (vehicleSpeedChange.getInterval() > 0) {
                     // set speed smoothly with given interval
                     final long changeSpeedTimestep = vehicleSpeedChange.getTime() + (vehicleSpeedChange.getInterval() * TIME.MILLI_SECOND);
                     log.debug("slow down vehicle {} and schedule change speed event for timestep {} ns ", vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
-                    traci.getVehicleControl()
+                    bridge.getVehicleControl()
                             .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(), vehicleSpeedChange.getInterval());
 
                     // set speed permanently after given interval (in the future) via the event scheduler
@@ -857,7 +861,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     );
                 } else {
                     // set speed immediately
-                    traci.getVehicleControl().setSpeed(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed());
+                    bridge.getVehicleControl().setSpeed(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed());
                 }
                 break;
             case WITH_FORCED_ACCELERATION:
@@ -887,7 +891,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
 
-        traci.getSimulationControl().subscribeForInductionLoop(
+        bridge.getSimulationControl().subscribeForInductionLoop(
                 inductionLoopDetectorSubscription.getInductionLoopId(),
                 inductionLoopDetectorSubscription.getTime(),
                 getEndTime()
@@ -909,7 +913,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
 
-        traci.getSimulationControl().subscribeForLaneArea(
+        bridge.getSimulationControl().subscribeForLaneArea(
                 laneAreaDetectorSubscription.getLaneAreaId(),
                 laneAreaDetectorSubscription.getTime(),
                 getEndTime()
@@ -931,7 +935,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
 
-        traci.getSimulationControl().subscribeForTrafficLight(
+        bridge.getSimulationControl().subscribeForTrafficLight(
                 trafficLightSubscription.getTrafficLightGroupId(),
                 trafficLightSubscription.getTime(),
                 this.getEndTime()
@@ -955,24 +959,24 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             List<String> allowedVehicleClasses = lanePropertyChange.getAllowedVehicleClasses().stream()
                     .map(SumoVehicleClassMapping::toSumo).collect(Collectors.toList());
-            traci.getSimulationControl().setLaneAllowedVehicles(laneId, allowedVehicleClasses);
+            bridge.getSimulationControl().setLaneAllowedVehicles(laneId, allowedVehicleClasses);
         }
 
         if (lanePropertyChange.getDisallowedVehicleClasses() != null) {
             log.info("Change disallowed vehicle classes of lane with ID={}", laneId);
 
             if (lanePropertyChange.getDisallowedVehicleClasses().containsAll(Lists.newArrayList(VehicleClass.values()))) {
-                traci.getSimulationControl().setLaneAllowedVehicles(laneId, Lists.newArrayList());
+                bridge.getSimulationControl().setLaneAllowedVehicles(laneId, Lists.newArrayList());
             } else {
                 List<String> disallowedVehicleClasses = lanePropertyChange.getDisallowedVehicleClasses().stream()
                         .map(SumoVehicleClassMapping::toSumo).collect(Collectors.toList());
-                traci.getSimulationControl().setLaneDisallowedVehicles(laneId, disallowedVehicleClasses);
+                bridge.getSimulationControl().setLaneDisallowedVehicles(laneId, disallowedVehicleClasses);
             }
         }
 
         if (lanePropertyChange.getMaxSpeed() != null) {
             log.info("Change max speed of lane with ID={}", laneId);
-            traci.getSimulationControl().setLaneMaxSpeed(laneId, lanePropertyChange.getMaxSpeed());
+            bridge.getSimulationControl().setLaneMaxSpeed(laneId, lanePropertyChange.getMaxSpeed());
         }
     }
 
@@ -989,7 +993,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         );
         log.info("Please keep in mind that the calculation of the sensor values may slow down the simulation.");
 
-        traci.getSimulationControl().enableDistanceSensors(
+        bridge.getSimulationControl().enableDistanceSensors(
                 vehicleDistanceSensorActivation.getVehicleId(),
                 vehicleDistanceSensorActivation.getMaximumLookahead(),
                 ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.FRONT),
@@ -1019,35 +1023,35 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         for (final VehicleParameter param : vehicleParametersChange.getVehicleParameters()) {
             switch (param.getParameterType()) {
                 case MAX_SPEED:
-                    traci.getVehicleControl().setMaxSpeed(veh_id, param.<Double>getValue());
+                    bridge.getVehicleControl().setMaxSpeed(veh_id, param.<Double>getValue());
                     break;
                 case IMPERFECTION:
-                    traci.getVehicleControl().setImperfection(veh_id, param.<Double>getValue());
+                    bridge.getVehicleControl().setImperfection(veh_id, param.<Double>getValue());
                     break;
                 case MAX_ACCELERATION:
-                    traci.getVehicleControl().setMaxAcceleration(veh_id, param.<Double>getValue());
+                    bridge.getVehicleControl().setMaxAcceleration(veh_id, param.<Double>getValue());
                     break;
                 case MAX_DECELERATION:
-                    traci.getVehicleControl().setMaxDeceleration(veh_id, param.<Double>getValue());
+                    bridge.getVehicleControl().setMaxDeceleration(veh_id, param.<Double>getValue());
                     break;
                 case MIN_GAP:
-                    traci.getVehicleControl().setMinimumGap(veh_id, param.<Double>getValue());
+                    bridge.getVehicleControl().setMinimumGap(veh_id, param.<Double>getValue());
                     break;
                 case REACTION_TIME:
-                    traci.getVehicleControl().setReactionTime(veh_id, param.<Double>getValue() + sumoConfig.timeGapOffset);
+                    bridge.getVehicleControl().setReactionTime(veh_id, param.<Double>getValue() + sumoConfig.timeGapOffset);
                     break;
                 case SPEED_FACTOR:
-                    traci.getVehicleControl().setSpeedFactor(veh_id, param.<Double>getValue());
+                    bridge.getVehicleControl().setSpeedFactor(veh_id, param.<Double>getValue());
                     break;
                 case LANE_CHANGE_MODE:
-                    traci.getVehicleControl().setLaneChangeMode(veh_id, SumoLaneChangeMode.translateFromEnum(param.getValue()));
+                    bridge.getVehicleControl().setLaneChangeMode(veh_id, SumoLaneChangeMode.translateFromEnum(param.getValue()));
                     break;
                 case SPEED_MODE:
-                    traci.getVehicleControl().setSpeedMode(veh_id, SumoSpeedMode.translateFromEnum(param.getValue()));
+                    bridge.getVehicleControl().setSpeedMode(veh_id, SumoSpeedMode.translateFromEnum(param.getValue()));
                     break;
                 case COLOR:
                     final Color color = param.getValue();
-                    traci.getVehicleControl().setColor(veh_id, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+                    bridge.getVehicleControl().setColor(veh_id, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
                     break;
                 default:
                     log.warn("Parameter type {} is not supported by SUMO Ambassador", param.getParameterType().name());
@@ -1083,11 +1087,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final byte stopFlag, final int duration)
             throws InternalFederateException {
 
-        double lengthOfLane = traci.getSimulationControl().getLengthOfLane(stopPos.getEdgeId(), stopPos.getLaneIndex());
+        double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getEdgeId(), stopPos.getLaneIndex());
         double stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
         stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
 
-        traci.getVehicleControl().stop(vehicleId, stopPos.getEdgeId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
+        bridge.getVehicleControl().stop(vehicleId, stopPos.getEdgeId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
     }
 
     /**
@@ -1115,7 +1119,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         if (event.getResource() instanceof VehicleSpeedChange) {
             VehicleSpeedChange cs = (VehicleSpeedChange) event.getResource();
             log.debug("Change the speed of vehicle {} at {} ns ", cs.getVehicleId(), event.getTime());
-            traci.getVehicleControl().setSpeed(cs.getVehicleId(), cs.getSpeed());
+            bridge.getVehicleControl().setSpeed(cs.getVehicleId(), cs.getSpeed());
         }
     }
 
@@ -1150,7 +1154,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
     @Override
     public synchronized void processTimeAdvanceGrant(long time) throws InternalFederateException {
-        if (socket == null) {
+        if (bridge instanceof TraciClientBridge && socket == null) {
             throw new InternalFederateException("Error during advance time (" + time + "): Sumo not yet ready.");
         }
 
@@ -1180,13 +1184,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             }
 
             if (firstAdvanceTime) {
-                initTraci();
+                initSumoConnection();
                 initializeTrafficLights(time);
                 firstAdvanceTime = false;
             }
 
             setExternalVehiclesToLatestPositions();
-            TraciSimulationStepResult simulationStepResult = traci.getSimulationControl().simulateUntil(time);
+            TraciSimulationStepResult simulationStepResult = bridge.getSimulationControl().simulateUntil(time);
 
             log.trace("Leaving advance time: {}", time);
             removeExternalVehiclesFromUpdates(simulationStepResult.getVehicleUpdates());
@@ -1229,11 +1233,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 latestVehicleData = external.getValue().getLastMovementInfo();
                 if (latestVehicleData == null) {
                     log.warn("No position data available for external vehicle {}", external.getKey());
-                    latestVehicleData = traci.getSimulationControl().getLastKnownVehicleData(external.getKey());
+                    latestVehicleData = bridge.getSimulationControl().getLastKnownVehicleData(external.getKey());
                 }
                 if (latestVehicleData != null) {
                     try {
-                        traci.getVehicleControl().moveToXY(
+                        bridge.getVehicleControl().moveToXY(
                                 external.getKey(),
                                 latestVehicleData.getPosition().toCartesian(),
                                 latestVehicleData.getHeading(),
@@ -1304,14 +1308,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      */
     VehicleRoute readRouteFromTraci(String routeId) throws InternalFederateException {
         // this route will always be generated with an empty list of nodes
-        return new VehicleRoute(routeId, traci.getRouteControl().getRouteEdges(routeId), new ArrayList<>(), 0d);
+        return new VehicleRoute(routeId, bridge.getRouteControl().getRouteEdges(routeId), new ArrayList<>(), 0d);
     }
 
     @Override
     public void finishSimulation() throws InternalFederateException {
-        log.info("Closing sumo traci");
-        if (traci != null) {
-            traci.close();
+        log.info("Closing SUMO connection");
+        if (bridge != null) {
+            bridge.close();
         }
         if (federateExecutor != null) {
             try {
@@ -1330,14 +1334,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @param time Current time
      */
     void initializeTrafficLights(long time) throws InternalFederateException, IOException, IllegalValueException {
-        List<String> tlgIds = traci.getSimulationControl().getTrafficLightGroupIds();
+        List<String> tlgIds = bridge.getSimulationControl().getTrafficLightGroupIds();
 
         List<TrafficLightGroup> tlgs = new ArrayList<>();
         Map<String, Collection<String>> tlgLaneMap = new HashMap<>();
         for (String tlgId : tlgIds) {
             try {
-                tlgs.add(traci.getTrafficLightControl().getTrafficLightGroup(tlgId));
-                Collection<String> ctrlLanes = traci.getTrafficLightControl().getControlledLanes(tlgId);
+                tlgs.add(bridge.getTrafficLightControl().getTrafficLightGroup(tlgId));
+                Collection<String> ctrlLanes = bridge.getTrafficLightControl().getControlledLanes(tlgId);
                 tlgLaneMap.put(tlgId, ctrlLanes);
             } catch (InternalFederateException e) {
                 log.warn("Could not add traffic light {} to simulation. Skipping.", tlgId);

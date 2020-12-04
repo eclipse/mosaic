@@ -31,12 +31,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
-import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
-import org.eclipse.mosaic.fed.sumo.traci.facades.TraciRouteFacade;
-import org.eclipse.mosaic.fed.sumo.traci.facades.TraciSimulationFacade;
-import org.eclipse.mosaic.fed.sumo.traci.facades.TraciTrafficLightFacade;
-import org.eclipse.mosaic.fed.sumo.traci.facades.TraciVehicleFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.RouteFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.SimulationFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.TrafficLightFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.VehicleFacade;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
@@ -89,7 +89,7 @@ public class SumoAmbassadorTest {
     @Rule
     public RuleChain chain = RuleChain.outerRule(temporaryFolder).around(testFileRule);
 
-    private TraciClient traciClientMock;
+    private TraciClientBridge traciClientBridgeMock;
     private RtiAmbassador rtiMock;
 
     private SumoAmbassador ambassador;
@@ -105,13 +105,13 @@ public class SumoAmbassadorTest {
         when(handleMock.getHost()).thenReturn(testHostConfig);
         when(handleMock.getId()).thenReturn("sumo");
 
-        traciClientMock = null;
+        traciClientBridgeMock = null;
         ambassador = new SumoAmbassador(new AmbassadorParameter("sumo", temporaryFolder.newFile("sumo/sumo_config.json"))) {
             @Override
-            protected void initTraci() throws InternalFederateException {
+            protected void initSumoConnection() throws InternalFederateException {
 
-                if (this.traci == null) {
-                    this.traci = createTraciClientMock();
+                if (this.bridge == null) {
+                    this.bridge = createTraciClientMock();
                     this.socket = mock(Socket.class);
                 }
             }
@@ -123,14 +123,14 @@ public class SumoAmbassadorTest {
 
     @Test
     public void initialize_doNotInitTraci() throws Throwable {
-        assertNull(traciClientMock);
+        assertNull(traciClientBridgeMock);
 
         // RUN
         ambassador.initialize(0, 1000 * TIME.SECOND);
 
         // ASSERT
         verify(rtiMock, times(1)).requestAdvanceTime(eq(0L), eq(0L), eq((byte) 1));
-        assertNull(traciClientMock);
+        assertNull(traciClientBridgeMock);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SumoAmbassadorTest {
         // processMessage(VehicleRoutesInitialization) but as we called it, we saved the reference to the
         // VehicleRoutesInitialization in the cachedVehicleTypesInitialization variable, so at the next
         // assertion traci will already be initialised (at the time of calling processMessage(VehicleTypesInitialization)
-        assertNull(traciClientMock);
+        assertNull(traciClientBridgeMock);
 
         // RUN
         final Map<String, VehicleType> types = new HashMap<>();
@@ -157,7 +157,7 @@ public class SumoAmbassadorTest {
         ambassador.processInteraction(vehicleTypesInitialization);
 
         // ASSERT
-        assertNotNull(traciClientMock);
+        assertNotNull(traciClientBridgeMock);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class SumoAmbassadorTest {
         ambassador.finishSimulation();
 
         // ASSERT
-        verify(traciClientMock).close();
+        verify(traciClientBridgeMock).close();
     }
 
     @Test
@@ -201,16 +201,16 @@ public class SumoAmbassadorTest {
         ambassador.advanceTime(0L);
 
         // ASSERT
-        verify(traciClientMock.getVehicleControl(), never()).setSpeed(anyString(), anyDouble());
-        verify(traciClientMock.getVehicleControl()).slowDown(eq("veh_0"), eq(10.0), eq(5000));
+        verify(traciClientBridgeMock.getVehicleControl(), never()).setSpeed(anyString(), anyDouble());
+        verify(traciClientBridgeMock.getVehicleControl()).slowDown(eq("veh_0"), eq(10.0), eq(5000));
 
         // RUN+ASSERT: setSpeed is NOT called after 4 seconds
         ambassador.advanceTime(4 * TIME.SECOND);
-        verify(traciClientMock.getVehicleControl(), never()).setSpeed(anyString(), anyDouble());
+        verify(traciClientBridgeMock.getVehicleControl(), never()).setSpeed(anyString(), anyDouble());
 
         // RUN+ASSERT: setSpeed is FINALLY called after 5 seconds interval
         ambassador.advanceTime(5 * TIME.SECOND);
-        verify(traciClientMock.getVehicleControl()).setSpeed(eq("veh_0"), eq(10.0));
+        verify(traciClientBridgeMock.getVehicleControl()).setSpeed(eq("veh_0"), eq(10.0));
     }
 
     @Test
@@ -232,7 +232,7 @@ public class SumoAmbassadorTest {
 
         // ASSERT not yet added (can not add vehicles before simulating the first step)
         verify(
-                traciClientMock.getSimulationControl(),
+                traciClientBridgeMock.getSimulationControl(),
                 never()).addVehicle(anyString(),
                 anyString(),
                 anyString(),
@@ -248,9 +248,9 @@ public class SumoAmbassadorTest {
         ambassador.advanceTime(time);
 
         // ASSERT vehicle has now been added
-        verify(traciClientMock.getSimulationControl(), times(1))
+        verify(traciClientBridgeMock.getSimulationControl(), times(1))
                 .addVehicle(eq("veh_0"), eq("0"), eq("default"), eq("0"), anyString(), eq("max"));
-        verify(traciClientMock.getSimulationControl(), times(1))
+        verify(traciClientBridgeMock.getSimulationControl(), times(1))
                 .subscribeForVehicle(eq("veh_0"), eq(0L), eq(1000 * TIME.SECOND));
     }
 
@@ -260,10 +260,10 @@ public class SumoAmbassadorTest {
         sendVehiclePathsAndTypes_doInitTraci();
 
         TrafficLightGroup tlg = new TrafficLightGroup("tl_0", new HashMap<>(1), Lists.newArrayList());
-        when(traciClientMock.getSimulationControl().getTrafficLightGroupIds()).thenReturn(Lists.newArrayList(tlg.getGroupId(), "unknown"));
+        when(traciClientBridgeMock.getSimulationControl().getTrafficLightGroupIds()).thenReturn(Lists.newArrayList(tlg.getGroupId(), "unknown"));
 
-        TraciTrafficLightFacade trafficLightControlMock = mock(TraciTrafficLightFacade.class);
-        when(traciClientMock.getTrafficLightControl()).thenReturn(trafficLightControlMock);
+        TrafficLightFacade trafficLightControlMock = mock(TrafficLightFacade.class);
+        when(traciClientBridgeMock.getTrafficLightControl()).thenReturn(trafficLightControlMock);
         when(trafficLightControlMock.getTrafficLightGroup(eq(tlg.getGroupId()))).thenReturn(tlg);
         when(trafficLightControlMock.getTrafficLightGroup(eq("unknown"))).thenThrow(new InternalFederateException());
         when(trafficLightControlMock.getControlledLanes(eq(tlg.getGroupId()))).thenReturn(Lists.newArrayList("edge_0", "edge_1"));
@@ -289,24 +289,24 @@ public class SumoAmbassadorTest {
         VehicleUpdates vehicleUpdates = new VehicleUpdates(time, Lists.newArrayList(vehicles), Lists.newArrayList(), Lists.newArrayList());
         TraciSimulationStepResult traciSimulationResult =
                 new TraciSimulationStepResult(vehicleUpdates, new TrafficDetectorUpdates(time, Lists.newArrayList(), Lists.newArrayList()), new TrafficLightUpdates(time, new HashMap<>()));
-        when(traciClientMock.getSimulationControl().simulateUntil(anyLong())).thenReturn(traciSimulationResult);
+        when(traciClientBridgeMock.getSimulationControl().simulateUntil(anyLong())).thenReturn(traciSimulationResult);
     }
 
-    private TraciClient createTraciClientMock() throws InternalFederateException {
-        this.traciClientMock = mock(TraciClient.class);
+    private TraciClientBridge createTraciClientMock() throws InternalFederateException {
+        this.traciClientBridgeMock = mock(TraciClientBridge.class);
 
-        TraciRouteFacade traciRouteFacade = mock(TraciRouteFacade.class);
-        when(traciClientMock.getRouteControl()).thenReturn(traciRouteFacade);
+        RouteFacade traciRouteFacade = mock(RouteFacade.class);
+        when(traciClientBridgeMock.getRouteControl()).thenReturn(traciRouteFacade);
 
-        TraciVehicleFacade traciVehicleFacade = mock(TraciVehicleFacade.class);
-        when(traciClientMock.getVehicleControl()).thenReturn(traciVehicleFacade);
+        VehicleFacade traciVehicleFacade = mock(VehicleFacade.class);
+        when(traciClientBridgeMock.getVehicleControl()).thenReturn(traciVehicleFacade);
 
-        TraciSimulationFacade traciSimulationFacade = mock(TraciSimulationFacade.class);
-        when(traciClientMock.getSimulationControl()).thenReturn(traciSimulationFacade);
+        SimulationFacade traciSimulationFacade = mock(SimulationFacade.class);
+        when(traciClientBridgeMock.getSimulationControl()).thenReturn(traciSimulationFacade);
 
-        when(traciClientMock.getRouteControl().getRouteIds()).thenReturn(Lists.newArrayList("0"));
+        when(traciClientBridgeMock.getRouteControl().getRouteIds()).thenReturn(Lists.newArrayList("0"));
 
-        return this.traciClientMock;
+        return this.traciClientBridgeMock;
     }
 
 }

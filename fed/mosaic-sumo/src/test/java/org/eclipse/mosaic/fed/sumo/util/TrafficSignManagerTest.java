@@ -21,8 +21,8 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
-import org.eclipse.mosaic.fed.sumo.traci.facades.TraciPoiFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.PoiFacade;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -63,17 +63,17 @@ public class TrafficSignManagerTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private TraciPoiFacade poiControlMock = Mockito.mock(TraciPoiFacade.class);
+    private PoiFacade poiControlMock = Mockito.mock(PoiFacade.class);
 
     private TrafficSignManager trafficSignManager;
 
     @Before
     public void setup() throws IOException {
-        final TraciClient traciClient = Mockito.mock(TraciClient.class);
-        when(traciClient.getPoiControl()).thenReturn(poiControlMock);
+        final TraciClientBridge traciClientBridge = Mockito.mock(TraciClientBridge.class);
+        when(traciClientBridge.getPoiControl()).thenReturn(poiControlMock);
 
         trafficSignManager = new TrafficSignManager(3.2);
-        trafficSignManager.configure(traciClient, temporaryFolder.getRoot());
+        trafficSignManager.configure(traciClientBridge, temporaryFolder.getRoot());
     }
 
     @Test

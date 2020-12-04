@@ -210,7 +210,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         routeCache.put(newRoute.getId(), newRoute);
         if (!sumoKnownRoutes.contains(newRoute.getId())) {
             sumoKnownRoutes.add(newRoute.getId());
-            traci.getRouteControl().addRoute(newRoute.getId(), newRoute.getEdgeIdList());
+            bridge.getRouteControl().addRoute(newRoute.getId(), newRoute.getEdgeIdList());
             log.debug("received newly propagated route {}", newRoute.getId());
         } else {
             log.debug("route has already been added to SUMO, ignoring id={}", newRoute.getId());
@@ -234,7 +234,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (cachedVehicleTypesInitialization != null && descriptor != null) {
             writeRouteFile(cachedVehicleTypesInitialization, interaction);
             startSumoLocal();
-            initTraci();
+            initSumoConnection();
             completeRoutes();
         }
         cachedVehicleRoutesInitialization = interaction;
@@ -252,14 +252,14 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (cachedVehicleRoutesInitialization != null && descriptor != null) {
             writeRouteFile(interaction, cachedVehicleRoutesInitialization);
             startSumoLocal();
-            initTraci();
+            initSumoConnection();
             completeRoutes();
         }
         cachedVehicleTypesInitialization = interaction;
     }
 
     private void completeRoutes() throws InternalFederateException {
-        for (String id : traci.getRouteControl().getRouteIds()) {
+        for (String id : bridge.getRouteControl().getRouteIds()) {
             if (!sumoKnownRoutes.contains(id)) {
                 VehicleRoute route = readRouteFromTraci(id);
                 sumoKnownRoutes.add(route.getId());
@@ -303,8 +303,11 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     }
                     sumoKnownRoutes.add(routeId);
 
-                    traci.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
-                    traci.getSimulationControl().subscribeForVehicle(vehicleId, interaction.getTime(), this.getEndTime());
+                    bridge.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
+
+                    if (!sumoConfig.subscribeOnlyVehiclesWithApps || !interaction.getMapping().getApplications().isEmpty()) {
+                        bridge.getSimulationControl().subscribeForVehicle(vehicleId, interaction.getTime(), this.getEndTime());
+                    }
 
                     applyChangesInVehicleTypeForVehicle(
                             vehicleId,
@@ -331,27 +334,27 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {
         if (!eq(actualVehicleType.getTau(), baseVehicleType.getTau())) {
             double minReactionTime = sumoConfig.updateInterval / 1000d;
-            traci.getVehicleControl().setReactionTime(
+            bridge.getVehicleControl().setReactionTime(
                     vehicleId, Math.max(minReactionTime, actualVehicleType.getTau() + sumoConfig.timeGapOffset)
             );
         }
         if (!eq(actualVehicleType.getMaxSpeed(), baseVehicleType.getMaxSpeed())) {
-            traci.getVehicleControl().setMaxSpeed(vehicleId, actualVehicleType.getMaxSpeed());
+            bridge.getVehicleControl().setMaxSpeed(vehicleId, actualVehicleType.getMaxSpeed());
         }
         if (!eq(actualVehicleType.getAccel(), baseVehicleType.getAccel())) {
-            traci.getVehicleControl().setMaxAcceleration(vehicleId, actualVehicleType.getAccel());
+            bridge.getVehicleControl().setMaxAcceleration(vehicleId, actualVehicleType.getAccel());
         }
         if (!eq(actualVehicleType.getDecel(), baseVehicleType.getDecel())) {
-            traci.getVehicleControl().setMaxDeceleration(vehicleId, actualVehicleType.getDecel());
+            bridge.getVehicleControl().setMaxDeceleration(vehicleId, actualVehicleType.getDecel());
         }
         if (!eq(actualVehicleType.getMinGap(), baseVehicleType.getMinGap())) {
-            traci.getVehicleControl().setMinimumGap(vehicleId, actualVehicleType.getMinGap());
+            bridge.getVehicleControl().setMinimumGap(vehicleId, actualVehicleType.getMinGap());
         }
         if (!eq(actualVehicleType.getLength(), baseVehicleType.getLength())) {
-            traci.getVehicleControl().setVehicleLength(vehicleId, actualVehicleType.getLength());
+            bridge.getVehicleControl().setVehicleLength(vehicleId, actualVehicleType.getLength());
         }
         if (!eq(actualVehicleType.getSpeedFactor(), baseVehicleType.getSpeedFactor())) {
-            traci.getVehicleControl().setSpeedFactor(vehicleId, actualVehicleType.getSpeedFactor());
+            bridge.getVehicleControl().setSpeedFactor(vehicleId, actualVehicleType.getSpeedFactor());
         }
     }
 
