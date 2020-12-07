@@ -116,11 +116,11 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             log.warn("sendCAM: Cell communication disabled (!cellModule.isEnabled()).");
             return null;
         }
-        CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
-        if (configuration == null || camConfiguration == null) {
+        if (configuration == null || configuration.getCamConfiguration() == null) {
             log.warn("sendCAM: No camConfiguration with addressingMode and geoRadius given.");
             return null;
         }
+        CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
         final MessageRouting routing;
         if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
             routing = createMessageRouting().topoCast(camConfiguration.getTopocastReceiver());
