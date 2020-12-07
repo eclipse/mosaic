@@ -41,6 +41,13 @@
         {
             "group": "LossyServer",
             "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LossyServer" ]
+        },
+        {
+            "group": "NoCellCommunication",
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.NoCellCommunicationServer" ]
+        },
+        {
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.NoCellCommunicationServer" ]
         }
     ],
     "rsus": [
