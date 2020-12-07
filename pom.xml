@@ -115,28 +115,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <!-- PURPOSE: Logging API -->
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${version.slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <!-- PURPOSE: Apache 2.0 licensed implementation of the findbugs annotations -->
-            <groupId>com.github.stephenc.findbugs</groupId>
-            <artifactId>findbugs-annotations</artifactId>
-            <version>${version.findbugs-annotations}</version>
-        </dependency>
-
-        <dependency>
-            <!-- PURPOSE: General Purpose functions -->
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${version.commons-lang3}</version>
-        </dependency>
-
-
         <!-- testing -->
         <dependency>
             <!-- PURPOSE: JUnit -->
@@ -169,6 +147,13 @@
                 <version>${version.logback}</version>
             </dependency>
             <dependency>
+                <!-- PURPOSE: Logging API -->
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${version.slf4j}</version>
+            </dependency>
+
+            <dependency>
                 <!-- PURPOSE: Required for providing variables in logback.xml -->
                 <groupId>org.codehaus.janino</groupId>
                 <artifactId>janino</artifactId>
@@ -180,6 +165,20 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${version.protobuf}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: Apache 2.0 licensed implementation of the findbugs annotations -->
+                <groupId>com.github.stephenc.findbugs</groupId>
+                <artifactId>findbugs-annotations</artifactId>
+                <version>${version.findbugs-annotations}</version>
+            </dependency>
+
+            <dependency>
+                <!-- PURPOSE: General Purpose functions -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons-lang3}</version>
             </dependency>
 
             <dependency>
@@ -528,7 +527,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.8.6</version>
                 <executions>
                     <execution>
                         <goals>
