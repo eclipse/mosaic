@@ -156,6 +156,10 @@ public class TrafficLightFacade {
             GeoPoint junctionPosition = getJunctionPosition.execute(bridge, trafficLightGroupId).getGeographicPosition();
 
             final List<SumoTrafficLightLogic> programDefinitions = getProgramDefinitions.execute(bridge, trafficLightGroupId);
+            if (programDefinitions.isEmpty()) {
+                throw new InternalFederateException("No programs found.");
+            }
+
             final Map<String, TrafficLightProgram> trafficLightPrograms = transformDefinitionsIntoPrograms(programDefinitions);
 
             final List<TrafficLightGetControlledLinks.TrafficLightControlledLink> controlledLinks

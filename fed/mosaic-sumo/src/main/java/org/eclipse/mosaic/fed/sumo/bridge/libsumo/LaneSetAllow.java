@@ -26,7 +26,7 @@ public class LaneSetAllow implements org.eclipse.mosaic.fed.sumo.bridge.api.Lane
     public void execute(Bridge traciCon, String laneId, List<String> allowedVClasses) {
         StringVector allowedVClassesVector = new StringVector();
         allowedVClasses.forEach(allowedVClassesVector::add);
-        Lane.setDisallowed(laneId, allowedVClassesVector);
+        Lane.setAllowed(laneId, allowedVClassesVector);
     }
 
 }

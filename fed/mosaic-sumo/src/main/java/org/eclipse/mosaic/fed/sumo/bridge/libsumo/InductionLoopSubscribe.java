@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 public class InductionLoopSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.InductionLoopSubscribe {
 
     public void execute(Bridge traciCon, String inductionLoopId, long startTime, long endTime) {
-        // we do not subscribe, but read data after each simulation step. There's no socket connection which would slow down this
+        SimulationSimulateStep.INDUCTION_LOOP_SUBSCRIPTIONS.add(inductionLoopId);
     }
 
 }

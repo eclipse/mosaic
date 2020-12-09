@@ -35,6 +35,6 @@ public class TrafficLightSubscribe implements org.eclipse.mosaic.fed.sumo.bridge
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     public void execute(Bridge traciCon, String trafficLightGroupId, long startTime, long endTime) {
-        // we do not subscribe, but read data after each simulation step. There's no socket connection which would slow down this
+        SimulationSimulateStep.TRAFFIC_LIGHT_SUBSCRIPTIONS.add(trafficLightGroupId);
     }
 }

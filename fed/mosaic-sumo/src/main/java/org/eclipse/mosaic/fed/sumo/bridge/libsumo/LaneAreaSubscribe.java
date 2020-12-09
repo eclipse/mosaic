@@ -19,6 +19,6 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 public class LaneAreaSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.LaneAreaSubscribe {
 
     public void execute(Bridge traciCon, String laneAreaId, long startTime, long endTime) {
-        // we do not subscribe, but read data after each simulation step. There's no socket connection which would slow down this
+        SimulationSimulateStep.LANE_AREA_SUBSCRIPTIONS.add(laneAreaId);
     }
 }

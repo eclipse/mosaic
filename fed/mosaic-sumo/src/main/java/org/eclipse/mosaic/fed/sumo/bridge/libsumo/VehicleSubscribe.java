@@ -19,6 +19,6 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 public class VehicleSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe {
 
     public void execute(Bridge traciCon, String vehicleId, long startTime, long endTime) {
-        // we do not subscribe, but read data after each simulation step. There's no socket connection which would slow down this
+        SimulationSimulateStep.VEHICLE_SUBSCRIPTIONS.add(vehicleId);
     }
 }

@@ -36,10 +36,24 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 import org.eclipse.sumo.libsumo.Vehicle;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationSimulateStep {
+
+    final static Set<String> VEHICLE_SUBSCRIPTIONS = new HashSet<>();
+    final static Set<String> INDUCTION_LOOP_SUBSCRIPTIONS = new HashSet<>();
+    final static Set<String> LANE_AREA_SUBSCRIPTIONS = new HashSet<>();
+    final static Set<String> TRAFFIC_LIGHT_SUBSCRIPTIONS = new HashSet<>();
+
+    public SimulationSimulateStep() {
+        VEHICLE_SUBSCRIPTIONS.clear();
+        INDUCTION_LOOP_SUBSCRIPTIONS.clear();
+        LANE_AREA_SUBSCRIPTIONS.clear();
+        TRAFFIC_LIGHT_SUBSCRIPTIONS.clear();
+    }
 
     public List<AbstractSubscriptionResult> execute(Bridge traciCon, long time) throws CommandException, InternalFederateException {
         Simulation.step((double) (time) / TIME.SECOND);
@@ -51,7 +65,6 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         readTrafficLights(results);
 
         return results;
-
     }
 
     private void readVehicles(List<AbstractSubscriptionResult> results) {
@@ -60,6 +73,10 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         String vehicle;
         for (int i = 0; i < vector.size(); i++) {
             vehicle = vector.get(i);
+
+            if (!VEHICLE_SUBSCRIPTIONS.contains(vehicle)) {
+                continue;
+            }
 
             VehicleSubscriptionResult result = new VehicleSubscriptionResult();
             result.id = vehicle;
@@ -92,6 +109,12 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
 
             results.add(result);
         }
+
+        StringVector arrived = Simulation.getArrivedIDList();
+
+        for (int i = 0; i < arrived.size(); i++) {
+            VEHICLE_SUBSCRIPTIONS.remove(arrived.get(i));
+        }
     }
 
 
@@ -101,6 +124,10 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         String inductionLoop;
         for (int i = 0; i < vector.size(); i++) {
             inductionLoop = vector.get(i);
+
+            if (!INDUCTION_LOOP_SUBSCRIPTIONS.contains(inductionLoop)) {
+                continue;
+            }
 
             InductionLoopSubscriptionResult result = new InductionLoopSubscriptionResult();
             result.id = inductionLoop;
@@ -129,6 +156,10 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         for (int i = 0; i < vector.size(); i++) {
             laneArea = vector.get(i);
 
+            if (!LANE_AREA_SUBSCRIPTIONS.contains(laneArea)) {
+                continue;
+            }
+
             LaneAreaSubscriptionResult result = new LaneAreaSubscriptionResult();
             result.id = laneArea;
             result.vehicleCount = LaneArea.getLastStepVehicleNumber(laneArea);
@@ -152,6 +183,10 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         String trafficLight;
         for (int i = 0; i < vector.size(); i++) {
             trafficLight = vector.get(i);
+
+            if (!TRAFFIC_LIGHT_SUBSCRIPTIONS.contains(trafficLight)) {
+                continue;
+            }
 
             TrafficLightSubscriptionResult result = new TrafficLightSubscriptionResult();
             result.id = trafficLight;

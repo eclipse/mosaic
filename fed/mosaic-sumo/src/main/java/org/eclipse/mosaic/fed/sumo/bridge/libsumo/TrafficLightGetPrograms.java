@@ -40,8 +40,8 @@ public class TrafficLightGetPrograms implements org.eclipse.mosaic.fed.sumo.brid
 
             List<SumoTrafficLightLogic.Phase> phases = new ArrayList<>();
             TraCIPhaseVector traCIPhases = traCILogic.getPhases();
-            for (int p = 0; p < traCIPhases.size(); i++) {
-                TraCIPhase traCIPhase = traCIPhases.get(i);
+            for (int p = 0; p < traCIPhases.size(); p++) {
+                TraCIPhase traCIPhase = traCIPhases.get(p);
                 phases.add(new SumoTrafficLightLogic.Phase((int) (traCIPhase.getDuration() * TIME.MILLI_SECOND), traCIPhase.getState()));
             }
 
