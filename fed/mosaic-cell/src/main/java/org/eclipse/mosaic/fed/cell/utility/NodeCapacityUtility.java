@@ -49,9 +49,9 @@ public final class NodeCapacityUtility {
             if (nodeCellConfiguration == null) {
                 return false;
             } else if (mode.isUplink()) {
-                return nodeCellConfiguration.getAvailableUlBitrate() >= neededBandwidthInBps;
+                return nodeCellConfiguration.getAvailableUplinkBitrate() >= neededBandwidthInBps;
             } else if (mode.isDownlink()) {
-                return nodeCellConfiguration.getAvailableDlBitrate() >= neededBandwidthInBps;
+                return nodeCellConfiguration.getAvailableDownlinkBitrate() >= neededBandwidthInBps;
             } else {
                 // Error Handling
                 return false;
@@ -68,13 +68,15 @@ public final class NodeCapacityUtility {
      */
     public static void consumeCapacityUp(CellConfiguration nodeCellConfiguration, long consumeInBps) {
         if (nodeCellConfiguration == null) {
-            log.warn("Could not consume the Ul bandwidth because the cell configuration of the the node is null");
+            log.warn("Could not consume the uplink bandwidth because the cell configuration of the the node is null");
             return;
         }
         if (consumeInBps > 0) {
-            nodeCellConfiguration.consumeUl(consumeInBps);
+            nodeCellConfiguration.consumeUplink(consumeInBps);
         } else {
-            log.warn(String.format("Could not consume the UL capacity because the value to consume is not larger than 0, it is %d", consumeInBps));
+            log.warn(String.format(
+                    "Could not consume the UL capacity because the value to consume is not larger than 0, it is %d", consumeInBps
+            ));
         }
     }
 
@@ -88,14 +90,14 @@ public final class NodeCapacityUtility {
      */
     public static void consumeCapacityDown(CellConfiguration nodeCellConfiguration, long bandwidthToConsumeInBps) {
         if (nodeCellConfiguration == null) {
-            log.warn("Could not consume the Dl bandwidth because the cell configuration of the node is null");
+            log.warn("Could not consume the downlink bandwidth because the cell configuration of the node is null");
             return;
         }
 
         if (bandwidthToConsumeInBps > 0) {
-            nodeCellConfiguration.consumeDl(bandwidthToConsumeInBps);
+            nodeCellConfiguration.consumeDownlink(bandwidthToConsumeInBps);
         } else {
-            log.warn(String.format("Could not consume the DL capacity because the value to consume is not larger than 0, it is %d", bandwidthToConsumeInBps));
+            log.warn(String.format("Could not consume the downlink capacity because the value to consume is not larger than 0, it is %d", bandwidthToConsumeInBps));
         }
     }
 
@@ -111,23 +113,28 @@ public final class NodeCapacityUtility {
      */
     public static void freeCapacityUp(CellConfiguration nodeCellConfiguration, long bandwidthToFreeInBps) {
         if (nodeCellConfiguration == null) {
-            log.warn("Could not free the Ul bandwidth because the cell configuration of the node is null");
+            log.warn("Could not free the uplink bandwidth because the cell configuration of the node is null");
             return;
         }
 
         if (bandwidthToFreeInBps < 0) {
-            log.warn("Could not free the Ul bandwidth because the free value was smaller than 0, it was: {}", bandwidthToFreeInBps);
+            log.warn("Could not free the uplink bandwidth because the free value was smaller than 0, it was: {}", bandwidthToFreeInBps);
             return;
         }
 
-        if (nodeCellConfiguration.getAvailableUlBitrate() + bandwidthToFreeInBps <= nodeCellConfiguration.getMaxUlBitrate()) {
-            nodeCellConfiguration.freeUl(bandwidthToFreeInBps);
+        if (nodeCellConfiguration.getAvailableUplinkBitrate() + bandwidthToFreeInBps <= nodeCellConfiguration.getMaxUplinkBitrate()) {
+            nodeCellConfiguration.freeUplink(bandwidthToFreeInBps);
         } else {
-            nodeCellConfiguration.freeUl(nodeCellConfiguration.getMaxUlBitrate() - nodeCellConfiguration.getAvailableUlBitrate());
-            log.warn("Could not free the whole free value because it would exceed the maximum UL capacity of {} bit/s of the node {}.", nodeCellConfiguration.getMaxUlBitrate(), nodeCellConfiguration.getNodeId());
+            nodeCellConfiguration.freeUplink(
+                    nodeCellConfiguration.getMaxUplinkBitrate() - nodeCellConfiguration.getAvailableUplinkBitrate()
+            );
+            log.warn(
+                    "Could not free the whole free value because it would exceed the maximum uplink capacity of {} bit/s of the node {}.",
+                    nodeCellConfiguration.getMaxUplinkBitrate(), nodeCellConfiguration.getNodeId()
+            );
         }
         log.trace("Freeing {} bit/s upstream for node {} (capacity now: {} bit/s)",
-                bandwidthToFreeInBps, nodeCellConfiguration.getNodeId(), nodeCellConfiguration.getAvailableUlBitrate());
+                bandwidthToFreeInBps, nodeCellConfiguration.getNodeId(), nodeCellConfiguration.getAvailableUplinkBitrate());
     }
 
     /**
@@ -142,22 +149,27 @@ public final class NodeCapacityUtility {
      */
     public static void freeCapacityDown(CellConfiguration nodeCellConfiguration, long bandwidthToFreeInBps) {
         if (nodeCellConfiguration == null) {
-            log.warn("Could not free the Dl bandwidth because the cell configuration of the node is null");
+            log.warn("Could not free the downlink bandwidth because the cell configuration of the node is null");
             return;
         }
         if (bandwidthToFreeInBps < 0) {
-            log.warn("Could not free the Dl bandwidth because the free value was smaller than 0, it was: {}", bandwidthToFreeInBps);
+            log.warn("Could not free the downlink bandwidth because the free value was smaller than 0, it was: {}", bandwidthToFreeInBps);
             return;
         }
 
-        if (nodeCellConfiguration.getAvailableDlBitrate() + bandwidthToFreeInBps <= nodeCellConfiguration.getMaxDlBitrate()) {
-            nodeCellConfiguration.freeDl(bandwidthToFreeInBps);
+        if (nodeCellConfiguration.getAvailableDownlinkBitrate() + bandwidthToFreeInBps <= nodeCellConfiguration.getMaxDownlinkBitrate()) {
+            nodeCellConfiguration.freeDownlink(bandwidthToFreeInBps);
         } else {
-            nodeCellConfiguration.freeDl(nodeCellConfiguration.getMaxDlBitrate() - nodeCellConfiguration.getAvailableDlBitrate());
-            log.warn("Could not free the whole free value because it would exceed the maximum DL capacity of {} bit/s of the node {}.", nodeCellConfiguration.getMaxDlBitrate(), nodeCellConfiguration.getNodeId());
+            nodeCellConfiguration.freeDownlink(
+                    nodeCellConfiguration.getMaxDownlinkBitrate() - nodeCellConfiguration.getAvailableDownlinkBitrate()
+            );
+            log.warn(
+                    "Could not free the whole free value because it would exceed the maximum downlink capacity of {} bit/s of the node {}.",
+                    nodeCellConfiguration.getMaxDownlinkBitrate(), nodeCellConfiguration.getNodeId()
+            );
         }
         log.trace("Freeing {} bit/s downstream for node {} (capacity now: {} bit/s)",
-                bandwidthToFreeInBps, nodeCellConfiguration.getNodeId(), nodeCellConfiguration.getAvailableDlBitrate());
+                bandwidthToFreeInBps, nodeCellConfiguration.getNodeId(), nodeCellConfiguration.getAvailableDownlinkBitrate());
     }
 
     /**
@@ -186,9 +198,9 @@ public final class NodeCapacityUtility {
         }
 
         if (mode.isUplink()) {
-            return nodeCellConfiguration.ulPossible();
+            return nodeCellConfiguration.uplinkPossible();
         } else if (mode.equals(TransmissionMode.DownlinkUnicast)) {
-            return nodeCellConfiguration.dlPossible();
+            return nodeCellConfiguration.downlinkPossible();
         } else {
             log.debug("Mode {} is not supported", mode);
             return false;
@@ -199,29 +211,27 @@ public final class NodeCapacityUtility {
      * Returns the available bandwidth of a node in the uplink direction.
      *
      * @param nodeCellConfiguration The cell configuration of the node whose bandwidth is requested.
-     * @return The available uplink bandwidth of the node with the id in bit/s.
-     *         If the node is not known, the returned value is 0.
+     * @return The available uplink bandwidth of the node with the id in bit/s. If the node is not known, the returned value is 0.
      */
     public static long getAvailableUlCapacity(CellConfiguration nodeCellConfiguration) {
         if (nodeCellConfiguration == null) {
             log.warn("Could not return the available Ul capacity because the cell configuration of the node is null");
             return 0;
         }
-        return nodeCellConfiguration.getAvailableUlBitrate();
+        return nodeCellConfiguration.getAvailableUplinkBitrate();
     }
 
     /**
      * Returns the available bandwidth of a node in the downlink direction.
      *
      * @param nodeCellConfiguration The cell configuration of the node whose bandwidth is requested.
-     * @return The available downlink bandwidth of the node with the id in bit/s.
-     *         If the node is not known, the returned value is 0.
+     * @return The available downlink bandwidth of the node with the id in bit/s. If the node is not known, the returned value is 0.
      */
-    public static long getAvailableDlCapacity(CellConfiguration nodeCellConfiguration) {
+    public static long getAvailableDownlinkCapacity(CellConfiguration nodeCellConfiguration) {
         if (nodeCellConfiguration == null) {
-            log.warn("The available Dl capacity could not be found for node because the cell configuration was null");
+            log.warn("The available downlink capacity could not be found for node because the cell configuration was null");
             return 0;
         }
-        return nodeCellConfiguration.getAvailableDlBitrate();
+        return nodeCellConfiguration.getAvailableDownlinkBitrate();
     }
 }

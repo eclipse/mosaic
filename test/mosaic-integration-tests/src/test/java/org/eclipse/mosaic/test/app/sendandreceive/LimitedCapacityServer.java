@@ -34,10 +34,11 @@ public class LimitedCapacityServer extends AbstractApplication<ServerOperatingSy
 
     @Override
     public void onStartup() {
+        // Setup server with very limited bitrates
         getOs().getCellModule().enable(
                 new CellModuleConfiguration()
-                        .maxDlBitrate(5 * DATA.BYTE)
-                        .maxUlBitrate(5 * DATA.BYTE)
+                        .maxDownlinkBitrate(5 * DATA.BYTE)
+                        .maxUplinkBitrate(5 * DATA.BYTE)
         );
         getLog().infoSimTime(this, "Setup limited capacity server {} at time {}", getOs().getId(), getOs().getSimulationTime());
     }

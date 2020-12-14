@@ -102,6 +102,10 @@ public final class RegionCapacityUtility {
             log.warn("Could not consume the capacity in the region in the UL because the region is null");
             return;
         }
+        if (region.uplink.capacity == Long.MAX_VALUE) { // Regions with unlimited capacity don't do bandwidth consuming/freeing process
+            return;
+        }
+
         if (bandwidthToConsumeInBps > 0) {
             region.uplink.capacity = (region.uplink.capacity - bandwidthToConsumeInBps);
         } else {
@@ -121,6 +125,9 @@ public final class RegionCapacityUtility {
             log.warn("Could not consume the capacity in the region in the DL because the region is null");
             return;
         }
+        if (region.downlink.capacity == Long.MAX_VALUE) { // Regions with unlimited capacity don't do bandwidth consuming/freeing process
+            return;
+        }
         if (bandwidthToConsumeInBps > 0) {
             region.downlink.capacity = (region.downlink.capacity - bandwidthToConsumeInBps);
         } else {
@@ -137,6 +144,9 @@ public final class RegionCapacityUtility {
     public static void freeCapacityUp(@Nonnull CNetworkProperties region, long bandwidthToFreeInBps) {
         if (bandwidthToFreeInBps < 0) {
             log.warn("Could not free the region capacity in the uplink direction in region {} because the capacity to free is {}, which is smaller than 0.", region.id, bandwidthToFreeInBps);
+            return;
+        }
+        if (region.uplink.capacity == Long.MAX_VALUE) { // Regions with unlimited capacity don't do bandwidth consuming/freeing process
             return;
         }
         if (region.uplink.capacity + bandwidthToFreeInBps <= region.uplink.maxCapacity) {
@@ -168,6 +178,9 @@ public final class RegionCapacityUtility {
             log.warn("Could not free the region capacity in the downlink direction in region {} because the capacity to free is {}, which is smaller than 0.", region.id, bandwidthToFreeInBps);
             return;
         }
+        if (region.downlink.capacity == Long.MAX_VALUE) { // Regions with unlimited capacity don't do bandwidth consuming/freeing process
+            return;
+        }
         if (region.downlink.capacity + bandwidthToFreeInBps <= region.downlink.maxCapacity) {
             region.downlink.capacity = region.downlink.capacity + bandwidthToFreeInBps;
             log.trace("Freeing {} bit/s in the downlink direction in region {} (capacity now: {} bit/s)",
@@ -185,7 +198,7 @@ public final class RegionCapacityUtility {
      *
      * @param mode The requested transmission of the transmission
      * @return The method returns true, if the available capacity of the region is above the threshold for allowing a new
-     * transmission. Otherwise, the method returns false.
+     *         transmission. Otherwise, the method returns false.
      */
     public static boolean isAvailable(TransmissionMode mode, CNetworkProperties region) {
         if (region == null) {

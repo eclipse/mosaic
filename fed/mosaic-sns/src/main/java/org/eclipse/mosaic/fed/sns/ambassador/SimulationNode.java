@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sns.ambassador;
 
-import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 
 /**
  * Aspects of an active simulation entity in SNS (position, communication radius).
@@ -25,14 +25,14 @@ public class SimulationNode {
     /**
      * Position of a node.
      */
-    private GeoPoint position;
+    private CartesianPoint position;
 
     /**
      * Transmission radius of a node.
      */
     private double radius;
 
-    public GeoPoint getPosition() {
+    public CartesianPoint getPosition() {
         return position;
     }
 
@@ -40,7 +40,7 @@ public class SimulationNode {
         return radius;
     }
 
-    void setPosition(GeoPoint position) {
+    void setPosition(CartesianPoint position) {
         this.position = position;
     }
 

@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
@@ -24,7 +23,6 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
-import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 /**
@@ -33,11 +31,8 @@ import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 public class LossyServer extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
     @Override
     public void onStartup() {
-        getOs().getCellModule().enable(
-                new CellModuleConfiguration()
-                        .maxDlBitrate(DATA.GIGABYTE)
-                        .maxUlBitrate(DATA.GIGABYTE)
-        );
+        getOs().getCellModule().enable();
+
         getLog().infoSimTime(this, "Setup lossy server {} at time {}", getOs().getId(), getOs().getSimulationTime());
     }
 

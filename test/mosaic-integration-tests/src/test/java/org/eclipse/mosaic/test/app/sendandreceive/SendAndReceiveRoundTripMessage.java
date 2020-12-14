@@ -50,8 +50,8 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
     public void onStartup() {
         getOs().getCellModule().enable(
                 new CellModuleConfiguration()
-                        .maxDlBitrate(10 * DATA.GIGABYTE)
-                        .maxUlBitrate(10 * DATA.GIGABYTE)
+                        .maxDownlinkBitrate(10 * DATA.GIGABYTE)
+                        .maxUplinkBitrate(10 * DATA.GIGABYTE)
         );
         getLog().infoSimTime(this, "Setup TMC server {} at time {}", getOs().getId(), getOs().getSimulationTime());
 

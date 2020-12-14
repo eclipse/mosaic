@@ -17,13 +17,12 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
 import org.eclipse.mosaic.fed.application.app.api.communication.CommunicationModuleConfiguration;
 import org.eclipse.mosaic.lib.enums.DestinationType;
-import org.eclipse.mosaic.rti.DATA;
 
 /**
  * <pre>
  * CellModuleConfiguration cellConfiguration = new CellModuleConfiguration()
- *     .maxDlBitrate(7200000000)
- *     .maxUlBitrate(1400000000)
+ *     .maxDownlinkBitrate(7200 * DATA.MEGABIT)
+ *     .maxUplinkBitrate(1400 * DATA.MEGABIT)
  *     .camConfiguration(new CAMConfiguration(DestinationType.CellGeoUnicast, 300));
  * </pre>
  */
@@ -33,46 +32,64 @@ public class CellModuleConfiguration implements CommunicationModuleConfiguration
      * DL/UL bitrates to reflect a data plan from a certain provider.
      * (intended to be used by Cell)
      */
-    private long maxDlBitrate = 900 * DATA.MEGABYTE;
-    private long maxUlBitrate = 175 * DATA.MEGABYTE;
-
+    private Long maxDownlinkBitrate;
+    private Long maxUplinkBitrate;
     /**
      * Configuration for CAM messaging over cellular communication.
      * (intended for application ambassador)
      */
     private CellCamConfiguration camConfiguration = null;
 
-    public CellModuleConfiguration maxDlBitrate(long bitrate) {
-        this.maxDlBitrate = bitrate;
+    public CellModuleConfiguration maxDownlinkBitrate(long bitrate) {
+        this.maxDownlinkBitrate = bitrate;
         return this;
     }
 
-    public CellModuleConfiguration maxUlBitrate(long bitrate) {
-        this.maxUlBitrate = bitrate;
+    public CellModuleConfiguration maxUplinkBitrate(long bitrate) {
+        this.maxUplinkBitrate = bitrate;
         return this;
     }
 
+    /**
+     * Convenience method creating CAM config using default bitrates.
+     *
+     * @param camReceiver id of receiving entity
+     * @return the built {@link CellModuleConfiguration}
+     */
     public CellModuleConfiguration camConfigurationTopocast(String camReceiver) {
         this.camConfiguration = new CellCamConfiguration(camReceiver);
         return this;
     }
 
+    /**
+     * Convenience method creating CAM config using default bitrates.
+     *
+     * @param addressingMode addressing mode to be used
+     * @param geoRadius      reception radius for CAM
+     * @return the built {@link CellModuleConfiguration}
+     */
     public CellModuleConfiguration camConfiguration(DestinationType addressingMode, double geoRadius) {
         this.camConfiguration = new CellCamConfiguration(addressingMode, geoRadius);
         return this;
     }
 
+    /**
+     * Convenience method creating CAM config using default bitrates.
+     *
+     * @param geoRadius reception radius for CAM
+     * @return the built {@link CellModuleConfiguration}
+     */
     public CellModuleConfiguration camConfiguration(double geoRadius) {
         this.camConfiguration = new CellCamConfiguration(DestinationType.CELL_GEOCAST, geoRadius);
         return this;
     }
 
-    public long getMaxDlBitrate() {
-        return maxDlBitrate;
+    public Long getMaxDownlinkBitrate() {
+        return maxDownlinkBitrate;
     }
 
-    public long getMaxUlBitrate() {
-        return maxUlBitrate;
+    public Long getMaxUplinkBitrate() {
+        return maxUplinkBitrate;
     }
 
     public CellCamConfiguration getCamConfiguration() {
