@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.eclipse.sumo</groupId>
             <artifactId>libsumojni</artifactId>
-            <version>1.7.0</version>
+            <version>1.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
