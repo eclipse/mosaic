@@ -253,10 +253,10 @@ Protocol Buffers [Core] (3.8.0)
  * Source: https://github.com/protocolbuffers/protobuf/protobuf-java
 
 
-SLF4J API Module (1.7.30)
+SLF4J API Module (1.7.25)
 
  * License: MIT License
- * Maven artifact: `org.slf4j:slf4j-api:1.7.30`
+ * Maven artifact: `org.slf4j:slf4j-api:1.7.25`
  * Project: http://www.slf4j.org
  * Source: https://github.com/qos-ch/slf4j/slf4j-api
 
