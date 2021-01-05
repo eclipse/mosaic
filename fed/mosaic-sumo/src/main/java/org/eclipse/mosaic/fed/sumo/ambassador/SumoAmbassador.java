@@ -304,7 +304,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     sumoKnownRoutes.add(routeId);
 
                     traci.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
-                    traci.getSimulationControl().subscribeForVehicle(vehicleId, interaction.getTime(), this.getEndTime());
+                    if (sumoConfig.subscribeToAllVehicles || interaction.getMapping().hasApplication()) {
+                        traci.getSimulationControl().subscribeForVehicle(vehicleId, interaction.getTime(), this.getEndTime());
+                    }
 
                     applyChangesInVehicleTypeForVehicle(
                             vehicleId,

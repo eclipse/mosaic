@@ -97,7 +97,9 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
-            traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
+            if (sumoConfig.subscribeToAllVehicles) {
+                traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
+            }
 
             vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
 
@@ -110,7 +112,7 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
     }
 
     @Override
-    protected void initializeTrafficLights(long time) throws IOException, IllegalValueException {
+    protected void initializeTrafficLights(long time) {
         try {
             super.initializeTrafficLights(time);
         } catch (Exception e) {
