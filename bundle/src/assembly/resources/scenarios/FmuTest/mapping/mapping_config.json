@@ -1,0 +1,55 @@
+{
+    "prototypes": [
+        {
+            "name": "Car",
+            "accel": 2.6,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 70.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "speedDeviation": 0.1,
+            "tau": 1
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 1.0,
+            "targetFlow": 6000,
+            "maxNumberVehicles": 400,
+            "route": "2",
+            "lanes": [ 1, 2 ],
+            "types": [
+                {
+                    "name": "Car",
+                    "weight": 80
+                },
+                {
+                    "name": "Car",
+                    "weight": 20,
+                    "applications": [ "org.eclipse.mosaic.fed.application.app.etsi.VehicleCamSendingApp" ]
+                }
+            ]
+        },
+        {
+            "startingTime": 1.0,
+            "targetFlow": 1000,
+            "maxNumberVehicles": 50,
+            "route": "1",
+            "lanes": [ 0 ],
+            "types": [
+                {
+                    "name": "Car",
+                    "weight": 80
+                },
+                {
+                    "name": "Car",
+                    "weight": 20,
+                    "applications": [ "org.eclipse.mosaic.fed.application.app.etsi.VehicleCamSendingApp" ]
+                }
+            ]
+        }
+    ]
+}
+
+

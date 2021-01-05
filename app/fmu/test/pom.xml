@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.mosaic</groupId>
+        <artifactId>mosaic-parent</artifactId>
+        <version>20.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.eclipse.mosaic.app</groupId>
+    <artifactId>example-applications</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Collection of Example Applications</name>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-application</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.ntnu.ihb.fmi4j</groupId>
+            <artifactId>fmi-export</artifactId>
+            <version>0.36.3</version>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
+
+</project>
