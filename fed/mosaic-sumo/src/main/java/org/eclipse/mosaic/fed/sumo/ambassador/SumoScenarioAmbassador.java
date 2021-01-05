@@ -17,18 +17,14 @@ package org.eclipse.mosaic.fed.sumo.ambassador;
 
 import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
 import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
-import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
-import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
-import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
-import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -74,7 +70,7 @@ import java.util.List;
  * }
  * </pre>
  */
-public class SumoScenarioAmbassador extends SumoAmbassador {
+public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
 
     /**
      * Creates a new {@link SumoScenarioAmbassador} object using
@@ -110,14 +106,16 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
+            traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
+
             vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
+
             try {
                 rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
             }
         }
-        super.flushNotYetAddedVehicles(time);
     }
 
     @Override

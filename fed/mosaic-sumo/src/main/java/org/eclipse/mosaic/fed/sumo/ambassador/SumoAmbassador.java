@@ -272,6 +272,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             }
         }
     }
+
     /**
      * Vehicles of the {@link #notYetAddedVehicles} list will be added to simulation by this function
      * or cached again for the next time advance.
