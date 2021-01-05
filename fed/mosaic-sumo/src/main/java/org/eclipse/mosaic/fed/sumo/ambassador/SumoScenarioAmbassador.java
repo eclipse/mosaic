@@ -17,8 +17,13 @@ package org.eclipse.mosaic.fed.sumo.ambassador;
 
 import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
 import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
+import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
+import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
+import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
+import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
@@ -34,34 +39,43 @@ import java.util.List;
  * addressed later.
  *
  * <br><br>
- * Configuration in defaults.xml file:
+ * Configuration in runtime.json file:
  * <pre>
  * {@code
- * <federate class="org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador">
- * <id>sumo</id>
- * <deploy>true</deploy>
- * <start>true</start>
- * <host>local</host>
- * <port>0</port>
- * <config>sumo_config.json</config>
- * <pseudoFederate></pseudoFederate>
- * <subscriptions>
- * <subscription>VehicleSlowDown</subscription>
- * <subscription>VehicleRouteChange</subscription>
- * <subscription>VehicleLaneChange</subscription>
- * <subscription>TrafficLightStateChange</subscription>
- * <subscription>VehicleStop</subscription>
- * <subscription>VehicleResume</subscription>
- * <subscription>SumoTraciRequest</subscription>
- * <subscription>VehicleDistanceSensorActivation</subscription>
- * <subscription>VehicleParametersChange</subscription>
- * <subscription>VehicleSpeedChange</subscription>
- * </subscriptions>
- * </federate>
+ * {
+ *     "id": "sumo",
+ *     "classname": "org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador",
+ *     "configuration": "sumo_config.json",
+ *     "priority": 50,
+ *     "host": "local",
+ *     "port": 0,
+ *     "deploy": true,
+ *     "start": true,
+ *     "subscriptions": [
+ *         "VehicleSlowDown",
+ *         "VehicleRouteChange",
+ *         "VehicleLaneChange",
+ *         "TrafficLightStateChange",
+ *         "VehicleStop",
+ *         "VehicleResume",
+ *         "SumoTraciRequest",
+ *         "VehicleDistanceSensorActivation",
+ *         "VehicleParametersChange",
+ *         "VehicleSpeedChange",
+ *         "VehicleFederateAssignment",
+ *         "VehicleUpdates",
+ *         "VehicleRegistration",
+ *         "VehicleRoutesInitialization"
+ *         "InductionLoopDetectorSubscription",
+ *         "LaneAreaDetectorSubscription",
+ *         "TrafficLightSubscription"
+ *     ],
+ *     "javaClasspathEntries": []
+ * }
  * }
  * </pre>
  */
-public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
+public class SumoScenarioAmbassador extends SumoAmbassador {
 
     /**
      * Creates a new {@link SumoScenarioAmbassador} object using
@@ -97,18 +111,14 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
-            if (sumoConfig.subscribeToAllVehicles) {
-                traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
-            }
-
             vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
-
             try {
                 rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
             }
         }
+        super.flushNotYetAddedVehicles(time);
     }
 
     @Override

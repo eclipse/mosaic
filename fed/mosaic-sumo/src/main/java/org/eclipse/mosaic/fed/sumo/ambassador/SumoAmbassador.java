@@ -78,7 +78,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Cached {@link VehicleRegistration}-interaction, which is filled if a vehicle could not be
      * emitted e.g. due a blocked lane.
      */
-    private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
+    protected final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
      * Map of vehicle types initially send to the ambassador.
