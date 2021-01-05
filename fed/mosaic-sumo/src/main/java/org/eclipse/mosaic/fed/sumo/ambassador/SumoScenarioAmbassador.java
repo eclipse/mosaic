@@ -24,7 +24,6 @@ import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -97,9 +96,7 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
-            if (sumoConfig.subscribeToAllVehicles) {
-                traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
-            }
+            traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
 
             vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
 
