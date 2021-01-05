@@ -7,11 +7,11 @@
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
         <version>20.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.eclipse.mosaic.app</groupId>
-    <artifactId>example-applications</artifactId>
+    <artifactId>test</artifactId>
     <packaging>jar</packaging>
 
     <name>Collection of Example Applications</name>
@@ -19,6 +19,14 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>fmi importer</id>
+            <name>fmi4j</name>
+            <url>https://dl.bintray.com/ntnu-ihb/mvn</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -28,10 +36,35 @@
         </dependency>
         <dependency>
             <groupId>no.ntnu.ihb.fmi4j</groupId>
+            <artifactId>fmi-import</artifactId>
+            <version>0.36.3</version>
+        </dependency>
+        <dependency>
+            <groupId>no.ntnu.ihb.fmi4j</groupId>
             <artifactId>fmi-export</artifactId>
             <version>0.36.3</version>
-            <type>pom</type>
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- any other plugins -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
