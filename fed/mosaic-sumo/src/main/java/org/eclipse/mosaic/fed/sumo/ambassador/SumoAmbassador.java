@@ -78,7 +78,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Cached {@link VehicleRegistration}-interaction, which is filled if a vehicle could not be
      * emitted e.g. due a blocked lane.
      */
-    protected final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
+    private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
      * Map of vehicle types initially send to the ambassador.
@@ -231,13 +231,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             routeCache.put(route.getId(), route);
         }
 
-        if (cachedVehicleTypesInitialization != null && descriptor != null) {
-            writeRouteFile(cachedVehicleTypesInitialization, interaction);
-            startSumoLocal();
-            initTraci();
-            completeRoutes();
-        }
         cachedVehicleRoutesInitialization = interaction;
+        if (sumoReadyToStart()) {
+            sumoStartingProcedure();
+        }
     }
 
     /**
@@ -249,13 +246,21 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private synchronized void receiveInteraction(VehicleTypesInitialization interaction) throws InternalFederateException {
         log.debug("Received VehicleTypesInitialization");
 
-        if (cachedVehicleRoutesInitialization != null && descriptor != null) {
-            writeRouteFile(interaction, cachedVehicleRoutesInitialization);
-            startSumoLocal();
-            initTraci();
-            completeRoutes();
-        }
         cachedVehicleTypesInitialization = interaction;
+        if (sumoReadyToStart()) {
+            sumoStartingProcedure();
+        }
+    }
+
+    private boolean sumoReadyToStart() {
+        return descriptor != null && cachedVehicleRoutesInitialization != null && cachedVehicleTypesInitialization != null;
+    }
+
+    private void sumoStartingProcedure() throws InternalFederateException {
+        writeRouteFile(cachedVehicleTypesInitialization, cachedVehicleRoutesInitialization);
+        startSumoLocal();
+        initTraci();
+        completeRoutes();
     }
 
     private void completeRoutes() throws InternalFederateException {
@@ -267,7 +272,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             }
         }
     }
-
     /**
      * Vehicles of the {@link #notYetAddedVehicles} list will be added to simulation by this function
      * or cached again for the next time advance.
@@ -444,7 +448,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             dir = new File(dir, subDir);
         }
         File tmpRouteFile = new File(dir, routeFilename);
-
 
         // keep single instance
         if (sumoRouteFileCreator == null) {
