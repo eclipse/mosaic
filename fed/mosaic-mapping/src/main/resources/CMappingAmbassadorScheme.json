@@ -172,8 +172,7 @@
                 "group": { "type": "string" },
                 "weight": {
                     "type": "number",
-                    "minimum": 0,
-                    "maximum": 1
+                    "minimum": 0
                 },
                 "applications": {
                     "type": "array",
