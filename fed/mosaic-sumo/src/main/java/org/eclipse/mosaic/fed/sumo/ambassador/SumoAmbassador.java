@@ -305,7 +305,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
                     bridge.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
 
-                    if (!sumoConfig.subscribeOnlyVehiclesWithApps || !interaction.getMapping().getApplications().isEmpty()) {
+                    if (sumoConfig.subscribeToAllVehicles || interaction.getMapping().hasApplication()) {
                         bridge.getSimulationControl().subscribeForVehicle(vehicleId, interaction.getTime(), this.getEndTime());
                     }
 

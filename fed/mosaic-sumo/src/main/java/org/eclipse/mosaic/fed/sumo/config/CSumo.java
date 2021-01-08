@@ -84,10 +84,11 @@ public class CSumo implements Serializable {
     public boolean writeVehicleDepartures = false;
 
     /**
-     * If set to true, the ambassador subscribes only to vehicles with mapped applications. Otherwise,
-     * all vehicles are subscribed, regardless of their mapped applications.
+     * If set to {@code true} all vehicles will be subscribed (see
+     * {@link org.eclipse.mosaic.fed.sumo.traci.facades.TraciSimulationFacade#subscribeForVehicle(String, long, long)}).
+     * If set to {@code false} only vehicles with applications mapped to them will be subscribed.
      */
-    public boolean subscribeOnlyVehiclesWithApps = false;
+    public boolean subscribeToAllVehicles = true;
 
     /**
      * A optional list of subscriptions for each vehicle in the simulation. The less subscriptions given,

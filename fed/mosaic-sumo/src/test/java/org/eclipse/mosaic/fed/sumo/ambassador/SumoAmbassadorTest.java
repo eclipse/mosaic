@@ -285,6 +285,51 @@ public class SumoAmbassadorTest {
         assertTrue(trafficLights.getLanesControlledByGroups().get(tlg.getGroupId()).contains("edge_1"));
     }
 
+    @Test
+    public void testSubscribeToAllVehicles() throws Throwable {
+        // set subscribeToAllVehicles to false
+        ambassador.sumoConfig.subscribeToAllVehicles = false;
+        sendVehiclePathsAndTypes_doInitTraci();
+
+        // PREPARE
+        VehicleDeparture departInfo = mock(VehicleDeparture.class);
+        when(departInfo.getRouteId()).thenReturn("0");
+        when(departInfo.getDepartSpeedMode()).thenReturn(VehicleDeparture.DepartSpeedMode.MAXIMUM);
+        when(departInfo.getLaneSelectionMode()).thenReturn(VehicleDeparture.LaneSelectionMode.DEFAULT);
+
+        // RUN send added vehicle and run first step
+        ambassador.processInteraction(
+                new VehicleRegistration(0, "veh_0", null, Lists.newArrayList(), departInfo, new VehicleType("default"))
+        );
+        mockSimulationStepResult(0L);
+        ambassador.advanceTime(0L);
+
+        // ASSERT not yet added (can not add vehicles before simulating the first step)
+        verify(
+                traciClientMock.getSimulationControl(),
+                never()).addVehicle(anyString(),
+                anyString(),
+                anyString(),
+                anyString(),
+                anyString(),
+                anyString()
+        );
+
+        // RUN second step
+        long time = TIME.SECOND;
+        VehicleData veh0 = new VehicleData.Builder(time, "veh_0").route("0").create();
+        mockSimulationStepResult(time, veh0);
+        ambassador.advanceTime(time);
+
+        // ASSERT vehicle has now been added but not subscribed to
+        verify(traciClientMock.getSimulationControl(), times(1))
+                .addVehicle(eq("veh_0"), eq("0"), eq("default"), eq("0"), anyString(), eq("max"));
+        verify(traciClientMock.getSimulationControl(), times(0))
+                .subscribeForVehicle(eq("veh_0"), eq(0L), eq(1000 * TIME.SECOND));
+        // reset config
+        ambassador.sumoConfig.subscribeToAllVehicles = true;
+    }
+
     private void mockSimulationStepResult(long time, VehicleData... vehicles) throws InternalFederateException {
         VehicleUpdates vehicleUpdates = new VehicleUpdates(time, Lists.newArrayList(vehicles), Lists.newArrayList(), Lists.newArrayList());
         TraciSimulationStepResult traciSimulationResult =
