@@ -213,12 +213,12 @@ JSR 374 (JSON Processing) API (1.1.5)
  * Source: https://github.com/eclipse-ee4j/jsonp/jakarta.json-api
 
 
-libsumojni (1.7.0)
+libsumojni (1.8.0)
 
- * License: Eclipse Public License 2.0
- * Maven artifact: `org.eclipse.sumo:libsumojni:1.7.0`
- * Project: not available
- * Source: not declared
+ * License: Eclipse Public License - v 2.0
+ * Maven artifact: `org.eclipse.sumo:libsumojni:1.8.0`
+ * Project: https://eclipse.org/sumo
+ * Source: https://github.com/eclipse/sumo
 
 
 Logback Classic Module (1.2.3)
