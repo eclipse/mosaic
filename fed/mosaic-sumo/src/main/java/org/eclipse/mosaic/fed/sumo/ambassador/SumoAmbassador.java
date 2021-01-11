@@ -23,6 +23,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
+import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
@@ -335,36 +336,32 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {
-        if (!eq(actualVehicleType.getTau(), baseVehicleType.getTau())) {
+        double epsilon = 1e-4;
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getTau(), baseVehicleType.getTau(), epsilon)) {
             double minReactionTime = sumoConfig.updateInterval / 1000d;
             traci.getVehicleControl().setReactionTime(
                     vehicleId, Math.max(minReactionTime, actualVehicleType.getTau() + sumoConfig.timeGapOffset)
             );
         }
-        if (!eq(actualVehicleType.getMaxSpeed(), baseVehicleType.getMaxSpeed())) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getMaxSpeed(), baseVehicleType.getMaxSpeed(), epsilon)) {
             traci.getVehicleControl().setMaxSpeed(vehicleId, actualVehicleType.getMaxSpeed());
         }
-        if (!eq(actualVehicleType.getAccel(), baseVehicleType.getAccel())) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getAccel(), baseVehicleType.getAccel(), epsilon)) {
             traci.getVehicleControl().setMaxAcceleration(vehicleId, actualVehicleType.getAccel());
         }
-        if (!eq(actualVehicleType.getDecel(), baseVehicleType.getDecel())) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getDecel(), baseVehicleType.getDecel(), epsilon)) {
             traci.getVehicleControl().setMaxDeceleration(vehicleId, actualVehicleType.getDecel());
         }
-        if (!eq(actualVehicleType.getMinGap(), baseVehicleType.getMinGap())) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getMinGap(), baseVehicleType.getMinGap(), epsilon)) {
             traci.getVehicleControl().setMinimumGap(vehicleId, actualVehicleType.getMinGap());
         }
-        if (!eq(actualVehicleType.getLength(), baseVehicleType.getLength())) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getLength(), baseVehicleType.getLength(), epsilon)) {
             traci.getVehicleControl().setVehicleLength(vehicleId, actualVehicleType.getLength());
         }
-        if (!eq(actualVehicleType.getSpeedFactor(), baseVehicleType.getSpeedFactor())) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getSpeedFactor(), baseVehicleType.getSpeedFactor(), epsilon)) {
             traci.getVehicleControl().setSpeedFactor(vehicleId, actualVehicleType.getSpeedFactor());
         }
     }
-
-    private boolean eq(double a, double b) {
-        return Math.abs(a - b) < 0.0001;
-    }
-
 
     private String extractDepartureSpeed(VehicleRegistration interaction) {
         switch (interaction.getDeparture().getDepartSpeedMode()) {
