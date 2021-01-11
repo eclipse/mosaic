@@ -24,7 +24,6 @@ import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
