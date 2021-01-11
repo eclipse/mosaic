@@ -30,11 +30,7 @@ public class MathUtils {
     }
 
     public static boolean isFuzzyEqual(float a, float b) {
-        if (Math.abs(a) <= EPSILON_F && Math.abs(b) <= EPSILON_F) {
-            return true;
-        } else {
-            return Math.abs(a - b) <= Math.abs(Math.max(a, b)) * EPSILON_F;
-        }
+        return  isFuzzyEqual(a, b, EPSILON_F);
     }
 
     public static boolean isFuzzyEqual(float a, float b, float epsilon) {
@@ -46,11 +42,7 @@ public class MathUtils {
     }
 
     public static boolean isFuzzyEqual(double a, double b) {
-        if (Math.abs(a) <= EPSILON_D && Math.abs(b) <= EPSILON_D) {
-            return true;
-        } else {
-            return Math.abs(a - b) <= Math.abs(Math.max(a, b)) * EPSILON_D;
-        }
+        return isFuzzyEqual(a, b, EPSILON_D);
     }
 
     public static boolean isFuzzyEqual(double a, double b, double epsilon) {
