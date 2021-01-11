@@ -194,7 +194,7 @@ public class SumoRouteFileCreatorTest {
         validateXml();
     }
 
-    private void validateXml() throws IOException, SAXException{
+    private void validateXml() throws IOException, SAXException {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(this.getClass().getResource(ROUTES_FILE_XSD));
         Validator validator = schema.newValidator();
