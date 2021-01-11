@@ -40,13 +40,10 @@ import org.apache.commons.lang3.Validate;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of a {@link AbstractSumoAmbassador} for the traffic simulator
@@ -80,11 +77,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * emitted e.g. due a blocked lane.
      */
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
-
-    /**
-     * Map of vehicle types initially send to the ambassador.
-     */
-    private final Map<String, VehicleType> initialTypes = new HashMap<>();
 
     /**
      * Instance of {@link SumoRouteFileCreator} used to write routes to a *.rou.xml file.
@@ -250,23 +242,31 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     protected void sumoStartupProcedure() throws InternalFederateException {
-        writeRouteFile(cachedVehicleTypesInitialization, cachedVehicleRoutesInitialization);
+        writeMappedTypes(cachedVehicleTypesInitialization);
         startSumoLocal();
         initTraci();
-        completeRoutes();
+        readInitialRoutesFromTraci();
+        addInitialRoutesFromMapping();
     }
 
     /**
      * Read Routes priorly defined in Sumo route-file to later make them available to the rest of the
      * simulations using {@link VehicleRouteRegistration}.
+     *
      * @throws InternalFederateException if Traci connection couldn't be established
      */
-    private void completeRoutes() throws InternalFederateException {
+    private void readInitialRoutesFromTraci() throws InternalFederateException {
         for (String id : traci.getRouteControl().getRouteIds()) {
             if (!routeCache.containsKey(id)) {
                 VehicleRoute route = readRouteFromTraci(id);
                 routeCache.put(route.getId(), route);
             }
+        }
+    }
+
+    private void addInitialRoutesFromMapping() throws InternalFederateException {
+        for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
+            traci.getRouteControl().addRoute(routeEntry.getKey(), routeEntry.getValue().getEdgeIdList());
         }
     }
 
@@ -312,7 +312,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     applyChangesInVehicleTypeForVehicle(
                             vehicleId,
                             interaction.getMapping().getVehicleType(),
-                            initialTypes.get(vehicleType)
+                            cachedVehicleTypesInitialization.getTypes().get(vehicleType)
                     );
 
                     if (sumoConfig.writeVehicleDepartures) {
@@ -417,19 +417,16 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     /**
-     * Writes a new SUMO route file based on the registered vehicle types and routes.
+     * Writes a new SUMO route file based on the registered vehicle types.
      *
-     * @param typesInit  Interaction contains predefined vehicle types.
+     * @param typesInit Interaction contains predefined vehicle types.
      */
-    private void writeRouteFile(VehicleTypesInitialization typesInit, VehicleRoutesInitialization routesInit) {
+    private void writeMappedTypes(VehicleTypesInitialization typesInit) {
         File outputFile = initRouteFileCreator();
-
-        this.initialTypes.putAll(typesInit.getTypes());
 
         // stores the rou.xml file to the working directory. this file is required for SUMO to run
         sumoRouteFileCreator
                 .addVehicleTypes(typesInit.getTypes())
-                .addRoutes(routesInit.getRoutes())
                 .store(outputFile);
     }
 
