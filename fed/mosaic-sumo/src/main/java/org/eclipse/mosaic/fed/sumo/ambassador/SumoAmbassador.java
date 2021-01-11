@@ -194,9 +194,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @param interaction {@link VehicleRegistration} containing the vehicle definition.
      */
-    private void receiveInteraction(VehicleRegistration interaction) {
-        VehicleMapping av = interaction.getMapping();
-        log.info("VehicleRegistration \"{}\" received at simulation time {} ns", av.getName(), interaction.getTime());
+    protected void receiveInteraction(VehicleRegistration interaction) throws InternalFederateException {
+        VehicleMapping vehicleMapping = interaction.getMapping();
+        log.info("VehicleRegistration \"{}\" received at simulation time {} ns", vehicleMapping.getName(), interaction.getTime());
         notYetAddedVehicles.add(interaction);
     }
 
@@ -233,7 +233,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
         cachedVehicleRoutesInitialization = interaction;
         if (sumoReadyToStart()) {
-            sumoStartingProcedure();
+            sumoStartupProcedure();
         }
     }
 
@@ -248,7 +248,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
         cachedVehicleTypesInitialization = interaction;
         if (sumoReadyToStart()) {
-            sumoStartingProcedure();
+            sumoStartupProcedure();
         }
     }
 
@@ -256,7 +256,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         return descriptor != null && cachedVehicleRoutesInitialization != null && cachedVehicleTypesInitialization != null;
     }
 
-    private void sumoStartingProcedure() throws InternalFederateException {
+    protected void sumoStartupProcedure() throws InternalFederateException {
         writeRouteFile(cachedVehicleTypesInitialization, cachedVehicleRoutesInitialization);
         startSumoLocal();
         initTraci();
@@ -306,7 +306,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                                 "Unknown route " + routeId + " for vehicle with departure time " + interaction.getTime()
                         );
                     }
-                    sumoKnownRoutes.add(routeId);
 
                     traci.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
                     if (sumoConfig.subscribeToAllVehicles || interaction.getMapping().hasApplication()) {
