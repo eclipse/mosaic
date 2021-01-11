@@ -86,12 +86,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private final Map<String, VehicleType> initialTypes = new HashMap<>();
 
-
-    /**
-     * This contains all routes known to sumo.
-     */
-    private final Set<String> sumoKnownRoutes = new HashSet<>();
-
     /**
      * Instance of {@link SumoRouteFileCreator} used to write routes to a *.rou.xml file.
      */
@@ -208,9 +202,8 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void receiveInteraction(VehicleRouteRegistration interaction) throws InternalFederateException {
         VehicleRoute newRoute = interaction.getRoute();
-        routeCache.put(newRoute.getId(), newRoute);
-        if (!sumoKnownRoutes.contains(newRoute.getId())) {
-            sumoKnownRoutes.add(newRoute.getId());
+        if (!routeCache.containsKey(newRoute.getId())) {
+            routeCache.put(newRoute.getId(), newRoute);
             traci.getRouteControl().addRoute(newRoute.getId(), newRoute.getEdgeIdList());
             log.debug("received newly propagated route {}", newRoute.getId());
         } else {
@@ -228,7 +221,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         log.debug("Received VehicleRoutesInitialization: {}", interaction.getTime());
 
         for (VehicleRoute route : interaction.getRoutes().values()) {
-            sumoKnownRoutes.add(route.getId());
             routeCache.put(route.getId(), route);
         }
 
@@ -264,11 +256,15 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         completeRoutes();
     }
 
+    /**
+     * Read Routes priorly defined in Sumo route-file to later make them available to the rest of the
+     * simulations using {@link VehicleRouteRegistration}.
+     * @throws InternalFederateException if Traci connection couldn't be established
+     */
     private void completeRoutes() throws InternalFederateException {
         for (String id : traci.getRouteControl().getRouteIds()) {
-            if (!sumoKnownRoutes.contains(id)) {
+            if (!routeCache.containsKey(id)) {
                 VehicleRoute route = readRouteFromTraci(id);
-                sumoKnownRoutes.add(route.getId());
                 routeCache.put(route.getId(), route);
             }
         }
@@ -302,7 +298,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     log.info("Adding new vehicle \"{}\" at simulation time {} ns (type={}, routeId={}, laneId={}, departPos={})",
                             vehicleId, interaction.getTime(), vehicleType, routeId, laneId, departPos);
 
-                    if (!sumoKnownRoutes.contains(routeId)) {
+                    if (!routeCache.containsKey(routeId)) {
                         throw new IllegalArgumentException(
                                 "Unknown route " + routeId + " for vehicle with departure time " + interaction.getTime()
                         );
@@ -424,7 +420,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Writes a new SUMO route file based on the registered vehicle types and routes.
      *
      * @param typesInit  Interaction contains predefined vehicle types.
-     * @param routesInit Interaction contains paths and their IDs.
      */
     private void writeRouteFile(VehicleTypesInitialization typesInit, VehicleRoutesInitialization routesInit) {
         File outputFile = initRouteFileCreator();
