@@ -4,43 +4,43 @@
     "properties": {
         "prototypes": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/prototype" } ]
+            "items": { "$ref": "#/definitions/prototype" }
         },
         "typeDistributions": {
             "type": "object",
-            "items": [ { "$ref": "#/definitions/typeDistribution" } ]
+            "items": { "$ref": "#/definitions/typeDistribution" }
         },
         "rsus": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/rsu" } ]
+            "items": { "$ref": "#/definitions/rsu" }
         },
         "tmcs": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/tmc" } ]
+            "items": { "$ref": "#/definitions/tmc" }
         },
         "servers": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/server" } ]
+            "items": { "$ref": "#/definitions/server" }
         },
         "trafficLights": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/tl" } ]
+            "items": { "$ref": "#/definitions/tl" }
         },
         "vehicles": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/vehicle" } ]
+            "items": { "$ref": "#/definitions/vehicle" }
         },
         "chargingStations": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/chargingStation" } ]
+            "items": { "$ref": "#/definitions/chargingStation" }
         },
         "matrixMappers": {
             "type": "array",
-            "items": [ { "$ref": "#/definitions/matrixMapper" } ]
+            "items": { "$ref": "#/definitions/matrixMapper" }
         },
         "config": {
             "type": "object",
-            "items": [ { "$ref": "#/definitions/config" } ]
+            "items": { "$ref": "#/definitions/config" }
         }
     },
     "definitions": {
