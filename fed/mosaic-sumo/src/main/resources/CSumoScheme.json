@@ -11,7 +11,7 @@
         "additionalSumoParameters": { "type": "string" },
         "additionalVTypeParameters": {
             "type": "object",
-            "additionalProperties": {  "$ref": "#/definitions/additionalVType"  }
+            "additionalProperties": { "$ref": "#/definitions/additionalVType" }
         },
         "trafficFlowMeasurementWindowInS": {
             "type": "integer",

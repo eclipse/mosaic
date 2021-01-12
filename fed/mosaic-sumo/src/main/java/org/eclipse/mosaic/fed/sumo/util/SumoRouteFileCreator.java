@@ -161,16 +161,14 @@ public class SumoRouteFileCreator {
     }
 
     private void applyParametersFromSumoConfiguration(Map<String, Map<String, String>> newVTypes) {
-        for (Entry<String, Map<String, String>> sumoParameterEntry: additionalVTypeParameters.entrySet()) {
+        for (Entry<String, Map<String, String>> sumoParameterEntry : additionalVTypeParameters.entrySet()) {
             String currentVehicleType = sumoParameterEntry.getKey();
-            if (!newVTypes.containsKey(currentVehicleType)) {
-                continue; // if type defined in sumo config wasn't defined in mapping ignore the type
-            }
+            newVTypes.putIfAbsent(currentVehicleType, new HashMap<>());
             Set<Entry<String, String>> additionalParameters = sumoParameterEntry.getValue().entrySet();
             for (Entry<String, String> parameter : additionalParameters) {
                 String parameterName = parameter.getKey();
                 String parameterValue = parameter.getValue();
-                newVTypes.get(currentVehicleType).put(parameterName,parameterValue);
+                newVTypes.get(currentVehicleType).put(parameterName, parameterValue);
             }
         }
     }
@@ -185,7 +183,11 @@ public class SumoRouteFileCreator {
             Element currentVType = vehicleTypesDocument.createElement("vType");
             currentVType.setAttribute("id", attributesEntry.getKey());
             for (Entry<String, String> attributeEntry : attributesEntry.getValue().entrySet()) {
-                currentVType.setAttribute(attributeEntry.getKey(), attributeEntry.getValue());
+                String attributeName = attributeEntry.getKey();
+                String attributeValue = attributeEntry.getValue();
+
+                currentVType.setAttribute(attributeName, attributeValue);
+
             }
             routesNode.appendChild(currentVType);
         }
@@ -213,7 +215,7 @@ public class SumoRouteFileCreator {
             attributes.put("minGap", formatDoubleAttribute(vehicleTypesEntry.getValue().getMinGap()));
             attributes.put("sigma", formatDoubleAttribute(vehicleTypesEntry.getValue().getSigma()));
             attributes.put("tau", formatDoubleAttribute(vehicleTypesEntry.getValue().getTau() + timeGapOffset));
-            attributes.put("speedFactor",formatDoubleAttribute(vehicleTypesEntry.getValue().getSpeedFactor()));
+            attributes.put("speedFactor", formatDoubleAttribute(vehicleTypesEntry.getValue().getSpeedFactor()));
 
             // We deviate the speedFactor on our own. Therefore, we must set the speedDev in SUMO to 0.0 in order
             // to not alter the already adjusted speedFactor again.
@@ -322,7 +324,7 @@ public class SumoRouteFileCreator {
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(file);
             transformer.transform(source, result);
-            log.info("{}-file successfully written.", file.toString());
+            log.info("{} file successfully written.", file.toString());
         } catch (TransformerException e) {
             log.debug("Couldn't write route-file.");
         }
