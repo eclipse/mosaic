@@ -152,14 +152,15 @@ public class SumoRouteFileCreator {
         Map<String, Map<String, String>> newVTypes = generateAttributesMap(additionalVTypes, timeGapOffset);
 
         // applies the additional para
-        newVTypes = applyParametersFromSumoConfiguration(newVTypes);
+        applyParametersFromSumoConfiguration(newVTypes);
+
         // write vehicle type to new route file containing vehicle types
         writeVehicleTypes(newVTypes);
 
         return this;
     }
 
-    private Map<String, Map<String, String>> applyParametersFromSumoConfiguration(Map<String, Map<String, String>> newVTypes) {
+    private void applyParametersFromSumoConfiguration(Map<String, Map<String, String>> newVTypes) {
         for (Entry<String, Map<String, String>> sumoParameterEntry: additionalVTypeParameters.entrySet()) {
             String currentVehicleType = sumoParameterEntry.getKey();
             if (!newVTypes.containsKey(currentVehicleType)) {
@@ -172,7 +173,6 @@ public class SumoRouteFileCreator {
                 newVTypes.get(currentVehicleType).put(parameterName,parameterValue);
             }
         }
-        return newVTypes;
     }
 
     private void writeVehicleTypes(Map<String, Map<String, String>> newVTypes) {
