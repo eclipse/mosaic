@@ -2,6 +2,13 @@
     "updateInterval": "wrong type",
     "sumoConfigurationFile": "placeholder.sumocfg",
     "exitOnInsertionError": true,
+    "additionalVTypeParameters": {
+        "car": {
+            "carFollowModel": 3,
+            "color": "red",
+            "maxSpeed": "50"
+        }
+    },
     "additionalSumoParameters": " --time-to-teleport 10  --seed 200000",
     "trafficFlowMeasurementWindowInS": 400,
     "timeGapOffset": 4.5,

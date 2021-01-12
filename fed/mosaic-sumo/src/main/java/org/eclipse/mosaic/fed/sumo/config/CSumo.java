@@ -22,6 +22,8 @@ import com.google.gson.annotations.JsonAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The SUMO Ambassador configuration class.
@@ -136,6 +138,12 @@ public class CSumo implements Serializable {
      * Possible values are: "changeLane", "changeRoute"
      */
     public Collection<String> highlights = new ArrayList<>();
+
+    /**
+     * Allows to configure specialised vType parameters, which can't be configured via Mapping.
+     * E.g. parameters for the lane change model of vehicles.
+     */
+    public Map<String, Map<String, String>> additionalVTypeParameters = new HashMap<>();
 
     public final static String HIGHLIGHT_CHANGE_LANE = "changeLane";
     public final static String HIGHLIGHT_CHANGE_ROUTE = "changeRoute";

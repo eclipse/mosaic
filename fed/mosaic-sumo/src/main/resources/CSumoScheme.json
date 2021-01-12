@@ -9,6 +9,10 @@
         "sumoConfigurationFile": { "type": "string" },
         "exitOnInsertionError": { "type": "boolean" },
         "additionalSumoParameters": { "type": "string" },
+        "additionalVTypeParameters": {
+            "type": "object",
+            "additionalProperties": {  "$ref": "#/definitions/additionalVType"  }
+        },
         "trafficFlowMeasurementWindowInS": {
             "type": "integer",
             "minimum": 1
@@ -26,6 +30,15 @@
         "highlights": {
             "type": "array",
             "items": [ { "type": "string" } ]
+        }
+    },
+    "definitions": {
+        "additionalVType": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/additionalParameter" }
+        },
+        "additionalParameter": {
+            "type": "string"
         }
     }
 }

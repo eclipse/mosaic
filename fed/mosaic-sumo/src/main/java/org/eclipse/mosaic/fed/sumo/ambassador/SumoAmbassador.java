@@ -15,8 +15,8 @@
 
 package org.eclipse.mosaic.fed.sumo.ambassador;
 
-import org.eclipse.mosaic.fed.sumo.util.SumoRouteFileCreator;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
+import org.eclipse.mosaic.fed.sumo.util.SumoRouteFileCreator;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
@@ -68,20 +68,22 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private VehicleTypesInitialization cachedVehicleTypesInitialization;
 
     /**
-     * Name of the route file which has to be altered.
-     */
-    private final String routeFilename;
-
-    /**
      * Cached {@link VehicleRegistration}-interaction, which is filled if a vehicle could not be
      * emitted e.g. due a blocked lane.
      */
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
+     * Name of the additional route file being created, which contains all vTypes added through Mapping.
+     */
+    private final String vehicleTypeRouteFileName;
+
+    /**
      * Instance of {@link SumoRouteFileCreator} used to write routes to a *.rou.xml file.
      */
     private SumoRouteFileCreator sumoRouteFileCreator;
+
+    private final File sumoConfigurationFile;
 
     /**
      * Constructor for {@link SumoAmbassador}. Loads the
@@ -96,28 +98,34 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (!absoluteConfiguration.exists()) {
             absoluteConfiguration = new File(this.ambassadorParameter.configuration.getParent(), sumoConfig.sumoConfigurationFile);
         }
+        sumoConfigurationFile = absoluteConfiguration;
 
-        routeFilename = parseRouteFilename(absoluteConfiguration);
+        vehicleTypeRouteFileName = extractVehicleTypeRouteFileName();
 
-        if (StringUtils.isBlank(routeFilename)) {
-            String myError = "The tag <route-files value=\"*.rou.xml\"/> is missing in " + absoluteConfiguration.getAbsolutePath();
+        if (StringUtils.isBlank(vehicleTypeRouteFileName)) {
+            String myError = "The tag <route-files value=\"*.rou.xml\"/> is missing in " + sumoConfigurationFile.getAbsolutePath();
             log.error(myError);
             throw new RuntimeException(myError);
         }
     }
 
     /**
-     * Find the name of the route file and return it.
+     * Find the name of the route file and extend it with {@code "_vTypes.rou.xml"}
+     * for new vehicle types to be written in.
      *
-     * @param sumoConfigurationFile The SUMO configuration file.
-     * @return The route-files filename.
+     * @return The route-file name for new vehicle types.
      */
-    private String parseRouteFilename(File sumoConfigurationFile) {
-
+    private String extractVehicleTypeRouteFileName() {
         try {
             XMLConfiguration sumoConfiguration = XmlUtils.readXmlFromFile(sumoConfigurationFile);
-            String routeFile = XmlUtils.getValueFromXpath(sumoConfiguration, "/input/route-files/@value", null);
-            return Validate.notNull(routeFile);
+            String routeFileName = XmlUtils.getValueFromXpath(sumoConfiguration, "/input/route-files/@value", null);
+            Validate.notNull(routeFileName);
+            String[] routeFiles = routeFileName.split("[\\s,]+"); // split by comma (+ white space)
+            if (routeFiles.length > 1) {
+                log.debug("It seems like there was more than one route-file defined.");
+            }
+            // get first route-file, extend it with "_vTypes.rou.xml"
+            return Validate.notNull(routeFiles[0]).split("\\.")[0] + "_vTypes.rou.xml";
         } catch (IOException e) {
             log.error("An error occurred while parsing the SUMO configuration file", e);
         }
@@ -242,7 +250,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     protected void sumoStartupProcedure() throws InternalFederateException {
-        writeMappedTypes(cachedVehicleTypesInitialization);
+        writeTypesFromMapping(cachedVehicleTypesInitialization);
         startSumoLocal();
         initTraci();
         readInitialRoutesFromTraci();
@@ -264,6 +272,11 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         }
     }
 
+    /**
+     * Passes on the routes from Mapping to SUMO.
+     *
+     * @throws InternalFederateException if there was a problem with traci
+     */
     private void addInitialRoutesFromMapping() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
             traci.getRouteControl().addRoute(routeEntry.getKey(), routeEntry.getValue().getEdgeIdList());
@@ -315,7 +328,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                             cachedVehicleTypesInitialization.getTypes().get(vehicleType)
                     );
 
-                    if (sumoConfig.writeVehicleDepartures) {
+                    if (sumoConfig.writeVehicleDepartures && sumoRouteFileCreator.departuresInitialized()) {
                         sumoRouteFileCreator.addVehicle(time, vehicleId, vehicleType, routeId, laneId, departPos, departSpeed);
                     }
                     iterator.remove();
@@ -403,12 +416,12 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
     @Override
     public void finishSimulation() throws InternalFederateException {
-        if (sumoConfig.writeVehicleDepartures) {
+        if (sumoConfig.writeVehicleDepartures && sumoRouteFileCreator.departuresInitialized()) {
             // debug feature: write all vehicle departures to an additional route-file
             File logDir = new File(new File(descriptor.getHost().workingDirectory, descriptor.getId()), "log");
             if (logDir.exists() || logDir.mkdirs()) {
                 File departureFile = new File(logDir, "departures.rou.xml");
-                sumoRouteFileCreator.store(departureFile);
+                sumoRouteFileCreator.storeDepartures(departureFile);
             } else {
                 log.error("Could not create directory for departure file.");
             }
@@ -421,8 +434,8 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @param typesInit Interaction contains predefined vehicle types.
      */
-    private void writeMappedTypes(VehicleTypesInitialization typesInit) {
-        File outputFile = initRouteFileCreator();
+    private void writeTypesFromMapping(VehicleTypesInitialization typesInit) {
+        File outputFile = initVehicleTypeRouteFileCreator();
 
         // stores the rou.xml file to the working directory. this file is required for SUMO to run
         sumoRouteFileCreator
@@ -430,18 +443,24 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 .store(outputFile);
     }
 
-    private File initRouteFileCreator() {
+    private File initVehicleTypeRouteFileCreator() {
         File dir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
         String subDir = new File(sumoConfig.sumoConfigurationFile).getParent();
         if (StringUtils.isNotBlank(subDir)) {
             dir = new File(dir, subDir);
         }
-        File tmpRouteFile = new File(dir, routeFilename);
+        File tmpRouteFile = new File(dir, vehicleTypeRouteFileName);
 
         // keep single instance
         if (sumoRouteFileCreator == null) {
-            this.sumoRouteFileCreator = new SumoRouteFileCreator(tmpRouteFile, sumoConfig.timeGapOffset);
+            this.sumoRouteFileCreator = new SumoRouteFileCreator(
+                    sumoConfigurationFile, tmpRouteFile, sumoConfig.additionalVTypeParameters, sumoConfig.timeGapOffset
+            );
+            if (sumoConfig.writeVehicleDepartures) {
+                sumoRouteFileCreator.initializeDepartureDocument();
+            }
         }
         return tmpRouteFile;
     }
+
 }
