@@ -74,6 +74,11 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
+     * Name of the route-file, which will be created if it doesn't exist.
+     */
+    private final String routeFileName;
+
+    /**
      * Name of the additional route file being created, which contains all vTypes added through Mapping.
      */
     private final String vehicleTypeRouteFileName;
@@ -100,9 +105,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         }
         sumoConfigurationFile = absoluteConfiguration;
 
-        vehicleTypeRouteFileName = extractVehicleTypeRouteFileName();
+        routeFileName = Validate.notNull(setRouteFileNames());
+        vehicleTypeRouteFileName = routeFileName.split("\\.")[0] + "_vTypes.rou.xml";
 
-        if (StringUtils.isBlank(vehicleTypeRouteFileName)) {
+        if (StringUtils.isBlank(routeFileName)) {
             String myError = "The tag <route-files value=\"*.rou.xml\"/> is missing in " + sumoConfigurationFile.getAbsolutePath();
             log.error(myError);
             throw new RuntimeException(myError);
@@ -110,12 +116,11 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     /**
-     * Find the name of the route file and extend it with {@code "_vTypes.rou.xml"}
-     * for new vehicle types to be written in.
+     * Find the name of the route file and return it.
      *
-     * @return The route-file name for new vehicle types.
+     * @return The route-file name.
      */
-    private String extractVehicleTypeRouteFileName() {
+    private String setRouteFileNames() {
         try {
             XMLConfiguration sumoConfiguration = XmlUtils.readXmlFromFile(sumoConfigurationFile);
             String routeFileName = XmlUtils.getValueFromXpath(sumoConfiguration, "/input/route-files/@value", null);
@@ -125,7 +130,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 log.debug("It seems like there was more than one route-file defined.");
             }
             // get first route-file, extend it with "_vTypes.rou.xml"
-            return Validate.notNull(routeFiles[0]).split("\\.")[0] + "_vTypes.rou.xml";
+            return routeFiles[0];
         } catch (IOException e) {
             log.error("An error occurred while parsing the SUMO configuration file", e);
         }
@@ -279,9 +284,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void addInitialRoutesFromMapping() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
+            String routeId = routeEntry.getKey();
             // if the route is already known (because it is defined in a route-file) don't add route
-            if (!routeCache.containsKey(routeEntry.getKey())) {
-                traci.getRouteControl().addRoute(routeEntry.getKey(), routeEntry.getValue().getEdgeIdList());
+            if (!traci.getRouteControl().getRouteIds().contains(routeId)) {
+                traci.getRouteControl().addRoute(routeId, routeEntry.getValue().getEdgeIdList());
             }
         }
     }
@@ -452,19 +458,25 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (StringUtils.isNotBlank(subDir)) {
             dir = new File(dir, subDir);
         }
-        File tmpRouteFile = new File(dir, vehicleTypeRouteFileName);
+        File tmpRouteFile = new File(dir, routeFileName);
+        File tmpVehicleTypeRouteFile = new File(dir, vehicleTypeRouteFileName);
         File tmpSumoFile = new File(dir, sumoConfigurationFile.getName());
 
         // keep single instance
         if (sumoRouteFileCreator == null) {
-            this.sumoRouteFileCreator = new SumoRouteFileCreator(
-                    tmpSumoFile, tmpRouteFile, sumoConfig.additionalVTypeParameters, sumoConfig.timeGapOffset
+            sumoRouteFileCreator = new SumoRouteFileCreator(
+                    tmpSumoFile, tmpVehicleTypeRouteFile, sumoConfig.additionalVTypeParameters, sumoConfig.timeGapOffset
             );
             if (sumoConfig.writeVehicleDepartures) {
                 sumoRouteFileCreator.initializeDepartureDocument();
             }
         }
-        return tmpRouteFile;
+
+        if (!tmpRouteFile.exists()) { // if route-file doesn't exists write an empty one
+            sumoRouteFileCreator.store(tmpRouteFile);
+        }
+
+        return tmpVehicleTypeRouteFile;
     }
 
 }
