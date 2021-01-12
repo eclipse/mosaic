@@ -15,8 +15,8 @@
 
 package org.eclipse.mosaic.fed.sumo.ambassador;
 
-import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
 import org.eclipse.mosaic.fed.sumo.util.SumoRouteFileCreator;
+import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
@@ -279,7 +279,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void addInitialRoutesFromMapping() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
-            traci.getRouteControl().addRoute(routeEntry.getKey(), routeEntry.getValue().getEdgeIdList());
+            // if the route is already known (because it is defined in a route-file) don't add route
+            if (!routeCache.containsKey(routeEntry.getKey())) {
+                traci.getRouteControl().addRoute(routeEntry.getKey(), routeEntry.getValue().getEdgeIdList());
+            }
         }
     }
 
@@ -450,11 +453,12 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             dir = new File(dir, subDir);
         }
         File tmpRouteFile = new File(dir, vehicleTypeRouteFileName);
+        File tmpSumoFile = new File(dir, sumoConfigurationFile.getName());
 
         // keep single instance
         if (sumoRouteFileCreator == null) {
             this.sumoRouteFileCreator = new SumoRouteFileCreator(
-                    sumoConfigurationFile, tmpRouteFile, sumoConfig.additionalVTypeParameters, sumoConfig.timeGapOffset
+                    tmpSumoFile, tmpRouteFile, sumoConfig.additionalVTypeParameters, sumoConfig.timeGapOffset
             );
             if (sumoConfig.writeVehicleDepartures) {
                 sumoRouteFileCreator.initializeDepartureDocument();
