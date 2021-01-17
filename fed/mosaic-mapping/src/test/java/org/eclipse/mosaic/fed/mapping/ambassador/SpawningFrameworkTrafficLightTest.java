@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
+
 package org.eclipse.mosaic.fed.mapping.ambassador;
 
 import static org.mockito.Mockito.times;
@@ -7,13 +22,11 @@ import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
-import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
