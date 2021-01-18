@@ -105,7 +105,7 @@ public class SumoRouteFileCreatorTest {
         Document document = documentBuilder.parse(vehicleTypesRouteFile.get("test_vTypes.rou.xml"));
         assertNotNull(document);
         NodeList vehicleTypesInDocument = document.getElementsByTagName("vType");
-        assertEquals(vehicleTypesInDocument.getLength(), 2); // length should be 2 even though there are 3 types from sumo config
+        assertEquals(vehicleTypesInDocument.getLength(), 3); // it is also possible to add vTypes from sumo config
         // crawling XML and asserting right values
         Node routes = document.getFirstChild();
         assertEquals("routes", routes.getNodeName());
@@ -124,8 +124,11 @@ public class SumoRouteFileCreatorTest {
         assertEquals("1.20", myCarVTypeAttributes.getNamedItem("speedFactor").getNodeValue()); // test overwriting
         assertEquals("1.00", myCarVTypeAttributes.getNamedItem("tau").getNodeValue());
         assertEquals("passenger", myCarVTypeAttributes.getNamedItem("vClass").getNodeValue());
-        Node hisCarVType = myCarVType.getNextSibling().getNextSibling();
-        assertEquals("vType", hisCarVType.getNodeName());
+        Node herCarVType = myCarVType.getNextSibling().getNextSibling();
+        assertEquals("vType", herCarVType.getNodeName());
+        NamedNodeMap herCarVTypeAttributes = herCarVType.getAttributes();
+        assertEquals("red", herCarVTypeAttributes.getNamedItem("color").getNodeValue());
+        Node hisCarVType = herCarVType.getNextSibling().getNextSibling();
         NamedNodeMap hisCarVTypeAttributes = hisCarVType.getAttributes();
         assertEquals("hisCar", hisCarVTypeAttributes.getNamedItem("id").getNodeValue());
         assertEquals("2.60", hisCarVTypeAttributes.getNamedItem("accel").getNodeValue());

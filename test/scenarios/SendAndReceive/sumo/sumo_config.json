@@ -1,7 +1,7 @@
 {
     "sumoConfigurationFile": "tiergarten.sumocfg",
     "additionalVTypeParameters": {
-        "default": {
+        "DEFAULT_VEHTYPE": {
             "length": "7.5",
             "maxSpeed": "50",
             "minGap": "2.0",

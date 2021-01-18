@@ -471,7 +471,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 sumoRouteFileCreator.initializeDepartureDocument();
             }
         }
-
+        // FIXME: This seems a little bit dirty, but we configure our sumocfg's with an route-file even if it doesn't exist
         if (!tmpRouteFile.exists()) { // if route-file doesn't exists write an empty one
             sumoRouteFileCreator.store(tmpRouteFile);
         }
