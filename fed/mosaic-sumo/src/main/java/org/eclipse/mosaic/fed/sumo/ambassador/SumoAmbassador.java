@@ -35,7 +35,6 @@ import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 
 import java.io.File;
 import java.io.IOException;
