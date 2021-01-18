@@ -17,14 +17,18 @@ package org.eclipse.mosaic.fed.sumo.ambassador;
 
 import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
 import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
+import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of {@link AbstractSumoAmbassador} which allows to execute
@@ -69,7 +73,17 @@ import java.util.List;
  * }
  * </pre>
  */
-public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
+public class SumoScenarioAmbassador extends SumoAmbassador {
+
+    /**
+     * Set containing all vehicles, that have been added using the SUMO route file.
+     */
+    private final Set<String> vehiclesAddedViaRouteFile = new HashSet<>();
+
+    /**
+     * Set containing all vehicles, that have been added using the Mapping file.
+     */
+    private final Set<String> vehiclesAddedViaMapping = new HashSet<>();
 
     /**
      * Creates a new {@link SumoScenarioAmbassador} object using
@@ -87,8 +101,6 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
         super.initialize(startTime, endTime);
 
         configure();
-        startSumoLocal();
-        initTraci();
     }
 
     @SuppressWarnings(
@@ -105,10 +117,12 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
-            traci.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
+            if (vehiclesAddedViaMapping.contains(vehicleId)) { // only handle route file vehicles here
+                continue;
+            }
+            vehiclesAddedViaRouteFile.add(vehicleId);
 
             vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
-
             try {
                 rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
             } catch (IllegalValueException e) {
@@ -118,11 +132,13 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
     }
 
     @Override
-    protected void initializeTrafficLights(long time) {
-        try {
-            super.initializeTrafficLights(time);
-        } catch (Exception e) {
-            log.error("Could not initialize traffic lights, skipping.", e);
+    protected void receiveInteraction(VehicleRegistration interaction) throws InternalFederateException {
+        VehicleMapping vehicleMapping = interaction.getMapping();
+        if (!vehiclesAddedViaRouteFile.contains(vehicleMapping.getName())) { // vehicle newly added via mapping
+            vehiclesAddedViaMapping.add(vehicleMapping.getName());
+            super.receiveInteraction(interaction);
+        } else if (sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication()) { // still subscribe to vehicles with apps
+            traci.getSimulationControl().subscribeForVehicle(vehicleMapping.getName(), interaction.getTime(), this.endTime);
         }
     }
 }

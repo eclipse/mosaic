@@ -254,7 +254,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         return descriptor != null && cachedVehicleRoutesInitialization != null && cachedVehicleTypesInitialization != null;
     }
 
-    protected void sumoStartupProcedure() throws InternalFederateException {
+    private void sumoStartupProcedure() throws InternalFederateException {
         writeTypesFromMapping(cachedVehicleTypesInitialization);
         startSumoLocal();
         initTraci();
