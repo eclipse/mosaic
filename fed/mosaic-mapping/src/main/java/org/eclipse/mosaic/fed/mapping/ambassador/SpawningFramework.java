@@ -125,10 +125,11 @@ public class SpawningFramework {
         }
         // Traffic lights
         if (mappingConfiguration.trafficLights != null) {
+            int i = 0;
             for (CTrafficLight trafficLightConfigurations : mappingConfiguration.trafficLights) {
                 if (trafficLightConfigurations != null) {
                     TrafficLightSpawner tl = new TrafficLightSpawner(trafficLightConfigurations);
-                    tls.put(tl.getTlName(), tl);
+                    tls.put(ObjectUtils.defaultIfNull(tl.getTlName(), Integer.toString(++i)), tl);
                 }
             }
         }
