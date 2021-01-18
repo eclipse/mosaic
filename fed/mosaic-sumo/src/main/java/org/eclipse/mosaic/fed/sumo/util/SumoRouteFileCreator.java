@@ -15,16 +15,17 @@
 
 package org.eclipse.mosaic.fed.sumo.util;
 
+import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.ColorUtils;
-import org.eclipse.mosaic.rti.TIME;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.awt.Color;
@@ -50,48 +51,44 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 /**
- * This class is used to write Sumo vehicle definitions and routes into a so
- * called rou.xml file.
+ * This class creates a new SUMO route file containing vehicle types added from Mapping and link to that file in the sumo configuration.
+ * Additionally it will merge vehicle types from mapping with additional parameters specified
+ * in {@link CSumo#additionalVehicleTypeParameters}.
  */
 public class SumoRouteFileCreator {
 
     private final static Logger log = LoggerFactory.getLogger(SumoRouteFileCreator.class);
 
-    private final double timeGapOffset;
-
     /**
      * Document used to write vehicle types (prototypes) from Mapping to.
-     * Note: parameters from {@link org.eclipse.mosaic.fed.sumo.config.CSumo#additionalVTypeParameters}
-     * will also be written into this file, overwriting (TODO) values from Mapping.
+     * Note: parameters from {@link org.eclipse.mosaic.fed.sumo.config.CSumo#additionalVehicleTypeParameters}
+     * will also be written into this file, overwriting values from Mapping.
      */
     private final Document vehicleTypesDocument;
 
-    /**
-     * Document used to write departures to.
-     */
-    private Document departureDocument;
+    private final double timeGapOffset;
 
     /**
      * Stores additional vehicle type parameters specified in {@link org.eclipse.mosaic.fed.sumo.config.CSumo}.
      */
-    private final Map<String, Map<String, String>> additionalVTypeParameters;
+    private final Map<String, Map<String, String>> additionalVehicleTypeParameters;
 
     /**
      * Constructor for {@link SumoRouteFileCreator}.
      *
-     * @param vehicleTypeRouteFile the name for the newly written route-file
-     * @param timeGapOffset        used to add time Offset to vehicle types
+     * @param sumoConfigurationFile this is the {@link File}-object linking to the `.sumocfg`-file
+     * @param vehicleTypeRouteFile  the name for the newly written route-file
+     * @param sumoConfiguration     the sumo configuration read from sumo_config.json
      */
     public SumoRouteFileCreator(File sumoConfigurationFile,
                                 File vehicleTypeRouteFile,
-                                Map<String, Map<String, String>> additionalVTypeParameters,
-                                double timeGapOffset) {
+                                CSumo sumoConfiguration) {
         if (vehicleTypeRouteFile == null) {
-            throw new IllegalArgumentException("No route file given.");
+            throw new IllegalArgumentException("No vehicle type route file given.");
         }
 
-        this.additionalVTypeParameters = additionalVTypeParameters;
-        this.timeGapOffset = timeGapOffset;
+        this.additionalVehicleTypeParameters = sumoConfiguration.additionalVehicleTypeParameters;
+        this.timeGapOffset = sumoConfiguration.timeGapOffset;
 
         addVehicleTypeRouteFileToSumoConfig(sumoConfigurationFile, vehicleTypeRouteFile);
         vehicleTypesDocument = initializeDocument();
@@ -108,18 +105,30 @@ public class SumoRouteFileCreator {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(sumoConfigurationFile);
 
-            Node routeFilesNode = doc.getElementsByTagName("route-files").item(0);
-            Element routeFilesNodeElement = (Element) routeFilesNode;
-            String previousRouteFiles = routeFilesNodeElement.getAttribute("value");
-            previousRouteFiles = previousRouteFiles.isEmpty() ? "" : previousRouteFiles + "," ; // "" if there were no previous route files
-            routeFilesNodeElement.setAttribute("value", previousRouteFiles + baseVehicleTypeRouteFile.getName());
+            NodeList routeFilesNodes = doc.getElementsByTagName("route-files");
+            Element routeFilesNodeElement;
+            String newRouteFilesValue;
+            if (routeFilesNodes.getLength() == 0) { // if there is no "route-files" element we have to create it and add
+                Node newRouteFilesNode = doc.createElement("route-files");
+
+                Element inputNode = (Element) doc.getElementsByTagName("input").item(0);
+                inputNode.appendChild(newRouteFilesNode);
+                routeFilesNodeElement = (Element) routeFilesNodes.item(0);
+                newRouteFilesValue = baseVehicleTypeRouteFile.getName();
+            } else {
+                routeFilesNodeElement = (Element) routeFilesNodes.item(0);
+                String previousRouteFiles = routeFilesNodeElement.getAttribute("value") + ",";
+                newRouteFilesValue = previousRouteFiles + baseVehicleTypeRouteFile.getName();
+            }
+            routeFilesNodeElement.setAttribute("value", newRouteFilesValue);
+
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             Result output = new StreamResult(sumoConfigurationFile);
             Source input = new DOMSource(doc);
             transformer.transform(input, output);
         } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-            e.printStackTrace();
+            log.error("Couldn't add new vehicle Types to SUMO configuration.", e);
         }
     }
 
@@ -145,54 +154,54 @@ public class SumoRouteFileCreator {
 
     /**
      * Adds the given vehicle types including the already existing
-     * to the {@link #departureDocument}.
+     * {@link #vehicleTypesDocument}.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public SumoRouteFileCreator addVehicleTypes(Map<String, VehicleType> additionalVTypes) {
+    public SumoRouteFileCreator addVehicleTypes(Map<String, VehicleType> additionalVehicleTypes) {
         // adding new types with additional parameters from sumo config
-        Map<String, Map<String, String>> newVTypes = generateAttributesMap(additionalVTypes, timeGapOffset);
+        Map<String, Map<String, String>> newVehicleTypes = generateAttributesMap(additionalVehicleTypes, timeGapOffset);
 
         // applies the additional para
-        applyParametersFromSumoConfiguration(newVTypes);
+        applyParametersFromSumoConfiguration(newVehicleTypes);
 
         // write vehicle type to new route file containing vehicle types
-        writeVehicleTypes(newVTypes);
+        writeVehicleTypes(newVehicleTypes);
 
         return this;
     }
 
-    private void applyParametersFromSumoConfiguration(Map<String, Map<String, String>> newVTypes) {
-        for (Entry<String, Map<String, String>> sumoParameterEntry : additionalVTypeParameters.entrySet()) {
+    private void applyParametersFromSumoConfiguration(Map<String, Map<String, String>> newVehicleTypes) {
+        for (Entry<String, Map<String, String>> sumoParameterEntry : additionalVehicleTypeParameters.entrySet()) {
             String currentVehicleType = sumoParameterEntry.getKey();
-            if (!newVTypes.containsKey(currentVehicleType)) {
+            if (!newVehicleTypes.containsKey(currentVehicleType)) {
                 continue; // if type defined in sumo config wasn't defined in mapping ignore the type
             }
             Set<Entry<String, String>> additionalParameters = sumoParameterEntry.getValue().entrySet();
             for (Entry<String, String> parameter : additionalParameters) {
                 String parameterName = parameter.getKey();
                 String parameterValue = parameter.getValue();
-                newVTypes.get(currentVehicleType).put(parameterName, parameterValue);
+                newVehicleTypes.get(currentVehicleType).put(parameterName, parameterValue);
             }
         }
     }
 
-    private void writeVehicleTypes(Map<String, Map<String, String>> newVTypes) {
+    private void writeVehicleTypes(Map<String, Map<String, String>> newVehicleTypes) {
         Node routesNode = vehicleTypesDocument.getFirstChild();
         if (!routesNode.getNodeName().equals("routes")) {
             log.warn("Couldn't write vTypes");
             return;
         }
-        for (Entry<String, Map<String, String>> attributesEntry : newVTypes.entrySet()) {
-            Element currentVType = vehicleTypesDocument.createElement("vType");
-            currentVType.setAttribute("id", attributesEntry.getKey());
+        for (Entry<String, Map<String, String>> attributesEntry : newVehicleTypes.entrySet()) {
+            Element currentVehicleType = vehicleTypesDocument.createElement("vType");
+            currentVehicleType.setAttribute("id", attributesEntry.getKey());
             for (Entry<String, String> attributeEntry : attributesEntry.getValue().entrySet()) {
                 String attributeName = attributeEntry.getKey();
                 String attributeValue = attributeEntry.getValue();
 
-                currentVType.setAttribute(attributeName, attributeValue);
+                currentVehicleType.setAttribute(attributeName, attributeValue);
 
             }
-            routesNode.appendChild(currentVType);
+            routesNode.appendChild(currentVehicleType);
         }
     }
 
@@ -246,69 +255,12 @@ public class SumoRouteFileCreator {
         return String.format(Locale.ENGLISH, "%.2f", attribute);
     }
 
-    public boolean departuresInitialized() {
-        return departureDocument != null;
-    }
-
-    public void initializeDepartureDocument() {
-        departureDocument = initializeDocument();
-    }
-
-    /**
-     * Adds a vehicle with the given parameters to the route file.
-     *
-     * @param time        time of the departure
-     * @param vehicleId   the id of the vehicle
-     * @param vehicleType string representation of the vehicle type
-     * @param routeId     the id of the route, that the vehicle follows
-     * @param laneId      the lane, that the vehicle spawns on
-     * @param departPos   the position, the vehicle departs from
-     * @param departSpeed the speed the vehicle departs with
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public SumoRouteFileCreator addVehicle(long time, String vehicleId, String vehicleType,
-                                           String routeId, String laneId, String departPos, String departSpeed) {
-        try {
-            Node routesNode = departureDocument.getFirstChild();
-            if (!routesNode.getNodeName().equals("routes")) {
-                throw new Exception();
-            }
-
-            // validating parameters
-            // create element and add attributes
-            Element vehicleElement = departureDocument.createElement("vehicle");
-
-            vehicleElement.setAttribute("id", vehicleId);
-            vehicleElement.setAttribute("type", vehicleType);
-            vehicleElement.setAttribute("route", routeId);
-            vehicleElement.setAttribute("depart", String.format(Locale.ENGLISH, "%.2f", (time / (double) TIME.SECOND)));
-            vehicleElement.setAttribute("departPos", departPos);
-            vehicleElement.setAttribute("departSpeed", departSpeed);
-            vehicleElement.setAttribute("departLane", laneId);
-
-            routesNode.appendChild(vehicleElement);
-        } catch (IOException e) {
-            log.warn("Couldn't open given file.");
-        } catch (Exception e) {
-            log.warn("The given file isn't a proper rou.xml file.");
-        }
-        return this;
-    }
-
     /**
      * Stores the document to the given target file.
      */
     public void store(File target) {
         // write route-file
         writeXmlFile(target, vehicleTypesDocument);
-    }
-
-    /**
-     * Stores the document to the given target file.
-     */
-    public void storeDepartures(File target) {
-        // write route-file
-        writeXmlFile(target, departureDocument);
     }
 
     /**
