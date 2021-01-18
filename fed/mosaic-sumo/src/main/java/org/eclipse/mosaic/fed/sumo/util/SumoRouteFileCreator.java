@@ -122,7 +122,6 @@ public class SumoRouteFileCreator {
             }
             routeFilesNodeElement.setAttribute("value", newRouteFilesValue);
 
-
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             Result output = new StreamResult(sumoConfigurationFile);
             Source input = new DOMSource(doc);
