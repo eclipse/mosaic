@@ -1,15 +1,3 @@
 {
-    "sumoConfigurationFile": "tiergarten.sumocfg",
-    "additionalVTypeParameters": {
-        "DEFAULT_VEHTYPE": {
-            "length": "7.5",
-            "maxSpeed": "50",
-            "minGap": "2.0",
-            "carFollowModel": "Krauss",
-            "accel": "0.8",
-            "decel": "4.5",
-            "sigma": "0.5",
-            "tau": "1"
-        }
-    }
+    "sumoConfigurationFile": "tiergarten.sumocfg"
 }
