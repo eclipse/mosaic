@@ -111,7 +111,8 @@ public class SumoRouteFileCreator {
             Node routeFilesNode = doc.getElementsByTagName("route-files").item(0);
             Element routeFilesNodeElement = (Element) routeFilesNode;
             String previousRouteFiles = routeFilesNodeElement.getAttribute("value");
-            routeFilesNodeElement.setAttribute("value", baseVehicleTypeRouteFile.getName() + "," + previousRouteFiles);
+            previousRouteFiles = previousRouteFiles.isEmpty() ? "" : "," + previousRouteFiles; // "" if there were no previous route files
+            routeFilesNodeElement.setAttribute("value", baseVehicleTypeRouteFile.getName() + previousRouteFiles);
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             Result output = new StreamResult(sumoConfigurationFile);
