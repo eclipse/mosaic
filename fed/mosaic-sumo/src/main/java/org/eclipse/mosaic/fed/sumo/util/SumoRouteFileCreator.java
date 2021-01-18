@@ -111,8 +111,8 @@ public class SumoRouteFileCreator {
             Node routeFilesNode = doc.getElementsByTagName("route-files").item(0);
             Element routeFilesNodeElement = (Element) routeFilesNode;
             String previousRouteFiles = routeFilesNodeElement.getAttribute("value");
-            previousRouteFiles = previousRouteFiles.isEmpty() ? "" : "," + previousRouteFiles; // "" if there were no previous route files
-            routeFilesNodeElement.setAttribute("value", baseVehicleTypeRouteFile.getName() + previousRouteFiles);
+            previousRouteFiles = previousRouteFiles.isEmpty() ? "" : previousRouteFiles + "," ; // "" if there were no previous route files
+            routeFilesNodeElement.setAttribute("value", previousRouteFiles + baseVehicleTypeRouteFile.getName());
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             Result output = new StreamResult(sumoConfigurationFile);
@@ -164,7 +164,9 @@ public class SumoRouteFileCreator {
     private void applyParametersFromSumoConfiguration(Map<String, Map<String, String>> newVTypes) {
         for (Entry<String, Map<String, String>> sumoParameterEntry : additionalVTypeParameters.entrySet()) {
             String currentVehicleType = sumoParameterEntry.getKey();
-            newVTypes.putIfAbsent(currentVehicleType, new HashMap<>());
+            if (!newVTypes.containsKey(currentVehicleType)) {
+                continue; // if type defined in sumo config wasn't defined in mapping ignore the type
+            }
             Set<Entry<String, String>> additionalParameters = sumoParameterEntry.getValue().entrySet();
             for (Entry<String, String> parameter : additionalParameters) {
                 String parameterName = parameter.getKey();
