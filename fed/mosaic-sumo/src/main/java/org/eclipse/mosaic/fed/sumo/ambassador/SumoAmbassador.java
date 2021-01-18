@@ -336,7 +336,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {
-        double epsilon = 1e-4;
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getTau(), baseVehicleType.getTau())) {
             double minReactionTime = sumoConfig.updateInterval / 1000d;
             traci.getVehicleControl().setReactionTime(
