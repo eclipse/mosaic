@@ -9,16 +9,15 @@
         "sumoConfigurationFile": { "type": "string" },
         "exitOnInsertionError": { "type": "boolean" },
         "additionalSumoParameters": { "type": "string" },
-        "additionalVTypeParameters": {
+        "additionalVehicleTypeParameters": {
             "type": "object",
-            "additionalProperties": { "$ref": "#/definitions/additionalVType" }
+            "additionalProperties": { "$ref": "#/definitions/additionalVehicleType" }
         },
         "trafficFlowMeasurementWindowInS": {
             "type": "integer",
             "minimum": 1
         },
         "timeGapOffset": { "type": "number" },
-        "writeVehicleDepartures": { "type": "boolean" },
         "subscriptions": {
             "type": "array",
             "items": [ { "type": "string" } ]
@@ -33,7 +32,7 @@
         }
     },
     "definitions": {
-        "additionalVType": {
+        "additionalVehicleType": {
             "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalParameter" }
         },

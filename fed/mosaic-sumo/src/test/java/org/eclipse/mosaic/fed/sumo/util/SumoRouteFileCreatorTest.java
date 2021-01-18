@@ -18,14 +18,12 @@ package org.eclipse.mosaic.fed.sumo.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
+import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.junit.TestFileRule;
-import org.eclipse.mosaic.rti.TIME;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -35,14 +33,11 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -56,22 +51,10 @@ public class SumoRouteFileCreatorTest {
 
     private final static String ROUTES_FILE_XSD = "/xsd/routes_file.xsd";
 
-    private final TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    private final TestFileRule vehicleTypesRouteFile = new TestFileRule(temporaryFolder)
-            .with("test_vTypes.rou.xml", "/route-file-creator/test_vTypes.rou.xml");
-
-    private final TestFileRule departureFile = new TestFileRule(temporaryFolder)
-            .with("departures.rou.xml", "/route-file-creator/departures.rou.xml");
-
-    private final TestFileRule testSumoConfig = new TestFileRule(temporaryFolder)
+    @Rule
+    public final TestFileRule testFileRule = new TestFileRule()
+            .with("test_vTypes.rou.xml", "/route-file-creator/test_vTypes.rou.xml")
             .with("test.sumocfg", "/route-file-creator/test.sumocfg");
-
-    @Rule // chain both junit rules in a specific order
-    public RuleChain testRules = RuleChain.outerRule(temporaryFolder)
-            .around(vehicleTypesRouteFile)
-            .around(departureFile)
-            .around(testSumoConfig);
 
     /**
      * Test whether a route file can be written error free.
@@ -88,21 +71,26 @@ public class SumoRouteFileCreatorTest {
         myCarAdditionalParameters.put("speedFactor", "1.20"); // testing overwriting
         Map<String, String> herCarAdditionalParameters = new HashMap<>();
         herCarAdditionalParameters.put("color", "red");
-        Map<String, Map<String, String>> additionalVTypeParameters = new HashMap<>();
-        additionalVTypeParameters.put("myCar", myCarAdditionalParameters);
-        additionalVTypeParameters.put("herCar", herCarAdditionalParameters);
+        Map<String, Map<String, String>> additionalVehicleTypeParameters = new HashMap<>();
+        additionalVehicleTypeParameters.put("myCar", myCarAdditionalParameters);
+        additionalVehicleTypeParameters.put("herCar", herCarAdditionalParameters);
+
+        CSumo sumoConfiguration = new CSumo();
+        sumoConfiguration.additionalVehicleTypeParameters = additionalVehicleTypeParameters;
+        sumoConfiguration.timeGapOffset = 0;
+
         // RUN
         SumoRouteFileCreator sumoRouteFileCreator = new SumoRouteFileCreator(
-                testSumoConfig.get("test.sumocfg"), vehicleTypesRouteFile.get("test_vTypes.rou.xml"), additionalVTypeParameters, 0
+                testFileRule.get("test.sumocfg"), testFileRule.get("test_vTypes.rou.xml"), sumoConfiguration
         );
 
         sumoRouteFileCreator.addVehicleTypes(types);
 
-        sumoRouteFileCreator.store(vehicleTypesRouteFile.get("test_vTypes.rou.xml"));
+        sumoRouteFileCreator.store(testFileRule.get("test_vTypes.rou.xml"));
         // ASSERT
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(vehicleTypesRouteFile.get("test_vTypes.rou.xml"));
+        Document document = documentBuilder.parse(testFileRule.get("test_vTypes.rou.xml"));
         assertNotNull(document);
         NodeList vehicleTypesInDocument = document.getElementsByTagName("vType");
         assertEquals(vehicleTypesInDocument.getLength(), 2); // length should be 2 even though there are 3 types from sumo config
@@ -140,89 +128,7 @@ public class SumoRouteFileCreatorTest {
         assertEquals("passenger", hisCarVTypeAttributes.getNamedItem("vClass").getNodeValue());
 
         // validate against xsd
-        validateXml(vehicleTypesRouteFile.get("test_vTypes.rou.xml"));
-    }
-
-    @Test
-    public void testDepartureWriting() throws IOException, SAXException, ParserConfigurationException {
-        SumoRouteFileCreator sumoRouteFileCreator = new SumoRouteFileCreator(
-                testSumoConfig.get("test.sumocfg"), vehicleTypesRouteFile.get("test_vTypes.rou.xml"), null, 0
-        );
-
-        sumoRouteFileCreator.initializeDepartureDocument();
-
-        // SETUP: scheduled departures
-        ArrayList<VehicleDeparture> departures = new ArrayList<>();
-        departures.add(new VehicleDeparture.Builder("23")
-                .departureLane(VehicleDeparture.LaneSelectionMode.DEFAULT, 0, 0.0)
-                .departureSpeed(30d)
-                .create()
-        );
-        departures.add(new VehicleDeparture.Builder("23")
-                .departureLane(VehicleDeparture.LaneSelectionMode.DEFAULT, 0, 0.0)
-                .departureSpeed(30d)
-                .create()
-
-        ); // 50 seconds
-        departures.add(new VehicleDeparture.Builder("24")
-                .departureLane(VehicleDeparture.LaneSelectionMode.DEFAULT, 0, 0.0)
-                .departureSpeed(30d)
-                .create()
-        ); // 100 seconds
-
-        long time = 0L;
-        int id = 0;
-        for (VehicleDeparture vehicleDeparture : departures) {
-            sumoRouteFileCreator.addVehicle(time * TIME.SECOND, "veh_" + id, "myCar",
-                    vehicleDeparture.getRouteId(), Integer.toString(vehicleDeparture.getDepartureLane()),
-                    String.format(Locale.ENGLISH, "%.2f", vehicleDeparture.getDeparturePos()),
-                    String.format(Locale.ENGLISH, "%.2f", vehicleDeparture.getDepartSpeed())
-            );
-            time += 50L;
-            id++;
-        }
-
-        sumoRouteFileCreator.storeDepartures(departureFile.get("departures.rou.xml"));
-
-        // ASSERT
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(departureFile.get("departures.rou.xml"));
-        assertNotNull(document);
-        Node routes = document.getFirstChild();
-        assertEquals("routes", routes.getNodeName());
-        Node firstVehicle = routes.getFirstChild().getNextSibling();
-        assertEquals("vehicle", firstVehicle.getNodeName());
-        NamedNodeMap firstVehicleAttributes = firstVehicle.getAttributes();
-        assertEquals("0.00", firstVehicleAttributes.getNamedItem("depart").getNodeValue());
-        assertEquals("0", firstVehicleAttributes.getNamedItem("departLane").getNodeValue());
-        assertEquals("0.00", firstVehicleAttributes.getNamedItem("departPos").getNodeValue());
-        assertEquals("30.00", firstVehicleAttributes.getNamedItem("departSpeed").getNodeValue());
-        assertEquals("veh_0", firstVehicleAttributes.getNamedItem("id").getNodeValue());
-        assertEquals("23", firstVehicleAttributes.getNamedItem("route").getNodeValue());
-        assertEquals("myCar", firstVehicleAttributes.getNamedItem("type").getNodeValue());
-        Node secondVehicle = firstVehicle.getNextSibling().getNextSibling();
-        assertEquals("vehicle", secondVehicle.getNodeName());
-        NamedNodeMap secondVehicleAttributes = secondVehicle.getAttributes();
-        assertEquals("50.00", secondVehicleAttributes.getNamedItem("depart").getNodeValue());
-        assertEquals("0", secondVehicleAttributes.getNamedItem("departLane").getNodeValue());
-        assertEquals("0.00", secondVehicleAttributes.getNamedItem("departPos").getNodeValue());
-        assertEquals("30.00", secondVehicleAttributes.getNamedItem("departSpeed").getNodeValue());
-        assertEquals("veh_1", secondVehicleAttributes.getNamedItem("id").getNodeValue());
-        assertEquals("23", secondVehicleAttributes.getNamedItem("route").getNodeValue());
-        assertEquals("myCar", secondVehicleAttributes.getNamedItem("type").getNodeValue());
-        Node thirdVehicle = secondVehicle.getNextSibling().getNextSibling();
-        assertEquals("vehicle", thirdVehicle.getNodeName());
-        NamedNodeMap thirdVehicleAttributes = thirdVehicle.getAttributes();
-        assertEquals("100.00", thirdVehicleAttributes.getNamedItem("depart").getNodeValue());
-        assertEquals("0", thirdVehicleAttributes.getNamedItem("departLane").getNodeValue());
-        assertEquals("0.00", thirdVehicleAttributes.getNamedItem("departPos").getNodeValue());
-        assertEquals("30.00", thirdVehicleAttributes.getNamedItem("departSpeed").getNodeValue());
-        assertEquals("veh_2", thirdVehicleAttributes.getNamedItem("id").getNodeValue());
-        assertEquals("24", thirdVehicleAttributes.getNamedItem("route").getNodeValue());
-        assertEquals("myCar", thirdVehicleAttributes.getNamedItem("type").getNodeValue());
-
-        validateXml(departureFile.get("departures.rou.xml"));
+        validateXml(testFileRule.get("test_vTypes.rou.xml"));
     }
 
     private void validateXml(File routeFile) throws IOException, SAXException {

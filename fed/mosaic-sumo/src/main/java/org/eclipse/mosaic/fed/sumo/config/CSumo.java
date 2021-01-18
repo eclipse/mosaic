@@ -80,12 +80,6 @@ public class CSumo implements Serializable {
     public double timeGapOffset = 0;
 
     /**
-     * This debug feature writes out all departed vehicles into a rou.xml file
-     * into the log directory which can be loaded with SUMO.
-     */
-    public boolean writeVehicleDepartures = false;
-
-    /**
      * If set to {@code true} all vehicles will be subscribed (see
      * {@link org.eclipse.mosaic.fed.sumo.traci.facades.TraciSimulationFacade#subscribeForVehicle(String, long, long)}).
      * If set to {@code false} only vehicles with applications mapped to them will be subscribed.
@@ -143,7 +137,7 @@ public class CSumo implements Serializable {
      * Allows to configure specialised vType parameters, which can't be configured via Mapping.
      * E.g. parameters for the lane change model of vehicles.
      */
-    public Map<String, Map<String, String>> additionalVTypeParameters = new HashMap<>();
+    public Map<String, Map<String, String>> additionalVehicleTypeParameters = new HashMap<>();
 
     public final static String HIGHLIGHT_CHANGE_LANE = "changeLane";
     public final static String HIGHLIGHT_CHANGE_ROUTE = "changeRoute";

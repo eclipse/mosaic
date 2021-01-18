@@ -35,7 +35,6 @@ import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,11 +73,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
-     * Name of the route-file, which will be created if it doesn't exist.
-     */
-    private final String routeFileName;
-
-    /**
      * Name of the additional route file being created, which contains all vTypes added through Mapping.
      */
     private final String vehicleTypeRouteFileName;
@@ -105,14 +99,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         }
         sumoConfigurationFile = absoluteConfiguration;
 
-        routeFileName = Validate.notNull(setRouteFileNames());
-        vehicleTypeRouteFileName = routeFileName.split("\\.")[0] + "_vTypes.rou.xml";
-
-        if (StringUtils.isBlank(routeFileName)) {
-            String myError = "The tag <route-files value=\"*.rou.xml\"/> is missing in " + sumoConfigurationFile.getAbsolutePath();
-            log.error(myError);
-            throw new RuntimeException(myError);
-        }
+        vehicleTypeRouteFileName = getVehicleTypeRouteFileName();
     }
 
     /**
@@ -120,17 +107,16 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @return The route-file name.
      */
-    private String setRouteFileNames() {
+    private String getVehicleTypeRouteFileName() {
         try {
             XMLConfiguration sumoConfiguration = XmlUtils.readXmlFromFile(sumoConfigurationFile);
             String routeFileName = XmlUtils.getValueFromXpath(sumoConfiguration, "/input/route-files/@value", null);
-            Validate.notNull(routeFileName);
-            String[] routeFiles = routeFileName.split("[\\s,]+"); // split by comma (+ white space)
-            if (routeFiles.length > 1) {
-                log.debug("It seems like there was more than one route-file defined.");
+            if (routeFileName == null) {
+                return "routes_vTypes.xml";
             }
+            String[] routeFiles = routeFileName.split("[\\s,]+"); // split by comma (+ white space)
             // get first route-file, extend it with "_vTypes.rou.xml"
-            return routeFiles[0];
+            return routeFiles[0].split("\\.")[0] + "_vTypes.rou.xml";
         } catch (IOException e) {
             log.error("An error occurred while parsing the SUMO configuration file", e);
         }
@@ -210,7 +196,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (!routeCache.containsKey(newRoute.getId())) {
             routeCache.put(newRoute.getId(), newRoute);
             traci.getRouteControl().addRoute(newRoute.getId(), newRoute.getEdgeIdList());
-            log.debug("received newly propagated route {}", newRoute.getId());
+            log.debug("Added route to simulation id: {} with edges: {}", newRoute.getId(), newRoute.getEdgeIdList());
         } else {
             log.debug("route has already been added to SUMO, ignoring id={}", newRoute.getId());
         }
@@ -259,7 +245,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         startSumoLocal();
         initTraci();
         readInitialRoutesFromTraci();
-        addInitialRoutesFromMapping();
+        addInitialRoutes();
     }
 
     /**
@@ -282,7 +268,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @throws InternalFederateException if there was a problem with traci
      */
-    private void addInitialRoutesFromMapping() throws InternalFederateException {
+    private void addInitialRoutes() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
             String routeId = routeEntry.getKey();
             // if the route is already known (because it is defined in a route-file) don't add route
@@ -336,10 +322,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                             interaction.getMapping().getVehicleType(),
                             cachedVehicleTypesInitialization.getTypes().get(vehicleType)
                     );
-
-                    if (sumoConfig.writeVehicleDepartures && sumoRouteFileCreator.departuresInitialized()) {
-                        sumoRouteFileCreator.addVehicle(time, vehicleId, vehicleType, routeId, laneId, departPos, departSpeed);
-                    }
                     iterator.remove();
                 }
             } catch (InternalFederateException e) {
@@ -354,29 +336,28 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {
-        double epsilon = 1e-4;
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getTau(), baseVehicleType.getTau(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getTau(), baseVehicleType.getTau())) {
             double minReactionTime = sumoConfig.updateInterval / 1000d;
             traci.getVehicleControl().setReactionTime(
                     vehicleId, Math.max(minReactionTime, actualVehicleType.getTau() + sumoConfig.timeGapOffset)
             );
         }
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getMaxSpeed(), baseVehicleType.getMaxSpeed(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getMaxSpeed(), baseVehicleType.getMaxSpeed())) {
             traci.getVehicleControl().setMaxSpeed(vehicleId, actualVehicleType.getMaxSpeed());
         }
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getAccel(), baseVehicleType.getAccel(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getAccel(), baseVehicleType.getAccel())) {
             traci.getVehicleControl().setMaxAcceleration(vehicleId, actualVehicleType.getAccel());
         }
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getDecel(), baseVehicleType.getDecel(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getDecel(), baseVehicleType.getDecel())) {
             traci.getVehicleControl().setMaxDeceleration(vehicleId, actualVehicleType.getDecel());
         }
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getMinGap(), baseVehicleType.getMinGap(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getMinGap(), baseVehicleType.getMinGap())) {
             traci.getVehicleControl().setMinimumGap(vehicleId, actualVehicleType.getMinGap());
         }
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getLength(), baseVehicleType.getLength(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getLength(), baseVehicleType.getLength())) {
             traci.getVehicleControl().setVehicleLength(vehicleId, actualVehicleType.getLength());
         }
-        if (!MathUtils.isFuzzyEqual(actualVehicleType.getSpeedFactor(), baseVehicleType.getSpeedFactor(), epsilon)) {
+        if (!MathUtils.isFuzzyEqual(actualVehicleType.getSpeedFactor(), baseVehicleType.getSpeedFactor())) {
             traci.getVehicleControl().setSpeedFactor(vehicleId, actualVehicleType.getSpeedFactor());
         }
     }
@@ -422,22 +403,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 || SumoVehicleClassMapping.toSumo(vehicleClass).equals("trailer");
     }
 
-
-    @Override
-    public void finishSimulation() throws InternalFederateException {
-        if (sumoConfig.writeVehicleDepartures && sumoRouteFileCreator.departuresInitialized()) {
-            // debug feature: write all vehicle departures to an additional route-file
-            File logDir = new File(new File(descriptor.getHost().workingDirectory, descriptor.getId()), "log");
-            if (logDir.exists() || logDir.mkdirs()) {
-                File departureFile = new File(logDir, "departures.rou.xml");
-                sumoRouteFileCreator.storeDepartures(departureFile);
-            } else {
-                log.error("Could not create directory for departure file.");
-            }
-        }
-        super.finishSimulation();
-    }
-
     /**
      * Writes a new SUMO route file based on the registered vehicle types.
      *
@@ -458,22 +423,12 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (StringUtils.isNotBlank(subDir)) {
             dir = new File(dir, subDir);
         }
-        File tmpRouteFile = new File(dir, routeFileName);
         File tmpVehicleTypeRouteFile = new File(dir, vehicleTypeRouteFileName);
         File tmpSumoFile = new File(dir, sumoConfigurationFile.getName());
 
         // keep single instance
         if (sumoRouteFileCreator == null) {
-            sumoRouteFileCreator = new SumoRouteFileCreator(
-                    tmpSumoFile, tmpVehicleTypeRouteFile, sumoConfig.additionalVTypeParameters, sumoConfig.timeGapOffset
-            );
-            if (sumoConfig.writeVehicleDepartures) {
-                sumoRouteFileCreator.initializeDepartureDocument();
-            }
-        }
-        // FIXME: This seems a little bit dirty, but we configure our sumocfg's with an route-file even if it doesn't exist
-        if (!tmpRouteFile.exists()) { // if route-file doesn't exists write an empty one
-            sumoRouteFileCreator.store(tmpRouteFile);
+            sumoRouteFileCreator = new SumoRouteFileCreator(tmpSumoFile, tmpVehicleTypeRouteFile, sumoConfig);
         }
 
         return tmpVehicleTypeRouteFile;
