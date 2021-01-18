@@ -24,7 +24,6 @@ import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -110,7 +109,7 @@ public class SumoScenarioAmbassador extends AbstractSumoAmbassador {
     }
 
     @Override
-    protected void initializeTrafficLights(long time) throws IOException, IllegalValueException {
+    protected void initializeTrafficLights(long time) {
         try {
             super.initializeTrafficLights(time);
         } catch (Exception e) {

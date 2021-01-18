@@ -84,6 +84,13 @@ public class CSumo implements Serializable {
     public boolean writeVehicleDepartures = false;
 
     /**
+     * If set to {@code true} all vehicles will be subscribed (see
+     * {@link org.eclipse.mosaic.fed.sumo.traci.facades.TraciSimulationFacade#subscribeForVehicle(String, long, long)}).
+     * If set to {@code false} only vehicles with applications mapped to them will be subscribed.
+     */
+    public boolean subscribeToAllVehicles = true;
+
+    /**
      * A optional list of subscriptions for each vehicle in the simulation. The less subscriptions given,
      * the faster the simulation. Per default (if this list is set to null), all subscriptions are activated.
      * Please note, that some components expect specific information, such as the road position. If those information
