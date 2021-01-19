@@ -88,7 +88,7 @@ public class SumoRouteFileCreator {
     public SumoRouteFileCreator(File sumoConfigurationDirectory,
                                 CSumo sumoConfiguration) {
         vehicleTypeRouteFile = new File(sumoConfigurationDirectory, VEHICLE_TYPE_ROUTE_FILE_NAME);
-        File sumoConfigurationFile = new File(sumoConfigurationDirectory, sumoConfigurationDirectory.getName());
+        File sumoConfigurationFile = new File(sumoConfigurationDirectory, sumoConfiguration.sumoConfigurationFile);
 
         this.additionalVehicleTypeParameters = sumoConfiguration.additionalVehicleTypeParameters;
         this.timeGapOffset = sumoConfiguration.timeGapOffset;
