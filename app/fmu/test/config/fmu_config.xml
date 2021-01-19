@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <input>
+        <fmuPathAbs/> "abspath/to/fmu.fmu"
+        <fmuPathRel/> "relPath/to/fmu/from/{{ where? }}.fmu"
+
+        <vars>
+            <fmuIn>
+                <speed/> "velocity"
+                <lowerBound/> "minSpeed"
+                <upperBound/> "maxSpeed"
+<!--            ...                 -->
+            </fmuIn>
+
+            <fmuOut>
+                <speedGoal/> "speedGoal"
+<!--            ...                 -->
+            </fmuOut>
+        </vars>
+    </input>
+</configuration>
