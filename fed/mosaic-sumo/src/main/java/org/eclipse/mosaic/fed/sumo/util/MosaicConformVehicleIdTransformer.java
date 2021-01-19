@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class MosaicConformVehicleIdTransformer implements IdTransformer<String, String> {
 
     private final static Logger log = LoggerFactory.getLogger(MosaicConformVehicleIdTransformer.class);
-    private final static String prefix = "veh_";
+    private final static String prefix = "scenario_veh_";
 
     private final BiMap<String, String> mosaicToSumoVehicleIdMap = HashBiMap.create(1024);
 

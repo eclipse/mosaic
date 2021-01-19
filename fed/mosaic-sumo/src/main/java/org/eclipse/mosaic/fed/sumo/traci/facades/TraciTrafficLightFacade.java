@@ -160,8 +160,12 @@ public class TraciTrafficLightFacade {
 
             final List<TrafficLightGetControlledLinks.TrafficLightControlledLink> controlledLinks
                     = getControlledLinks.execute(traciConnection, trafficLightGroupId);
-            final List<TrafficLight> trafficLights
-                    = createTrafficLights(trafficLightPrograms.get(getCurrentProgram(trafficLightGroupId)), controlledLinks, junctionPosition);
+            final List<TrafficLight> trafficLights =
+                    createTrafficLights(
+                            trafficLightPrograms.get(getCurrentProgram(trafficLightGroupId)),
+                            controlledLinks,
+                            junctionPosition
+                    );
 
             return new TrafficLightGroup(trafficLightGroupId, trafficLightPrograms, trafficLights);
         } catch (TraciCommandException e) {
@@ -181,7 +185,16 @@ public class TraciTrafficLightFacade {
         List<TrafficLight> trafficLights = new ArrayList<>();
         int id = 0;
         for (TrafficLightState state : currentProgram.getCurrentPhase().getStates()) {
-            trafficLights.add(new TrafficLight(id, junctionPosition, controlledLinks.get(id).getIncoming(), controlledLinks.get(id).getOutgoing(), state));
+            if (id == controlledLinks.size()) {
+                // TODO add warning
+                break;
+            } else {
+                trafficLights.add(
+                        new TrafficLight(
+                                id, junctionPosition, controlledLinks.get(id).getIncoming(), controlledLinks.get(id).getOutgoing(), state
+                        )
+                );
+            }
             id++;
         }
         return trafficLights;
@@ -205,8 +218,8 @@ public class TraciTrafficLightFacade {
                 phases.add(new TrafficLightProgramPhase(phaseId, (long) phaseLogic.getDuration() * 1000, states));
                 phaseId++;
             }
-
-            TrafficLightProgram program = new TrafficLightProgram(programDefinition.getLogicId(), phases, programDefinition.getCurrentPhase());
+            TrafficLightProgram program =
+                    new TrafficLightProgram(programDefinition.getLogicId(), phases, programDefinition.getCurrentPhase());
             programs.put(programDefinition.getLogicId(), program);
         }
 
