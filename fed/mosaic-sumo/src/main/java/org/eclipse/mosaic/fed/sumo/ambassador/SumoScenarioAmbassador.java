@@ -33,30 +33,39 @@ import java.util.List;
  * addressed later.
  *
  * <br><br>
- * Configuration in defaults.xml file:
+ * Configuration in runtime.json file:
  * <pre>
  * {@code
- * <federate class="org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador">
- * <id>sumo</id>
- * <deploy>true</deploy>
- * <start>true</start>
- * <host>local</host>
- * <port>0</port>
- * <config>sumo_config.json</config>
- * <pseudoFederate></pseudoFederate>
- * <subscriptions>
- * <subscription>VehicleSlowDown</subscription>
- * <subscription>VehicleRouteChange</subscription>
- * <subscription>VehicleLaneChange</subscription>
- * <subscription>TrafficLightStateChange</subscription>
- * <subscription>VehicleStop</subscription>
- * <subscription>VehicleResume</subscription>
- * <subscription>SumoTraciRequest</subscription>
- * <subscription>VehicleDistanceSensorActivation</subscription>
- * <subscription>VehicleParametersChange</subscription>
- * <subscription>VehicleSpeedChange</subscription>
- * </subscriptions>
- * </federate>
+ * {
+ *     "id": "sumo",
+ *     "classname": "org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador",
+ *     "configuration": "sumo_config.json",
+ *     "priority": 50,
+ *     "host": "local",
+ *     "port": 0,
+ *     "deploy": true,
+ *     "start": true,
+ *     "subscriptions": [
+ *         "VehicleSlowDown",
+ *         "VehicleRouteChange",
+ *         "VehicleLaneChange",
+ *         "TrafficLightStateChange",
+ *         "VehicleStop",
+ *         "VehicleResume",
+ *         "SumoTraciRequest",
+ *         "VehicleDistanceSensorActivation",
+ *         "VehicleParametersChange",
+ *         "VehicleSpeedChange",
+ *         "VehicleFederateAssignment",
+ *         "VehicleUpdates",
+ *         "VehicleRegistration",
+ *         "VehicleRoutesInitialization"
+ *         "InductionLoopDetectorSubscription",
+ *         "LaneAreaDetectorSubscription",
+ *         "TrafficLightSubscription"
+ *     ],
+ *     "javaClasspathEntries": []
+ * }
  * }
  * </pre>
  */

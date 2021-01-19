@@ -1,7 +1,6 @@
 <configuration>
 	<input>
 		<net-file value="highway.net.xml" />
-		<route-files value="highway.rou.xml" />
 	</input>
 	<time>
 		<begin value="0" />
