@@ -1,10 +1,10 @@
 {
     "sumoConfigurationFile": "tiergarten.sumocfg",
     "additionalVehicleTypeParameters": {
-        "TLPKW": {
+        "Car": {
             "carFollowModel": "Krauss"
         },
-        "PKW": {
+        "TrafficLightCar": {
             "carFollowModel": "Krauss"
         }
     }
