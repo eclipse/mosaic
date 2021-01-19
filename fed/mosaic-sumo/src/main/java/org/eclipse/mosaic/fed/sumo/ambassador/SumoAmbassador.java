@@ -264,7 +264,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     /**
-     * Passes on the routes from Mapping to SUMO.
+     * Passes on initial routes to SUMO.
      *
      * @throws InternalFederateException if there was a problem with traci
      */
