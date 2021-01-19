@@ -5,7 +5,7 @@
             "accel": 2.6,
             "decel": 4.5,
             "length": 5.00,
-            "maxSpeed": 70.0,
+            "maxSpeed": 120.0,
             "minGap": 2.5,
             "sigma": 0.5,
             "speedDeviation": 0.1,
@@ -15,19 +15,19 @@
     "vehicles": [
         {
             "startingTime": 1.0,
-            "targetFlow": 6000,
-            "maxNumberVehicles": 400,
+            "targetFlow": 1,
+            "maxNumberVehicles": 1,
             "route": "2",
             "lanes": [ 1, 2 ],
             "types": [
                 {
                     "name": "Car",
-                    "weight": 80
+                    "weight": 0
                 },
                 {
                     "name": "Car",
-                    "weight": 20,
-                    "applications": [ "org.eclipse.mosaic.fed.application.app.etsi.VehicleCamSendingApp" ]
+                    "weight": 1,
+                    "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp" ]
                 }
             ]
         },
@@ -40,12 +40,12 @@
             "types": [
                 {
                     "name": "Car",
-                    "weight": 80
+                    "weight": 0
                 },
                 {
                     "name": "Car",
-                    "weight": 20,
-                    "applications": [ "org.eclipse.mosaic.fed.application.app.etsi.VehicleCamSendingApp" ]
+                    "weight": 1,
+                    "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp" ]
                 }
             ]
         }

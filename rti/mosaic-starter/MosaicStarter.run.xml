@@ -1,16 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MosaicStarter" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.eclipse.mosaic.starter.MosaicStarter" />
     <module name="mosaic-starter" />
-    <option name="PROGRAM_PARAMETERS" value="-c ..\mosaic-bundle\src\assembly\resources\scenarios\HelloWorld\scenario_config.json" />
+    <option name="PROGRAM_PARAMETERS" value="-c ..\..\bundle\src\assembly\resources\scenarios\FmuTest\scenario_config.json" />
     <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
-    <extension name="coverage">
-      <pattern>
-        <option name="PATTERN" value="org.eclipse.mosaic.starter.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

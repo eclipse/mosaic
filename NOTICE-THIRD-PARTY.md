@@ -77,6 +77,22 @@ Commons JXPath (1.3)
  * Source: https://svn.apache.org/repos/asf/commons/proper/jxpath/trunk
 
 
+Extended StAX API (1.8.1)
+
+ * License: Eclipse Distribution License - v 1.0
+ * Maven artifact: `org.jvnet.staxex:stax-ex:1.8.1`
+ * Project: https://projects.eclipse.org/projects/ee4j/stax-ex
+ * Source: https://github.com/eclipse-ee4j/jaxb-stax-ex
+
+
+fastinfoset (1.2.16)
+
+ * License: Apache License, Version 2.0, Eclipse Distribution License - v 1.0
+ * Maven artifact: `com.sun.xml.fastinfoset:FastInfoset:1.2.16`
+ * Project: https://projects.eclipse.org/projects/ee4j.jaxb-impl/FastInfoset
+ * Source: https://github.com/eclipse-ee4j/jaxb-fi/FastInfoset
+
+
 Findbugs Annotations under Apache License (1.3.9-1)
 
  * License: Apache License, Version 2.0
@@ -133,6 +149,14 @@ HPPC Collections (0.8.1)
  * Source: https://github.com/carrotsearch/hppc/hppc
 
 
+istack common utility code runtime (3.0.8)
+
+ * License: Eclipse Distribution License - v 1.0
+ * Maven artifact: `com.sun.istack:istack-commons-runtime:3.0.8`
+ * Project: https://projects.eclipse.org/projects/ee4j/istack-commons/istack-commons-runtime
+ * Source: https://github.com/eclipse-ee4j/jaxb-istack-commons/istack-commons-runtime
+
+
 Jackson module: JAXB Annotations (2.9.9)
 
  * License: The Apache Software License, Version 2.0
@@ -173,6 +197,14 @@ Jackson-dataformat-XML (2.9.9)
  * Source: https://github.com/FasterXML/jackson-dataformat-xml
 
 
+jakarta.xml.bind-api (2.3.2)
+
+ * License: Eclipse Distribution License - v 1.0
+ * Maven artifact: `jakarta.xml.bind:jakarta.xml.bind-api:2.3.2`
+ * Project: https://github.com/eclipse-ee4j/jaxb-api/jakarta.xml.bind-api
+ * Source: https://github.com/eclipse-ee4j/jaxb-api/jakarta.xml.bind-api
+
+
 Janino (2.7.5)
 
  * License: New BSD License
@@ -187,6 +219,22 @@ Java-WebSocket (1.3.9)
  * Maven artifact: `org.java-websocket:Java-WebSocket:1.3.9`
  * Project: https://github.com/TooTallNate/Java-WebSocket
  * Source: https://github.com/TooTallNate/Java-WebSocket
+
+
+JavaBeans Activation Framework API jar (1.2.1)
+
+ * License: EDL 1.0
+ * Maven artifact: `jakarta.activation:jakarta.activation-api:1.2.1`
+ * Project: https://github.com/eclipse-ee4j/jaf/jakarta.activation-api
+ * Source: https://github.com/eclipse-ee4j/jaf/jakarta.activation-api
+
+
+JAXB Runtime (2.3.2)
+
+ * License: Eclipse Distribution License - v 1.0
+ * Maven artifact: `org.glassfish.jaxb:jaxb-runtime:2.3.2`
+ * Project: https://javaee.github.io/jaxb-v2/jaxb-runtime-parent/jaxb-runtime/
+ * Source: https://github.com/eclipse-ee4j/jaxb-ri/jaxb-runtime-parent/jaxb-runtime
 
 
 Johnzon :: Core (1.1.13)
@@ -267,6 +315,14 @@ Stax2 API (3.1.4)
  * Maven artifact: `org.codehaus.woodstox:stax2-api:3.1.4`
  * Project: http://wiki.fasterxml.com/WoodstoxStax2
  * Source: https://github.com/FasterXML/stax2-api
+
+
+TXW2 Runtime (2.3.2)
+
+ * License: Eclipse Distribution License - v 1.0
+ * Maven artifact: `org.glassfish.jaxb:txw2:2.3.2`
+ * Project: https://javaee.github.io/jaxb-v2/jaxb-txw-parent/txw2/
+ * Source: https://github.com/eclipse-ee4j/jaxb-ri/jaxb-txw-parent/txw2
 
 
 Woodstox (5.1.0)

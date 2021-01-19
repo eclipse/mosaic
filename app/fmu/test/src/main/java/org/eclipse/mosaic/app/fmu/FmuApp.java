@@ -24,6 +24,7 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation;
+import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
@@ -65,8 +66,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
 
     @Override
     public void onStartup() {
-        int startTime = 1;
-        int stopTime = 2000;
+        //create fmu instance
         try{
             fmu = Fmu.from(new File(fmuInUse.normalize().toString()));
         }catch(IOException e){
@@ -75,6 +75,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         slave = fmu.asCoSimulationFmu().newInstance();
         slave.simpleSetup();
 
+        //initialize variables
         slaveDes = slave.getModelDescription();
         speed = slaveDes.getVariableByName(SPEED).asRealVariable();
 
@@ -84,44 +85,39 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     @Override
     public void onVehicleUpdated(VehicleData previousVehicleData, VehicleData updatedVehicleData) {
 
+        // setup
         currentTime = getOs().getSimulationTimeMs();
         long stepSize = currentTime - lastStepTime;
-
-
-        //##########
-        //### action
-
-        double distance = updatedVehicleData.getVehicleSensors().distance.front.distValue;
-
         slaveDes = slave.getModelDescription();
 
-        //# output to fmu
-        speed = slaveDes.getVariableByName(SPEED).asRealVariable();
+        //in meter
+//        double distance = updatedVehicleData.getVehicleSensors().distance.front.distValue;
 
+        // write to fmu
+        speed = slaveDes.getVariableByName(SPEED).asRealVariable();
         Fmi4jVariableUtils.write(speed, slave, updatedVehicleData.getSpeed() * 3.6f);
 
-        //# write to fmu
+        // simulate
         slave.doStep(stepSize);
 
-        //# input from fmu
+        // read from fmu
         RealVariable speedGoal = slaveDes.getVariableByName(SPEED_GOAL).asRealVariable();
         getOs().changeSpeedWithInterval(Fmi4jVariableUtils.read(speedGoal, slave).getValue() / 3.6f, 5000);
 
+        // test output: print velocity
         if(getOs().getId().equals("veh_0")){
-            System.out.println("######################################");
-            System.out.println(getOs().getId() + ":");
-            System.out.println(updatedVehicleData.getSpeed() * 3.6f);
-            System.out.println(Fmi4jVariableUtils.read(speedGoal, slave).getValue());
+//            System.out.println(updatedVehicleData.getSpeed() * 3.6f);
+
+            System.out.println(new String(new char[(int)(updatedVehicleData.getSpeed() * 3.6f)]).replace("\0", "I"));
         }
 
-        //### action end
-        //##########
-
+        // teardown
         previousVars = currentVars;
         currentVars = slave.getModelVariables();
         lastStepTime = currentTime;
-
     }
+
+
 
     @Override
     public void onShutdown() {
