@@ -77,11 +77,10 @@ public class SumoRouteFileCreatorTest {
         CSumo sumoConfiguration = new CSumo();
         sumoConfiguration.additionalVehicleTypeParameters = additionalVehicleTypeParameters;
         sumoConfiguration.timeGapOffset = 0;
+        sumoConfiguration.sumoConfigurationFile = "test.sumocfg";
 
         // RUN
-        SumoRouteFileCreator sumoRouteFileCreator = new SumoRouteFileCreator(
-                testFileRule.getRoot(), sumoConfiguration
-        );
+        SumoRouteFileCreator sumoRouteFileCreator = new SumoRouteFileCreator(testFileRule.getRoot(), sumoConfiguration);
 
         sumoRouteFileCreator.addVehicleTypes(types);
 
