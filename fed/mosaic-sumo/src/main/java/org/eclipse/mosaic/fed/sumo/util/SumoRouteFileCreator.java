@@ -117,8 +117,9 @@ public class SumoRouteFileCreator {
                 newRouteFilesValue = baseVehicleTypeRouteFile.getName();
             } else {
                 routeFilesNodeElement = (Element) routeFilesNodes.item(0);
-                String previousRouteFiles = routeFilesNodeElement.getAttribute("value") + ",";
-                newRouteFilesValue = previousRouteFiles + baseVehicleTypeRouteFile.getName();
+                String previousRouteFiles = "," + routeFilesNodeElement.getAttribute("value");
+                // prepending because vTypes have to be known before vehicle definitions
+                newRouteFilesValue = baseVehicleTypeRouteFile.getName() + previousRouteFiles;
             }
             routeFilesNodeElement.setAttribute("value", newRouteFilesValue);
 
