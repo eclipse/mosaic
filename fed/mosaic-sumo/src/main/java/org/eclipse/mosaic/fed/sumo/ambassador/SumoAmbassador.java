@@ -27,17 +27,14 @@ import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
-import org.eclipse.mosaic.lib.util.XmlUtils;
 import org.eclipse.mosaic.rti.api.FederateAmbassador;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
-import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -73,55 +70,17 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
-     * Name of the additional route file being created, which contains all vTypes added through Mapping.
-     */
-    private final String vehicleTypeRouteFileName;
-
-    /**
      * Instance of {@link SumoRouteFileCreator} used to write routes to a *.rou.xml file.
      */
     private SumoRouteFileCreator sumoRouteFileCreator;
 
-    private final File sumoConfigurationFile;
-
     /**
-     * Constructor for {@link SumoAmbassador}. Loads the
-     * SUMO-configuration, and the SUMO-route file.
+     * Constructor for {@link SumoAmbassador}.
      *
      * @param ambassadorParameter parameters for the ambassador containing its' id and configuration
      */
     public SumoAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
-
-        File absoluteConfiguration = new File(sumoConfig.sumoConfigurationFile);
-        if (!absoluteConfiguration.exists()) {
-            absoluteConfiguration = new File(this.ambassadorParameter.configuration.getParent(), sumoConfig.sumoConfigurationFile);
-        }
-        sumoConfigurationFile = absoluteConfiguration;
-
-        vehicleTypeRouteFileName = getVehicleTypeRouteFileName();
-    }
-
-    /**
-     * Find the name of the route file and return it.
-     *
-     * @return The route-file name.
-     */
-    private String getVehicleTypeRouteFileName() {
-        try {
-            XMLConfiguration sumoConfiguration = XmlUtils.readXmlFromFile(sumoConfigurationFile);
-            String routeFileName = XmlUtils.getValueFromXpath(sumoConfiguration, "/input/route-files/@value", null);
-            if (routeFileName == null) {
-                return "vTypes.rou.xml";
-            }
-            String[] routeFiles = routeFileName.split("[\\s,]+"); // split by comma (+ white space)
-            // get first route-file, extend it with "_vTypes.rou.xml"
-            return routeFiles[0].split("\\.")[0] + "_vTypes.rou.xml";
-        } catch (IOException e) {
-            log.error("An error occurred while parsing the SUMO configuration file", e);
-        }
-
-        return null;
     }
 
     @Override
@@ -409,29 +368,23 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * @param typesInit Interaction contains predefined vehicle types.
      */
     private void writeTypesFromMapping(VehicleTypesInitialization typesInit) {
-        File outputFile = initVehicleTypeRouteFileCreator();
-
+        initVehicleTypeRouteFileCreator();
         // stores the rou.xml file to the working directory. this file is required for SUMO to run
         sumoRouteFileCreator
                 .addVehicleTypes(typesInit.getTypes())
-                .store(outputFile);
+                .store();
     }
 
-    private File initVehicleTypeRouteFileCreator() {
+    private void initVehicleTypeRouteFileCreator() {
         File dir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
         String subDir = new File(sumoConfig.sumoConfigurationFile).getParent();
         if (StringUtils.isNotBlank(subDir)) {
             dir = new File(dir, subDir);
         }
-        File tmpVehicleTypeRouteFile = new File(dir, vehicleTypeRouteFileName);
-        File tmpSumoFile = new File(dir, sumoConfigurationFile.getName());
-
         // keep single instance
         if (sumoRouteFileCreator == null) {
-            sumoRouteFileCreator = new SumoRouteFileCreator(tmpSumoFile, tmpVehicleTypeRouteFile, sumoConfig);
+            sumoRouteFileCreator = new SumoRouteFileCreator(dir, sumoConfig);
         }
-
-        return tmpVehicleTypeRouteFile;
     }
 
 }

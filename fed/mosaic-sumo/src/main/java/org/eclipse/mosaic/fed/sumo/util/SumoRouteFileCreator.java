@@ -59,12 +59,18 @@ public class SumoRouteFileCreator {
 
     private final static Logger log = LoggerFactory.getLogger(SumoRouteFileCreator.class);
 
+    final static String VEHICLE_TYPE_ROUTE_FILE_NAME = "mosaic_types.rou.xml";
     /**
      * Document used to write vehicle types (prototypes) from Mapping to.
      * Note: parameters from {@link org.eclipse.mosaic.fed.sumo.config.CSumo#additionalVehicleTypeParameters}
      * will also be written into this file, overwriting values from Mapping.
      */
     private final Document vehicleTypesDocument;
+
+    /**
+     *{@link File}-object linking to the new vehicle type route file.
+     */
+    private final File vehicleTypeRouteFile;
 
     private final double timeGapOffset;
 
@@ -76,31 +82,27 @@ public class SumoRouteFileCreator {
     /**
      * Constructor for {@link SumoRouteFileCreator}.
      *
-     * @param sumoConfigurationFile this is the {@link File}-object linking to the `.sumocfg`-file
-     * @param vehicleTypeRouteFile  the name for the newly written route-file
-     * @param sumoConfiguration     the sumo configuration read from sumo_config.json
+     * @param sumoConfigurationDirectory this is the {@link File}-object linking to the directory containing
+     * @param sumoConfiguration          the sumo configuration read from sumo_config.json
      */
-    public SumoRouteFileCreator(File sumoConfigurationFile,
-                                File vehicleTypeRouteFile,
+    public SumoRouteFileCreator(File sumoConfigurationDirectory,
                                 CSumo sumoConfiguration) {
-        if (vehicleTypeRouteFile == null) {
-            throw new IllegalArgumentException("No vehicle type route file given.");
-        }
+        vehicleTypeRouteFile = new File(sumoConfigurationDirectory, VEHICLE_TYPE_ROUTE_FILE_NAME);
+        File sumoConfigurationFile = new File(sumoConfigurationDirectory, sumoConfigurationDirectory.getName());
 
         this.additionalVehicleTypeParameters = sumoConfiguration.additionalVehicleTypeParameters;
         this.timeGapOffset = sumoConfiguration.timeGapOffset;
 
-        addVehicleTypeRouteFileToSumoConfig(sumoConfigurationFile, vehicleTypeRouteFile);
+        addVehicleTypeRouteFileToSumoConfig(sumoConfigurationFile);
         vehicleTypesDocument = initializeDocument();
     }
 
     /**
      * Adds the new route file containing the vehicle type to the sumo configuration.
      *
-     * @param sumoConfigurationFile    the sumo configuration
-     * @param baseVehicleTypeRouteFile the route file containing the vehicle types, used to get name
+     * @param sumoConfigurationFile the sumo configuration
      */
-    private void addVehicleTypeRouteFileToSumoConfig(File sumoConfigurationFile, File baseVehicleTypeRouteFile) {
+    private void addVehicleTypeRouteFileToSumoConfig(File sumoConfigurationFile) {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(sumoConfigurationFile);
@@ -114,12 +116,12 @@ public class SumoRouteFileCreator {
                 Element inputNode = (Element) doc.getElementsByTagName("input").item(0);
                 inputNode.appendChild(newRouteFilesNode);
                 routeFilesNodeElement = (Element) routeFilesNodes.item(0);
-                newRouteFilesValue = baseVehicleTypeRouteFile.getName();
-            } else {
+                newRouteFilesValue = VEHICLE_TYPE_ROUTE_FILE_NAME;
+            } else { // else prepend document
                 routeFilesNodeElement = (Element) routeFilesNodes.item(0);
                 String previousRouteFiles = "," + routeFilesNodeElement.getAttribute("value");
                 // prepending because vTypes have to be known before vehicle definitions
-                newRouteFilesValue = baseVehicleTypeRouteFile.getName() + previousRouteFiles;
+                newRouteFilesValue = VEHICLE_TYPE_ROUTE_FILE_NAME + previousRouteFiles;
             }
             routeFilesNodeElement.setAttribute("value", newRouteFilesValue);
 
@@ -258,9 +260,9 @@ public class SumoRouteFileCreator {
     /**
      * Stores the document to the given target file.
      */
-    public void store(File target) {
+    public void store() {
         // write route-file
-        writeXmlFile(target, vehicleTypesDocument);
+        writeXmlFile(vehicleTypeRouteFile, vehicleTypesDocument);
     }
 
     /**
