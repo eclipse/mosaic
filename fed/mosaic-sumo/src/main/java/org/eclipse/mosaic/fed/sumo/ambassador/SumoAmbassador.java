@@ -112,7 +112,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             XMLConfiguration sumoConfiguration = XmlUtils.readXmlFromFile(sumoConfigurationFile);
             String routeFileName = XmlUtils.getValueFromXpath(sumoConfiguration, "/input/route-files/@value", null);
             if (routeFileName == null) {
-                return "routes_vTypes.xml";
+                return "vTypes.rou.xml";
             }
             String[] routeFiles = routeFileName.split("[\\s,]+"); // split by comma (+ white space)
             // get first route-file, extend it with "_vTypes.rou.xml"
