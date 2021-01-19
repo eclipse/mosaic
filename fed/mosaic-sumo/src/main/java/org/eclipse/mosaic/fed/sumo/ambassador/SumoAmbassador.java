@@ -75,8 +75,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private SumoRouteFileCreator sumoRouteFileCreator;
 
     /**
-     * Constructor for {@link SumoAmbassador}. Loads the
-     * SUMO-configuration, and the SUMO-route file.
+     * Constructor for {@link SumoAmbassador}.
      *
      * @param ambassadorParameter parameters for the ambassador containing its' id and configuration
      */
