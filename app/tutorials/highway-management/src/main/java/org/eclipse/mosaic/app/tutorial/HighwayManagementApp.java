@@ -62,7 +62,7 @@ public class HighwayManagementApp extends AbstractApplication<TrafficManagementC
     private void closeEdges(Route routeToClose, int numberOfLanesToClose) {
         getLog().info("Closing {} lanes along route {}", numberOfLanesToClose, routeToClose.getId());
 
-        for (String edge : routeToClose.getEdgeIdList()) {
+        for (String edge : routeToClose.getEdgeIds()) {
             for (int lane = 0; lane < numberOfLanesToClose; lane++) {
                 getOs().changeLaneState(edge, lane).closeForAll();
             }
@@ -72,7 +72,7 @@ public class HighwayManagementApp extends AbstractApplication<TrafficManagementC
     private void openEdges(Route routeToClose, int numberOfLanesToClose) {
         getLog().info("Opening {} lanes along route {}", numberOfLanesToClose, routeToClose.getId());
 
-        for (String edge : routeToClose.getEdgeIdList()) {
+        for (String edge : routeToClose.getEdgeIds()) {
             for (int lane = 0; lane < numberOfLanesToClose; lane++) {
                 getOs().changeLaneState(edge, lane).openForAll();
             }

@@ -15,11 +15,11 @@
 
 package org.eclipse.mosaic.lib.database.route;
 
+import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,7 +37,6 @@ public class Route {
 
     /**
      * The list of edges the vehicles using this route have to drive.
-     * Each entry has the form connectionid_startnode
      */
     private final List<Edge> edgeList = new ArrayList<>();
 
@@ -63,12 +62,11 @@ public class Route {
 
     /**
      * This is the list of {@link Edge}s that form the route.
-     * The entries have the form connectionid_startnode
      *
      * @return list of edges
      */
     @Nonnull
-    public List<Edge> getRoute() {
+    public List<Edge> getEdges() {
         return Collections.unmodifiableList(edgeList);
     }
 
@@ -78,12 +76,12 @@ public class Route {
      * @return Extracted list of edge Ids.
      */
     @Nonnull
-    public List<String> getEdgeIdList() {
+    public List<String> getEdgeIds() {
         return edgeList.stream().map(Edge::getId).collect(Collectors.toList());
     }
 
     /**
-     * Add an {@link Edge} to the route. Mind the order of edges.
+     * Adds an {@link Edge} to the route.
      *
      * @param edge Edge to add.
      */
@@ -100,7 +98,7 @@ public class Route {
      * @return Extracted nodes.
      */
     @Nonnull
-    public List<Node> getNodeList() {
+    public List<Node> getNodes() {
         if (edgeList.isEmpty()) {
             return new ArrayList<>();
         } else {
@@ -110,32 +108,46 @@ public class Route {
         }
     }
 
+
+
     /**
      * This extracts a list of all node IDs this {@link Route} passes.
-     * So ALL the edges nodes, even those between intersections where a route could change!
      *
      * @return Extracted list of all node IDs.
      */
     @Nonnull
-    public List<String> getNodeIdList() {
-        return Collections.unmodifiableList(getNodeList().stream().map(Node::getId).collect(Collectors.toList()));
+    public List<String> getNodeIds() {
+        return Collections.unmodifiableList(getNodes().stream().map(Node::getId).collect(Collectors.toList()));
+    }
+
+    /**
+     * This extracts a list of {@link Connection}s that vehicles using this {@link Route} are passing. Multiple adjacent edges belonging to
+     * the same connection will result in only one occurrence of the connection.
+     *
+     * @return Extracted nodes.
+     */
+    @Nonnull
+    public List<Connection> getConnections() {
+        List<Connection> connections = new ArrayList<>();
+        Connection lastConnection = null;
+        for (Edge edge : edgeList) {
+            if (lastConnection != edge.getConnection()) {
+                connections.add(edge.getConnection());
+            }
+            lastConnection = edge.getConnection();
+        }
+        return connections;
     }
 
     /**
      * This extracts a list of connection IDs. Multiple adjacent edges belonging to
-     * the same connection will result in only one occurrence of the connection !
+     * the same connection will result in only one occurrence of the connection.
      *
      * @return Extracted list of connection Ids.
      */
     @Nonnull
-    public List<String> getConnectionIdList() {
-        final LinkedList<String> result = new LinkedList<>();
-        for (Edge edge : edgeList) {
-            if (result.isEmpty() || !result.getLast().equals(edge.getConnection().getId())) {
-                result.add(edge.getConnection().getId());
-            }
-        }
-        return result;
+    public List<String> getConnectionIds() {
+        return Collections.unmodifiableList(getConnections().stream().map(Connection::getId).collect(Collectors.toList()));
     }
 
 }

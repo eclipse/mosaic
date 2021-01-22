@@ -835,7 +835,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
             dbConnection.setAutoCommit(false);
             for (Route route : database.getRoutes()) {
                 sequenceNumber = 0;
-                for (Edge edge : route.getRoute()) {
+                for (Edge edge : route.getEdges()) {
                     prep.setString(1, route.getId());
                     prep.setInt(2, sequenceNumber);
                     prep.setString(3, edge.getConnection().getId());
