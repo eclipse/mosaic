@@ -35,7 +35,9 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Contact
 
-We are available for all kind of questions regarding Eclipse MOSAIC via mosaic@fokus.fraunhofer.de
+Any questions regarding Eclipse MOSAIC can be asked, discussed, and found in the [Discussions section](https://github.com/eclipse/mosaic/discussions) here at GitHub.
+
+For further questions we are available via mosaic@fokus.fraunhofer.de
 
 ## Prerequisites
 

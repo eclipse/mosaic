@@ -3,9 +3,18 @@
     "sumoConfigurationFile": "placeholder.sumocfg",
     "exitOnInsertionError": true,
     "additionalSumoParameters": " --time-to-teleport 10  --seed 200000",
+    "additionalVehicleTypeParameters": {
+        "car": {
+            "carFollowModel": "Krauss",
+            "color": "red",
+            "maxSpeed": "50"
+        },
+        "truck": {
+            "maxSpeed": "10"
+        }
+    },
     "trafficFlowMeasurementWindowInS": 400,
     "timeGapOffset": 4.5,
-    "writeVehicleDepartures": true,
     "subscriptions": [
         "roadposition", "signals", "emissions"
     ]

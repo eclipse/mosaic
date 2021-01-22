@@ -433,7 +433,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             File sumoWorkingDir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
             trafficSignManager.configure(bridge, sumoWorkingDir);
         } catch (Exception e) {
-            log.error("Could not load TraffiSignManager. No traffic signs will be displayed.");
+            log.error("Could not load TrafficSignManager. No traffic signs will be displayed.");
         }
 
     }
