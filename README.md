@@ -35,7 +35,9 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Contact
 
-We are available for all kind of questions regarding Eclipse MOSAIC via mosaic@fokus.fraunhofer.de
+Any questions regarding Eclipse MOSAIC can be asked, discussed, and found in the [Discussions section](https://github.com/eclipse/mosaic/discussions) here at GitHub.
+
+For further questions we are available via mosaic@fokus.fraunhofer.de
 
 ## Prerequisites
 
@@ -43,7 +45,7 @@ For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
 * **Java 8 or 11** - We recommend using the [Adopt OpenJDK](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot).
-* **SUMO 1.7.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **SUMO 1.8.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 

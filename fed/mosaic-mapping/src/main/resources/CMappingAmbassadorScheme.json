@@ -375,7 +375,7 @@
                     "description": "Adjusts the departure time of individual vehicles.",
                     "type": "string",
                     "enum": [
-                        "CONSTANT", "GROW", "SHRINK", "GROW_AND_SHRINK", "GROW_EXPONENTIAL", "SHRINK_EXPONENTIAL",
+                        "CONSTANT", "GROW", "POISSON", "SHRINK", "GROW_AND_SHRINK", "GROW_EXPONENTIAL", "SHRINK_EXPONENTIAL",
                         "GROW_AND_SHRINK_EXPONENTIAL"
                     ],
                     "default": "CONSTANT"

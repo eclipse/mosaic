@@ -83,31 +83,31 @@ public class RouteManager {
      * @return simplified version of the route suitable to send to other ambassadors
      */
     public final VehicleRoute createRouteForRTI(Route route) {
+
+        final List<String> edgeIds;
+        if (database.getImportOrigin().equals(Database.IMPORT_ORIGIN_SUMO)) {
+            /* Due to the way we import SUMO netfiles, we need to export
+             * the connections of the route directly without transforming
+             * to various edges for each intermediate node of a connection. */
+            edgeIds = route.getConnectionIds();
+        } else {
+            edgeIds = route.getEdgeIds();
+        }
+
+        double length = approximateLengthOfRoute(route);
+        return new VehicleRoute(route.getId(), edgeIds, route.getNodeIds(), length);
+    }
+
+    private double approximateLengthOfRoute(Route route) {
         double length = 0.0;
-
-        /* To prevent sequent double connections, create a variable for the
-         * last connection. The current connection (named currentConnection)
-         * is always checked with the latest (named lastConnection). */
-        Connection lastConnection = null;
-
-        // iterate over all edges from the path
-        for (Edge edge : route.getRoute()) {
-            Connection currentConnection = edge.getConnection();
-            // is the connection not the last connection?
-            // hint: never flip this equals because lastConnection could be null
-            if (!currentConnection.equals(lastConnection)) {
-                // current connection is not the same as the lastConnection
-                // assign the current connection to the last connection
-                lastConnection = currentConnection;
-                // ... and add the length to the sum
+        Connection prev = null;
+        for (Edge edge : route.getEdges()) {
+            if (prev != edge.getConnection()) {
                 length += edge.getConnection().getLength();
             }
+            prev = edge.getConnection();
         }
-        return new VehicleRoute(
-                route.getId(),
-                route.getEdgeIdList(),
-                route.getNodeIdList(),
-                length);
+        return length;
     }
 
     /**

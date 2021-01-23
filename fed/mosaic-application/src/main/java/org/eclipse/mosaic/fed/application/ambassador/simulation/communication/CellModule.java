@@ -42,9 +42,9 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     private CellModuleConfiguration configuration = null;
 
     /**
-     * Default radius for geographic cam dissemination over the cellular network.
+     * Default radius for geographic cam dissemination over the cellular network [m].
      */
-    private final static long CAM_GEO_RADIUS = 300;
+    private final static long DEFAULT_CAM_GEO_RADIUS = 300;
 
     public CellModule(OperatingSystem owner, Logger log) {
         super(owner, log);
@@ -66,17 +66,21 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             owner.sendInteractionToRti(
                     new CellularCommunicationConfiguration(
                             owner.getSimulationTime(), new CellConfiguration(
-                            owner.getId(), true, configuration.getMaxDlBitrate(), configuration.getMaxUlBitrate())));
+                            owner.getId(), true, configuration.getMaxDownlinkBitrate(), configuration.getMaxUplinkBitrate())));
         } else {
             logEnableConfigurationNull();
         }
     }
 
     /**
-     * Convenience method to enable the cell module with default values.
+     * Convenience method to enable the cell module with bare minimum default values
+     * and a default configuration for CAMs using the {@link #DEFAULT_CAM_GEO_RADIUS}
+     * Note: When using this method, no bitrates will be set and default values
+     * configured in the Cell module will be used.
+     * If you want to set these values use {@link #enable(CellModuleConfiguration)}
      */
     public void enable() {
-        enable(new CellModuleConfiguration().camConfiguration(CAM_GEO_RADIUS));
+        enable(new CellModuleConfiguration().camConfiguration(DEFAULT_CAM_GEO_RADIUS));
     }
 
     /**
@@ -85,7 +89,9 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     @Override
     public void disable() {
         configuration = null;
-        owner.sendInteractionToRti(new CellularCommunicationConfiguration(owner.getSimulationTime(), new CellConfiguration(owner.getId(), false)));
+        owner.sendInteractionToRti(
+                new CellularCommunicationConfiguration(owner.getSimulationTime(), new CellConfiguration(owner.getId(), false))
+        );
     }
 
     /**
@@ -110,16 +116,17 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             log.warn("sendCAM: Cell communication disabled (!cellModule.isEnabled()).");
             return null;
         }
-        if (configuration == null) {
+        if (configuration == null || configuration.getCamConfiguration() == null) {
             log.warn("sendCAM: No camConfiguration with addressingMode and geoRadius given.");
             return null;
         }
+        CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
         final MessageRouting routing;
-        if (configuration.getCamConfiguration().getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
-            routing = createMessageRouting().topoCast(configuration.getCamConfiguration().getTopocastReceiver());
+        if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
+            routing = createMessageRouting().topoCast(camConfiguration.getTopocastReceiver());
         } else {
-            final GeoCircle destination = new GeoCircle(owner.getPosition(), configuration.getCamConfiguration().getGeoRadius());
-            if (configuration.getCamConfiguration().getAddressingMode().equals(DestinationType.CELL_GEOCAST)) {
+            final GeoCircle destination = new GeoCircle(owner.getPosition(), camConfiguration.getGeoRadius());
+            if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_GEOCAST)) {
                 routing = createMessageRouting().geoBroadcastBasedOnUnicast(destination);
             } else {
                 routing = createMessageRouting().geoBroadcastMbms(destination);

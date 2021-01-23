@@ -54,6 +54,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.io.File;
@@ -237,30 +238,44 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      */
     private void process(CellularCommunicationConfiguration interaction) throws InternalFederateException {
         Validate.notNull(interaction.getConfiguration(), "CellConfiguration is null");
-        final String nodeId = interaction.getConfiguration().getNodeId();
+        long interactionTime = interaction.getTime();
+        CellConfiguration cellConfiguration = interaction.getConfiguration();
+
+        cellConfiguration.setBitrates(
+                ObjectUtils.defaultIfNull(
+                        cellConfiguration.getMaxDownlinkBitrate(),
+                        ConfigurationData.INSTANCE.getNetworkConfig().defaultDownlinkCapacity
+                ),
+                ObjectUtils.defaultIfNull(
+                        cellConfiguration.getMaxUplinkBitrate(),
+                        ConfigurationData.INSTANCE.getNetworkConfig().defaultUplinkCapacity
+                )
+        );
+
+        final String nodeId = cellConfiguration.getNodeId();
         final boolean isVehicle = registeredVehicles.containsKey(nodeId);
         Optional<HandoverInfo> handoverInfo = Optional.empty();
-        if (!interaction.getConfiguration().isEnabled()) {
+        if (!cellConfiguration.isEnabled()) {
             handoverInfo = disableCellForNode(nodeId);
             if (isVehicle) {
                 // keep the vehicle in the registeredVehicles map since it could enable the cell module again
                 // the update cell configuration has the cell module disabled
-                registeredVehicles.get(nodeId).set(interaction.getConfiguration());
+                registeredVehicles.get(nodeId).set(cellConfiguration);
             }
             log.info(
                     "Disabled Cell Communication for "
                             + (isVehicle ? "vehicle" : "entity")
-                            + "={}, t={}", nodeId, TIME.format(interaction.getTime())
+                            + "={}, t={}", nodeId, TIME.format(interactionTime)
             );
         } else {
             if (isVehicle) { // handle vehicles
-                handoverInfo = handleVehicleCellConfiguration(nodeId, interaction);
+                handoverInfo = handleVehicleCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else if (registeredEntities.containsKey(nodeId)) { // handle stationary entities
-                handleEntityCellConfiguration(nodeId, interaction);
+                handleEntityCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else if (registeredServers.containsKey(nodeId)) { // handle servers
-                handleServerCellConfiguration(nodeId, interaction);
+                handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else {
-                if (interaction.getConfiguration().isCellCommunicationEnabled()) {
+                if (cellConfiguration.isCellCommunicationEnabled()) {
                     throw new InternalFederateException(
                             "Cell Ambassador: Cannot activate Cell module for \"" + nodeId + "\" because the id is unknown"
                     );
@@ -271,7 +286,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         }
         handoverInfo.ifPresent((handover) -> {
             List<HandoverInfo> handoverInfos = Lists.newArrayList(handover);
-            CellularHandoverUpdates handoverUpdatesInteraction = new CellularHandoverUpdates(interaction.getTime(), handoverInfos);
+            CellularHandoverUpdates handoverUpdatesInteraction = new CellularHandoverUpdates(interactionTime, handoverInfos);
             chainManager.sendInteractionToRti(handoverUpdatesInteraction);
         });
     }
@@ -350,7 +365,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      */
     private void process(ServerRegistration serverRegistration) {
         ServerMapping server = serverRegistration.getMapping();
-        if (server.hasApplication()) {
+        // only register servers that have applications and the group parameter set
+        if (server.hasApplication() && server.getGroup() != null) {
             registerServer(server.getName(), server.getGroup());
 
             if (log.isDebugEnabled()) {
@@ -360,7 +376,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Server (id={}) has NO application and is ignored in "
+                log.debug("Server (id={}) has NO application or group and is ignored in "
                         + "communication simulation", server.getName());
             }
         }
@@ -522,22 +538,22 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 && registeredVehicles.get(added.getName()).get().isCellCommunicationEnabled();
     }
 
-    private Optional<HandoverInfo> handleVehicleCellConfiguration(String nodeId, CellularCommunicationConfiguration interaction) throws InternalFederateException {
-        registeredVehicles.get(nodeId).set(interaction.getConfiguration());
+    private Optional<HandoverInfo> handleVehicleCellConfiguration(String nodeId, CellConfiguration cellConfiguration, Long interactionTime) throws InternalFederateException {
+        registeredVehicles.get(nodeId).set(cellConfiguration);
         Optional<HandoverInfo> handoverInfo = Optional.empty();
         // update the cell configuration if the cell module was already activated
         if (simData.containsCellConfigurationOfNode(nodeId)) {
-            simData.setCellConfigurationOfNode(nodeId, interaction.getConfiguration());
+            simData.setCellConfigurationOfNode(nodeId, cellConfiguration);
             log.info("Updated (Configured) Cell Communication for vehicle={}, t={}",
-                    nodeId, TIME.format(interaction.getTime()));
+                    nodeId, TIME.format(interactionTime));
         } else {
             log.info("Enabled (Configured) Cell Communication for vehicle={}, t={}",
-                    nodeId, TIME.format(interaction.getTime()));
+                    nodeId, TIME.format(interactionTime));
 
             if (latestVehicleUpdates != null) {
                 Optional<VehicleData> vehicleData = fetchVehicleDataFromLastUpdate(nodeId);
                 if (vehicleData.isPresent()) {
-                    handoverInfo = registerOrUpdateVehicle(interaction.getTime(), vehicleData.get());
+                    handoverInfo = registerOrUpdateVehicle(interactionTime, vehicleData.get());
                 }
             }
         }
@@ -551,38 +567,41 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 .findFirst();
     }
 
-    private void handleEntityCellConfiguration(String nodeId, CellularCommunicationConfiguration interaction) {
+    private void handleEntityCellConfiguration(String nodeId, CellConfiguration cellConfiguration, long interactionTime) {
         CNetworkProperties regionProperties = RegionUtility.getRegionForPosition(registeredEntities.get(nodeId));
-        registerStationaryNode(nodeId, interaction, regionProperties);
+        registerStationaryNode(nodeId, cellConfiguration, interactionTime, regionProperties);
         simData.setPositionOfNode(nodeId, registeredEntities.get(nodeId));
     }
 
-    private void handleServerCellConfiguration(String nodeId, CellularCommunicationConfiguration interaction) {
+    private void handleServerCellConfiguration(String nodeId, CellConfiguration cellConfiguration, long interactionTime) {
         CNetworkProperties serverProperties = registeredServers.get(nodeId);
-        registerStationaryNode(nodeId, interaction, serverProperties);
+        registerStationaryNode(nodeId, cellConfiguration, interactionTime, serverProperties);
     }
 
-    private void registerStationaryNode(String nodeId, CellularCommunicationConfiguration interaction, CNetworkProperties properties) {
+    private void registerStationaryNode(String nodeId, CellConfiguration cellConfiguration,
+                                        long interactionTime, CNetworkProperties properties) {
         simData.setRegionOfNode(nodeId, properties);
         simData.setSpeedOfNode(nodeId, 0);
-        simData.setCellConfigurationOfNode(nodeId, interaction.getConfiguration());
+        simData.setCellConfigurationOfNode(nodeId, cellConfiguration);
 
         log.info(
                 "Enabled (Configured) Cell Communication for entity={}, t={} with capacity in downlink={} and uplink={}",
-                nodeId, TIME.format(interaction.getTime()),
-                interaction.getConfiguration().getAvailableDlBitrate(),
-                interaction.getConfiguration().getAvailableUlBitrate()
+                nodeId, TIME.format(interactionTime),
+                cellConfiguration.getAvailableDownlinkBitrate(),
+                cellConfiguration.getAvailableUplinkBitrate()
         );
     }
 
     private void registerServer(String serverName, String serverGroup) {
-        CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegion(serverGroup);
+        CNetworkProperties serverProperties = ConfigurationData.INSTANCE.getServerRegionFromConfiguration(serverGroup);
         if (serverProperties != null) {
             registeredServers.put(serverName, serverProperties);
         } else {
-            // TODO: needs to be validated if this works as a useful workaround for servers without server config especially
-            //  since capacity is shared with globalNetwork and servers capacity shouldn't be affected by this
-            registeredServers.put(serverName, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork);
+            log.warn(
+                    "No server properties for server group \"{}\" found in \"{}\" config-file."
+                            + " If you intend to use cell-communication with this unit please add a configuration.",
+                    serverGroup, ConfigurationData.INSTANCE.getCellConfig().networkConfigurationFile
+            );
         }
     }
 

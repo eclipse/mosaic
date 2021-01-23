@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sns.ambassador;
 
-import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ enum SimulationEntities {
     /**
      * Offline nodes (may get switched on).
      */
-    private final HashMap<String, GeoPoint> offlineNodes = new HashMap<>();
+    private final HashMap<String, CartesianPoint> offlineNodes = new HashMap<>();
 
     /**
      * Gets all nodes currently known as online (initialized, Wifi enabled) in the simulation.
@@ -73,7 +73,7 @@ enum SimulationEntities {
      * @param position position of the node
      * @param radius   transmission radius of the node
      */
-    public void createOnlineNode(String nodeName, GeoPoint position, double radius) {
+    public void createOnlineNode(String nodeName, CartesianPoint position, double radius) {
         if (nodeName != null && position != null) {
             SimulationNode nodeData = new SimulationNode();
             nodeData.setPosition(position);
@@ -90,7 +90,7 @@ enum SimulationEntities {
      * @param nodeName identifier of the node to be updated
      * @param position the updated position
      */
-    public void updateOnlineNode(String nodeName, GeoPoint position) {
+    public void updateOnlineNode(String nodeName, CartesianPoint position) {
         if (nodeName != null && position != null) {
             onlineNodes.get(nodeName).setPosition(position);
         } else {
@@ -104,7 +104,7 @@ enum SimulationEntities {
      * @param nodeName identifier of the node to be updated
      * @param position the updated position
      */
-    public void createOrUpdateOfflineNode(String nodeName, GeoPoint position) {
+    public void createOrUpdateOfflineNode(String nodeName, CartesianPoint position) {
         if (nodeName != null && position != null) {
             offlineNodes.put(nodeName, position);
         } else {
@@ -148,30 +148,6 @@ enum SimulationEntities {
             offlineNodes.put(nodeName, onlineNodes.get(nodeName).getPosition());
             onlineNodes.remove(nodeName);
         }
-    }
-
-    /**
-     * Returns the position of a node from the position table.
-     * Returns null if the node is non existing.
-     *
-     * @param nodeId Name of the node.
-     * @return Position of the node, null if non existing.
-     */
-    public GeoPoint getPositionOfNode(String nodeId) {
-        SimulationNode node = onlineNodes.get(nodeId);
-        return node != null ? node.getPosition() : null;
-    }
-
-    /**
-     * Returns the communication radius (for single hop) of a node.
-     * Returns null if the node is non existing.
-     *
-     * @param nodeId Name of the node.
-     * @return Position of the node, null if non existing.
-     */
-    public double getRadiusOfNode(String nodeId) {
-        SimulationNode node = onlineNodes.get(nodeId);
-        return node != null ? node.getRadius() : 0.0;
     }
 
     /**

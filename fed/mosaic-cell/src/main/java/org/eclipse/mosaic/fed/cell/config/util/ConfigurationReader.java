@@ -81,7 +81,7 @@ public class ConfigurationReader {
             }
             if (server.downlink.multicast != null) {
                 log.warn("It seems like you've tried to set the downlink multicast for a server."
-                        + "Servers can't be addressed with multicasts.  Your set values will be dismissed");
+                        + "Servers can't be addressed with multicasts. Your set values will be dismissed");
             }
             server.downlink.maxCapacity = server.downlink.capacity = Long.MAX_VALUE;
             server.uplink.maxCapacity = server.uplink.capacity = Long.MAX_VALUE;

@@ -86,8 +86,8 @@ public final class CapacityUtility {
      */
     public static boolean isCapacitySufficient(TransmissionMode mode, CNetworkProperties region,
                                                CellConfiguration nodeCellConfiguration, long neededBandwidth) {
-        return RegionCapacityUtility.isCapacitySufficient(mode, region, neededBandwidth)
-                && NodeCapacityUtility.isCapacitySufficient(mode, nodeCellConfiguration, neededBandwidth);
+        return NodeCapacityUtility.isCapacitySufficient(mode, nodeCellConfiguration, neededBandwidth)
+                && RegionCapacityUtility.isCapacitySufficient(mode, region, neededBandwidth);
     }
 
     /**
@@ -127,18 +127,6 @@ public final class CapacityUtility {
                 NodeCapacityUtility.consumeCapacityDown(nodeCellConfiguration, consume);
             }
         }
-    }
-
-    /**
-     * Frees the capacity in the region and for the node. This method is normally called when a transmission is finished.
-     *
-     * @param region                The region where the capacity is freed.
-     * @param nodeCellConfiguration The cell configuration of the node where the capacity is freed.
-     * @param freed                 The capacity that should be freed.
-     */
-    public static void freeCapacityUp(@Nonnull CNetworkProperties region, CellConfiguration nodeCellConfiguration, long freed) {
-        RegionCapacityUtility.freeCapacityUp(region, freed);
-        NodeCapacityUtility.freeCapacityUp(nodeCellConfiguration, freed);
     }
 
     /**
@@ -197,11 +185,11 @@ public final class CapacityUtility {
         long bandwidth2;
         switch (mode) {
             case UplinkUnicast:
-                bandwidth1 = nodeCellConfiguration.getAvailableUlBitrate();
+                bandwidth1 = nodeCellConfiguration.getAvailableUplinkBitrate();
                 bandwidth2 = region.uplink.capacity;
                 break;
             case DownlinkUnicast:
-                bandwidth1 = nodeCellConfiguration.getAvailableDlBitrate();
+                bandwidth1 = nodeCellConfiguration.getAvailableDownlinkBitrate();
                 bandwidth2 = region.downlink.capacity;
                 break;
             case DownlinkMulticast:

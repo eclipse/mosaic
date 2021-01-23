@@ -32,13 +32,13 @@ public class SendCamAppCell extends AbstractSenderApp {
         this(durationInS, addressingMode, geoRadius, Long.MAX_VALUE, Long.MAX_VALUE);
     }
 
-    public SendCamAppCell(int durationInS, String addressingMode, double geoRadius, long maxDlBitRate, long maxUlBitRate) {
+    public SendCamAppCell(int durationInS, String addressingMode, double geoRadius, long maxDownlinkBitrate, long maxUplinkBitrate) {
         super(TIME.SECOND, durationInS * TIME.SECOND);
 
         this.cellModuleConfiguration = new CellModuleConfiguration()
                 .camConfiguration(DestinationType.valueOf(addressingMode), geoRadius)
-                .maxDlBitrate(maxDlBitRate)
-                .maxUlBitrate(maxUlBitRate);
+                .maxDownlinkBitrate(maxDownlinkBitrate)
+                .maxUplinkBitrate(maxUplinkBitrate);
     }
 
     @Override

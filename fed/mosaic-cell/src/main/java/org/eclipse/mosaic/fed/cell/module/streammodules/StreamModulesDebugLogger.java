@@ -80,7 +80,7 @@ class StreamModulesDebugLogger {
                             + "(For TCP, notifying the sending node {})",
                     msgId, input.getMode(), input.getRegion().id,
                     msgLenInBit, delayInNs, neededBw, input.getRegion().downlink.capacity, input.getNodeId(),
-                    NodeCapacityUtility.getAvailableDlCapacity(input.getNodeConfiguration()),
+                    NodeCapacityUtility.getAvailableDownlinkCapacity(input.getNodeConfiguration()),
                     senderId);
         } else if (input.getMode().equals(TransmissionMode.DownlinkMulticast)) {
             log.debug(" msg-{} IS NOT deliverable via {} in region \"{}\" "
@@ -120,7 +120,7 @@ class StreamModulesDebugLogger {
                             + "capacityLeft={} bps, nodeId={}, nodeCapacityLeft={})",
                     msgId, input.getMode(), input.getRegion().id,
                     msgLenInBit, delayInNs, result.getRequiredBandwidthInBps(), input.getRegion().downlink.capacity,
-                    input.getNodeId(), NodeCapacityUtility.getAvailableDlCapacity(input.getNodeConfiguration()));
+                    input.getNodeId(), NodeCapacityUtility.getAvailableDownlinkCapacity(input.getNodeConfiguration()));
         } else if (input.getMode().equals(TransmissionMode.DownlinkMulticast)) {
             log.debug(" msg-{} IS deliverable via {} in region \"{}\" "
                             + "(with msgSize={} bit, delay={} ns, neededBandwidth={} bps, capacityLeft={} bps)",
@@ -203,7 +203,7 @@ class StreamModulesDebugLogger {
                             + "capacityLeft={} bps, nodeId={}, nodeCapacityLeft={})",
                     msgId, input.getMode(), input.getRegion().id, result.getNackReasons(),
                     msgLenInBit, delayInNs, result.getRequiredBandwidthInBps(), input.getRegion().downlink.capacity, input.getNodeId(),
-                    NodeCapacityUtility.getAvailableDlCapacity(input.getNodeConfiguration()));
+                    NodeCapacityUtility.getAvailableDownlinkCapacity(input.getNodeConfiguration()));
         } else if (input.getMode().equals(TransmissionMode.DownlinkMulticast)) {
             log.debug(" msg-{} is not sendable via {} in region \"{}\" due to {}"
                             + "(with msgSize={} bit, delay={} ns, neededBandwidth={} bps, capacityLeft={} bps)",
@@ -240,7 +240,7 @@ class StreamModulesDebugLogger {
                             + "capacityLeft={} bps, nodeId={}, nodeCapacityLeft={})",
                     msgId, input.getMode(), input.getRegion().id,
                     msgLenInBit, delayInNs, result.getRequiredBandwidthInBps(), input.getRegion().downlink.capacity, input.getNodeId(),
-                    NodeCapacityUtility.getAvailableDlCapacity(input.getNodeConfiguration()));
+                    NodeCapacityUtility.getAvailableDownlinkCapacity(input.getNodeConfiguration()));
         } else if (input.getMode().equals(TransmissionMode.DownlinkMulticast)) {
             log.debug(" msg-{} IS NOT deliverable via {} in region \"{}\" "
                             + "(with msgSize={} bit, delay={} ns, neededBandwidth={} bps, capacityLeft={} bps)",

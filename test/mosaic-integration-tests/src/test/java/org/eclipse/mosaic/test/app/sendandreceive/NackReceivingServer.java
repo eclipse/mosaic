@@ -44,11 +44,7 @@ public class NackReceivingServer extends AbstractApplication<ServerOperatingSyst
 
     @Override
     public void onStartup() {
-        getOs().getCellModule().enable(
-                new CellModuleConfiguration()
-                        .maxDlBitrate(10 * DATA.GIGABYTE)
-                        .maxUlBitrate(10 * DATA.GIGABYTE)
-        );
+        getOs().getCellModule().enable();
         getLog().infoSimTime(this, "Setup server {} at time {}", getOs().getId(), getOs().getSimulationTime());
 
         getOs().getEventManager().addEvent(new SendSimpleMessage(SEND_TIME, this, LIMITED_CAPACITY_SERVER));
