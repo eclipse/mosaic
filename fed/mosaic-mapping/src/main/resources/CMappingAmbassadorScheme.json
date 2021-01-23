@@ -393,7 +393,7 @@
                 },
                 "route": { 
                     "description": "Route that the vehicle(-s) should use. If an origin and a destination are specified this route will be treated as a preference (i.e. it will be selected if it connects the two points in question).",
-                    "type": [ "string"]
+                    "type": ["string"]
                 },
                 "lanes": {
                     "description": "Array of numbers defining the lanes to be used. The vehicles will be evenly distributed among the given lanes. When no value is given lane zero will be used for all vehicles.",
