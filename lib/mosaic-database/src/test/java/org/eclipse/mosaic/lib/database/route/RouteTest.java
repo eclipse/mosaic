@@ -50,19 +50,19 @@ public class RouteTest {
         Route route = createTestRoute();
 
         // test path
-        assertEquals("Wrong edge amount on the route", 2, route.getRoute().size());
+        assertEquals("Wrong edge amount on the route", 2, route.getEdges().size());
 
-        Edge edge = route.getRoute().get(0);
+        Edge edge = route.getEdges().get(0);
         assertEquals("Wrong edge 1 connection id", "1", edge.getConnection().getId());
         assertEquals("Wrong edge 1 start node id", "1", edge.getFromNode().getId());
         assertEquals("Wrong edge 1 end node id", "2", edge.getToNode().getId());
 
-        edge = route.getRoute().get(1);
+        edge = route.getEdges().get(1);
         assertEquals("Wrong edge 2 connection id", "1", edge.getConnection().getId());
         assertEquals("Wrong edge 2 start node id", "2", edge.getFromNode().getId());
         assertEquals("Wrong edge 2 end node id", "3", edge.getToNode().getId());
 
-        assertEquals("Route string representation wasn't generated correctly", "1_1 1_2", String.join(" ", route.getEdgeIdList()));
+        assertEquals("Route string representation wasn't generated correctly", "1_1 1_2", String.join(" ", route.getEdgeIds()));
     }
 
 
@@ -74,8 +74,8 @@ public class RouteTest {
         Route route = createTestRoute();
 
         // test
-        List<String> nodeIdList = route.getNodeIdList();
-        List<Node> nodeList = route.getNodeList();
+        List<String> nodeIdList = route.getNodeIds();
+        List<Node> nodeList = route.getNodes();
 
         // check counts
         assertEquals("Wrong node IDs amount on the route", 3, nodeIdList.size());

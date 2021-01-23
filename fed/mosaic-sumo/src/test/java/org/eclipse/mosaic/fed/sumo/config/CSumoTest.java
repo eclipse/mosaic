@@ -47,9 +47,12 @@ public class CSumoTest {
         assertEquals("placeholder.sumocfg", sumoConfiguration.sumoConfigurationFile);
         assertEquals(Boolean.TRUE, sumoConfiguration.exitOnInsertionError);
         assertEquals(" --time-to-teleport 10  --seed 200000", sumoConfiguration.additionalSumoParameters);
+        assertEquals("red", sumoConfiguration.additionalVehicleTypeParameters.get("car").get("color"));
+        assertEquals("Krauss", sumoConfiguration.additionalVehicleTypeParameters.get("car").get("carFollowModel"));
+        assertEquals("50", sumoConfiguration.additionalVehicleTypeParameters.get("car").get("maxSpeed"));
+        assertEquals("10", sumoConfiguration.additionalVehicleTypeParameters.get("truck").get("maxSpeed"));
         assertEquals(400, sumoConfiguration.trafficFlowMeasurementWindowInS);
         assertEquals(4.5d, sumoConfiguration.timeGapOffset, 0.1d);
-        assertEquals(Boolean.TRUE, sumoConfiguration.writeVehicleDepartures);
         Collection<String> expectedSubscriptions = Arrays.asList("roadposition", "signals", "emissions");
         assertEquals(expectedSubscriptions, sumoConfiguration.subscriptions);
     }

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.cell.config.CNetwork;
+import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
 import org.eclipse.mosaic.fed.cell.junit.CellConfigurationRule;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
@@ -36,6 +37,8 @@ import org.junit.Test;
 public class CapacityUtilityTest {
     private CellConfiguration nodeConfig;
     private CellConfiguration nodeConfig2;
+    private CellConfiguration serverNodeConfig0;
+    private CellConfiguration serverNodeConfig1;
 
     @Rule
     public CellConfigurationRule configRule = new CellConfigurationRule()
@@ -43,8 +46,10 @@ public class CapacityUtilityTest {
 
     @Before
     public void initializeCellConfiguration() {
-        nodeConfig = new CellConfiguration("veh0", true, 1000, 2000);
-        nodeConfig2 = new CellConfiguration("veh1", true, 44000, 25000);
+        nodeConfig = new CellConfiguration("veh0", true, 1000L, 2000L);
+        nodeConfig2 = new CellConfiguration("veh1", true, 44000L, 25000L);
+        serverNodeConfig0 = new CellConfiguration("server0", true, 44000L, 25000L);
+        serverNodeConfig1 = new CellConfiguration("server1", true, 44000L, 25000L);
     }
 
     @Test
@@ -191,46 +196,46 @@ public class CapacityUtilityTest {
         CNetwork networkConfig = configRule.getNetworkConfig();
 
         CapacityUtility.consumeCapacity(TransmissionMode.UplinkUnicast, networkConfig.globalNetwork, nodeConfig, 200 * DATA.BIT);
-        assertEquals(1800 * DATA.BIT, nodeConfig.getAvailableUlBitrate());
+        assertEquals(1800 * DATA.BIT, nodeConfig.getAvailableUplinkBitrate());
         assertEquals(22800 * DATA.BIT, networkConfig.globalNetwork.uplink.capacity);
 
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkUnicast, networkConfig.globalNetwork, nodeConfig, 300 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41700 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkMulticast, networkConfig.globalNetwork, nodeConfig, 400 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41300 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         // consume negative capacity (should not change the actual capacity)
         CapacityUtility.consumeCapacity(TransmissionMode.UplinkUnicast, networkConfig.globalNetwork, nodeConfig, -200 * DATA.BIT);
-        assertEquals(1800 * DATA.BIT, nodeConfig.getAvailableUlBitrate());
+        assertEquals(1800 * DATA.BIT, nodeConfig.getAvailableUplinkBitrate());
         assertEquals(22800 * DATA.BIT, networkConfig.globalNetwork.uplink.capacity);
 
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkUnicast, networkConfig.globalNetwork, nodeConfig, -200 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41300 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkMulticast, networkConfig.globalNetwork, nodeConfig, -200 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41300 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         // check null
         CapacityUtility.consumeCapacity(null, networkConfig.globalNetwork, nodeConfig, 200 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41300 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkUnicast, null, nodeConfig, 200 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41300 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkUnicast, networkConfig.globalNetwork, null, 200 * DATA.BIT);
-        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(700 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
         assertEquals(41300 * DATA.BIT, networkConfig.globalNetwork.downlink.capacity);
 
         // consume more capacity as available
         CapacityUtility.consumeCapacity(TransmissionMode.DownlinkUnicast, networkConfig.globalNetwork, nodeConfig, 800 * DATA.BIT);
-        assertEquals(-100 * DATA.BIT, nodeConfig.getAvailableDlBitrate());
+        assertEquals(-100 * DATA.BIT, nodeConfig.getAvailableDownlinkBitrate());
 
         CapacityUtility.consumeCapacity(TransmissionMode.UplinkUnicast, networkConfig.globalNetwork, nodeConfig, 23000 * DATA.BIT);
         assertEquals(-200 * DATA.BIT, networkConfig.globalNetwork.uplink.capacity);
@@ -241,19 +246,23 @@ public class CapacityUtilityTest {
         // public static void freeCapacityUp(CNetworkProperties region, CellConfiguration nodeCellConfiguration, long freed)
         CNetwork networkConfig = configRule.getNetworkConfig();
         CapacityUtility.consumeCapacity(TransmissionMode.UplinkUnicast, networkConfig.globalNetwork, nodeConfig, 800 * DATA.BIT);
-        CapacityUtility.freeCapacityUp(networkConfig.globalNetwork, nodeConfig, 500 * DATA.BIT);
+        NodeCapacityUtility.freeCapacityUp(nodeConfig, 500 * DATA.BIT);
+        RegionCapacityUtility.freeCapacityUp(networkConfig.globalNetwork, 500 * DATA.BIT);
 
-        assertEquals(1700 * DATA.BIT, nodeConfig.getAvailableUlBitrate());
+        assertEquals(1700 * DATA.BIT, nodeConfig.getAvailableUplinkBitrate());
         assertEquals(22700 * DATA.BIT, networkConfig.globalNetwork.uplink.capacity);
         try {
+            NodeCapacityUtility.freeCapacityUp(nodeConfig, 800 * DATA.BIT);
             //noinspection ConstantConditions
-            CapacityUtility.freeCapacityUp(null, nodeConfig, 800 * DATA.BIT);
+            RegionCapacityUtility.freeCapacityUp(null, 800 * DATA.BIT);
         } catch (Exception e) {
             assertTrue(e instanceof NullPointerException);
         }
-        CapacityUtility.freeCapacityUp(networkConfig.globalNetwork, null, 800 * DATA.BIT);
-        CapacityUtility.freeCapacityUp(networkConfig.globalNetwork, nodeConfig, 500 * DATA.BIT);
-        assertEquals(2000 * DATA.BIT, nodeConfig.getAvailableUlBitrate());
+        NodeCapacityUtility.freeCapacityUp(null, 800 * DATA.BIT);
+        RegionCapacityUtility.freeCapacityUp(networkConfig.globalNetwork, 800 * DATA.BIT);
+        NodeCapacityUtility.freeCapacityUp(nodeConfig, 500 * DATA.BIT);
+        RegionCapacityUtility.freeCapacityUp(networkConfig.globalNetwork, 500 * DATA.BIT);
+        assertEquals(2000 * DATA.BIT, nodeConfig.getAvailableUplinkBitrate());
         assertEquals(23000 * DATA.BIT, networkConfig.globalNetwork.uplink.capacity);
     }
 
@@ -320,5 +329,57 @@ public class CapacityUtilityTest {
                 500 * DATA.BIT,
                 CapacityUtility.availableCapacity(TransmissionMode.DownlinkUnicast, networkConfig.globalNetwork, nodeConfig)
         );
+    }
+
+    @Test
+    public void capacityHandlingForServers() {
+        CNetwork networkConfig = configRule.getNetworkConfig();
+        CNetworkProperties serverRegion = networkConfig.servers.get(0);
+        assertEquals(serverRegion.downlink.capacity, Long.MAX_VALUE);
+        assertEquals(serverRegion.uplink.capacity, Long.MAX_VALUE);
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.DownlinkUnicast, serverRegion,
+                        serverNodeConfig0), serverNodeConfig0.getAvailableDownlinkBitrate()
+        );
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.UplinkUnicast, serverRegion,
+                        serverNodeConfig0), serverNodeConfig0.getAvailableUplinkBitrate()
+        );
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.DownlinkUnicast, serverRegion,
+                        serverNodeConfig1), serverNodeConfig1.getAvailableDownlinkBitrate()
+        );
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.UplinkUnicast, serverRegion,
+                        serverNodeConfig1), serverNodeConfig1.getAvailableUplinkBitrate()
+        );
+        // consume downlink capacity, only node capacity should be affected server region shouldn't change
+        long consumedBandwidth = 100 * DATA.BIT;
+        CapacityUtility.consumeCapacity(TransmissionMode.DownlinkUnicast, serverRegion, serverNodeConfig0, consumedBandwidth);
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.DownlinkUnicast, serverRegion,
+                        serverNodeConfig0), serverNodeConfig1.getAvailableDownlinkBitrate() - consumedBandwidth
+        ); // capacity should be consumed up
+        assertEquals(serverRegion.downlink.capacity, Long.MAX_VALUE);
+        RegionCapacityUtility.freeCapacityDown(serverRegion, consumedBandwidth);
+        NodeCapacityUtility.freeCapacityDown(serverNodeConfig0, consumedBandwidth);
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.DownlinkUnicast, serverRegion,
+                        serverNodeConfig0), serverNodeConfig1.getAvailableDownlinkBitrate()
+        ); // capacity should be freed up
+
+        // consume uplink capacity, only node capacity should be affected server region shouldn't change
+        CapacityUtility.consumeCapacity(TransmissionMode.UplinkUnicast, serverRegion, serverNodeConfig0, consumedBandwidth);
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.UplinkUnicast, serverRegion,
+                        serverNodeConfig0), serverNodeConfig1.getAvailableUplinkBitrate() - consumedBandwidth
+        ); // capacity should be consumed up
+        assertEquals(serverRegion.uplink.capacity, Long.MAX_VALUE);
+        RegionCapacityUtility.freeCapacityUp(serverRegion, consumedBandwidth);
+        NodeCapacityUtility.freeCapacityUp(serverNodeConfig0, consumedBandwidth);
+        assertEquals(
+                CapacityUtility.availableCapacity(TransmissionMode.UplinkUnicast, serverRegion,
+                        serverNodeConfig0), serverNodeConfig1.getAvailableUplinkBitrate()
+        ); // capacity should be freed up
     }
 }

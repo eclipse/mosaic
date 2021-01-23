@@ -1,6 +1,0 @@
-<?xml version="1.0" ?>
-<!-- Example file which specifies SUMO specific parameters (color and carFollowModel)-->
-<routes>
-    <vType id="TLPKW" carFollowModel="Krauss"/>
-    <vType id="PKW" carFollowModel="Krauss"/>
-</routes>

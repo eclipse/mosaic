@@ -15,10 +15,10 @@
 
 package org.eclipse.mosaic.fed.cell.config.model;
 
-import org.eclipse.mosaic.fed.cell.config.gson.CapacityTypeAdapter;
 import org.eclipse.mosaic.lib.model.delay.Delay;
 import org.eclipse.mosaic.lib.model.gson.DelayTypeAdapterFactory;
 import org.eclipse.mosaic.lib.model.transmission.CTransmission;
+import org.eclipse.mosaic.lib.util.gson.DataFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * In this context, uplink and downlink always refer to the direction TOWARDS
  * respectively FROM the GEO entity.
  */
-public class CNetworkProperties {
+public class CNetworkProperties implements Cloneable {
     public static final String GLOBAL_NETWORK_ID = "globalNetwork";
 
     /**
@@ -65,7 +65,7 @@ public class CNetworkProperties {
         /**
          * Current capacity.
          */
-        @JsonAdapter(CapacityTypeAdapter.class)
+        @JsonAdapter(DataFieldAdapter.Bandwidth.class)
         public long capacity;
         /**
          * The maximal Capacity (when no transmission is ongoing).
@@ -92,7 +92,7 @@ public class CNetworkProperties {
         /**
          * Shared capacity between unicast and multicast.
          */
-        @JsonAdapter(CapacityTypeAdapter.class)
+        @JsonAdapter(DataFieldAdapter.Bandwidth.class)
         public long capacity;
         /**
          * The maximal Capacity (when no transmission is ongoing).

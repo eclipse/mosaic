@@ -130,7 +130,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     private void process(RsuRegistration interaction) {
         final RsuMapping applicationRsu = interaction.getMapping();
         if (applicationRsu.hasApplication()) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationRsu.getName(), applicationRsu.getPosition());
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationRsu.getName(), applicationRsu.getPosition().toCartesian());
             log.info("Added RSU id={} @time={}", applicationRsu.getName(), TIME.format(interaction.getTime()));
         }
     }
@@ -138,7 +138,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     private void process(ChargingStationRegistration interaction) {
         final ChargingStationMapping applicationCs = interaction.getMapping();
         if (applicationCs.hasApplication()) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition());
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
             log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
         }
     }
@@ -146,7 +146,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     private void process(TrafficLightRegistration interaction) {
         final TrafficLightMapping applicationTl = interaction.getMapping();
         if (applicationTl.hasApplication()) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationTl.getName(), applicationTl.getPosition());
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationTl.getName(), applicationTl.getPosition().toCartesian());
             log.info("Added TrafficLight id={} @time={}", applicationTl.getName(), TIME.format(interaction.getTime()));
         }
     }
@@ -170,11 +170,9 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
             }
         }
         for (VehicleData updated : interaction.getUpdated()) {
-            if (addOrUpdateVehicle(updated)) {
-                if (log.isTraceEnabled()) {
-                    log.trace("Moved Vehicle id={} to position={} @time={}",
-                            updated.getName(), updated.getPosition(), TIME.format(interaction.getTime()));
-                }
+            if (addOrUpdateVehicle(updated) && log.isTraceEnabled()) {
+                log.trace("Moved Vehicle id={} to position={} @time={}",
+                        updated.getName(), updated.getPosition(), TIME.format(interaction.getTime()));
             }
         }
         for (final String removedName : interaction.getRemovedNames()) {
@@ -248,33 +246,27 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
      * @return {@code true} if vehicle is online and able to send/receive messages {@code false}
      */
     private boolean addOrUpdateVehicle(VehicleData vehicleData) {
-        boolean nodeOnline = false;
-
         final String vehicleName = vehicleData.getName();
 
-        // During simulation, the regular case: just move vehicles (online / offline)
+        // During simulation, the regular case: just move vehicles
         if (SimulationEntities.INSTANCE.isNodeOnline(vehicleName)) {
-            nodeOnline = true;
-            SimulationEntities.INSTANCE.updateOnlineNode(vehicleName, vehicleData.getPosition());
-
-        } else if (SimulationEntities.INSTANCE.isNodeOffline(vehicleName)) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(vehicleName, vehicleData.getPosition());
-
-        } else {
-            // In case the AdHocConfiguration arrived earlier than the first VehicleUpdates: create online vehicles
-            if (registeredVehicles.containsKey(vehicleName)) {
-                Double communicationRadius = registeredVehicles.get(vehicleName);
-                if (communicationRadius != null) {
-                    nodeOnline = true;
-                    SimulationEntities.INSTANCE.createOnlineNode(vehicleName, vehicleData.getPosition(), communicationRadius);
-                } else {
-                    nodeOnline = false;
-                    SimulationEntities.INSTANCE.createOrUpdateOfflineNode(vehicleName, vehicleData.getPosition());
-                }
-            }
-            // In case of vehicleUpdate of unequipped vehicles (no apps): just skip
+            SimulationEntities.INSTANCE.updateOnlineNode(vehicleName, vehicleData.getProjectedPosition());
+            return true;
         }
-        return nodeOnline;
+
+        if (SimulationEntities.INSTANCE.isNodeOffline(vehicleName)) {
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(vehicleName, vehicleData.getProjectedPosition());
+            return false;
+        }
+
+        // In case the AdHocConfiguration arrived earlier than the first VehicleUpdates: create online vehicles
+        Double communicationRadius = registeredVehicles.get(vehicleName);
+        if (communicationRadius != null) {
+            SimulationEntities.INSTANCE.createOnlineNode(vehicleName, vehicleData.getProjectedPosition(), communicationRadius);
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -302,12 +294,11 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         for (Map.Entry<String, TransmissionResult> transmissionResultEntry : transmissionResults.entrySet()) {
             if (transmissionResultEntry.getValue().success) {
                 long receiveTime = v2xMessageTransmission.getTime() + transmissionResultEntry.getValue().delay;
-                log.debug(
-                        "Receive v2xMessage.id={} on node={} @time={}",
-                        v2xMessageTransmission.getMessageId(),
-                        transmissionResultEntry.getKey(),
-                        TIME.format(receiveTime)
-                );
+                if (log.isDebugEnabled()) {
+                    log.debug("Receive v2xMessage.id={} on node={} @time={}",
+                            v2xMessageTransmission.getMessageId(), transmissionResultEntry.getKey(), TIME.format(receiveTime)
+                    );
+                }
 
                 final V2xMessageReception v2xMessageReception = new V2xMessageReception(
                         receiveTime,
