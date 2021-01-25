@@ -49,7 +49,6 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
     public String toExternalId(String mosaicVehicleId) {
         String sumoVehicleId = mosaicToSumoVehicleIdMap.inverse().get(mosaicVehicleId);
         if (sumoVehicleId == null) {
-            // TODO we don't really need inverse here, since we put the same value twice
             mosaicToSumoVehicleIdMap.inverse().put(mosaicVehicleId, mosaicVehicleId);
             sumoVehicleId = mosaicVehicleId; // return incoming id
         }
