@@ -21,17 +21,17 @@
             "items": { "$ref": "#/definitions/rsu" }
         },
         "tmcs": {
-            "description": "Array of Traffic Management Centers (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors.",
+            "description": "Array of Traffic Management Centers (TMCs). TMCs are specialized forms of servers directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
             "type": "array",
             "items": { "$ref": "#/definitions/tmc" }
         },
         "servers": {
-            "description": "Array of servers.",
+            "description": "Array of servers. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
             "type": "array",
             "items": { "$ref": "#/definitions/server" }
         },
         "trafficLights": {
-            "description": "Array of prototypes for traffic lights. Since it is a traffic light only applications can be defined.",
+            "description": "Array of prototypes for traffic lights. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
             "type": "array",
             "items": { "$ref": "#/definitions/trafficLights" }
         },
@@ -51,7 +51,7 @@
             "items": { "$ref": "#/definitions/matrixMapper" }
         },
         "config": {
-            "description": "Object defining additional options for the mapping.",
+            "description": "Object defining additional configuration options for the mapping.",
             "type": "object",
             "items": { "$ref": "#/definitions/config" }
         }
@@ -102,13 +102,13 @@
                     ]
                 },
                 "sigma": {
-                    "description": "Driver imperfection.",
+                    "description": "Driver imperfection. This is a parameter of the car-following model.",
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1
                 },
                 "tau": {
-                    "description": "Driver reaction time in seconds.",
+                    "description": "Driver reaction time in seconds. This is a parameter of the car-following model.",
                     "type": "number",
                     "minimum": 0
                 },
@@ -118,7 +118,7 @@
                     "minimum": 0
                 },
                 "vehicleClass": {
-                    "description": "Class of the vehicle.",
+                    "description": "Class of the vehicle. The classes are used in lane definitions and allow/disallow the use of lanes for certain vehicle types (e.g. a taxi lane).",
                     "type": "string",
                     "enum": [
                         "Unknown", "Car", "LightGoodsVehicle", "HeavyGoodsVehicle", "PublicTransportVehicle",
@@ -174,7 +174,7 @@
         },
         "tmc": {
             "title": "tmc",
-            "description": "Object defining a Traffic Management Center (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors.",
+            "description": "Object defining a Traffic Management Center (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -204,7 +204,7 @@
         },
         "server": {
             "title": "server",
-            "description": "Object defining a Server.",
+            "description": "Object defining a server. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -224,7 +224,7 @@
         },
         "trafficLights": {
             "title": "trafficLights",
-            "description": "Object defining a prototype for a traffic light. Since it is a traffic light only applications can be defined.",
+            "description": "Object defining a prototype for a traffic light. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -232,7 +232,7 @@
                     "type": "string" 
                 },
                 "tlGroupId": { 
-                    "description": "The name of the traffic light.",
+                    "description": "The ID of a traffic light group. This property is used to map applications to specific traffic lights.",
                     "type": "string" 
                 },
                 "group": { 
@@ -278,7 +278,7 @@
                     "type": "string" 
                 },
                 "chargingSpots": {
-                    "description": "List of the electric vehicle charging spots associated with this electric vehocle charging station.",
+                    "description": "List of the electric vehicle charging spots associated with this electric vehicle charging station.",
                     "type": "array",
                     "items": { "$ref": "#/definitions/chargingSpot" }
                 },
@@ -356,7 +356,7 @@
                     ]
                 },
                 "departSpeedMode": {
-                    "description": "The depart speed mode. Depending on the value the depart speed behaves as follows: <br> PRECISE = Use the value given in departSpeed, <br> RANDOM  = The departSpeed will be overridden by a random value, <br> MAXIMUM = The departSpeed will be overridden by the max value",
+                    "description": "The depart speed mode determines the vehicle's speed at insertion.",
                     "type": "string",
                     "enum": [
                         "PRECISE", "RANDOM", "MAXIMUM"
@@ -364,7 +364,7 @@
                     "default": "MAXIMUM"
                 },
                 "laneSelectionMode": {
-                    "description": "The lane selection mode which chooses the lane for the next departing vehicle.",
+                    "description": "The lane selection mode chooses the lane for the next departing vehicle.",
                     "type": "string",
                     "enum": [
                         "DEFAULT", "ROUNDROBIN", "ROUNDROBIN_HIGHWAY", "HIGHWAY", "RANDOM", "FREE", "ALLOWED", "BEST", "FIRST"
@@ -470,7 +470,7 @@
             "type": "object",
             "properties": {
                 "name": { 
-                    "description": "The name of the point.",
+                    "description": "The name of the point. This identifier is used to reference the odPoint.",
                     "type": "string" 
                 },
                 "position": { 
@@ -519,7 +519,7 @@
         },
         "config": {
             "title": "config",
-            "description": "Object defining additional options for the mapping",
+            "description": "Object defining additional configuration options for the mapping",
             "type": "object",
             "properties": {
                 "start": { 
