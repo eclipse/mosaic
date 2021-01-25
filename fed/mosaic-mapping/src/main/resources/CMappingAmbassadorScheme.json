@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://example.com/schemas/abstract",
-    "title": "mapping_config",
+    "title": "CMappingAmbassadorSchema",
     "description": "This schema defines the mapping configuration JSON file, which is used to define simulation entities.",
     "type": "object",
     "properties": {
@@ -161,7 +161,7 @@
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name",
+                    "description": "The group name.",
                     "type": "string" 
                 },
                 "applications": {
