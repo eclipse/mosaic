@@ -152,13 +152,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void receiveInteraction(VehicleRouteRegistration interaction) throws InternalFederateException {
         VehicleRoute newRoute = interaction.getRoute();
-        if (!routeCache.containsKey(newRoute.getId())) {
-            routeCache.put(newRoute.getId(), newRoute);
-            traci.getRouteControl().addRoute(newRoute.getId(), newRoute.getEdgeIdList());
-            log.debug("Added route to simulation id: {} with edges: {}", newRoute.getId(), newRoute.getEdgeIdList());
-        } else {
-            log.debug("route has already been added to SUMO, ignoring id={}", newRoute.getId());
-        }
+        addRouteToSumoIfAbsent(newRoute.getId(), newRoute);
     }
 
     /**
@@ -169,10 +163,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void receiveInteraction(VehicleRoutesInitialization interaction) throws InternalFederateException {
         log.debug("Received VehicleRoutesInitialization: {}", interaction.getTime());
-
-        for (VehicleRoute route : interaction.getRoutes().values()) {
-            routeCache.put(route.getId(), route);
-        }
 
         cachedVehicleRoutesInitialization = interaction;
         if (sumoReadyToStart()) {
@@ -229,11 +219,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void addInitialRoutes() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
-            String routeId = routeEntry.getKey();
-            // if the route is already known (because it is defined in a route-file) don't add route
-            if (!traci.getRouteControl().getRouteIds().contains(routeId)) {
-                traci.getRouteControl().addRoute(routeId, routeEntry.getValue().getEdgeIdList());
-            }
+            addRouteToSumoIfAbsent(routeEntry.getKey(), routeEntry.getValue());
         }
     }
 
@@ -360,6 +346,16 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private boolean isTruckOrTrailer(VehicleClass vehicleClass) {
         return SumoVehicleClassMapping.toSumo(vehicleClass).equals("truck")
                 || SumoVehicleClassMapping.toSumo(vehicleClass).equals("trailer");
+    }
+
+    private void addRouteToSumoIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {
+        // if the route is already known (because it is defined in a route-file) don't add route
+        if (routeCache.containsKey(routeId)) {
+            log.warn("Couldn't add Route {}, because it is already known to SUMO.", routeId);
+        } else {
+            routeCache.put(routeId, route);
+            traci.getRouteControl().addRoute(routeId, route.getEdgeIdList());
+        }
     }
 
     /**

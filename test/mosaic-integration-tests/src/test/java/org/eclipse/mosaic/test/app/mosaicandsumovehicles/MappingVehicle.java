@@ -18,21 +18,36 @@ package org.eclipse.mosaic.test.app.mosaicandsumovehicles;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
+import org.eclipse.mosaic.rti.TIME;
 
 public class MappingVehicle extends AbstractApplication<VehicleOperatingSystem> {
+
+    /**
+     * Sample interval. Unit: [ns].
+     */
+    private final static long TIME_INTERVAL = 20 * TIME.SECOND;
+
+    private void sample() {
+        // create a new simple event to sample something in a specific interval
+        getOs().getEventManager().addEvent(getOs().getSimulationTime() + TIME_INTERVAL, this);
+    }
+
     @Override
     public void onStartup() {
-        getLog().infoSimTime(this, "I'm a vehicle defined in Mapping file.");
-
+        getLog().infoSimTime(this, "Startup: I'm a vehicle defined in Mapping file.");
+        sample();
     }
 
     @Override
     public void onShutdown() {
+        getLog().infoSimTime(this, "Shutdown: I'm a vehicle defined in Mapping file.");
 
     }
 
     @Override
     public void processEvent(Event event) throws Exception {
+        getLog().infoSimTime(this, "I'm still here!");
 
+        sample();
     }
 }

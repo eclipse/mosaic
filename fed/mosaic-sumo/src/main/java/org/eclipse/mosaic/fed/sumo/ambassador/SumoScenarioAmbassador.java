@@ -99,7 +99,6 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
     @Override
     public void initialize(long startTime, long endTime) throws InternalFederateException {
         super.initialize(startTime, endTime);
-
         configure();
     }
 

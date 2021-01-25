@@ -25,7 +25,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> {
     /**
      * Sample interval. Unit: [ns].
      */
-    private final static long TIME_INTERVAL = TIME.SECOND;
+    private final static long TIME_INTERVAL = 20 * TIME.SECOND;
 
     private void sample() {
         // create a new simple event to sample something in a specific interval
@@ -35,6 +35,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> {
     @Override
     public void onStartup() {
         getLog().infoSimTime(this, "Startup: I'm a vehicle defined in SUMO route file.");
+        sample();
     }
 
     @Override

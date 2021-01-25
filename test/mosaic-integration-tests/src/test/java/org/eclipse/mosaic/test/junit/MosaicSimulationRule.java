@@ -20,6 +20,7 @@ import org.eclipse.mosaic.fed.sumo.ambassador.SumoGuiAmbassador;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
+import org.eclipse.mosaic.lib.util.ClassUtils;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.rti.MosaicComponentProvider;
@@ -44,6 +45,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
@@ -53,6 +56,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Path logDirectory;
 
     protected String logLevelOverride = null;
+    protected Map<String, String> federateOverride = new HashMap<>();
 
     @Override
     protected void before() throws Throwable {
@@ -64,6 +68,11 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     public MosaicSimulationRule logLevelOverride(String logLevelOverride) {
         this.logLevelOverride = logLevelOverride;
+        return this;
+    }
+
+    public MosaicSimulationRule federateOverride(String federateName, Class federateAmbassador) {
+        this.federateOverride.put(federateName, federateAmbassador.getCanonicalName());
         return this;
     }
 
@@ -131,6 +140,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
+                    .setFederateOverride(federateOverride)
                     .setComponentProviderFactory(componentProviderFactory)
                     .runSimulation(scenarioDirectory, scenarioConfiguration);
         } catch (Throwable e) {
