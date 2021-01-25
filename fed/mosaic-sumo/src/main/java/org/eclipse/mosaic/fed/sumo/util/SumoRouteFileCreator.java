@@ -59,7 +59,7 @@ public class SumoRouteFileCreator {
 
     private final static Logger log = LoggerFactory.getLogger(SumoRouteFileCreator.class);
 
-    final static String VEHICLE_TYPE_ROUTE_FILE_NAME = "mosaic_types.rou.xml";
+    final static String MOSAIC_TYPES_FILE_NAME = "mosaic_types.add.xml";
     /**
      * Document used to write vehicle types (prototypes) from Mapping to.
      * Note: parameters from {@link org.eclipse.mosaic.fed.sumo.config.CSumo#additionalVehicleTypeParameters}
@@ -68,9 +68,9 @@ public class SumoRouteFileCreator {
     private final Document vehicleTypesDocument;
 
     /**
-     *{@link File}-object linking to the new vehicle type route file.
+     *{@link File}-object linking to the new vehicle type additional file.
      */
-    private final File vehicleTypeRouteFile;
+    private final File vehicleTypeAdditionalFile;
 
     private final double timeGapOffset;
 
@@ -87,7 +87,7 @@ public class SumoRouteFileCreator {
      */
     public SumoRouteFileCreator(File sumoConfigurationDirectory,
                                 CSumo sumoConfiguration) {
-        vehicleTypeRouteFile = new File(sumoConfigurationDirectory, VEHICLE_TYPE_ROUTE_FILE_NAME);
+        vehicleTypeAdditionalFile = new File(sumoConfigurationDirectory, MOSAIC_TYPES_FILE_NAME);
         File sumoConfigurationFile = new File(sumoConfigurationDirectory, sumoConfiguration.sumoConfigurationFile);
 
         this.additionalVehicleTypeParameters = sumoConfiguration.additionalVehicleTypeParameters;
@@ -107,23 +107,23 @@ public class SumoRouteFileCreator {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(sumoConfigurationFile);
 
-            NodeList routeFilesNodes = doc.getElementsByTagName("route-files");
-            Element routeFilesNodeElement;
-            String newRouteFilesValue;
-            if (routeFilesNodes.getLength() == 0) { // if there is no "route-files" element we have to create it and add
-                Node newRouteFilesNode = doc.createElement("route-files");
+            NodeList additionalFilesNodes = doc.getElementsByTagName("additional-files");
+            Element additionalFilesNodeElement;
+            String newAdditionalFilesValue;
+            if (additionalFilesNodes.getLength() == 0) { // if there is no "route-files" element we have to create it and add
+                Node newAdditionalFilesNode = doc.createElement("additional-files");
 
                 Element inputNode = (Element) doc.getElementsByTagName("input").item(0);
-                inputNode.appendChild(newRouteFilesNode);
-                routeFilesNodeElement = (Element) routeFilesNodes.item(0);
-                newRouteFilesValue = VEHICLE_TYPE_ROUTE_FILE_NAME;
+                inputNode.appendChild(newAdditionalFilesNode);
+                additionalFilesNodeElement = (Element) additionalFilesNodes.item(0);
+                newAdditionalFilesValue = MOSAIC_TYPES_FILE_NAME;
             } else { // else prepend document
-                routeFilesNodeElement = (Element) routeFilesNodes.item(0);
-                String previousRouteFiles = "," + routeFilesNodeElement.getAttribute("value");
+                additionalFilesNodeElement = (Element) additionalFilesNodes.item(0);
+                String previousAdditionalFiles = "," + additionalFilesNodeElement.getAttribute("value");
                 // prepending because vTypes have to be known before vehicle definitions
-                newRouteFilesValue = VEHICLE_TYPE_ROUTE_FILE_NAME + previousRouteFiles;
+                newAdditionalFilesValue = MOSAIC_TYPES_FILE_NAME + previousAdditionalFiles;
             }
-            routeFilesNodeElement.setAttribute("value", newRouteFilesValue);
+            additionalFilesNodeElement.setAttribute("value", newAdditionalFilesValue);
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             Result output = new StreamResult(sumoConfigurationFile);
@@ -262,7 +262,7 @@ public class SumoRouteFileCreator {
      */
     public void store() {
         // write route-file
-        writeXmlFile(vehicleTypeRouteFile, vehicleTypesDocument);
+        writeXmlFile(vehicleTypeAdditionalFile, vehicleTypesDocument);
     }
 
     /**
