@@ -114,6 +114,7 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
 
     @Override
     protected synchronized void flushNotYetAddedVehicles(long time) throws InternalFederateException {
+        super.flushNotYetAddedVehicles(time);
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
