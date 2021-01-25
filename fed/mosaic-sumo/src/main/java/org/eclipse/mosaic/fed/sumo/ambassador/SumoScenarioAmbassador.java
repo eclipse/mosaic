@@ -138,6 +138,11 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
             vehiclesAddedViaMapping.add(vehicleMapping.getName());
             super.receiveInteraction(interaction);
         } else if (sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication()) { // still subscribe to vehicles with apps
+            log.info(
+                    "VehicleRegistration for SUMO vehicle \"{}\" received at simulation time {} ns",
+                    vehicleMapping.getName(),
+                    interaction.getTime()
+            );
             traci.getSimulationControl().subscribeForVehicle(vehicleMapping.getName(), interaction.getTime(), this.endTime);
         }
     }
