@@ -17,7 +17,7 @@ package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
-import org.eclipse.mosaic.fed.mapping.ambassador.NameGenerator;
+import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation.CChargingSpot;

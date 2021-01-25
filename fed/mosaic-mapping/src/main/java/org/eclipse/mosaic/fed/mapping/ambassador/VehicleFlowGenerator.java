@@ -37,6 +37,7 @@ import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.mapping.OriginDestinationPair;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
