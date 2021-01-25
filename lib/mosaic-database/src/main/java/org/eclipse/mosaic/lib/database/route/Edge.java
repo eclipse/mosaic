@@ -117,7 +117,7 @@ public class Edge {
      * @return true if the scenario is compatible
      */
     public static boolean isScenarioCompatible(@Nonnull String edgeId) {
-        return (edgeId.split("_").length >= 2);
+        return (edgeId.split("_").length == 4);
     }
 
     /**
