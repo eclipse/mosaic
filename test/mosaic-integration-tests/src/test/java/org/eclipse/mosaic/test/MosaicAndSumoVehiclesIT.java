@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador;
 import org.eclipse.mosaic.starter.MosaicSimulation;
+import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
 
 import org.junit.BeforeClass;
@@ -35,6 +36,9 @@ public class MosaicAndSumoVehiclesIT {
 
     private static MosaicSimulation.SimulationResult simulationResult;
 
+    private final static String VEH_0_MAPPING = "apps/veh_0/MappingVehicle.log";
+    private final static String VEH_1_SUMO = "apps/veh_1/SumoVehicle.log";
+
     @BeforeClass
     public static void runSimulation() {
         simulationResult = simulationRule.executeTestScenario("MosaicAndSumoVehicles");
@@ -45,4 +49,11 @@ public class MosaicAndSumoVehiclesIT {
         assertNull(simulationResult.exception);
         assertTrue(simulationResult.success);
     }
+
+    @Test
+    public void allLogsCreated() {
+        LogAssert.exists(simulationRule, VEH_0_MAPPING);
+        LogAssert.exists(simulationRule, VEH_1_SUMO);
+    }
+
 }
