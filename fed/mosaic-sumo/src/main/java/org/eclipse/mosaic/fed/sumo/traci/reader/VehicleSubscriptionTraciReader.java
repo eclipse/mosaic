@@ -20,7 +20,6 @@ import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
 import org.eclipse.mosaic.fed.sumo.traci.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.traci.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveVehicleState;
-import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +33,6 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final IdTransformer<String, String> transformer = TraciClient.VEHICLE_ID_TRANSFORMER;
-
     public VehicleSubscriptionTraciReader() {
         getTypeBasedTraciReader().registerCompoundReader(new LeadingVehicleReader());
     }
@@ -43,7 +40,7 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
     @Override
     VehicleSubscriptionResult createSubscriptionResult(String id) {
         VehicleSubscriptionResult result = new VehicleSubscriptionResult();
-        result.id = transformer.fromExternalId(id);
+        result.id = TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId(id);
         return result;
     }
 

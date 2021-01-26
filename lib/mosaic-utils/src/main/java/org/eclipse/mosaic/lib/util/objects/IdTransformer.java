@@ -39,6 +39,11 @@ public interface IdTransformer<ExternalT, InternalT> {
     InternalT fromExternalId(ExternalT externalId);
 
     /**
+     * Resets the {@link IdTransformer}. (e.g. new Map and new counter)
+     */
+    void reset();
+
+    /**
      * Simple default implementation which expects external and internal IDs to be equal.
      */
     class Identity implements IdTransformer<String, String> {
@@ -50,6 +55,10 @@ public interface IdTransformer<ExternalT, InternalT> {
         @Override
         public String fromExternalId(String externalId) {
             return externalId;
+        }
+
+        @Override
+        public void reset() {
         }
     }
 }

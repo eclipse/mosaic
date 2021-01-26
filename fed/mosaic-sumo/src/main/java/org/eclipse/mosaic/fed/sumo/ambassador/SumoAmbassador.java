@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.sumo.ambassador;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleTypesWriter;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
@@ -28,6 +29,7 @@ import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.rti.api.FederateAmbassador;
+import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
@@ -36,10 +38,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of a {@link AbstractSumoAmbassador} for the traffic simulator
@@ -64,10 +68,25 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private VehicleTypesInitialization cachedVehicleTypesInitialization;
 
     /**
-     * Cached {@link VehicleRegistration}-interaction, which is filled if a vehicle could not be
-     * emitted e.g. due a blocked lane.
+     * Cached {@link VehicleRegistration}-interactions, which will clear vehicles if they can be added and try again
+     * next time step if it couldn't be emitted.
      */
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
+
+    /**
+     * Cached {@link VehicleRegistration}-interactions, for vehicles, that haven't been subscribed to yet.
+     */
+    private final List<VehicleRegistration> notYetSubscribedVehicles = new ArrayList<>();
+
+    /**
+     * Set containing all vehicles, that have been added using the SUMO route file.
+     */
+    private final Set<String> vehiclesAddedViaRouteFile = new HashSet<>();
+
+    /**
+     * Set containing all vehicles, that have been added from the RTI e.g. using the Mapping file.
+     */
+    private final Set<String> vehiclesAddedViaRti = new HashSet<>();
 
     /**
      * Instance of {@link SumoVehicleTypesWriter} used to write routes to a *.rou.xml file.
@@ -139,10 +158,27 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @param interaction {@link VehicleRegistration} containing the vehicle definition.
      */
-    protected void receiveInteraction(VehicleRegistration interaction) throws InternalFederateException {
+    private void receiveInteraction(VehicleRegistration interaction) {
         VehicleMapping vehicleMapping = interaction.getMapping();
-        log.info("VehicleRegistration \"{}\" received at simulation time {} ns", vehicleMapping.getName(), interaction.getTime());
-        notYetAddedVehicles.add(interaction);
+        String vehicleId = vehicleMapping.getName();
+        String logMessage;
+        boolean isVehicleAddedViaRti = !vehiclesAddedViaRouteFile.contains(vehicleMapping.getName());
+        if (isVehicleAddedViaRti) {
+            vehiclesAddedViaRti.add(vehicleMapping.getName());
+            notYetAddedVehicles.add(interaction);
+            logMessage = "VehicleRegistration from RTI \"{}\" received at simulation time {} ns";
+        } else { // still subscribe to vehicles with apps
+            logMessage = "VehicleRegistration for SUMO vehicle \"{}\" received at simulation time {} ns";
+        }
+        log.info(logMessage, vehicleId, interaction.getTime());
+
+        // now prepare vehicles to subscribe to
+        boolean subscribeToVehicle = sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication();
+        if (subscribeToVehicle) {
+            notYetSubscribedVehicles.add(interaction);
+        } else {
+            log.debug("Won't subscribe to vehicle \"{}\".", vehicleId);
+        }
     }
 
     /**
@@ -224,7 +260,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     /**
-     * Vehicles of the {@link #notYetAddedVehicles} list will be added to simulation by this function
+     * Vehicles of the {@link #notYetSubscribedVehicles} list will be added to simulation by this function
      * or cached again for the next time advance.
      *
      * @param time Current system time
@@ -236,6 +272,33 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (time < 0) {
             return;
         }
+        // first check if there were new vehicles added via SUMO
+        propagateSumoVehiclesToRti();
+        // now add all vehicles, that were received from RTI
+        addNotYetAddedVehicles(time);
+        // now subscribe to all relevant vehicles
+        subscribeToNotYetSubscribedVehicles(time);
+
+    }
+
+    private void propagateSumoVehiclesToRti() throws InternalFederateException {
+        final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        String vehicleTypeId;
+        for (String vehicleId : departedVehicles) {
+            if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
+                continue;
+            }
+            vehiclesAddedViaRouteFile.add(vehicleId);
+            vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
+            try {
+                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
+            } catch (IllegalValueException e) {
+                throw new InternalFederateException(e);
+            }
+        }
+    }
+
+    private void addNotYetAddedVehicles(long time) throws InternalFederateException {
         for (Iterator<VehicleRegistration> iterator = notYetAddedVehicles.iterator(); iterator.hasNext(); ) {
             VehicleRegistration interaction = iterator.next();
 
@@ -258,9 +321,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     }
 
                     traci.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
-                    if (sumoConfig.subscribeToAllVehicles || interaction.getMapping().hasApplication()) {
-                        traci.getSimulationControl().subscribeForVehicle(vehicleId, interaction.getTime(), this.getEndTime());
-                    }
 
                     applyChangesInVehicleTypeForVehicle(
                             vehicleId,
@@ -276,8 +336,28 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 }
                 iterator.remove();
             }
-
         }
+    }
+
+    private void subscribeToNotYetSubscribedVehicles(long time) throws InternalFederateException {
+        for (Iterator<VehicleRegistration> iterator = notYetSubscribedVehicles.iterator(); iterator.hasNext(); ) {
+            VehicleRegistration currentVehicleRegistration = iterator.next();
+            String vehicleId = currentVehicleRegistration.getMapping().getName();
+            try {
+                // always subscribe to vehicles, that are came from SUMO and are in notYetSubscribedVehicles-list
+                if (vehiclesAddedViaRouteFile.contains(vehicleId) || currentVehicleRegistration.getTime() <= time) {
+                    traci.getSimulationControl().subscribeForVehicle(vehicleId, currentVehicleRegistration.getTime(), this.getEndTime());
+                    iterator.remove();
+                }
+            } catch (InternalFederateException e) {
+                log.warn("Couldn't subscribe to vehicle {}.", vehicleId);
+                if (sumoConfig.exitOnInsertionError) {
+                    throw e;
+                }
+                iterator.remove();
+            }
+        }
+
     }
 
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {

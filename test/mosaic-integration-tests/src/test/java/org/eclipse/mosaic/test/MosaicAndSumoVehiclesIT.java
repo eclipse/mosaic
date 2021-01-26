@@ -18,7 +18,6 @@ package org.eclipse.mosaic.test;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador;
 import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
@@ -30,9 +29,7 @@ import org.junit.Test;
 public class MosaicAndSumoVehiclesIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule()
-            .logLevelOverride("TRACE")
-            .federateOverride("sumo", SumoScenarioAmbassador.class);
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("TRACE");
 
     private static MosaicSimulation.SimulationResult simulationResult;
 

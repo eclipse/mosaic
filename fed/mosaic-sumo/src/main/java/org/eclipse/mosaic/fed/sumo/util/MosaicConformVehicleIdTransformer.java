@@ -29,17 +29,15 @@ import org.slf4j.LoggerFactory;
  * scenarios usually come with custom vehicle ids which do not match this
  * pattern, so we need to transform them into the required format which is
  * accomplished by this class.
- *
- * @see org.eclipse.mosaic.fed.sumo.ambassador.SumoScenarioAmbassador
  */
 public class MosaicConformVehicleIdTransformer implements IdTransformer<String, String> {
 
     private final static Logger log = LoggerFactory.getLogger(MosaicConformVehicleIdTransformer.class);
 
-    private final BiMap<String, String> mosaicToSumoVehicleIdMap = HashBiMap.create(1024);
+    private BiMap<String, String> sumoToMosaicVehicleIdMap = HashBiMap.create(1024);
 
     /**
-     * Takes a MOSAIC conform vehicle id (e.g. veh_1) and returns the saved SUMO id in {@link #mosaicToSumoVehicleIdMap}.
+     * Takes a MOSAIC conform vehicle id (e.g. veh_1) and returns the saved SUMO id in {@link #sumoToMosaicVehicleIdMap}.
      * If a new vehicle from MOSAIC has to be added to SUMO we use the same id.
      *
      * @param mosaicVehicleId the MOSAIC conform vehicle id
@@ -47,9 +45,9 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
      */
     @Override
     public String toExternalId(String mosaicVehicleId) {
-        String sumoVehicleId = mosaicToSumoVehicleIdMap.inverse().get(mosaicVehicleId);
+        String sumoVehicleId = sumoToMosaicVehicleIdMap.inverse().get(mosaicVehicleId);
         if (sumoVehicleId == null) {
-            mosaicToSumoVehicleIdMap.inverse().put(mosaicVehicleId, mosaicVehicleId);
+            sumoToMosaicVehicleIdMap.inverse().put(mosaicVehicleId, mosaicVehicleId);
             sumoVehicleId = mosaicVehicleId; // return incoming id
         }
         return sumoVehicleId;
@@ -57,19 +55,24 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
 
     /**
      * Takes a SUMO vehicle id and makes it known to the simulation by creating a
-     * MOSAIC conform vehicle id and adding it to {@link #mosaicToSumoVehicleIdMap}.
+     * MOSAIC conform vehicle id and adding it to {@link #sumoToMosaicVehicleIdMap}.
      *
      * @param sumoVehicleId the id from SUMO
      * @return the created MOSAIC conform vehicle id
      */
     @Override
     public String fromExternalId(String sumoVehicleId) {
-        String mosaicVehicleId = mosaicToSumoVehicleIdMap.get(sumoVehicleId);
+        String mosaicVehicleId = sumoToMosaicVehicleIdMap.get(sumoVehicleId);
         if (mosaicVehicleId == null) {
             mosaicVehicleId = NameGenerator.getVehicleName();
-            mosaicToSumoVehicleIdMap.put(sumoVehicleId, mosaicVehicleId);
+            sumoToMosaicVehicleIdMap.put(sumoVehicleId, mosaicVehicleId);
             log.info("Assigned vehicle id {} to vehicle {}", mosaicVehicleId, sumoVehicleId);
         }
         return mosaicVehicleId;
+    }
+
+    @Override
+    public void reset() {
+        sumoToMosaicVehicleIdMap = HashBiMap.create();
     }
 }
