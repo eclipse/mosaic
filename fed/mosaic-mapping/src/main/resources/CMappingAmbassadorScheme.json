@@ -63,11 +63,11 @@
             "type": "object",
             "properties": {
                 "name": { 
-                    "description": "The name of this prototype. This identifier is used to match it against other objects.",
+                    "description": "The name of this prototype is used to match it against other objects.",
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name.",
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple prototype entities.",
                     "type": "string" 
                 },
                 "accel": {
@@ -81,21 +81,21 @@
                     "exclusiveMinimum": 0
                 },
                 "length": {
-                    "description": "Length of the vehicle, given in meter when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. 500 cm).",
+                    "description": "Length of the vehicle, given in meter when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '500 cm').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
                     ]
                 },
                 "maxSpeed": {
-                    "description": "Maximal speed, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. 50 kmh).",
+                    "description": "Maximal speed, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '50 kmh').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
                     ]
                 },
                 "minGap": {
-                    "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam, given in meter when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. 300 cm).",
+                    "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam, given in meter when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '300 cm').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
@@ -161,7 +161,7 @@
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name.",
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple rsu entities.",
                     "type": "string" 
                 },
                 "applications": {
@@ -182,7 +182,7 @@
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name. This parameter will be used to match with configurations in the network.json-configuration in the cell-module.",
+                    "description": "The group name is used to match with configurations in the network.json-configuration in the cell-module.",
                     "type": "string" 
                 },
                 "applications": {
@@ -212,7 +212,7 @@
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name. This parameter will be used to match with configurations in the network.json-configuration in the cell-module.",
+                    "description": "The group name is used to match with configurations in the network.json-configuration in the cell-module.",
                     "type": "string" 
                 },
                 "applications": {
@@ -236,7 +236,7 @@
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name.",
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple trafficLights entities.",
                     "type": "string" 
                 },
                 "weight": {
@@ -266,7 +266,7 @@
                     "type": "string" 
                 },
                 "group": { 
-                    "description": "The group name.",
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple charginStation entities.",
                     "type": "string" 
                 },
                 "access": { 
@@ -349,7 +349,7 @@
                     "minimum": 0
                 },
                 "departSpeed": {
-                    "description": "The speed at which the vehicle is supposed to depart, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. 10 kmh). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
+                    "description": "The speed at which the vehicle is supposed to depart, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '10 kmh'). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
@@ -444,10 +444,6 @@
                     "type": "array",
                     "items": { "$ref": "#/definitions/prototype" }
                 },
-                "randomSeed": { 
-                    "description": "",
-                    "type": "number" 
-                },
                 "deterministic": { 
                     "description": "If deterministic is true the spawning-process will be exactly the same with every execution. If left false the order is different and the selected weights will be reached slower than in the deterministic mode.",
                     "type": "boolean",
@@ -499,7 +495,7 @@
         },
         "geoPoint": {
             "title": "geoPoint",
-            "description": "Geographical point coordinates.",
+            "description": "Object defining geographical point coordinates.",
             "type": "object",
             "properties": {
                 "longitude": { 
