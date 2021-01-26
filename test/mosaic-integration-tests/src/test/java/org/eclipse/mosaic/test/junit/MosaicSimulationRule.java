@@ -20,7 +20,6 @@ import org.eclipse.mosaic.fed.sumo.ambassador.SumoGuiAmbassador;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
-import org.eclipse.mosaic.lib.util.ClassUtils;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.rti.MosaicComponentProvider;
@@ -74,6 +73,16 @@ public class MosaicSimulationRule extends TemporaryFolder {
     public MosaicSimulationRule federateOverride(String federateName, Class federateAmbassador) {
         this.federateOverride.put(federateName, federateAmbassador.getCanonicalName());
         return this;
+    }
+
+    private void setFederateOverride(Map<String, String> federateOverride) {
+        for (Map.Entry<String, String> federateEntry : federateOverride.entrySet()) {
+            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
+                if (federate.id.equals(federateEntry.getKey())) {
+                    federate.classname = federateEntry.getValue();
+                }
+            }
+        }
     }
 
     public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
@@ -135,12 +144,12 @@ public class MosaicSimulationRule extends TemporaryFolder {
             logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
+            setFederateOverride(federateOverride);
             return new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
-                    .setFederateOverride(federateOverride)
                     .setComponentProviderFactory(componentProviderFactory)
                     .runSimulation(scenarioDirectory, scenarioConfiguration);
         } catch (Throwable e) {

@@ -39,6 +39,9 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgramPhase;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -46,6 +49,9 @@ import java.util.List;
 import java.util.Map;
 
 public class TraciTrafficLightFacade {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private final TraciConnection traciConnection;
 
     private final TrafficLightSetProgram setProgram;
@@ -186,7 +192,7 @@ public class TraciTrafficLightFacade {
         int id = 0;
         for (TrafficLightState state : currentProgram.getCurrentPhase().getStates()) {
             if (id == controlledLinks.size()) {
-                // TODO add warning
+                log.warn("There seem to be more states than links controlled by the TrafficLightProgram.");
                 break;
             } else {
                 trafficLights.add(

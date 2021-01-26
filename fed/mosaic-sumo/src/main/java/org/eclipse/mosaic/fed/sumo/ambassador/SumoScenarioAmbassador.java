@@ -81,9 +81,9 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
     private final Set<String> vehiclesAddedViaRouteFile = new HashSet<>();
 
     /**
-     * Set containing all vehicles, that have been added using the Mapping file.
+     * Set containing all vehicles, that have been added from the RTI e.g. using the Mapping file.
      */
-    private final Set<String> vehiclesAddedViaMapping = new HashSet<>();
+    private final Set<String> vehiclesAddedViaRti = new HashSet<>();
 
     /**
      * Creates a new {@link SumoScenarioAmbassador} object using
@@ -117,7 +117,7 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
         final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
-            if (vehiclesAddedViaMapping.contains(vehicleId)) { // only handle route file vehicles here
+            if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
                 continue;
             }
             vehiclesAddedViaRouteFile.add(vehicleId);
@@ -134,8 +134,9 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
     @Override
     protected void receiveInteraction(VehicleRegistration interaction) throws InternalFederateException {
         VehicleMapping vehicleMapping = interaction.getMapping();
-        if (!vehiclesAddedViaRouteFile.contains(vehicleMapping.getName())) { // vehicle newly added via mapping
-            vehiclesAddedViaMapping.add(vehicleMapping.getName());
+        boolean isVehicleAddedViaRti = !vehiclesAddedViaRouteFile.contains(vehicleMapping.getName());
+        if (isVehicleAddedViaRti) {
+            vehiclesAddedViaRti.add(vehicleMapping.getName());
             super.receiveInteraction(interaction);
         } else if (sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication()) { // still subscribe to vehicles with apps
             log.info(
@@ -144,6 +145,10 @@ public class SumoScenarioAmbassador extends SumoAmbassador {
                     interaction.getTime()
             );
             traci.getSimulationControl().subscribeForVehicle(vehicleMapping.getName(), interaction.getTime(), this.endTime);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Not subscribing to Vehicle \"{}\" at {} ns.", vehicleMapping.getName(), interaction.getTime());
+            }
         }
     }
 }

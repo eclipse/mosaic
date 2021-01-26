@@ -46,7 +46,7 @@ import javax.xml.validation.Validator;
 /**
  * Tests the route writing.
  */
-public class SumoRouteFileCreatorTest {
+public class SumoVehicleTypesWriterTest {
 
     private final static String ROUTES_FILE_XSD = "/xsd/routes_file.xsd";
 
@@ -79,15 +79,15 @@ public class SumoRouteFileCreatorTest {
         sumoConfiguration.sumoConfigurationFile = "test.sumocfg";
 
         // RUN
-        SumoRouteFileCreator sumoRouteFileCreator = new SumoRouteFileCreator(testFileRule.getRoot(), sumoConfiguration);
+        SumoVehicleTypesWriter sumoVehicleTypesWriter = new SumoVehicleTypesWriter(testFileRule.getRoot(), sumoConfiguration);
 
-        sumoRouteFileCreator.addVehicleTypes(types);
+        sumoVehicleTypesWriter.addVehicleTypes(types);
 
-        sumoRouteFileCreator.store();
+        sumoVehicleTypesWriter.store();
         // ASSERT
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(new File(testFileRule.getRoot(), SumoRouteFileCreator.MOSAIC_TYPES_FILE_NAME));
+        Document document = documentBuilder.parse(new File(testFileRule.getRoot(), SumoVehicleTypesWriter.MOSAIC_TYPES_FILE_NAME));
         assertNotNull(document);
         NodeList vehicleTypesInDocument = document.getElementsByTagName("vType");
         assertEquals(vehicleTypesInDocument.getLength(), 2); // length should be 2 even though there are 3 types from sumo config
@@ -125,7 +125,7 @@ public class SumoRouteFileCreatorTest {
         assertEquals("passenger", hisCarVTypeAttributes.getNamedItem("vClass").getNodeValue());
 
         // validate against xsd
-        validateXml(new File(testFileRule.getRoot(), SumoRouteFileCreator.MOSAIC_TYPES_FILE_NAME));
+        validateXml(new File(testFileRule.getRoot(), SumoVehicleTypesWriter.MOSAIC_TYPES_FILE_NAME));
     }
 
     private void validateXml(File routeFile) throws IOException, SAXException {

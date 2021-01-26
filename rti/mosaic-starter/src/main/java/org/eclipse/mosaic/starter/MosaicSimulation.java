@@ -118,17 +118,6 @@ public class MosaicSimulation {
         return this;
     }
 
-    public MosaicSimulation setFederateOverride(Map<String, String> federateOverride) {
-        for (Map.Entry<String, String> federateEntry : federateOverride.entrySet()) {
-            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
-                if (federate.id.equals(federateEntry.getKey())) {
-                    federate.classname = federateEntry.getValue();
-                }
-            }
-        }
-        return this;
-    }
-
     public MosaicSimulation setWatchdogInterval(int watchdogInterval) {
         this.watchdogInterval = watchdogInterval;
         return this;

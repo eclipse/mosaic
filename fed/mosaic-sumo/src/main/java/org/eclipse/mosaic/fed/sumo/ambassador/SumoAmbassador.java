@@ -15,8 +15,8 @@
 
 package org.eclipse.mosaic.fed.sumo.ambassador;
 
-import org.eclipse.mosaic.fed.sumo.util.SumoRouteFileCreator;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
+import org.eclipse.mosaic.fed.sumo.util.SumoVehicleTypesWriter;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
@@ -70,9 +70,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final List<VehicleRegistration> notYetAddedVehicles = new ArrayList<>();
 
     /**
-     * Instance of {@link SumoRouteFileCreator} used to write routes to a *.rou.xml file.
+     * Instance of {@link SumoVehicleTypesWriter} used to write routes to a *.rou.xml file.
      */
-    private SumoRouteFileCreator sumoRouteFileCreator;
+    private SumoVehicleTypesWriter sumoVehicleTypesWriter;
 
     /**
      * Constructor for {@link SumoAmbassador}.
@@ -152,7 +152,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void receiveInteraction(VehicleRouteRegistration interaction) throws InternalFederateException {
         VehicleRoute newRoute = interaction.getRoute();
-        addRouteToSumoIfAbsent(newRoute.getId(), newRoute);
+        propagateRouteIfAbsent(newRoute.getId(), newRoute);
     }
 
     /**
@@ -219,7 +219,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void addInitialRoutes() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
-            addRouteToSumoIfAbsent(routeEntry.getKey(), routeEntry.getValue());
+            propagateRouteIfAbsent(routeEntry.getKey(), routeEntry.getValue());
         }
     }
 
@@ -348,7 +348,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 || SumoVehicleClassMapping.toSumo(vehicleClass).equals("trailer");
     }
 
-    private void addRouteToSumoIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {
+    private void propagateRouteIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {
         // if the route is already known (because it is defined in a route-file) don't add route
         if (routeCache.containsKey(routeId)) {
             log.warn("Couldn't add Route {}, because it is already known to SUMO.", routeId);
@@ -359,27 +359,27 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     /**
-     * Writes a new SUMO route file based on the registered vehicle types.
+     * Writes a new SUMO additional-file based on the registered vehicle types.
      *
      * @param typesInit Interaction contains predefined vehicle types.
      */
     private void writeTypesFromMapping(VehicleTypesInitialization typesInit) {
-        initVehicleTypeRouteFileCreator();
+        initVehicleTypesWriter();
         // stores the rou.xml file to the working directory. this file is required for SUMO to run
-        sumoRouteFileCreator
+        sumoVehicleTypesWriter
                 .addVehicleTypes(typesInit.getTypes())
                 .store();
     }
 
-    private void initVehicleTypeRouteFileCreator() {
+    private void initVehicleTypesWriter() {
         File dir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
         String subDir = new File(sumoConfig.sumoConfigurationFile).getParent();
         if (StringUtils.isNotBlank(subDir)) {
             dir = new File(dir, subDir);
         }
         // keep single instance
-        if (sumoRouteFileCreator == null) {
-            sumoRouteFileCreator = new SumoRouteFileCreator(dir, sumoConfig);
+        if (sumoVehicleTypesWriter == null) {
+            sumoVehicleTypesWriter = new SumoVehicleTypesWriter(dir, sumoConfig);
         }
     }
 
