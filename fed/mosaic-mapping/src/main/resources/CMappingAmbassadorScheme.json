@@ -352,7 +352,7 @@
                     "description": "The speed at which the vehicle is supposed to depart, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '10 kmh'). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
-                        { "type": "number", "exclusiveMinimum": 0 }
+                        { "type": "number", "minimum": 0 }
                     ]
                 },
                 "departSpeedMode": {
