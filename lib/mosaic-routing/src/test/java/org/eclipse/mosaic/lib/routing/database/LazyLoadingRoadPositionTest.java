@@ -99,7 +99,6 @@ public class LazyLoadingRoadPositionTest {
         assertRefinedPrevious(refinedRoadPosition);
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("4068038_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
@@ -123,7 +122,6 @@ public class LazyLoadingRoadPositionTest {
         assertRefinedPrevious(refinedRoadPosition);
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("4068038_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
@@ -147,7 +145,6 @@ public class LazyLoadingRoadPositionTest {
         assertRefinedPrevious(refinedRoadPosition);
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("4068038_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
@@ -174,7 +171,6 @@ public class LazyLoadingRoadPositionTest {
 
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("?_?_?_?", refinedRoadPosition.getEdgeId());
         assertEquals("?_?_?", refinedRoadPosition.getConnection().getId());
     }
 
@@ -198,7 +194,6 @@ public class LazyLoadingRoadPositionTest {
         assertNull(refinedRoadPosition.getUpcomingNode());
         assertEquals(0.0, refinedRoadPosition.getConnection().getLength(), 0.01d);
 
-        assertEquals("4068038x_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038x_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
@@ -225,7 +220,6 @@ public class LazyLoadingRoadPositionTest {
         assertNull(refinedRoadPosition.getUpcomingNode());
         assertEquals(0.0, refinedRoadPosition.getConnection().getLength(), 0.01d);
 
-        assertEquals("4068038_251150126x_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038_251150126x_428788319", refinedRoadPosition.getConnection().getId());
     }
 

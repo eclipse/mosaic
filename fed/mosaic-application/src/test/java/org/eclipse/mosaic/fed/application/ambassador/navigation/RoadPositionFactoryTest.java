@@ -60,18 +60,17 @@ public class RoadPositionFactoryTest {
         Mockito.when(cncMock.getPositionOfNode("6")).thenReturn(GeoPoint.latLon(52.459983399640414, 13.368204832077026)); // 5->6: 39.91m
         Mockito.when(cncMock.getPositionOfNode("7")).thenReturn(GeoPoint.latLon(52.45961731241121, 13.367979526519775));  // 6->7: 43.52m
 
-        Mockito.when(routeMock.getNodeIdList()).thenReturn(Lists.newArrayList("1", "2", "3", "4", "5", "6", "7"));
+        Mockito.when(routeMock.getNodeIds()).thenReturn(Lists.newArrayList("1", "2", "3", "4", "5", "6", "7"));
     }
 
     @Test
     public void createFromSumoEdge_validEdgeId() {
-        IRoadPosition roadPosition = RoadPositionFactory.createFromSumoEdge("1_2_3_4", 0, 10d);
+        IRoadPosition roadPosition = RoadPositionFactory.createFromSumoEdge("1_2_3", 0, 10d);
 
         // ASSERT
         assertEquals("1", roadPosition.getConnection().getWay().getId());
         assertEquals("2", roadPosition.getConnection().getStartNode().getId());
         assertEquals("3", roadPosition.getConnection().getEndNode().getId());
-        assertEquals("4", roadPosition.getPreviousNode().getId());
         assertEquals(0, roadPosition.getLaneIndex());
         assertEquals(10d, roadPosition.getOffset(), 0.0001d);
 
@@ -80,7 +79,7 @@ public class RoadPositionFactoryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createFromSumoEdge_invalidEdgeId() {
-        RoadPositionFactory.createFromSumoEdge("1_2_3", 0, 10d);
+        RoadPositionFactory.createFromSumoEdge("1_2", 0, 10d);
     }
 
     @Test

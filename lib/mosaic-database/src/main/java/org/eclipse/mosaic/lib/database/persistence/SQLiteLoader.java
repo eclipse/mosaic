@@ -22,7 +22,6 @@ import org.eclipse.mosaic.lib.database.road.Restriction;
 import org.eclipse.mosaic.lib.database.road.Roundabout;
 import org.eclipse.mosaic.lib.database.road.TrafficLightNode;
 import org.eclipse.mosaic.lib.database.road.Way;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.rti.api.MosaicVersion;
@@ -556,8 +555,8 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
                 // read files from entry, mind index order (see columns above)
                 String id = routeEntry.getString("id");
                 String connectionId = routeEntry.getString("connection_id");
-                String fromNodeId = routeEntry.getString("from_node_id");
-                String toNodeId = routeEntry.getString("to_node_id");
+//                String fromNodeId = routeEntry.getString("from_node_id"); // deprecated field, ignored
+//                String toNodeId = routeEntry.getString("to_node_id"); // deprecated field, ignored
 
                 // we need to group into our route object
                 if (!id.equals(lastId)) {
@@ -567,7 +566,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
                     routeBuilder = databaseBuilder.addRoute(id);
                     lastId = id;
                 }
-                routeBuilder.addEdge(connectionId, fromNodeId, toNodeId);
+                routeBuilder.addConnection(connectionId);
             }
 
             if (routeBuilder != null) {
@@ -835,12 +834,12 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
             dbConnection.setAutoCommit(false);
             for (Route route : database.getRoutes()) {
                 sequenceNumber = 0;
-                for (Edge edge : route.getEdges()) {
+                for (Connection connection : route.getConnections()) {
                     prep.setString(1, route.getId());
                     prep.setInt(2, sequenceNumber);
-                    prep.setString(3, edge.getConnection().getId());
-                    prep.setString(4, edge.getFromNode().getId());
-                    prep.setString(5, edge.getToNode().getId());
+                    prep.setString(3, connection.getId());
+                    prep.setString(4, ""); //deprecated field
+                    prep.setString(5, ""); //deprecated field
 
                     prep.executeUpdate();
                     sequenceNumber++;

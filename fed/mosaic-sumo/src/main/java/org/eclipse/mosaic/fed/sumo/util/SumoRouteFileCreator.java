@@ -270,7 +270,7 @@ public class SumoRouteFileCreator {
         for (VehicleRoute route : routes.values()) {
             Element currentRoute = routeFileDocument.createElement("route");
             currentRoute.setAttribute("id", route.getId());
-            currentRoute.setAttribute("edges", Joiner.on(" ").join(route.getEdgeIdList()));
+            currentRoute.setAttribute("edges", Joiner.on(" ").join(route.getConnectionIds()));
             routesNode.appendChild(currentRoute);
         }
         return this;

@@ -20,8 +20,8 @@ import static java.lang.Double.min;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
+import org.eclipse.mosaic.lib.database.spatial.Edge;
 import org.eclipse.mosaic.lib.database.spatial.EdgeFinder;
 import org.eclipse.mosaic.lib.database.spatial.NodeFinder;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -258,16 +258,16 @@ public class DatabaseRouting implements Routing {
         }
 
         LazyLoadingConnection connection = new LazyLoadingConnection(closestEdge.getConnection());
-        LazyLoadingNode previousNode = new LazyLoadingNode(closestEdge.getFromNode());
-        LazyLoadingNode upcommingNode = new LazyLoadingNode(closestEdge.getToNode());
+        LazyLoadingNode previousNode = new LazyLoadingNode(closestEdge.getPreviousNode());
+        LazyLoadingNode upcommingNode = new LazyLoadingNode(closestEdge.getNextNode());
 
-        GeoPoint startOfEdge = closestEdge.getFromNode().getPosition();
-        GeoPoint endOfEdge = closestEdge.getToNode().getPosition();
+        GeoPoint startOfEdge = closestEdge.getPreviousNode().getPosition();
+        GeoPoint endOfEdge = closestEdge.getNextNode().getPosition();
         GeoPoint closestPointOnEdge = GeoUtils.closestPointOnLine(location, startOfEdge, endOfEdge);
-        double distanceFromStart = closestEdge.getFromNode().getPosition().distanceTo(closestPointOnEdge);
+        double distanceFromStart = closestEdge.getPreviousNode().getPosition().distanceTo(closestPointOnEdge);
         distanceFromStart = min(distanceFromStart, previousNode.getPosition().distanceTo(upcommingNode.getPosition()));
 
-        return new LazyLoadingRoadPosition(closestEdge.getId(), connection, previousNode, upcommingNode, distanceFromStart);
+        return new LazyLoadingRoadPosition(connection, previousNode, upcommingNode, distanceFromStart);
     }
 
     @Override

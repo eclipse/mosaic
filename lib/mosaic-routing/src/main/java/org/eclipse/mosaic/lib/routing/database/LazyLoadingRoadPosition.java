@@ -58,19 +58,16 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
     private LazyLoadingNode previousNode;
     private LazyLoadingNode upcomingNode;
     private LazyLoadingConnection connection;
-    private String edgeId;
 
     /**
      * Creates an {@link IRoadPosition} with all required information provided.
      *
-     * @param edgeId the id of the edge
      * @param connection the connection this road position can be found on
      * @param previousNode the previous node which is part of the given connection and lies behind this road position
      * @param upcomingNode the upcoming node which is part of the given connection and lies in front of this road position
      * @param roadOffset the distance in meters from the previous node to the exact road position
      */
-    public LazyLoadingRoadPosition(String edgeId, final LazyLoadingConnection connection, final LazyLoadingNode previousNode, final LazyLoadingNode upcomingNode, double roadOffset) {
-        this.edgeId = edgeId;
+    public LazyLoadingRoadPosition(final LazyLoadingConnection connection, final LazyLoadingNode previousNode, final LazyLoadingNode upcomingNode, double roadOffset) {
         this.connection = connection;
         this.previousNode = previousNode;
         this.upcomingNode = upcomingNode;
@@ -99,13 +96,8 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
     }
 
     @Override
-    public String getEdgeId() {
-        if (edgeId == null) {
-            edgeId = new StringBuilder(getConnection().getId()).append("_").append(
-                    getPreviousNode() != null ? getPreviousNode().getId() : "?"
-            ).toString();
-        }
-        return edgeId;
+    public String getConnectionId() {
+        return getConnection().getId();
     }
 
     @Override

@@ -210,7 +210,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         routeCache.put(newRoute.getId(), newRoute);
         if (!sumoKnownRoutes.contains(newRoute.getId())) {
             sumoKnownRoutes.add(newRoute.getId());
-            traci.getRouteControl().addRoute(newRoute.getId(), newRoute.getEdgeIdList());
+            traci.getRouteControl().addRoute(newRoute.getId(), newRoute.getConnectionIds());
             log.debug("received newly propagated route {}", newRoute.getId());
         } else {
             log.debug("route has already been added to SUMO, ignoring id={}", newRoute.getId());

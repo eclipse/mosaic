@@ -102,7 +102,7 @@ public class NavigationModuleTest {
         when(vehicleDataMock.getRoadPosition()).thenReturn(mock(IRoadPosition.class));
         when(vehicleDataMock.getRoadPosition().getConnection()).thenReturn(mock(IConnection.class));
         when(vehicleDataMock.getRoadPosition().getPreviousNode()).thenReturn(mock(INode.class));
-        when(navigationModule.getRoadPosition().getEdgeId()).thenReturn("1_1_2");
+        when(navigationModule.getRoadPosition().getConnectionId()).thenReturn("1_1_2");
         when(navigationModule.getRoadPosition().getPreviousNode().getId()).thenReturn("1");
         doAnswer((Answer<RoutingResponse>) invocation -> {
             findRouteRequest = invocation.getArgument(0);
@@ -362,8 +362,8 @@ public class NavigationModuleTest {
     @Test
     public void testOnRouteQueryTrue() {
         VehicleRoute route =
-                new VehicleRoute("123", Collections.singletonList("connectionID_startNodeID"), Collections.singletonList("Node_ID"), 0.0);
-        when(navigationModule.getRoadPosition().getEdgeId()).thenReturn("connectionID_startNodeID");
+                new VehicleRoute("123", Collections.singletonList("connectionID"), Collections.singletonList("Node_ID"), 0.0);
+        when(navigationModule.getRoadPosition().getConnectionId()).thenReturn("connectionID");
         assertTrue(navigationModule.onRouteQuery(route));
     }
 
@@ -374,7 +374,7 @@ public class NavigationModuleTest {
     public void testOnRouteQueryFalse() {
         VehicleRoute route =
                 new VehicleRoute("123", Collections.singletonList("differentEdgeID"), Collections.singletonList("Node_ID"), 0.0);
-        when(navigationModule.getRoadPosition().getEdgeId()).thenReturn("connectionID_startNodeID");
+        when(navigationModule.getRoadPosition().getConnectionId()).thenReturn("connectionID");
         assertFalse(navigationModule.onRouteQuery(route));
     }
 

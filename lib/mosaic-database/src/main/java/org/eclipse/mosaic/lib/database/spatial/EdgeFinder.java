@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.database.spatial;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.spatial.KdTree;
@@ -89,8 +88,8 @@ public class EdgeFinder {
 
         public EdgeWrapper(Edge edge) {
             super(
-                    edge.getFromNode().getPosition().toVector3d(),
-                    edge.getToNode().getPosition().toVector3d()
+                    edge.getPreviousNode().getPosition().toVector3d(),
+                    edge.getNextNode().getPosition().toVector3d()
             );
             this.edge = edge;
         }

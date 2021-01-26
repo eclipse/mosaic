@@ -45,7 +45,7 @@ public class SumoRawRoadPosition implements IRoadPosition {
     }
 
     @Override
-    public String getEdgeId() {
+    public String getConnectionId() {
         return edgeId;
     }
 

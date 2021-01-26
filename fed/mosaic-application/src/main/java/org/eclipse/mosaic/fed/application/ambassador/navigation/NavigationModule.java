@@ -110,7 +110,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
                 belongingUnit.getOsLog().info(
                         "NavigationModule#switchRoute: Switched to route {} [{}]",
                         route.getId(),
-                        StringUtils.join(route.getNodeIdList(), ",")
+                        StringUtils.join(route.getNodeIds(), ",")
                 );
             } else if (route != null) {
                 belongingUnit.getOsLog().info("NavigationModule#switchRoute: Stay on route {}", route.getId());
@@ -199,7 +199,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
             VehicleRoute route = entry.getValue();
             if (targetQuery(targetPosition, route, centNavComp.getTargetPositionOfRoute(route.getId())) && onRouteQuery(route)) {
                 // length and time are no valid values at this point
-                candidateRoutes.add(new CandidateRoute(route.getNodeIdList(), 0, 0));
+                candidateRoutes.add(new CandidateRoute(route.getNodeIds(), 0, 0));
                 belongingUnit.getOsLog().debug(
                         "NavigationModule#retrieveAllValidExistingRoutesToTarget found valid existing candidate route {} ", route.getId()
                 );
@@ -210,12 +210,12 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
 
     @VisibleForTesting
     boolean onRouteQuery(VehicleRoute route) {
-        return route.getEdgeIdList().contains(this.getVehicleData().getRoadPosition().getEdgeId());
+        return route.getConnectionIds().contains(this.getVehicleData().getRoadPosition().getConnectionId());
     }
 
     @VisibleForTesting
     boolean targetQuery(RoutingPosition targetPosition, VehicleRoute route, GeoPoint routeTargetPoint) {
-        if (targetPosition.getConnectionID() != null && route.getLastEdgeId().startsWith(targetPosition.getConnectionID())) {
+        if (targetPosition.getConnectionID() != null && route.getLastConnectionId().startsWith(targetPosition.getConnectionID())) {
             return true;
         }
         if (targetPosition.getNodeID() != null && targetPosition.getNodeID().equals(route.getLastNodeId())) {

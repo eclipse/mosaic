@@ -38,7 +38,7 @@ public class Route {
     /**
      * The list of edges the vehicles using this route have to drive.
      */
-    private final List<Edge> edgeList = new ArrayList<>();
+    private final List<Connection> connections = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -61,35 +61,15 @@ public class Route {
     }
 
     /**
-     * This is the list of {@link Edge}s that form the route.
+     * Adds an {@link Connection} to the route.
      *
-     * @return list of edges
+     * @param connection Connection to add.
      */
-    @Nonnull
-    public List<Edge> getEdges() {
-        return Collections.unmodifiableList(edgeList);
-    }
-
-    /**
-     * This extracts a list of edge IDs.
-     *
-     * @return Extracted list of edge Ids.
-     */
-    @Nonnull
-    public List<String> getEdgeIds() {
-        return edgeList.stream().map(Edge::getId).collect(Collectors.toList());
-    }
-
-    /**
-     * Adds an {@link Edge} to the route.
-     *
-     * @param edge Edge to add.
-     */
-    public void addEdge(@Nonnull Edge edge) {
-        if (edgeList.size() > 0 && edgeList.get(edgeList.size() - 1).getId().equals(edge.getId())) {
-            edgeList.remove(edgeList.size() - 1);
+    public void addConnection(@Nonnull Connection connection) {
+        if (connections.size() > 0 && connections.get(connections.size() - 1).getId().equals(connection.getId())) {
+            connections.remove(connections.size() - 1);
         }
-        edgeList.add(Objects.requireNonNull(edge));
+        connections.add(Objects.requireNonNull(connection));
     }
 
     /**
@@ -99,11 +79,18 @@ public class Route {
      */
     @Nonnull
     public List<Node> getNodes() {
-        if (edgeList.isEmpty()) {
+        if (connections.isEmpty()) {
             return new ArrayList<>();
         } else {
-            List<Node> nodes = edgeList.stream().map(Edge::getFromNode).collect(Collectors.toList());
-            nodes.add(edgeList.get(edgeList.size() - 1).getToNode());
+            //FIXME find out if we really need all nodes, or only start/end nodes of connections
+            List<Node> nodes = new ArrayList<>();
+            for (Connection connection : connections) {
+                if (!nodes.isEmpty()) {
+                    // avoid double nodes as end and start node from consecutive connections are the same
+                    nodes.remove(nodes.size() - 1);
+                }
+                nodes.addAll(connection.getNodes());
+            }
             return nodes;
         }
     }
@@ -128,15 +115,7 @@ public class Route {
      */
     @Nonnull
     public List<Connection> getConnections() {
-        List<Connection> connections = new ArrayList<>();
-        Connection lastConnection = null;
-        for (Edge edge : edgeList) {
-            if (lastConnection != edge.getConnection()) {
-                connections.add(edge.getConnection());
-            }
-            lastConnection = edge.getConnection();
-        }
-        return connections;
+        return Collections.unmodifiableList(connections);
     }
 
     /**

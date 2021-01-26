@@ -35,18 +35,18 @@ public class RoadPositionFactory {
      * Creates a {@link IRoadPosition} based on the edgeId in SUMO format
      * "&lt;way&gt;_&lt;connectionFromNode&gt;_&lt;connectionToNode&gt;_&lt;previousNode&gt;".
      *
-     * @param edgeId     The id of the edge in SUMO format.
+     * @param connectionId The id of the edge in SUMO format.
      * @param laneIndex  The index of the lane where the road position is generated at.
      * @param edgeOffset the offset in m along the edge where the position is generated at
      * @return A new {@link IRoadPosition} with all available data.
      */
-    public static IRoadPosition createFromSumoEdge(final String edgeId, final int laneIndex, final double edgeOffset) {
-        final String[] roadIdParts = edgeId.split("_");
-        if (roadIdParts.length < 4) {
-            throw new IllegalArgumentException(String.format("Could not read edge id %s", edgeId));
+    public static IRoadPosition createFromSumoEdge(final String connectionId, final int laneIndex, final double edgeOffset) {
+        final String[] roadIdParts = connectionId.split("_");
+        if (roadIdParts.length < 3) {
+            throw new IllegalArgumentException(String.format("Could not read edge id %s", connectionId));
         }
         final IRoadPosition roadPosition =
-                new SimpleRoadPosition(roadIdParts[0], roadIdParts[1], roadIdParts[2], roadIdParts[3], laneIndex, edgeOffset);
+                new SimpleRoadPosition(roadIdParts[0], roadIdParts[1], roadIdParts[2], laneIndex, edgeOffset);
         return refine(roadPosition);
     }
 
@@ -79,7 +79,7 @@ public class RoadPositionFactory {
         String from = null;
         String to = null;
         double untilStop = 0 - currentPosition.getOffset() - distance;
-        for (Iterator<String> nodeIdIterator = currentRoute.getNodeIdList().iterator(); nodeIdIterator.hasNext(); ) {
+        for (Iterator<String> nodeIdIterator = currentRoute.getNodeIds().iterator(); nodeIdIterator.hasNext(); ) {
             nodeId = nodeIdIterator.next();
             if (from != null) {
                 to = nodeId;
@@ -115,7 +115,7 @@ public class RoadPositionFactory {
      * @return An {@link IRoadPosition} of the last edge in route.
      */
     public static IRoadPosition createAtEndOfRoute(VehicleRoute currentRoute, int laneIndex) {
-        return createAtEndOfRoute(currentRoute.getNodeIdList(), laneIndex);
+        return createAtEndOfRoute(currentRoute.getNodeIds(), laneIndex);
     }
 
     /**

@@ -809,12 +809,21 @@ public class TraciSimulationFacade {
     private IRoadPosition createRoadPosition(String roadId, double offset, double lateralLanePosition, IRoadPosition previous) {
         final String[] roadParts = StringUtils.split(roadId, '_');
         if (roadParts.length == 5) {
+            // FIXME only for a moment to stay compatible with old networks in tests
             return new SimpleRoadPosition(
                     roadParts[0],
                     roadParts[1],
                     roadParts[2],
-                    roadParts[3],
                     Integer.parseInt(roadParts[4]),
+                    offset,
+                    lateralLanePosition
+            );
+        } else if (roadParts.length == 4) {
+            return new SimpleRoadPosition(
+                    roadParts[0],
+                    roadParts[1],
+                    roadParts[2],
+                    Integer.parseInt(roadParts[3]),
                     offset,
                     lateralLanePosition
             );

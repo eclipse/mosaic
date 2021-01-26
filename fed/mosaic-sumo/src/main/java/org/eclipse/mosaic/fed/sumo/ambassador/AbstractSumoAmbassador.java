@@ -585,7 +585,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         VEHICLE_STOP_REQ,
                         TIME.format(vehicleStop.getTime()),
                         vehicleStop.getVehicleId(),
-                        stopPos.getEdgeId(),
+                        stopPos.getConnectionId(),
                         stopPos.getOffset(),
                         stopPos.getLaneIndex(),
                         vehicleStop.getDuration(),
@@ -664,7 +664,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     "{} at simulation time {}: vehicleId=\"{}\", newRouteId={}, current edge: {}",
                     VEHICLE_ROUTE_CHANGE_REQ, TIME.format(vehicleRouteChange.getTime()),
                     vehicleRouteChange.getVehicleId(), vehicleRouteChange.getRouteId(),
-                    lastKnownVehicleData != null ? lastKnownVehicleData.getRoadPosition().getEdgeId() : null
+                    lastKnownVehicleData != null ? lastKnownVehicleData.getRoadPosition().getConnectionId() : null
             );
         }
 
@@ -1083,11 +1083,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final byte stopFlag, final int duration)
             throws InternalFederateException {
 
-        double lengthOfLane = traci.getSimulationControl().getLengthOfLane(stopPos.getEdgeId(), stopPos.getLaneIndex());
+        double lengthOfLane = traci.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
         double stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
         stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
 
-        traci.getVehicleControl().stop(vehicleId, stopPos.getEdgeId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
+        traci.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
     }
 
     /**

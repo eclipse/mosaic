@@ -45,16 +45,15 @@ public class SimpleRoadPosition implements IRoadPosition {
      * @param wayId               the ID of the way.
      * @param connectionStartId   the start ID of the road.
      * @param connectionEndId     the end ID of the road.
-     * @param previousNodeId      the previous node ID.
      * @param laneIndex           the index of the current lane.
      * @param laneOffset          the lane offset.
      * @param lateralLanePosition the lateral position on the lane.
      */
-    public SimpleRoadPosition(String wayId, String connectionStartId, String connectionEndId, String previousNodeId,
+    public SimpleRoadPosition(String wayId, String connectionStartId, String connectionEndId,
                               int laneIndex, double laneOffset, double lateralLanePosition) {
         this.connection = new SimpleConnection(wayId, connectionStartId, connectionEndId);
-        this.previousNode = new SimpleNode(previousNodeId);
-        this.upcomingNode = null;
+        this.previousNode = new SimpleNode(connectionStartId);
+        this.upcomingNode = new SimpleNode(connectionEndId);
         this.laneOffset = laneOffset;
         this.laneIndex = laneIndex;
         this.lateralLanePosition = lateralLanePosition;
@@ -66,15 +65,13 @@ public class SimpleRoadPosition implements IRoadPosition {
      * @param wayId             the ID of the way.
      * @param connectionStartId the start ID of the road.
      * @param connectionEndId   the end ID of the road.
-     * @param previousNodeId    the previous node ID.
      * @param laneIndex         the index of the current lane.
      * @param laneOffset        the lane offset.
      */
-    public SimpleRoadPosition(String wayId, String connectionStartId, String connectionEndId,
-                              String previousNodeId, int laneIndex, double laneOffset) {
+    public SimpleRoadPosition(String wayId, String connectionStartId, String connectionEndId, int laneIndex, double laneOffset) {
         this.connection = new SimpleConnection(wayId, connectionStartId, connectionEndId);
-        this.previousNode = new SimpleNode(previousNodeId);
-        this.upcomingNode = null;
+        this.previousNode = new SimpleNode(connectionStartId);
+        this.upcomingNode = new SimpleNode(connectionEndId);
         this.laneOffset = laneOffset;
         this.laneIndex = laneIndex;
         this.lateralLanePosition = 0;
@@ -98,14 +95,13 @@ public class SimpleRoadPosition implements IRoadPosition {
     }
 
     /**
-     * Gets the ID of the edge the vehicle currently driving on as string.
+     * Gets the ID of the connection the vehicle currently driving on as string.
      *
-     * @return ID of the edge as string.
+     * @return ID of the connection as string.
      */
     @Override
-    public String getEdgeId() {
-        return String.format("%s_%s", getConnection() != null ? getConnection().getId() : "?_?_?",
-                getPreviousNode() != null ? getPreviousNode().getId() : "?");
+    public String getConnectionId() {
+        return getConnection() != null ? getConnection().getId() : "?_?_?";
     }
 
     /**
