@@ -6,6 +6,6 @@ This MOSAIC-scenario integrates the Luxembourg SUMO Traffic (LuST) Scenario to M
 * Adjust the `mapping_config.json` to get your apps mapped onto the available vehicle types
 * Execute MOSAIC with provided `runtime.xml`  :
   ```
-  mosaic.bat/sh -s LuST -u <user-id> --runtime scenarios/LuST/runtime.json
+  mosaic.bat/sh -s LuST
   ```
 
