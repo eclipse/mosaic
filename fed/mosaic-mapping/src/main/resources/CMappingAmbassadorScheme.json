@@ -1,9 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CMappingAmbassadorSchema",
-    "description": "This schema defines the mapping configuration JSON file, which is used to define simulation entities.",
+    "title": "CMappingAmbassadorScheme",
+    "description": "This schema describes the JSON file structure for the mapping configuration, which is used to define simulation entities.",
     "type": "object",
     "properties": {
+        "config": {
+            "description": "Object defining additional configuration options for the mapping.",
+            "type": "object",
+            "$ref": "#/definitions/config"
+        },
         "prototypes": {
             "description": "Array of prototypes, which can complete the definitions of other objects. This can be used to re-use certain configurations. All possible properties of objects are available. Only the ones needed will be used (for example an RSU does not have a length, so this property would be ignored).",
             "type": "array",
@@ -12,50 +17,85 @@
         "typeDistributions": {
             "description": "Object defining the distribution of prototypes to reuse in vehicle spawners.",
             "type": "object",
-            "items": { "$ref": "#/definitions/typeDistribution" }
-        },
-        "rsus": {
-            "description": "Array of Road Side Units (RSUs). For RSUs only applications can be defined along with the position.",
-            "type": "array",
-            "items": { "$ref": "#/definitions/rsu" }
-        },
-        "tmcs": {
-            "description": "Array of Traffic Management Centers (TMCs). TMCs are specialized forms of servers directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
-            "type": "array",
-            "items": { "$ref": "#/definitions/tmc" }
-        },
-        "servers": {
-            "description": "Array of servers. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
-            "type": "array",
-            "items": { "$ref": "#/definitions/server" }
-        },
-        "trafficLights": {
-            "description": "Array of prototypes for traffic lights. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
-            "type": "array",
-            "items": { "$ref": "#/definitions/trafficLights" }
+            "$ref": "#/definitions/typeDistribution"
         },
         "vehicles": {
-            "description": "Array of vehicles to be spawned in the simulation. This property is responsible for describing the vehicles populating the simulation. It is possible to create a single vehicle (maxNumberVehicles should be one in that case) or a stream of one or multiple vehicles. The type(-s) are defined in the field types. When more than one type is defined the weights in the prpert prototypes can be used to balance them against each other.",
+            "description": "Array of vehicles to be spawned in the simulation. This property describes the vehicles populatingthe simulation. It is possible to create a single vehicle (maxNumberVehicles should be '1' in that case) or a streamof one or multiple vehicles. The type(s) are defined in the field types. When more than one type is defined theweights in the prototype can be used to balance them against each other.",
             "type": "array",
             "items": { "$ref": "#/definitions/vehicle" }
-        },
-        "chargingStations": {
-            "description": "Array of electric vehicle charging stations based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
-            "type": "array",
-            "items": { "$ref": "#/definitions/chargingStation" }
         },
         "matrixMappers": {
             "description": "Array of items defining additional traffic that will be spawned using OD-matrices.",
             "type": "array",
             "items": { "$ref": "#/definitions/matrixMapper" }
         },
-        "config": {
-            "description": "Object defining additional configuration options for the mapping.",
-            "type": "object",
-            "items": { "$ref": "#/definitions/config" }
+        "rsus": {
+            "description": "Array of Road Side Units (RSUs). For RSUs only applications can be defined along with the position.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/rsu" }
+        },
+        "servers": {
+            "description": "Array of servers. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/server" }
+        },
+        "tmcs": {
+            "description": "Array of Traffic Management Centers (TMCs). TMCs are specialized forms of servers having direct access to data collected by induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/tmc" }
+        },
+        "trafficLights": {
+            "description": "Array of prototypes for traffic lights. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/trafficLights" }
+        },
+        "chargingStations": {
+            "description": "Array of electric vehicle charging stations based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/chargingStation" }
         }
     },
     "definitions": {
+        "config": {
+            "title": "config",
+            "description": "Object defining additional configuration options for the mapping",
+            "type": "object",
+            "properties": {
+                "start": { 
+                    "description": "Defines the point in time (in seconds) to start spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration.",
+                    "type": "number" 
+                },
+                "end": { 
+                    "description": "Defines the point in time (in seconds) to end spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration or until the simulation ends.",
+                    "type": "number" 
+                },
+                "scaleTraffic": { 
+                    "description": "Scales the traffic by the given factor. E.g. 2.0 would double the number of spawned vehicles",
+                    "type": "number",
+                    "default": 1.0
+                },
+                "adjustStartingTimes": { 
+                    "description": "If set to true and if the parameter start is set, the starting times of each spawner is adjusted accordingly, so that we shouldn't wait in case that the simulation starting time and spawner starting time are widely spread out. All spawners before start will be completely ignored then.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "randomizeFlows": { 
+                    "description": "If set to true, all flow definitions defined by vehicle spawners with more than one vehicle resulting in slightly randomized departure times. The specified `targetFlow` of the vehicle spawner is kept.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "randomizeStartingTimes":{
+                    "description": "If set to true, the starting times of all vehicle spawner definitions are randomized by +-60seconds.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "randomizeWeights":{
+                    "description": "If set to true, the configured weights of all types are slightly randomized by +-1% of the sum of all weights.",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
         "prototype": {
             "title": "prototype",
             "description": "Object defining a prototype, which can complete the definitions of other objects. This can be used to re-use certain configurations. All possible properties of objects are available. Only the ones needed will be used (for example an RSU does not have a length, so this property would be ignored).",
@@ -140,189 +180,16 @@
             "type": "object",
             "additionalProperties": {
                 "type": "array",
+                "minItems": 1,
                 "items": {
                     "$ref": "#/definitions/prototype",
                     "required": [ "name", "weight" ]
                 }
             }
         },
-        "rsu": {
-            "title": "rsu",
-            "description": "Object defining a Road Side Unit (RSU). For RSUs only applications can be defined along with the position.",
-            "type": "object",
-            "properties": {
-                "position": { 
-                    "description": "The position at which the RSU will be created.",
-                    "$ref": "#/definitions/geoPoint" 
-                },
-                "name": { 
-                    "description": "The name of the prototype to be matched against this object. All properties which are not specified will then be replaced.",
-                    "type": "string" 
-                },
-                "group": { 
-                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple rsu entities.",
-                    "type": "string" 
-                },
-                "applications": {
-                    "description": "Array of strings that specifies the applications to be used for this object. If none are specified, none are used",
-                    "type": "array",
-                    "items": { "type": "string" }
-                }
-            },
-            "required": [ "position" ]
-        },
-        "tmc": {
-            "title": "tmc",
-            "description": "Object defining a Traffic Management Center (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
-            "type": "object",
-            "properties": {
-                "name": { 
-                    "description": "The name of the TMC to be matched against this object. All properties which are not specified will then be replaced.",
-                    "type": "string" 
-                },
-                "group": { 
-                    "description": "The group name is used to match with configurations in the network.json-configuration in the cell-module.",
-                    "type": "string" 
-                },
-                "applications": {
-                    "description": "The applications to be used for this object. If none are specified, none are used.",
-                    "type": "array",
-                    "items": { "type": "string" }
-                },
-                "inductionLoops": {
-                    "description": "The induction loops the TMC shall be matched with. If none are specified, none are used.",
-                    "type": "array",
-                    "items": { "type": "string" }
-                },
-                "laneAreaDetectors": {
-                    "description": "The lane area detectors the TMC shall be matched with. If none are specified, none are used.",
-                    "type": "array",
-                    "items": { "type": "string" }
-                }
-            }
-        },
-        "server": {
-            "title": "server",
-            "description": "Object defining a server. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
-            "type": "object",
-            "properties": {
-                "name": { 
-                    "description": "The name of the TMC to be matched against this object. All properties which are not specified will then be replaced.",
-                    "type": "string" 
-                },
-                "group": { 
-                    "description": "The group name is used to match with configurations in the network.json-configuration in the cell-module.",
-                    "type": "string" 
-                },
-                "applications": {
-                    "description": "The applications to be used for this object. If none are specified, none are used.",
-                    "type": "array",
-                    "items": { "type": "string" }
-                }
-            }
-        },
-        "trafficLights": {
-            "title": "trafficLights",
-            "description": "Object defining a prototype for a traffic light. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
-            "type": "object",
-            "properties": {
-                "name": { 
-                    "description": "The name of the prototype to be matched against this object. All properties which are not specified will then be replaced.",
-                    "type": "string" 
-                },
-                "tlGroupId": { 
-                    "description": "The ID of a traffic light group. This property is used to map applications to specific traffic lights.",
-                    "type": "string" 
-                },
-                "group": { 
-                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple trafficLights entities.",
-                    "type": "string" 
-                },
-                "weight": {
-                    "description": "The weight is used to distribute traffic lights between multiple default types. If tlGroupId is not set, then the default value is 1, otherwise 0. All weights do NOT have to add up to 1 or 100.",
-                    "type": "number",
-                    "minimum": 0
-                },
-                "applications": {
-                    "description": "The applications to be used for this object. If none are specified, none are used",
-                    "type": "array",
-                    "items": { "type": "string" }
-                }
-            },
-            "required": [ ]
-        },
-        "chargingStation": {
-            "title": "chargingStation",
-            "description": "Object defining an electric vehicle charging station based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
-            "type": "object",
-            "properties": {
-                "position": { 
-                    "description": "The geographic position at which the EV charging station will be created.",
-                    "$ref": "#/definitions/geoPoint" 
-                },
-                "operator": { 
-                    "description": "The EV charging station operator (e.g. energy provider) identification.",
-                    "type": "string" 
-                },
-                "group": { 
-                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple charginStation entities.",
-                    "type": "string" 
-                },
-                "access": { 
-                    "description": "Access restrictions, e.g. open to all or restricted to some communities, free of access or paying access.",
-                    "type": "string" 
-                },
-                "name": { 
-                    "description": "The name of the prototype to be matched against this object (will replace missing properties).",
-                    "type": "string" 
-                },
-                "chargingSpots": {
-                    "description": "List of the electric vehicle charging spots associated with this electric vehicle charging station.",
-                    "type": "array",
-                    "items": { "$ref": "#/definitions/chargingSpot" }
-                },
-                "applications": {
-                    "description": "The application to be used for this object.",
-                    "type": "array",
-                    "items": { "type": "string" }
-                }
-            },
-            "required": [ "position", "operator", "access", "chargingSpots" ]
-        },
-        "chargingSpot": {
-            "title": "chargingSpot",
-            "description": "Definition of an electric vehicle charging spot based on ETSI TS 101 556-1. A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an electric vehicle.",
-            "type": "object",
-            "properties": {
-                "id": { 
-                    "description": "Unique identifier of the charging spot.",
-                    "type": "number" 
-                },
-                "type": {
-                    "description": "The type of this electric vehicle charging spot in compliance with current standards, including IEC 62196-2.",
-                    "type": "number",
-                    "maximum": 3
-                },
-                "parkingPlaces": {
-                    "description": "Number of available parking places, i.e. 1 to 4 parking places arranged around a pole.",
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 4
-                }
-            },
-            "required": [ "type", "parkingPlaces" ]
-        },
-        "typeDistributions": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "array",
-                "minItems": 1,
-                "items": { "$ref": "#/definitions/prototype" }
-            }
-        },
         "vehicle": {
             "title": "vehicle",
-            "description": "Object defining vehicles to be spawned in the simulation. This property is responsible for describing the vehicles populating the simulation. It is possible to create a single vehicle (maxNumberVehicles should be one in that case) or a stream of one or multiple vehicles. The types (or type) are defined in the field types. When more than one type is defined the weights in the prpert prototypes can be used to balance them against each other.",
+            "description": "Object defining vehicles to be spawned in the simulation. This property describes the vehicles populating the simulation. It is possible to create a single vehicle (maxNumberVehicles should be '1' in that case) or a stream of one or multiple vehicles. The types (or type) are defined in the field types. When more than one type is defined the weights in the prototype can be used to balance them against each other.",
             "type": "object",
             "properties": {
                 "startingTime": {
@@ -385,13 +252,13 @@
                     "default": true
                 },
                 "pos": {
-                    "description": "Position within the route where the vehicle(-s) should be spawned.",
+                    "description": "Position within the route where the vehicle(s) should be spawned.",
                     "type": "number",
                     "minimum": 0,
                     "default": 0
                 },
                 "route": { 
-                    "description": "Route that the vehicle(-s) should use. If an origin and a destination are specified this route will be treated as a preference (i.e. it will be selected if it connects the two points in question).",
+                    "description": "Route that the vehicle(s) should use. If an origin and a destination are specified this route will be treated as a preference (i.e. it will be selected if it connects the two points in question).",
                     "type": ["string"]
                 },
                 "lanes": {
@@ -459,6 +326,172 @@
             },
             "required": [ "points", "odValues" ]
         },
+        "rsu": {
+            "title": "rsu",
+            "description": "Object defining a Road Side Unit (RSU). For RSUs only applications can be defined along with the position.",
+            "type": "object",
+            "properties": {
+                "position": { 
+                    "description": "The position at which the RSU will be created.",
+                    "$ref": "#/definitions/geoPoint" 
+                },
+                "name": { 
+                    "description": "Used to be matched with a prototype. If a prototype name matches this name, all properties not set in this object will be overwritten by those defined in the prototype.",
+                    "type": "string" 
+                },
+                "group": { 
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple rsu entities.",
+                    "type": "string" 
+                },
+                "applications": {
+                    "description": "Array of strings that specifies the applications to be used for this object. If none are specified, none are used",
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            },
+            "required": [ "position" ]
+        },
+        "server": {
+            "title": "server",
+            "description": "Object defining a server. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
+            "type": "object",
+            "properties": {
+                "name": { 
+                    "description": "Used to be matched with a prototype. If a prototype name matches this name, all properties not set in this object will be overwritten by those defined in the prototype.",
+                    "type": "string" 
+                },
+                "group": { 
+                    "description": "The group name is used to match with configurations in the network.json-configuration in the cell-module.",
+                    "type": "string" 
+                },
+                "applications": {
+                    "description": "The applications to be used for this object. If none are specified, none are used.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            }
+        },
+        "tmc": {
+            "title": "tmc",
+            "description": "Object defining a Traffic Management Center (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
+            "type": "object",
+            "properties": {
+                "name": { 
+                    "description": "Used to be matched with a prototype. If a prototype name matches this name, all properties not set in this object will be overwritten by those defined in the prototype.",
+                    "type": "string" 
+                },
+                "group": { 
+                    "description": "The group name is used to match with configurations in the network.json-configuration in the cell-module.",
+                    "type": "string" 
+                },
+                "applications": {
+                    "description": "The applications to be used for this object. If none are specified, none are used.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "inductionLoops": {
+                    "description": "The induction loops the TMC shall be matched with. If none are specified, none are used.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "laneAreaDetectors": {
+                    "description": "The lane area detectors the TMC shall be matched with. If none are specified, none are used.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            }
+        },
+        "trafficLights": {
+            "title": "trafficLights",
+            "description": "Object defining a prototype for a traffic light. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
+            "type": "object",
+            "properties": {
+                "name": { 
+                    "description": "Used to be matched with a prototype. If a prototype name matches this name, all properties not set in this object will be overwritten by those defined in the prototype.",
+                    "type": "string" 
+                },
+                "tlGroupId": { 
+                    "description": "The ID of a traffic light group. This property is used to map applications to specific traffic lights.",
+                    "type": "string" 
+                },
+                "group": { 
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple trafficLights entities.",
+                    "type": "string" 
+                },
+                "weight": {
+                    "description": "The weight is used to distribute traffic lights between multiple default types. If tlGroupId is not set, then the default value is 1, otherwise 0. All weights do NOT have to add up to 1 or 100.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "applications": {
+                    "description": "The applications to be used for this object. If none are specified, none are used",
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            },
+            "required": [ ]
+        },
+        "chargingStation": {
+            "title": "chargingStation",
+            "description": "Object defining an electric vehicle charging station based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
+            "type": "object",
+            "properties": {
+                "position": { 
+                    "description": "The geographic position at which the EV charging station will be created.",
+                    "$ref": "#/definitions/geoPoint" 
+                },
+                "operator": { 
+                    "description": "The EV charging station operator (e.g. energy provider) identification.",
+                    "type": "string" 
+                },
+                "group": { 
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple charginStation entities.",
+                    "type": "string" 
+                },
+                "access": { 
+                    "description": "Access restrictions, e.g. open to all or restricted to some communities, free of access or paying access.",
+                    "type": "string" 
+                },
+                "name": { 
+                    "description": "Used to be matched with a prototype. If a prototype name matches this name, all properties not set in this object will be overwritten by those defined in the prototype.",
+                    "type": "string" 
+                },
+                "chargingSpots": {
+                    "description": "List of the electric vehicle charging spots associated with this electric vehicle charging station.",
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/chargingSpot" }
+                },
+                "applications": {
+                    "description": "The application to be used for this object.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                }
+            },
+            "required": [ "position", "operator", "access", "chargingSpots" ]
+        },
+        "chargingSpot": {
+            "title": "chargingSpot",
+            "description": "Definition of an electric vehicle charging spot based on ETSI TS 101 556-1. A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an electric vehicle.",
+            "type": "object",
+            "properties": {
+                "id": { 
+                    "description": "Unique identifier of the charging spot.",
+                    "type": "number" 
+                },
+                "type": {
+                    "description": "The type of this electric vehicle charging spot in compliance with current standards, including IEC 62196-2.",
+                    "type": "number",
+                    "maximum": 3
+                },
+                "parkingPlaces": {
+                    "description": "Number of available parking places, i.e. 1 to 4 parking places arranged around a pole.",
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 4
+                }
+            },
+            "required": [ "type", "parkingPlaces" ]
+        },
         "odPoint": {
             "title": "odPoint",
             "description": "Object defining a point that can be referenced from an OD-matrix.",
@@ -511,47 +544,6 @@
                 }
             },
             "required": [ "longitude", "latitude" ]
-        },
-        "config": {
-            "title": "config",
-            "description": "Object defining additional configuration options for the mapping",
-            "type": "object",
-            "properties": {
-                "start": { 
-                    "description": "Defines the point in time (in seconds) to start spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration.",
-                    "type": "number" 
-                },
-                "end": { 
-                    "description": "Defines the point in time (in seconds) to end spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration or until the simulation ends.",
-                    "type": "number" 
-                },
-                "scaleTraffic": { 
-                    "description": "Scales the traffic by the given factor. E.g. 2.0 would double the number of spawned vehicles",
-                    "type": "number",
-                    "default": 1.0
-                },
-                "adjustStartingTimes": { 
-                    "description": "If set to true and if the parameter start is set, the starting times of each spawner is adjusted accordingly, so that we shouldn't wait in case that simulation starting time and spawner starting time are widely spread out. All spawners before start will be completely ignored then.",
-                    "type": "boolean",
-                    "default": false
-                },
-                "randomizeFlows": { 
-                    "description": "If set to true, all flow definitions defined by vehicle spawners with more than 1 vehicle result in slightly randomized departure times. The specified `targetFlow` of the vehicle spawner is kept.",
-                    "type": "boolean",
-                    "default": false
-                },
-                "randomizeStartingTimes":{
-                    "description": "If set to true, the starting times of all vehicle spawner definitions are randomized by +-60 seconds.",
-                    "type": "boolean",
-                    "default": false
-                },
-                "randomizeWeights":{
-                    "description": "If set to true, the configured weights of all types are slightly randomized by +-1% of the sum of all weights.",
-                    "type": "boolean",
-                    "default": false
-                }
-            },
-            "required": [ ]
         }
     }
 }
