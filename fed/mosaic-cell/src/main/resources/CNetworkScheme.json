@@ -1,40 +1,98 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CNetworkScheme",
+    "description": "Schema describing the JSON file structure for the network configuration. It is is used to define the properties of the global network.",
     "type": "object",
     "properties": {
-        "defaultDownlinkCapacity": { "$ref": "#/definitions/capacity" },
-        "defaultUplinkCapacity": { "$ref": "#/definitions/capacity" },
+        "defaultDownlinkCapacity": { 
+            "description": "This downlink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration.",
+            "oneOf": [
+                { "type": "integer", "minimum": 0 },
+                { "type": "string" }
+            ],
+            "default": "100 Gigabit"
+        },
+        "defaultUplinkCapacity": { 
+            "description": "This uplink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration.",
+            "oneOf": [
+                { "type": "integer", "minimum": 0 },
+                { "type": "string" }
+            ],
+            "default": "100 Gigabit"
+        },
         "globalNetwork": {
+            "description": "The global network definition.",
+            "type": "object",
+            "$ref": "#/definitions/globalNetwork"
+        },
+        "servers": {
+            "description": "List of configured servers.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/server" }
+        }
+    },
+    "required": [ "globalNetwork" ],
+    "definitions": {
+        "globalNetwork":{
+            "title": "globalNetwork",
+            "description": "Holds all coverage properties of one region of the radio access network (ran-part). Such a configuration consists of one uplink-module and one downlink-module. In this context, uplink and downlink always refer to the direction TOWARDS and respectively FROM the GEO entity.",
             "type": "object",
             "properties": {
                 "uplink": {
+                    "title": "uplink",
+                    "description": "The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
                     "type": "object",
                     "properties": {
-                        "delay": { "$ref": "#/definitions/delay" },
-                        "transmission": { "$ref": "#/definitions/transmission" },
-                        "capacity": { "$ref": "#/definitions/capacity" }
+                        "delay": { 
+                            "description": "The delay used by the uplink.",
+                            "$ref": "#/definitions/delay" 
+                        },
+                        "transmission": { 
+                            "description": "The packet retransmission (here summarized in the delay).",
+                            "$ref": "#/definitions/transmission" 
+                        },
+                        "capacity": { 
+                            "description": "The current capacity.",
+                            "oneOf": [
+                                { "type": "integer", "minimum": 0 },
+                                { "type": "string" }
+                            ]
+                        },
+                        "maxCapacity": {
+                            "description": "The maximal capacity when no transmission is ongoing.",
+                            "type": "number"
+                        }
                     },
                     "required": [ "delay", "transmission", "capacity" ]
                 },
                 "downlink": {
+                    "title": "downlink",
+                    "description": "The downlink supports two individual paths.",
                     "type": "object",
                     "properties": {
-                        "unicast": { "$ref": "#/definitions/unicast" },
-                        "multicast": { "$ref": "#/definitions/multicast" },
-                        "capacity": { "$ref": "#/definitions/capacity" }
+                        "unicast": { 
+                            "description": "Point-to-point communication.",
+                            "$ref": "#/definitions/unicast" 
+                        },
+                        "multicast": { 
+                            "description": "Point-to-multipoint communication.",
+                            "$ref": "#/definitions/multicast" 
+                        },
+                        "capacity": { 
+                            "description": "Shared capacity between unicast and multicast.",
+                            "oneOf": [
+                                { "type": "integer", "minimum": 0 },
+                                { "type": "string" }
+                            ]
+                        }
                     },
                     "required": [ "unicast", "multicast", "capacity" ]
                 }
             }
         },
-        "servers": {
-            "type": "array",
-            "items": [ { "$ref": "#/definitions/server" } ]
-        }
-    },
-    "required": [ "globalNetwork" ],
-    "definitions": {
         "delay": {
+            "title": "delay",
+            "description": "",
             "oneOf": [
                 {
                     "type": "object",
@@ -103,6 +161,8 @@
             ]
         },
         "transmission": {
+            "title": "transmission",
+            "description": "Transmission model.",
             "type": "object",
             "properties": {
                 "lossProbability": {
@@ -118,19 +178,35 @@
             "required": [ "lossProbability" ]
         },
         "unicast": {
+            "title": "unicast",
+            "description": "",
             "type": "object",
             "properties": {
-                "delay": { "$ref": "#/definitions/delay" },
-                "transmission": { "$ref": "#/definitions/transmission" }
+                "delay": { 
+                    "description": "Delay to be used by unicast.",
+                    "$ref": "#/definitions/delay" 
+                },
+                "transmission": { 
+                    "description": "Parameters for Transmission Model to be used by unicast.",
+                    "$ref": "#/definitions/transmission" 
+                }
             },
             "required": [ "delay", "transmission" ]
         },
         "multicast": {
+            "title": "multicast",
             "type": "object",
             "properties": {
-                "delay": { "$ref": "#/definitions/delay" },
-                "transmission": { "$ref": "#/definitions/transmission" },
+                "delay": { 
+                    "description": "Delay to be used by multicast.",
+                    "$ref": "#/definitions/delay" 
+                },
+                "transmission": { 
+                    "description": "Parameters for Transmission Model to be used by multicast.",
+                    "$ref": "#/definitions/transmission" 
+                },
                 "usableCapacity": {
+                    "description": "The usableCapacity configures the ratio of the overall downlink capacity allowed to be used.",
                     "type": "number",
                     "minimum": 0.0,
                     "maximum": 1.0
@@ -138,24 +214,17 @@
             },
             "required": [ "delay", "transmission", "usableCapacity" ]
         },
-        "capacity": {
-            "oneOf": [
-                {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
         "server": {
+            "title": "server",
+            "description": "",
             "type": "object",
             "properties": {
                 "id": {
+                    "description": "Network-Id for identification.",
                     "type": "string"
                 },
                 "uplink": {
+                    "description": "",
                     "type": "object",
                     "properties": {
                         "delay": { "$ref": "#/definitions/delay" },
