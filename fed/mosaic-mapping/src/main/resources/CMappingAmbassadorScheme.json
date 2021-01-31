@@ -58,7 +58,7 @@
     "definitions": {
         "config": {
             "title": "config",
-            "description": "Object defining additional configuration options for the mapping",
+            "description": "Object to define additional configuration options for the mapping",
             "type": "object",
             "properties": {
                 "start": { 
@@ -98,7 +98,7 @@
         },
         "prototype": {
             "title": "prototype",
-            "description": "Object defining a prototype, which can complete the definitions of other objects. This can be used to re-use certain configurations. All possible properties of objects are available. Only the ones needed will be used (for example an RSU does not have a length, so this property would be ignored).",
+            "description": "Object to define a prototype, which can complete the definitions of other objects. This can be used to re-use certain configurations. All possible properties of objects are available. Only the ones needed will be used (for example an RSU does not have a length, so this property would be ignored).",
             "type": "object",
             "properties": {
                 "name": { 
@@ -120,21 +120,21 @@
                     "exclusiveMinimum": 0
                 },
                 "length": {
-                    "description": "Length of the vehicle, given in meter when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '500 cm').",
+                    "description": "Length of the vehicle, given in meter when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '500 cm').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
                     ]
                 },
                 "maxSpeed": {
-                    "description": "Maximal speed, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '50 kmh').",
+                    "description": "Maximal speed, given in m/s when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '50 kmh').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
                     ]
                 },
                 "minGap": {
-                    "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam, given in meter when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '300 cm').",
+                    "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam, given in meter when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '300 cm').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
@@ -176,7 +176,7 @@
         },
         "typeDistribution": {
             "title": "typeDistribution",
-            "description": "Object defining the distribution of prototypes to reuse in vehicle spawners.",
+            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners.",
             "type": "object",
             "additionalProperties": {
                 "type": "array",
@@ -189,7 +189,7 @@
         },
         "vehicle": {
             "title": "vehicle",
-            "description": "Object defining vehicles to be spawned in the simulation. This property describes the vehicles populating the simulation. It is possible to create a single vehicle (maxNumberVehicles should be '1' in that case) or a stream of one or multiple vehicles. The types (or type) are defined in the field types. When more than one type is defined the weights in the prototype can be used to balance them against each other.",
+            "description": "Object to define vehicles to be spawned in the simulation. This property describes the vehicles populating the simulation. It is possible to create a single vehicle (maxNumberVehicles should be '1' in that case) or a stream of one or multiple vehicles. The types (or type) are defined in the field types. When more than one type is defined the weights in the prototype can be used to balance them against each other.",
             "type": "object",
             "properties": {
                 "startingTime": {
@@ -215,7 +215,7 @@
                     "minimum": 0
                 },
                 "departSpeed": {
-                    "description": "The speed at which the vehicle is supposed to depart, given in m/s when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '10 kmh'). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
+                    "description": "The speed at which the vehicle is supposed to depart, given in m/s when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '10 kmh'). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "minimum": 0 }
@@ -297,7 +297,7 @@
         },
         "matrixMapper": {
             "title": "matrixMapper",
-            "description": "Object defining a mapper to define an Origin-Destination (OD) matrix. The mapper contains a list of points (with varying radius) and a matrix (arrays) of flow values. It creates a series of conventional vehicles spawners from the specified data.",
+            "description": "Object to define a mapper for an Origin-Destination (OD) matrix. The mapper contains a list of points (with varying radius) and a matrix (arrays) of flow values. It creates a series of conventional vehicles spawners from the specified data.",
             "type": "object",
             "properties": {
                 "points": {
@@ -328,7 +328,7 @@
         },
         "rsu": {
             "title": "rsu",
-            "description": "Object defining a Road Side Unit (RSU). For RSUs only applications can be defined along with the position.",
+            "description": "Object to define a Road Side Unit (RSU). For RSUs only applications can be defined along with the position.",
             "type": "object",
             "properties": {
                 "position": { 
@@ -353,7 +353,7 @@
         },
         "server": {
             "title": "server",
-            "description": "Object defining a server. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
+            "description": "Object to define a server. Servers are a form of units that have no geographical location. The network properties of a server can be defined in the network.json-configuration in the cell-module.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -373,7 +373,7 @@
         },
         "tmc": {
             "title": "tmc",
-            "description": "Object defining a Traffic Management Center (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
+            "description": "Object to define a Traffic Management Center (TMCs). TMCs are specialized forms of server directly communicating with induction loops and lane area detectors. The network properties of a TMC can be defined in the network.json-configuration in the cell-module.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -403,7 +403,7 @@
         },
         "trafficLights": {
             "title": "trafficLights",
-            "description": "Object defining a prototype for a traffic light. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
+            "description": "Object to define a prototype for a traffic light. Since it is a traffic light only applications can be defined. Traffic light prototypes can be distributed among all traffic lights of an application by weight or assigned to specific traffic lights by using the ID of traffic light groups as reference.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -433,7 +433,7 @@
         },
         "chargingStation": {
             "title": "chargingStation",
-            "description": "Object defining an electric vehicle charging station based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
+            "description": "Object to define an electric vehicle charging station based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
             "type": "object",
             "properties": {
                 "position": { 
@@ -471,7 +471,7 @@
         },
         "chargingSpot": {
             "title": "chargingSpot",
-            "description": "Definition of an electric vehicle charging spot based on ETSI TS 101 556-1. A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an electric vehicle.",
+            "description": "Object to define an electric vehicle charging spot based on ETSI TS 101 556-1. A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an electric vehicle.",
             "type": "object",
             "properties": {
                 "id": { 
@@ -494,7 +494,7 @@
         },
         "odPoint": {
             "title": "odPoint",
-            "description": "Object defining a point that can be referenced from an OD-matrix.",
+            "description": "Object to define a point that can be referenced from an OD-matrix.",
             "type": "object",
             "properties": {
                 "name": { 
@@ -510,12 +510,13 @@
         },
         "geoCircle": {
             "title": "geoCircle",
-            "description": "Object representing an immutable pair of a geoPoint center position and a radius in meters.",
+            "description": "Object to define an immutable pair of a geoPoint center position and a radius in meters.",
             "type": "object",
             "properties": {
                 "center": { 
                     "description": "Center of the circle.",
-                    "$ref": "#/definitions/geoPoint" 
+                    "type": "object",
+                    "$ref": "#/definitions/geoPoint"
                 },
                 "radius": {
                     "description": "Radius of the circle.",
@@ -527,7 +528,7 @@
         },
         "geoPoint": {
             "title": "geoPoint",
-            "description": "Object defining geographical point coordinates.",
+            "description": "Object to define geographical point coordinates.",
             "type": "object",
             "properties": {
                 "longitude": { 
