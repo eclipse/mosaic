@@ -1,24 +1,24 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "CNetworkScheme",
-    "description": "Schema describing the JSON file structure for the network configuration. It is is used to define the properties of the global network.",
+    "description": "Schema describing the JSON file structure for the network configuration. It is is used to define the properties of the global network. The value should be given in gigabit if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
     "type": "object",
     "properties": {
         "defaultDownlinkCapacity": { 
-            "description": "This downlink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration.",
-            "oneOf": [
+            "description": "This downlink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration. The value should be given in gigabit if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
+            "anyOf": [
                 { "type": "integer", "minimum": 0 },
                 { "type": "string" }
             ],
-            "default": "100 Gigabit"
+            "default": "100 Gb"
         },
         "defaultUplinkCapacity": { 
             "description": "This uplink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration.",
-            "oneOf": [
+            "anyOf": [
                 { "type": "integer", "minimum": 0 },
                 { "type": "string" }
             ],
-            "default": "100 Gigabit"
+            "default": "100 Gb"
         },
         "globalNetwork": {
             "description": "The global network definition.",
@@ -35,142 +35,174 @@
     "definitions": {
         "globalNetwork":{
             "title": "globalNetwork",
-            "description": "Holds all coverage properties of one region of the radio access network (ran-part). Such a configuration consists of one uplink-module and one downlink-module. In this context, uplink and downlink always refer to the direction TOWARDS and respectively FROM the GEO entity.",
+            "description": "Object to define all coverage properties of one region of the radio access network (ran-part). Such a configuration consists of one uplink-module and one downlink-module. In this context, uplink and downlink always refer to the direction TOWARDS and respectively FROM the GEO entity.",
             "type": "object",
             "properties": {
                 "uplink": {
-                    "title": "uplink",
                     "description": "The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
-                    "type": "object",
-                    "properties": {
-                        "delay": { 
-                            "description": "The delay used by the uplink.",
-                            "$ref": "#/definitions/delay" 
-                        },
-                        "transmission": { 
-                            "description": "The packet retransmission (here summarized in the delay).",
-                            "$ref": "#/definitions/transmission" 
-                        },
-                        "capacity": { 
-                            "description": "The current capacity.",
-                            "oneOf": [
-                                { "type": "integer", "minimum": 0 },
-                                { "type": "string" }
-                            ]
-                        },
-                        "maxCapacity": {
-                            "description": "The maximal capacity when no transmission is ongoing.",
-                            "type": "number"
-                        }
-                    },
-                    "required": [ "delay", "transmission", "capacity" ]
+                    "$ref": "#/definitions/globalNetwork.uplink"
                 },
                 "downlink": {
-                    "title": "downlink",
-                    "description": "The downlink supports two individual paths.",
-                    "type": "object",
-                    "properties": {
-                        "unicast": { 
-                            "description": "Point-to-point communication.",
-                            "$ref": "#/definitions/unicast" 
-                        },
-                        "multicast": { 
-                            "description": "Point-to-multipoint communication.",
-                            "$ref": "#/definitions/multicast" 
-                        },
-                        "capacity": { 
-                            "description": "Shared capacity between unicast and multicast.",
-                            "oneOf": [
-                                { "type": "integer", "minimum": 0 },
-                                { "type": "string" }
-                            ]
-                        }
-                    },
-                    "required": [ "unicast", "multicast", "capacity" ]
+                    "description": "The downlink supports two individual paths: Point-to-point communication (unicast) and Point-to-multipoint communication (multicast)",
+                    "$ref": "#/definitions/globalNetwork.downlink"
                 }
             }
         },
+        "globalNetwork.uplink": {
+            "title": "globalNetwork.uplink",
+            "description": "Object to define the uplink of a network. The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
+            "type": "object",
+            "properties": {
+                "delay": { 
+                    "description": "The delay used by the uplink.",
+                    "$ref": "#/definitions/delay" 
+                },
+                "transmission": { 
+                    "description": "The packet retransmission (here summarized in the delay).",
+                    "$ref": "#/definitions/transmission" 
+                },
+                "capacity": { 
+                    "description": "The capacity.",
+                    "anyOf": [
+                        { "type": "integer", "minimum": 0 },
+                        { "type": "string" }
+                    ]
+                },
+                "maxCapacity": {
+                    "description": "The maximal capacity when no transmission is ongoing.",
+                    "type": "number"
+                }
+            },
+            "required": [ "delay", "transmission", "capacity" ]
+        },
+        "globalNetwork.downlink": {
+            "title": "globalNetwork.downlink",
+            "description": "Object to define the downlink of a network. The downlink supports two individual paths: Point-to-point communication (unicast) and Point-to-multipoint communication (multicast).",
+            "type": "object",
+            "properties": {
+                "unicast": { 
+                    "description": "Point-to-point communication.",
+                    "type": "object",
+                    "$ref": "#/definitions/unicast" 
+                },
+                "multicast": { 
+                    "description": "Point-to-multipoint communication.",
+                    "$ref": "#/definitions/multicast" 
+                },
+                "capacity": { 
+                    "description": "Shared capacity between unicast and multicast.",
+                    "type": "object",
+                    "anyOf": [
+                        { "type": "integer", "minimum": 0 },
+                        { "type": "string" }
+                    ]
+                }
+            },
+            "required": [ "unicast", "multicast", "capacity" ]
+        },
         "delay": {
             "title": "delay",
-            "description": "",
+            "description": "Object to define a delay model.",
+            "type": "object",
             "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
-                        },
-                        "minDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        },
-                        "expDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "minDelay", "expDelay" ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "ConstantDelay" ]
-                        },
-                        "delay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "delay" ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "SimpleRandomDelay" ]
-                        },
-                        "steps": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "minDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        },
-                        "maxDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "steps", "minDelay", "maxDelay" ]
-                }
+                {"$ref": "#/definitions/gammaDelay" },
+                {"$ref": "#/definitions/constantDelay"},
+                {"$ref": "#/definitions/simpleRandomDelay"}
             ]
         },
+        "gammaDelay": {
+            "title": "gammaDelay",
+            "description": "Object to define a model for GammaRandomDelay or GammaSpeedDelay. GammaRandomDelay bases directly on the Gamma distribution (b=2,p=2) with minimum and expected value. Due to the nature of the Gamma distribution, the resulting delays can be far higher than the expected value. GammaSpeedDelay bases on the GammaRandomDelay and includes an additional speed penalty according to the current speed of the vehicle.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of delay.",
+                    "type": "string",
+                    "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
+                },
+                "minDelay": {
+                    "description": "Minimum delay for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "expDelay": {
+                    "description": "Expected delay for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "minDelay", "expDelay" ]
+        },
+        "constantDelay": {
+            "title": "constantDelay",
+            "description": "Object to define a model for constant delay, which delivers always the same delay.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of delay.",
+                    "type": "string",
+                    "enum": [ "ConstantDelay" ]
+                },
+                "delay": {
+                    "description": "The delay, given in ns if defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "delay" ]
+        },
+        "simpleRandomDelay": {
+            "title": "simpleRandomDelay",
+            "description": "Object to define a model for a radnomised delay. Delivers number-of-steps different uniformly distributed delays in the interval defined by min and max (e.g. minDelay=30ms, maxDelay=60ms, steps=4 -> possible delays={30,40,50,60}ms.).",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of delay.",
+                    "type": "string",
+                    "enum": [ "SimpleRandomDelay" ]
+                },
+                "steps": {
+                    "description": "Number of possible delays between min and max.",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "minDelay": {
+                    "description": "Minimum delay in nanoseconds for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "maxDelay": {
+                    "description": "Maximum delay in nanoseconds for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "steps", "minDelay", "maxDelay" ]
+        },
         "transmission": {
-            "title": "transmission",
-            "description": "Transmission model.",
+            "title": "tranmission",
+            "description": "Object to define the properties of a transmission.",
             "type": "object",
             "properties": {
                 "lossProbability": {
+                    "description": "Probability of packet retransmission (in case of configured retries > 0) or packet loss (retries = 0) for the packet retransmission/loss model. A value of 0 equals a lossfree transmission.",
                     "type": "number",
                     "minimum": 0.0,
-                    "maximum": 1.0
+                    "maximum": 1.0,
+                    "default": 0
                 },
                 "maxRetries": {
+                    "description": "Maximum Number of retransmissions.",
                     "type": "integer",
                     "minimum": 0
                 }
@@ -179,7 +211,7 @@
         },
         "unicast": {
             "title": "unicast",
-            "description": "",
+            "description": "Point-to-point communication (unicast).",
             "type": "object",
             "properties": {
                 "delay": { 
@@ -195,6 +227,7 @@
         },
         "multicast": {
             "title": "multicast",
+            "description": "Point-to-multipoint communication (multicast).",
             "type": "object",
             "properties": {
                 "delay": { 
@@ -224,25 +257,47 @@
                     "type": "string"
                 },
                 "uplink": {
-                    "description": "",
+                    "description": "The uplink properties of the server",
                     "type": "object",
-                    "properties": {
-                        "delay": { "$ref": "#/definitions/delay" },
-                        "transmission": { "$ref": "#/definitions/transmission" }
-                    },
-                    "required": [ "delay", "transmission" ],
-                    "additionalProperties": false
+                    "$ref": "#/definitions/server.uplink"
                 },
                 "downlink": {
+                    "description": "The dowlink properties of the server.",
                     "type": "object",
-                    "properties": {
-                        "unicast": { "$ref": "#/definitions/unicast" }
-                    },
-                    "required": [ "unicast" ],
-                    "additionalProperties": false
+                    "$ref": "#/definitions/server.downlink"
                 }
             },
             "required": [ "id" ],
+            "additionalProperties": false
+        },
+        "server.uplink": {
+            "title": "server.uplink",
+            "description": "Object to define uplink properties of a network. The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
+            "type": "object",
+            "properties": {
+                "delay": {
+                    "description": "",
+                    "$ref": "#/definitions/delay"
+                },
+                "transmission": {
+                    "description": "",
+                    "$ref": "#/definitions/transmission"
+                }
+            },
+            "required": [ "delay", "transmission" ],
+            "additionalProperties": false
+        },
+        "server.downlink": {
+            "title": "server.downlink",
+            "desciption": "Object to define dowlink properties of a network.",
+            "type": "object",
+            "properties": {
+                "unicast": {
+                    "description": "",
+                    "$ref": "#/definitions/unicast"
+                }
+            },
+            "required": [ "unicast" ],
             "additionalProperties": false
         }
     }

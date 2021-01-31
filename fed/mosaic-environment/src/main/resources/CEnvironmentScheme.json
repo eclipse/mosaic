@@ -1,60 +1,122 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CEnvironmentScheme",
+    "description": "Schema describing the JSON file structure for the environment configuration. It is is used to define which events are evaluated by the simulator. Entities entering the areas of the events, are notified by the 'EnvironmentSensorUpdates' interaction",
     "type": "object",
     "properties": {
         "events": {
+            "description": "List of events.",
             "type": "array",
-            "items": [ { "$ref": "#/definitions/event" } ]
+            "items": { "$ref": "#/definitions/event" }
         }
     },
     "definitions": {
         "event": {
+            "title": "event",
+            "description": "Object to define a single event configuration.",
             "type": "object",
             "properties": {
-                "type": { "$ref": "#/definitions/eventType" },
-                "location": { "$ref": "#/definitions/eventLocation" },
-                "time": { "$ref": "#/definitions/eventTime" }
+                "type": { 
+                    "description": "Type of the event.",
+                    "type": "object",
+                    "$ref": "#/definitions/eventType" 
+                },
+                "location": { 
+                    "description": "The location of the event,, this can either be a geoArea or a string representing a specific road segment.",
+                    "type": "object",
+                    "$ref": "#/definitions/eventLocation" 
+                },
+                "time": { 
+                    "description": "Time of the event.",
+                    "type": "object",
+                    "$ref": "#/definitions/eventTime" 
+                }
             },
             "required": [ "type", "location", "time" ]
         },
         "eventType": {
+            "title": "eventType",
+            "description": "Object to define the type of an event.",
             "type": "object",
             "properties": {
-                "sensorType": { "type": "string" },
-                "value": { "type": "integer", "default": 1 }
+                "sensorType": { 
+                    "description": "Represents the type of sensor value this event is emitting (e.g. Ice, Snow, or an arbitrary Obstacle)",
+                    "type": "string" 
+                },
+                "value": { 
+                    "description": "Used for assigning a value to the event. It can be used as the strength of an event, the amount of free parking spots in a parking lot, etc.",
+                    "type": "integer", 
+                    "default": 1 
+                }
             },
             "required": [ "sensorType" ]
         },
         "eventLocation": {
-            "properties": {
-                "area": {
-                    "type": "object",
-                    "properties": {
-                        "type": { "type": "string" }
-                    },
-                    "anyOf": [
-                        { "$ref": "#/definitions/geoCircle" },
-                        { "$ref": "#/definitions/geoRectangle" },
-                        { "$ref": "#/definitions/geoPolygon" }
-                    ],
-                    "default": null
-                },
-                "roadSegmentId": { "type": "string", "default": null }
-            }
-        },
-        "geoPoint": {
+            "title": "eventLocation",
+            "description": "Object to define the event location configuration, which is either a GeoArea (e.g. rectangle, circle, or polygon) or a specific street segment.",
             "type": "object",
             "properties": {
-                "longitude": { "type": "number" },
-                "latitude": { "type": "number" }
+                "area": {
+                    "description": "The area in which the event is located in.",
+                    "type": "object",
+                    "$ref": "#/definitions/area"
+                },
+                "roadSegmentId": { 
+                    "description": "The ID of the road segment the event is located on (Connection ID or road ID).",
+                    "type": "string"
+                }
+            }
+        },
+        "area": {
+            "title": "area",
+            "description": "Object to define the area in which the event is located in.",
+            "type": "object",
+            "properties": {
+                "type": { 
+                    "description": "The type of the area.",
+                    "type": "string",
+                    "enum": [ "rectangle", "circle", "polygon" ]
+                }
+            },
+            "oneOf": [
+                { "$ref": "#/definitions/geoCircle" },
+                { "$ref": "#/definitions/geoRectangle" },
+                { "$ref": "#/definitions/geoPolygon" }
+            ]
+
+        },
+        "geoPoint": {
+            "title": "geoPoint",
+            "description": "Object to define geographical point coordinates.",
+            "type": "object",
+            "properties": {
+                "longitude": { 
+                    "description":"East-west position of a point on earth.",
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
+                },
+                "latitude": { 
+                    "description":"North-south position of a point on earth.",
+                    "type": "number",
+                    "maximum": 90,
+                    "minimmum": -90
+                }
             },
             "required": [ "longitude", "latitude" ]
         },
         "geoCircle": {
+            "title": "geoCircle",
+            "description": "Object to define an immutable pair of a geoPoint center position and a radius in meters.",
             "type": "object",
             "properties": {
-                "center": { "$ref": "#/definitions/geoPoint" },
+                "center": { 
+                    "description": "Center of the circle.",
+                    "type": "object",
+                    "$ref": "#/definitions/geoPoint" 
+                },
                 "radius": {
+                    "description": "Radius of the circle.",
                     "type": "number",
                     "minimum": 0
                 }
@@ -62,33 +124,49 @@
             "required": [ "radius", "center" ]
         },
         "geoRectangle": {
+            "title": "geoRectangle",
+            "description": "Object to define an immutable pair of two different GeoPoints. Together they form a rectangular area.",
             "type": "object",
             "properties": {
-                "a": { "$ref": "#/definitions/geoPoint" },
-                "b": { "$ref": "#/definitions/geoPoint" }
+                "a": { 
+                    "description": "GeoPoint defining the north-western vertex of the rectangle.",
+                    "type": "object",
+                    "$ref": "#/definitions/geoPoint" 
+                },
+                "b": { 
+                    "description": "GeoPoint defining the south-eastern vertex of the rectangle.",
+                    "type": "object",
+                    "$ref": "#/definitions/geoPoint" 
+                }
             },
             "required": [ "a", "b" ]
         },
         "geoPolygon": {
+            "title": "geoPolygon",
+            "description": "Object to define a set of GeoPoints. Together the points for a polygonal area.",
             "type": "object",
             "properties": {
                 "vertices": {
+                    "description": "Set of points representing the vertices of a polygon.",
                     "type": "array",
-                    "items": [ { "$ref": "#/definitions/geoPoint" } ]
-                },
-                "boundingBox": { "$ref": "#/definitions/geoRectangle" }
+                    "items": { "$ref": "#/definitions/geoPoint" }
+                }
             }
         },
         "eventTime": {
+            "title": "eventTime",
+            "description": "Object to define the temproal properties of an event.",
             "type": "object",
             "properties": {
                 "start": {
+                    "description": "Start time of the event. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 minutes')",
                     "anyOf": [
                         { "type": "string", "maxLength": 20 },
                         { "type": "number", "minimum": 0 }
                     ]
                 },
                 "end": {
+                    "description": "End time of the event. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 minutes')",
                     "anyOf": [
                         { "type": "string", "maxLength": 20 },
                         { "type": "number", "minimum": 0 }

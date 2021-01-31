@@ -35,7 +35,7 @@
     "definitions": {
         "bandwidthMeasurement": {
             "title": "bandwidthMeasurement",
-            "description": "Measure the bandwidth between regions.",
+            "description": "Object to define the bandwidth measurement between regions.",
             "type": "object",
             "properties": {
                 "fromRegion": {
