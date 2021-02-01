@@ -482,6 +482,7 @@
                 "type": {
                     "description": "The type of this electric vehicle charging spot in compliance with current standards, including IEC 62196-2.",
                     "type": "integer",
+                    "minimum": 1,
                     "maximum": 3
                 },
                 "parkingPlaces": {
