@@ -4,8 +4,8 @@
 
     <input>
         <net-file value="sievekingplatz.net.xml"/>
-        <route-files value="multimodal.rou.xml"/>
-        <additional-files value="multimodal.bus.add.xml"/>
+        <route-files value="sievekingplatz.rou.xml"/>
+        <additional-files value="sievekingplatz.bus.add.xml"/>
     </input>
 
     <time>

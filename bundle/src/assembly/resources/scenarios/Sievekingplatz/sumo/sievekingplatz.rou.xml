@@ -41,17 +41,28 @@
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-    <vType id="DEFAULT_BIKETYPE" jmIgnoreFoeProb="1.0" impatience="1.0" vClass="bicycle"/>
-    <vehicle id="vehicle_0" depart="0.00">
-        <route edges="139083727#1 139083727#2 370073260#0 370073258#0 -4919237#3" />
+    <vType id="Bus" vClass="bus" length="20"/>
+    <vType id="Bike" jmIgnoreFoeProb="1.0" impatience="1.0" vClass="bicycle"/>
+
+    <vehicle id="bus_0" type="Bus" depart="0.00">
+        <route edges="139083727#2 370073260#0 370073258#0 24400729#1">
+            <stop busStop="busstop" duration="60"/>
+        </route>
     </vehicle>
-    <vehicle id="bike_left" type="DEFAULT_BIKETYPE" depart="0.00" departPos="11">
+    <vehicle id="bus_1" type="Bus" depart="0.00">
+        <route edges="139083727#1 139083727#2 370073260#0 370073258#0 24400729#1">
+            <stop busStop="busstop" duration="60"/>
+        </route>
+    </vehicle>
+
+    <vehicle id="vehicle_straight" depart="0.00">
+        <route edges="139083727#1 139083727#2 370073260#0 370073258#0 -4919237#3"/>
+    </vehicle>
+
+    <vehicle id="bike_left" type="Bike" depart="0.00" departPos="11">
         <route edges="gneE3 370073260#0 370073258#0 -4919237#3"/>
     </vehicle>
-    <vehicle id="bike_right" type="DEFAULT_BIKETYPE" depart="5.00">
+    <vehicle id="bike_right" type="Bike" depart="5.00">
         <route edges="624358653#1 624358654#0 624358654#1 gneE4 458455265"/>
-    </vehicle>
-    <vehicle id="vehicle_2" depart="10.00" color="red">
-        <route edges="139083727#1 139083727#2 370073260#0 370073258#0 24400729#1"/>
     </vehicle>
 </routes>

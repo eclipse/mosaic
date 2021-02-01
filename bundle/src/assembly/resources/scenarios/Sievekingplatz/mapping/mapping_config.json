@@ -1,0 +1,35 @@
+{
+    "prototypes": [
+        {
+            "name": "MappingCar"
+        },
+        {
+            "name": "Bike",
+            "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ]
+        },
+        {
+            "name": "DEFAULT_VEHTYPE",
+            "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ]
+        },
+        {
+            "name": "Bus",
+            "weight": 0.4,
+            "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ]
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 10.0,
+            "route": "3",
+            "targetFlow": 1200,
+            "maxNumberVehicles": 3,
+            "lanes": [ 1, 2 ],
+            "types": [
+                {
+                    "name": "MappingCar",
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ]
+                }
+            ]
+        }
+    ]
+}
