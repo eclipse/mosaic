@@ -84,7 +84,7 @@ public class CPrototype {
     public VehicleClass vehicleClass;
 
     /**
-     * Acceleration m/s^2.
+     * Acceleration in m/s^2.
      */
     public Double accel;
 

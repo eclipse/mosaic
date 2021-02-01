@@ -86,7 +86,7 @@ public class CChargingStation {
     public String name;
 
     /**
-     * Specifies the application(s) to be used for this object (optional).
+     * Specifies the application(-s) to be used for this object (optional).
      */
     public List<String> applications;
 }
