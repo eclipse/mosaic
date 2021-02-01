@@ -7,6 +7,7 @@
         "maximumTtl": { 
             "description": "The threshold for the amount of hops for a transmission. This is an additional, hard threshold, which can't be exceeded.",
             "type": "integer",
+            "minimum": 0,
             "default": 10
         },
         "singlehopRadius": { 
@@ -20,7 +21,8 @@
         },
         "singlehopDelay": { 
             "description": "Delay configuration for a single hop.",
-            "$ref": "#/definitions/delay" 
+            "$ref": "#/definitions/delay",
+            "default": { "$ref": "#/definitions/constantDelay" }
         },
         "singlehopTransmission": {
             "description": "Transmission configuration for a single hop.",
@@ -51,11 +53,13 @@
         "delay": {
             "title": "delay",
             "description": "Object to define a delay model.",
+            "type": "object",
             "oneOf": [
                 {"$ref": "#/definitions/gammaDelay" },
                 {"$ref": "#/definitions/constantDelay"},
                 {"$ref": "#/definitions/simpleRandomDelay"}
-            ]
+            ],
+            "default": { "$ref": "#/definitions/constantDelay" }
         },
         "gammaDelay": {
             "title": "gammaDelay",
@@ -146,7 +150,7 @@
                     "type": "number",
                     "minimum": 0.0,
                     "maximum": 1.0,
-                    "default": 0
+                    "default": 0.0
                 },
                 "maxRetries": {
                     "description": "Maximum Number of retransmissions.",
