@@ -38,10 +38,9 @@
             "properties": {
                 "sensorType": { 
                     "description": "Represents the type of sensor value this event is emitting (e.g. Ice, Snow, or an arbitrary Obstacle)",
-                    "type": "string",
-                    "enum": [ "ICE", "SNOW", "OBSTACLE" ]
+                    "type": "string"
                 },
-                "value": { 
+                "value": {
                     "description": "Used for assigning a value to the event. It can be used as the strength of an event, the amount of free parking spots in a parking lot, etc.",
                     "type": "integer", 
                     "default": 1 
