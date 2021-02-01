@@ -148,7 +148,8 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                     CPrototype.group,
                     applications,
                     null,
-                    new VehicleTypeSpawner(CPrototype).convertType());
+                    new VehicleTypeSpawner(CPrototype).convertType()
+            );
             try {
                 rti.triggerInteraction(vehicleRegistration);
             } catch (Exception e) {
