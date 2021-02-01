@@ -60,7 +60,6 @@
         },       
         "additionalVehicleTypeParameters": {
             "description": "Allows to configure specialised vType parameters, which can't be configured via Mapping (e.g. parameters for the lane change model of vehicles).",
-            "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalVehicleType" }
         }
     },
@@ -68,7 +67,6 @@
         "additionalVehicleType": {
             "title": "additionalVehicleType",
             "description": "Object to define a specialised vType.",
-            "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalParameter" }
         },
         "additionalParameter": {

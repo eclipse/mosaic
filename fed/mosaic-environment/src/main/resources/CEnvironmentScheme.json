@@ -18,17 +18,14 @@
             "properties": {
                 "type": { 
                     "description": "Type of the event.",
-                    "type": "object",
                     "$ref": "#/definitions/eventType" 
                 },
                 "location": { 
                     "description": "The location of the event,, this can either be a geoArea or a string representing a specific road segment.",
-                    "type": "object",
                     "$ref": "#/definitions/eventLocation" 
                 },
                 "time": { 
                     "description": "Time of the event.",
-                    "type": "object",
                     "$ref": "#/definitions/eventTime" 
                 }
             },
@@ -58,7 +55,6 @@
             "properties": {
                 "area": {
                     "description": "The area in which the event is located in.",
-                    "type": "object",
                     "$ref": "#/definitions/area"
                 },
                 "roadSegmentId": { 
@@ -112,7 +108,6 @@
             "properties": {
                 "center": { 
                     "description": "Center of the circle.",
-                    "type": "object",
                     "$ref": "#/definitions/geoPoint" 
                 },
                 "radius": {
@@ -130,12 +125,10 @@
             "properties": {
                 "a": { 
                     "description": "GeoPoint defining the north-western vertex of the rectangle.",
-                    "type": "object",
                     "$ref": "#/definitions/geoPoint" 
                 },
                 "b": { 
                     "description": "GeoPoint defining the south-eastern vertex of the rectangle.",
-                    "type": "object",
                     "$ref": "#/definitions/geoPoint" 
                 }
             },

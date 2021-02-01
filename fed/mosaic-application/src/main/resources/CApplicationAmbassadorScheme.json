@@ -29,7 +29,6 @@
         },
         "navigationConfiguration": {
             "description": "Configuration options for the route calculation.",
-            "type": "object",
             "$ref": "#/definitions/routingByType"
         }
     },

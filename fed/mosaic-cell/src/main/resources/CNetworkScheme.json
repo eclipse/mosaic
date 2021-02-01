@@ -22,12 +22,10 @@
         },
         "globalNetwork": {
             "description": "The global network definition.",
-            "type": "object",
             "$ref": "#/definitions/globalNetwork"
         },
         "servers": {
             "description": "List of configured servers.",
-            "type": "array",
             "items": { "$ref": "#/definitions/server" }
         }
     },
@@ -82,7 +80,6 @@
             "properties": {
                 "unicast": { 
                     "description": "Point-to-point communication.",
-                    "type": "object",
                     "$ref": "#/definitions/unicast" 
                 },
                 "multicast": { 
@@ -91,7 +88,6 @@
                 },
                 "capacity": { 
                     "description": "Shared capacity between unicast and multicast.",
-                    "type": "object",
                     "anyOf": [
                         { "type": "integer", "minimum": 0 },
                         { "type": "string" }
@@ -103,7 +99,6 @@
         "delay": {
             "title": "delay",
             "description": "Object to define a delay model.",
-            "type": "object",
             "oneOf": [
                 {"$ref": "#/definitions/gammaDelay" },
                 {"$ref": "#/definitions/constantDelay"},
@@ -258,12 +253,10 @@
                 },
                 "uplink": {
                     "description": "The uplink properties of the server",
-                    "type": "object",
                     "$ref": "#/definitions/server.uplink"
                 },
                 "downlink": {
                     "description": "The dowlink properties of the server.",
-                    "type": "object",
                     "$ref": "#/definitions/server.downlink"
                 }
             },

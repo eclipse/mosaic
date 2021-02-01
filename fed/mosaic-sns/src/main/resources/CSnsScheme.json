@@ -16,17 +16,14 @@
         },
         "adhocTransmissionModel": {
             "description": "Defines the adhoc transmission model to be used for transmission.",
-            "type": "object",
             "$ref": "#/definitions/adhocTransmissionModel"
         },
         "singlehopDelay": { 
             "description": "Delay configuration for a single hop.",
-            "type": "object",
             "$ref": "#/definitions/delay" 
         },
         "singlehopTransmission": {
             "description": "Transmission configuration for a single hop.",
-            "type": "object",
             "$ref": "#/definitions/transmission"
         }
     },
@@ -37,15 +34,16 @@
             "type": "object",
             "properties": {
                 "type": { 
-                    "description": "",
-                    "type": "string" 
+                    "description": "Type of the transmission model. The simple model assumes, that all receivers can be reached even though this might not be the case in reality.",
+                    "type": "string",
+                    "enum": [ "simple","sophisticated" ]
                 },
                 "simpleMultihopDelay": {
-                    "description": "",
+                    "description": "Delay to be used for a simple multihop.",
                     "$ref": "#/definitions/delay" 
                 },
                 "simpleMultihopTransmission": { 
-                    "description": "",
+                    "description": "Transmission parameters to be used for a simple multihop.",
                     "$ref": "#/definitions/transmission" 
                 }
             }
@@ -53,7 +51,6 @@
         "delay": {
             "title": "delay",
             "description": "Object to define a delay model.",
-            "type": "object",
             "oneOf": [
                 {"$ref": "#/definitions/gammaDelay" },
                 {"$ref": "#/definitions/constantDelay"},

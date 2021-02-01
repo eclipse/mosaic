@@ -22,7 +22,6 @@
                 },
                 "area": {
                     "description": "The geographical area, which the network covers, as a rectangle.",
-                    "type": "object",
                     "$ref": "#/definitions/geoRectangle"
                 },
                 "polygon": {
@@ -35,12 +34,10 @@
                 },
                 "uplink": {
                     "description": "The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
-                    "type": "object",
                     "$ref": "#/definitions/mobileNetworkProperties.uplink"
                 },
                 "downlink": {
                     "description": "The downlink supports two individual paths: Point-to-point communication (unicast) and Point-to-multipoint communication (multicast).",
-                    "type": "object",
                     "$ref": "#/definitions/mobileNetworkProperties.downlink"
                 }
             },
@@ -271,12 +268,10 @@
             "properties": {
                 "nw": {
                     "description": "GeoPoint defining the north-western vertex of the rectangle.",
-                    "type": "object",
                     "$ref": "#/definitions/geoPoint"
                 },
                 "se": {
                     "description": "GeoPoint defining the south-east vertex of the rectangle.",
-                    "type": "object",
                     "$ref": "#/definitions/geoPoint"
                 }
             },
