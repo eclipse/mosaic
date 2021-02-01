@@ -38,7 +38,7 @@
                 "type": { 
                     "description": "Type of the transmission model. The simple model assumes, that all receivers can be reached even though this might not be the case in reality.",
                     "type": "string",
-                    "enum": [ "simple","sophisticated" ]
+                    "enum": [ "SimpleAdhocTransmissionModel","SophisticatedAdhocTransmissionModel" ]
                 },
                 "simpleMultihopDelay": {
                     "description": "Delay to be used for a simple multihop.",
