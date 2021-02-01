@@ -84,7 +84,7 @@ public class NetworkEntityIdTransformer implements IdTransformer<Integer, String
 
     @Override
     public void reset() {
-        idMap = HashBiMap.create();
-        nextId = new AtomicInteger();
+        idMap.clear();
+        nextId.set(0);
     }
 }
