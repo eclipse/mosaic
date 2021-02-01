@@ -89,11 +89,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final Set<String> vehiclesAddedViaRti = new HashSet<>();
 
     /**
-     * Instance of {@link SumoVehicleTypesWriter} used to write routes to a *.rou.xml file.
-     */
-    private SumoVehicleTypesWriter sumoVehicleTypesWriter;
-
-    /**
      * Constructor for {@link SumoAmbassador}.
      *
      * @param ambassadorParameter parameters for the ambassador containing its' id and configuration
@@ -226,7 +221,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private void sumoStartupProcedure() throws InternalFederateException {
-        writeTypesFromMapping(cachedVehicleTypesInitialization);
+        writeTypesFromRti(cachedVehicleTypesInitialization);
         startSumoLocal();
         initTraci();
         readInitialRoutesFromTraci();
@@ -443,24 +438,16 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @param typesInit Interaction contains predefined vehicle types.
      */
-    private void writeTypesFromMapping(VehicleTypesInitialization typesInit) {
-        initVehicleTypesWriter();
-        // stores the rou.xml file to the working directory. this file is required for SUMO to run
-        sumoVehicleTypesWriter
-                .addVehicleTypes(typesInit.getTypes())
-                .store();
-    }
-
-    private void initVehicleTypesWriter() {
+    private void writeTypesFromRti(VehicleTypesInitialization typesInit) {
         File dir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
         String subDir = new File(sumoConfig.sumoConfigurationFile).getParent();
         if (StringUtils.isNotBlank(subDir)) {
             dir = new File(dir, subDir);
         }
-        // keep single instance
-        if (sumoVehicleTypesWriter == null) {
-            sumoVehicleTypesWriter = new SumoVehicleTypesWriter(dir, sumoConfig);
-        }
+        SumoVehicleTypesWriter sumoVehicleTypesWriter = new SumoVehicleTypesWriter(dir, sumoConfig);
+        // stores the *.add.xml file to the working directory. this file is required for SUMO to run
+        sumoVehicleTypesWriter
+                .addVehicleTypes(typesInit.getTypes())
+                .store();
     }
-
 }

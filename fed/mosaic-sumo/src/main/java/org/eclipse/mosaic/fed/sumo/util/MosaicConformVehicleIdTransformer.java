@@ -73,6 +73,6 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
 
     @Override
     public void reset() {
-        sumoToMosaicVehicleIdMap = HashBiMap.create();
+        sumoToMosaicVehicleIdMap.clear();
     }
 }
