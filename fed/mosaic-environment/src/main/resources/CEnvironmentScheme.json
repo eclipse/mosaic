@@ -71,15 +71,14 @@
                 "type": { 
                     "description": "The type of the area.",
                     "type": "string",
-                    "enum": [ "rectangle", "circle", "polygon" ]
+                    "enum": [ "Rectangle", "Circle", "Polygon" ]
                 }
             },
-            "oneOf": [
+            "anyOf": [
                 { "$ref": "#/definitions/geoCircle" },
                 { "$ref": "#/definitions/geoRectangle" },
                 { "$ref": "#/definitions/geoPolygon" }
             ]
-
         },
         "geoPoint": {
             "title": "geoPoint",
@@ -148,7 +147,7 @@
         },
         "eventTime": {
             "title": "eventTime",
-            "description": "Object to define the temproal properties of an event.",
+            "description": "Object to define the temporal properties of an event.",
             "type": "object",
             "properties": {
                 "start": {
