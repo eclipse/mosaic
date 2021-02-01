@@ -89,7 +89,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final Set<String> vehiclesAddedViaRti = new HashSet<>();
 
     /**
-     * Instance of {@link SumoVehicleTypesWriter} used to write routes to a *.rou.xml file.
+     * Instance of {@link SumoVehicleTypesWriter} used to write vehicle types to an *.add.xml file.
      */
     private SumoVehicleTypesWriter sumoVehicleTypesWriter;
 
