@@ -1,7 +1,7 @@
 {
     "simulation": {
         "id": "Multimodal",
-        "duration": "1000s",
+        "duration": "200s",
         "randomSeed": 212323853,
         "projection": {
             "centerCoordinates": {
@@ -26,7 +26,7 @@
     "federates": {
         "application": true,
         "cell": false,
-        "environment": true,
+        "environment": false,
         "sns": false,
         "ns3": false,
         "omnetpp": false,
