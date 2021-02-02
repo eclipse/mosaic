@@ -14,7 +14,7 @@
             "items": { "$ref": "#/definitions/prototype" }
         },
         "typeDistributions": {
-            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners.",
+            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners. The typeDistribution is referenced by it's attribute name, which can be set to any valid string.",
             "$ref": "#/definitions/typeDistribution"
         },
         "vehicles": {
@@ -177,7 +177,7 @@
         },
         "typeDistribution": {
             "title": "typeDistribution",
-            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners.",
+            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners. A typeDistribution is referenced by it's attribute name, which can be set to any valid string.",
             "type": "object",
             "additionalProperties": {
                 "type": "array",
