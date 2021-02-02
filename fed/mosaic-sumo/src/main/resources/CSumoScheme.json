@@ -22,9 +22,9 @@
             "default": true
         },
         "additionalSumoParameters": { 
-            "description": "Add additional parameter to the SUMO start command. Prepend always a blank. Set a particular seed for the random number generator. By using different values you can have different but still reproducible simulation runs. Ignore possible waiting times by setting time-to-teleport to 0. This avoids unmoved vehicles (in our case also RSUs) being removed from simulation.",
+            "description": "Add additional parameters to the SUMO start command. Set a particular seed for the random number generator. By using different values you can have different but still reproducible simulation runs. Ignore possible waiting times by setting time-to-teleport to 0. This avoids unmoved vehicles (in our case also RSUs) being removed from simulation.",
             "type": "string",
-            "default": " --time-to-teleport 0  --seed 100000"
+            "default": "--time-to-teleport 0 --seed 100000"
         },
         "trafficFlowMeasurementWindowInS": {
             "description": "Defines the time window in seconds in which vehicle counts on induction loops should be aggregated to traffic flow. The value should be given in veh/h.",
@@ -43,7 +43,7 @@
             "default": true
         },
         "subscriptions": {
-            "description": "A optional list of subscriptions for each vehicle in the simulation. The less subscriptions given, the faster the simulation. Per default (if this list is set to null), all subscriptions are activated. Please note, that some components expect specific information, such as the road position. If those information is not subscribed, these components may fail.",
+            "description": "An optional list of subscriptions for each vehicle in the simulation. The less subscriptions given, the faster the simulation. Per default (if this list is set to null), all subscriptions are activated. Please note, that some components expect specific information, such as the road position. If this information is not subscribed, these components may fail.",
             "type": "array",
             "items": { "type": "string" }
         },
