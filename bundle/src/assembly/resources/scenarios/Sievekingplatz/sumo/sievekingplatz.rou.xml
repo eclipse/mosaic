@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 01/26/21 14:46:01 by Eclipse SUMO netedit Version 1.7.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="net.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="net.net.xml"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.5"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="false"/>
+    </pedestrian>
+
+    <netedit>
+        <route-files value="D:\tmp\reallab\test.rou.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="Bus" vClass="bus" length="20"/>
+    <vType id="Bike" jmIgnoreFoeProb="1.0" impatience="1.0" vClass="bicycle"/>
+
+    <vehicle id="bus_0" type="Bus" depart="0.00">
+        <route edges="139083727#2 370073260#0 370073258#0 24400729#1">
+            <stop busStop="busstop" duration="60"/>
+        </route>
+    </vehicle>
+    <vehicle id="bus_1" type="Bus" depart="0.00">
+        <route edges="139083727#1 139083727#2 370073260#0 370073258#0 24400729#1">
+            <stop busStop="busstop" duration="60"/>
+        </route>
+    </vehicle>
+
+    <vehicle id="vehicle_straight" depart="0.00">
+        <route edges="139083727#1 139083727#2 370073260#0 370073258#0 -4919237#3"/>
+    </vehicle>
+
+    <vehicle id="bike_left" type="Bike" depart="0.00" departPos="11">
+        <route edges="gneE3 370073260#0 370073258#0 -4919237#3"/>
+    </vehicle>
+    <vehicle id="bike_right" type="Bike" depart="5.00">
+        <route edges="624358653#1 624358654#0 624358654#1 gneE4 458455265"/>
+    </vehicle>
+</routes>

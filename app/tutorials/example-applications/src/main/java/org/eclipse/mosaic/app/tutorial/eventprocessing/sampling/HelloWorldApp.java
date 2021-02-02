@@ -40,7 +40,7 @@ public class HelloWorldApp extends AbstractApplication<VehicleOperatingSystem> {
 
     @Override
     public void onStartup() { //this method is declared in Application interface
-        getLog().infoSimTime(this, "Hello World!");
+        getLog().infoSimTime(this, "Hello World! I'm a " + getOs().getInitialVehicleType().getName() + ".");
         sample();
     }
 

@@ -9,9 +9,11 @@
 [![Jenkins Build](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.eclipse.org%2Fmosaic%2Fjob%2Fmosaic%2Fjob%2Fmain&label=Jenkins%20build)](https://ci.eclipse.org/mosaic/job/mosaic/)
 
 
-**Eclipse MOSAIC** is a multi-scale simulation framework in the field of smart and connected mobility. It allows to couple simulators from various domains towards a comprehensive simulation tool. 
-Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models are coupled to the RTI using HLA inspired interfaces; 
-Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador" which is directly coupled with the RTI. Currently, the following simulators are coupled with the MOSAIC RTI:
+[**Eclipse MOSAIC**](https://eclipse.org/mosaic) is a multi-scale simulation framework in the field of smart and connected mobility.
+It allows coupling simulators from various domains towards a comprehensive simulation tool. 
+Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models
+are coupled to the RTI using HLA inspired interfaces; Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador"
+which is directly coupled with the RTI. Currently, the following simulators are coupled with the MOSAIC RTI:
   * MOSAIC Application (application simulation)
   * Eclipse SUMO (traffic simulation)
   * OMNeT++ (communication simulation)
@@ -24,8 +26,9 @@ Each simulator is wrapped into a "Federate" object which is linked to an "Ambass
 The project is a Maven based multi-module project and has its child modules organized in three main categories:
   * MOSAIC RTI: modules providing the runtime infrastructure API and implementation
   * MOSAIC Libraries: mathematics, spatial, routing, utilities, communication models, and data exchange
-  * MOSAIC Ambassadors: simulators and couplings which integrate first bunch of simulation models to Eclipse MOSAIC
+  * MOSAIC Ambassadors: simulators and couplings which integrate simulation models to Eclipse MOSAIC
 
+> View our website ([https://eclipse.org/mosaic](https://eclipse.org/mosaic)) for further documentation and tutorials.
 ## The Essential edition of Eclipse MOSAIC
 
 This repository contains the *Essential* edition of Eclipse MOSAIC, that is, the runtime infrastructure, 
