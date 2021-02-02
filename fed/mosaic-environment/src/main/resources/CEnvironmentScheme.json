@@ -37,7 +37,7 @@
             "type": "object",
             "properties": {
                 "sensorType": { 
-                    "description": "Represents the type of sensor value this event is emitting (e.g. Ice, Snow, or an arbitrary Obstacle)",
+                    "description": "Represents the type of sensor value this event is emitting (e.g. Ice, Snow, or an arbitrary Obstacle). The value can be set to any valid string.",
                     "type": "string"
                 },
                 "value": {
