@@ -11,7 +11,7 @@
             "default": 10
         },
         "singlehopRadius": { 
-            "description": "Default radius to be used if an AdhocConfiguration doesn't specify a radius.",
+            "description": "Default radius in m to be used if an AdhocConfiguration doesn't specify a radius.",
             "type": "number",
             "default": 509.4 
         },
