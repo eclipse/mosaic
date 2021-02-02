@@ -72,14 +72,14 @@
                     "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
                 },
                 "minDelay": {
-                    "description": "Minimum delay for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "description": "Minimum delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
                     ]
                 },
                 "expDelay": {
-                    "description": "Expected delay for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "description": "Expected delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
@@ -99,7 +99,7 @@
                     "enum": [ "ConstantDelay" ]
                 },
                 "delay": {
-                    "description": "The delay, given in ns if defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "description": "The delay. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
@@ -124,14 +124,14 @@
                     "minimum": 0
                 },
                 "minDelay": {
-                    "description": "Minimum delay in nanoseconds for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "description": "Minimum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
                     ]
                 },
                 "maxDelay": {
-                    "description": "Maximum delay in nanoseconds for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "description": "Maximum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }

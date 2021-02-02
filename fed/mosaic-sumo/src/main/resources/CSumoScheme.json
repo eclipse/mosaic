@@ -5,7 +5,7 @@
     "description": "Schema describing the JSON file structure for the SUMO configuration.",
     "properties": {
         "updateInterval": {
-            "description": "The Interval after which positions are published. The value should be given in ms when defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '1 s'). Define the size of one simulation step in sumo.",
+            "description": "The Interval after which positions are published. If defined as a number, then the default unit is ms. Alternatively this can be defined as a string to include the unit of measurement (e.g. '1 s'). Define the size of one simulation step in sumo.",
             "anyOf": [
                 { "type": "string", "maxLength": 15 },
                 { "type": "number", "minimum": 100 }
@@ -59,7 +59,8 @@
             "items": { "type": "string" }
         },       
         "additionalVehicleTypeParameters": {
-            "description": "Allows to configure specialised vType parameters, which can't be configured via Mapping (e.g. parameters for the lane change model of vehicles).",
+            "description": "Allows to configure specialised vType parameters, which can't be configured via mapping (e.g. parameters for the lane change model of vehicles).",
+            "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalVehicleType" }
         }
     },
@@ -67,6 +68,7 @@
         "additionalVehicleType": {
             "title": "additionalVehicleType",
             "description": "Object to define a specialised vType.",
+            "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalParameter" }
         },
         "additionalParameter": {

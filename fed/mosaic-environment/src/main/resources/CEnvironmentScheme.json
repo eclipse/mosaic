@@ -151,14 +151,14 @@
             "type": "object",
             "properties": {
                 "start": {
-                    "description": "Start time of the event. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 minutes')",
+                    "description": "Start time of the event. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 minutes')",
                     "anyOf": [
                         { "type": "string", "maxLength": 20 },
                         { "type": "number", "minimum": 0 }
                     ]
                 },
                 "end": {
-                    "description": "End time of the event. The value should be given in ns if defined as number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 minutes')",
+                    "description": "End time of the event. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 minutes')",
                     "anyOf": [
                         { "type": "string", "maxLength": 20 },
                         { "type": "number", "minimum": 0 }

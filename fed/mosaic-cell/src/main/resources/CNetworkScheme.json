@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "CNetworkScheme",
-    "description": "Schema describing the JSON file structure for the network configuration. It is is used to define the properties of the global network. The value should be given in gigabit if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
+    "description": "Schema describing the JSON file structure for the network configuration. It is is used to define the properties of the global network. If defined as a number, then the default unit is Gb. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
     "type": "object",
     "properties": {
         "defaultDownlinkCapacity": { 
-            "description": "This downlink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration. The value should be given in gigabit if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
+            "description": "This downlink capacity value will be used for node-specific capacity calculation, if it wasn't set in the cell configuration. If defined as a number, then the default unit is Gb. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
             "anyOf": [
                 { "type": "integer", "minimum": 0 },
                 { "type": "string" }
@@ -116,14 +116,14 @@
                     "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
                 },
                 "minDelay": {
-                    "description": "Minimum delay for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "description": "Minimum delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
                     ]
                 },
                 "expDelay": {
-                    "description": "Expected delay for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "description": "Expected delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
@@ -143,7 +143,7 @@
                     "enum": [ "ConstantDelay" ]
                 },
                 "delay": {
-                    "description": "The delay, given in ns if defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "description": "The delay. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
@@ -168,14 +168,14 @@
                     "minimum": 0
                 },
                 "minDelay": {
-                    "description": "Minimum delay in nanoseconds for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "description": "Minimum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
                     ]
                 },
                 "maxDelay": {
-                    "description": "Maximum delay in nanoseconds for the Gamma distribution. The value should be given in ns if defined as number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
+                    "description": "Maximum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 seconds')",
                     "anyOf": [
                         { "type": "number", "minimum": 0 },
                         { "type": "string", "minLength": 2 }
