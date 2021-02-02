@@ -59,7 +59,7 @@
             "items": { "type": "string" }
         },       
         "additionalVehicleTypeParameters": {
-            "description": "Allows to configure specialised vType parameters, which can't be configured via mapping (e.g. parameters for the lane change model of vehicles).",
+            "description": "Allows to configure specialised vType parameters, which can't be configured via mapping (e.g. parameters for the lane change model of vehicles). The key of this object has to match with the name of a protype defined in the mapping configuration.",
             "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalVehicleType" }
         }
@@ -73,7 +73,7 @@
         },
         "additionalParameter": {
             "title": "additionalParameter",
-            "description": "The vehicle parameter",
+            "description": "The vehicle parameter.",
             "type": "string"
         }
     }
