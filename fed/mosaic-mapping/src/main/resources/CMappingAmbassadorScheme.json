@@ -14,7 +14,7 @@
             "items": { "$ref": "#/definitions/prototype" }
         },
         "typeDistributions": {
-            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners.",
+            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners. The typeDistribution is referenced by it's attribute name, which can be set to any valid string.",
             "$ref": "#/definitions/typeDistribution"
         },
         "vehicles": {
@@ -121,21 +121,21 @@
                     "exclusiveMinimum": 0
                 },
                 "length": {
-                    "description": "Length of the vehicle, given in meter when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '500 cm').",
+                    "description": "Length of the vehicle. If defined as a number, then the default unit is m. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '500 cm').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
                     ]
                 },
                 "maxSpeed": {
-                    "description": "Maximal speed, given in m/s when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '50 kmh').",
+                    "description": "Maximal speed. If defined as a number, then the default unit is m/s. Alternatively this can be defined as a string to include the unit of measurement (e.g. '50 kmh').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
                     ]
                 },
                 "minGap": {
-                    "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam, given in meter when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '300 cm').",
+                    "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam. If defined as a number, then the default unit is m. Alternatively this can be defined as a string to include the unit of measurement (e.g. '300 cm').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "exclusiveMinimum": 0 }
@@ -177,7 +177,7 @@
         },
         "typeDistribution": {
             "title": "typeDistribution",
-            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners.",
+            "description": "Object to define the distribution of prototypes to reuse in vehicle spawners. A typeDistribution is referenced by it's attribute name, which can be set to any valid string.",
             "type": "object",
             "additionalProperties": {
                 "type": "array",
@@ -216,7 +216,7 @@
                     "minimum": 0
                 },
                 "departSpeed": {
-                    "description": "The speed at which the vehicle is supposed to depart, given in m/s when defined as a number. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '10 kmh'). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
+                    "description": "The speed at which the vehicle is supposed to depart. If defined as a number, then the default unit is m/s. Alternatively this can be defined as a string to include the unit of measurement (e.g. '10 kmh'). Depending on the simulator this value may only be used if departSpeedMode is set to PRECISE.",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
                         { "type": "number", "minimum": 0 }
@@ -496,6 +496,7 @@
         },
         "odPoint": {
             "title": "odPoint",
+
             "description": "Object to define a point that can be referenced from an OD-matrix.",
             "type": "object",
             "properties": {

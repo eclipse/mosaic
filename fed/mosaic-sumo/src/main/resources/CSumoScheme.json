@@ -1,42 +1,79 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
+    "title": "CSumoScheme",
+    "description": "Schema describing the JSON file structure for the SUMO configuration.",
     "properties": {
         "updateInterval": {
-            "type": "number",
-            "minimum": 1
+            "description": "The Interval after which positions are published. If defined as a number, then the default unit is ms. Alternatively this can be defined as a string to include the unit of measurement (e.g. '1 s'). Define the size of one simulation step in sumo.",
+            "anyOf": [
+                { "type": "string", "maxLength": 15 },
+                { "type": "number", "minimum": 100 }
+            ],
+            "default": 1000
         },
-        "sumoConfigurationFile": { "type": "string" },
-        "exitOnInsertionError": { "type": "boolean" },
-        "additionalSumoParameters": { "type": "string" },
-        "additionalVehicleTypeParameters": {
-            "type": "object",
-            "additionalProperties": { "$ref": "#/definitions/additionalVehicleType" }
+        "sumoConfigurationFile": { 
+            "description": "Name of the main SUMO scenario configuration (*.sumocfg). If this member equals null, the SUMO ambassador will try to find a '.sumocfg' file.",
+            "type": "string" 
+        },
+        "exitOnInsertionError": { 
+            "description": "If too many vehicles try to enter the simulation, SUMO might skip some vehicles and tries to enter them later again. This behavior can lead to wrong simulation results. This parameter defines, if the ambassador should try to continue the simulation in such cases. Quit SUMO, if an error occurs while inserting a new vehicle (e.g. due to high vehicle densities) (recommended: true).",
+            "type": "boolean",
+            "default": true
+        },
+        "additionalSumoParameters": { 
+            "description": "Add additional parameters to the SUMO start command. Set a particular seed for the random number generator. By using different values you can have different but still reproducible simulation runs. Ignore possible waiting times by setting time-to-teleport to 0. This avoids unmoved vehicles (in our case also RSUs) being removed from simulation.",
+            "type": "string",
+            "default": "--time-to-teleport 0 --seed 100000"
         },
         "trafficFlowMeasurementWindowInS": {
+            "description": "Defines the time window in seconds in which vehicle counts on induction loops should be aggregated to traffic flow. The value should be given in veh/h.",
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "default": 300
         },
-        "timeGapOffset": { "type": "number" },
+        "timeGapOffset": { 
+            "description": "This offset is added to all time-gap related parametrizations of vehicles (e.g. declaring vehicle types to SUMO, changing time-gap/reaction time during simulation). This could be helpful as IDM should be parametrized with lower time gaps to achieve specific time gap values.",
+            "type": "number",
+            "default": 0 
+        },
+        "subscribeToAllVehicles": {
+            "description": "If set to true all vehicles will be subscribed. If set to false only vehicles with applications mapped to them will be subscribed.",
+            "type": "boolean",
+            "default": true
+        },
         "subscriptions": {
+            "description": "An optional list of subscriptions for each vehicle in the simulation. The less subscriptions given, the faster the simulation. Per default (if this list is set to null), all subscriptions are activated. Please note, that some components expect specific information, such as the road position. If this information is not subscribed, these components may fail.",
             "type": "array",
-            "items": [ { "type": "string" } ]
+            "items": { "type": "string" }
         },
         "trafficSignLaneWidth": {
+            "description": "The default lane width to be used when adding traffic signs per lane (only relevant when using SUMO-GUI)",
             "type": "number",
-            "minimum": 0.1
+            "minimum": 0.1,
+            "default": 3.2
         },
         "highlights": {
+            "description": "Configure to highlight a vehicle in the GUI if it's performing a route or lane change, e.g. for debugging purposes (only relevant when using SUMO-GUI).",
             "type": "array",
-            "items": [ { "type": "string" } ]
+            "items": { "type": "string" }
+        },       
+        "additionalVehicleTypeParameters": {
+            "description": "Allows to configure specialised vType parameters, which can't be configured via mapping (e.g. parameters for the lane change model of vehicles). The key of this object has to match with the name of a protype defined in the mapping configuration.",
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/additionalVehicleType" }
         }
     },
     "definitions": {
         "additionalVehicleType": {
+            "title": "additionalVehicleType",
+            "description": "Object to define a specialised vType.",
             "type": "object",
             "additionalProperties": { "$ref": "#/definitions/additionalParameter" }
         },
         "additionalParameter": {
+            "title": "additionalParameter",
+            "description": "The vehicle parameter.",
             "type": "string"
         }
     }

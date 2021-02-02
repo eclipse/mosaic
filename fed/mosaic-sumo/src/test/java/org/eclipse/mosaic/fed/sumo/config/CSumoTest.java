@@ -73,8 +73,8 @@ public class CSumoTest {
             assertThat(
                     instantiationException.getMessage(),
                     startsWith(
-                            "The CSumo config is not valid: [2,34][/updateInterval]"
-                                    + " The value must be of number type, but actual type is string."
+                            "The CSumo config is not valid: [7,31][/additionalVehicleTypeParameters/car/carFollowModel]"
+                                + " The value must be of string type, but actual type is integer."
                     )
             );  // checking that proper Exception is thrown
         }
