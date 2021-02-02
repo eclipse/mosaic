@@ -83,7 +83,7 @@
     "vehicles": [
         {
             "startingTime": 0.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [
                 {
@@ -94,7 +94,7 @@
         },
         {
             "startingTime": 160.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [
                 {
@@ -107,7 +107,7 @@
         },
         {
             "startingTime": 300.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [
                 {
