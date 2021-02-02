@@ -76,7 +76,6 @@ public class SumoTraciRule implements TestRule {
         this.sumoConfig = sumoConfig;
     }
 
-
     @Override
     public Statement apply(Statement base, Description description) {
         return new Statement() {
@@ -103,9 +102,8 @@ public class SumoTraciRule implements TestRule {
         };
     }
 
-
     private void before() throws Throwable {
-
+        TraciClient.VEHICLE_ID_TRANSFORMER.reset();
         final String sumoCmd;
         if (GUI_DEBUG) {
             sumoCmd = "sumo-gui";
@@ -143,7 +141,6 @@ public class SumoTraciRule implements TestRule {
 
         redirectOutputToLog(); // this is necessary, otherwise TraCI will hang due to full output buffer
 
-
         log.info("Connect to SUMO on port {}", port);
         final Socket socket = new Socket("localhost", port);
         socket.setPerformancePreferences(0, 100, 10);
@@ -178,6 +175,7 @@ public class SumoTraciRule implements TestRule {
     }
 
     private void after() {
+        TraciClient.VEHICLE_ID_TRANSFORMER.reset();
         try {
             log.info("Close Traci Connection");
             traci.close();

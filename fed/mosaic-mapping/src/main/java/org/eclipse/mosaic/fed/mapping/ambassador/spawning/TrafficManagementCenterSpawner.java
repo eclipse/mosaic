@@ -15,15 +15,13 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import org.eclipse.mosaic.fed.mapping.ambassador.NameGenerator;
+import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
-import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
