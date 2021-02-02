@@ -99,6 +99,7 @@
         "delay": {
             "title": "delay",
             "description": "Object to define a delay model.",
+            "type": "object",
             "oneOf": [
                 {"$ref": "#/definitions/gammaDelay" },
                 {"$ref": "#/definitions/constantDelay"},
