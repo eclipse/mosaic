@@ -194,13 +194,13 @@
                     "description": "Probability of packet retransmission (in case of configured retries > 0) or packet loss (retries = 0) for the packet retransmission/loss model. A value of 0 equals a lossfree transmission.",
                     "type": "number",
                     "minimum": 0.0,
-                    "maximum": 1.0,
-                    "default": 0
+                    "maximum": 1.0
                 },
                 "maxRetries": {
                     "description": "Maximum Number of retransmissions.",
                     "type": "integer",
-                    "minimum": 0
+                    "minimum": 0,
+                    "default": 0
                 }
             },
             "required": [ "lossProbability" ]
