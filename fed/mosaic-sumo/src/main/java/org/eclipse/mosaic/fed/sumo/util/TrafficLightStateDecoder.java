@@ -47,6 +47,7 @@ public class TrafficLightStateDecoder {
             case 'r':
                 return new TrafficLightState(true, false, false);
             case 'y':
+            case 'Y':
                 return new TrafficLightState(false, false, true);
             case 'u':
                 return new TrafficLightState(true, false, true);

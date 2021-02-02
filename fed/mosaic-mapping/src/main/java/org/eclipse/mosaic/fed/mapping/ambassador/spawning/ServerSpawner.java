@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import org.eclipse.mosaic.fed.mapping.ambassador.NameGenerator;
+import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;

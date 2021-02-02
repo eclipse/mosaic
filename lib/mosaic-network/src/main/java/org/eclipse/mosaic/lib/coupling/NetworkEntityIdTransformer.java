@@ -27,13 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NetworkEntityIdTransformer implements IdTransformer<Integer, String> {
 
     private final static Logger log = LoggerFactory.getLogger(NetworkEntityIdTransformer.class);
-    private final BiMap<String, Integer> idMap;
-    private final AtomicInteger nextId;
-
-    NetworkEntityIdTransformer() {
-        this.idMap = HashBiMap.create();
-        this.nextId = new AtomicInteger();
-    }
+    private BiMap<String, Integer> idMap = HashBiMap.create();
+    private AtomicInteger nextId = new AtomicInteger();
 
     boolean containsInternalId(String internalId) {
         return idMap.containsKey(internalId);
@@ -85,5 +80,11 @@ public class NetworkEntityIdTransformer implements IdTransformer<Integer, String
             throw new IllegalStateException(String.format("No element with the external ID %s", externalId));
         }
         return nodeId;
+    }
+
+    @Override
+    public void reset() {
+        idMap.clear();
+        nextId.set(0);
     }
 }
