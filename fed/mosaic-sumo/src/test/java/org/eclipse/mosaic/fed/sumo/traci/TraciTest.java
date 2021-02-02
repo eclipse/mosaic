@@ -33,6 +33,7 @@ import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SinceTraci;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoTraciRule;
+import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SpeedMode;
@@ -45,6 +46,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.SensorValue.SensorStatus;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -58,7 +60,6 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @RunWith(SumoRunner.class)
@@ -234,7 +235,6 @@ public class TraciTest {
                         "1_1_2_1_0", "1_1_2_1_0", "1_1_2_1_1", "1_1_2_1_1"
                 );
 
-
         assertThat(lanesActual, is(lanesExpected));
     }
 
@@ -366,7 +366,7 @@ public class TraciTest {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
             vehData = traci.getSimulationControl().getLastKnownVehicleData("veh_0");
 
-            double expectedAcc = ((vehData.getSpeed() - prevSpeed) / 1d);
+            double expectedAcc = ((vehData.getSpeed() - prevSpeed));
             if (prevSpeed < 0) {
                 expectedAcc = 0;
             }
@@ -386,7 +386,6 @@ public class TraciTest {
         traci.getSimulationControl().addVehicle("veh_0", "1", "PKW", "0", "0", "max");
         traci.getSimulationControl().subscribeForVehicle("veh_0", 0, 4000 * TIME.SECOND);
 
-
         // RUN
         VehicleData vehData = null;
         for (int t = 0; t < 200; t++) {
@@ -404,11 +403,17 @@ public class TraciTest {
         assertEquals(1.23, vehData.getVehicleEmissions().getAllEmissions().getPmx() * per1kmFactor, 0.1d);
     }
 
+    /**
+     * Simulates SUMO scenario and checks for vehicles when they should be departed.
+     *
+     * @throws InternalFederateException e.g. if there was a problem with TraCI connection
+     */
     @Test
-    public void testGetDepartedVehicles() throws Exception {
+    public void testGetDepartedVehicles() throws InternalFederateException {
         // SETUP
         final TraciClient traci = traciRule.getTraciClient();
 
+        // RUN & ASSERT
         traci.getSimulationControl().simulateUntil(0L);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
 
@@ -418,14 +423,19 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(2 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
 
+        List<String> departedVehicles;
         traci.getSimulationControl().simulateUntil(3 * TIME.SECOND);
-        assertEquals(Collections.singletonList("1"), traci.getSimulationControl().getDepartedVehicles());
+        departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        assertEquals(1, departedVehicles.size());
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), departedVehicles.get(0));
 
         traci.getSimulationControl().simulateUntil(4 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
 
         traci.getSimulationControl().simulateUntil(7 * TIME.SECOND);
-        assertEquals(Collections.singletonList("0"), traci.getSimulationControl().getDepartedVehicles());
+        departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        assertEquals(1, departedVehicles.size());
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), departedVehicles.get(0));
 
         traci.getSimulationControl().simulateUntil(8 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
