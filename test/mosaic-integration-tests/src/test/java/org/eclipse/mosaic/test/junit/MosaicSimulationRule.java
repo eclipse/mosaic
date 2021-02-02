@@ -44,6 +44,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
@@ -53,6 +55,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Path logDirectory;
 
     protected String logLevelOverride = null;
+    protected Map<String, String> federateOverride = new HashMap<>();
 
     @Override
     protected void before() throws Throwable {
@@ -65,6 +68,21 @@ public class MosaicSimulationRule extends TemporaryFolder {
     public MosaicSimulationRule logLevelOverride(String logLevelOverride) {
         this.logLevelOverride = logLevelOverride;
         return this;
+    }
+
+    public MosaicSimulationRule federateOverride(String federateName, Class federateAmbassador) {
+        this.federateOverride.put(federateName, federateAmbassador.getCanonicalName());
+        return this;
+    }
+
+    private void setFederateOverride(Map<String, String> federateOverride) {
+        for (Map.Entry<String, String> federateEntry : federateOverride.entrySet()) {
+            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
+                if (federate.id.equals(federateEntry.getKey())) {
+                    federate.classname = federateEntry.getValue();
+                }
+            }
+        }
     }
 
     public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
@@ -126,6 +144,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
             logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
+            setFederateOverride(federateOverride);
             return new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)

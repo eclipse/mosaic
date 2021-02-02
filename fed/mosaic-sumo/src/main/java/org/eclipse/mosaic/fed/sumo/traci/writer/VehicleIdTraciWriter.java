@@ -30,19 +30,17 @@ import java.io.IOException;
  */
 public class VehicleIdTraciWriter extends StringTraciWriter {
 
-    private final IdTransformer<String, String> transformer = TraciClient.VEHICLE_ID_TRANSFORMER;
-
     public VehicleIdTraciWriter() {
         super();
     }
 
     @Override
     public int getVariableLength(String argument) {
-        return super.getVariableLength(transformer.toExternalId(argument));
+        return super.getVariableLength(TraciClient.VEHICLE_ID_TRANSFORMER.toExternalId(argument));
     }
 
     @Override
     public void writeVariableArgument(DataOutputStream out, String argument) throws IOException {
-        super.writeVariableArgument(out, transformer.toExternalId(argument));
+        super.writeVariableArgument(out, TraciClient.VEHICLE_ID_TRANSFORMER.toExternalId(argument));
     }
 }
