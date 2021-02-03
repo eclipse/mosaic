@@ -41,6 +41,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -125,10 +126,11 @@ public class SpawningFramework {
         }
         // Traffic lights
         if (mappingConfiguration.trafficLights != null) {
+            int i = 0;
             for (CTrafficLight trafficLightConfigurations : mappingConfiguration.trafficLights) {
                 if (trafficLightConfigurations != null) {
                     TrafficLightSpawner tl = new TrafficLightSpawner(trafficLightConfigurations);
-                    tls.put(tl.getTlName(), tl);
+                    tls.put(ObjectUtils.defaultIfNull(tl.getTlName(), Integer.toString(++i)), tl);
                 }
             }
         }

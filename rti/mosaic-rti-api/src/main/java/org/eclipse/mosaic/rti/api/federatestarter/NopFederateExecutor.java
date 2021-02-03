@@ -26,7 +26,7 @@ import java.io.PrintStream;
 /**
  * A {@link FederateExecutor} implementation which does nothing when called (no-operation).
  * This should be used mainly by {@link FederateAmbassador}
- * implementations which do not connect with a seperate federate but which are
+ * implementations which do not connect with a separate federate but which are
  * directly coupled with the RTI.
  */
 public class NopFederateExecutor implements FederateExecutor {

@@ -49,25 +49,25 @@
     "vehicles": [
         {
             "startingTime": 1.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "PKW" } ]
         },
         {
             "startingTime": 5.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "PKW" } ]
         },
         {
             "startingTime": 8.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "TLPKW" } ]
         },
         {
             "startingTime": 10.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "PKW" } ]
         }

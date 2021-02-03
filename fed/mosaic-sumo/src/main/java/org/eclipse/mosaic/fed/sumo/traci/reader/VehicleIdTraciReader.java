@@ -30,10 +30,8 @@ import java.io.IOException;
  */
 public class VehicleIdTraciReader extends StringTraciReader {
 
-    private final IdTransformer<String, String> transformer = TraciClient.VEHICLE_ID_TRANSFORMER;
-
     @Override
     protected String readFromStream(DataInputStream in) throws IOException {
-        return transformer.fromExternalId(super.readFromStream(in));
+        return TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId(super.readFromStream(in));
     }
 }

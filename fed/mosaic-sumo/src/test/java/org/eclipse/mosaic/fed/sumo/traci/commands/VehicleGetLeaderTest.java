@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
 import org.eclipse.mosaic.fed.sumo.traci.TraciCommandException;
 import org.eclipse.mosaic.fed.sumo.traci.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
@@ -45,7 +46,7 @@ public class VehicleGetLeaderTest extends AbstractTraciCommandTest {
 
         // ASSERT
         assertNotNull(leading);
-        assertEquals("1", leading.getLeadingVehicleId());
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), leading.getLeadingVehicleId());
     }
 
     @Test

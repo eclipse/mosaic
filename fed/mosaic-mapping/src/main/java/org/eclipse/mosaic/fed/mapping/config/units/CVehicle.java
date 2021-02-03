@@ -34,7 +34,7 @@ import java.util.List;
  * JSON-configuration. This class is responsible for describing the vehicles
  * populating the simulation. It is possible to create a single vehicle
  * (maxNumberVehicles should be one in that case) or a stream of one or multiple
- * vehicles. The types (or type) are defined in the field types. When more than
+ * vehicles. The type(-s) are defined in the field types. When more than
  * one type is defined the weights in the {@link CPrototype}
  * can be used to balance them against each other.
  */
@@ -81,7 +81,7 @@ public class CVehicle implements Comparable<CVehicle> {
 
         /**
          * The center of the circle and the distance from the point from which vehicles will be spawned.
-         * If left empty (<code>0</code>) than only the closest node will be used
+         * If left empty (<code>0</code>) then only the closest node will be used.
          */
         public GeoCircle position;
     }
@@ -93,7 +93,7 @@ public class CVehicle implements Comparable<CVehicle> {
     }
 
     /**
-     * Time when the first vehicle will be created.
+     * Time at which the first vehicle will be created.
      */
     public double startingTime = 0.0;
 
@@ -110,6 +110,8 @@ public class CVehicle implements Comparable<CVehicle> {
     public double targetFlow = 600.0;
 
     /**
+     * Adjusts the departure time of individual vehicles.
+     *
      * @see SpawningMode#CONSTANT spawns vehicles by the given targetFlow
      * @see SpawningMode#GROW increases the vehicle flow demand exponentially to targetFlow until maxTime is reached
      * @see SpawningMode#SHRINK decreases the vehicle flow demand exponentially from targetFlow until maxTime is reached
@@ -125,7 +127,7 @@ public class CVehicle implements Comparable<CVehicle> {
     /**
      * List of lanes to be used. The vehicles will be evenly distributed among
      * the given lanes. When no value is given lane zero will be used for all
-     * vehicles
+     * vehicles.
      */
     public List<Integer> lanes;
 
@@ -196,6 +198,9 @@ public class CVehicle implements Comparable<CVehicle> {
      */
     public List<CPrototype> types;
 
+    /**
+     * Defines the distribution of vehicle types.
+     */
     public String typeDistribution;
 
     /**
@@ -213,7 +218,7 @@ public class CVehicle implements Comparable<CVehicle> {
     /**
      * Route that the vehicle(-s) should use. If an origin and a destination are
      * specified this route will be treated as a preference (i.e. it will be
-     * selected if it connects the two points in question)
+     * selected if it connects the two points in question).
      */
     public String route;
 

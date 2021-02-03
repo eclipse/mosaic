@@ -20,9 +20,9 @@ import org.eclipse.mosaic.fed.sns.model.AdhocTransmissionModel;
 import org.eclipse.mosaic.fed.sns.model.TransmissionParameter;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.geo.Area;
+import org.eclipse.mosaic.lib.geo.CartesianCircle;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoArea;
-import org.eclipse.mosaic.lib.geo.GeoCircle;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.model.transmission.TransmissionResult;
 import org.eclipse.mosaic.lib.objects.addressing.DestinationAddressContainer;
@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,21 +93,21 @@ public class TransmissionSimulator {
         Map<String, TransmissionResult> transmissionResults = null;
         switch (dac.getType()) {
             case AD_HOC_TOPOCAST:
-                log.debug(
-                        "Send v2xMessage.id={} from node={} as Topocast (singlehop) @time={}",
-                        interaction.getMessage().getId(),
-                        senderName,
-                        TIME.format(interaction.getTime())
-                );
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Send v2xMessage.id={} from node={} as Topocast (singlehop) @time={}",
+                            interaction.getMessage().getId(), senderName, TIME.format(interaction.getTime())
+                    );
+                }
                 transmissionResults = sendMessageAsTopocast(senderName, dac);
                 break;
             case AD_HOC_GEOCAST:
-                log.debug(
-                        "Send v2xMessage.id={} from={} as Geocast (geo routing) @time={}",
-                        interaction.getMessage().getId(),
-                        senderName,
-                        TIME.format(interaction.getTime())
-                );
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Send v2xMessage.id={} from={} as Geocast (geo routing) @time={}",
+                            interaction.getMessage().getId(), senderName, TIME.format(interaction.getTime())
+                    );
+                }
                 transmissionResults = sendMessageAsGeocast(senderName, dac);
                 break;
             default:
@@ -208,8 +209,11 @@ public class TransmissionSimulator {
      * @return a Map containing the summarized transmission results
      */
     protected Map<String, TransmissionResult> sendMessageAsGeocast(String senderName, DestinationAddressContainer dac) {
+        if (dac.getGeoArea() == null) {
+            return Collections.EMPTY_MAP;
+        }
 
-        Area<GeoPoint> destinationArea = dac.getGeoArea();
+        Area<CartesianPoint> destinationArea = dac.getGeoArea().toCartesian();
         Map<String, SimulationNode> allReceivers = getPotentialBroadcastReceivers(destinationArea);
         log.debug("Addressed nodes in destination area={}", allReceivers);
 
@@ -231,8 +235,8 @@ public class TransmissionSimulator {
         );
     }
 
-    private Area<GeoPoint> getTopocastDestinationArea(SimulationNode nodeData) {
-        return new GeoCircle(nodeData.getPosition(), nodeData.getRadius());
+    private Area<CartesianPoint> getTopocastDestinationArea(SimulationNode nodeData) {
+        return new CartesianCircle(nodeData.getPosition(), nodeData.getRadius());
     }
 
     /**
@@ -241,7 +245,7 @@ public class TransmissionSimulator {
      * @param destinationArea destination area for transmission
      * @return a map containing the
      */
-    private Map<String, SimulationNode> getPotentialBroadcastReceivers(Area<GeoPoint> destinationArea) {
+    private Map<String, SimulationNode> getPotentialBroadcastReceivers(Area<CartesianPoint> destinationArea) {
         return getEntitiesInArea(SimulationEntities.INSTANCE.getAllOnlineNodes(), destinationArea);
     }
 
@@ -255,7 +259,7 @@ public class TransmissionSimulator {
      * @return A map of the given entities, which are in the destination area.
      */
     public static Map<String, SimulationNode> getEntitiesInArea(
-            Map<String, SimulationNode> relevantEntities, Area<GeoPoint> range) {
+            Map<String, SimulationNode> relevantEntities, Area<CartesianPoint> range) {
         Map<String, SimulationNode> results = new HashMap<>();
 
         for (Map.Entry<String, SimulationNode> entityEntry : relevantEntities.entrySet()) {
@@ -274,7 +278,7 @@ public class TransmissionSimulator {
      * @param reachableArea      area, that can be reached with one hop by the sender
      * @return if receiver was found single element map, else empty map
      */
-    private Map<String, SimulationNode> getAddressedReceiver(NetworkAddress destinationAddress, Area<GeoPoint> reachableArea) {
+    private Map<String, SimulationNode> getAddressedReceiver(NetworkAddress destinationAddress, Area<CartesianPoint> reachableArea) {
         final Map<String, SimulationNode> receiver = new HashMap<>();
 
         final String destinationNodeId = IpResolver.getSingleton().reverseLookup(destinationAddress.getIPv4Address());
@@ -285,7 +289,7 @@ public class TransmissionSimulator {
         return receiver;
     }
 
-    private boolean isNodeInArea(GeoPoint nodePosition, Area<GeoPoint> destinationArea) {
+    private boolean isNodeInArea(CartesianPoint nodePosition, Area<CartesianPoint> destinationArea) {
         if (nodePosition == null) {
             log.warn("position of the unit is null");
             return false;

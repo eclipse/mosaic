@@ -128,6 +128,24 @@ public class RouteManagerTest {
     }
 
     @Test
+    public void getRouteForRTI_originSumo() throws IllegalRouteException {
+        // SETUP
+        // override behavior of getImportOrigin to simulate import origin from network file
+        doReturn(Database.IMPORT_ORIGIN_SUMO).when(database).getImportOrigin();
+
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("27011311", "21677261", "21668930", "27537748"), 0, 0);
+        Route route = instance.createRouteByCandidateRoute(candidateRoute);
+
+        //RUN
+        VehicleRoute rtiRoute = instance.createRouteForRTI(route);
+
+        assertEquals("1", rtiRoute.getId());
+        assertEquals(Arrays.asList("4400154_21487169_21677261", "32935480_21677261_21668930", "32935480_21668930_27537748"), rtiRoute.getEdgeIdList());
+        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIdList());
+        assertEquals(1213.4, rtiRoute.getLength(), 0.1d);
+    }
+
+    @Test
     public void getRoutesFromDatabaseForMessage() {
 
         //RUN

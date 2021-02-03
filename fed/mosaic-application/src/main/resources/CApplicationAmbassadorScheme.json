@@ -1,24 +1,52 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
+    "title": "CApplicationAmbassadorScheme",
+    "description": "This schema describes the JSON file structure for the application configuration, which is used to configure parameters for the creation of the simulation unit.",
     "properties": {
         "messageCacheTime": {
+            "description": "To free some memory, use a time limit for cached V2XMessages. Given in nanoseconds if defined as an integer. If the value is defined as a string the unit of measurement can be specified (e.g. '3 minutes'). Set to '0' for an infinity cache.",
+            "default": "30 s",
             "anyOf": [
                 { "type": "string", "maxLength": 20 },
                 { "type": "integer", "minimum": 0 }
             ]
         },
         "minimalPayloadLength": {
+            "description": "The minimal size which the payload of any ETSI message (CAM, DENM, IVIM) pay should have, given in bytes",
             "type": "integer"
         },
         "encodePayloads": {
+            "description": "If set to true, messages (e.g. CAMs, DENMs, or SPATMs) will be encoded into a byte array. If set to false, only their length is stored which may help to improve performance on large-scale scenarios.",
+            "default": true,
             "type": "boolean"
         },
         "eventSchedulerThreads": {
-            "type": "integer", "minimum": 1
+            "description": "Number of threads used by the MultiThreadedEventScheduler. Using more than 1 thread would result in undetermined behavior. Repeating the simulation could result in different simulation results, if some processed event uses the random number generator.",
+            "default": 1,
+            "type": "integer", 
+            "minimum": 1
         },
         "navigationConfiguration": {
-            "type": "object"
+            "description": "Configuration options for the route calculation.",
+            "$ref": "#/definitions/routingByType"
+        }
+    },
+    "definitions": {
+        "routingByType": {
+            "title": "routingByType",
+            "description": "Object to define the configuration for the route calculation.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Defines the routing implementation to be used for navigation. Possible values are 'database' or 'no-routing', or any full-qualified java class name.",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "The source for the route calculation, e.g. the path to the database containing the road network.",
+                    "type": "string"
+                }
+            }
         }
     }
 }

@@ -81,16 +81,8 @@ public class DepartSpeedTest {
     }
 
     @Test
-    public void checkWrongDepartSpeedMode() {
-        CVehicle vehicle = mapping.vehicles.get(3);
-        assertNotEquals(vehicle, null);
-        assertEquals(0, vehicle.departSpeed, 0);
-        assertEquals(VehicleDeparture.DepartSpeedMode.MAXIMUM, vehicle.departSpeedMode);
-    }
-
-    @Test
     public void checkNoDepartSpeedMode() {
-        CVehicle vehicle = mapping.vehicles.get(4);
+        CVehicle vehicle = mapping.vehicles.get(3);
         assertNotEquals(vehicle, null);
         assertEquals(500, vehicle.departSpeed, 0);
         assertEquals(VehicleDeparture.DepartSpeedMode.MAXIMUM, vehicle.departSpeedMode);
