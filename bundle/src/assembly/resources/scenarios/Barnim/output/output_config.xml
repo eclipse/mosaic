@@ -107,7 +107,7 @@
                     <entry>TrafficSign.GeoPosition.Longitude</entry>
                     <entry>TrafficSign.GeoPosition.Altitude</entry>
                     <entry>TrafficSign.Angle</entry>
-                    <entry>TrafficSign.Edge</entry>
+                    <entry>TrafficSign.ConnectionId</entry>
                     <entry>TrafficSign.Lane</entry>
                     <entry>TrafficSign.TypeId</entry>
                     <entry>TrafficSign.SignContents</entry>
