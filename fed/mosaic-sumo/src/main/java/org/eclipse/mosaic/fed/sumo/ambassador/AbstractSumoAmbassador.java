@@ -1137,11 +1137,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             connectToFederate("localhost", p.getInputStream(), p.getErrorStream());
             // read error output of process in an extra thread
-            ProcessLoggingThread outputLoggingThread = new ProcessLoggingThread(log, p.getInputStream(), "SumoAmbassador", ProcessLoggingThread.Level.Info);
-            outputLoggingThread.start();
+            new ProcessLoggingThread(log, p.getInputStream(), "sumo", ProcessLoggingThread.Level.Info).start();
+            new ProcessLoggingThread(log, p.getErrorStream(), "sumo", ProcessLoggingThread.Level.Error).start();
 
-            ProcessLoggingThread errorLoggingThread = new ProcessLoggingThread(log, p.getErrorStream(), "SumoAmbassador", ProcessLoggingThread.Level.Error);
-            errorLoggingThread.start();
         } catch (FederateExecutor.FederateStarterException e) {
             log.error("Error while executing command: {}", federateExecutor.toString());
             throw new InternalFederateException("Error while starting Sumo: " + e.getLocalizedMessage());

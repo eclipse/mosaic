@@ -15,10 +15,10 @@
 
 package org.eclipse.mosaic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
@@ -43,5 +43,15 @@ public class HighwayReleaseIT {
     public void executionSuccessful() {
         assertNull(simulationResult.exception);
         assertTrue(simulationResult.success);
+    }
+
+    @Test
+    public void correctLanePropertyChanges() throws Exception {
+        assertEquals(10, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Change disallowed vehicle classes of lane with ID=.*"
+        ));
+        assertEquals(10, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Change allowed vehicle classes of lane with ID=.*"
+        ));
     }
 }

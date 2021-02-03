@@ -36,7 +36,7 @@ public class CEventLocation implements Serializable {
     public GeoArea area;
 
     /**
-     * The ID of the road segment the event is located on (Connection ID or road ID).
+     * The ID of the road segment the event is located on (Connection ID).
      */
     public String roadSegmentId;
 }

@@ -50,7 +50,7 @@ public class BarnimReleaseIT {
         assertEquals(24,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Request to switch to new route for vehicle .*")
         );
-        assertEquals(13,
+        assertEquals(12,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Change to route [2-9] for vehicle .*")
         );
     }
@@ -67,10 +67,7 @@ public class BarnimReleaseIT {
         assertEquals(1, LogAssert.count(simulationRule, "output.csv",
                 ".*RSU_REGISTRATION;.*"
         ));
-        assertEquals(53, LogAssert.count(simulationRule, "output.csv",
-                ".*TRAFFICLIGHT_REGISTRATION;.*"
-        ));
-        assertEquals(53, LogAssert.count(simulationRule, "output.csv",
+        assertEquals(42, LogAssert.count(simulationRule, "output.csv",
                 ".*TRAFFICLIGHT_REGISTRATION;.*"
         ));
         LogAssert.contains(simulationRule, "output.csv", "RSU_REGISTRATION;0;rsu_0;52.65027;13.545;0.0;null;\\[.*\\]");

@@ -17,7 +17,6 @@ package org.eclipse.mosaic.fed.sumo.traci.commands;
 
 import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_MEAN_SPEED;
 import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_MEAN_VEHICLE_LENGTH;
-import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_OCCUPANCY;
 import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_VEHICLE_DATA;
 
 import org.eclipse.mosaic.fed.sumo.traci.AbstractTraciCommand;
@@ -46,7 +45,6 @@ public class InductionLoopSubscribe extends AbstractTraciCommand<Void> {
     public InductionLoopSubscribe() {
         this(Arrays.asList(
                 VAR_LAST_STEP_MEAN_SPEED,
-                VAR_LAST_STEP_OCCUPANCY,
                 VAR_LAST_STEP_MEAN_VEHICLE_LENGTH,
                 VAR_LAST_STEP_VEHICLE_DATA
 

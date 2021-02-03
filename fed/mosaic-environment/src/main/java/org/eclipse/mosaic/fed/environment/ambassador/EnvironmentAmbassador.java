@@ -221,8 +221,7 @@ public class EnvironmentAmbassador extends AbstractFederateAmbassador {
             return event.location.area.contains(vehicleData.getPosition());
         }
         if (event.location.roadSegmentId != null) {
-            return event.location.roadSegmentId.equals(vehicleData.getRoadPosition().getEdgeId())
-                    || event.location.roadSegmentId.equals(vehicleData.getRoadPosition().getConnection().getId());
+            return event.location.roadSegmentId.equals(vehicleData.getRoadPosition().getConnection().getId());
         }
         return false;
     }

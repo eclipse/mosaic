@@ -23,7 +23,7 @@
                     <entry>Updated:Slope</entry>
                     <entry>Updated:Stopped</entry>
                     <entry>Updated:RouteId</entry>
-                    <entry>Updated:RoadPosition.EdgeId</entry>
+                    <entry>Updated:RoadPosition.Connection.Id</entry>
                     <entry>Updated:RoadPosition.LaneIndex</entry>
                     <entry>Updated:VehicleEmissions.CurrentEmissions.Co2</entry>
                     <entry>Updated:VehicleEmissions.CurrentEmissions.Co</entry>

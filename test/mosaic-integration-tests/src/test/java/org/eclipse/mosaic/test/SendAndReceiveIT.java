@@ -208,8 +208,8 @@ public class SendAndReceiveIT {
         long timeOfSending = 310 * TIME.SECOND;
         long delayTmcUpload = 50 * TIME.MILLI_SECOND;
         long delayTmcDownload = 50 * TIME.MILLI_SECOND;
-        long delayVehUpload = 106 * TIME.MILLI_SECOND;
-        long delayVehDownload = 57 * TIME.MILLI_SECOND;
+        long delayVehUpload = 43 * TIME.MILLI_SECOND; //TODO check those values, are those random?
+        long delayVehDownload = 54 * TIME.MILLI_SECOND; //TODO check those values, are those random? if so, than its not ideal for a test
 
         long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
         long timeFromVehToTmc = delayVehUpload + delayTmcDownload;

@@ -85,7 +85,7 @@ public class RouteFixer {
         try {
             List<Connection> fixedRoute = new ArrayList<>();
 
-            Connection currConnection = null;
+            Connection currConnection;
             Connection prevConnection = null;
             for (String currConnectionId : route) {
                 currConnection = getConnection(database, currConnectionId);

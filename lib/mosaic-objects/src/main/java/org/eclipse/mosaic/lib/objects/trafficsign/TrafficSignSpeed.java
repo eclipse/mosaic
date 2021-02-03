@@ -178,7 +178,7 @@ public class TrafficSignSpeed extends TrafficSign<SpeedLimit> {
                 .append("position", getPosition())
                 .append("geoPosition", getGeoPosition())
                 .append("angle", getAngle())
-                .append("edge", getEdge())
+                .append("connection", getConnectionId())
                 .append("lane", getLane())
                 .append("isVariable", isVariable())
                 .append("visibility", getVisibility())
