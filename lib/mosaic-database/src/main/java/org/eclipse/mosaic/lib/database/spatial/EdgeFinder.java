@@ -49,14 +49,7 @@ public class EdgeFinder {
             for (int i = 0; i < con.getNodes().size() - 1; i++) {
                 Node from = con.getNodes().get(i);
                 Node to = con.getNodes().get(i + 1);
-
-                String id;
-                if (database.getImportOrigin().equals(Database.IMPORT_ORIGIN_SUMO)) {
-                    id = con.getId();
-                } else {
-                    id = con.getId() + "_" + from.getId();
-                }
-                items.add(new EdgeWrapper(new Edge(con, id, from, to)));
+                items.add(new EdgeWrapper(new Edge(con, from, to)));
             }
         }
         edgeIndex = new KdTree<>(new SpatialItemAdapter.EdgeAdapter<>(), items);

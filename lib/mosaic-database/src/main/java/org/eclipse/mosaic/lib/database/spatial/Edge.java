@@ -27,7 +27,7 @@ public class Edge {
     private final Node previousNode;
     private final Node nextNode;
 
-    Edge(@Nonnull Connection connection, @Nonnull String id, @Nonnull Node from, @Nonnull Node to) {
+    Edge(@Nonnull Connection connection, @Nonnull Node from, @Nonnull Node to) {
         this.connection = Objects.requireNonNull(connection);
         this.previousNode = Objects.requireNonNull(from);
         this.nextNode = Objects.requireNonNull(to);
