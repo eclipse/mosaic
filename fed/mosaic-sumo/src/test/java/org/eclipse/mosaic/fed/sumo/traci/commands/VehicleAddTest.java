@@ -58,7 +58,7 @@ public class VehicleAddTest extends AbstractTraciCommandTest {
         assertEquals(1, subscriptions.size());
         assertEquals("veh_0", Iterables.getOnlyElement(subscriptions).id);
         assertTrue(((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).laneId.endsWith("_1")); // free lane "1" chosen
-        assertEquals(94.50979874130276, ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).heading, 0.01);
+        assertEquals(1.34, ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).heading, 0.01);
     }
 
 }

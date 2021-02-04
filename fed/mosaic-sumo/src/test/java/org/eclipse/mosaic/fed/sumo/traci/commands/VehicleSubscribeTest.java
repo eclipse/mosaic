@@ -49,7 +49,7 @@ public class VehicleSubscribeTest extends AbstractTraciCommandTest {
         // ASSERT
         subscriptions = simulateStep.execute(traci.getTraciConnection(), 10 * TIME.SECOND);
         assertEquals(1, subscriptions.size());
-        assertEquals("1_1_2_1", ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).road);
+        assertEquals("1_1_2", ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).road);
 
         subscriptions = simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
         assertTrue(subscriptions.isEmpty());
@@ -87,7 +87,7 @@ public class VehicleSubscribeTest extends AbstractTraciCommandTest {
         assertEquals(1, subscriptions.size());
 
         VehicleSubscriptionResult result = (VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions);
-        assertEquals("1_1_2_1", result.road);
+        assertEquals("1_1_2", result.road);
         assertEquals(0d, result.lateralLanePosition, 0d);
 
         subscriptions = simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
