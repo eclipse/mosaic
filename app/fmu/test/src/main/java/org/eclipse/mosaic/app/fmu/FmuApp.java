@@ -43,8 +43,7 @@ import java.util.Hashtable;
 
 
 public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
-//    private static final Path fmuPath = Paths.get("C:", "Users", "Theo", "Nextcloud", "uni", "WS2020-2021", "dcaiti_Projekt_VuaF", "mosaic", "mosaic", "mosaic_own", "app", "fmu", "test", "fmu", "Linear_Pos.fmu");
-    private static final Path fmuPath = Paths.get("C:\\Users\\Theo\\Nextcloud\\uni\\WS2020-2021\\dcaiti_Projekt_VuaF\\mosaic\\fmu");
+    private static final Path fmuPath = Paths.get("C:\\Users\\Theo\\Nextcloud\\uni\\WS2020-2021\\dcaiti_Projekt_VuaF\\mosaic\\fmu\\");
     private static final Path fmuInUse = Paths.get(fmuPath.toAbsolutePath().normalize().toString(), "TriangularDriving.fmu");
 
     Fmu fmu;
@@ -57,9 +56,12 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     ModelVariables currentVars;
     ModelVariables previousVars;
 
+    //input variables
     static final String SPEED = "speed";
     static final String SPEED_MIN = "speedMin";
     static final String SPEED_MAX = "speedMax";
+
+    //output variables
     static final String SPEED_GOAL = "speedGoal";
 
     RealVariable speed;
@@ -67,6 +69,8 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     @Override
     public void onStartup() {
         //create fmu instance
+
+        getOs().getConfigurationPath();
         try{
             fmu = Fmu.from(new File(fmuInUse.normalize().toString()));
         }catch(IOException e){
@@ -87,7 +91,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
 
         // setup
         currentTime = getOs().getSimulationTimeMs();
-        long stepSize = currentTime - lastStepTime;
+        double stepSize = currentTime - lastStepTime;
         slaveDes = slave.getModelDescription();
 
         //in meter
@@ -106,8 +110,6 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
 
         // test output: print velocity
         if(getOs().getId().equals("veh_0")){
-//            System.out.println(updatedVehicleData.getSpeed() * 3.6f);
-
             System.out.println(new String(new char[(int)(updatedVehicleData.getSpeed() * 3.6f)]).replace("\0", "I"));
         }
 
@@ -131,6 +133,10 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     }
 
     private void reactOnEnvironmentData(SensorType sensorType, int strength){
+
+    }
+
+    public void fillVariables(Hashtable<String, Hashtable<String, String>> vars){
 
     }
 
