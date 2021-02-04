@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <input>
-        <fmuPathAbs/> "abspath/to/fmu.fmu"
-        <fmuPathRel/> "relPath/to/fmu/from/{{ where? }}.fmu"
+        <fmuPathAbs>a</fmuPathAbs>
+        <fmuPathRel>relPath/to/fmu/from/?.fmu</fmuPathRel>
 
         <vars>
             <fmuIn>
-                <speed/> "velocity"
-                <lowerBound/> "minSpeed"
-                <upperBound/> "maxSpeed"
+                <speed>velocity</speed>
+                <lowerBound>minSpeed</lowerBound>
+                <upperBound>maxSpeed</upperBound>
 <!--            ...                 -->
             </fmuIn>
 
             <fmuOut>
-                <speedGoal/> "speedGoal"
+                <speedGoal>speedGoal</speedGoal>
 <!--            ...                 -->
             </fmuOut>
         </vars>
-    </input>
+
 </configuration>
