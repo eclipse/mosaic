@@ -32,15 +32,6 @@
             ]
         },
         {
-            "departSpeedMode": "TOMATOJUICE",
-            "route": "1",
-            "types": [
-                {
-                    "name": "PKW"
-                }
-            ]
-        },
-        {
             "departSpeed": 500,
             "route": "1",
             "types": [

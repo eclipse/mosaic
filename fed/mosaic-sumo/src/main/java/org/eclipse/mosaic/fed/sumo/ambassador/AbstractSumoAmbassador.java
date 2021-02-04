@@ -167,7 +167,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     /**
      * Manages traffic signs to be added as POIs to SUMO (e.g. for visualization)
      */
-    protected final TrafficSignManager trafficSignManager;
+    private final TrafficSignManager trafficSignManager;
 
 
     /**
@@ -432,7 +432,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             File sumoWorkingDir = new File(descriptor.getHost().workingDirectory, descriptor.getId());
             trafficSignManager.configure(traci, sumoWorkingDir);
         } catch (Exception e) {
-            log.error("Could not load TraffiSignManager. No traffic signs will be displayed.");
+            log.error("Could not load TrafficSignManager. No traffic signs will be displayed.");
         }
 
     }
@@ -522,9 +522,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
     /**
      * Extract data from received {@link VehicleUpdates} interaction and apply
-     * movements of externally simulated vehicles to SUMO via TraCI calls.
+     * updates of externally simulated vehicles to SUMO via TraCI calls.
      *
-     * @param vehicleUpdates interaction indicating vehicles movements of a simulator
+     * @param vehicleUpdates interaction indicating vehicle updates of a simulator
      */
     private synchronized void receiveInteraction(VehicleUpdates vehicleUpdates) throws InternalFederateException {
         if (vehicleUpdates == null || vehicleUpdates.getSenderId().equals(getId())) {
@@ -1258,23 +1258,23 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     /**
      * This handles the case that sumo handles routing and creates new routes while doing so.
      *
-     * @param movements Vehicle movement in the simulation.
+     * @param vehicleUpdates Vehicle movement in the simulation.
      * @param time      Time at which the vehicle has moved.
      * @throws InternalFederateException Exception if an error occurred while propagating new routes.
      */
-    private void propagateNewRoutes(VehicleUpdates movements, long time) throws InternalFederateException {
+    private void propagateNewRoutes(VehicleUpdates vehicleUpdates, long time) throws InternalFederateException {
         // cache all new routes
         ArrayList<VehicleRoute> newRoutes = new ArrayList<>();
 
         // check added vehicles for new routes
-        for (VehicleData vehicleData : movements.getAdded()) {
+        for (VehicleData vehicleData : vehicleUpdates.getAdded()) {
             if (!routeCache.containsKey(vehicleData.getRouteId())) {
                 newRoutes.add(readRouteFromTraci(vehicleData.getRouteId()));
             }
         }
 
         // check updated vehicles for new routes
-        for (VehicleData vehicleData : movements.getUpdated()) {
+        for (VehicleData vehicleData : vehicleUpdates.getUpdated()) {
             if (!routeCache.containsKey(vehicleData.getRouteId())) {
                 newRoutes.add(readRouteFromTraci(vehicleData.getRouteId()));
             }
@@ -1329,7 +1329,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      *
      * @param time Current time
      */
-    void initializeTrafficLights(long time) throws InternalFederateException, IOException, IllegalValueException {
+    private void initializeTrafficLights(long time) throws InternalFederateException, IOException, IllegalValueException {
         List<String> tlgIds = traci.getSimulationControl().getTrafficLightGroupIds();
 
         List<TrafficLightGroup> tlgs = new ArrayList<>();

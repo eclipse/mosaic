@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.sumo.traci.commands;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
 import org.eclipse.mosaic.rti.TIME;
 
@@ -44,8 +45,8 @@ public class SimulationGetDepartedVehicleIdsTest extends AbstractTraciCommandTes
 
         // ASSERT
         assertEquals(2, vehicleIdsDeparted.size());
-        assertEquals("1", vehicleIdsDeparted.get(0));
-        assertEquals("0", vehicleIdsDeparted.get(1));
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), vehicleIdsDeparted.get(0));
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), vehicleIdsDeparted.get(1));
 
         simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
 

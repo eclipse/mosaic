@@ -82,6 +82,12 @@
                 <include>org.eclipse.mosaic.app:example-applications</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <outputDirectory>scenarios/Multimodal/application</outputDirectory>
+            <includes>
+                <include>org.eclipse.mosaic.app:example-applications</include>
+            </includes>
+        </dependencySet>
 
 
         <!-- MOSAIC projects -->

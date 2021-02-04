@@ -41,6 +41,13 @@
         {
             "group": "LossyServer",
             "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.LossyServer" ]
+        },
+        {
+            "group": "NoCellCommunication",
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.NoCellCommunicationServer" ]
+        },
+        {
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.NoCellCommunicationServer" ]
         }
     ],
     "rsus": [
@@ -76,7 +83,7 @@
     "vehicles": [
         {
             "startingTime": 0.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [
                 {
@@ -87,7 +94,7 @@
         },
         {
             "startingTime": 160.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [
                 {
@@ -100,7 +107,7 @@
         },
         {
             "startingTime": 300.0,
-            "route": 0,
+            "route": "0",
             "maxNumberVehicles": 1,
             "types": [
                 {

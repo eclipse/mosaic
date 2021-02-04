@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.mapping.ambassador;
+package org.eclipse.mosaic.lib.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,5 +59,18 @@ public class NameGenerator {
         } else {
             return "prot_" + prototypeCounter.getAndIncrement();
         }
+    }
+
+    /**
+     * Resets all counters for the name generators.
+     */
+    public static void reset() {
+        vehicleCounter.set(0);
+        rsuCounter.set(0);
+        tmcCounter.set(0);
+        serverCounter.set(0);
+        tlCounter.set(0);
+        chargingStationCounter.set(0);
+        prototypeCounter.set(0);
     }
 }

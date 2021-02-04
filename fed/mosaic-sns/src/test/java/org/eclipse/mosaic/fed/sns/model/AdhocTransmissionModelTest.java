@@ -23,8 +23,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.sns.ambassador.SimulationNode;
-import org.eclipse.mosaic.lib.geo.GeoArea;
-import org.eclipse.mosaic.lib.geo.GeoCircle;
+import org.eclipse.mosaic.lib.geo.CartesianArea;
+import org.eclipse.mosaic.lib.geo.CartesianCircle;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
@@ -57,7 +58,7 @@ public class AdhocTransmissionModelTest {
     private final Map<String, SimulationNode> nodesRandomlyDistributed = new HashMap<>();
 
     @Rule
-    public GeoProjectionRule coordinateTransformationRule = new GeoProjectionRule(GeoPoint.lonLat(13.3856, 52.5415));
+    public GeoProjectionRule coordinateTransformationRule = new GeoProjectionRule(GeoPoint.lonLat(15.48, 47.02));
 
     @Before
     public void setup() {
@@ -77,7 +78,7 @@ public class AdhocTransmissionModelTest {
         for (int i = 0; i < 21; ++i) {
             currentLatitude += 0.001;
             SimulationNode newNode = mock(SimulationNode.class);
-            when(newNode.getPosition()).thenReturn(GeoPoint.latLon(currentLatitude, currentLongitude));
+            when(newNode.getPosition()).thenReturn(GeoPoint.latLon(currentLatitude, currentLongitude).toCartesian());
             when(newNode.getRadius()).thenReturn(adhocRadius);
             allNodes.put("" + i, newNode);
             nodesInRow.add("" + i);
@@ -90,7 +91,7 @@ public class AdhocTransmissionModelTest {
             randomLatitude = rng.nextDouble(currentLatitude, currentLatitude + 0.005);
             randomLongitude = rng.nextDouble(currentLongitude - 0.0025, currentLongitude + 0.0025);
             SimulationNode newNode = mock(SimulationNode.class);
-            when(newNode.getPosition()).thenReturn(GeoPoint.latLon(randomLatitude, randomLongitude));
+            when(newNode.getPosition()).thenReturn(GeoPoint.latLon(randomLatitude, randomLongitude).toCartesian());
             when(newNode.getRadius()).thenReturn(adhocRadius);
             allNodes.put("" + i, newNode);
             nodesRandomlyDistributed.put("" + i, newNode);
@@ -146,10 +147,10 @@ public class AdhocTransmissionModelTest {
         // ASSERT
 
         // all entities within communication radius should receive message (units 0 to 4)
-        GeoPoint senderPosition = allNodes.get("0").getPosition();
+        CartesianPoint senderPosition = allNodes.get("0").getPosition();
         double senderRadius = allNodes.get("0").getRadius();
         for (Map.Entry<String, TransmissionResult> transmissionResultEntry : directTransmissionResults.entrySet()) {
-            GeoPoint receiverPosition = allNodes.get(transmissionResultEntry.getKey()).getPosition();
+            CartesianPoint receiverPosition = allNodes.get(transmissionResultEntry.getKey()).getPosition();
             if (senderPosition.distanceTo(receiverPosition) <= senderRadius) {
                 assertTrue(transmissionResultEntry.getValue().success);
             } else {
@@ -467,7 +468,7 @@ public class AdhocTransmissionModelTest {
 
     private Map<String, SimulationNode> getAllReceiversInRange(String senderName) {
         Map<String, SimulationNode> receivers = new HashMap<>();
-        GeoArea range = new GeoCircle(
+        CartesianArea range = new CartesianCircle(
                 allNodes.get(senderName).getPosition(),
                 allNodes.get(senderName).getRadius()
         );

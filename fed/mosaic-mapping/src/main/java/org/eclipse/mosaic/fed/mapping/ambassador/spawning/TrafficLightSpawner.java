@@ -43,7 +43,11 @@ public class TrafficLightSpawner extends UnitSpawner implements Weighted {
     public TrafficLightSpawner(CTrafficLight trafficLightConfiguration) {
         super(trafficLightConfiguration.applications, trafficLightConfiguration.name, trafficLightConfiguration.group);
         this.tlName = trafficLightConfiguration.tlGroupId;
-        this.weight = ObjectUtils.defaultIfNull(trafficLightConfiguration.weight, 0d);
+        if (this.tlName == null && trafficLightConfiguration.weight == null) {
+            this.weight = 1d;
+        } else {
+            this.weight = ObjectUtils.defaultIfNull(trafficLightConfiguration.weight, 0d);
+        }
     }
 
     public double getWeight() {

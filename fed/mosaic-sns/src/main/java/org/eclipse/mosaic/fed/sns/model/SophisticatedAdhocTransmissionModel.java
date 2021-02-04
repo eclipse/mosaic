@@ -17,9 +17,9 @@ package org.eclipse.mosaic.fed.sns.model;
 
 import org.eclipse.mosaic.fed.sns.ambassador.SimulationNode;
 import org.eclipse.mosaic.fed.sns.ambassador.TransmissionSimulator;
-import org.eclipse.mosaic.lib.geo.GeoArea;
-import org.eclipse.mosaic.lib.geo.GeoCircle;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.CartesianArea;
+import org.eclipse.mosaic.lib.geo.CartesianCircle;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.misc.Tuple;
 import org.eclipse.mosaic.lib.model.delay.Delay;
 import org.eclipse.mosaic.lib.model.transmission.TransmissionResult;
@@ -121,7 +121,7 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
 
             // do this for all of the currently sending entities
             for (Map.Entry<String, SimulationNode> floodingEntityEntry : floodingEntities.entrySet()) {
-                GeoArea singleHopReachArea = new GeoCircle(
+                CartesianArea singleHopReachArea = new CartesianCircle(
                         floodingEntityEntry.getValue().getPosition(),
                         floodingEntityEntry.getValue().getRadius()
                 );
@@ -187,7 +187,7 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
             ++currentDepth;
 
             currentEntity = currentNodes.get(currentEntityName);
-            GeoCircle singleHopReach = new GeoCircle(
+            CartesianCircle singleHopReach = new CartesianCircle(
                     currentEntity.getPosition(),
                     currentEntity.getRadius()
             );
@@ -236,7 +236,7 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
                                                     Map<String, SimulationNode> possibleReceivers,
                                                     Map<String, SimulationNode> currentNodes) {
         SimulationNode sender = currentNodes.get(senderName);
-        GeoPoint senderPosition = sender.getPosition();
+        CartesianPoint senderPosition = sender.getPosition();
         double senderRadius = sender.getRadius();
         for (SimulationNode receiver : possibleReceivers.values()) {
             if (senderPosition.distanceTo(receiver.getPosition()) <= senderRadius) {

@@ -28,6 +28,7 @@ import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.model.delay.ConstantDelay;
 import org.eclipse.mosaic.lib.model.delay.GammaRandomDelay;
 import org.eclipse.mosaic.lib.model.delay.SimpleRandomDelay;
+import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -67,6 +68,10 @@ public class CNetworkImportTest {
     @Test
     public void checkNetworkConfigAsExpected() throws InternalFederateException {
         CNetwork networkConfig = getNetworkConfig();
+
+        assertEquals(networkConfig.defaultDownlinkCapacity, 100 * DATA.GIGABIT);
+        assertEquals(networkConfig.defaultUplinkCapacity, 100 * DATA.GIGABIT);
+
         assertNotNull(networkConfig.globalNetwork);
         final CNetworkProperties globalNetwork = networkConfig.globalNetwork;
 
