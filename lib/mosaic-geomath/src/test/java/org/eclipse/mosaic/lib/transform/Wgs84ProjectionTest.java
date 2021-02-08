@@ -38,6 +38,22 @@ public class Wgs84ProjectionTest {
     }
 
     @Test
+    public void conversion_Europe_UtmBorder() {
+        GeoPoint aGeo = GeoPoint.latLon(52.236397, 12.003500); // -> is in zone 33u
+        GeoPoint bGeo = GeoPoint.latLon(52.236397, 11.909200); // -> is in zone 32u
+
+        Wgs84Projection projection = new Wgs84Projection(aGeo);
+
+        UtmPoint aUtm33 = projection.geographicToUtm(aGeo);
+        UtmPoint bUtm33 = projection.geographicToUtm(bGeo, aUtm33.getZone(), new MutableUtmPoint()); // convert with target zone 33u
+
+        double geoDistance = new HarvesineGeoCalculator().distanceBetween(aGeo, bGeo, new Vector3d()).magnitude();
+        double utmDistance = aUtm33.distanceTo(bUtm33);
+
+        assertEquals(geoDistance, utmDistance, 15); // utm-distance should be quite equal to geographic distance
+    }
+
+    @Test
     public void conversion_Europe_Austria() {
         testUtmConversion(
                 GeoPoint.latLon(47.0631844, 15.5854173),
@@ -153,9 +169,18 @@ public class Wgs84ProjectionTest {
     }
 
     private void testUtmConversion(GeoPoint wgs84, MutableUtmPoint utm) {
-        GeoProjection transform = new Wgs84Projection(wgs84);
+        testUtmConversion(wgs84, utm, null);
+    }
 
-        UtmPoint actualUtm = transform.geographicToUtm(wgs84);
+    private void testUtmConversion(GeoPoint wgs84, MutableUtmPoint utm, UtmZone zone) {
+        Wgs84Projection transform = new Wgs84Projection(wgs84);
+
+        UtmPoint actualUtm;
+        if (zone != null) {
+            actualUtm = transform.geographicToUtm(wgs84, zone, new MutableUtmPoint());
+        } else {
+            actualUtm = transform.geographicToUtm(wgs84);
+        }
 
         assertEquals(utm.getEasting(), actualUtm.getEasting(), 1d);
         assertEquals(utm.getNorthing(), actualUtm.getNorthing(), 1d);
