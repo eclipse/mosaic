@@ -40,8 +40,10 @@ public class Wgs84Projection extends GeoProjection {
     private final ReferenceEllipsoid ellipsoid = ReferenceEllipsoid.WGS_84;
 
     private final GeoPoint geoOrigin;
+    private final UtmPoint utmOrigin;
 
     private boolean failIfOutsideWorld = false;
+    private boolean useZoneOfUtmOrigin = false;
 
     /**
      * Initializes the projection based on the {@link GeoPoint}
@@ -52,6 +54,7 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection(GeoPoint origin) {
         this.geoOrigin = origin;
+        this.utmOrigin = geographicToUtm(origin);
     }
 
     /**
@@ -63,6 +66,7 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection(UtmPoint origin) {
         this.geoOrigin = utmToGeographic(origin);
+        this.utmOrigin = origin;
     }
 
     /**
@@ -70,7 +74,7 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection(GeoPoint playgroundCenter, CartesianPoint cartesianOffset) {
         final UtmZone zone = UtmZone.from(playgroundCenter);
-        UtmPoint utmOrigin = new MutableUtmPoint(
+        this.utmOrigin = new MutableUtmPoint(
                 -cartesianOffset.getX(),
                 -cartesianOffset.getY(),
                 -cartesianOffset.getZ(),
@@ -87,6 +91,16 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection failIfOutsideWorld() {
         this.failIfOutsideWorld = true;
+        return this;
+    }
+
+    /**
+     * Enables the option to use the zone of the UTM origin point when converting to UTM Point.
+     *
+     * @return this projection
+     */
+    public Wgs84Projection useZoneOfUtmOrigin() {
+        this.useZoneOfUtmOrigin = true;
         return this;
     }
 
@@ -124,22 +138,6 @@ public class Wgs84Projection extends GeoProjection {
 
     @Override
     public MutableUtmPoint geographicToUtm(GeoPoint geoPoint, MutableUtmPoint result) {
-        return geographicToUtm(geoPoint, null, result);
-    }
-
-    /**
-     * This extra method allows to pass a target UTM zone. The number of this zone
-     * is used for further calculation instead of calculating a zone based on the given
-     * coordinates. This is useful for batch conversion of GeoPoints which are spread
-     * across two zones simultaneously (e.g. near borders of zones).
-     *
-     * @param geoPoint the geographical point to transform to UTM coordinates
-     * @param targetZone the target zone to use during transformation, if non given, the zone is calculated based on the input coordinates
-     * @param result the {@link UtmPoint} which holds the result of the transformation
-     * @return the {@link UtmPoint} which holds the result of the transformation
-     */
-    public MutableUtmPoint geographicToUtm(GeoPoint geoPoint, UtmZone targetZone, MutableUtmPoint result) {
-
         double resultEasting;
         double resultNorthing;
 
@@ -166,8 +164,9 @@ public class Wgs84Projection extends GeoProjection {
         double longOriginRad;
         int zoneNumber;
 
-        // calculate zone number if not given (default case)
-        if (targetZone == null) {
+        if (useZoneOfUtmOrigin && utmOrigin != null) {
+            zoneNumber = utmOrigin.getZone().number;
+        } else {
             zoneNumber = (int) ((longTemp + 180) / 6) + 1;
 
             if (geoPoint.getLatitude() >= 56.0 && geoPoint.getLatitude() < 64.0 && longTemp >= 3.0 && longTemp < 12.0) {
@@ -186,8 +185,6 @@ public class Wgs84Projection extends GeoProjection {
                     zoneNumber = 37;
                 }
             }
-        } else {
-            zoneNumber = targetZone.number;
         }
 
 

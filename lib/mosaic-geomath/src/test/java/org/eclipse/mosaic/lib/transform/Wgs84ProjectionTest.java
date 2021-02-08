@@ -42,10 +42,12 @@ public class Wgs84ProjectionTest {
         GeoPoint aGeo = GeoPoint.latLon(52.236397, 12.003500); // -> is in zone 33u
         GeoPoint bGeo = GeoPoint.latLon(52.236397, 11.909200); // -> is in zone 32u
 
-        Wgs84Projection projection = new Wgs84Projection(aGeo);
+        Wgs84Projection projection = new Wgs84Projection(aGeo).useZoneOfUtmOrigin();
 
         UtmPoint aUtm33 = projection.geographicToUtm(aGeo);
-        UtmPoint bUtm33 = projection.geographicToUtm(bGeo, aUtm33.getZone(), new MutableUtmPoint()); // convert with target zone 33u
+        UtmPoint bUtm33 = projection.geographicToUtm(bGeo); // convert with target zone 33u
+
+        assertEquals(aUtm33.getZone(), bUtm33.getZone());
 
         double geoDistance = new HarvesineGeoCalculator().distanceBetween(aGeo, bGeo, new Vector3d()).magnitude();
         double utmDistance = aUtm33.distanceTo(bUtm33);
@@ -169,18 +171,9 @@ public class Wgs84ProjectionTest {
     }
 
     private void testUtmConversion(GeoPoint wgs84, MutableUtmPoint utm) {
-        testUtmConversion(wgs84, utm, null);
-    }
-
-    private void testUtmConversion(GeoPoint wgs84, MutableUtmPoint utm, UtmZone zone) {
         Wgs84Projection transform = new Wgs84Projection(wgs84);
 
-        UtmPoint actualUtm;
-        if (zone != null) {
-            actualUtm = transform.geographicToUtm(wgs84, zone, new MutableUtmPoint());
-        } else {
-            actualUtm = transform.geographicToUtm(wgs84);
-        }
+        UtmPoint actualUtm = transform.geographicToUtm(wgs84);
 
         assertEquals(utm.getEasting(), actualUtm.getEasting(), 1d);
         assertEquals(utm.getNorthing(), actualUtm.getNorthing(), 1d);

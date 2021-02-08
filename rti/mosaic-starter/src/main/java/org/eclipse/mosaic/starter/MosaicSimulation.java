@@ -258,7 +258,9 @@ public class MosaicSimulation {
                     -projectionConfig.cartesianOffset.getX(),
                     -projectionConfig.cartesianOffset.getY()
             );
-            return new Wgs84Projection(origin).failIfOutsideWorld();
+            return new Wgs84Projection(origin)
+                    .failIfOutsideWorld()
+                    .useZoneOfUtmOrigin();
         } catch (Exception e) {
             throw new IllegalArgumentException("Error while processing the Projection configuration.", e);
         }
