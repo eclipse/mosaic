@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.lib.routing;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
@@ -110,4 +111,12 @@ public interface Routing {
      * @return the node object identified by the given nodeId.
      */
     INode getNode(String nodeId);
+
+    /**
+     * Getter for the connection by given Id.
+     *
+     * @param nodeId the id of the requested connection.
+     * @return the connection object identified by the given nodeId.
+     */
+    IConnection getConnection(String nodeId);
 }

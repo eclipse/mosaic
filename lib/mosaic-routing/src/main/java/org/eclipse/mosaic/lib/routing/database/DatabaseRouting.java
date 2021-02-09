@@ -26,6 +26,7 @@ import org.eclipse.mosaic.lib.database.spatial.EdgeFinder;
 import org.eclipse.mosaic.lib.database.spatial.NodeFinder;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoUtils;
+import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
@@ -63,8 +64,6 @@ public class DatabaseRouting implements Routing {
     private EdgeFinder edgeFinder;
     private NodeFinder nodeFinder;
 
-    private boolean isEdgeNamingMosaicCompatible = false;
-
     private GraphHopperRouting routing;
 
     @Override
@@ -84,7 +83,6 @@ public class DatabaseRouting implements Routing {
         // actually try to load
         try {
             this.scenarioDatabase = Database.loadFromFile(dbFile);
-            isEdgeNamingMosaicCompatible = !this.scenarioDatabase.getImportOrigin().equals(Database.IMPORT_ORIGIN_SUMO);
         } catch (RuntimeException re) {
             throw new InternalFederateException("Could not load database file! Invalid type or outdated?", re);
         }
@@ -119,6 +117,15 @@ public class DatabaseRouting implements Routing {
             throw new IllegalArgumentException(String.format("No such (%s) node existing.", nodeId));
         }
         return new LazyLoadingNode(n);
+    }
+
+    @Override
+    public IConnection getConnection(String nodeId) {
+        Connection c = scenarioDatabase.getConnection(nodeId);
+        if (c == null) {
+            throw new IllegalArgumentException(String.format("No such (%s) connetion existing.", nodeId));
+        }
+        return new LazyLoadingConnection(c);
     }
 
     /**
@@ -196,7 +203,7 @@ public class DatabaseRouting implements Routing {
      */
     @Override
     public IRoadPosition refineRoadPosition(IRoadPosition roadPosition) {
-        if (!isEdgeNamingMosaicCompatible || roadPosition instanceof LazyLoadingRoadPosition) {
+        if (roadPosition instanceof LazyLoadingRoadPosition) {
             return roadPosition;
         }
         return new LazyLoadingRoadPosition(roadPosition, scenarioDatabase);

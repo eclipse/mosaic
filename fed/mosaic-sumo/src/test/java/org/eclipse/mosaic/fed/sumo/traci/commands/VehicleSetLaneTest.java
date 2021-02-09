@@ -40,7 +40,8 @@ public class VehicleSetLaneTest extends AbstractTraciCommandTest {
         // PRE-ASSERT
         VehicleSubscriptionResult vehInfo =
                 (VehicleSubscriptionResult) Iterables.getOnlyElement(simulateStep.execute(traci.getTraciConnection(), 6 * TIME.SECOND));
-        assertEquals("1_1_2_0", vehInfo.laneId);
+        assertEquals("1_1_2", vehInfo.edgeId);
+        assertEquals(0, vehInfo.laneIndex);
         assertEquals(5d, vehInfo.position.getX(), 5d);
         assertEquals(11d, vehInfo.position.getY(), 5d);
 
@@ -49,7 +50,7 @@ public class VehicleSetLaneTest extends AbstractTraciCommandTest {
 
         // ASSERT
         vehInfo = (VehicleSubscriptionResult) Iterables.getOnlyElement(simulateStep.execute(traci.getTraciConnection(), 9 * TIME.SECOND));
-        assertEquals("1_1_2_1", vehInfo.laneId);
+        assertEquals(1, vehInfo.laneIndex);
     }
 
     @Test

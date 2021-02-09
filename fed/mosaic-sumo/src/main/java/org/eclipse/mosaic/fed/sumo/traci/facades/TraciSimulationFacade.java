@@ -37,7 +37,6 @@ import org.eclipse.mosaic.fed.sumo.traci.complex.AbstractSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.traci.complex.InductionLoopSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.traci.complex.LaneAreaSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.traci.complex.LeadingVehicle;
-import org.eclipse.mosaic.fed.sumo.traci.complex.SumoRawRoadPosition;
 import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.traci.complex.TrafficLightSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.traci.complex.VehicleSubscriptionResult;
@@ -66,7 +65,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -383,7 +381,7 @@ public class TraciSimulationFacade {
                         continue;
                     }
                     if (!lastVehicleData.isStopped()) {
-                        log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.road);
+                        log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName()).copyFrom(lastVehicleData).stopped(true).create();
                 } else if (veh.position == null || !veh.position.isValid()) {
@@ -763,18 +761,17 @@ public class TraciSimulationFacade {
      * @return The position in the form of IRoadPosition.
      */
     private IRoadPosition getRoadPosition(VehicleData lastVehicleData, VehicleSubscriptionResult veh) {
-        if (veh.road == null || veh.laneId == null) {
+        if (veh.edgeId == null) {
             return null;
         }
 
-        String preRoadID = (veh.laneId.length() != 0 ? veh.laneId : veh.road);
         IRoadPosition roadPosition = null;
-        if (!preRoadID.contains(":")) {
+        if (!veh.edgeId.contains(":")) {
             roadPosition = createRoadPosition(
-                    preRoadID,
+                    veh.edgeId,
+                    veh.laneIndex,
                     veh.lanePosition,
-                    veh.lateralLanePosition,
-                    lastVehicleData != null ? lastVehicleData.getRoadPosition() : null
+                    veh.lateralLanePosition
             );
         } else if (lastVehicleData != null) {
             roadPosition = lastVehicleData.getRoadPosition();
@@ -800,32 +797,13 @@ public class TraciSimulationFacade {
     /**
      * Creates a road position as {@link IRoadPosition}.
      *
-     * @param roadId              The Id of the road.
+     * @param edgeId              The Id of the edge.
      * @param offset              The offset.
      * @param lateralLanePosition The lateral lane position.
-     * @param previous            The previous position.
      * @return Road position.
      */
-    private IRoadPosition createRoadPosition(String roadId, double offset, double lateralLanePosition, IRoadPosition previous) {
-        final String[] roadParts = StringUtils.split(roadId, '_');
-        if (roadParts.length == 4) {
-            return new SimpleRoadPosition(
-                    roadParts[0],
-                    roadParts[1],
-                    roadParts[2],
-                    Integer.parseInt(roadParts[3]),
-                    offset,
-                    lateralLanePosition
-            );
-        } else if (roadParts.length > 1) {
-            String edgeId = StringUtils.substringBeforeLast(roadId, "_");
-            int laneIndex = Integer.parseInt(roadParts[roadParts.length - 1]);
-            return new SumoRawRoadPosition(edgeId, laneIndex, offset);
-        } else if (previous != null) {
-            return previous;
-        } else {
-            return new SumoRawRoadPosition(roadId, offset, lateralLanePosition);
-        }
+    private IRoadPosition createRoadPosition(String edgeId, int laneIndex, double offset, double lateralLanePosition) {
+        return new SimpleRoadPosition(edgeId, laneIndex, offset, lateralLanePosition);
     }
 
     /**

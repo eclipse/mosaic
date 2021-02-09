@@ -251,7 +251,7 @@ public class TraciTest {
         // ASSERT (by checking if vehicle is first edge on route)
         final TraciSimulationStepResult result = traci.getSimulationControl().simulateUntil(3 * TIME.SECOND);
         assertVehicleInSimulation(result.getVehicleUpdates(), "veh_0");
-        assertEquals("2", traci.getSimulationControl().getLastKnownVehicleData("veh_0").getRoadPosition().getConnection().getWay().getId());
+        assertEquals("2_5_2", traci.getSimulationControl().getLastKnownVehicleData("veh_0").getRoadPosition().getConnectionId());
     }
 
     @Test

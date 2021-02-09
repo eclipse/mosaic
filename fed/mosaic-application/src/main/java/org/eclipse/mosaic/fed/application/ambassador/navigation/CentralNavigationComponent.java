@@ -300,8 +300,18 @@ public class CentralNavigationComponent {
      * @param nodeId The nodeId, that the position is wanted of
      * @return A {@link GeoPoint} representing the position of the node.
      */
-    public GeoPoint getPositionOfNode(String nodeId) {
+    private GeoPoint getPositionOfNode(String nodeId) {
         return routing.getNode(nodeId).getPosition();
+    }
+
+    /**
+     * Get the length of a specific connection.
+     *
+     * @param connectionId the id of the connection
+     * @return the length of the connection in [m]
+     */
+    double getLengthOfConnection(String connectionId) {
+        return routing.getConnection(connectionId).getLength();
     }
 
     /**

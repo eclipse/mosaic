@@ -63,9 +63,9 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
         } else if (varId == CommandRetrieveVehicleState.VAR_ACCELERATION.var) {
             result.acceleration = (double) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_ROAD_ID.var) {
-            result.road = (String) varValue;
-        } else if (varId == CommandRetrieveVehicleState.VAR_LANE_ID.var) {
-            result.laneId = (String) varValue;
+            result.edgeId = (String) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_LANE_INDEX.var) {
+            result.laneIndex = (int) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_ROUTE_ID.var) {
             result.routeId = (String) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_SIGNAL_STATES.var) {
