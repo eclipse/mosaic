@@ -207,7 +207,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * @param interaction interaction containing vehicle types
      * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci() or completeRoutes()
      */
-    private synchronized void receiveInteraction(VehicleTypesInitialization interaction) throws InternalFederateException {
+    private void receiveInteraction(VehicleTypesInitialization interaction) throws InternalFederateException {
         log.debug("Received VehicleTypesInitialization");
 
         cachedVehicleTypesInitialization = interaction;
