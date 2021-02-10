@@ -214,7 +214,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
 
     @VisibleForTesting
     boolean targetQuery(RoutingPosition targetPosition, VehicleRoute route, GeoPoint routeTargetPoint) {
-        boolean reachedLastEdge = targetPosition.getConnectionID() != null && route.getLastConnectionId().startsWith(targetPosition.getConnectionID());
+        boolean reachedLastEdge = targetPosition.getConnectionId() != null && route.getLastConnectionId().startsWith(targetPosition.getConnectionId());
         boolean reachedTargetGeoPoint = targetPosition.getPosition().distanceTo(routeTargetPoint) < POSITION_DIFFERENCE_THRESHOLD;
         return reachedLastEdge || reachedTargetGeoPoint;
     }

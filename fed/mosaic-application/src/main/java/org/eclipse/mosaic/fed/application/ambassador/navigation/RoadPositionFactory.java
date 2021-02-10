@@ -31,16 +31,15 @@ import java.util.List;
 public class RoadPositionFactory {
 
     /**
-     * Creates a {@link IRoadPosition} based on the edgeId in SUMO format
-     * "&lt;way&gt;_&lt;connectionFromNode&gt;_&lt;connectionToNode&gt;_&lt;previousNode&gt;".
+     * Creates a {@link IRoadPosition} based on an arbitrary edge ID (= connection ID) in SUMO.
      *
-     * @param connectionId The id of the edge in SUMO format.
+     * @param edgeId       The id of the edge.
      * @param laneIndex    The index of the lane where the road position is generated at.
      * @param edgeOffset   the offset in m along the edge where the position is generated at
      * @return A new {@link IRoadPosition} with all available data.
      */
-    public static IRoadPosition createFromSumoEdge(final String connectionId, final int laneIndex, final double edgeOffset) {
-        return refine(new SimpleRoadPosition(connectionId, laneIndex, edgeOffset, 0d));
+    public static IRoadPosition createFromSumoEdge(final String edgeId, final int laneIndex, final double edgeOffset) {
+        return refine(new SimpleRoadPosition(edgeId, laneIndex, edgeOffset, 0d));
     }
 
     /**

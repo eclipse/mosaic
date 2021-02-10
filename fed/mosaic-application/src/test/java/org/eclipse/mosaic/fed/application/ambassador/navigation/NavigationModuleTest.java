@@ -146,7 +146,7 @@ public class NavigationModuleTest {
         assertNotNull(findRouteRequest);
         assertEquals(vehicleDataMock.getPosition(), findRouteRequest.getSource().getPosition());
         assertEquals(vehicleDataMock.getHeading(), findRouteRequest.getSource().getHeading(), 0.01d);
-        when(navigationModule.getRoadPosition().getConnection().getId()).thenReturn(findRouteRequest.getSource().getConnectionID());
+        when(navigationModule.getRoadPosition().getConnection().getId()).thenReturn(findRouteRequest.getSource().getConnectionId());
         assertEquals(params, findRouteRequest.getRoutingParameters());
     }
 
