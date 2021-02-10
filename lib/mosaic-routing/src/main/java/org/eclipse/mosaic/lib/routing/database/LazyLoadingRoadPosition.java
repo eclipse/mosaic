@@ -24,6 +24,7 @@ import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.Iterator;
 import javax.annotation.Nullable;
 
 /**
@@ -191,10 +192,11 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
 
         Node prevNode = null;
         double distance = 0;
-        for (Node node : connection.getNodes()) {
+        for (Iterator<Node> nodeIterator = connection.getNodes().iterator(); nodeIterator.hasNext(); ) {
+            Node node = nodeIterator.next();
             if (prevNode != null) {
                 distance += prevNode.getPosition().distanceTo(node.getPosition());
-                if (distance > offset) {
+                if (distance > offset || !nodeIterator.hasNext()) {
                     previousNode = new LazyLoadingNode(prevNode);
                     upcomingNode = new LazyLoadingNode(node);
                     return;

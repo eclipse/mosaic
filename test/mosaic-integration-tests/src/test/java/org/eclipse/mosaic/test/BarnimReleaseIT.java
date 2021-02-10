@@ -50,7 +50,7 @@ public class BarnimReleaseIT {
         assertEquals(24,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Request to switch to new route for vehicle .*")
         );
-        assertEquals(12,
+        assertEquals(14,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Change to route [2-9] for vehicle .*")
         );
     }

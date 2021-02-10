@@ -72,8 +72,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
             source = new RoutingPosition(
                     vehicleData.getPosition(),
                     vehicleData.getHeading(),
-                    vehicleData.getRoadPosition().getConnection().getId(),
-                    vehicleData.getRoadPosition().getPreviousNode().getId()
+                    vehicleData.getRoadPosition().getConnection().getId()
             );
         } else {
             source = new RoutingPosition(vehicleData.getPosition(), vehicleData.getHeading());
@@ -215,16 +214,9 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
 
     @VisibleForTesting
     boolean targetQuery(RoutingPosition targetPosition, VehicleRoute route, GeoPoint routeTargetPoint) {
-        if (targetPosition.getConnectionID() != null && route.getLastConnectionId().startsWith(targetPosition.getConnectionID())) {
-            return true;
-        }
-        if (targetPosition.getNodeID() != null && targetPosition.getNodeID().equals(route.getLastNodeId())) {
-            return true;
-        }
-        if (targetPosition.getPosition().distanceTo(routeTargetPoint) < POSITION_DIFFERENCE_THRESHOLD) {
-            return true;
-        }
-        return false;
+        boolean reachedLastEdge = targetPosition.getConnectionID() != null && route.getLastConnectionId().startsWith(targetPosition.getConnectionID());
+        boolean reachedTargetGeoPoint = targetPosition.getPosition().distanceTo(routeTargetPoint) < POSITION_DIFFERENCE_THRESHOLD;
+        return reachedLastEdge || reachedTargetGeoPoint;
     }
 
     @Override

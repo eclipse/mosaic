@@ -34,7 +34,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
-import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
@@ -101,9 +100,7 @@ public class NavigationModuleTest {
         when(vehicleDataMock.getPosition()).thenReturn(GeoPoint.latLon(10, 10));
         when(vehicleDataMock.getRoadPosition()).thenReturn(mock(IRoadPosition.class));
         when(vehicleDataMock.getRoadPosition().getConnection()).thenReturn(mock(IConnection.class));
-        when(vehicleDataMock.getRoadPosition().getPreviousNode()).thenReturn(mock(INode.class));
         when(navigationModule.getRoadPosition().getConnectionId()).thenReturn("1_1_2");
-        when(navigationModule.getRoadPosition().getPreviousNode().getId()).thenReturn("1");
         doAnswer((Answer<RoutingResponse>) invocation -> {
             findRouteRequest = invocation.getArgument(0);
             return mock(RoutingResponse.class);
@@ -150,7 +147,6 @@ public class NavigationModuleTest {
         assertEquals(vehicleDataMock.getPosition(), findRouteRequest.getSource().getPosition());
         assertEquals(vehicleDataMock.getHeading(), findRouteRequest.getSource().getHeading(), 0.01d);
         when(navigationModule.getRoadPosition().getConnection().getId()).thenReturn(findRouteRequest.getSource().getConnectionID());
-        when(navigationModule.getRoadPosition().getPreviousNode().getId()).thenReturn(findRouteRequest.getSource().getNodeID());
         assertEquals(params, findRouteRequest.getRoutingParameters());
     }
 
@@ -205,8 +201,7 @@ public class NavigationModuleTest {
                 new RoutingPosition(
                         GeoPoint.latLon(30, 40),
                         0.0,
-                        "connectionID",
-                        "nodeID"
+                        "connectionID"
                 )
         );
 
@@ -259,9 +254,8 @@ public class NavigationModuleTest {
         Collection<CandidateRoute> coll = navigationModule.retrieveAllValidRoutesToTarget(new RoutingPosition(
                 GeoPoint.latLon(30, 40),
                 0.0,
-                "connectionID",
-                "nodeID")
-        );
+                "connectionID"
+        ));
 
         // ASSERT
         testRetrieveAllValidExistingRoutesToNoTargetValidRoute_assert(coll);
@@ -313,24 +307,13 @@ public class NavigationModuleTest {
     }
 
     /**
-     * Asserts that targetQuery method returns true iff target position and route's last node are equal.
-     */
-    @Test
-    public void testTargetQueryNodeIdsEqual() {
-        RoutingPosition targetPosition =
-                new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, "Some_Not_Equal_Edge_ID", "Node_ID");
-        VehicleRoute route = new VehicleRoute("123", Collections.singletonList("Edge_ID"), Collections.singletonList("Node_ID"), 0.0);
-        assertTrue(navigationModule.targetQuery(targetPosition, route, GeoPoint.latLon(90, 90)));
-    }
-
-    /**
      * Asserts that targetQuery method returns true iff the two geoPoints are closer to
      * each other than specified in POSITION_DIFFERENCE_THREASHOLD constant.
      */
     @Test
     public void testTargetQueryGeoPointsClose() {
         RoutingPosition targetPosition =
-                new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, "Some_Not_Equal_Edge_ID", "Some_Not_Equal_Node_ID");
+                new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, "Some_Not_Equal_Edge_ID");
         VehicleRoute route = new VehicleRoute("123", Collections.singletonList("Edge_ID"), Collections.singletonList("Node_ID"), 0.0);
         assertTrue(navigationModule.targetQuery(targetPosition, route, GeoPoint.latLon(30, 40)));
     }
@@ -340,7 +323,7 @@ public class NavigationModuleTest {
      */
     @Test
     public void testTargetQueryNullSafe() {
-        RoutingPosition targetPosition = new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, null, null);
+        RoutingPosition targetPosition = new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, null);
         VehicleRoute route = new VehicleRoute("123", Collections.singletonList("Edge_ID"), Collections.singletonList("Node_ID"), 0.0);
         navigationModule.targetQuery(targetPosition, route, GeoPoint.latLon(30, 40));
     }
@@ -351,7 +334,7 @@ public class NavigationModuleTest {
     @Test
     public void testTargetQueryFalse() {
         RoutingPosition targetPosition =
-                new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, "Some_Not_Equal_Edge_ID", "Some_Not_Equal_Node_ID");
+                new RoutingPosition(GeoPoint.latLon(30, 40), 0.0, "Some_Not_Equal_Edge_ID");
         VehicleRoute route = new VehicleRoute("123", Collections.singletonList("Edge_ID"), Collections.singletonList("Node_ID"), 0.0);
         assertFalse(navigationModule.targetQuery(targetPosition, route, GeoPoint.latLon(90, 90)));
     }

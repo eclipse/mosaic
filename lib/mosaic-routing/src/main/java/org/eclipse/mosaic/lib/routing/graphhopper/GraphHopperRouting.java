@@ -210,9 +210,7 @@ public class GraphHopperRouting {
      * @return Node of the source.
      */
     private Node determinePrefixNode(final RoutingPosition source) {
-        if (source.getNodeID() != null) {
-            return db.getNode(source.getNodeID());
-        } else if (source.getConnectionID() != null) {
+        if (source.getConnectionID() != null) {
             return db.getConnection(source.getConnectionID()).getFrom();
         }
         return getClosestNode(source.getPosition());
@@ -225,9 +223,7 @@ public class GraphHopperRouting {
      * @return End node of the target.
      */
     private Node determineEndNode(final RoutingPosition target) {
-        if (target.getNodeID() != null) {
-            return db.getNode(target.getNodeID());
-        } else if (target.getConnectionID() != null) {
+        if (target.getConnectionID() != null) {
             return db.getConnection(target.getConnectionID()).getTo();
         }
         return getClosestNode(target.getPosition());

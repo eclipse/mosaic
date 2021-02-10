@@ -26,23 +26,20 @@ public class RoutingPosition {
 
     private final String connectionID;
 
-    private final String nodeID;
-
     private final Double heading;
 
     public RoutingPosition(GeoPoint position) {
-        this(position, null, null, null);
+        this(position, null, null);
     }
 
     public RoutingPosition(GeoPoint position, Double heading) {
-        this(position, heading, null, null);
+        this(position, heading, null);
     }
 
-    public RoutingPosition(GeoPoint position, Double heading, String connectionID, String nodeID) {
+    public RoutingPosition(GeoPoint position, Double heading, String connectionID) {
         this.position = position;
         this.heading = heading;
         this.connectionID = connectionID;
-        this.nodeID = nodeID;
     }
 
     public GeoPoint getPosition() {
@@ -57,12 +54,8 @@ public class RoutingPosition {
         return connectionID;
     }
 
-    public String getNodeID() {
-        return nodeID;
-    }
-
     @Override
     public String toString() {
-        return "RoutingPosition [position=" + position + ", connectionID=" + connectionID + ", nodeID=" + nodeID + ", heading=" + heading + "]";
+        return "RoutingPosition [position=" + position + ", connectionID=" + connectionID + ", heading=" + heading + "]";
     }
 }
