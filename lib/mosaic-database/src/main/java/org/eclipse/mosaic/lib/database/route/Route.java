@@ -82,7 +82,8 @@ public class Route {
         if (connections.isEmpty()) {
             return new ArrayList<>();
         } else {
-            //FIXME find out if we really need all nodes, or only start/end nodes of connections
+            // we store all nodes of all connections here
+            // this is needed for determining the next and previous node in LazyLoadingRoadPosition
             List<Node> nodes = new ArrayList<>();
             for (Connection connection : connections) {
                 if (!nodes.isEmpty()) {
