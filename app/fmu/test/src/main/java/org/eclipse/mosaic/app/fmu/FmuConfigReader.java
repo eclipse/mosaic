@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.io.Reader;
 
 public class FmuConfigReader {
-    public static String configPath = "app/fmu/test/config/fmu_config.json";
-    public static JsonObject fmuConfig;
-//    public static void main(String[] args){
-//        String cPath = "app/fmu/test/config/fmu_config.json";
-//        new FmuConfigReader(cPath);
-//    }
-    static{
+    public String configPath;
+    public JsonObject fmuConfig;
+
+    public FmuConfigReader(String configPath){
+        this.configPath = configPath;
+
         Gson gson = new Gson();
 
         try(Reader reader = new FileReader(configPath)){

@@ -15,28 +15,10 @@
     "vehicles": [
         {
             "startingTime": 1.0,
-            "targetFlow": 1,
-            "maxNumberVehicles": 1,
-            "route": "2",
-            "lanes": [ 1, 2 ],
-            "types": [
-                {
-                    "name": "Car",
-                    "weight": 0
-                },
-                {
-                    "name": "Car",
-                    "weight": 1,
-                    "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp" ]
-                }
-            ]
-        },
-        {
-            "startingTime": 1.0,
             "targetFlow": 1000,
             "maxNumberVehicles": 50,
-            "route": "1",
-            "lanes": [ 0 ],
+            "route": "2",
+            "lanes": [ 0, 1, 2 ],
             "types": [
                 {
                     "name": "Car",
@@ -44,8 +26,13 @@
                 },
                 {
                     "name": "Car",
-                    "weight": 1,
-                    "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp" ]
+                    "weight": 0,
+                    "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp('fmu_config.json')" ]
+                },
+                {
+                    "name": "Car",
+                    "weight": 0.3,
+                    "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp('fmu_config2.json')" ]
                 }
             ]
         }

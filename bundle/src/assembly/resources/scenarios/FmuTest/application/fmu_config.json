@@ -5,8 +5,10 @@
     "fmuIn":
     {
       "time": "",
-      "position":  "",
-      "projectedPosition": "",
+      "positionLatitude": "",
+      "positionLongitude": "",
+      "positionX": "",
+      "positionY": "",
       "speed": "speed",
       "heading": "",
       "stopped": "",

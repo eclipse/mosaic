@@ -1,0 +1,14 @@
+{
+  "fmuPathAbs": "C:\\Users\\Theo\\Nextcloud\\uni\\WS2020-2021\\dcaiti_Projekt_VuaF\\mosaic\\fmu\\LaneChange.fmu",
+  "variables":
+  {
+    "fmuIn":
+    {
+      "currentLane": "current_lane"
+    },
+    "fmuOut":
+    {
+      "laneChange": "laneChange"
+    }
+  }
+}

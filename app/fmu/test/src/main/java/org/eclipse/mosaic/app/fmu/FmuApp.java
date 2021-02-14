@@ -15,74 +15,41 @@
 
 package org.eclipse.mosaic.app.fmu;
 
-import no.ntnu.ihb.fmi4j.Fmi4jVariableUtils;
-import no.ntnu.ihb.fmi4j.modeldescription.CoSimulationModelDescription;
 import no.ntnu.ihb.fmi4j.modeldescription.variables.ModelVariables;
-import no.ntnu.ihb.fmi4j.modeldescription.variables.RealVariable;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation;
-import org.eclipse.mosaic.lib.enums.LaneChangeMode;
+import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
+import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
-import no.ntnu.ihb.fmi4j.importer.fmi2.*;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.CollationElementIterator;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 
 public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
-    private static final Path fmuPath = Paths.get("C:\\Users\\Theo\\Nextcloud\\uni\\WS2020-2021\\dcaiti_Projekt_VuaF\\mosaic\\fmu\\");
-    private static final Path fmuInUse = Paths.get(fmuPath.toAbsolutePath().normalize().toString(), "TriangularDriving.fmu");
-
-    Fmu fmu;
-    CoSimulationSlave slave;
-    CoSimulationModelDescription slaveDes;
+    FmuWrapper fmu;
 
     long currentTime;
     long lastStepTime = 0;
 
-    ModelVariables currentVars;
-    ModelVariables previousVars;
+    Hashtable<String, Object> outVars;
 
-    //input variables
-    static final String SPEED = "speed";
-    static final String SPEED_MIN = "speedMin";
-    static final String SPEED_MAX = "speedMax";
-
-    //output variables
-    static final String SPEED_GOAL = "speedGoal";
-
-    RealVariable speed;
+    public FmuApp(String configName){
+        fmu = new FmuWrapper(configName);
+    }
 
     @Override
     public void onStartup() {
         //create fmu instance
-
-        getOs().getConfigurationPath();
-        try{
-            fmu = Fmu.from(new File(fmuInUse.normalize().toString()));
-        }catch(IOException e){
-            getLog().error(e.toString());
-        }
-        slave = fmu.asCoSimulationFmu().newInstance();
-        slave.simpleSetup();
-
-        //initialize variables
-        slaveDes = slave.getModelDescription();
-        speed = slaveDes.getVariableByName(SPEED).asRealVariable();
-
+        fmu.fmuUpdateVehicle(
+                getOs().getVehicleParameters(),
+                getOs().getVehicleData(),
+                getOs().getInitialVehicleType()
+        );
+        outVars = fmu.fmuReadVariables();
         getOs().activateVehicleDistanceSensors(100, VehicleDistanceSensorActivation.DistanceSensors.FRONT);
     }
 
@@ -92,44 +59,89 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         // setup
         currentTime = getOs().getSimulationTimeMs();
         double stepSize = currentTime - lastStepTime;
-        slaveDes = slave.getModelDescription();
 
-        //in meter
-//        double distance = updatedVehicleData.getVehicleSensors().distance.front.distValue;
-
-        // write to fmu
-        speed = slaveDes.getVariableByName(SPEED).asRealVariable();
-        Fmi4jVariableUtils.write(speed, slave, updatedVehicleData.getSpeed() * 3.6f);
+        fmu.fmuUpdateVehicle(
+                getOs().getVehicleParameters(),
+                getOs().getVehicleData(),
+                getOs().getInitialVehicleType()
+        );
 
         // simulate
-        slave.doStep(stepSize);
+        fmu.doStep(stepSize);
 
-        // read from fmu
-        RealVariable speedGoal = slaveDes.getVariableByName(SPEED_GOAL).asRealVariable();
-        getOs().changeSpeedWithInterval(Fmi4jVariableUtils.read(speedGoal, slave).getValue() / 3.6f, 5000);
-
-        // test output: print velocity
-        if(getOs().getId().equals("veh_0")){
-            System.out.println(new String(new char[(int)(updatedVehicleData.getSpeed() * 3.6f)]).replace("\0", "I"));
+        Hashtable<String, Object> newOutVars = fmu.fmuReadVariables();
+        if(newOutVars != outVars){
+            actOnOutput(newOutVars);
         }
 
         // teardown
-        previousVars = currentVars;
-        currentVars = slave.getModelVariables();
         lastStepTime = currentTime;
     }
 
+    public void actOnOutput(Hashtable<String, Object> fmuOutputVars){
+        //ersetzen durch hardcoded array?
+
+        for(String varName: fmu.potentialVariables.keySet()){
+            String fmuVarName = (String) fmu.potentialVariables.get(varName).get("name");
+            String dir = (String) fmu.potentialVariables.get(varName).get("direction");
+
+            if(fmuVarName.equals("") || dir.equals("in")){
+                continue;
+            }
+
+            // check, ob variable sich geändert hat??????????????????????????
+            // && this.outVars.get(varName) != fmuOutputVars.get(varName)
+
+            Object currentValue = fmuOutputVars.get(varName);
+            switch (varName){
+                case "speedGoal":
+                    // KARL fragen!!!
+                    getOs().changeSpeedWithInterval((double) currentValue / 3.6f, 0);
+                    break;
+                case "laneChange":
+                    int newLane = getOs().getRoadPosition().getLaneIndex() - (int) currentValue;
+                    getOs().changeLane(newLane, 1000);
+                    break;
+                case "stop":
+                    if((boolean) currentValue){
+                        getOs().stopNow(VehicleStop.VehicleStopMode.STOP, 1000);
+                    }
+                    break;
+                case "resume":
+                    if((boolean) currentValue){
+                        getOs().resume();
+                    }
+                    break;
+                case "paramMaxSpeed":
+                    getOs().requestVehicleParametersUpdate().changeMaxSpeed((double) currentValue).apply();
+                    break;
+                case "paramMaxAcceleration":
+                    getOs().requestVehicleParametersUpdate().changeMaxAcceleration((double) currentValue).apply();
+                    break;
+                case "paramMaxDeceleration":
+                    getOs().requestVehicleParametersUpdate().changeMaxDeceleration((double) currentValue).apply();
+                    break;
+                case "paramEmergencyDeceleration":
+                    getOs().requestVehicleParametersUpdate().changeEmergencyDeceleration((double) currentValue).apply();
+                    break;
+                case "paramMinimumGap":
+                    getOs().requestVehicleParametersUpdate().changeMinimumGap((double) currentValue).apply();
+                    break;
+            }
+        }
+        outVars = fmuOutputVars;
+    }
 
 
     @Override
     public void onShutdown() {
-        slave.terminate();
-        fmu.close();
+        fmu.terminate();
     }
 
     @Override
     public void processEvent(Event event) {
         // ...
+        System.out.println("Alexandre est un petit fromage.");
     }
 
     private void reactOnEnvironmentData(SensorType sensorType, int strength){
