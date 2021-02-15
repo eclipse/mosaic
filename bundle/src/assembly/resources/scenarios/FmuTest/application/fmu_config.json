@@ -1,5 +1,5 @@
 {
-  "fmuPathAbs": "C:\\Users\\Theo\\Nextcloud\\uni\\WS2020-2021\\dcaiti_Projekt_VuaF\\mosaic\\fmu\\TriangularDriving.fmu",
+  "fmuPathAbs": "C:\\Users\\Theo\\Onedrive\\uni\\WS2020-2021\\dcaiti_Projekt_VuaF\\mosaic\\fmu\\TriangularDriving.fmu",
   "variables":
   {
     "fmuIn":
@@ -15,11 +15,11 @@
       "longitudinalAcceleration": "",
       "distanceDriven": "",
       "slope": "",
-      "MIN_GAP" : "",
-      "MAX_SPEED": "",
-      "MAX_ACCELERATION": "",
-      "MAX_DECELERATION": "",
-      "REACTION_TIME": "",
+      "minGap" : "",
+      "maxSpeed": "",
+      "maxAcceleration": "",
+      "maxDeceleration": "",
+      "reactionTime": "",
       "length": "",
       "currentLane": ""
     },
