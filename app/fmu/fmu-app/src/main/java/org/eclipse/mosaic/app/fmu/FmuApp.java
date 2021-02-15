@@ -34,26 +34,25 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     long currentTime;
     long lastStepTime = 0;
 
+    private final String configName;
+
     Hashtable<String, Object> outVars;
 
     public FmuApp(String configName){
-//        if(configName == null){
-//            configName = "";
-//        }
-        fmu = new FmuWrapper(configName);
+        this.configName = configName;
     }
 
     @Override
     public void onStartup() {
         //create fmu instance
-        fmu.fmuUpdateVehicle(
+        fmu = new FmuWrapper(getOs().getConfigurationPath() + "\\" + this.configName);
+        fmu.updateVehicle(
                 getOs().getVehicleParameters(),
                 getOs().getVehicleData(),
                 getOs().getInitialVehicleType()
         );
-        outVars = fmu.fmuReadVariables();
+        outVars = fmu.readVariables();
         getOs().activateVehicleDistanceSensors(100, VehicleDistanceSensorActivation.DistanceSensors.FRONT);
-        System.out.println(getOs().getConfigurationPath());
     }
 
     @Override
@@ -63,7 +62,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         currentTime = getOs().getSimulationTimeMs();
         double stepSize = currentTime - lastStepTime;
 
-        fmu.fmuUpdateVehicle(
+        fmu.updateVehicle(
                 getOs().getVehicleParameters(),
                 getOs().getVehicleData(),
                 getOs().getInitialVehicleType()
@@ -72,7 +71,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         // simulate
         fmu.doStep(stepSize);
 
-        Hashtable<String, Object> newOutVars = fmu.fmuReadVariables();
+        Hashtable<String, Object> newOutVars = fmu.readVariables();
         if(newOutVars != outVars){
             actOnOutput(newOutVars);
         }
@@ -84,21 +83,21 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     public void actOnOutput(Hashtable<String, Object> fmuOutputVars){
         //ersetzen durch hardcoded array?
 
-        for(String varName: fmu.potentialVariables.keySet()){
-            String fmuVarName = (String) fmu.potentialVariables.get(varName).get("name");
-            String dir = (String) fmu.potentialVariables.get(varName).get("direction");
+        for(String varName: fmu.allPossibleVariables.keySet()){
+            String fmuVarName = (String) fmu.allPossibleVariables.get(varName).get("name");
+            String dir = (String) fmu.allPossibleVariables.get(varName).get("direction");
 
-            if(fmuVarName.equals("") || dir.equals("in")){
+            if(fmuVarName.equals("") || !dir.equals("out")){
                 continue;
             }
 
-            // check, ob variable sich geändert hat??????????????????????????
+            // Karl fragen: check, ob variable sich geändert hat??????????????????????????
             // && this.outVars.get(varName) != fmuOutputVars.get(varName)
 
             Object currentValue = fmuOutputVars.get(varName);
             switch (varName){
                 case "speedGoal":
-                    // KARL fragen!!!
+                    // Karl fragen: andere alternative zum ändern der Geschwindigkeit
                     getOs().changeSpeedWithInterval((double) currentValue / 3.6f, 0);
                     break;
                 case "laneChange":
@@ -106,6 +105,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
                     getOs().changeLane(newLane, 1000);
                     break;
                 case "stop":
+                    // Karl fragen: stop und resume mergen? Reihenfolge?
                     if((boolean) currentValue){
                         getOs().stopNow(VehicleStop.VehicleStopMode.STOP, 1000);
                     }

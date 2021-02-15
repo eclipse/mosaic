@@ -26,7 +26,7 @@
                 },
                 {
                     "name": "Car",
-                    "weight": 0,
+                    "weight": 0.3,
                     "applications": [ "org.eclipse.mosaic.app.fmu.FmuApp('fmu_config.json')" ]
                 },
                 {
