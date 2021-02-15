@@ -27,7 +27,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameter
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -44,12 +43,12 @@ public class FmuWrapper {
     private VehicleParameters currentVehicleParameters;
     private VehicleData currentVehicleData;
 
-    public final Hashtable<String, Hashtable<String, Object>> potentialVariables;
+    public final Hashtable<String, Hashtable<String, Object>> allPossibleVariables;
 
     public FmuWrapper(String configPath){
         FmuConfigWrapper fcw = new FmuConfigWrapper(configPath);
         vars = fcw.getActiveVariables();
-        potentialVariables = fcw.getVariables();
+        allPossibleVariables = fcw.getVariables();
 
         try {
             fmu = Fmu.from(new File(fcw.path));
@@ -97,16 +96,12 @@ public class FmuWrapper {
     public VariableRead<?> readVariable(String variableName){
         ScalarVariable c = (ScalarVariable) vars.get(variableName).get("fmuVar");
 
-        VariableRead<?> retVal = Fmi4jVariableUtils.read((TypedScalarVariable<?>) c, slave);
-
-        return retVal;
+        return Fmi4jVariableUtils.read((TypedScalarVariable<?>) c, slave);
     }
 
     private void addSlaveVariables(){
         for(String varName: vars.keySet()){
             addVariable(varName, (String) vars.get(varName).get("name"), (VariableType) vars.get(varName).get("type"));
-//            vars.get(varName).remove("type");
-//            vars.get(varName).remove("direction");
         }
     }
 
@@ -134,22 +129,22 @@ public class FmuWrapper {
         }
     }
 
-    public void fmuUpdateVehicle(VehicleParameters vehicleParameters, VehicleData vehicleData, VehicleType vehicleType){
+    public void updateVehicle(VehicleParameters vehicleParameters, VehicleData vehicleData, VehicleType vehicleType){
         if(vehicleParameters != currentVehicleParameters){
             currentVehicleParameters = vehicleParameters;
-            fmuUpdateVehicleParameters(vehicleParameters);
+            updateVehicleParameters(vehicleParameters);
         }
         if(vehicleData != currentVehicleData && vehicleData != null){
             currentVehicleData = vehicleData;
-            fmuUpdateVehicleData(vehicleData);
+            updateVehicleData(vehicleData);
         }
         if(vehicleType != currentVehicleType){
             currentVehicleType = vehicleType;
-            fmuUpdateVehicleType(vehicleType);
+            updateVehicleType(vehicleType);
         }
     }
 
-    public Hashtable<String, Object> fmuReadVariables(){
+    public Hashtable<String, Object> readVariables(){
         Hashtable<String, Object> ht = new Hashtable<>();
 
         for(String varName: vars.keySet()){
@@ -161,7 +156,7 @@ public class FmuWrapper {
         return ht;
     }
 
-    public void fmuUpdateVehicleParameters(VehicleParameters vehicleParameters) {
+    public void updateVehicleParameters(VehicleParameters vehicleParameters) {
         Hashtable<String, Object> vp = new Hashtable<>();
         // Double
         vp.put("MIN_GAP", vehicleParameters.getMinimumGap());
@@ -173,7 +168,7 @@ public class FmuWrapper {
         writeFmuInputByHashtable(vp);
     }
 
-    public void fmuUpdateVehicleData(VehicleData vehicleData){
+    public void updateVehicleData(VehicleData vehicleData){
         Hashtable<String, Object> vd = new Hashtable<>();
         // Long
         vd.put("time", vehicleData.getTime());
@@ -187,13 +182,15 @@ public class FmuWrapper {
         vd.put("stopped", vehicleData.isStopped());
         // Others
         vd.put("currentLane", vehicleData.getRoadPosition().getLaneIndex());
-//        nonDouble.put("position", vehicleData.getPosition());
-//        nonDouble.put("projectedPosition", vehicleData.getProjectedPosition());
+        vd.put("positionLatitude", vehicleData.getPosition().getLatitude());
+        vd.put("positionLongitude", vehicleData.getPosition().getLongitude());
+        vd.put("positionX", vehicleData.getProjectedPosition().getX());
+        vd.put("positionY", vehicleData.getProjectedPosition().getY());
 
         writeFmuInputByHashtable(vd);
     }
 
-    public void fmuUpdateVehicleType(VehicleType vehicleType){
+    public void updateVehicleType(VehicleType vehicleType){
         Hashtable<String, Object> vt = new Hashtable<>();
         vt.put("length", vehicleType.getLength());
 
@@ -227,8 +224,8 @@ class FmuConfigWrapper{
     JsonObject fmuConfig;
     public final String path;
 
-    private Hashtable<String, Hashtable<String, Object>> activeVariables = new Hashtable<>();
-    private Hashtable<String, Hashtable<String, Object>> allVariables = new Hashtable<>();
+    private final Hashtable<String, Hashtable<String, Object>> activeVariables = new Hashtable<>();
+    private final Hashtable<String, Hashtable<String, Object>> allVariables = new Hashtable<>();
 
     FmuConfigWrapper(String configPath){
         FmuConfigReader fcr = new FmuConfigReader(configPath);
@@ -252,12 +249,12 @@ class FmuConfigWrapper{
 
             if(externalName != null){
                 activeVariables.get(internalName).put("name", externalName);
-                allVariables.put(internalName, activeVariables.get(internalName));
             }
+            allVariables.put(internalName, activeVariables.get(internalName));
         }
 
         //remove if name is unused
-        activeVariables.entrySet().removeIf(entry -> (entry.getValue().get("name").equals("") || entry.getValue().get("name").equals(null)));
+        activeVariables.entrySet().removeIf(entry -> (entry.getValue().get("name").equals("")));
     }
 
     private String getVariableNameByInternalName(String name, String dir){
@@ -283,17 +280,31 @@ class FmuConfigWrapper{
                 put("direction", "in");
             }
         });
-        activeVariables.put("position", new Hashtable<String, Object>() {
+        activeVariables.put("positionLatitude", new Hashtable<String, Object>() {
             {
                 put("name", "");
-                put("type", VariableType.STRING);
+                put("type", VariableType.REAL);
                 put("direction", "in");
             }
         });
-        activeVariables.put("projectedPosition", new Hashtable<String, Object>() {
+        activeVariables.put("positionLongitude", new Hashtable<String, Object>() {
             {
                 put("name", "");
-                put("type", VariableType.STRING);
+                put("type", VariableType.REAL);
+                put("direction", "in");
+            }
+        });
+        activeVariables.put("positionX", new Hashtable<String, Object>() {
+            {
+                put("name", "");
+                put("type", VariableType.REAL);
+                put("direction", "in");
+            }
+        });
+        activeVariables.put("positionY", new Hashtable<String, Object>() {
+            {
+                put("name", "");
+                put("type", VariableType.REAL);
                 put("direction", "in");
             }
         });
@@ -339,35 +350,35 @@ class FmuConfigWrapper{
                 put("direction", "in");
             }
         });
-        activeVariables.put("MIN_GAP", new Hashtable<String, Object>() {
+        activeVariables.put("paramMinGap", new Hashtable<String, Object>() {
             {
                 put("name", "");
                 put("type", VariableType.REAL);
                 put("direction", "in");
             }
         });
-        activeVariables.put("MAX_SPEED", new Hashtable<String, Object>() {
+        activeVariables.put("maxSpeed", new Hashtable<String, Object>() {
             {
                 put("name", "");
                 put("type", VariableType.REAL);
                 put("direction", "in");
             }
         });
-        activeVariables.put("MAX_ACCELERATION", new Hashtable<String, Object>() {
+        activeVariables.put("maxAcceleration", new Hashtable<String, Object>() {
             {
                 put("name", "");
                 put("type", VariableType.REAL);
                 put("direction", "in");
             }
         });
-        activeVariables.put("MAX_DECELERATION", new Hashtable<String, Object>() {
+        activeVariables.put("maxDeceleration", new Hashtable<String, Object>() {
             {
                 put("name", "");
                 put("type", VariableType.REAL);
                 put("direction", "in");
             }
         });
-        activeVariables.put("REACTION_TIME", new Hashtable<String, Object>() {
+        activeVariables.put("reactionTime", new Hashtable<String, Object>() {
             {
                 put("name", "");
                 put("type", VariableType.REAL);
