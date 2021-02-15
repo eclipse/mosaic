@@ -20,7 +20,6 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation;
-import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -38,6 +37,9 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     Hashtable<String, Object> outVars;
 
     public FmuApp(String configName){
+//        if(configName == null){
+//            configName = "";
+//        }
         fmu = new FmuWrapper(configName);
     }
 
@@ -51,6 +53,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         );
         outVars = fmu.fmuReadVariables();
         getOs().activateVehicleDistanceSensors(100, VehicleDistanceSensorActivation.DistanceSensors.FRONT);
+        System.out.println(getOs().getConfigurationPath());
     }
 
     @Override
