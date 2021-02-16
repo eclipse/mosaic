@@ -32,7 +32,6 @@ class FmuConfig{
     public final String path;
 
     private final Hashtable<String, Hashtable<String, Object>> activeVariables = new Hashtable<>();
-    private final Hashtable<String, Hashtable<String, Object>> allVariables = new Hashtable<>();
 
     FmuConfig(String configPath){
         Gson gson = new Gson();
@@ -51,7 +50,6 @@ class FmuConfig{
     public Hashtable<String, Hashtable<String, Object>> getActiveVariables() {
         return activeVariables;
     }
-    public Hashtable<String, Hashtable<String, Object>> getVariables() {return allVariables;}
 
 
     private void fillExternalNames(){
@@ -62,7 +60,6 @@ class FmuConfig{
             if(externalName != null){
                 activeVariables.get(internalName).put("name", externalName);
             }
-            allVariables.put(internalName, activeVariables.get(internalName));
         }
 
         //remove if name is unused
@@ -93,7 +90,7 @@ class FmuConfig{
             }
         });
         activeVariables.put("positionLatitude", new Hashtable<String, Object>() {
-            {
+            {:
                 put("name", "");
                 put("type", VariableType.REAL);
                 put("direction", "in");
