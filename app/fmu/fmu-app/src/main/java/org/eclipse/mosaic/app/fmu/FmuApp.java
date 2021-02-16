@@ -29,13 +29,12 @@ import java.util.Hashtable;
 
 
 public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
-    FmuWrapper fmu;
-
     long currentTime;
     long lastStepTime = 0;
 
     private final String configName;
 
+    FmuWrapper fmu;
     Hashtable<String, Object> outVars;
 
     public FmuApp(String configName){
@@ -62,6 +61,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         currentTime = getOs().getSimulationTimeMs();
         double stepSize = currentTime - lastStepTime;
 
+        // write to fmu
         fmu.updateVehicle(
                 getOs().getVehicleParameters(),
                 getOs().getVehicleData(),
@@ -71,6 +71,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         // simulate
         fmu.doStep(stepSize);
 
+        // read from fmu
         Hashtable<String, Object> newOutVars = fmu.readVariables();
         if(newOutVars != outVars){
             actOnOutput(newOutVars);
@@ -83,9 +84,9 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     public void actOnOutput(Hashtable<String, Object> fmuOutputVars){
         //ersetzen durch hardcoded array?
 
-        for(String varName: fmu.allPossibleVariables.keySet()){
-            String fmuVarName = (String) fmu.allPossibleVariables.get(varName).get("name");
-            String dir = (String) fmu.allPossibleVariables.get(varName).get("direction");
+        for(String varName: fmu.vars.keySet()){
+            String fmuVarName = (String) fmu.vars.get(varName).get("name");
+            String dir = (String) fmu.vars.get(varName).get("direction");
 
             if(fmuVarName.equals("") || !dir.equals("out")){
                 continue;
@@ -105,7 +106,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
                     getOs().changeLane(newLane, 1000);
                     break;
                 case "stop":
-                    // Karl fragen: stop und resume mergen? Reihenfolge?
+                    // Karl fragen: stop und resume mergen? Bzw. Reihenfolge?
                     if((boolean) currentValue){
                         getOs().stopNow(VehicleStop.VehicleStopMode.STOP, 1000);
                     }
