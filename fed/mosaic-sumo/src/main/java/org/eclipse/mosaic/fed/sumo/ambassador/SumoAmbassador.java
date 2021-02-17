@@ -290,6 +290,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
             }
+            if (sumoConfig.subscribeToAllVehicles) {
+                traci.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
+            }
         }
     }
 
