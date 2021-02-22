@@ -86,6 +86,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-cell</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-environment</artifactId>
             <version>${mosaic.version}</version>
         </dependency>
