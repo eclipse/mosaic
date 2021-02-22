@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CNetworkScheme",
+    "title": "Cell Network Configuration (`network.json`)",
     "description": "Schema describing the JSON file structure for the network configuration. It is is used to define the properties of the global network. If defined as a number, then the default unit is Gb. Alternatively this can be defined as a string to specify the unit of measurement (e.g. '3 MB').",
     "type": "object",
     "properties": {

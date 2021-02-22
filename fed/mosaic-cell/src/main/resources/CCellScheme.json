@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CCellScheme",
+    "title": "Cell Ambassador Configuration (`cell_config.json`)",
     "description": "This schema describes the JSON file structure for the cell configuration, which provides general configuration for the ambassador, such as paths to the regions and network configuration files.",
     "type": "object",
     "properties": {

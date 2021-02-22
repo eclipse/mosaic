@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CRegionSchema",
+    "title": "Cell Regions Configuration (`regions.json`)",
     "description": "Schema describing the JSON file structure for the regional networks configuration. It is is used to extend the network with regional information, which enables the emulation of mobile networks. If configured very granular, these regions can reflect cells as used in the real world. Though for most use-cases it is sufficient to approximate the behaviour by defining larger regions.",
     "type": "object",
     "properties": {
