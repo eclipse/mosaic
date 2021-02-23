@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "SNS Configuration (`sns_config.json`)",
+    "title": "SNS",
     "description": "Schema describing the JSON file structure for the sns configuration.",
     "type": "object",
     "properties": {

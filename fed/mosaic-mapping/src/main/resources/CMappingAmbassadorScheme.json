@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Mapping Configuration (`mapping_config.json`)",
+    "title": "Mapping",
     "description": "This schema describes the JSON file structure for the mapping configuration, which is used to define simulation entities.",
     "type": "object",
     "properties": {

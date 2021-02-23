@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Environment Events Configuration (`environment_config.json`)",
+    "title": "Environment Events",
     "description": "Schema describing the JSON file structure for the environment configuration. It is is used to define which events are evaluated by the simulator. Entities entering the areas of the events, are notified by the 'EnvironmentSensorUpdates' interaction",
     "type": "object",
     "properties": {
