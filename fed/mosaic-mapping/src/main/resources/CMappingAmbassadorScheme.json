@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "CMappingAmbassadorScheme",
+    "title": "Mapping",
     "description": "This schema describes the JSON file structure for the mapping configuration, which is used to define simulation entities.",
     "type": "object",
     "properties": {
         "config": {
-            "description": "Object to deifne additional configuration options for the mapping.",
+            "description": "Object to define additional configuration options for the mapping.",
             "$ref": "#/definitions/config"
         },
         "prototypes": {
@@ -529,7 +529,7 @@
             "required": [ "radius", "center" ]
         },
         "geoPoint": {
-            "title": "geoPoint",
+            "title": "GeoPoint",
             "description": "Object to define geographical point coordinates.",
             "type": "object",
             "properties": {

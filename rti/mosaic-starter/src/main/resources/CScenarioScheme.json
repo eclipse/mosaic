@@ -1,6 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "http://example.com/example.json",
+    "title": "Scenario",
+    "description": "Schema describing the JSON file structure for the main scenario configuration.",
     "type": "object",
     "required": [
         "simulation",
@@ -8,7 +9,21 @@
     ],
     "properties": {
         "simulation": {
+            "$ref": "#/definitions/simulation"
+        },
+        "federates": {
+            "description": "Defines the list of ambassadors/simulators which are used by the simulation. For each simulator (referenced by its id) a boolean value must be given, which enables or disables the simulator.",
             "type": "object",
+            "additionalProperties": {
+                "type": "boolean"
+            }
+        }
+    },
+    "definitions": {
+        "simulation": {
+            "type": "object",
+            "title": "simulation",
+            "description": "Basic properties of the simulation scenario.",
             "required": [
                 "id",
                 "duration",
@@ -16,87 +31,128 @@
             ],
             "properties": {
                 "id": {
+                    "description": "The id or name of the simulation scenario.",
                     "type": "string"
                 },
                 "duration": {
+                    "description": "The duration of the simulation. If defined as a number, then the unit to be applied is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '300 s')",
                     "anyOf": [
                         { "type": "string", "maxLength": 20 },
                         { "type": "number", "minimum": 0 }
                     ]
                 },
                 "randomSeed": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The random seed to apply. This influences the application mapping, the communication models, and any use of randomness inside of applications. If not set, the random number generator will be initialized without a seed resulting in different results for each run. Note that several other simulators (e.g. SUMO) come with their own random number generators which are not affected by this property."
                 },
                 "projection": {
-                    "type": "object",
-                    "required": [
-                        "centerCoordinates",
-                        "cartesianOffset"
-                    ],
-                    "properties": {
-                        "centerCoordinates": {
-                            "type": "object",
-                            "required": [
-                                "latitude",
-                                "longitude"
-                            ],
-                            "properties": {
-                                "latitude": { "type": "number" },
-                                "longitude": { "type": "number" }
-                            }
-                        },
-                        "cartesianOffset": {
-                            "type": "object",
-                            "required": [
-                                "x",
-                                "y"
-                            ],
-                            "properties": {
-                                "x": { "type": "number" },
-                                "y": { "type": "number" }
-                            }
-                        }
-                    }
+                    "$ref": "#/definitions/projection"
                 },
                 "network": {
-                    "title": "The network schema",
-                    "properties": {
-                        "netMask": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        },
-                        "vehicleNet": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        },
-                        "rsuNet": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        },
-                        "tlNet": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        },
-                        "csNet": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        },
-                        "serverNet": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        },
-                        "tmcNet": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"
-                        }
-                    }
+                    "$ref": "#/definitions/network"
                 }
             }
         },
-        "federates": {
+        "projection" : {
             "type": "object",
-            "additionalProperties" : {
-                "type" : "boolean"
+            "title": "Projection",
+            "description": "Configures the projection used to transform geographical coordinates (WGS84) to local cartesian coordinates used by various simulators (e.g. SUMO, or OMNeT++). The projection is based on UTM and must be adapted to the used traffic network.",
+            "required": [
+                "centerCoordinates",
+                "cartesianOffset"
+            ],
+            "properties": {
+                "centerCoordinates": {
+                    "description": "Geographic coordinates of the rough center of the map / playground used in this scenario. This is just used to determine the UTM zone used for any further projection.",
+                    "$ref": "#/definitions/geoPoint"
+                },
+                "cartesianOffset": {
+                    "description": "A cartesian offset which is added to the UTM transformation. In most cases, this must be the exact offset which can be found in the `location.netOffset` of the `*.net.xml` of the scenario.",
+                    "$ref": "#/definitions/cartesianOffset"
+                }
+            }
+        },
+        "network" : {
+            "title": "Network Addressing",
+            "type": "object",
+            "default": "default network",
+            "description": "Defines the subnets (e.g. 10.0.0.0) used for generating IP addresses for each unit in the simulation. Each type of unit is configured with its own subnet. A default configuration is used, when left out from the configuration.",
+            "properties": {
+                "netMask": {
+                    "description": "The net mask used for IP generation.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "255.0.0.0"
+                },
+                "vehicleNet": {
+                    "description": "The subnet used for assigning IPs to vehicles.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "10.0.0.0"
+                },
+                "rsuNet": {
+                    "description": "The subnet used for assigning IPs to road side units.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "11.0.0.0"
+                },
+                "tlNet": {
+                    "description": "The subnet used for assigning IPs to traffic lights.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "12.0.0.0"
+                },
+                "csNet": {
+                    "description": "The subnet used for assigning IPs to charging stations.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "13.0.0.0"
+                },
+                "serverNet": {
+                    "description": "The subnet used for assigning IPs to servers.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "14.0.0.0"
+                },
+                "tmcNet": {
+                    "description": "The subnet used for assigning IPs to traffic management centers.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$",
+                    "default": "15.0.0.0"
+                }
+            }
+        },
+        "geoPoint": {
+            "title": "GeoPoint",
+            "description": "Geographic coordinates of the rough center of the map / playground used in this scenario. This is just used to determine the UTM zone used for any further projection.",
+            "type": "object",
+            "properties": {
+                "longitude": {
+                    "description":"East-west position of a point on earth.",
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
+                },
+                "latitude": {
+                    "description":"North-south position of a point on earth.",
+                    "type": "number",
+                    "maximum": 90,
+                    "minimum": -90
+                }
+            },
+            "required": [ "longitude", "latitude" ]
+        },
+        "cartesianOffset": {
+            "title": "CartesianOffset",
+            "description": "A cartesian offset which is added to the UTM transformation. In most cases, this must be the exact offset which can be found in the `location.netOffset` of the `*.net.xml` of the scenario.",
+            "type": "object",
+            "required": [
+                "x",
+                "y"
+            ],
+            "properties": {
+                "x": { "type": "number", "description": "The value to add to the X coordinate after UTM transformation" },
+                "y": { "type": "number", "description": "The value to add to the Y coordinate after UTM transformation" }
             }
         }
     }
