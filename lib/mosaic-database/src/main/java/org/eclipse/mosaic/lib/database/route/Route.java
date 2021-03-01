@@ -18,6 +18,8 @@ package org.eclipse.mosaic.lib.database.route;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 
+import com.google.common.collect.Iterables;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,8 +68,8 @@ public class Route {
      * @param connection Connection to add.
      */
     public void addConnection(@Nonnull Connection connection) {
-        if (connections.size() > 0 && connections.get(connections.size() - 1).getId().equals(connection.getId())) {
-            connections.remove(connections.size() - 1);
+        if (connections.size() > 0 && Iterables.getLast(connections).getId().equals(connection.getId())) {
+            return;
         }
         connections.add(Objects.requireNonNull(connection));
     }
