@@ -161,14 +161,14 @@ public class CEnvironmentTest {
             SensorType expectedSensorType,
             int expectedEventValue,
             @Nullable GeoArea expectedArea,
-            @Nullable String expectedRoadSegmentId,
+            @Nullable String expectedConnectionId,
             long expectedStartTime,
             long expectedEndTime) {
 
         assertEquals(expectedSensorType, event.type.sensorType);
         assertEquals(expectedEventValue, event.type.value);
         assertEquals(expectedArea, event.location.area);
-        assertEquals(expectedRoadSegmentId, event.location.roadSegmentId);
+        assertEquals(expectedConnectionId, event.location.connectionId);
         assertEquals(expectedStartTime, event.time.start);
         assertEquals(expectedEndTime, event.time.end);
     }

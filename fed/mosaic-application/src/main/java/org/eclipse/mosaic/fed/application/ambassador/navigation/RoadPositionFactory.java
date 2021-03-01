@@ -84,12 +84,12 @@ public class RoadPositionFactory {
             }
         }
 
-        double lengthOfRoadSegment = cnc.getLengthOfConnection(connectionToStopOn);
+        double lengthOfConnection = cnc.getLengthOfConnection(connectionToStopOn);
         IRoadPosition roadPosition;
         if (untilStop > 0) {
-            roadPosition = new SimpleRoadPosition(connectionToStopOn, laneIndex, lengthOfRoadSegment - untilStop, 0d);
+            roadPosition = new SimpleRoadPosition(connectionToStopOn, laneIndex, lengthOfConnection - untilStop, 0d);
         } else {
-            roadPosition = new SimpleRoadPosition(connectionToStopOn, laneIndex, lengthOfRoadSegment, 0d);
+            roadPosition = new SimpleRoadPosition(connectionToStopOn, laneIndex, lengthOfConnection, 0d);
         }
         return refine(roadPosition);
     }

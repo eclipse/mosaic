@@ -308,7 +308,7 @@ public class NavigationModuleTest {
 
     /**
      * Asserts that targetQuery method returns true iff the two geoPoints are closer to
-     * each other than specified in POSITION_DIFFERENCE_THREASHOLD constant.
+     * each other than specified in POSITION_DIFFERENCE_THRESHOLD constant.
      */
     @Test
     public void testTargetQueryGeoPointsClose() {
@@ -329,7 +329,7 @@ public class NavigationModuleTest {
     }
 
     /**
-     * Asserts that targetQuery method returns false iff neither of its if statements holds.
+     * Asserts that targetQuery method returns false if neither of its if statements holds.
      */
     @Test
     public void testTargetQueryFalse() {
