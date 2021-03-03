@@ -107,10 +107,10 @@ public class LazyLoadingNode implements INode {
             return false;
         }
 
-        LazyLoadingNode sdn = (LazyLoadingNode) obj;
+        LazyLoadingNode other = (LazyLoadingNode) obj;
         return new EqualsBuilder()
-                .append(this.currentNode, sdn.currentNode)
-                .append(this.scenarioDatabaseNode, sdn.scenarioDatabaseNode)
+                .append(this.currentNode, other.currentNode)
+                .append(this.scenarioDatabaseNode, other.scenarioDatabaseNode)
                 .isEquals();
     }
 

@@ -188,11 +188,11 @@ public class LazyLoadingConnection implements IConnection {
             return false;
         }
 
-        LazyLoadingConnection sdc = (LazyLoadingConnection) obj;
+        LazyLoadingConnection other = (LazyLoadingConnection) obj;
         return new EqualsBuilder()
-                .append(this.conStartNode, sdc.conStartNode)
-                .append(this.conEndNode, sdc.conEndNode)
-                .append(this.way, sdc.way)
+                .append(this.conStartNode, other.conStartNode)
+                .append(this.conEndNode, other.conEndNode)
+                .append(this.way, other.way)
                 .isEquals();
     }
 
