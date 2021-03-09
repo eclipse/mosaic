@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.app.fmu;
 
-import com.google.gson.JsonObject;
 import no.ntnu.ihb.fmi4j.Fmi4jVariableUtils;
 import no.ntnu.ihb.fmi4j.VariableRead;
 import no.ntnu.ihb.fmi4j.modeldescription.CoSimulationModelDescription;
@@ -29,7 +28,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Hashtable;
 
 
@@ -48,7 +46,7 @@ public class FmuWrapper {
         vars = fmuConfig.getActiveVariables();
 
         try {
-            fmu = Fmu.from(new File(fmuConfig.path));
+            fmu = Fmu.from(new File(fmuConfig.fmuPath));
         } catch (IOException e) {
             e.printStackTrace();
         }

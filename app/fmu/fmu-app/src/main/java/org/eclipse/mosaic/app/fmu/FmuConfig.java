@@ -29,20 +29,13 @@ import java.util.Hashtable;
 class FmuConfig{
 
     JsonObject fmuConfig;
-    public final String path;
+    public final String fmuPath;
 
     private final Hashtable<String, Hashtable<String, Object>> activeVariables = new Hashtable<>();
 
     FmuConfig(String configPath){
-        Gson gson = new Gson();
-
-        try(Reader reader = new FileReader(configPath)){
-            fmuConfig = gson.fromJson(reader, JsonObject.class);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        path = Paths.get(fmuConfig.get("fmuPathAbs").getAsString()).toString();
+        fmuConfig = getConfigFromFile(configPath);
+        fmuPath = Paths.get(fmuConfig.get("fmuPathAbs").getAsString()).toString();
         fillConfig();
         fillExternalNames();
     }
@@ -51,6 +44,19 @@ class FmuConfig{
         return activeVariables;
     }
 
+    private JsonObject getConfigFromFile(String configPath){
+        Gson gson = new Gson();
+
+        JsonObject config = null;
+
+        try(Reader reader = new FileReader(configPath)){
+            config = gson.fromJson(reader, JsonObject.class);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return config;
+    }
 
     private void fillExternalNames(){
         for(String internalName: activeVariables.keySet()){
@@ -62,7 +68,7 @@ class FmuConfig{
             }
         }
 
-        //remove if name is unused
+        //remove variable if name is unused
         activeVariables.entrySet().removeIf(entry -> (entry.getValue().get("name").equals("")));
     }
 
@@ -90,7 +96,7 @@ class FmuConfig{
             }
         });
         activeVariables.put("positionLatitude", new Hashtable<String, Object>() {
-            {:
+            {
                 put("name", "");
                 put("type", VariableType.REAL);
                 put("direction", "in");
@@ -225,14 +231,14 @@ class FmuConfig{
         activeVariables.put("stop", new Hashtable<String, Object>() {
             {
                 put("name", "");
-                put("type", VariableType.REAL);
+                put("type", VariableType.BOOLEAN);
                 put("direction", "out");
             }
         });
         activeVariables.put("resume", new Hashtable<String, Object>() {
             {
                 put("name", "");
-                put("type", VariableType.REAL);
+                put("type", VariableType.BOOLEAN);
                 put("direction", "out");
             }
         });

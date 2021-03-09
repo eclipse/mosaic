@@ -22,7 +22,7 @@
             "types": [
                 {
                     "name": "Car",
-                    "weight": 0
+                    "weight": 0.3
                 },
                 {
                     "name": "Car",

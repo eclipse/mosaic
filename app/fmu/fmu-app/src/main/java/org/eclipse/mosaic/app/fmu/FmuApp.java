@@ -81,9 +81,7 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
         lastStepTime = currentTime;
     }
 
-    public void actOnOutput(Hashtable<String, Object> fmuOutputVars){
-        //ersetzen durch hardcoded array?
-
+    private void actOnOutput(Hashtable<String, Object> fmuOutputVars){
         for(String varName: fmu.vars.keySet()){
             String fmuVarName = (String) fmu.vars.get(varName).get("name");
             String dir = (String) fmu.vars.get(varName).get("direction");
@@ -92,13 +90,9 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
                 continue;
             }
 
-            // Karl fragen: check, ob variable sich geändert hat??????????????????????????
-            // && this.outVars.get(varName) != fmuOutputVars.get(varName)
-
             Object currentValue = fmuOutputVars.get(varName);
             switch (varName){
                 case "speedGoal":
-                    // Karl fragen: andere alternative zum ändern der Geschwindigkeit
                     getOs().changeSpeedWithInterval((double) currentValue / 3.6f, 0);
                     break;
                 case "laneChange":
@@ -106,7 +100,6 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
                     getOs().changeLane(newLane, 1000);
                     break;
                 case "stop":
-                    // Karl fragen: stop und resume mergen? Bzw. Reihenfolge?
                     if((boolean) currentValue){
                         getOs().stopNow(VehicleStop.VehicleStopMode.STOP, 1000);
                     }
@@ -145,18 +138,5 @@ public class FmuApp extends AbstractApplication<VehicleOperatingSystem> implemen
     @Override
     public void processEvent(Event event) {
         // ...
-        System.out.println("Alexandre est un petit fromage.");
     }
-
-    private void reactOnEnvironmentData(SensorType sensorType, int strength){
-
-    }
-
-    public void fillVariables(Hashtable<String, Hashtable<String, String>> vars){
-
-    }
-
-    public void setInputVariables(ModelVariables vars){}
-
-    public void setOutputVariables(ModelVariables vars){}
 }
