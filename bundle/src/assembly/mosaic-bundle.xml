@@ -83,7 +83,7 @@
             </includes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>scenarios/Multimodal/application</outputDirectory>
+            <outputDirectory>scenarios/Sievekingplatz/application</outputDirectory>
             <includes>
                 <include>org.eclipse.mosaic.app:example-applications</include>
             </includes>
