@@ -23,9 +23,9 @@ import java.io.Serializable;
 public interface IRoadPosition extends Serializable {
 
     /**
-     * Returns the ID of the edge the vehicle currently driving on in the form {@code <id-connection>_<id-previous-node>}.
+     * Returns the ID of the connection the vehicle currently driving on.
      */
-    String getEdgeId();
+    String getConnectionId();
 
     /**
      * Returns the index of the lane, where 0 is the rightmost lane.

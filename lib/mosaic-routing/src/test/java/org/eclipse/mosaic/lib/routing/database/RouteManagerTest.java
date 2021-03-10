@@ -22,7 +22,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.database.route.Edge;
+import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
@@ -71,15 +71,11 @@ public class RouteManagerTest {
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
 
         List<String> firstNodesOfConnections = new ArrayList<>();
-        for (Edge edge : route.getEdges()) {
-            if (edge.getFromNode().equals(edge.getConnection().getFrom())
-                    || edge.getFromNode().equals(edge.getConnection().getTo())) {
-                firstNodesOfConnections.add(edge.getFromNode().getId());
-            }
+        for (Connection connection : route.getConnections()) {
+            firstNodesOfConnections.add(connection.getFrom().getId());
         }
         assertEquals("1", route.getId());
         assertEquals(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), route.getConnectionIds());
-        assertEquals(Arrays.asList("4609243_27537749_252864801_27537749", "4609243_252864801_252864802_252864801", "4609243_252864801_252864802_265786533"), route.getEdgeIds());
 
         assertEquals(Arrays.asList("27537749", "252864801"), firstNodesOfConnections);
         assertEquals(candidateRoute.getNodeIdList(), route.getNodeIds());
@@ -94,23 +90,23 @@ public class RouteManagerTest {
         VehicleRoute rtiRoute = instance.createRouteForRTI(route);
 
         assertEquals("1", rtiRoute.getId());
-        assertEquals(Arrays.asList("4609243_27537749_252864801_27537749", "4609243_252864801_252864802_252864801", "4609243_252864801_252864802_265786533"), rtiRoute.getEdgeIdList());
-        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIdList());
+        assertEquals(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), rtiRoute.getConnectionIds());
+        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIds());
         assertEquals(290.5, rtiRoute.getLength(), 0.1d);
     }
 
     @Test
     public void getRouteForRTI_transformationSuccessful__twoConnectionsWithSameStartEndNode() throws IllegalRouteException {
-        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("27011311", "21677261", "21668930", "27537748"), 0, 0);
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("21677261", "21668930", "27537748"), 0, 0);
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
 
         //RUN
         VehicleRoute rtiRoute = instance.createRouteForRTI(route);
 
         assertEquals("1", rtiRoute.getId());
-        assertEquals(Arrays.asList("4400154_21487169_21677261_27011311", "32935480_21677261_21668930_21677261", "32935480_21668930_27537748_21668930"), rtiRoute.getEdgeIdList());
-        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIdList());
-        assertEquals(1213.4, rtiRoute.getLength(), 0.1d);
+        assertEquals(Arrays.asList("32935480_21677261_21668930", "32935480_21668930_27537748"), rtiRoute.getConnectionIds());
+        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIds());
+        assertEquals(291.7, rtiRoute.getLength(), 0.1d);
     }
 
     @Test
@@ -119,16 +115,16 @@ public class RouteManagerTest {
         // override behavior of getImportOrigin to simulate import origin from network file
         doReturn(Database.IMPORT_ORIGIN_SUMO).when(database).getImportOrigin();
 
-        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("27011311", "21677261", "21668930", "27537748"), 0, 0);
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("21677261", "21668930", "27537748"), 0, 0);
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
 
         //RUN
         VehicleRoute rtiRoute = instance.createRouteForRTI(route);
 
         assertEquals("1", rtiRoute.getId());
-        assertEquals(Arrays.asList("4400154_21487169_21677261", "32935480_21677261_21668930", "32935480_21668930_27537748"), rtiRoute.getEdgeIdList());
-        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIdList());
-        assertEquals(1213.4, rtiRoute.getLength(), 0.1d);
+        assertEquals(Arrays.asList("32935480_21677261_21668930", "32935480_21668930_27537748"), rtiRoute.getConnectionIds());
+        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIds());
+        assertEquals(291.7, rtiRoute.getLength(), 0.1d);
     }
 
     @Test
@@ -141,8 +137,8 @@ public class RouteManagerTest {
         assertNotNull(routesFromDatabaseForMessage.get("0"));
         assertEquals("0", routesFromDatabaseForMessage.get("0").getId());
         assertEquals(4142.9, routesFromDatabaseForMessage.get("0").getLength(), 0.1d);
-        assertFalse(routesFromDatabaseForMessage.get("0").getNodeIdList().isEmpty());
-        assertFalse(routesFromDatabaseForMessage.get("0").getEdgeIdList().isEmpty());
+        assertFalse(routesFromDatabaseForMessage.get("0").getNodeIds().isEmpty());
+        assertFalse(routesFromDatabaseForMessage.get("0").getConnectionIds().isEmpty());
 
     }
 }

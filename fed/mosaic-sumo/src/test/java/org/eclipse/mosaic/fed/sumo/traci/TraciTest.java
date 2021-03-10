@@ -33,7 +33,6 @@ import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SinceTraci;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoTraciRule;
-import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SpeedMode;
@@ -142,7 +141,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park)
-        traci.getVehicleControl().stop("veh_0", "1_1_2_1", 200, 0, Integer.MAX_VALUE, (byte) 0);
+        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, (byte) 0);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -230,9 +229,9 @@ public class TraciTest {
         // ASSERT
         final Collection<String> lanesExpected =
                 Lists.newArrayList(
-                        "1_3_2_3_0", "1_3_2_3_1", "1_3_2_3_1",
-                        "1_3_2_3_1", "2_6_3_6_0", "2_6_3_6_0", "2_6_3_6_0",
-                        "1_1_2_1_0", "1_1_2_1_0", "1_1_2_1_1", "1_1_2_1_1"
+                        "1_3_2_0", "1_3_2_1", "1_3_2_1",
+                        "1_3_2_1", "2_6_3_0", "2_6_3_0", "2_6_3_0",
+                        "1_1_2_0", "1_1_2_0", "1_1_2_1", "1_1_2_1"
                 );
 
         assertThat(lanesActual, is(lanesExpected));
@@ -243,7 +242,7 @@ public class TraciTest {
         final TraciClient traci = traciRule.getTraciClient();
 
         // RUN
-        traci.getRouteControl().addRoute("2", Lists.newArrayList("2_5_2_5", "1_2_3_2", "1_3_4_3"));
+        traci.getRouteControl().addRoute("2", Lists.newArrayList("2_5_2", "1_2_3", "1_3_4"));
 
         // ASSERT (by adding a vehicle on that route
         traci.getSimulationControl().addVehicle("veh_0", "2", "PKW", "0", "0", "max");
@@ -252,7 +251,7 @@ public class TraciTest {
         // ASSERT (by checking if vehicle is first edge on route)
         final TraciSimulationStepResult result = traci.getSimulationControl().simulateUntil(3 * TIME.SECOND);
         assertVehicleInSimulation(result.getVehicleUpdates(), "veh_0");
-        assertEquals("2", traci.getSimulationControl().getLastKnownVehicleData("veh_0").getRoadPosition().getConnection().getWay().getId());
+        assertEquals("2_5_2", traci.getSimulationControl().getLastKnownVehicleData("veh_0").getRoadPosition().getConnectionId());
     }
 
     @Test
@@ -396,8 +395,8 @@ public class TraciTest {
         // ASSERT (for emission class HBEFA3/PC_G_EU4: http://sumo.dlr.de/wiki/Models/Emissions/HBEFA3-based)
         double per1kmFactor = 1000 / vehData.getDistanceDriven();
         assertEquals(54.5, vehData.getVehicleConsumptions().getAllConsumptions().getFuel() * per1kmFactor, 1d);
-        assertEquals(493, vehData.getVehicleEmissions().getAllEmissions().getCo() * per1kmFactor, 2d);
-        assertEquals(126930, vehData.getVehicleEmissions().getAllEmissions().getCo2() * per1kmFactor, 100d);
+        assertEquals(490, vehData.getVehicleEmissions().getAllEmissions().getCo() * per1kmFactor, 2d);
+        assertEquals(126800, vehData.getVehicleEmissions().getAllEmissions().getCo2() * per1kmFactor, 100d);
         assertEquals(4.7, vehData.getVehicleEmissions().getAllEmissions().getHc() * per1kmFactor, 1d);
         assertEquals(43.9, vehData.getVehicleEmissions().getAllEmissions().getNox() * per1kmFactor, 1d);
         assertEquals(1.23, vehData.getVehicleEmissions().getAllEmissions().getPmx() * per1kmFactor, 0.1d);
@@ -447,7 +446,7 @@ public class TraciTest {
         final TraciClient traci = traciRule.getTraciClient();
 
         List<String> edges = traci.getRouteControl().getRouteEdges("1");
-        assertEquals(Arrays.asList("1_1_2_1", "2_2_5_2", "2_5_6_5", "2_6_3_6", "1_3_4_3"), edges);
+        assertEquals(Arrays.asList("1_1_2", "2_2_5", "2_5_6", "2_6_3", "1_3_4"), edges);
     }
 
     @Test
@@ -509,8 +508,8 @@ public class TraciTest {
         assertEquals(50 / 3.6d, maxSpeedVeh, 0.5d);
 
         // RUN
-        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_1_0", 30 / 3.6d);
-        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_1_1", 30 / 3.6d);
+        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_0", 30 / 3.6d);
+        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_1", 30 / 3.6d);
 
         // let the vehicle decelerate
         VehicleData vehicleData =

@@ -100,10 +100,10 @@ class LazyLoadingWay implements IWay {
             return false;
         }
 
-        LazyLoadingWay sdw = (LazyLoadingWay) obj;
+        LazyLoadingWay other = (LazyLoadingWay) obj;
         return new EqualsBuilder()
-                .append(this.currentWay, sdw.currentWay)
-                .append(this.scenarioDatabaseWay, sdw.scenarioDatabaseWay)
+                .append(this.currentWay, other.currentWay)
+                .append(this.scenarioDatabaseWay, other.scenarioDatabaseWay)
                 .isEquals();
     }
 

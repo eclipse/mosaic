@@ -25,7 +25,6 @@ import org.eclipse.mosaic.lib.database.road.Restriction;
 import org.eclipse.mosaic.lib.database.road.Roundabout;
 import org.eclipse.mosaic.lib.database.road.TrafficLightNode;
 import org.eclipse.mosaic.lib.database.road.Way;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoRectangle;
@@ -126,7 +125,7 @@ public class Database {
 
     /**
      * Contains all predefined {@link Route}s vehicles can drive on. Each route consists of
-     * {@link Edge}s that are part of {@link Connection}s.
+     * {@link Connection}s
      */
     private final Map<String, Route> routes = new HashMap<>();
 
@@ -944,11 +943,9 @@ public class Database {
             this.route = new Route(routeId);
         }
 
-        public RouteBuilder addEdge(String connectionId, String nodeIdFrom, String nodeIdTo) {
-            Node from = builder.database.getNode(nodeIdFrom);
-            Node to = builder.database.getNode(nodeIdTo);
+        public RouteBuilder addConnection(String connectionId) {
             Connection connection = builder.database.getConnection(connectionId);
-            route.addEdge(new Edge(connection, from, to));
+            route.addConnection(connection);
             return this;
         }
 

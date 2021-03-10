@@ -54,7 +54,7 @@ public abstract class TrafficSign<T> implements Serializable {
     /**
      * The edge the traffic sign is meant for.
      */
-    private final String edge;
+    private final String connectionId;
 
     /**
      * Tells the lane the traffic sign is meant for.
@@ -85,13 +85,13 @@ public abstract class TrafficSign<T> implements Serializable {
      *
      * @param id       The traffic sign id.
      * @param position The position of the sign.
-     * @param edge     The corresponding edge of the sign.
+     * @param connectionId     The corresponding edge of the sign.
      */
-    public TrafficSign(String id, Position position, String edge) {
+    public TrafficSign(String id, Position position, String connectionId) {
         this.id = id;
         this.position = position.getProjectedPosition();
         this.geoPosition = position.getGeographicPosition();
-        this.edge = edge;
+        this.connectionId = connectionId;
     }
 
     void addSignContents(List<T> signContents) {
@@ -204,8 +204,8 @@ public abstract class TrafficSign<T> implements Serializable {
     /**
      * Returns the edge of the traffic sign.
      */
-    public String getEdge() {
-        return edge;
+    public String getConnectionId() {
+        return connectionId;
     }
 
     /**
@@ -227,7 +227,7 @@ public abstract class TrafficSign<T> implements Serializable {
                 .append("position", position)
                 .append("geoPosition", geoPosition)
                 .append("angle", angle)
-                .append("edge", edge)
+                .append("connection", connectionId)
                 .append("lane", lane)
                 .append("isVariable", isVariable)
                 .append("visibility", visibility)

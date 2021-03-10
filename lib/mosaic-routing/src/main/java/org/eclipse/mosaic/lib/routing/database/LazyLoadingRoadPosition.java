@@ -24,6 +24,7 @@ import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.Iterator;
 import javax.annotation.Nullable;
 
 /**
@@ -52,31 +53,30 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
 
     private final IRoadPosition currentRoadPosition;
 
+    private final String connectionId;
     private final int laneIndex;
     private final double lateralLanePosition;
     private final double offset;
     private LazyLoadingNode previousNode;
     private LazyLoadingNode upcomingNode;
     private LazyLoadingConnection connection;
-    private String edgeId;
 
     /**
      * Creates an {@link IRoadPosition} with all required information provided.
      *
-     * @param edgeId the id of the edge
-     * @param connection the connection this road position can be found on
+     * @param connection   the connection this road position can be found on
      * @param previousNode the previous node which is part of the given connection and lies behind this road position
      * @param upcomingNode the upcoming node which is part of the given connection and lies in front of this road position
-     * @param roadOffset the distance in meters from the previous node to the exact road position
+     * @param roadOffset   the distance in meters from the previous node to the exact road position
      */
-    public LazyLoadingRoadPosition(String edgeId, final LazyLoadingConnection connection, final LazyLoadingNode previousNode, final LazyLoadingNode upcomingNode, double roadOffset) {
-        this.edgeId = edgeId;
+    public LazyLoadingRoadPosition(final LazyLoadingConnection connection, final LazyLoadingNode previousNode, final LazyLoadingNode upcomingNode, double roadOffset) {
         this.connection = connection;
         this.previousNode = previousNode;
         this.upcomingNode = upcomingNode;
         this.offset = roadOffset;
         this.laneIndex = 0;
 
+        this.connectionId = connection.getId();
         this.database = null;
         this.currentRoadPosition = null;
         this.lateralLanePosition = 0;
@@ -93,19 +93,15 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
         this.database = database;
         this.currentRoadPosition = currentRoadPosition;
 
-        laneIndex = currentRoadPosition.getLaneIndex();
-        lateralLanePosition = currentRoadPosition.getLateralLanePosition();
-        offset = currentRoadPosition.getOffset();
+        this.connectionId = currentRoadPosition.getConnectionId();
+        this.laneIndex = currentRoadPosition.getLaneIndex();
+        this.offset = currentRoadPosition.getOffset();
+        this.lateralLanePosition = currentRoadPosition.getLateralLanePosition();
     }
 
     @Override
-    public String getEdgeId() {
-        if (edgeId == null) {
-            edgeId = new StringBuilder(getConnection().getId()).append("_").append(
-                    getPreviousNode() != null ? getPreviousNode().getId() : "?"
-            ).toString();
-        }
-        return edgeId;
+    public String getConnectionId() {
+        return connectionId;
     }
 
     @Override
@@ -131,18 +127,9 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
         if (currentRoadPosition.getPreviousNode() != null) {
             previousNode = new LazyLoadingNode(currentRoadPosition.getPreviousNode(), database);
         } else if (currentRoadPosition.getUpcomingNode() != null) {
-            final Connection roadConnection = getConnection().getConnectionFromDatabase();
-            if (roadConnection != null) {
-                Node prevNode = null;
-                for (Node node : roadConnection.getNodes()) {
-                    if (node.getId().equals(currentRoadPosition.getUpcomingNode().getId())) {
-                        previousNode = new LazyLoadingNode(prevNode);
-                        break;
-                    }
-                    prevNode = node;
-                }
-            }
-
+            findPreviousNodeUsingUpcomingNode();
+        } else if (offset > 0) {
+            findPreviousAndUpcomingNodesWithOffset();
         } else {
             // no possibility to calculate upcoming node.
             return currentRoadPosition.getPreviousNode();
@@ -159,22 +146,64 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
         if (currentRoadPosition.getUpcomingNode() != null) {
             upcomingNode = new LazyLoadingNode(currentRoadPosition.getUpcomingNode(), database);
         } else if (currentRoadPosition.getPreviousNode() != null) {
-            final Connection roadConnection = getConnection().getConnectionFromDatabase();
-            if (roadConnection != null) {
-                Node prevNode = null;
-                for (Node node : roadConnection.getNodes()) {
-                    if (prevNode != null && prevNode.getId().equals(currentRoadPosition.getPreviousNode().getId())) {
-                        upcomingNode = new LazyLoadingNode(node);
-                        break;
-                    }
-                    prevNode = node;
-                }
-            }
+            findUpcomingNodeUsingPreviousNode();
+        } else if (offset > 0) {
+            findPreviousAndUpcomingNodesWithOffset();
         } else {
             // no possibility to calculate upcoming node.
             return currentRoadPosition.getUpcomingNode();
         }
         return upcomingNode;
+    }
+
+    private void findUpcomingNodeUsingPreviousNode() {
+        final Connection roadConnection = getConnection().getConnectionFromDatabase();
+        if (roadConnection != null) {
+            Node prevNode = null;
+            for (Node node : roadConnection.getNodes()) {
+                if (prevNode != null && prevNode.getId().equals(currentRoadPosition.getPreviousNode().getId())) {
+                    upcomingNode = new LazyLoadingNode(node);
+                    break;
+                }
+                prevNode = node;
+            }
+        }
+    }
+
+    private void findPreviousNodeUsingUpcomingNode() {
+        final Connection roadConnection = getConnection().getConnectionFromDatabase();
+        if (roadConnection != null) {
+            Node prevNode = null;
+            for (Node node : roadConnection.getNodes()) {
+                if (node.getId().equals(currentRoadPosition.getUpcomingNode().getId())) {
+                    previousNode = new LazyLoadingNode(prevNode);
+                    break;
+                }
+                prevNode = node;
+            }
+        }
+    }
+
+    private void findPreviousAndUpcomingNodesWithOffset() {
+        final Connection connection = getConnection().getConnectionFromDatabase();
+        if (connection == null) {
+            return;
+        }
+
+        Node prevNode = null;
+        double distance = 0;
+        for (Iterator<Node> nodeIterator = connection.getNodes().iterator(); nodeIterator.hasNext(); ) {
+            Node node = nodeIterator.next();
+            if (prevNode != null) {
+                distance += prevNode.getPosition().distanceTo(node.getPosition());
+                if (distance > offset || !nodeIterator.hasNext()) {
+                    previousNode = new LazyLoadingNode(prevNode);
+                    upcomingNode = new LazyLoadingNode(node);
+                    return;
+                }
+            }
+            prevNode = node;
+        }
     }
 
     @Override
@@ -188,6 +217,7 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 43)
+                .append(this.connectionId)
                 .append(this.laneIndex)
                 .append(this.lateralLanePosition)
                 .append(this.offset)
@@ -209,14 +239,15 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
             return false;
         }
 
-        LazyLoadingRoadPosition sn = (LazyLoadingRoadPosition) obj;
+        LazyLoadingRoadPosition other = (LazyLoadingRoadPosition) obj;
         return new EqualsBuilder()
-                .append(this.laneIndex, sn.laneIndex)
-                .append(this.lateralLanePosition, sn.lateralLanePosition)
-                .append(this.offset, sn.offset)
-                .append(this.previousNode, sn.previousNode)
-                .append(this.upcomingNode, sn.upcomingNode)
-                .append(this.connection, sn.connection)
+                .append(this.connectionId, other.connectionId)
+                .append(this.laneIndex, other.laneIndex)
+                .append(this.lateralLanePosition, other.lateralLanePosition)
+                .append(this.offset, other.offset)
+                .append(this.previousNode, other.previousNode)
+                .append(this.upcomingNode, other.upcomingNode)
+                .append(this.connection, other.connection)
                 .isEquals();
     }
 

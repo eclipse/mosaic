@@ -162,8 +162,8 @@ public class GraphHopperRouting {
     }
 
     private QueryResult fixQueryResultIfNoClosestEdgeFound(RoutingPosition source, QueryResult queryResultOriginal, FlagEncoder flagEncoder) {
-        if (queryResultOriginal.getClosestEdge() == null && source.getConnectionID() != null) {
-            log.warn("Wrong routing request: The from-connection {} does not fit with the given position {}", source.getConnectionID(), source.getPosition());
+        if (queryResultOriginal.getClosestEdge() == null && source.getConnectionId() != null) {
+            log.warn("Wrong routing request: The from-connection {} does not fit with the given position {}", source.getConnectionId(), source.getPosition());
             queryResultOriginal = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), DefaultEdgeFilter.allEdges(flagEncoder));
         }
         return queryResultOriginal;
@@ -173,7 +173,7 @@ public class GraphHopperRouting {
         /* If the requested position is outside of the edge it is mapped either on the start or end of the edge (one of the tower nodes).
          * As a result, the resulting route can bypass turn restrictions in very rare cases. To avoid this, we can choose a fallback
          * node to be the requested position instead of the routing position.*/
-        if (queryResultOriginal.getSnappedPosition() == QueryResult.Position.TOWER && routingPosition.getConnectionID() != null) {
+        if (queryResultOriginal.getSnappedPosition() == QueryResult.Position.TOWER && routingPosition.getConnectionId() != null) {
             queryResultOriginal = ghApi.getLocationIndex().findClosest(fallbackNode.getPosition().getLatitude(), fallbackNode.getPosition().getLongitude(),
                     fromEdgeFilter);
         }
@@ -193,10 +193,10 @@ public class GraphHopperRouting {
     }
 
     private EdgeFilter createEdgeFilterForRoutingPosition(final RoutingPosition position, final FlagEncoder flagEncoder) {
-        if (position.getConnectionID() == null) {
+        if (position.getConnectionId() == null) {
             return DefaultEdgeFilter.allEdges(flagEncoder);
         }
-        final int forcedEdge = graphMapper.fromConnection(db.getConnection(position.getConnectionID()));
+        final int forcedEdge = graphMapper.fromConnection(db.getConnection(position.getConnectionId()));
         if (forcedEdge < 0) {
             return DefaultEdgeFilter.allEdges(flagEncoder);
         }
@@ -210,10 +210,8 @@ public class GraphHopperRouting {
      * @return Node of the source.
      */
     private Node determinePrefixNode(final RoutingPosition source) {
-        if (source.getNodeID() != null) {
-            return db.getNode(source.getNodeID());
-        } else if (source.getConnectionID() != null) {
-            return db.getConnection(source.getConnectionID()).getFrom();
+        if (source.getConnectionId() != null) {
+            return db.getConnection(source.getConnectionId()).getFrom();
         }
         return getClosestNode(source.getPosition());
     }
@@ -225,10 +223,8 @@ public class GraphHopperRouting {
      * @return End node of the target.
      */
     private Node determineEndNode(final RoutingPosition target) {
-        if (target.getNodeID() != null) {
-            return db.getNode(target.getNodeID());
-        } else if (target.getConnectionID() != null) {
-            return db.getConnection(target.getConnectionID()).getTo();
+        if (target.getConnectionId() != null) {
+            return db.getConnection(target.getConnectionId()).getTo();
         }
         return getClosestNode(target.getPosition());
     }
@@ -316,8 +312,8 @@ public class GraphHopperRouting {
     }
 
     private boolean checkRouteOnRequiredSourceConnection(CandidateRoute route, RoutingPosition source) {
-        if (source.getConnectionID() != null) {
-            Connection con = db.getConnection(source.getConnectionID());
+        if (source.getConnectionId() != null) {
+            Connection con = db.getConnection(source.getConnectionId());
             String node1 = Iterables.get(route.getNodeIdList(), 0);
             String node2 = Iterables.get(route.getNodeIdList(), 1);
 
