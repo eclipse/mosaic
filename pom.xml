@@ -5,7 +5,7 @@
 
     <groupId>org.eclipse.mosaic</groupId>
     <artifactId>mosaic-parent</artifactId>
-    <version>20.1-SNAPSHOT</version>
+    <version>21.0</version>
     <packaging>pom</packaging>
 
     <name>Eclipse MOSAIC Parent</name>
@@ -79,7 +79,7 @@
     </modules>
 
     <properties>
-        <mosaic.version>20.1-SNAPSHOT</mosaic.version>
+        <mosaic.version>21.0</mosaic.version>
         <parent.dir>.</parent.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceTarget>1.8</project.build.sourceTarget>
@@ -453,6 +453,7 @@
                         <header>${parent.dir}/legal/templates/license-header.ftl</header>
                         <validHeaders>
                             <header>${parent.dir}/legal/templates/license-header-2020.txt</header>
+                            <header>${parent.dir}/legal/templates/license-header-2021.txt</header>
                         </validHeaders>
                         <headerDefinitions>
                         </headerDefinitions>
