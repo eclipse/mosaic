@@ -51,7 +51,7 @@ public class DatabaseUtils {
      * @throws RuntimeException if an SQLException or IOException were caught
      */
     public static void updateDb(@Nonnull final File file) {
-        DatabaseLoader loader = new SQLiteLoader();
+        DatabaseLoader loader = new SQLiteLoader(true);
         try {
             loader.updateDatabase(file.getCanonicalPath());
         } catch (SQLException | IOException | OutdatedDatabaseException e) {

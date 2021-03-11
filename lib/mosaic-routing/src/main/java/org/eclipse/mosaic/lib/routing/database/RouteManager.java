@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.routing.database;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
@@ -84,30 +83,13 @@ public class RouteManager {
      */
     public final VehicleRoute createRouteForRTI(Route route) {
 
-        final List<String> edgeIds;
-        if (database.getImportOrigin().equals(Database.IMPORT_ORIGIN_SUMO)) {
-            /* Due to the way we import SUMO netfiles, we need to export
-             * the connections of the route directly without transforming
-             * to various edges for each intermediate node of a connection. */
-            edgeIds = route.getConnectionIds();
-        } else {
-            edgeIds = route.getEdgeIds();
-        }
-
+        final List<String> edgeIds = route.getConnectionIds();
         double length = approximateLengthOfRoute(route);
         return new VehicleRoute(route.getId(), edgeIds, route.getNodeIds(), length);
     }
 
     private double approximateLengthOfRoute(Route route) {
-        double length = 0.0;
-        Connection prev = null;
-        for (Edge edge : route.getEdges()) {
-            if (prev != edge.getConnection()) {
-                length += edge.getConnection().getLength();
-            }
-            prev = edge.getConnection();
-        }
-        return length;
+        return route.getConnections().stream().mapToDouble(Connection::getLength).sum();
     }
 
     /**
@@ -147,7 +129,7 @@ public class RouteManager {
                 // check if we can create an edge or the route is invalid
                 currentCon = chooseFastest(connectionCandidates);
                 if (currentCon.isPresent()) {
-                    route.addEdge(new Edge(currentCon.get(), lastNode, currentNode));
+                    route.addConnection(currentCon.get());
                 } else {
                     throw new IllegalRouteException(
                             String.format("[addRouteByNodeList] given nodes represent an invalid route. "

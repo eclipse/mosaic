@@ -36,6 +36,14 @@ the core libraries, and various implementations of simulators or couplings to ex
 included in this version of Eclipse MOSAIC are sufficient for most use-cases in the field of smart and connected mobility.
 Additional simulators and assessment features are provided by [Fraunhofer FOKUS](https://www.fokus.fraunhofer.de/go/asct) on a commercial basis.
 
+## Related repositories
+
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.8.0`.
+* The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
+  We currently support ns-3 version `3.28`. 
+* The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
+  We currently support OMNeT++ version `5.5` in combination with the INET framework in version `4.1`.  
+
 ## Contact
 
 Any questions regarding Eclipse MOSAIC can be asked, discussed, and found in the [Discussions section](https://github.com/eclipse/mosaic/discussions) here at GitHub.

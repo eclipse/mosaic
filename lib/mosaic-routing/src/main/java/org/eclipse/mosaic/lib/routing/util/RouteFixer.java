@@ -17,8 +17,6 @@ package org.eclipse.mosaic.lib.routing.util;
 
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
-import org.eclipse.mosaic.lib.database.road.Node;
-import org.eclipse.mosaic.lib.database.route.Edge;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,19 +83,20 @@ public class RouteFixer {
         }
 
         try {
-            List<Edge> fixedRoute = new ArrayList<>();
+            List<Connection> fixedRoute = new ArrayList<>();
 
-            Edge currEdge = null;
-            Edge prevEdge = null;
-            for (String currEdgeId : route) {
-                currEdge = getEdge(database, currEdgeId);
-                if (prevEdge != null && currEdge.getFromNode() != prevEdge.getToNode()) {
-                    fixedRoute.addAll(findIntermediateEdges(prevEdge, currEdge));
+            Connection currConnection;
+            Connection prevConnection = null;
+            for (String currConnectionId : route) {
+                currConnection = getConnection(database, currConnectionId);
+                if (prevConnection != null && currConnection.getFrom() != prevConnection.getTo()) {
+                    fixedRoute.addAll(findIntermediateConnections(prevConnection, currConnection)); //always includes currConnection
+                } else {
+                    fixedRoute.add(currConnection);
                 }
-                fixedRoute.add(currEdge);
-                prevEdge = currEdge;
+                prevConnection = currConnection;
             }
-            return convertEdgesToIds(fixedRoute);
+            return convertConnectionsToIds(fixedRoute);
 
         } catch (Exception e) {
             log.error("Could not fix route with edges [" + StringUtils.join(route, " ") + "]. The route shall be fixed manually.", e);
@@ -112,17 +110,6 @@ public class RouteFixer {
         }
         return !database.getConnections().isEmpty()
                 && database.getConnections().iterator().next().getId().matches("^\\w+_\\w+_\\w+$");
-    }
-
-    private Collection<Edge> findIntermediateEdges(Edge fromEdge, Edge toEdge) {
-        List<Connection> connections = Lists.newArrayList(fromEdge.getConnection());
-        if (fromEdge.getConnection() != toEdge.getConnection()) {
-            connections.addAll(findIntermediateConnections(fromEdge.getConnection(), toEdge.getConnection()));
-        }
-
-        List<Edge> allEdgesOnConnections = convertConnectionsToEdges(connections);
-
-        return getEdgesBetween(fromEdge, toEdge, allEdgesOnConnections);
     }
 
     private List<Connection> findIntermediateConnections(Connection from, Connection to) {
@@ -157,57 +144,14 @@ public class RouteFixer {
         return shortest;
     }
 
-    private List<Edge> convertConnectionsToEdges(List<Connection> connections) {
-        List<Edge> allEdges = new ArrayList<>();
-        for (Connection connection : connections) {
-            Node prevNode = null;
-            for (Node currNode : connection.getNodes()) {
-                if (prevNode != null) {
-                    allEdges.add(new Edge(connection, prevNode, currNode));
-                }
-                prevNode = currNode;
-            }
-        }
-        return allEdges;
-    }
-
-    private List<Edge> getEdgesBetween(Edge fromEdge, Edge toEdge, List<Edge> allEdgesOnConnections) {
-        List<Edge> intermediateEdges = new ArrayList<>();
-        boolean fromEdgeFound = false;
-        boolean toEdgeFound = false;
-        for (Edge edge : allEdgesOnConnections) {
-            if (isEdgeEquals(edge, toEdge)) {
-                toEdgeFound = true;
-            }
-            if (fromEdgeFound && !toEdgeFound) {
-                intermediateEdges.add(edge);
-            }
-            if (isEdgeEquals(edge, fromEdge)) {
-                fromEdgeFound = true;
-            }
-        }
-        return intermediateEdges;
-    }
-
-
     private double lengthOfConnections(List<Connection> connections) {
         return connections == null ? Double.MAX_VALUE : connections.stream().map(Connection::getLength).reduce(0d, Double::sum);
     }
 
-    private boolean isEdgeEquals(Edge a, Edge b) {
-        return a.getConnection() == b.getConnection() && a.getFromNode() == b.getFromNode() && a.getToNode() == b.getToNode();
-    }
-
-    public static Edge getEdge(Database db, String edgeId) {
-        final Connection con = db.getConnection(StringUtils.substringBeforeLast(edgeId, "_"));
-        final String previousNodeId = getPreviousNodeId(edgeId);
-
-        Node prevNode = null;
-        for (Node n : con.getNodes()) {
-            if (prevNode != null) {
-                return new Edge(con, prevNode, n);
-            }
-            prevNode = n.getId().equals(previousNodeId) ? n : null;
+    public static Connection getConnection(Database db, String connectionId) {
+        Connection con = db.getConnection(connectionId);
+        if (con != null) {
+            return con;
         }
         throw new IllegalStateException("Could not find Edge");
     }
@@ -216,9 +160,7 @@ public class RouteFixer {
         return StringUtils.substringAfterLast(edgeId, "_");
     }
 
-    private List<String> convertEdgesToIds(List<Edge> fixedRoute) {
-        return fixedRoute.stream().map(
-                (e) -> e.getConnection().getId() + "_" + e.getFromNode().getId()
-        ).collect(Collectors.toList());
+    private List<String> convertConnectionsToIds(List<Connection> fixedRoute) {
+        return fixedRoute.stream().map(Connection::getId).collect(Collectors.toList());
     }
 }

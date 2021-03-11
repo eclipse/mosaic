@@ -114,7 +114,7 @@ public class CentralNavigationComponentTest {
 
         final VehicleRoute exampleRoute2 = createExampleRoute2();
         when(routingMock.createRouteForRTI(argThat(
-                argument -> argument.getNodeIdList().equals(exampleRoute2.getNodeIdList())
+                argument -> argument.getNodeIdList().equals(exampleRoute2.getNodeIds())
         ))).thenReturn(exampleRoute2);
     }
 

@@ -66,7 +66,9 @@ public class SequentialTimeManagement extends AbstractTimeManagement {
         while (this.time < getEndTime()) {
 
             // sync with real time
-            realtimeSync.sync(this.time);
+            if (this.time > 0) {
+                realtimeSync.sync(this.time);
+            }
 
             // remove all events at the head of the queue that are created by the same federate
             synchronized (this.events) {

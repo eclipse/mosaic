@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * In this context, uplink and downlink always refer to the direction TOWARDS
  * respectively FROM the GEO entity.
  */
-public class CNetworkProperties implements Cloneable {
+public class CNetworkProperties {
     public static final String GLOBAL_NETWORK_ID = "globalNetwork";
 
     /**

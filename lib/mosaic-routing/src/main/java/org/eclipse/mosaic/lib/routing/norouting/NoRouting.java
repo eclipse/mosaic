@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.lib.routing.norouting;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
@@ -90,4 +91,8 @@ public class NoRouting implements Routing {
         return null;
     }
 
+    @Override
+    public IConnection getConnection(String nodeId) {
+        return null;
+    }
 }

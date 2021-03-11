@@ -192,7 +192,7 @@ public class CentralNavigationComponent {
     public VehicleRoute switchRoute(VehicleData vehicleData, CandidateRoute rawRoute, VehicleRoute currentRoute, long time) throws IllegalRouteException {
         log.debug("Request to switch to new route for vehicle {} (currently on route {})", vehicleData.getName(), currentRoute.getId());
 
-        boolean newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getNodeIdList(), currentRoute.getNodeIdList());
+        boolean newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getNodeIdList(), currentRoute.getNodeIds());
         // no switch is needed, just stay on the previous route
         if (newRouteOnOriginalRoute) {
             log.debug("Discard route change for vehicle {}: route matches current route {}.", vehicleData.getName(), currentRoute.getId());
@@ -204,7 +204,7 @@ public class CentralNavigationComponent {
             VehicleRoute knownRoute = null;
             for (VehicleRoute route : routeMap.values()) {
                 newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getNodeIdList(),
-                        routeMap.get(route.getId()).getNodeIdList());
+                        routeMap.get(route.getId()).getNodeIds());
                 if (newRouteOnOriginalRoute) {
                     knownRoute = route;
                     break;
@@ -263,7 +263,7 @@ public class CentralNavigationComponent {
      */
     GeoPoint getTargetPositionOfRoute(String routeId) {
         if (routeMap.containsKey(routeId)) {
-            String lastNodeId = Iterables.getLast(routeMap.get(routeId).getNodeIdList(), null);
+            String lastNodeId = Iterables.getLast(routeMap.get(routeId).getNodeIds(), null);
             return getPositionOfNode(lastNodeId);
         } else {
             return null;
@@ -278,7 +278,7 @@ public class CentralNavigationComponent {
      */
     public GeoPoint getSourcePositionOfRoute(String routeId) {
         if (routeMap.containsKey(routeId)) {
-            String firstNodeId = Iterables.getFirst(routeMap.get(routeId).getNodeIdList(), null);
+            String firstNodeId = Iterables.getFirst(routeMap.get(routeId).getNodeIds(), null);
             return getPositionOfNode(firstNodeId);
         } else {
             return null;
@@ -300,8 +300,18 @@ public class CentralNavigationComponent {
      * @param nodeId The nodeId, that the position is wanted of
      * @return A {@link GeoPoint} representing the position of the node.
      */
-    public GeoPoint getPositionOfNode(String nodeId) {
+    private GeoPoint getPositionOfNode(String nodeId) {
         return routing.getNode(nodeId).getPosition();
+    }
+
+    /**
+     * Get the length of a specific connection.
+     *
+     * @param connectionId the id of the connection
+     * @return the length of the connection in [m]
+     */
+    double getLengthOfConnection(String connectionId) {
+        return routing.getConnection(connectionId).getLength();
     }
 
     /**
@@ -376,7 +386,7 @@ public class CentralNavigationComponent {
             if (response.getBestRoute() != null) {
                 VehicleRoute route = null;
                 for (VehicleRoute existingRoute : routeMap.values()) {
-                    if (isNewRouteOnOriginalRoute(response.getBestRoute().getNodeIdList(), existingRoute.getNodeIdList())) {
+                    if (isNewRouteOnOriginalRoute(response.getBestRoute().getNodeIdList(), existingRoute.getNodeIds())) {
                         route = existingRoute;
                         break;
                     }
@@ -443,7 +453,7 @@ public class CentralNavigationComponent {
         if (finalNode == null) {
             throw new IllegalArgumentException("finalNode is null.");
         }
-        List<String> currentRouteNodes = routeMap.get(routeId).getNodeIdList();
+        List<String> currentRouteNodes = routeMap.get(routeId).getNodeIds();
 
         if (!currentRouteNodes.contains(finalNode)) {
             return Double.POSITIVE_INFINITY;
@@ -474,13 +484,13 @@ public class CentralNavigationComponent {
     INode getNextNodeOnRoute(String routeId, IRoadPosition roadPosition, Predicate<INode> nodeCondition) {
         VehicleRoute currentRoute = routeMap.get(routeId);
 
-        int indexOfUpcomingNode = currentRoute.getNodeIdList().indexOf(roadPosition.getUpcomingNode().getId());
+        int indexOfUpcomingNode = currentRoute.getNodeIds().indexOf(roadPosition.getUpcomingNode().getId());
         // check if there is an upcoming node
         if (indexOfUpcomingNode < 0) {
             return null;
         }
 
-        List<String> nodeList = currentRoute.getNodeIdList().subList(indexOfUpcomingNode, currentRoute.getNodeIdList().size());
+        List<String> nodeList = currentRoute.getNodeIds().subList(indexOfUpcomingNode, currentRoute.getNodeIds().size());
         for (String nodeId : nodeList) {
             INode node = routing.getNode(nodeId);
             if (nodeCondition.test(node)) {

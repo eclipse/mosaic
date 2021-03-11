@@ -23,7 +23,7 @@
                     <entry>Updated:Slope</entry>
                     <entry>Updated:Stopped</entry>
                     <entry>Updated:RouteId</entry>
-                    <entry>Updated:RoadPosition.EdgeId</entry>
+                    <entry>Updated:RoadPosition.Connection.Id</entry>
                     <entry>Updated:RoadPosition.LaneIndex</entry>
                     <entry>Updated:VehicleEmissions.CurrentEmissions.Co2</entry>
                     <entry>Updated:VehicleEmissions.CurrentEmissions.Co</entry>
@@ -107,7 +107,7 @@
                     <entry>TrafficSign.GeoPosition.Longitude</entry>
                     <entry>TrafficSign.GeoPosition.Altitude</entry>
                     <entry>TrafficSign.Angle</entry>
-                    <entry>TrafficSign.Edge</entry>
+                    <entry>TrafficSign.ConnectionId</entry>
                     <entry>TrafficSign.Lane</entry>
                     <entry>TrafficSign.TypeId</entry>
                     <entry>TrafficSign.SignContents</entry>

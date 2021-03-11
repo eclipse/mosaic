@@ -33,6 +33,8 @@ import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -48,6 +50,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MosaicSimulationRule extends TemporaryFolder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MosaicSimulationRule.class);
 
     protected CHosts hostsConfiguration;
     protected CRuntime runtimeConfiguration;
@@ -132,6 +136,8 @@ public class MosaicSimulationRule extends TemporaryFolder {
                             .readFile(scenarioDirectory.resolve("scenario_config.json").toFile())
             );
         } catch (InstantiationException e) {
+            LOG.error("", e);
+
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
             result.exception = e;
             result.success = false;
@@ -153,6 +159,8 @@ public class MosaicSimulationRule extends TemporaryFolder {
                     .setComponentProviderFactory(componentProviderFactory)
                     .runSimulation(scenarioDirectory, scenarioConfiguration);
         } catch (Throwable e) {
+            LOG.error("", e);
+
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
             result.exception = e;
             result.success = false;

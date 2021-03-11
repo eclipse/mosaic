@@ -22,7 +22,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 
 import org.apache.commons.lang3.Validate;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,22 +31,15 @@ import java.util.List;
 public class RoadPositionFactory {
 
     /**
-     * Creates a {@link IRoadPosition} based on the edgeId in SUMO format
-     * "&lt;way&gt;_&lt;connectionFromNode&gt;_&lt;connectionToNode&gt;_&lt;previousNode&gt;".
+     * Creates a {@link IRoadPosition} based on an arbitrary edge ID (= connection ID) in SUMO.
      *
-     * @param edgeId     The id of the edge in SUMO format.
-     * @param laneIndex  The index of the lane where the road position is generated at.
-     * @param edgeOffset the offset in m along the edge where the position is generated at
+     * @param edgeId       The id of the edge.
+     * @param laneIndex    The index of the lane where the road position is generated at.
+     * @param edgeOffset   the offset in m along the edge where the position is generated at
      * @return A new {@link IRoadPosition} with all available data.
      */
     public static IRoadPosition createFromSumoEdge(final String edgeId, final int laneIndex, final double edgeOffset) {
-        final String[] roadIdParts = edgeId.split("_");
-        if (roadIdParts.length < 4) {
-            throw new IllegalArgumentException(String.format("Could not read edge id %s", edgeId));
-        }
-        final IRoadPosition roadPosition =
-                new SimpleRoadPosition(roadIdParts[0], roadIdParts[1], roadIdParts[2], roadIdParts[3], laneIndex, edgeOffset);
-        return refine(roadPosition);
+        return refine(new SimpleRoadPosition(edgeId, laneIndex, edgeOffset, 0d));
     }
 
     /**
@@ -72,36 +64,32 @@ public class RoadPositionFactory {
         Validate.notNull(cnc, "The CentralNavigationComponent must not be null");
         Validate.notNull(currentRoute, "The route must not be null");
         Validate.notNull(currentPosition, "The currentPosition must not be null");
-        Validate.notNull(currentPosition.getPreviousNode(), "The currentPosition must provide the previously passed node");
+        Validate.notNull(currentPosition.getConnectionId(), "The currentPosition must provide the id of the connection");
         Validate.isTrue(distance > 0d, "The distance must be greater than 0");
 
-        String nodeId;
-        String from = null;
-        String to = null;
         double untilStop = 0 - currentPosition.getOffset() - distance;
-        for (Iterator<String> nodeIdIterator = currentRoute.getNodeIdList().iterator(); nodeIdIterator.hasNext(); ) {
-            nodeId = nodeIdIterator.next();
-            if (from != null) {
-                to = nodeId;
-                untilStop += cnc.getPositionOfNode(from).distanceTo(cnc.getPositionOfNode(to));
+
+        String connectionToStopOn = null;
+        for (String connectionId : currentRoute.getConnectionIds()) {
+            if (connectionId.equals(currentPosition.getConnectionId())) {
+                connectionToStopOn = connectionId;
+            }
+
+            if (connectionToStopOn != null) {
+                connectionToStopOn = connectionId;
+                untilStop += cnc.getLengthOfConnection(connectionId);
                 if (untilStop > 0) {
                     break;
                 }
-                if (nodeIdIterator.hasNext()) {
-                    from = to;
-                }
-            }
-            if (nodeId.equals(currentPosition.getPreviousNode().getId())) {
-                from = nodeId;
             }
         }
 
-        double lengthOfRoadSegment = cnc.getPositionOfNode(from).distanceTo(cnc.getPositionOfNode(to));
-        final IRoadPosition roadPosition;
+        double lengthOfConnection = cnc.getLengthOfConnection(connectionToStopOn);
+        IRoadPosition roadPosition;
         if (untilStop > 0) {
-            roadPosition = new SimpleRoadPosition(from, to, laneIndex, lengthOfRoadSegment - untilStop);
+            roadPosition = new SimpleRoadPosition(connectionToStopOn, laneIndex, lengthOfConnection - untilStop, 0d);
         } else {
-            roadPosition = new SimpleRoadPosition(from, to, laneIndex, lengthOfRoadSegment);
+            roadPosition = new SimpleRoadPosition(connectionToStopOn, laneIndex, lengthOfConnection, 0d);
         }
         return refine(roadPosition);
     }
@@ -115,7 +103,7 @@ public class RoadPositionFactory {
      * @return An {@link IRoadPosition} of the last edge in route.
      */
     public static IRoadPosition createAtEndOfRoute(VehicleRoute currentRoute, int laneIndex) {
-        return createAtEndOfRoute(currentRoute.getNodeIdList(), laneIndex);
+        return createAtEndOfRoute(currentRoute.getNodeIds(), laneIndex);
     }
 
     /**

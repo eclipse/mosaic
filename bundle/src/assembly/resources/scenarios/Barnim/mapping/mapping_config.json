@@ -40,6 +40,7 @@
             "startingTime": 5.0,
             "targetFlow": 1800,
             "maxNumberVehicles": 120,
+            "pos": 1417,
             "route": "1",
             "lanes": [ 0, 1 ],
             "types": [

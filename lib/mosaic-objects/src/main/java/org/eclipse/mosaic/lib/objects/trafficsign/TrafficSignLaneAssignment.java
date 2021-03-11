@@ -38,11 +38,11 @@ public class TrafficSignLaneAssignment extends TrafficSign<LaneAssignment> {
      *
      * @param id The id of the lane assignment sign.
      * @param position The position of the sign.
-     * @param edge The corresponding edge.
+     * @param connectionId The corresponding edge.
      * @param laneAssignments The lane assignments for all lanes.
      */
-    public TrafficSignLaneAssignment(String id, Position position, String edge, List<LaneAssignment> laneAssignments) {
-        super(id, position, edge);
+    public TrafficSignLaneAssignment(String id, Position position, String connectionId, List<LaneAssignment> laneAssignments) {
+        super(id, position, connectionId);
         super.addSignContents(laneAssignments);
     }
 
@@ -214,7 +214,7 @@ public class TrafficSignLaneAssignment extends TrafficSign<LaneAssignment> {
                 .append("position", getPosition())
                 .append("geoPosition", getGeoPosition())
                 .append("angle", getAngle())
-                .append("edge", getEdge())
+                .append("connection", getConnectionId())
                 .append("lane", getLane())
                 .append("isVariable", isVariable())
                 .append("visibility", getVisibility())

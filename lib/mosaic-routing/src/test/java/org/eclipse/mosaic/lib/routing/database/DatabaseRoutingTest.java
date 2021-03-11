@@ -138,7 +138,7 @@ public class DatabaseRoutingTest {
                 "21487170", "27011237", "27423744", "27011241", "299080425", "26703663", "299080426", "21487176", "21487175", "197687090",
                 "342813080", "27011231", "21487174", "27011842", "27011256", "26873451", "406585016", "414959615", "82654384", "564738832",
                 "249734328", "26873453", "152533555", "417709064", "391498256", "26873454"),
-                routes.get(routeID).getNodeIdList());
+                routes.get(routeID).getNodeIds());
     }
 
     @Test
@@ -187,16 +187,16 @@ public class DatabaseRoutingTest {
         routingAPIScenarioDatabase.initialize(configuration, cfgDir);
 
         final CandidateRoute candidateRoute = new CandidateRoute(
-                Arrays.asList("423839224", "26704448", "27537750", "27537749", "252864801", "265786533"), 0, 0);
+                Arrays.asList("423839224", "26704448", "27537750", "27537749", "252864801", "265786533", "252864802"), 0, 0);
         //RUN
         final VehicleRoute route = routingAPIScenarioDatabase.createRouteForRTI(candidateRoute);
 
         //ASSERT
         assertEquals(376.4d, route.getLength(), 0.1d);
-        assertEquals(candidateRoute.getNodeIdList(), route.getNodeIdList());
-        assertEquals(Arrays.asList("4068038_423839224_26704448_423839224", "36337928_26704448_27537750_26704448",
-                "4609244_27537750_27537749_27537750", "4609243_27537749_252864801_27537749", "4609243_252864801_252864802_252864801"),
-                route.getEdgeIdList());
+        assertEquals(candidateRoute.getNodeIdList(), route.getNodeIds());
+        assertEquals(Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750",
+                "4609244_27537750_27537749", "4609243_27537749_252864801", "4609243_252864801_252864802"),
+                route.getConnectionIds());
     }
 
     @Test(expected = IllegalRouteException.class)

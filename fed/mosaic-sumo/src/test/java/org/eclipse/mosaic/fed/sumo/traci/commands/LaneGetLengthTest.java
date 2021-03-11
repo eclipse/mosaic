@@ -28,7 +28,7 @@ public class LaneGetLengthTest extends AbstractTraciCommandTest {
 
     @Test
     public void execute() throws Exception {
-        String edgeId = "2_6_5_6";
+        String edgeId = "2_6_5";
         int laneIndex = 0;
 
 
@@ -36,12 +36,12 @@ public class LaneGetLengthTest extends AbstractTraciCommandTest {
         double length = new LaneGetLength().execute(traci.getTraciConnection(), edgeId, laneIndex);
 
         // ASSERT
-        assertEquals(1106.3, length, 0.1);
+        assertEquals(1106.4, length, 0.1);
     }
 
     @Test(expected = TraciCommandException.class)
     public void executeUnknownLane() throws Exception {
-        String edgeId = "2_6_5_6";
+        String edgeId = "2_6_5";
         int laneIndex = 2;
 
         // RUN
