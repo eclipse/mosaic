@@ -488,6 +488,7 @@ public class Database {
 
         /**
          * Resets network components of database.
+         *
          * @return the builder for easy cascading
          */
         public Builder clearNetwork() {
