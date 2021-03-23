@@ -23,6 +23,7 @@ import org.eclipse.mosaic.lib.transform.GeoProjection;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.rti.MosaicComponentProvider;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.config.CHosts;
 import org.eclipse.mosaic.rti.config.CLocalHost;
 import org.eclipse.mosaic.starter.MosaicSimulation;
@@ -32,6 +33,7 @@ import org.eclipse.mosaic.starter.config.CScenario;
 import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.janino.util.Producer;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
@@ -60,6 +67,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     protected String logLevelOverride = null;
     protected Map<String, String> federateOverride = new HashMap<>();
+    protected long timeout = 5 * TIME.MINUTE;
 
     @Override
     protected void before() throws Throwable {
@@ -91,6 +99,11 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
         this.componentProviderFactory = factory;
+        return this;
+    }
+
+    public MosaicSimulationRule timeout(long timeout) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -151,13 +164,13 @@ public class MosaicSimulationRule extends TemporaryFolder {
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
             setFederateOverride(federateOverride);
-            return logError(new MosaicSimulation()
+            return logError(timeout(() -> new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
                     .setComponentProviderFactory(componentProviderFactory)
-                    .runSimulation(scenarioDirectory, scenarioConfiguration));
+                    .runSimulation(scenarioDirectory, scenarioConfiguration)));
         } catch (Throwable e) {
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
             result.exception = e;
@@ -203,6 +216,29 @@ public class MosaicSimulationRule extends TemporaryFolder {
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "randomNumberGenerator", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configuration", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configurationPath", null);
+    }
+
+
+
+    /**
+     * Executes the given {@link Callable} and throws an {@link AssertionError} if
+     * the callable could not be executed within the given timeout period.
+     *
+     * @param execution the code to be executed
+     * @return the object the given {@link Callable} produced if the timeout has not been exceeded.
+     * @throws AssertionError if the timeout has exceeded.
+     */
+    private MosaicSimulation.SimulationResult timeout(Producer<MosaicSimulation.SimulationResult> execution) {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<MosaicSimulation.SimulationResult> future = executor.submit(() -> (MosaicSimulation.SimulationResult) execution.produce());
+        try {
+            return future.get(this.timeout, TimeUnit.NANOSECONDS);
+        } catch (Throwable e) {
+            MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
+            result.success = false;
+            result.exception = e;
+            return result;
+        }
     }
 
     /**
