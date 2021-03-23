@@ -151,23 +151,28 @@ public class MosaicSimulationRule extends TemporaryFolder {
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
             setFederateOverride(federateOverride);
-            return new MosaicSimulation()
+            return logError(new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
                     .setComponentProviderFactory(componentProviderFactory)
-                    .runSimulation(scenarioDirectory, scenarioConfiguration);
+                    .runSimulation(scenarioDirectory, scenarioConfiguration));
         } catch (Throwable e) {
-            LOG.error("", e);
-
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
             result.exception = e;
             result.success = false;
-            return result;
+            return logError(result);
         } finally {
             resetSingletons();
         }
+    }
+
+    private MosaicSimulation.SimulationResult logError(MosaicSimulation.SimulationResult simulationResult) {
+        if (!simulationResult.success && simulationResult.exception != null) {
+            LOG.error("Error during test execution.", simulationResult.exception);
+        }
+        return simulationResult;
     }
 
     protected Path prepareLogConfiguration(Path logDirectory) throws IOException {
