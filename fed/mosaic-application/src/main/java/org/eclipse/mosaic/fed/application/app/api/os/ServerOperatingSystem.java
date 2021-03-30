@@ -15,9 +15,18 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
+import org.eclipse.mosaic.fed.application.ambassador.navigation.IRoutingModule;
+
 /**
  * Note: This interface is empty for now and currently only functions as a marker-interface. Future extensions
  * might add features.
  */
 public interface ServerOperatingSystem extends OperatingSystem {
+
+    /**
+     * Gives access to a routing facility for calculating routes through the road network.
+     *
+     * @return the {@link IRoutingModule}
+     */
+    IRoutingModule getRoutingModule();
 }
