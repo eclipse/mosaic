@@ -15,16 +15,23 @@
 
     <repositories>
         <repository>
-            <id>sumo-maven-repository</id>
-            <url>file://${basedir}/lib</url>
+            <id>repo.eclipse.org</id>
+            <name>SUMO Repository</name>
+            <url>https://repo.eclipse.org/content/repositories/sumo</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sumo</groupId>
-            <artifactId>libsumojni</artifactId>
-            <version>1.8.0</version>
+            <artifactId>libsumo</artifactId>
+            <version>${version.libsumo}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
