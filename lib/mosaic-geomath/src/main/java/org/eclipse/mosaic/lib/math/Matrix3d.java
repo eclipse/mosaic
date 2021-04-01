@@ -15,7 +15,11 @@
 
 package org.eclipse.mosaic.lib.math;
 
-public class Matrix3d {
+import java.io.Serializable;
+
+public class Matrix3d implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public final double m[] = new double[9];
 
