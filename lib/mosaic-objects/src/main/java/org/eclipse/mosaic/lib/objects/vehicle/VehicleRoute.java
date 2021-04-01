@@ -57,7 +57,7 @@ public class VehicleRoute implements Serializable {
      * This creates a route a vehicle can drive on.
      *
      * @param id     may NOT be null
-     * @param edges  may be but should not be null
+     * @param connections  may be but should not be null
      * @param nodes  may be but should not be null
      * @param length the length of the complete route described from edges. <code>0.0</code> if no length is given.
      */
