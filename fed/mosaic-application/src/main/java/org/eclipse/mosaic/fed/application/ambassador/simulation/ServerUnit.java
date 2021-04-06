@@ -16,6 +16,8 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
+import org.eclipse.mosaic.fed.application.ambassador.navigation.IRoutingModule;
+import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
@@ -28,6 +30,8 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
  */
 public class ServerUnit extends AbstractSimulationUnit implements ServerOperatingSystem {
 
+    private final IRoutingModule routingModule;
+
     /**
      * Constructor for {@link ServerUnit}, sets the operating system.
      *
@@ -36,6 +40,7 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
     public ServerUnit(final ServerMapping serverMapping) {
         super(serverMapping.getName(), null);
         setRequiredOperatingSystem(ServerOperatingSystem.class);
+        routingModule = new NavigationModule(this);
     }
 
     /**
@@ -46,6 +51,7 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
      */
     public ServerUnit(String unitName) {
         super(unitName, null);
+        routingModule = new NavigationModule(this);
     }
 
     @Override
@@ -61,6 +67,11 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
     @Override
     public AdHocModule getAdHocModule() {
         throw new UnsupportedOperationException("Servers can't access AdHoc functionality.");
+    }
+
+    @Override
+    public IRoutingModule getRoutingModule() {
+        return routingModule;
     }
 
     @Override
