@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 public class SumoTraciRule implements TestRule {
     // set this value to true to open the simulation with SUMO-GUI, you can also set the Environment variable GUI_DEBUG to true
-    private final static boolean GUI_DEBUG = ObjectUtils.defaultIfNull(Boolean.valueOf(System.getenv("MOSAIC_SUMO_GUI_DEBUG")), false);
+    private final static boolean GUI_DEBUG = ObjectUtils.defaultIfNull(Boolean.valueOf(System.getenv("MOSAIC_SUMO_GUI_DEBUG")), true);
 
     private static final Pattern PORT_PATTERN = Pattern.compile(".*Starting server on port ([0-9]+).*");
 
@@ -92,6 +92,18 @@ public class SumoTraciRule implements TestRule {
                                         sinceTraci.value()
                                 ),
                                 currentVersion.getApiVersion() >= sinceTraci.value().getApiVersion()
+                        );
+                    }
+
+                    SinceSumo sinceSumo = description.getAnnotation(SinceSumo.class);
+                    if (sinceSumo != null) {
+                        SumoVersion currentVersion = SumoTraciRule.this.traci.getCurrentVersion();
+                        assumeTrue(
+                                String.format(
+                                        "This unit test expects SUMO version %s to be installed. Skipping.",
+                                        sinceSumo.value()
+                                ),
+                                currentVersion.isGreaterOrEqualThan(sinceSumo.value())
                         );
                     }
                     base.evaluate();
