@@ -233,9 +233,9 @@ public class GraphHopperRouting {
              * the source or target query.
              */
             if (queryGraph.isVirtualEdge(ghEdge.getEdge())) {
-                if (pathConnections.isEmpty()) {
+                if (pathConnections.isEmpty() && queryGraph.isVirtualNode(source.getClosestNode())) {
                     ghEdge = queryGraph.getOriginalEdgeFromVirtNode(source.getClosestNode());
-                } else if (!edgesIt.hasNext()){
+                } else if (!edgesIt.hasNext() && queryGraph.isVirtualNode(target.getClosestNode())) {
                     ghEdge = queryGraph.getOriginalEdgeFromVirtNode(target.getClosestNode());
                 } else {
                     continue;
