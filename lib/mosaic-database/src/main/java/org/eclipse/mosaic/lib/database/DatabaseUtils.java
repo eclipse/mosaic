@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.database.persistence.OutdatedDatabaseException;
 import org.eclipse.mosaic.lib.database.persistence.SQLiteLoader;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
+import org.eclipse.mosaic.lib.database.road.Restriction;
 import org.eclipse.mosaic.lib.database.road.Way;
 
 import org.slf4j.Logger;
@@ -231,6 +232,54 @@ public class DatabaseUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * This processes all connections already read and tries to extract possible turn restrictions
+     * on junctions. For this the outgoing connections of the {@link Connection} are checked against
+     * the outgoing connections of the junction {@link Node}.
+     */
+    public static void generateRestrictions(Database.Builder databaseBuilder) {
+        // running vars
+        int restrictionIdCounter = -1;
+        Collection<Connection> connectionOutgoing;
+        Collection<Connection> nodeOutgoing;
+
+        // we need to check every connection for possible restrictions
+        for (Connection connection : databaseBuilder.getConnections()) {
+            // convenience access
+            connectionOutgoing = connection.getOutgoingConnections();
+            nodeOutgoing = connection.getTo().getOutgoingConnections();
+
+            // restrictions apply when the sizes don't match
+            if (connectionOutgoing.size() < nodeOutgoing.size()) {
+
+                // special case only one possible way => generate restriction of type only
+                if (connectionOutgoing.size() == 1) {
+                    databaseBuilder.addRestriction(
+                            ++restrictionIdCounter + "",
+                            Restriction.Type.Only,
+                            connection.getWay().getId(),
+                            connection.getTo().getId(),
+                            connectionOutgoing.iterator().next().getWay().getId());
+                } else {
+                    // obviously multiple restrictions, use type not
+                    for (Connection outgoing : nodeOutgoing) {
+                        // restriction applies if outgoing connection of node does not exist
+                        // in outgoing connections of current connection
+                        if (!connectionOutgoing.contains(outgoing)) {
+                            databaseBuilder.addRestriction(
+                                    ++restrictionIdCounter + "",
+                                    Restriction.Type.Not,
+                                    connection.getWay().getId(),
+                                    connection.getTo().getId(),
+                                    outgoing.getWay().getId()
+                            );
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
