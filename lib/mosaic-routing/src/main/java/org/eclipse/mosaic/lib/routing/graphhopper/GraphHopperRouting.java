@@ -55,6 +55,14 @@ import java.util.List;
 import java.util.Set;
 
 public class GraphHopperRouting {
+
+    /**
+     * If the requested target point is this X meters away from the last node of
+     * the found route, another connection is added on which the target
+     * point is matched on.
+     */
+    public static double TARGET_REQUEST_CONNECTION_THRESHOLD = 5d;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private GraphHopper ghApi;
@@ -229,8 +237,10 @@ public class GraphHopperRouting {
             EdgeIteratorState ghEdge = edgesIt.next();
 
             /*
-             * If the first or last edge is virtual, than we grab their original edge from
-             * the source or target query.
+             * If the requested source or target point is in the middle of the road, an artificial node
+             * (and artificial edges) is created in the QueryGraph. As a consequence, the first
+             * and/or last edge of the route might be such virtual edge. We use the queried source
+             * and target to extract the original edge where the requested points have been matched on.             *
              */
             if (queryGraph.isVirtualEdge(ghEdge.getEdge())) {
                 if (pathConnections.isEmpty() && queryGraph.isVirtualNode(source.getClosestNode())) {
@@ -244,9 +254,14 @@ public class GraphHopperRouting {
 
             Connection con = graphMapper.toConnection(ghEdge.getEdge());
             if (con != null) {
+                /*
+                 * In some cases, virtual edges are created at the target even though they are only some
+                 * centimeters away from the requested node. In that case, we would have an unwanted
+                 * last connection at the end of the route, which is eliminated here.
+                 */
                 boolean lastConnectionStartsAtTarget = !edgesIt.hasNext()
                         && targetPosition.getConnectionId() == null
-                        && targetPosition.getPosition().distanceTo(con.getFrom().getPosition()) < 5;
+                        && targetPosition.getPosition().distanceTo(con.getFrom().getPosition()) < TARGET_REQUEST_CONNECTION_THRESHOLD;
                 if (lastConnectionStartsAtTarget) {
                     continue;
                 }
