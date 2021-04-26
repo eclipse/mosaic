@@ -148,7 +148,8 @@ public class Restriction {
 
         // last but not least actually filter
         if (from != null && to != null) {
-            from.applyTurnRestriction(type, to);
+            from.applyTurnRestrictionOutgoing(type, to);
+            to.applyTurnRestrictionIncoming(type, from);
         }
     }
 

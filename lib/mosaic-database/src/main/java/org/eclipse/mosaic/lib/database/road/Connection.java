@@ -255,19 +255,35 @@ public class Connection {
      * or the target will be removed from the outgoing connections.
      *
      * @param type   either 'only' or 'not'
-     * @param target the connection
+     * @param target the outgoing connection
      */
-    public void applyTurnRestriction(@Nonnull Restriction.Type type, @Nonnull Connection target) {
+    public void applyTurnRestrictionOutgoing(@Nonnull Restriction.Type type, @Nonnull Connection target) {
+        applyTurnRestriction(type, target, outgoing);
+    }
+
+    /**
+     * This applies a turn restriction to the connection. Restrictions can be of type 'only'
+     * or 'not' which will cause the incoming connections to be either trimmed down to the source
+     * or the source will be removed from the incoming connections.
+     *
+     * @param type   either 'only' or 'not'
+     * @param source the incoming connection
+     */
+    public void applyTurnRestrictionIncoming(@Nonnull Restriction.Type type, @Nonnull Connection source) {
+        applyTurnRestriction(type, source, incoming);
+    }
+
+    private void applyTurnRestriction(@Nonnull Restriction.Type type, @Nonnull Connection source, Map<String, Connection> incoming) {
         Objects.requireNonNull(type);
-        Objects.requireNonNull(target);
+        Objects.requireNonNull(source);
         switch (type) {
             case Only:
                 // this means there should be ONLY the target in the connection
-                outgoing.clear();
-                outgoing.put(target.getId(), target);
+                incoming.clear();
+                incoming.put(source.getId(), source);
                 break;
             case Not:
-                outgoing.remove(target.getId());
+                incoming.remove(source.getId());
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + type);

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -156,7 +157,7 @@ public class ConnectionTest {
     }
 
     /**
-     * Test of
+     * Test if turn restrictions are properly applied.
      */
     @Test
     public void testApplyTurnRestriction() {
@@ -175,9 +176,10 @@ public class ConnectionTest {
         instance.addNode(junctionNode);
         instance.addOutgoingConnection(conn1);
         instance.addOutgoingConnection(conn2);
-        instance.applyTurnRestriction(Restriction.Type.Only, conn2);
+        instance.applyTurnRestrictionOutgoing(Restriction.Type.Only, conn2);
+        conn2.applyTurnRestrictionIncoming(Restriction.Type.Only, instance);
 
-        assertEquals("Number of outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
+        assertEquals("# outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
         boolean hasId = false;
         for (Connection connection : instance.getOutgoingConnections()) {
             if (connection.getId().equals("2")) {
@@ -186,6 +188,8 @@ public class ConnectionTest {
                 break;
             }
         }
+        assertEquals(1, conn2.getIncomingConnections().size());
+        assertEquals("3", Lists.newArrayList(conn2.getIncomingConnections()).get(0).getId());
         assertTrue("Outgoing connection id wasn't correct", hasId);
 
         // test 'not'
@@ -194,9 +198,11 @@ public class ConnectionTest {
         instance.addNode(junctionNode);
         instance.addOutgoingConnection(conn1);
         instance.addOutgoingConnection(conn2);
-        instance.applyTurnRestriction(Restriction.Type.Not, conn2);
+        conn2.addIncomingConnection(instance);
+        instance.applyTurnRestrictionOutgoing(Restriction.Type.Not, conn2);
+        conn2.applyTurnRestrictionIncoming(Restriction.Type.Not, instance);
 
-        assertEquals("Number of outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
+        assertEquals("# outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
         hasId = false;
         for (Connection connection : instance.getOutgoingConnections()) {
             if (connection.getId().equals("1")) {
@@ -205,6 +211,7 @@ public class ConnectionTest {
                 break;
             }
         }
+        assertTrue(conn2.getIncomingConnections().isEmpty());
         assertTrue("Outgoing connection id wasn't correct", hasId);
     }
 }
