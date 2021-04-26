@@ -18,23 +18,23 @@ package org.eclipse.mosaic.lib.routing;
 import java.util.List;
 
 /**
- * Stores solely a list of node IDs of the freshly generated route.
+ * Stores solely a list of connection IDs of the freshly generated route.
  * Additionally, includes the length and time for this route.
  */
 public class CandidateRoute {
 
-    private final List<String> nodeIdList;
+    private final List<String> connectionIds;
     private final double length;
     private final double time;
 
-    public CandidateRoute(List<String> nodeIdList, double length, double time) {
-        this.nodeIdList = nodeIdList;
+    public CandidateRoute(List<String> connectionIds, double length, double time) {
+        this.connectionIds = connectionIds;
         this.length = length;
         this.time = time;
     }
 
-    public List<String> getNodeIdList() {
-        return nodeIdList;
+    public List<String> getConnectionIds() {
+        return connectionIds;
     }
 
     public double getLength() {

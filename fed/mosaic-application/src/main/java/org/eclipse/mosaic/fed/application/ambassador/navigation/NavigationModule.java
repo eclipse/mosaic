@@ -94,7 +94,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     public boolean switchRoute(CandidateRoute newRoute) {
         belongingUnit.getOsLog().debug(
                 "NavigationModule#switchRoute: Initiated route switch to [{}]",
-                StringUtils.join(newRoute.getNodeIdList(), ",")
+                StringUtils.join(newRoute.getConnectionIds(), ",")
         );
 
         VehicleRoute route;
@@ -120,7 +120,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
         } catch (IllegalRouteException e) {
             belongingUnit.getOsLog().info(
                     "NavigationModule#switchRoute: Could not switch to candidate route[{}]",
-                    StringUtils.join(newRoute.getNodeIdList(), ",")
+                    StringUtils.join(newRoute.getConnectionIds(), ",")
             );
             return false;
         }
@@ -198,7 +198,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
             VehicleRoute route = entry.getValue();
             if (targetQuery(targetPosition, route, centNavComp.getTargetPositionOfRoute(route.getId())) && onRouteQuery(route)) {
                 // length and time are no valid values at this point
-                candidateRoutes.add(new CandidateRoute(route.getNodeIds(), 0, 0));
+                candidateRoutes.add(new CandidateRoute(route.getConnectionIds(), 0, 0));
                 belongingUnit.getOsLog().debug(
                         "NavigationModule#retrieveAllValidExistingRoutesToTarget found valid existing candidate route {} ", route.getId()
                 );

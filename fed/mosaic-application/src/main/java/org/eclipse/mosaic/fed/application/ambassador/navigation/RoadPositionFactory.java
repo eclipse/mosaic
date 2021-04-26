@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.road.SimpleRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -103,21 +104,21 @@ public class RoadPositionFactory {
      * @return An {@link IRoadPosition} of the last edge in route.
      */
     public static IRoadPosition createAtEndOfRoute(VehicleRoute currentRoute, int laneIndex) {
-        return createAtEndOfRoute(currentRoute.getNodeIds(), laneIndex);
+        return createAtEndOfRoute(currentRoute.getConnectionIds(), laneIndex);
     }
 
     /**
      * Creates an {@link IRoadPosition} for the last edge of a
      * list of route nodeIds.
      *
-     * @param currentRouteNodeIds The list of nodeIds, that the {@link IRoadPosition} should be created for.
-     * @param laneIndex           The lane index.
+     * @param currentRouteConnectionIds The list of connectionIds, that the {@link IRoadPosition} should be created for.
+     * @param laneIndex                 The lane index.
      * @return An {@link IRoadPosition} of the last edge in route.
      */
-    public static IRoadPosition createAtEndOfRoute(List<String> currentRouteNodeIds, int laneIndex) {
-        final String startNodeOfLastEdge = currentRouteNodeIds.get(currentRouteNodeIds.size() - 2);
-        final String endNodeOfLastEdge = currentRouteNodeIds.get(currentRouteNodeIds.size() - 1);
-        return refine(new SimpleRoadPosition(startNodeOfLastEdge, endNodeOfLastEdge, laneIndex, -1d));
+    public static IRoadPosition createAtEndOfRoute(List<String> currentRouteConnectionIds, int laneIndex) {
+        // laneOffset of -1 results in a position 1m before the end of the route
+        // lateral offset does not matter, therefore we use 0
+        return refine(new SimpleRoadPosition(Iterables.getLast(currentRouteConnectionIds), laneIndex, -1d, 0d));
     }
 
     /**
