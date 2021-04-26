@@ -116,6 +116,8 @@ public class RoadPositionFactory {
      * @return An {@link IRoadPosition} of the last edge in route.
      */
     public static IRoadPosition createAtEndOfRoute(List<String> currentRouteConnectionIds, int laneIndex) {
+        // laneOffset of -1 results in a position 1m before the end of the route
+        // lateral offset does not matter, therefore we use 0
         return refine(new SimpleRoadPosition(Iterables.getLast(currentRouteConnectionIds), laneIndex, -1d, 0d));
     }
 
