@@ -87,6 +87,6 @@ public enum SumoVersion {
     }
 
     public boolean isGreaterOrEqualThan(SumoVersion other) {
-        return this.major >= other.major && this.minor >= other.minor;
+        return this.major > other.major || (this.major == other.major && this.minor >= other.minor);
     }
 }
