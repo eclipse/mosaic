@@ -238,7 +238,7 @@ public class NavigationModuleTest {
 
     private void testRetrieveAllValidExistingRoutesToTargetValidRoute_assert(Collection<CandidateRoute> coll) {
         assertEquals(1, coll.size());
-        assertTrue(coll.iterator().next().getNodeIdList().contains("nodeID"));
+        assertTrue(coll.iterator().next().getConnectionIds().contains("edgeID"));
 
     }
 

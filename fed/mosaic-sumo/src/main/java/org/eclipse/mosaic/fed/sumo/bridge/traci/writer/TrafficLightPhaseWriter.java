@@ -51,9 +51,9 @@ public class TrafficLightPhaseWriter extends AbstractTraciParameterWriter<SumoTr
         stringWriter.writeVariableArgument(out, argument.getPhaseDef());
 
         out.writeByte(TraciDatatypes.DOUBLE);
-        out.writeDouble(argument.getDuration() / 1000d);
+        out.writeDouble(-1d);
         out.writeByte(TraciDatatypes.DOUBLE);
-        out.writeDouble(argument.getDuration() / 1000d);
+        out.writeDouble(-1d);
         out.writeByte(TraciDatatypes.COMPOUND);
         out.writeInt(0);
 

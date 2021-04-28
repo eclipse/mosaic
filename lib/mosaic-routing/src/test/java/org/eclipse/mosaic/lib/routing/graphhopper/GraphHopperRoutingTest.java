@@ -72,7 +72,7 @@ public class GraphHopperRoutingTest {
                 .findRoutes(new RoutingRequest(new RoutingPosition(startNode.getPosition()), new RoutingPosition(endNode.getPosition()), new RoutingParameters()));
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(Arrays.asList("27537749", "252864801", "265786533", "252864802"), result.get(0).getNodeIdList());
+        assertEquals(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), result.get(0).getConnectionIds());
         assertValidRoute(result.get(0));
     }
 
@@ -89,34 +89,19 @@ public class GraphHopperRoutingTest {
         );
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(Arrays.asList("21487169", "281787660", "281787659", "27011219", "282745683", "271749621", "341364267", "27011311", "21677261", "21668930", "27537748", "27537747", "26704447", "423839225", "408194196", "410846037", "408194217", "408194192", "415838099", "428788320", "411091943", "290001020", "415838100"), result.get(0).getNodeIdList());
+        assertEquals(Arrays.asList("4400154_21487169_21677261", "32935480_21677261_21668930", "32935480_21668930_27537748", "4609242_27537748_27537747", "4609241_27537747_26704447", "4609241_26704447_423839225", "4609241_423839225_408194196", "36337926_408194196_408194192", "36337926_408194192_428788320", "36337926_428788320_415838100"), result.get(0).getConnectionIds());
         assertValidRoute(result.get(0));
     }
 
     private void assertValidRoute(CandidateRoute candidateRoute) {
-        Node lastNode = null, currentNode;
         Connection currentConnection;
-        for (String nodeId : candidateRoute.getNodeIdList()) {
-            currentNode = database.getNode(nodeId);
-
-            if (lastNode != null) {
-                currentConnection = null;
-                List<Connection> checkConnections = (!lastNode.getOutgoingConnections().isEmpty()) ? lastNode.getOutgoingConnections() : lastNode.getPartOfConnections();
-                for (Connection connection : checkConnections) {
-                    int index = connection.getNodes().indexOf(lastNode);
-                    if (connection.getNodes().get(index + 1).equals(currentNode)) {
-                        if (currentConnection != null && !currentConnection.getOutgoingConnections().contains(connection)) {
-                            throw new AssertionError("Route is not valid, no transition existing");
-                        }
-                        currentConnection = connection;
-                        break;
-                    }
-                }
-                if (currentConnection == null) {
-                    throw new AssertionError("Route is not valid.");
-                }
+        Connection previousConnection = null;
+        for (String connectionId : candidateRoute.getConnectionIds()) {
+            currentConnection = database.getConnection(connectionId);
+            if (previousConnection != null && !previousConnection.getOutgoingConnections().contains(currentConnection)) {
+                throw new AssertionError("Route is not valid, no transition existing");
             }
-            lastNode = currentNode;
+            previousConnection = currentConnection;
         }
     }
 
