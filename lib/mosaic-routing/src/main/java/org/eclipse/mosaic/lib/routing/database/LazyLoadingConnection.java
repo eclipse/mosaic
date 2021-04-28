@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.routing.database;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
@@ -55,38 +57,32 @@ public class LazyLoadingConnection implements IConnection {
     @Nullable
     private transient Connection scenarioDatabaseConnection;
 
-    private final IConnection currentConnection;
+    private final String id;
+
     private final IRoadPosition currentRoadPosition;
 
     private LazyLoadingNode conStartNode;
     private LazyLoadingNode conEndNode;
     private LazyLoadingWay way;
 
-    private String id;
-
     public LazyLoadingConnection(Connection connection) {
         this.id = connection.getId();
         this.scenarioDatabaseConnection = connection;
 
         this.database = null;
-        this.currentConnection = null;
         this.currentRoadPosition = null;
     }
 
     LazyLoadingConnection(IRoadPosition currentRoadPosition, Database database) {
-        this.currentConnection = currentRoadPosition.getConnection();
+        this.id = currentRoadPosition.getConnectionId();
         this.currentRoadPosition = currentRoadPosition;
         this.database = database;
     }
 
     @Override
     public String getId() {
-        if (id == null) {
-            id = new StringBuilder(getWay() != null ? getWay().getId() : "?").append("_")
-                    .append(getStartNode() != null ? getStartNode().getId() : "?").append("_")
-                    .append(getEndNode() != null ? getEndNode().getId() : "?").toString();
-        }
-        return id;
+        final Connection con = getConnectionFromDatabase();
+        return con != null ? con.getId() : defaultIfNull(id, "?");
     }
 
     @Override
@@ -104,13 +100,9 @@ public class LazyLoadingConnection implements IConnection {
     @Override
     public INode getStartNode() {
         if (conStartNode == null) {
-            if (currentConnection == null || currentConnection.getStartNode() == null) {
-                final Connection con = getConnectionFromDatabase();
-                if (con != null) {
-                    conStartNode = new LazyLoadingNode(con.getFrom());
-                }
-            } else {
-                conStartNode = new LazyLoadingNode(currentConnection.getStartNode(), database);
+            final Connection con = getConnectionFromDatabase();
+            if (con != null) {
+                conStartNode = new LazyLoadingNode(con.getFrom());
             }
         }
         return conStartNode;
@@ -119,13 +111,9 @@ public class LazyLoadingConnection implements IConnection {
     @Override
     public INode getEndNode() {
         if (conEndNode == null) {
-            if (currentConnection == null || currentConnection.getEndNode() == null) {
-                final Connection con = getConnectionFromDatabase();
-                if (con != null) {
-                    conEndNode = new LazyLoadingNode(con.getTo());
-                }
-            } else {
-                conEndNode = new LazyLoadingNode(currentConnection.getEndNode(), database);
+            final Connection con = getConnectionFromDatabase();
+            if (con != null) {
+                conEndNode = new LazyLoadingNode(con.getTo());
             }
         }
         return conEndNode;
@@ -134,13 +122,9 @@ public class LazyLoadingConnection implements IConnection {
     @Override
     public IWay getWay() {
         if (way == null) {
-            if (currentConnection == null || currentConnection.getWay() == null) {
-                final Connection con = getConnectionFromDatabase();
-                if (con != null) {
-                    way = new LazyLoadingWay(con.getWay());
-                }
-            } else {
-                way = new LazyLoadingWay(currentConnection.getWay(), database);
+            final Connection con = getConnectionFromDatabase();
+            if (con != null) {
+                way = new LazyLoadingWay(con.getWay());
             }
         }
         return way;
@@ -151,28 +135,22 @@ public class LazyLoadingConnection implements IConnection {
             return scenarioDatabaseConnection;
         }
 
-        if (currentConnection != null && currentConnection.getStartNode() != null && currentConnection.getEndNode() != null && currentConnection.getWay() != null) {
-            final String currentConnectionId = currentConnection.getWay().getId() + "_"
-                    + currentConnection.getStartNode().getId() + "_"
-                    + currentConnection.getEndNode().getId();
-            scenarioDatabaseConnection = database.getConnection(currentConnectionId);
-
-        } else if (currentConnection != null && currentConnection.getStartNode() != null && currentConnection.getEndNode() != null) {
-            scenarioDatabaseConnection = getConnectionBetweenNodes(
-                    currentConnection.getStartNode(), currentConnection.getEndNode(), currentConnection.getWay()
-            );
-        } else if (currentRoadPosition != null && currentRoadPosition.getPreviousNode() != null && currentRoadPosition.getUpcomingNode() != null) {
-            scenarioDatabaseConnection = getConnectionBetweenNodes(
-                    currentRoadPosition.getPreviousNode(), currentRoadPosition.getUpcomingNode(),
-                    currentConnection != null ? currentConnection.getWay() : null
-            );
-        } else {
-            // from here there's no way to get the connection :(
+        scenarioDatabaseConnection = database.getConnection(id);
+        if (scenarioDatabaseConnection != null) {
+            return scenarioDatabaseConnection;
         }
+
+        if (currentRoadPosition != null && currentRoadPosition.getPreviousNode() != null && currentRoadPosition.getUpcomingNode() != null) {
+            scenarioDatabaseConnection = getConnectionBetweenNodes(
+                    currentRoadPosition.getPreviousNode(),
+                    currentRoadPosition.getUpcomingNode()
+            );
+        }
+
         return scenarioDatabaseConnection;
     }
 
-    private Connection getConnectionBetweenNodes(INode from, INode to, IWay way) {
+    private Connection getConnectionBetweenNodes(INode from, INode to) {
         final Node fromNode = database.getNode(from.getId());
         final Collection<Connection> fromNodeConnections = fromNode.getOutgoingConnections().isEmpty() ? fromNode.getPartOfConnections() : fromNode.getOutgoingConnections();
 
@@ -181,8 +159,7 @@ public class LazyLoadingConnection implements IConnection {
 
         for (Connection conFromStart : fromNodeConnections) {
             for (Connection conToEnd : toNodeConnections) {
-                if (conFromStart.getId().equals(conToEnd.getId()) && // 
-                        (way == null || way.getId().equals(conFromStart.getWay().getId()))) {
+                if (conFromStart.getId().equals(conToEnd.getId())) {
                     return conFromStart;
                 }
             }
@@ -193,7 +170,6 @@ public class LazyLoadingConnection implements IConnection {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 37)
-                .append(this.currentConnection)
                 .append(this.conStartNode)
                 .append(this.conEndNode)
                 .append(this.way)
@@ -212,12 +188,11 @@ public class LazyLoadingConnection implements IConnection {
             return false;
         }
 
-        LazyLoadingConnection sdc = (LazyLoadingConnection) obj;
+        LazyLoadingConnection other = (LazyLoadingConnection) obj;
         return new EqualsBuilder()
-                .append(this.currentConnection, sdc.currentConnection)
-                .append(this.conStartNode, sdc.conStartNode)
-                .append(this.conEndNode, sdc.conEndNode)
-                .append(this.way, sdc.way)
+                .append(this.conStartNode, other.conStartNode)
+                .append(this.conEndNode, other.conEndNode)
+                .append(this.way, other.way)
                 .isEquals();
     }
 

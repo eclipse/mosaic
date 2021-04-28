@@ -9,9 +9,11 @@
 [![Jenkins Build](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.eclipse.org%2Fmosaic%2Fjob%2Fmosaic%2Fjob%2Fmain&label=Jenkins%20build)](https://ci.eclipse.org/mosaic/job/mosaic/)
 
 
-**Eclipse MOSAIC** is a multi-scale simulation framework in the field of smart and connected mobility. It allows to couple simulators from various domains towards a comprehensive simulation tool. 
-Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models are coupled to the RTI using HLA inspired interfaces; 
-Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador" which is directly coupled with the RTI. Currently, the following simulators are coupled with the MOSAIC RTI:
+[**Eclipse MOSAIC**](https://eclipse.org/mosaic) is a multi-scale simulation framework in the field of smart and connected mobility.
+It allows coupling simulators from various domains towards a comprehensive simulation tool. 
+Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models
+are coupled to the RTI using HLA inspired interfaces; Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador"
+which is directly coupled with the RTI. Currently, the following simulators are coupled with the MOSAIC RTI:
   * MOSAIC Application (application simulation)
   * Eclipse SUMO (traffic simulation)
   * OMNeT++ (communication simulation)
@@ -24,14 +26,23 @@ Each simulator is wrapped into a "Federate" object which is linked to an "Ambass
 The project is a Maven based multi-module project and has its child modules organized in three main categories:
   * MOSAIC RTI: modules providing the runtime infrastructure API and implementation
   * MOSAIC Libraries: mathematics, spatial, routing, utilities, communication models, and data exchange
-  * MOSAIC Ambassadors: simulators and couplings which integrate first bunch of simulation models to Eclipse MOSAIC
+  * MOSAIC Ambassadors: simulators and couplings which integrate simulation models to Eclipse MOSAIC
 
+> View our website ([https://eclipse.org/mosaic](https://eclipse.org/mosaic)) for further documentation and tutorials.
 ## The Essential edition of Eclipse MOSAIC
 
 This repository contains the *Essential* edition of Eclipse MOSAIC, that is, the runtime infrastructure, 
 the core libraries, and various implementations of simulators or couplings to existing ones. All features 
 included in this version of Eclipse MOSAIC are sufficient for most use-cases in the field of smart and connected mobility.
 Additional simulators and assessment features are provided by [Fraunhofer FOKUS](https://www.fokus.fraunhofer.de/go/asct) on a commercial basis.
+
+## Related repositories
+
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.9.0`.
+* The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
+  We currently support ns-3 version `3.28`. 
+* The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
+  We currently support OMNeT++ version `5.5` in combination with the INET framework in version `4.1`.  
 
 ## Contact
 
@@ -45,7 +56,7 @@ For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
 * **Java 8 or 11** - We recommend using the [Adopt OpenJDK](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot).
-* **SUMO 1.8.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **SUMO 1.9.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 

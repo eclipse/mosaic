@@ -45,6 +45,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.SensorValue.SensorStatus;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -58,7 +59,6 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @RunWith(SumoRunner.class)
@@ -141,7 +141,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park)
-        traci.getVehicleControl().stop("veh_0", "1_1_2_1", 200, 0, Integer.MAX_VALUE, (byte) 0);
+        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, (byte) 0);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -229,11 +229,10 @@ public class TraciTest {
         // ASSERT
         final Collection<String> lanesExpected =
                 Lists.newArrayList(
-                        "1_3_2_3_0", "1_3_2_3_1", "1_3_2_3_1",
-                        "1_3_2_3_1", "2_6_3_6_0", "2_6_3_6_0", "2_6_3_6_0",
-                        "1_1_2_1_0", "1_1_2_1_0", "1_1_2_1_1", "1_1_2_1_1"
+                        "1_3_2_0", "1_3_2_1", "1_3_2_1",
+                        "1_3_2_1", "2_6_3_0", "2_6_3_0", "2_6_3_0",
+                        "1_1_2_0", "1_1_2_0", "1_1_2_1", "1_1_2_1"
                 );
-
 
         assertThat(lanesActual, is(lanesExpected));
     }
@@ -243,7 +242,7 @@ public class TraciTest {
         final TraciClientBridge traci = traciRule.getTraciClient();
 
         // RUN
-        traci.getRouteControl().addRoute("2", Lists.newArrayList("2_5_2_5", "1_2_3_2", "1_3_4_3"));
+        traci.getRouteControl().addRoute("2", Lists.newArrayList("2_5_2", "1_2_3", "1_3_4"));
 
         // ASSERT (by adding a vehicle on that route
         traci.getSimulationControl().addVehicle("veh_0", "2", "PKW", "0", "0", "max");
@@ -252,7 +251,7 @@ public class TraciTest {
         // ASSERT (by checking if vehicle is first edge on route)
         final TraciSimulationStepResult result = traci.getSimulationControl().simulateUntil(3 * TIME.SECOND);
         assertVehicleInSimulation(result.getVehicleUpdates(), "veh_0");
-        assertEquals("2", traci.getSimulationControl().getLastKnownVehicleData("veh_0").getRoadPosition().getConnection().getWay().getId());
+        assertEquals("2_5_2", traci.getSimulationControl().getLastKnownVehicleData("veh_0").getRoadPosition().getConnectionId());
     }
 
     @Test
@@ -366,7 +365,7 @@ public class TraciTest {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
             vehData = traci.getSimulationControl().getLastKnownVehicleData("veh_0");
 
-            double expectedAcc = ((vehData.getSpeed() - prevSpeed) / 1d);
+            double expectedAcc = ((vehData.getSpeed() - prevSpeed));
             if (prevSpeed < 0) {
                 expectedAcc = 0;
             }
@@ -386,7 +385,6 @@ public class TraciTest {
         traci.getSimulationControl().addVehicle("veh_0", "1", "PKW", "0", "0", "max");
         traci.getSimulationControl().subscribeForVehicle("veh_0", 0, 4000 * TIME.SECOND);
 
-
         // RUN
         VehicleData vehData = null;
         for (int t = 0; t < 200; t++) {
@@ -397,18 +395,24 @@ public class TraciTest {
         // ASSERT (for emission class HBEFA3/PC_G_EU4: http://sumo.dlr.de/wiki/Models/Emissions/HBEFA3-based)
         double per1kmFactor = 1000 / vehData.getDistanceDriven();
         assertEquals(54.5, vehData.getVehicleConsumptions().getAllConsumptions().getFuel() * per1kmFactor, 1d);
-        assertEquals(493, vehData.getVehicleEmissions().getAllEmissions().getCo() * per1kmFactor, 2d);
-        assertEquals(126930, vehData.getVehicleEmissions().getAllEmissions().getCo2() * per1kmFactor, 100d);
+        assertEquals(490, vehData.getVehicleEmissions().getAllEmissions().getCo() * per1kmFactor, 2d);
+        assertEquals(126800, vehData.getVehicleEmissions().getAllEmissions().getCo2() * per1kmFactor, 100d);
         assertEquals(4.7, vehData.getVehicleEmissions().getAllEmissions().getHc() * per1kmFactor, 1d);
         assertEquals(43.9, vehData.getVehicleEmissions().getAllEmissions().getNox() * per1kmFactor, 1d);
         assertEquals(1.23, vehData.getVehicleEmissions().getAllEmissions().getPmx() * per1kmFactor, 0.1d);
     }
 
+    /**
+     * Simulates SUMO scenario and checks for vehicles when they should be departed.
+     *
+     * @throws InternalFederateException e.g. if there was a problem with TraCI connection
+     */
     @Test
-    public void testGetDepartedVehicles() throws Exception {
+    public void testGetDepartedVehicles() throws InternalFederateException {
         // SETUP
         final TraciClientBridge traci = traciRule.getTraciClient();
 
+        // RUN & ASSERT
         traci.getSimulationControl().simulateUntil(0L);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
 
@@ -418,14 +422,19 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(2 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
 
+        List<String> departedVehicles;
         traci.getSimulationControl().simulateUntil(3 * TIME.SECOND);
-        assertEquals(Collections.singletonList("1"), traci.getSimulationControl().getDepartedVehicles());
+        departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        assertEquals(1, departedVehicles.size());
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), departedVehicles.get(0));
 
         traci.getSimulationControl().simulateUntil(4 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
 
         traci.getSimulationControl().simulateUntil(7 * TIME.SECOND);
-        assertEquals(Collections.singletonList("0"), traci.getSimulationControl().getDepartedVehicles());
+        departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        assertEquals(1, departedVehicles.size());
+        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), departedVehicles.get(0));
 
         traci.getSimulationControl().simulateUntil(8 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
@@ -437,7 +446,7 @@ public class TraciTest {
         final TraciClientBridge traci = traciRule.getTraciClient();
 
         List<String> edges = traci.getRouteControl().getRouteEdges("1");
-        assertEquals(Arrays.asList("1_1_2_1", "2_2_5_2", "2_5_6_5", "2_6_3_6", "1_3_4_3"), edges);
+        assertEquals(Arrays.asList("1_1_2", "2_2_5", "2_5_6", "2_6_3", "1_3_4"), edges);
     }
 
     @Test
@@ -499,8 +508,8 @@ public class TraciTest {
         assertEquals(50 / 3.6d, maxSpeedVeh, 0.5d);
 
         // RUN
-        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_1_0", 30 / 3.6d);
-        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_1_1", 30 / 3.6d);
+        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_0", 30 / 3.6d);
+        traci.getSimulationControl().setLaneMaxSpeed("1_1_2_1", 30 / 3.6d);
 
         // let the vehicle decelerate
         VehicleData vehicleData =

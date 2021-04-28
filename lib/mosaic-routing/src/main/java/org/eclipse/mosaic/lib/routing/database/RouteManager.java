@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.routing.database;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
@@ -83,31 +82,14 @@ public class RouteManager {
      * @return simplified version of the route suitable to send to other ambassadors
      */
     public final VehicleRoute createRouteForRTI(Route route) {
-        double length = 0.0;
 
-        /* To prevent sequent double connections, create a variable for the
-         * last connection. The current connection (named currentConnection)
-         * is always checked with the latest (named lastConnection). */
-        Connection lastConnection = null;
+        final List<String> edgeIds = route.getConnectionIds();
+        double length = approximateLengthOfRoute(route);
+        return new VehicleRoute(route.getId(), edgeIds, route.getNodeIds(), length);
+    }
 
-        // iterate over all edges from the path
-        for (Edge edge : route.getRoute()) {
-            Connection currentConnection = edge.getConnection();
-            // is the connection not the last connection?
-            // hint: never flip this equals because lastConnection could be null
-            if (!currentConnection.equals(lastConnection)) {
-                // current connection is not the same as the lastConnection
-                // assign the current connection to the last connection
-                lastConnection = currentConnection;
-                // ... and add the length to the sum
-                length += edge.getConnection().getLength();
-            }
-        }
-        return new VehicleRoute(
-                route.getId(),
-                route.getEdgeIdList(),
-                route.getNodeIdList(),
-                length);
+    private double approximateLengthOfRoute(Route route) {
+        return route.getConnections().stream().mapToDouble(Connection::getLength).sum();
     }
 
     /**
@@ -147,7 +129,7 @@ public class RouteManager {
                 // check if we can create an edge or the route is invalid
                 currentCon = chooseFastest(connectionCandidates);
                 if (currentCon.isPresent()) {
-                    route.addEdge(new Edge(currentCon.get(), lastNode, currentNode));
+                    route.addConnection(currentCon.get());
                 } else {
                     throw new IllegalRouteException(
                             String.format("[addRouteByNodeList] given nodes represent an invalid route. "

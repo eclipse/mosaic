@@ -144,13 +144,12 @@ public class SendAndReceiveIT {
     public void cellMessagesHandledInModules() throws Exception {
         // send 150 uplink messages from veh_0 and veh_1 + 2*RoundTripMessage + 2*Messages for nack + 1*Nack-test = 305
         LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Upstream\\] Processed messages: 305.*");
-        /* received (26 rsu_0 + 40 rsu_1 + 31 rsu_2 + 130 self) messages from veh_0 = 227
-        and (150 broadcast + 11 region overlap) - (112 messages not sendable due to capacity limit) messages from veh_1 = 49
+        /* received (26 rsu_0 + 30 rsu_1 + 30 rsu_2 + 150 self) messages from veh_0 = 236
+        and (150 broadcast + 2 region overlap) - (113 messages not sendable due to capacity limit) messages from veh_1 = 39
         and 2*RoundTripMessage = 2
         and 2*Messages for nack test = 2
-        and 1*Nack-Test ==> total 281
-        FIXME: Not sure if listed amounts are correct, since the test went through multiple iterations without the comment being updated */
-        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Downstream\\] Processed messages: 281.*");
+        and 1*Nack-Test ==> total 280*/
+        LogAssert.contains(simulationRule, CELL_LOG, ".*ChainManager - \\[Downstream\\] Processed messages: 280.*");
     }
 
     @Test
@@ -208,8 +207,8 @@ public class SendAndReceiveIT {
         long timeOfSending = 310 * TIME.SECOND;
         long delayTmcUpload = 50 * TIME.MILLI_SECOND;
         long delayTmcDownload = 50 * TIME.MILLI_SECOND;
-        long delayVehUpload = 106 * TIME.MILLI_SECOND;
-        long delayVehDownload = 57 * TIME.MILLI_SECOND;
+        long delayVehUpload = 86 * TIME.MILLI_SECOND; //TODO check those values, are those random?
+        long delayVehDownload = 57 * TIME.MILLI_SECOND; //TODO check those values, are those random? if so, than its not ideal for a test
 
         long timeFromTmcToVeh = delayTmcUpload + delayVehDownload;
         long timeFromVehToTmc = delayVehUpload + delayTmcDownload;

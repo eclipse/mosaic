@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * This is a complete route that can be driven by a vehicle.
@@ -39,14 +38,14 @@ public class VehicleRoute implements Serializable {
     private final String routeId;
 
     /**
-     * The list of all edge IDs this route passes.
+     * The list of all connection IDs this route passes.
      */
-    private final List<String> edgeIdList;
+    private final List<String> connectionIds;
 
     /**
      * The list of all node IDs this route passes.
      */
-    private final List<String> nodeIdList;
+    private final List<String> nodeIds;
 
     /**
      * The length of the complete route described from edges.
@@ -58,14 +57,14 @@ public class VehicleRoute implements Serializable {
      * This creates a route a vehicle can drive on.
      *
      * @param id     may NOT be null
-     * @param edges  may be but should not be null
+     * @param connections  may be but should not be null
      * @param nodes  may be but should not be null
      * @param length the length of the complete route described from edges. <code>0.0</code> if no length is given.
      */
-    public VehicleRoute(@Nonnull String id, List<String> edges, List<String> nodes, double length) {
+    public VehicleRoute(@Nonnull String id, List<String> connections, List<String> nodes, double length) {
         this.routeId = Objects.requireNonNull(id);
-        this.edgeIdList = (edges == null) ? new ArrayList<>() : edges;
-        this.nodeIdList = (nodes == null) ? new ArrayList<>() : nodes;
+        this.connectionIds = (connections == null) ? new ArrayList<>() : connections;
+        this.nodeIds = (nodes == null) ? new ArrayList<>() : nodes;
         this.length = length;
     }
 
@@ -84,8 +83,8 @@ public class VehicleRoute implements Serializable {
      * @return the edgeIdList
      */
     @Nonnull
-    public List<String> getEdgeIdList() {
-        return this.edgeIdList;
+    public List<String> getConnectionIds() {
+        return this.connectionIds;
     }
 
     /**
@@ -94,8 +93,8 @@ public class VehicleRoute implements Serializable {
      * @return nodeIdList
      */
     @Nonnull
-    public List<String> getNodeIdList() {
-        return this.nodeIdList;
+    public List<String> getNodeIds() {
+        return this.nodeIds;
     }
 
     /**
@@ -112,26 +111,25 @@ public class VehicleRoute implements Serializable {
      *
      * @return the last edge id.
      */
-    @Nullable
-    public String getLastEdgeId() {
-        return Iterables.getLast(edgeIdList, null);
+    public String getLastConnectionId() {
+        return Iterables.getLast(connectionIds, null);
     }
 
     public String getLastNodeId() {
-        return Iterables.getLast(nodeIdList, null);
+        return Iterables.getLast(nodeIds, null);
     }
 
     @Override
     public String toString() {
-        return "Route{" + "id=" + routeId + ", edges=" + edgeIdList + ", nodes=" + nodeIdList + ", length=" + length + '}';
+        return "Route{" + "id=" + routeId + ", connetions=" + connectionIds + ", nodes=" + nodeIds + ", length=" + length + '}';
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(7, 23)
                 .append(routeId)
-                .append(edgeIdList)
-                .append(nodeIdList)
+                .append(connectionIds)
+                .append(nodeIds)
                 .append(length)
                 .toHashCode();
     }
@@ -151,8 +149,8 @@ public class VehicleRoute implements Serializable {
         VehicleRoute other = (VehicleRoute) obj;
         return new EqualsBuilder()
                 .append(this.routeId, other.routeId)
-                .append(this.edgeIdList, other.edgeIdList)
-                .append(this.nodeIdList, other.nodeIdList)
+                .append(this.connectionIds, other.connectionIds)
+                .append(this.nodeIds, other.nodeIds)
                 .append(this.length, other.length)
                 .isEquals();
     }

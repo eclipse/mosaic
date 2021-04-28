@@ -15,11 +15,13 @@
 
 package org.eclipse.mosaic.lib.database.route;
 
+import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
+
+import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,9 +39,8 @@ public class Route {
 
     /**
      * The list of edges the vehicles using this route have to drive.
-     * Each entry has the form connectionid_startnode
      */
-    private final List<Edge> edgeList = new ArrayList<>();
+    private final List<Connection> connections = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -62,36 +63,15 @@ public class Route {
     }
 
     /**
-     * This is the list of {@link Edge}s that form the route.
-     * The entries have the form connectionid_startnode
+     * Adds an {@link Connection} to the route.
      *
-     * @return list of edges
+     * @param connection Connection to add.
      */
-    @Nonnull
-    public List<Edge> getRoute() {
-        return Collections.unmodifiableList(edgeList);
-    }
-
-    /**
-     * This extracts a list of edge IDs.
-     *
-     * @return Extracted list of edge Ids.
-     */
-    @Nonnull
-    public List<String> getEdgeIdList() {
-        return edgeList.stream().map(Edge::getId).collect(Collectors.toList());
-    }
-
-    /**
-     * Add an {@link Edge} to the route. Mind the order of edges.
-     *
-     * @param edge Edge to add.
-     */
-    public void addEdge(@Nonnull Edge edge) {
-        if (edgeList.size() > 0 && edgeList.get(edgeList.size() - 1).getId().equals(edge.getId())) {
-            edgeList.remove(edgeList.size() - 1);
+    public void addConnection(@Nonnull Connection connection) {
+        if (connections.size() > 0 && Iterables.getLast(connections).getId().equals(connection.getId())) {
+            return;
         }
-        edgeList.add(Objects.requireNonNull(edge));
+        connections.add(Objects.requireNonNull(connection));
     }
 
     /**
@@ -100,42 +80,56 @@ public class Route {
      * @return Extracted nodes.
      */
     @Nonnull
-    public List<Node> getNodeList() {
-        if (edgeList.isEmpty()) {
+    public List<Node> getNodes() {
+        if (connections.isEmpty()) {
             return new ArrayList<>();
         } else {
-            List<Node> nodes = edgeList.stream().map(Edge::getFromNode).collect(Collectors.toList());
-            nodes.add(edgeList.get(edgeList.size() - 1).getToNode());
+            // we store all nodes of all connections here
+            // this is needed for determining the next and previous node in LazyLoadingRoadPosition
+            List<Node> nodes = new ArrayList<>();
+            for (Connection connection : connections) {
+                if (!nodes.isEmpty()) {
+                    // avoid double nodes as end and start node from consecutive connections are the same
+                    nodes.remove(nodes.size() - 1);
+                }
+                nodes.addAll(connection.getNodes());
+            }
             return nodes;
         }
     }
 
+
+
     /**
      * This extracts a list of all node IDs this {@link Route} passes.
-     * So ALL the edges nodes, even those between intersections where a route could change!
      *
      * @return Extracted list of all node IDs.
      */
     @Nonnull
-    public List<String> getNodeIdList() {
-        return Collections.unmodifiableList(getNodeList().stream().map(Node::getId).collect(Collectors.toList()));
+    public List<String> getNodeIds() {
+        return Collections.unmodifiableList(getNodes().stream().map(Node::getId).collect(Collectors.toList()));
+    }
+
+    /**
+     * This extracts a list of {@link Connection}s that vehicles using this {@link Route} are passing. Multiple adjacent edges belonging to
+     * the same connection will result in only one occurrence of the connection.
+     *
+     * @return Extracted nodes.
+     */
+    @Nonnull
+    public List<Connection> getConnections() {
+        return Collections.unmodifiableList(connections);
     }
 
     /**
      * This extracts a list of connection IDs. Multiple adjacent edges belonging to
-     * the same connection will result in only one occurrence of the connection !
+     * the same connection will result in only one occurrence of the connection.
      *
      * @return Extracted list of connection Ids.
      */
     @Nonnull
-    public List<String> getConnectionIdList() {
-        final LinkedList<String> result = new LinkedList<>();
-        for (Edge edge : edgeList) {
-            if (result.isEmpty() || !result.getLast().equals(edge.getConnection().getId())) {
-                result.add(edge.getConnection().getId());
-            }
-        }
-        return result;
+    public List<String> getConnectionIds() {
+        return Collections.unmodifiableList(getConnections().stream().map(Connection::getId).collect(Collectors.toList()));
     }
 
 }

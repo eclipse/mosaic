@@ -40,8 +40,10 @@ public class Wgs84Projection extends GeoProjection {
     private final ReferenceEllipsoid ellipsoid = ReferenceEllipsoid.WGS_84;
 
     private final GeoPoint geoOrigin;
+    private final UtmPoint utmOrigin;
 
     private boolean failIfOutsideWorld = false;
+    private boolean useZoneOfUtmOrigin = false;
 
     /**
      * Initializes the projection based on the {@link GeoPoint}
@@ -52,6 +54,7 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection(GeoPoint origin) {
         this.geoOrigin = origin;
+        this.utmOrigin = geographicToUtm(origin);
     }
 
     /**
@@ -63,6 +66,7 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection(UtmPoint origin) {
         this.geoOrigin = utmToGeographic(origin);
+        this.utmOrigin = origin;
     }
 
     /**
@@ -70,7 +74,7 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection(GeoPoint playgroundCenter, CartesianPoint cartesianOffset) {
         final UtmZone zone = UtmZone.from(playgroundCenter);
-        UtmPoint utmOrigin = new MutableUtmPoint(
+        this.utmOrigin = new MutableUtmPoint(
                 -cartesianOffset.getX(),
                 -cartesianOffset.getY(),
                 -cartesianOffset.getZ(),
@@ -87,6 +91,16 @@ public class Wgs84Projection extends GeoProjection {
      */
     public Wgs84Projection failIfOutsideWorld() {
         this.failIfOutsideWorld = true;
+        return this;
+    }
+
+    /**
+     * Enables the option to use the zone of the UTM origin point when converting to UTM Point.
+     *
+     * @return this projection
+     */
+    public Wgs84Projection useZoneOfUtmOrigin() {
+        this.useZoneOfUtmOrigin = true;
         return this;
     }
 
@@ -114,7 +128,7 @@ public class Wgs84Projection extends GeoProjection {
 
     @Override
     public Vector3d utmToVector(UtmPoint utm, Vector3d result) {
-        return geographicToVector(utmToGeographic(utm));
+        return geographicToVector(utmToGeographic(utm), result);
     }
 
     @Override
@@ -124,9 +138,8 @@ public class Wgs84Projection extends GeoProjection {
 
     @Override
     public MutableUtmPoint geographicToUtm(GeoPoint geoPoint, MutableUtmPoint result) {
-
-        double resultEasting = 0d;
-        double resultNorthing = 0d;
+        double resultEasting;
+        double resultNorthing;
 
         /* Converts lat/long to UTM coords. Equations from USGS Bulletin 1532
            East Longitudes are positive, West longitudes are negative.
@@ -151,24 +164,30 @@ public class Wgs84Projection extends GeoProjection {
         double longOriginRad;
         int zoneNumber;
 
-        zoneNumber = (int) ((longTemp + 180) / 6) + 1;
+        if (useZoneOfUtmOrigin && utmOrigin != null) {
+            zoneNumber = utmOrigin.getZone().number;
+        } else {
+            zoneNumber = (int) ((longTemp + 180) / 6) + 1;
 
-        if (geoPoint.getLatitude() >= 56.0 && geoPoint.getLatitude() < 64.0 && longTemp >= 3.0 && longTemp < 12.0) {
-            zoneNumber = 32;
-        }
+            if (geoPoint.getLatitude() >= 56.0 && geoPoint.getLatitude() < 64.0 && longTemp >= 3.0 && longTemp < 12.0) {
+                zoneNumber = 32;
+            }
 
-        // Special zones for Svalbard
-        if (geoPoint.getLatitude() >= 72.0 && geoPoint.getLatitude() < 84.0) {
-            if (longTemp >= 0.0 && longTemp < 9.0) {
-                zoneNumber = 31;
-            } else if (longTemp >= 9.0 && longTemp < 21.0) {
-                zoneNumber = 33;
-            } else if (longTemp >= 21.0 && longTemp < 33.0) {
-                zoneNumber = 35;
-            } else if (longTemp >= 33.0 && longTemp < 42.0) {
-                zoneNumber = 37;
+            // Special zones for Svalbard
+            if (geoPoint.getLatitude() >= 72.0 && geoPoint.getLatitude() < 84.0) {
+                if (longTemp >= 0.0 && longTemp < 9.0) {
+                    zoneNumber = 31;
+                } else if (longTemp >= 9.0 && longTemp < 21.0) {
+                    zoneNumber = 33;
+                } else if (longTemp >= 21.0 && longTemp < 33.0) {
+                    zoneNumber = 35;
+                } else if (longTemp >= 33.0 && longTemp < 42.0) {
+                    zoneNumber = 37;
+                }
             }
         }
+
+
         longOrigin = (zoneNumber - 1) * 6 - 180 + 3;  //+3 puts origin in middle of zone
         longOriginRad = Math.toRadians(longOrigin);
 

@@ -32,9 +32,9 @@ public class VehicleSubscriptionResult extends AbstractSubscriptionResult {
     public int signalsEncoded;
     public double minGap;
 
-    public String road;
     public String routeId;
-    public String laneId;
+    public String edgeId;
+    public int laneIndex;
     public double lanePosition;
     public double lateralLanePosition;
 

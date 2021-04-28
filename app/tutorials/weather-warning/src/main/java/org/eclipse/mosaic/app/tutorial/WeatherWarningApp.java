@@ -191,7 +191,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         // longLat of the vehicle that detected an event.
         GeoPoint vehicleLongLat = getOs().getPosition();
 
-        // roadId (connectionId) of the vehicle that detected an event.
+        // ID of the connection on which the vehicle detected an event.
         String roadId = getOs().getVehicleData().getRoadPosition().getConnection().getId();
 
         getLog().infoSimTime(this, "Sensor {} event detected", type);
@@ -246,7 +246,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          * would decrease dramatically. This may change in the future.
          * Until this, the routeChanged variable is used.
          */
-        final String affectedRoadId = denm.getEventRoadId();
+        final String affectedConnectionId = denm.getEventRoadId();
         final VehicleRoute routeInfo = Objects.requireNonNull(getOs().getNavigationModule().getCurrentRoute());
 
         // Print some useful DEN message information
@@ -260,14 +260,13 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         }
 
         // Retrieving whether the event we have been notified of is on the vehicle's route
-        for (final String edges : routeInfo.getEdgeIdList()) {
+        for (final String connection : routeInfo.getConnectionIds()) {
             // Retrieve only the connection id and throw away the edge id
             // NOTE: a route info id has the format connectionId_edgeId
-            final String v_roadId = edges.substring(0, edges.lastIndexOf("_"));
-            if (v_roadId.equals(affectedRoadId)) {
-                getLog().infoSimTime(this, "The Event is on the vehicle's route {} = {}", v_roadId, affectedRoadId);
+            if (connection.equals(affectedConnectionId)) {
+                getLog().infoSimTime(this, "The Event is on the vehicle's route {} = {}", connection, affectedConnectionId);
 
-                circumnavigateAffectedRoad(denm, affectedRoadId);
+                circumnavigateAffectedRoad(denm, affectedConnectionId);
                 routeChanged = true;
                 return;
             }

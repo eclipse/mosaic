@@ -25,6 +25,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.facades.TrafficLightFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.VehicleFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.AbstractTraciCommand;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
+import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -55,8 +56,7 @@ public class TraciClientBridge implements Bridge {
      * a custom transformer may be defined here, which converts the vehicle IDs known by SUMO to
      * vehicle IDs known by the consumer (e.g. MOSAIC) of this TraciClient.
      */
-    @SuppressWarnings(value = {"MS_SHOULD_BE_FINAL", "MS_CANNOT_BE_FINAL"})
-    public static IdTransformer<String, String> VEHICLE_ID_TRANSFORMER = new IdTransformer.Identity();
+    public static final IdTransformer<String, String> VEHICLE_ID_TRANSFORMER = new MosaicConformVehicleIdTransformer();
 
     private final CommandRegister commandRegister;
 

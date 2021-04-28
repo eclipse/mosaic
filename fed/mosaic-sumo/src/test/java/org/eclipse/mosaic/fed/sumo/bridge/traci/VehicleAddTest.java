@@ -17,7 +17,6 @@ package org.eclipse.mosaic.fed.sumo.bridge.traci;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.AbstractSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
@@ -44,7 +43,7 @@ public class VehicleAddTest extends AbstractTraciCommandTest {
         assertEquals(1, subscriptions.size());
         assertEquals("veh_0", Iterables.getOnlyElement(subscriptions).id);
         assertEquals(1.341011890611844, ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).heading, 0.01d);
-        assertNotEquals("", ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).road);
+        assertNotEquals("", ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).edgeId);
     }
 
     @Test
@@ -57,8 +56,8 @@ public class VehicleAddTest extends AbstractTraciCommandTest {
         List<AbstractSubscriptionResult> subscriptions = simulateStep.execute(traci.getTraciConnection(), 6 * TIME.SECOND);
         assertEquals(1, subscriptions.size());
         assertEquals("veh_0", Iterables.getOnlyElement(subscriptions).id);
-        assertTrue(((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).laneId.endsWith("_1")); // free lane "1" chosen
-        assertEquals(94.50979874130276, ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).heading, 0.01);
+        assertEquals(1, ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).laneIndex); // free lane "1" chosen
+        assertEquals(1.34, ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).heading, 0.01);
     }
 
 }

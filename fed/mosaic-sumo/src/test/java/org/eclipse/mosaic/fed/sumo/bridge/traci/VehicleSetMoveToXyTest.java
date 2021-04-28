@@ -37,7 +37,7 @@ public class VehicleSetMoveToXyTest extends AbstractTraciCommandTest {
         // PRE-ASSERT
         VehicleSubscriptionResult vehInfo =
                 (VehicleSubscriptionResult) Iterables.getOnlyElement(simulateStep.execute(traci.getTraciConnection(), 6 * TIME.SECOND));
-        assertEquals("1_1_2_1", vehInfo.road);
+        assertEquals("1_1_2", vehInfo.edgeId);
         assertEquals(5d, vehInfo.position.getX(), 5d);
         assertEquals(11d, vehInfo.position.getY(), 5d);
 
@@ -47,7 +47,7 @@ public class VehicleSetMoveToXyTest extends AbstractTraciCommandTest {
 
         // ASSERT
         vehInfo = (VehicleSubscriptionResult) Iterables.getOnlyElement(simulateStep.execute(traci.getTraciConnection(), 7 * TIME.SECOND));
-        assertEquals("2_6_3_6", vehInfo.road);
+        assertEquals("2_6_3", vehInfo.edgeId);
         assertEquals(423d, vehInfo.position.getX(), 5d);
         assertEquals(2218d, vehInfo.position.getY(), 5d);
     }

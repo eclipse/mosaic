@@ -28,7 +28,6 @@ import org.eclipse.mosaic.lib.util.SocketUtils;
 import org.eclipse.mosaic.rti.api.federatestarter.ExecutableFederateExecutor;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -49,7 +48,7 @@ import java.util.regex.Pattern;
 
 public class SumoTraciRule implements TestRule {
     // set this value to true to open the simulation with SUMO-GUI, you can also set the Environment variable GUI_DEBUG to true
-    private final static boolean GUI_DEBUG = ObjectUtils.defaultIfNull(Boolean.valueOf(System.getenv("MOSAIC_SUMO_GUI_DEBUG")), false);
+    private final static boolean GUI_DEBUG = Boolean.parseBoolean(StringUtils.defaultIfBlank(System.getenv("MOSAIC_SUMO_GUI_DEBUG"), "false"));
 
     private static final Pattern PORT_PATTERN = Pattern.compile(".*Starting server on port ([0-9]+).*");
 
@@ -76,7 +75,6 @@ public class SumoTraciRule implements TestRule {
         this.sumoConfig = sumoConfig;
     }
 
-
     @Override
     public Statement apply(Statement base, Description description) {
         return new Statement() {
@@ -95,6 +93,18 @@ public class SumoTraciRule implements TestRule {
                                 currentVersion.getApiVersion() >= sinceTraci.value().getApiVersion()
                         );
                     }
+
+                    SinceSumo sinceSumo = description.getAnnotation(SinceSumo.class);
+                    if (sinceSumo != null) {
+                        SumoVersion currentVersion = SumoTraciRule.this.traci.getCurrentVersion();
+                        assumeTrue(
+                                String.format(
+                                        "This unit test expects SUMO version %s to be installed. Skipping.",
+                                        sinceSumo.value()
+                                ),
+                                currentVersion.isGreaterOrEqualThan(sinceSumo.value())
+                        );
+                    }
                     base.evaluate();
                 } finally {
                     after();
@@ -103,9 +113,8 @@ public class SumoTraciRule implements TestRule {
         };
     }
 
-
     private void before() throws Throwable {
-
+        TraciClient.VEHICLE_ID_TRANSFORMER.reset();
         final String sumoCmd;
         if (GUI_DEBUG) {
             sumoCmd = "sumo-gui";
@@ -143,7 +152,6 @@ public class SumoTraciRule implements TestRule {
 
         redirectOutputToLog(); // this is necessary, otherwise TraCI will hang due to full output buffer
 
-
         log.info("Connect to SUMO on port {}", port);
         final Socket socket = new Socket("localhost", port);
         socket.setPerformancePreferences(0, 100, 10);
@@ -178,6 +186,7 @@ public class SumoTraciRule implements TestRule {
     }
 
     private void after() {
+        TraciClient.VEHICLE_ID_TRANSFORMER.reset();
         try {
             log.info("Close Traci Connection");
             traci.close();

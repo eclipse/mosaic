@@ -41,6 +41,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -111,9 +112,6 @@ public class SpawningFramework {
         this.rti = rti;
         // config refers to meta parameters like start-/end-time, flow noise etc.
         this.config = mappingConfiguration.config;
-
-        // initialize Name Generator
-        NameGenerator.reset();
 
         // Prototypes
         if (mappingConfiguration.prototypes != null) {

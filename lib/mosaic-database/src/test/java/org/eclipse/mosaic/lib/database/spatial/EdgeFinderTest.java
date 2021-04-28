@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.util.junit.TestFileRule;
@@ -46,7 +45,8 @@ public class EdgeFinderTest {
 
         // RUN + ASSERT
         Edge edge = edgeFinder.findClosestEdge(GeoPoint.latLon(52.51303, 13.32743));
-        assertEquals("36337926_408194196_408194192_410846037", edge.getId());
+        assertEquals("36337926_408194196_408194192", edge.getConnection().getId());
+        assertEquals("410846037", edge.getPreviousNode().getId());
 
     }
 

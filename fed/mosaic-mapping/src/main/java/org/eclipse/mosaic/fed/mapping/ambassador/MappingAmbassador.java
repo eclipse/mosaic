@@ -32,7 +32,10 @@ import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -124,7 +127,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
         if (framework != null) {
             final CPrototype CPrototype = framework.getPrototypeByName(interaction.getVehicleTypeId());
             if (CPrototype == null) {
-                log.warn(
+                log.debug(
                         "There is no such CPrototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
                         interaction.getVehicleTypeId(),
                         interaction.getId()
@@ -132,13 +135,21 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                 return;
             }
 
+            List<String> applications = new ArrayList<>();
+            if (
+                    randomNumberGenerator.nextDouble() < ObjectUtils.defaultIfNull(CPrototype.weight, 1.0)
+                    && CPrototype.applications != null
+            ) {
+                applications = CPrototype.applications;
+            }
             final VehicleRegistration vehicleRegistration = new VehicleRegistration(
                     interaction.getTime(),
                     interaction.getName(),
                     CPrototype.group,
-                    CPrototype.applications == null ? Lists.newArrayList() : Lists.newArrayList(CPrototype.applications),
+                    applications,
                     null,
-                    new VehicleTypeSpawner(CPrototype).convertType());
+                    new VehicleTypeSpawner(CPrototype).convertType()
+            );
             try {
                 rti.triggerInteraction(vehicleRegistration);
             } catch (Exception e) {

@@ -1,0 +1,28 @@
+{
+    "prototypes": [
+        {
+            "name": "MappingVehicle",
+            "applications": [
+                "org.eclipse.mosaic.test.app.mosaicandsumovehicles.MappingVehicle"
+            ]
+        },
+        {
+            "name": "SumoVehicle",
+            "applications": [
+                "org.eclipse.mosaic.test.app.mosaicandsumovehicles.SumoVehicle"
+            ]
+        }
+    ],
+    "vehicles": [
+        {
+            "startingTime": 0.0,
+            "route": "0",
+            "maxNumberVehicles": 1,
+            "types": [
+                {
+                    "name": "MappingVehicle"
+                }
+            ]
+        }
+    ]
+}

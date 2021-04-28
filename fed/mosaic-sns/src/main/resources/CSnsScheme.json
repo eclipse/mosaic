@@ -1,100 +1,159 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SNS",
+    "description": "Schema describing the JSON file structure for the sns configuration.",
     "type": "object",
     "properties": {
-        "maximumTtl": { "type": "integer" },
-        "singlehopRadius": { "type": "number" },
-        "adhocTransmissionModel": {
-            "type": "object",
-            "properties": {
-                "type": { "type": "string" },
-                "simpleMultihopDelay": { "$ref": "#/definitions/delay" },
-                "simpleMultihopTransmission": { "$ref": "#/definitions/transmission" }
-            }
+        "maximumTtl": { 
+            "description": "The threshold for the amount of hops for a transmission. This is an additional, hard threshold, which can't be exceeded.",
+            "type": "integer",
+            "minimum": 0,
+            "default": 10
         },
-        "singlehopDelay": { "$ref": "#/definitions/delay" },
+        "singlehopRadius": { 
+            "description": "Default radius in m to be used if an AdhocConfiguration doesn't specify a radius.",
+            "type": "number",
+            "default": 509.4 
+        },
+        "adhocTransmissionModel": {
+            "description": "Defines the adhoc transmission model to be used for transmission.",
+            "$ref": "#/definitions/adhocTransmissionModel"
+        },
+        "singlehopDelay": { 
+            "description": "Delay configuration for a single hop.",
+            "$ref": "#/definitions/delay",
+            "default": { "$ref": "#/definitions/constantDelay" }
+        },
         "singlehopTransmission": {
+            "description": "Transmission configuration for a single hop.",
             "$ref": "#/definitions/transmission"
         }
     },
     "definitions": {
-        "delay": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
-                        },
-                        "minDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        },
-                        "expDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "minDelay", "expDelay" ]
+        "adhocTransmissionModel": {
+            "title": "adocTransmissionModel",
+            "description": "Object to define an adhoc transimssion model.",
+            "type": "object",
+            "properties": {
+                "type": { 
+                    "description": "Type of the transmission model. The simple model assumes, that all receivers can be reached even though this might not be the case in reality.",
+                    "type": "string",
+                    "enum": [ "SimpleAdhocTransmissionModel","SophisticatedAdhocTransmissionModel" ]
                 },
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "ConstantDelay" ]
-                        },
-                        "delay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "delay" ]
+                "simpleMultihopDelay": {
+                    "description": "Delay to be used for a simple multihop.",
+                    "$ref": "#/definitions/delay" 
                 },
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "SimpleRandomDelay" ]
-                        },
-                        "steps": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "minDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        },
-                        "maxDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "steps", "minDelay", "maxDelay" ]
+                "simpleMultihopTransmission": { 
+                    "description": "Transmission parameters to be used for a simple multihop.",
+                    "$ref": "#/definitions/transmission" 
                 }
-            ]
+            }
+        },
+        "delay": {
+            "title": "delay",
+            "description": "Object to define a delay model.",
+            "type": "object",
+            "oneOf": [
+                {"$ref": "#/definitions/gammaDelay" },
+                {"$ref": "#/definitions/constantDelay"},
+                {"$ref": "#/definitions/simpleRandomDelay"}
+            ],
+            "default": { "$ref": "#/definitions/constantDelay" }
+        },
+        "gammaDelay": {
+            "title": "gammaDelay",
+            "description": "Object to define a model for GammaRandomDelay or GammaSpeedDelay. GammaRandomDelay bases directly on the Gamma distribution (b=2,p=2) with minimum and expected value. Due to the nature of the Gamma distribution, the resulting delays can be far higher than the expected value. GammaSpeedDelay bases on the GammaRandomDelay and includes an additional speed penalty according to the current speed of the vehicle.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Type of Gamma delay.",
+                    "type": "string",
+                    "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
+                },
+                "minDelay": {
+                    "description": "Minimum delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "expDelay": {
+                    "description": "Expected delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "minDelay", "expDelay" ]
+        },
+        "constantDelay": {
+            "title": "constantDelay",
+            "description": "Object to define a model for constant delay, which delivers always the same delay.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Type of the constant delay",
+                    "type": "string",
+                    "enum": [ "ConstantDelay" ]
+                },
+                "delay": {
+                    "description": "The delay. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "delay" ]
+        },
+        "simpleRandomDelay": {
+            "title": "simpleRandomDelay",
+            "description": "Object to define a model for a radnomised delay. Delivers number-of-steps different uniformly distributed delays in the interval defined by min and max (e.g. minDelay=30ms, maxDelay=60ms, steps=4 -> possible delays={30,40,50,60}ms.).",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Type of the delay.",
+                    "type": "string",
+                    "enum": [ "SimpleRandomDelay" ]
+                },
+                "steps": {
+                    "description": "Number of possible delays between min and max.",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "minDelay": {
+                    "description": "Minimum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "maxDelay": {
+                    "description": "Maximum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "steps", "minDelay", "maxDelay" ]
         },
         "transmission": {
+            "title": "tranmission",
+            "description": "Object to define the properties of a transmission.",
             "type": "object",
             "properties": {
                 "lossProbability": {
+                    "description": "Probability of packet retransmission (in case of configured retries > 0) or packet loss (retries = 0) for the packet retransmission/loss model. A value of 0 equals a lossfree transmission.",
                     "type": "number",
                     "minimum": 0.0,
-                    "maximum": 1.0
+                    "maximum": 1.0,
+                    "default": 0.0
                 },
                 "maxRetries": {
+                    "description": "Maximum Number of retransmissions.",
                     "type": "integer",
                     "minimum": 0
                 }

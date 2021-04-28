@@ -22,7 +22,6 @@ import org.eclipse.mosaic.lib.database.road.Restriction;
 import org.eclipse.mosaic.lib.database.road.Roundabout;
 import org.eclipse.mosaic.lib.database.road.TrafficLightNode;
 import org.eclipse.mosaic.lib.database.road.Way;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.rti.api.MosaicVersion;
@@ -108,7 +107,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
         loadRestrictions(builder);
         log.debug("Loading routes...");
         loadRoutes(builder);
-        log.debug("Database loaded!");
+        log.debug("Database loaded");
         disconnect(null);
         return builder;
     }
@@ -160,7 +159,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
                 saveRoutes(database);
                 log.debug("Saving roundabouts...");
                 saveRoundabouts(database);
-                log.debug("Database saved!");
+                log.debug("Database saved");
                 disconnect(statement);
             } catch (SQLException sqle) {
                 log.error("error while trying to write database content: {}", sqle.getMessage());
@@ -176,10 +175,17 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
      */
     @Override
     public void updateDatabase(String fileName) {
-        log.warn(
-                "You used \"--update\"  as an option. This is currently not supported and will do nothing. "
-                        + "This could change in future versions, for now try to update your database manually or generate it again."
-        );
+        try {
+            log.info("The database will now be updated.");
+
+            // between 20.0 and 21.0 we changed the way routes are stored. A simple load+save fixes the database.
+            Database db = loadFromFile(fileName).build();
+            saveToFile(db, fileName);
+
+            log.info("The database has been updated successfully.");
+        } catch (Exception e) {
+            log.error("The database could not be updated.");
+        }
     }
 
     /**
@@ -237,7 +243,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
         // traffic signals
         statement.executeUpdate("CREATE TABLE TrafficSignals (id STRING, ref_node_id STRING, phases STRING, timing STRING, from_way_id STRING, via0_way_id STRING, via1_way_id STRING, to_way_id STRING, lanes_from STRING, lanes_via0 STRING, lanes_via1 STRING, lanes_to STRING)");
         // vehicle data
-        statement.executeUpdate("CREATE TABLE Route (id STRING, sequence_number INTEGER, connection_id STRING, from_node_id STRING, to_node_id STRING)");
+        statement.executeUpdate("CREATE TABLE Route (id STRING, sequence_number INTEGER, connection_id STRING)");
         // buildings
         statement.executeUpdate("CREATE TABLE Corner (id STRING, lat DOUBLE, lon DOUBLE, x DOUBLE, y DOUBLE)");
         statement.executeUpdate("CREATE TABLE Wall (id STRING, building_id STRING, from_corner_id STRING, to_corner_id STRING, length DOUBLE, sequence_number INTEGER)");
@@ -544,7 +550,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
     private void loadRoutes(Database.Builder databaseBuilder) {
         try {
             List<ResultRow> routes = executeStatement(
-                    "SELECT id, connection_id, from_node_id, to_node_id FROM Route ORDER BY id, sequence_number"
+                    "SELECT id, connection_id FROM Route ORDER BY id, sequence_number"
             ).getRows();
 
             String lastId = null;
@@ -556,8 +562,6 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
                 // read files from entry, mind index order (see columns above)
                 String id = routeEntry.getString("id");
                 String connectionId = routeEntry.getString("connection_id");
-                String fromNodeId = routeEntry.getString("from_node_id");
-                String toNodeId = routeEntry.getString("to_node_id");
 
                 // we need to group into our route object
                 if (!id.equals(lastId)) {
@@ -567,7 +571,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
                     routeBuilder = databaseBuilder.addRoute(id);
                     lastId = id;
                 }
-                routeBuilder.addEdge(connectionId, fromNodeId, toNodeId);
+                routeBuilder.addConnection(connectionId);
             }
 
             if (routeBuilder != null) {
@@ -827,20 +831,18 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
      * @param database Save routes into the database.
      */
     private void saveRoutes(Database database) {
-        String columns = "id, sequence_number, connection_id, from_node_id, to_node_id";
-        String statement = "INSERT INTO Route(" + columns + ") VALUES (?, ?, ?, ?, ?)";
+        String columns = "id, sequence_number, connection_id";
+        String statement = "INSERT INTO Route(" + columns + ") VALUES (?, ?, ?)";
         int sequenceNumber;
         try (PreparedStatement prep = dbConnection.prepareStatement(statement)) {
             boolean autoCommit = dbConnection.getAutoCommit();
             dbConnection.setAutoCommit(false);
             for (Route route : database.getRoutes()) {
                 sequenceNumber = 0;
-                for (Edge edge : route.getRoute()) {
+                for (Connection connection : route.getConnections()) {
                     prep.setString(1, route.getId());
                     prep.setInt(2, sequenceNumber);
-                    prep.setString(3, edge.getConnection().getId());
-                    prep.setString(4, edge.getFromNode().getId());
-                    prep.setString(5, edge.getToNode().getId());
+                    prep.setString(3, connection.getId());
 
                     prep.executeUpdate();
                     sequenceNumber++;

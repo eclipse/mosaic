@@ -36,48 +36,23 @@ public class SimpleRoadPosition implements IRoadPosition {
     private final SimpleNode previousNode;
     private final SimpleNode upcomingNode;
     private final double laneOffset;
+    private final double lateralOffset;
     private final int laneIndex;
-    private final double lateralLanePosition;
 
     /**
      * Construct a {@link SimpleRoadPosition}.
      *
-     * @param wayId               the ID of the way.
-     * @param connectionStartId   the start ID of the road.
-     * @param connectionEndId     the end ID of the road.
-     * @param previousNodeId      the previous node ID.
+     * @param connectionId        the ID of the connection.
      * @param laneIndex           the index of the current lane.
      * @param laneOffset          the lane offset.
-     * @param lateralLanePosition the lateral position on the lane.
      */
-    public SimpleRoadPosition(String wayId, String connectionStartId, String connectionEndId, String previousNodeId,
-                              int laneIndex, double laneOffset, double lateralLanePosition) {
-        this.connection = new SimpleConnection(wayId, connectionStartId, connectionEndId);
-        this.previousNode = new SimpleNode(previousNodeId);
+    public SimpleRoadPosition(String connectionId, int laneIndex, double laneOffset, double lateralOffset) {
+        this.connection = new SimpleConnection(connectionId);
+        this.previousNode = null;
         this.upcomingNode = null;
         this.laneOffset = laneOffset;
         this.laneIndex = laneIndex;
-        this.lateralLanePosition = lateralLanePosition;
-    }
-
-    /**
-     * Construct a {@link SimpleRoadPosition}.
-     *
-     * @param wayId             the ID of the way.
-     * @param connectionStartId the start ID of the road.
-     * @param connectionEndId   the end ID of the road.
-     * @param previousNodeId    the previous node ID.
-     * @param laneIndex         the index of the current lane.
-     * @param laneOffset        the lane offset.
-     */
-    public SimpleRoadPosition(String wayId, String connectionStartId, String connectionEndId,
-                              String previousNodeId, int laneIndex, double laneOffset) {
-        this.connection = new SimpleConnection(wayId, connectionStartId, connectionEndId);
-        this.previousNode = new SimpleNode(previousNodeId);
-        this.upcomingNode = null;
-        this.laneOffset = laneOffset;
-        this.laneIndex = laneIndex;
-        this.lateralLanePosition = 0;
+        this.lateralOffset = lateralOffset;
     }
 
     /**
@@ -94,18 +69,17 @@ public class SimpleRoadPosition implements IRoadPosition {
         this.upcomingNode = new SimpleNode(upcomingNodeId);
         this.laneOffset = laneOffset;
         this.laneIndex = laneIndex;
-        this.lateralLanePosition = 0;
+        this.lateralOffset = 0d;
     }
 
     /**
-     * Gets the ID of the edge the vehicle currently driving on as string.
+     * Gets the ID of the connection the vehicle currently driving on as string.
      *
-     * @return ID of the edge as string.
+     * @return ID of the connection as string.
      */
     @Override
-    public String getEdgeId() {
-        return String.format("%s_%s", getConnection() != null ? getConnection().getId() : "?_?_?",
-                getPreviousNode() != null ? getPreviousNode().getId() : "?");
+    public String getConnectionId() {
+        return getConnection() != null ? getConnection().getId() : "?";
     }
 
     /**
@@ -135,7 +109,7 @@ public class SimpleRoadPosition implements IRoadPosition {
      */
     @Override
     public double getLateralLanePosition() {
-        return lateralLanePosition;
+        return lateralOffset;
     }
 
     /**
@@ -174,7 +148,7 @@ public class SimpleRoadPosition implements IRoadPosition {
                 .append(this.connection)
                 .append(this.laneIndex)
                 .append(this.laneOffset)
-                .append(this.lateralLanePosition)
+                .append(this.lateralOffset)
                 .append(this.previousNode)
                 .append(this.upcomingNode)
                 .toHashCode();
@@ -192,14 +166,14 @@ public class SimpleRoadPosition implements IRoadPosition {
             return false;
         }
 
-        SimpleRoadPosition srp = (SimpleRoadPosition) obj;
+        SimpleRoadPosition other = (SimpleRoadPosition) obj;
         return new EqualsBuilder()
-                .append(this.connection, srp.connection)
-                .append(this.laneIndex, srp.laneIndex)
-                .append(this.laneOffset, srp.laneOffset)
-                .append(this.lateralLanePosition, srp.lateralLanePosition)
-                .append(this.previousNode, srp.previousNode)
-                .append(this.upcomingNode, srp.upcomingNode)
+                .append(this.connection, other.connection)
+                .append(this.laneIndex, other.laneIndex)
+                .append(this.laneOffset, other.laneOffset)
+                .append(this.lateralOffset, other.laneIndex)
+                .append(this.previousNode, other.previousNode)
+                .append(this.upcomingNode, other.upcomingNode)
                 .isEquals();
     }
 
@@ -207,22 +181,15 @@ public class SimpleRoadPosition implements IRoadPosition {
 
         private static final long serialVersionUID = 1L;
 
-        private final SimpleWay way;
-        private final SimpleNode startNode;
-        private final SimpleNode endNode;
+        private final String connectionId;
 
-        private SimpleConnection(String wayId, String connectionStartId, String connectionEndId) {
-            this.way = new SimpleWay(wayId);
-            this.startNode = new SimpleNode(connectionStartId);
-            this.endNode = new SimpleNode(connectionEndId);
+        private SimpleConnection(String connectionId) {
+            this.connectionId = connectionId;
         }
 
         @Override
         public String getId() {
-            return String.format("%s_%s_%s", //
-                    getWay() != null ? getWay().getId() : "?", //
-                    getStartNode() != null ? getStartNode().getId() : "?", //
-                    getEndNode() != null ? getEndNode().getId() : "?");
+            return connectionId;
         }
 
         @Override
@@ -232,17 +199,17 @@ public class SimpleRoadPosition implements IRoadPosition {
 
         @Override
         public INode getStartNode() {
-            return startNode;
+            return null;
         }
 
         @Override
         public INode getEndNode() {
-            return endNode;
+            return null;
         }
 
         @Override
         public IWay getWay() {
-            return way;
+            return null;
         }
 
         @Override
@@ -253,9 +220,7 @@ public class SimpleRoadPosition implements IRoadPosition {
         @Override
         public int hashCode() {
             return new HashCodeBuilder(19, 37)
-                    .append(this.way)
-                    .append(this.startNode)
-                    .append(this.endNode)
+                    .append(this.connectionId)
                     .toHashCode();
         }
 
@@ -273,9 +238,7 @@ public class SimpleRoadPosition implements IRoadPosition {
 
             SimpleConnection sc = (SimpleConnection) obj;
             return new EqualsBuilder()
-                    .append(this.way, sc.way)
-                    .append(this.startNode, sc.startNode)
-                    .append(this.endNode, sc.endNode)
+                    .append(this.connectionId, sc.connectionId)
                     .isEquals();
         }
 
@@ -333,58 +296,6 @@ public class SimpleRoadPosition implements IRoadPosition {
             SimpleNode sn = (SimpleNode) obj;
             return new EqualsBuilder()
                     .append(this.nodeId, sn.nodeId)
-                    .isEquals();
-        }
-
-    }
-
-    private static class SimpleWay implements IWay {
-
-        private static final long serialVersionUID = 1L;
-
-        private final String wayId;
-
-        private SimpleWay(String wayId) {
-            this.wayId = wayId;
-        }
-
-        @Override
-        public String getId() {
-            return wayId;
-        }
-
-        @Override
-        public String getType() {
-            return null;
-        }
-
-        @Override
-        public double getMaxSpeedInMs() {
-            return Double.NaN;
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder(5, 71)
-                    .append(this.wayId)
-                    .toHashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (obj.getClass() != getClass()) {
-                return false;
-            }
-
-            SimpleWay sw = (SimpleWay) obj;
-            return new EqualsBuilder()
-                    .append(this.wayId, sw.wayId)
                     .isEquals();
         }
 

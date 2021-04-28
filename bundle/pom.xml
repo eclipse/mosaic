@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>20.1-SNAPSHOT</version>
+        <version>21.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -82,6 +82,11 @@
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-application</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-cell</artifactId>
             <version>${mosaic.version}</version>
         </dependency>
         <dependency>

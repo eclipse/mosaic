@@ -28,15 +28,10 @@ import org.eclipse.mosaic.rti.TIME;
 
 public final class TrafficLightApp extends AbstractApplication<TrafficLightOperatingSystem> implements CommunicationApplication {
     public final static String SECRET = "open sesame!";
-    private final static long TIME_INTERVAL = TIME.SECOND;
-    private final static short GREEN_DURATION = 20;
-    private boolean switched = false;
-    private short ctr = 0;
+    private final static short GREEN_DURATION = 10;
 
-    @Override
-    public void processEvent(Event event) throws Exception {
-        sample();
-    }
+    private static final String DEFAULT_PROGRAM = "1";
+    private static final String GREEN_PROGRAM = "0";
 
     @Override
     public void onStartup() {
@@ -44,18 +39,6 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
         getOs().getAdHocModule().enable();
         getLog().infoSimTime(this, "Activated Wifi Module");
         setRed();
-        sample();
-    }
-
-    private void sample() {
-        getOs().getEventManager().addEvent(
-                getOs().getSimulationTime() + TIME_INTERVAL, this
-        );
-        if (switched) {
-            if (++ctr == GREEN_DURATION) {
-                setRed();
-            }
-        }
     }
 
     @Override
@@ -64,28 +47,30 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
     }
 
     private void setGreen() {
-        getOs().switchToProgram("0");
+        getOs().switchToProgram(GREEN_PROGRAM);
         getLog().infoSimTime(this, "Setting traffic lights to GREEN");
 
+        getOs().getEventManager().addEvent(
+                getOs().getSimulationTime() + GREEN_DURATION * TIME.SECOND,
+                (e) -> setRed()
+        );
     }
 
     private void setRed() {
-        getOs().switchToProgram("1");
+        getOs().switchToProgram(DEFAULT_PROGRAM);
         getLog().infoSimTime(this, "Setting traffic lights to RED");
-
     }
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (switched) {
-            return;
-        }
         if (receivedV2xMessage.getMessage() instanceof GreenWaveMsg) {
             getLog().infoSimTime(this, "Received GreenWaveMsg");
             if (((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
                 getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
-                setGreen();
-                switched = true;
+
+                if (DEFAULT_PROGRAM.equals(getOs().getCurrentProgram().getProgramId())) {
+                    setGreen();
+                }
             }
         }
     }
@@ -102,6 +87,11 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
 
     @Override
     public void onMessageTransmitted(V2xMessageTransmission v2xMessageTransmission) {
+        // nop
+    }
+
+    @Override
+    public void processEvent(Event event) throws Exception {
         // nop
     }
 }

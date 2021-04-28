@@ -20,10 +20,8 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
-import org.eclipse.mosaic.lib.objects.road.IWay;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -47,20 +45,9 @@ public class LazyLoadingRoadPositionTest {
 
     private Database database;
 
-    @Mock
-    IWay way;
-    @Mock
-    INode connectionStart;
-    @Mock
-    INode connectionEnd;
-    @Mock
-    INode previous;
-    @Mock
-    INode upcoming;
-    @Mock
-    IConnection connection;
-    @Mock
-    IRoadPosition roadPosition;
+    @Mock INode previous;
+    @Mock INode upcoming;
+    @Mock IRoadPosition roadPosition;
 
     @Before
     public void setup() throws IOException {
@@ -70,23 +57,13 @@ public class LazyLoadingRoadPositionTest {
 
         database = Database.loadFromFile(dbFileCopy);
 
-        when(roadPosition.getConnection()).thenReturn(connection);
-        when(roadPosition.getPreviousNode()).thenReturn(previous);
-        when(roadPosition.getUpcomingNode()).thenReturn(upcoming);
         when(roadPosition.getOffset()).thenReturn(13.37d);
-        when(connection.getStartNode()).thenReturn(connectionStart);
-        when(connection.getEndNode()).thenReturn(connectionEnd);
-        when(connection.getWay()).thenReturn(way);
     }
 
     @Test
     public void sumoAvailableValues_everythingAvailable() {
         //SETUP
-        when(way.getId()).thenReturn("4068038");
-        when(connectionStart.getId()).thenReturn("251150126");
-        when(connectionEnd.getId()).thenReturn("428788319");
-        when(previous.getId()).thenReturn("21487167");
-        when(roadPosition.getUpcomingNode()).thenReturn(null);
+        when(roadPosition.getConnectionId()).thenReturn("4068038_251150126_428788319");
 
         //RUN
         final LazyLoadingRoadPosition refinedRoadPosition = new LazyLoadingRoadPosition(roadPosition, database);
@@ -99,16 +76,15 @@ public class LazyLoadingRoadPositionTest {
         assertRefinedPrevious(refinedRoadPosition);
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("4068038_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
     @Test
     public void phabmacsAvailableValues_everythingAvailable() {
         //SETUP
-        when(way.getId()).thenReturn("4068038");
-        when(connection.getStartNode()).thenReturn(null);
-        when(connection.getEndNode()).thenReturn(null);
+        when(roadPosition.getPreviousNode()).thenReturn(previous);
+        when(roadPosition.getUpcomingNode()).thenReturn(upcoming);
+
         when(previous.getId()).thenReturn("21487167");
         when(upcoming.getId()).thenReturn("272365223");
 
@@ -123,41 +99,13 @@ public class LazyLoadingRoadPositionTest {
         assertRefinedPrevious(refinedRoadPosition);
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("4068038_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
-        assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
-    }
-
-    @Test
-    public void onlyPrevAndUpcoming_everythingAvailable() {
-        //SETUP
-        when(connection.getWay()).thenReturn(null);
-        when(connection.getStartNode()).thenReturn(null);
-        when(connection.getEndNode()).thenReturn(null);
-        when(previous.getId()).thenReturn("21487167");
-        when(upcoming.getId()).thenReturn("272365223");
-
-        //RUN
-        final LazyLoadingRoadPosition refinedRoadPosition = new LazyLoadingRoadPosition(roadPosition, database);
-
-        //ASSERT
-        assertRefinedWay(refinedRoadPosition);
-        assertRefinedStartJunction(refinedRoadPosition);
-        assertRefinedEndJunction(refinedRoadPosition);
-        assertRefinedRoadSegment(refinedRoadPosition);
-        assertRefinedPrevious(refinedRoadPosition);
-        assertRefinedUpcoming(refinedRoadPosition);
-
-        assertEquals("4068038_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
         assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
     @Test
     public void onlyUpcomingNode_noDataRefined() {
         //SETUP
-        when(connection.getWay()).thenReturn(null);
-        when(connection.getStartNode()).thenReturn(null);
-        when(connection.getEndNode()).thenReturn(null);
-        when(roadPosition.getPreviousNode()).thenReturn(null);
+        when(roadPosition.getUpcomingNode()).thenReturn(upcoming);
         when(upcoming.getId()).thenReturn("272365223");
 
         //RUN
@@ -174,60 +122,23 @@ public class LazyLoadingRoadPositionTest {
 
         assertRefinedUpcoming(refinedRoadPosition);
 
-        assertEquals("?_?_?_?", refinedRoadPosition.getEdgeId());
-        assertEquals("?_?_?", refinedRoadPosition.getConnection().getId());
+        assertEquals("?", refinedRoadPosition.getConnection().getId());
     }
 
     @Test
-    public void unknownWayInput_noRoadSegmentDataAvailable() {
+    public void unknownConnectionInput_noDataAvailable() {
         //SETUP
-        when(way.getId()).thenReturn("4068038x");
-        when(connectionStart.getId()).thenReturn("251150126");
-        when(connectionEnd.getId()).thenReturn("428788319");
-        when(previous.getId()).thenReturn("21487167");
-        when(roadPosition.getUpcomingNode()).thenReturn(null);
+        when(roadPosition.getConnectionId()).thenReturn("thisABadConnectionId");
 
         //RUN
         final LazyLoadingRoadPosition refinedRoadPosition = new LazyLoadingRoadPosition(roadPosition, database);
 
         //ASSERT
-        assertRefinedStartJunction(refinedRoadPosition);
-        assertRefinedEndJunction(refinedRoadPosition);
-        assertRefinedPrevious(refinedRoadPosition);
-
+        assertEquals("thisABadConnectionId", refinedRoadPosition.getConnection().getId());
+        assertNull(refinedRoadPosition.getPreviousNode());
         assertNull(refinedRoadPosition.getUpcomingNode());
-        assertEquals(0.0, refinedRoadPosition.getConnection().getLength(), 0.01d);
-
-        assertEquals("4068038x_251150126_428788319_21487167", refinedRoadPosition.getEdgeId());
-        assertEquals("4068038x_251150126_428788319", refinedRoadPosition.getConnection().getId());
     }
 
-    @Test
-    public void unknownConnectionStartInput_noRoadSegmentDataAvailable() {
-        //SETUP
-        when(way.getId()).thenReturn("4068038");
-        when(connectionStart.getId()).thenReturn("251150126x");
-        when(connectionEnd.getId()).thenReturn("428788319");
-        when(previous.getId()).thenReturn("21487167");
-        when(roadPosition.getUpcomingNode()).thenReturn(null);
-
-        //RUN
-        final LazyLoadingRoadPosition refinedRoadPosition = new LazyLoadingRoadPosition(roadPosition, database);
-
-        //ASSERT
-        assertRefinedWay(refinedRoadPosition);
-        assertRefinedEndJunction(refinedRoadPosition);
-        assertRefinedPrevious(refinedRoadPosition);
-
-        assertEquals("251150126x", refinedRoadPosition.getConnection().getStartNode().getId());
-        assertNull(refinedRoadPosition.getConnection().getStartNode().getPosition());
-
-        assertNull(refinedRoadPosition.getUpcomingNode());
-        assertEquals(0.0, refinedRoadPosition.getConnection().getLength(), 0.01d);
-
-        assertEquals("4068038_251150126x_428788319_21487167", refinedRoadPosition.getEdgeId());
-        assertEquals("4068038_251150126x_428788319", refinedRoadPosition.getConnection().getId());
-    }
 
     private void assertRefinedUpcoming(final LazyLoadingRoadPosition refinedRoadPosition) {
         assertEquals("272365223", refinedRoadPosition.getUpcomingNode().getId());

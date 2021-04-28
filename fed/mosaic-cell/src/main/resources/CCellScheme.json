@@ -1,31 +1,63 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Cell",
+    "description": "This schema describes the JSON file structure for the cell configuration, which provides general configuration for the ambassador, such as paths to the regions and network configuration files.",
     "type": "object",
     "properties": {
-        "bandwidthMeasurementInterval": { "type": "number", "minimum": 1 },
-        "bandwidthMeasurements": {
-            "type": "array",
-            "items": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "fromRegion": { "type": "string" },
-                        "toRegion": { "type": "string" },
-                        "transmissionMode": {
-                            "type": "string",
-                            "enum": [ "UplinkUnicast", "DownlinkUnicast", "DownlinkMulticast" ]
-                        }
-                    },
-                    "required": [
-                        "fromRegion", "toRegion", "transmissionMode"
-                    ]
-                }
-            ]
+        "bandwidthMeasurementInterval": {
+            "description": "Interval in which the bandwidth is aggregated, given in seconds.",
+            "type": "number",
+            "minimum": 1,
+            "default": 1
         },
-        "networkConfigurationFile": { "type": "string" },
-        "regionConfigurationFile": { "type": "string" }
+        "bandwidthMeasurementCompression": {
+            "description": "If enabled, the export files with bandwidth measurements will be compressed using gzip compression.",
+            "type": "boolean",
+            "default": false
+        },
+        "networkConfigurationFile": {
+            "description": "Relative path to the network configuration file.",
+            "type": "string",
+            "default": "network.json"
+        },
+        "regionConfigurationFile": {
+            "description": "Relative path to the region configuration file.",
+            "type": "string",
+            "default": "regions.json"
+        },
+        "bandwidthMeasurements": {
+            "description": "Measure the bandwidth between regions.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/bandwidthMeasurement"}
+        }
     },
-    "required": [
-        "networkConfigurationFile"
-    ]
+    "required": [ "networkConfigurationFile" ],
+    "definitions": {
+        "bandwidthMeasurement": {
+            "title": "bandwidthMeasurement",
+            "description": "Object to define the bandwidth measurement between regions.",
+            "type": "object",
+            "properties": {
+                "fromRegion": {
+                    "description": "Measure the bandwidth of messages which originate in this region (use wildcard * for all regions).",
+                    "type": "string"
+                },
+                "toRegion": {
+                    "description": "Measure the bandwidth of messages which target in this region (use wildcard * for all regions).",
+                    "type": "string"
+                },
+                "transmissionMode": {
+                    "description": "Defines the transmission mode which is observed.",
+                    "type": "string",
+                    "enum": [ "UplinkUnicast", "DownlinkUnicast", "DownlinkMulticast" ]
+                },
+                "applicationClass": {
+                    "description": "The application Class.",
+                    "type": "string",
+                    "default": "*"
+                }
+            },
+            "required": [ "fromRegion", "toRegion", "transmissionMode" ]
+        }
+    }
 }

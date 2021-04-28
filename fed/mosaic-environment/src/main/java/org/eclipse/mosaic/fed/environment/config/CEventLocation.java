@@ -19,6 +19,7 @@ import org.eclipse.mosaic.lib.geo.GeoArea;
 import org.eclipse.mosaic.lib.gson.GeoAreaAdapterFactory;
 
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
@@ -36,7 +37,8 @@ public class CEventLocation implements Serializable {
     public GeoArea area;
 
     /**
-     * The ID of the road segment the event is located on (Connection ID or road ID).
+     * The ID of the road segment the event is located on (Connection ID).
      */
-    public String roadSegmentId;
+    @SerializedName(value = "connectionId", alternate = "roadSegmentId")
+    public String connectionId;
 }

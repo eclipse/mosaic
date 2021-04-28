@@ -39,6 +39,9 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgramPhase;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -46,6 +49,9 @@ import java.util.List;
 import java.util.Map;
 
 public class TrafficLightFacade {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private final Bridge bridge;
 
     private final TrafficLightSetProgram setProgram;
@@ -164,8 +170,12 @@ public class TrafficLightFacade {
 
             final List<TrafficLightGetControlledLinks.TrafficLightControlledLink> controlledLinks
                     = getControlledLinks.execute(bridge, trafficLightGroupId);
-            final List<TrafficLight> trafficLights
-                    = createTrafficLights(trafficLightPrograms.get(getCurrentProgram(trafficLightGroupId)), controlledLinks, junctionPosition);
+            final List<TrafficLight> trafficLights =
+                    createTrafficLights(
+                            trafficLightPrograms.get(getCurrentProgram(trafficLightGroupId)),
+                            controlledLinks,
+                            junctionPosition
+                    );
 
             return new TrafficLightGroup(trafficLightGroupId, trafficLightPrograms, trafficLights);
         } catch (CommandException e) {
@@ -185,7 +195,16 @@ public class TrafficLightFacade {
         List<TrafficLight> trafficLights = new ArrayList<>();
         int id = 0;
         for (TrafficLightState state : currentProgram.getCurrentPhase().getStates()) {
-            trafficLights.add(new TrafficLight(id, junctionPosition, controlledLinks.get(id).getIncoming(), controlledLinks.get(id).getOutgoing(), state));
+            if (id == controlledLinks.size()) {
+                log.warn("There seem to be more states than links controlled by the TrafficLightProgram.");
+                break;
+            } else {
+                trafficLights.add(
+                        new TrafficLight(
+                                id, junctionPosition, controlledLinks.get(id).getIncoming(), controlledLinks.get(id).getOutgoing(), state
+                        )
+                );
+            }
             id++;
         }
         return trafficLights;
@@ -209,8 +228,8 @@ public class TrafficLightFacade {
                 phases.add(new TrafficLightProgramPhase(phaseId, (long) phaseLogic.getDuration() * 1000, states));
                 phaseId++;
             }
-
-            TrafficLightProgram program = new TrafficLightProgram(programDefinition.getLogicId(), phases, programDefinition.getCurrentPhase());
+            TrafficLightProgram program =
+                    new TrafficLightProgram(programDefinition.getLogicId(), phases, programDefinition.getCurrentPhase());
             programs.put(programDefinition.getLogicId(), program);
         }
 

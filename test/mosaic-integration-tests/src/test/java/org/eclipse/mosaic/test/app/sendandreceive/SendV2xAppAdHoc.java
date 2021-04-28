@@ -79,7 +79,7 @@ public class SendV2xAppAdHoc extends AbstractSenderApp {
     protected void sendMessage() {
         long time = getOs().getSimulationTime();
 
-        final String roadId = getOs().getNavigationModule().getRoadPosition().getEdgeId();
+        final String roadId = getOs().getNavigationModule().getRoadPosition().getConnectionId();
         final byte[] additionalPayload = ("" + sequenceNbr + ";" + roadId).getBytes(StandardCharsets.UTF_8);
 
         // Send Message to Ernst-Reuter Platz

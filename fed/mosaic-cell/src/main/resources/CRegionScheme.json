@@ -1,134 +1,202 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Regions",
+    "description": "Schema describing the JSON file structure for the regional networks configuration. It is is used to extend the network with regional information, which enables the emulation of mobile networks. If configured very granular, these regions can reflect cells as used in the real world. Though for most use-cases it is sufficient to approximate the behaviour by defining larger regions.",
     "type": "object",
     "properties": {
         "regions": {
+            "description": "An array of regional network configruations.",
             "type": "array",
-            "items": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "polygon": {
-                            "type": "object",
-                            "coordinates": [
-                                { "$ref": "#/definitions/geopoint" }
-                            ],
-                            "required": [ "coordinates" ]
-                        },
-                        "area": {
-                            "type": "object",
-                            "properties": {
-                                "nw": { "$ref": "#/definitions/geopoint" },
-                                "se": { "$ref": "#/definitions/geopoint" }
-                            },
-                            "required": [ "nw", "se" ]
-                        },
-                        "id": { "type": "string" },
-                        "uplink": {
-                            "type": "object",
-                            "properties": {
-                                "delay": { "$ref": "#/definitions/delay" },
-                                "transmission": { "$ref": "#/definitions/transmission" },
-                                "capacity": { "$ref": "#/definitions/capacity" }
-                            },
-                            "required": [ "delay", "transmission", "capacity" ]
-                        },
-                        "downlink": {
-                            "type": "object",
-                            "properties": {
-                                "unicast": { "$ref": "#/definitions/unicast" },
-                                "multicast": { "$ref": "#/definitions/multicast" },
-                                "capacity": { "$ref": "#/definitions/capacity" }
-                            },
-                            "required": [ "unicast", "multicast", "capacity" ]
-                        }
-                    },
-                    "anyOf": [
-                        { "required": [ "area", "id", "uplink", "downlink" ] },
-                        { "required": [ "polygon", "id", "uplink", "downlink" ] }
-                    ]
-                }
-            ]
+            "items": { "$ref": "#/definitions/mobileNetworkProperties" }
         }
     },
     "definitions": {
-        "delay": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
-                        },
-                        "minDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        },
-                        "expDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "minDelay", "expDelay" ]
+        "mobileNetworkProperties":  {
+            "title": "mobileNetworkProperties",
+            "description": "Object to define a network with specific geograpgical extensions. It applies for all regions except the global network, which covers the remaining space. The CMobileNetworkProperties only needs to be employed, when geographic information are accessed.",
+            "type": "object",
+            "properties": {
+                "id": { 
+                    "description": "Network-Id for identification.",
+                    "type": "string" 
                 },
-                {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "ConstantDelay" ]
-                        },
-                        "delay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "delay" ]
+                "area": {
+                    "description": "The geographical area, which the network covers, as a rectangle.",
+                    "$ref": "#/definitions/geoRectangle"
                 },
-                {
+                "polygon": {
+                    "description": "The area of the network as a polygon.",
                     "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [ "SimpleRandomDelay" ]
-                        },
-                        "steps": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "minDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        },
-                        "maxDelay": {
-                            "oneOf": [
-                                { "type": "number", "minimum": 0 },
-                                { "type": "string", "minLength": 2 }
-                            ]
-                        }
-                    },
-                    "required": [ "type", "steps", "minDelay", "maxDelay" ]
+                    "coordinates": [
+                        { "$ref": "#/definitions/geoPoint" }
+                    ],
+                    "required": [ "coordinates" ]
+                },
+                "uplink": {
+                    "description": "The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
+                    "$ref": "#/definitions/mobileNetworkProperties.uplink"
+                },
+                "downlink": {
+                    "description": "The downlink supports two individual paths: Point-to-point communication (unicast) and Point-to-multipoint communication (multicast).",
+                    "$ref": "#/definitions/mobileNetworkProperties.downlink"
                 }
+            },
+            "anyOf": [
+                { "required": [ "area", "id", "uplink", "downlink" ] },
+                { "required": [ "polygon", "id", "uplink", "downlink" ] }
             ]
         },
+        "mobileNetworkProperties.uplink": {
+            "title": "mobileNetworkProperties.uplink",
+            "description": "Object to define the uplink of a network. The uplink direction only allows point-to-point communication (unicast). It is composed of the three nested models for delay, transmission configuration and capacity.",
+            "type": "object",
+            "properties": {
+                "delay": {
+                    "description": "The delay of the uplink.",
+                    "$ref": "#/definitions/delay"
+                },
+                "transmission": {
+                    "description": "The transmission model of the uplink.",
+                    "$ref": "#/definitions/transmission"
+                },
+                "capacity": {
+                    "description": "The capacity of the uplink.",
+                    "anyOf": [
+                        { "type": "integer", "minimum": 0 },
+                        { "type": "string", "pattern": "^unlimited$"}
+                    ]
+                }
+            },
+            "required": [ "delay", "transmission", "capacity" ] 
+
+        },
+        "mobileNetworkProperties.downlink": {
+            "title": "mobileNetworkProperties.downlink",
+            "description": "Object to define the downlink of a network. The downlink supports two individual paths: Point-to-point communication (unicast) and Point-to-multipoint communication (multicast).",
+            "type": "object",
+            "properties": {
+                "unicast": {
+                    "description": "The properties of the unicast communication.",
+                    "$ref": "#/definitions/unicast"
+                },
+                "multicast": {
+                    "description": "The properties of the multicast communication.",
+                    "$ref": "#/definitions/multicast"
+                },
+                "capacity": {
+                    "description": "The capacity of the downlink.",
+                    "anyOf": [
+                        { "type": "integer", "minimum": 0 },
+                        { "type": "string", "pattern": "^unlimited$"}
+                    ]
+                }
+            },
+            "required": [ "unicast", "multicast", "capacity" ]
+
+        },
+        "delay": {
+            "title": "delay",
+            "description": "Object to define a delay model.",
+            "type": "object",
+            "oneOf": [
+                {"$ref": "#/definitions/gammaDelay" },
+                {"$ref": "#/definitions/constantDelay"},
+                {"$ref": "#/definitions/simpleRandomDelay"}
+            ]
+        },
+        "gammaDelay": {
+            "title": "gammaDelay",
+            "description": "Object to define a model for GammaRandomDelay or GammaSpeedDelay. GammaRandomDelay bases directly on the Gamma distribution (b=2,p=2) with minimum and expected value. Due to the nature of the Gamma distribution, the resulting delays can be far higher than the expected value. GammaSpeedDelay bases on the GammaRandomDelay and includes an additional speed penalty according to the current speed of the vehicle.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Type of Gamma delay.",
+                    "type": "string",
+                    "enum": [ "GammaRandomDelay", "GammaSpeedDelay" ]
+                },
+                "minDelay": {
+                    "description": "Minimum delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "expDelay": {
+                    "description": "Expected delay for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "minDelay", "expDelay" ]
+        },
+        "constantDelay": {
+            "title": "constantDelay",
+            "description": "Object to define a model for constant delay, which delivers always the same delay.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Type of the constant delay",
+                    "type": "string",
+                    "enum": [ "ConstantDelay" ]
+                },
+                "delay": {
+                    "description": "The delay, given in ns if defined as a number. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "delay" ]
+        },
+        "simpleRandomDelay": {
+            "title": "simpleRandomDelay",
+            "description": "Object to define a model for a radnomised delay. Delivers number-of-steps different uniformly distributed delays in the interval defined by min and max (e.g. minDelay=30ms, maxDelay=60ms, steps=4 -> possible delays={30,40,50,60}ms.).",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Type of the delay.",
+                    "type": "string",
+                    "enum": [ "SimpleRandomDelay" ]
+                },
+                "steps": {
+                    "description": "Number of possible delays between min and max.",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "minDelay": {
+                    "description": "Minimum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "maxDelay": {
+                    "description": "Maximum delay in nanoseconds for the Gamma distribution. If defined as a number, then the default unit is ns. Alternatively this can be defined as a string to include the unit of measurement (e.g. '3 seconds')",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type", "steps", "minDelay", "maxDelay" ]
+        },
         "transmission": {
+            "title": "tranmission",
+            "description": "Object to define the properties of a transmission.",
             "type": "object",
             "properties": {
                 "lossProbability": {
+                    "description": "Probability of packet retransmission (in case of configured retries > 0) or packet loss (retries = 0) for the packet retransmission/loss model. A value of 0 equals a lossfree transmission.",
                     "type": "number",
                     "minimum": 0.0,
-                    "maximum": 1.0
+                    "maximum": 1.0,
+                    "default": 0
                 },
                 "maxRetries": {
+                    "description": "Maximum Number of retransmissions.",
                     "type": "integer",
                     "minimum": 0
                 }
@@ -136,19 +204,36 @@
             "required": [ "lossProbability" ]
         },
         "unicast": {
+            "title": "unicast",
+            "description": "Object to define point-to-point communication.",
             "type": "object",
             "properties": {
-                "delay": { "$ref": "#/definitions/delay" },
-                "transmission": { "$ref": "#/definitions/transmission" }
+                "delay": {
+                    "description": "The delay of the connection.",
+                    "$ref": "#/definitions/delay"
+                },
+                "transmission": {
+                    "description": "The transmission model used by the connection.",
+                    "$ref": "#/definitions/transmission"
+                }
             },
             "required": [ "delay", "transmission" ]
         },
         "multicast": {
+            "title": "multicast",
+            "description": "Object to define point-to-multipoint communication.",
             "type": "object",
             "properties": {
-                "delay": { "$ref": "#/definitions/delay" },
-                "transmission": { "$ref": "#/definitions/transmission" },
+                "delay": {
+                    "description": "The delay of the connection.",
+                    "$ref": "#/definitions/delay"
+                },
+                "transmission": {
+                    "description": "The transmission model used by the connection.",
+                    "$ref": "#/definitions/transmission"
+                },
                 "usableCapacity": {
+                    "description": "The usableCapacity configures the ratio of the overall downlink capacity allowed to be used.",
                     "type": "number",
                     "minimum": 0.0,
                     "maximum": 1.0
@@ -156,25 +241,41 @@
             },
             "required": [ "delay", "usableCapacity", "transmission" ]
         },
-        "geopoint": {
+        "geoPoint": {
+            "title": "geoPoint",
+            "description": "Object to define geographical point coordinates.",
             "type": "object",
             "properties": {
-                "lon": { "type": "number" },
-                "lat": { "type": "number" }
+                "lon": { 
+                    "description":"East-west position of a point on earth.",
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
+                },
+                "lat": { 
+                    "description":"North-south position of a point on earth.",
+                    "type": "number",
+                    "maximum": 90,
+                    "minimmum": -90
+                }
             },
             "required": [ "lon", "lat" ]
         },
-        "capacity": {
-            "oneOf": [
-                {
-                    "type": "integer",
-                    "minimum": 0
+        "geoRectangle": {
+            "title": "geoRectangle",
+            "description": "Object to define an immutable pair of two different geoPoints. Together they form a rectangular area.",
+            "type": "object",
+            "properties": {
+                "nw": {
+                    "description": "GeoPoint defining the north-western vertex of the rectangle.",
+                    "$ref": "#/definitions/geoPoint"
                 },
-                {
-                    "type": "string",
-                    "pattern": "^unlimited$"
+                "se": {
+                    "description": "GeoPoint defining the south-east vertex of the rectangle.",
+                    "$ref": "#/definitions/geoPoint"
                 }
-            ]
+            },
+            "required": [ "nw", "se" ]
         }
     }
 }

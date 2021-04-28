@@ -35,7 +35,7 @@ public class RouteGetEdgesTest extends AbstractTraciCommandTest {
 
         // ASSERT
         assertEquals(3, edges.size());
-        assertEquals("1_1_2_1, 1_2_3_2, 1_3_4_3", StringUtils.join(edges, ", "));
+        assertEquals("1_1_2, 1_2_3, 1_3_4", StringUtils.join(edges, ", "));
     }
 
 }

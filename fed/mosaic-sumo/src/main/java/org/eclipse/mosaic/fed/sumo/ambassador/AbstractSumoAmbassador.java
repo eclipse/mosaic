@@ -168,7 +168,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     /**
      * Manages traffic signs to be added as POIs to SUMO (e.g. for visualization)
      */
-    protected final TrafficSignManager trafficSignManager;
+    private final TrafficSignManager trafficSignManager;
 
 
     /**
@@ -523,9 +523,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
     /**
      * Extract data from received {@link VehicleUpdates} interaction and apply
-     * movements of externally simulated vehicles to SUMO via TraCI calls.
+     * updates of externally simulated vehicles to SUMO via TraCI calls.
      *
-     * @param vehicleUpdates interaction indicating vehicles movements of a simulator
+     * @param vehicleUpdates interaction indicating vehicle updates of a simulator
      */
     private synchronized void receiveInteraction(VehicleUpdates vehicleUpdates) throws InternalFederateException {
         if (vehicleUpdates == null || vehicleUpdates.getSenderId().equals(getId())) {
@@ -586,7 +586,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         VEHICLE_STOP_REQ,
                         TIME.format(vehicleStop.getTime()),
                         vehicleStop.getVehicleId(),
-                        stopPos.getEdgeId(),
+                        stopPos.getConnectionId(),
                         stopPos.getOffset(),
                         stopPos.getLaneIndex(),
                         vehicleStop.getDuration(),
@@ -668,7 +668,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     "{} at simulation time {}: vehicleId=\"{}\", newRouteId={}, current edge: {}",
                     VEHICLE_ROUTE_CHANGE_REQ, TIME.format(vehicleRouteChange.getTime()),
                     vehicleRouteChange.getVehicleId(), vehicleRouteChange.getRouteId(),
-                    lastKnownVehicleData != null ? lastKnownVehicleData.getRoadPosition().getEdgeId() : null
+                    lastKnownVehicleData != null ? lastKnownVehicleData.getRoadPosition().getConnectionId() : null
             );
         }
 
@@ -1087,11 +1087,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final byte stopFlag, final int duration)
             throws InternalFederateException {
 
-        double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getEdgeId(), stopPos.getLaneIndex());
+        double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
         double stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
         stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
 
-        bridge.getVehicleControl().stop(vehicleId, stopPos.getEdgeId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
+        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
     }
 
     /**
@@ -1141,11 +1141,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             connectToFederate("localhost", p.getInputStream(), p.getErrorStream());
             // read error output of process in an extra thread
-            ProcessLoggingThread outputLoggingThread = new ProcessLoggingThread(log, p.getInputStream(), "SumoAmbassador", ProcessLoggingThread.Level.Info);
-            outputLoggingThread.start();
+            new ProcessLoggingThread(log, p.getInputStream(), "sumo", ProcessLoggingThread.Level.Info).start();
+            new ProcessLoggingThread(log, p.getErrorStream(), "sumo", ProcessLoggingThread.Level.Error).start();
 
-            ProcessLoggingThread errorLoggingThread = new ProcessLoggingThread(log, p.getErrorStream(), "SumoAmbassador", ProcessLoggingThread.Level.Error);
-            errorLoggingThread.start();
         } catch (FederateExecutor.FederateStarterException e) {
             log.error("Error while executing command: {}", federateExecutor.toString());
             throw new InternalFederateException("Error while starting Sumo: " + e.getLocalizedMessage());
@@ -1262,23 +1260,23 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     /**
      * This handles the case that sumo handles routing and creates new routes while doing so.
      *
-     * @param movements Vehicle movement in the simulation.
+     * @param vehicleUpdates Vehicle movement in the simulation.
      * @param time      Time at which the vehicle has moved.
      * @throws InternalFederateException Exception if an error occurred while propagating new routes.
      */
-    private void propagateNewRoutes(VehicleUpdates movements, long time) throws InternalFederateException {
+    private void propagateNewRoutes(VehicleUpdates vehicleUpdates, long time) throws InternalFederateException {
         // cache all new routes
         ArrayList<VehicleRoute> newRoutes = new ArrayList<>();
 
         // check added vehicles for new routes
-        for (VehicleData vehicleData : movements.getAdded()) {
+        for (VehicleData vehicleData : vehicleUpdates.getAdded()) {
             if (!routeCache.containsKey(vehicleData.getRouteId())) {
                 newRoutes.add(readRouteFromTraci(vehicleData.getRouteId()));
             }
         }
 
         // check updated vehicles for new routes
-        for (VehicleData vehicleData : movements.getUpdated()) {
+        for (VehicleData vehicleData : vehicleUpdates.getUpdated()) {
             if (!routeCache.containsKey(vehicleData.getRouteId())) {
                 newRoutes.add(readRouteFromTraci(vehicleData.getRouteId()));
             }
@@ -1333,7 +1331,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      *
      * @param time Current time
      */
-    void initializeTrafficLights(long time) throws InternalFederateException, IOException, IllegalValueException {
+    private void initializeTrafficLights(long time) throws InternalFederateException, IOException, IllegalValueException {
         List<String> tlgIds = bridge.getSimulationControl().getTrafficLightGroupIds();
 
         List<TrafficLightGroup> tlgs = new ArrayList<>();

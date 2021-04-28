@@ -19,7 +19,6 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
-import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,8 +32,6 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final IdTransformer<String, String> transformer = TraciClientBridge.VEHICLE_ID_TRANSFORMER;
-
     public VehicleSubscriptionTraciReader() {
         getTypeBasedTraciReader().registerCompoundReader(new LeadingVehicleReader());
     }
@@ -42,7 +39,7 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
     @Override
     VehicleSubscriptionResult createSubscriptionResult(String id) {
         VehicleSubscriptionResult result = new VehicleSubscriptionResult();
-        result.id = transformer.fromExternalId(id);
+        result.id = TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId(id);
         return result;
     }
 
@@ -65,9 +62,9 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
         } else if (varId == CommandRetrieveVehicleState.VAR_ACCELERATION.var) {
             result.acceleration = (double) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_ROAD_ID.var) {
-            result.road = (String) varValue;
-        } else if (varId == CommandRetrieveVehicleState.VAR_LANE_ID.var) {
-            result.laneId = (String) varValue;
+            result.edgeId = (String) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_LANE_INDEX.var) {
+            result.laneIndex = (int) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_ROUTE_ID.var) {
             result.routeId = (String) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_SIGNAL_STATES.var) {

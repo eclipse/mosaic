@@ -41,6 +41,31 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
+import org.eclipse.mosaic.fed.sumo.traci.TraciCommandException;
+import org.eclipse.mosaic.fed.sumo.traci.TraciConnection;
+import org.eclipse.mosaic.fed.sumo.traci.commands.InductionLoopSubscribe;
+import org.eclipse.mosaic.fed.sumo.traci.commands.LaneAreaSubscribe;
+import org.eclipse.mosaic.fed.sumo.traci.commands.LaneGetLength;
+import org.eclipse.mosaic.fed.sumo.traci.commands.LaneSetAllow;
+import org.eclipse.mosaic.fed.sumo.traci.commands.LaneSetDisallow;
+import org.eclipse.mosaic.fed.sumo.traci.commands.LaneSetMaxSpeed;
+import org.eclipse.mosaic.fed.sumo.traci.commands.SimulationGetDepartedVehicleIds;
+import org.eclipse.mosaic.fed.sumo.traci.commands.SimulationGetTrafficLightIds;
+import org.eclipse.mosaic.fed.sumo.traci.commands.SimulationSimulateStep;
+import org.eclipse.mosaic.fed.sumo.traci.commands.TrafficLightSubscribe;
+import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleAdd;
+import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleGetLeader;
+import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSetRemove;
+import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSetUpdateBestLanes;
+import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSubscribe;
+import org.eclipse.mosaic.fed.sumo.traci.complex.AbstractSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.traci.complex.InductionLoopSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.traci.complex.LaneAreaSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.traci.complex.LeadingVehicle;
+import org.eclipse.mosaic.fed.sumo.traci.complex.SumoRawRoadPosition;
+import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
+import org.eclipse.mosaic.fed.sumo.traci.complex.TrafficLightSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.traci.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.util.InductionLoop;
 import org.eclipse.mosaic.fed.sumo.util.TrafficLightStateDecoder;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
@@ -66,7 +91,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -380,7 +404,7 @@ public class SimulationFacade {
                         continue;
                     }
                     if (!lastVehicleData.isStopped()) {
-                        log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.road);
+                        log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName()).copyFrom(lastVehicleData).stopped(true).create();
                 } else if (veh.position == null || !veh.position.isValid()) {
@@ -760,18 +784,17 @@ public class SimulationFacade {
      * @return The position in the form of IRoadPosition.
      */
     private IRoadPosition getRoadPosition(VehicleData lastVehicleData, VehicleSubscriptionResult veh) {
-        if (veh.road == null || veh.laneId == null) {
+        if (veh.edgeId == null) {
             return null;
         }
 
-        String preRoadID = (veh.laneId.length() != 0 ? veh.laneId : veh.road);
         IRoadPosition roadPosition = null;
-        if (!preRoadID.contains(":")) {
+        if (!veh.edgeId.contains(":")) {
             roadPosition = createRoadPosition(
-                    preRoadID,
+                    veh.edgeId,
+                    veh.laneIndex,
                     veh.lanePosition,
-                    veh.lateralLanePosition,
-                    lastVehicleData != null ? lastVehicleData.getRoadPosition() : null
+                    veh.lateralLanePosition
             );
         } else if (lastVehicleData != null) {
             roadPosition = lastVehicleData.getRoadPosition();
@@ -797,33 +820,13 @@ public class SimulationFacade {
     /**
      * Creates a road position as {@link IRoadPosition}.
      *
-     * @param roadId              The Id of the road.
+     * @param edgeId              The Id of the edge.
      * @param offset              The offset.
      * @param lateralLanePosition The lateral lane position.
-     * @param previous            The previous position.
      * @return Road position.
      */
-    private IRoadPosition createRoadPosition(String roadId, double offset, double lateralLanePosition, IRoadPosition previous) {
-        final String[] roadParts = StringUtils.split(roadId, '_');
-        if (roadParts.length == 5) {
-            return new SimpleRoadPosition(
-                    roadParts[0],
-                    roadParts[1],
-                    roadParts[2],
-                    roadParts[3],
-                    Integer.parseInt(roadParts[4]),
-                    offset,
-                    lateralLanePosition
-            );
-        } else if (roadParts.length > 1) {
-            String edgeId = StringUtils.substringBeforeLast(roadId, "_");
-            int laneIndex = Integer.parseInt(roadParts[roadParts.length - 1]);
-            return new SumoRawRoadPosition(edgeId, laneIndex, offset);
-        } else if (previous != null) {
-            return previous;
-        } else {
-            return new SumoRawRoadPosition(roadId, offset, lateralLanePosition);
-        }
+    private IRoadPosition createRoadPosition(String edgeId, int laneIndex, double offset, double lateralLanePosition) {
+        return new SimpleRoadPosition(edgeId, laneIndex, offset, lateralLanePosition);
     }
 
     /**

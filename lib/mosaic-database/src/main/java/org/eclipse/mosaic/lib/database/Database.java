@@ -25,7 +25,6 @@ import org.eclipse.mosaic.lib.database.road.Restriction;
 import org.eclipse.mosaic.lib.database.road.Roundabout;
 import org.eclipse.mosaic.lib.database.road.TrafficLightNode;
 import org.eclipse.mosaic.lib.database.road.Way;
-import org.eclipse.mosaic.lib.database.route.Edge;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoRectangle;
@@ -126,7 +125,7 @@ public class Database {
 
     /**
      * Contains all predefined {@link Route}s vehicles can drive on. Each route consists of
-     * {@link Edge}s that are part of {@link Connection}s.
+     * {@link Connection}s
      */
     private final Map<String, Route> routes = new HashMap<>();
 
@@ -319,7 +318,7 @@ public class Database {
     /**
      * Returns all roundabouts from the database.
      *
-     *  @return List of all roundabouts.
+     * @return List of all roundabouts.
      */
     public List<Roundabout> getRoundabouts() {
         return Collections.unmodifiableList(roundabouts);
@@ -481,11 +480,27 @@ public class Database {
          * classes, that add fields to this object, but need information already contained in the object.
          *
          * @return the current database
-         *
          * @deprecated will be removed in future versions. It should not be required to have access to a Database which is being currently built.
          */
         public Database getIntermediateDatabase() {
             return database;
+        }
+
+        /**
+         * Resets network components of database.
+         *
+         * @return the builder for easy cascading
+         */
+        public Builder clearNetwork() {
+            database.connections.clear();
+            database.nodes.clear();
+            database.restrictions.clear();
+            database.ways.clear();
+            database.roundabouts.clear();
+            database.borderNodes = null;
+            database.minBounds.set(90, 180, 0);
+            database.maxBounds.set(-90, -180, 0);
+            return this;
         }
 
         /**
@@ -507,7 +522,6 @@ public class Database {
          *
          * @param node Node to add.
          * @return this builder for easy cascading
-         *
          * @deprecated use {@link #addNode(String, GeoPoint)} instead
          */
         public Builder addNode(Node node) {
@@ -564,7 +578,7 @@ public class Database {
         }
 
         public boolean nodeExists(String nodeId) {
-           return database.getNode(nodeId) != null;
+            return database.getNode(nodeId) != null;
         }
 
         public Node getNode(String nodeId) {
@@ -944,11 +958,9 @@ public class Database {
             this.route = new Route(routeId);
         }
 
-        public RouteBuilder addEdge(String connectionId, String nodeIdFrom, String nodeIdTo) {
-            Node from = builder.database.getNode(nodeIdFrom);
-            Node to = builder.database.getNode(nodeIdTo);
+        public RouteBuilder addConnection(String connectionId) {
             Connection connection = builder.database.getConnection(connectionId);
-            route.addEdge(new Edge(connection, from, to));
+            route.addConnection(connection);
             return this;
         }
 
