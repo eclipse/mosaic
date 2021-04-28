@@ -673,7 +673,7 @@
                                 <configuration>
                                     <outputDirectory>.</outputDirectory>
                                     <includedScopes>runtime,compile</includedScopes>
-                                    <excludedGroups>org.eclipse.mosaic</excludedGroups>
+                                    <excludedGroups>org.eclipse.mosaic|org.eclipse.sumo</excludedGroups>
                                     <failOnMissing>true</failOnMissing>
                                     <sortArtifactByName>true</sortArtifactByName>
                                     <thirdPartyFilename>NOTICE-THIRD-PARTY.md</thirdPartyFilename>
@@ -710,7 +710,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
-                                    <excludedGroups>org.eclipse.mosaic</excludedGroups>
+                                    <excludedGroups>org.eclipse.mosaic|org.eclipse.sumo</excludedGroups>
                                     <includedScopes>compile</includedScopes>
                                     <failOnMissing>true</failOnMissing>
                                     <sortArtifactByName>true</sortArtifactByName>
