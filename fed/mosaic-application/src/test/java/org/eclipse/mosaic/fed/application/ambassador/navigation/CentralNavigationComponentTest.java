@@ -114,7 +114,7 @@ public class CentralNavigationComponentTest {
 
         final VehicleRoute exampleRoute2 = createExampleRoute2();
         when(routingMock.createRouteForRTI(argThat(
-                argument -> argument.getNodeIdList().equals(exampleRoute2.getNodeIds())
+                argument -> argument.getConnectionIds().equals(exampleRoute2.getConnectionIds())
         ))).thenReturn(exampleRoute2);
     }
 
@@ -180,7 +180,7 @@ public class CentralNavigationComponentTest {
 
         VehicleData vehicleData = mock(VehicleData.class);
         when(vehicleData.getRouteId()).thenReturn("0");
-        final CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("1", "2", "3", "4"), 0, 0);
+        final CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("1_1_2_1", "2_2_4_2", "2_2_4_3"), 0, 0);
         VehicleRoute currentRoute = routingMock.getRoutesFromDatabaseForMessage().get(vehicleData.getRouteId());
 
         // RUN
@@ -199,7 +199,7 @@ public class CentralNavigationComponentTest {
 
         VehicleData vehicleData = mock(VehicleData.class);
         when(vehicleData.getRouteId()).thenReturn("1");
-        final CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("1", "2", "3", "4"), 0, 0);
+        final CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("1_1_2_1", "2_2_4_2", "2_2_4_3"), 0, 0);
 
         // RUN
         VehicleRoute result = cnc.switchRoute(vehicleData, candidateRoute, mock(VehicleRoute.class), 0 * TIME.SECOND);
@@ -217,7 +217,7 @@ public class CentralNavigationComponentTest {
 
         VehicleData vehicleData = mock(VehicleData.class);
         when(vehicleData.getRouteId()).thenReturn("1");
-        final CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("1", "2", "5"), 0, 0);
+        final CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("1_1_2_1", "3_2_5_2"), 0, 0);
 
         // RUN
         VehicleRoute result = cnc.switchRoute(vehicleData, candidateRoute, mock(VehicleRoute.class), 0 * TIME.SECOND);

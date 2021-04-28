@@ -192,7 +192,7 @@ public class CentralNavigationComponent {
     public VehicleRoute switchRoute(VehicleData vehicleData, CandidateRoute rawRoute, VehicleRoute currentRoute, long time) throws IllegalRouteException {
         log.debug("Request to switch to new route for vehicle {} (currently on route {})", vehicleData.getName(), currentRoute.getId());
 
-        boolean newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getNodeIdList(), currentRoute.getNodeIds());
+        boolean newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getConnectionIds(), currentRoute.getConnectionIds());
         // no switch is needed, just stay on the previous route
         if (newRouteOnOriginalRoute) {
             log.debug("Discard route change for vehicle {}: route matches current route {}.", vehicleData.getName(), currentRoute.getId());
@@ -203,8 +203,7 @@ public class CentralNavigationComponent {
             //  — generate a complete route with an ID and propagate it
             VehicleRoute knownRoute = null;
             for (VehicleRoute route : routeMap.values()) {
-                newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getNodeIdList(),
-                        routeMap.get(route.getId()).getNodeIds());
+                newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getConnectionIds(), routeMap.get(route.getId()).getConnectionIds());
                 if (newRouteOnOriginalRoute) {
                     knownRoute = route;
                     break;
@@ -386,7 +385,7 @@ public class CentralNavigationComponent {
             if (response.getBestRoute() != null) {
                 VehicleRoute route = null;
                 for (VehicleRoute existingRoute : routeMap.values()) {
-                    if (isNewRouteOnOriginalRoute(response.getBestRoute().getNodeIdList(), existingRoute.getNodeIds())) {
+                    if (isNewRouteOnOriginalRoute(response.getBestRoute().getConnectionIds(), existingRoute.getConnectionIds())) {
                         route = existingRoute;
                         break;
                     }
