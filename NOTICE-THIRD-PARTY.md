@@ -213,10 +213,10 @@ JSR 374 (JSON Processing) API (1.1.5)
  * Source: https://github.com/eclipse-ee4j/jsonp/jakarta.json-api
 
 
-libsumo (1.9.0-SNAPSHOT)
+libsumo (1.10.0-SNAPSHOT)
 
  * License: Eclipse Public License 2.0
- * Maven artifact: `org.eclipse.sumo:libsumo:1.9.0-SNAPSHOT`
+ * Maven artifact: `org.eclipse.sumo:libsumo:1.10.0-SNAPSHOT`
  * Project: not available
  * Source: not declared
 

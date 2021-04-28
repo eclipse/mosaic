@@ -13,12 +13,12 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.sumo.traci.junit;
+package org.eclipse.mosaic.fed.sumo.junit;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.eclipse.mosaic.fed.sumo.traci.SumoVersion;
+import org.eclipse.mosaic.fed.sumo.bridge.SumoVersion;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

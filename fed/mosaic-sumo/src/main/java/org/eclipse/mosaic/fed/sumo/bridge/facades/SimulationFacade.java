@@ -36,36 +36,10 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.AbstractSubscriptionResult
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
-import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoRawRoadPosition;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
-import org.eclipse.mosaic.fed.sumo.traci.TraciCommandException;
-import org.eclipse.mosaic.fed.sumo.traci.TraciConnection;
-import org.eclipse.mosaic.fed.sumo.traci.commands.InductionLoopSubscribe;
-import org.eclipse.mosaic.fed.sumo.traci.commands.LaneAreaSubscribe;
-import org.eclipse.mosaic.fed.sumo.traci.commands.LaneGetLength;
-import org.eclipse.mosaic.fed.sumo.traci.commands.LaneSetAllow;
-import org.eclipse.mosaic.fed.sumo.traci.commands.LaneSetDisallow;
-import org.eclipse.mosaic.fed.sumo.traci.commands.LaneSetMaxSpeed;
-import org.eclipse.mosaic.fed.sumo.traci.commands.SimulationGetDepartedVehicleIds;
-import org.eclipse.mosaic.fed.sumo.traci.commands.SimulationGetTrafficLightIds;
-import org.eclipse.mosaic.fed.sumo.traci.commands.SimulationSimulateStep;
-import org.eclipse.mosaic.fed.sumo.traci.commands.TrafficLightSubscribe;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleAdd;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleGetLeader;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSetRemove;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSetUpdateBestLanes;
-import org.eclipse.mosaic.fed.sumo.traci.commands.VehicleSubscribe;
-import org.eclipse.mosaic.fed.sumo.traci.complex.AbstractSubscriptionResult;
-import org.eclipse.mosaic.fed.sumo.traci.complex.InductionLoopSubscriptionResult;
-import org.eclipse.mosaic.fed.sumo.traci.complex.LaneAreaSubscriptionResult;
-import org.eclipse.mosaic.fed.sumo.traci.complex.LeadingVehicle;
-import org.eclipse.mosaic.fed.sumo.traci.complex.SumoRawRoadPosition;
-import org.eclipse.mosaic.fed.sumo.traci.complex.TraciSimulationStepResult;
-import org.eclipse.mosaic.fed.sumo.traci.complex.TrafficLightSubscriptionResult;
-import org.eclipse.mosaic.fed.sumo.traci.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.util.InductionLoop;
 import org.eclipse.mosaic.fed.sumo.util.TrafficLightStateDecoder;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
@@ -143,7 +117,7 @@ public class SimulationFacade {
     private boolean updateBestLanesBeforeNextSimulationStep = false;
 
     /**
-     * Creates a new {@link TraciSimulationFacade} object.
+     * Creates a new {@link SimulationFacade} object.
      *
      * @param bridge   Connection to Traci.
      * @param sumoConfiguration The SUMO configuration file.

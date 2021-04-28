@@ -68,7 +68,7 @@ public class TrafficLightFacade {
     private final JunctionGetPosition getJunctionPosition;
 
     /**
-     * Creates a new {@link TraciTrafficLightFacade} object.
+     * Creates a new {@link TrafficLightFacade} object.
      *
      * @param bridge Connection to Traci.
      */
@@ -193,19 +193,18 @@ public class TrafficLightFacade {
     ) {
 
         List<TrafficLight> trafficLights = new ArrayList<>();
-        int id = 0;
+        int index = 0;
         for (TrafficLightState state : currentProgram.getCurrentPhase().getStates()) {
-            if (id == controlledLinks.size()) {
+            final String incoming, outgoing;
+            if (index >= controlledLinks.size()) {
+                incoming = null;
+                outgoing = null;
                 log.warn("There seem to be more states than links controlled by the TrafficLightProgram.");
-                break;
             } else {
-                trafficLights.add(
-                        new TrafficLight(
-                                id, junctionPosition, controlledLinks.get(id).getIncoming(), controlledLinks.get(id).getOutgoing(), state
-                        )
-                );
+                incoming = controlledLinks.get(index).getIncoming();
+                outgoing = controlledLinks.get(index).getOutgoing();
             }
-            id++;
+            trafficLights.add(new TrafficLight(index++, junctionPosition, incoming, outgoing, state));
         }
         return trafficLights;
     }

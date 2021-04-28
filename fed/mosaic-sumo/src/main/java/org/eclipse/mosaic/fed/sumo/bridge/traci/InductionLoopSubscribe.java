@@ -15,9 +15,10 @@
 
 package org.eclipse.mosaic.fed.sumo.bridge.traci;
 
-import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_MEAN_SPEED;
-import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_MEAN_VEHICLE_LENGTH;
-import static org.eclipse.mosaic.fed.sumo.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_VEHICLE_DATA;
+
+import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_MEAN_SPEED;
+import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_MEAN_VEHICLE_LENGTH;
+import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveInductionLoopState.VAR_LAST_STEP_VEHICLE_DATA;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
@@ -48,7 +49,6 @@ public class InductionLoopSubscribe
                 VAR_LAST_STEP_MEAN_SPEED,
                 VAR_LAST_STEP_MEAN_VEHICLE_LENGTH,
                 VAR_LAST_STEP_VEHICLE_DATA
-
         ));
     }
 

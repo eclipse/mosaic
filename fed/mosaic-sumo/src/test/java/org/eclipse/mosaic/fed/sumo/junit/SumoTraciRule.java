@@ -114,7 +114,7 @@ public class SumoTraciRule implements TestRule {
     }
 
     private void before() throws Throwable {
-        TraciClient.VEHICLE_ID_TRANSFORMER.reset();
+        TraciClientBridge.VEHICLE_ID_TRANSFORMER.reset();
         final String sumoCmd;
         if (GUI_DEBUG) {
             sumoCmd = "sumo-gui";
@@ -186,7 +186,7 @@ public class SumoTraciRule implements TestRule {
     }
 
     private void after() {
-        TraciClient.VEHICLE_ID_TRANSFORMER.reset();
+        TraciClientBridge.VEHICLE_ID_TRANSFORMER.reset();
         try {
             log.info("Close Traci Connection");
             traci.close();

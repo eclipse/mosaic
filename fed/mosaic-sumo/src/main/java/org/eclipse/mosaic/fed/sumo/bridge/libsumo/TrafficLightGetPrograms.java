@@ -20,7 +20,6 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoTrafficLightLogic;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import com.google.common.collect.Lists;
 import org.eclipse.sumo.libsumo.TraCILogic;
 import org.eclipse.sumo.libsumo.TraCILogicVector;
 import org.eclipse.sumo.libsumo.TraCIPhase;
@@ -33,7 +32,6 @@ import java.util.List;
 public class TrafficLightGetPrograms implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetPrograms {
 
     public List<SumoTrafficLightLogic> execute(Bridge con, String tlId) throws CommandException, InternalFederateException {
-        // FIXME this currently returns an empty list in any case
         TraCILogicVector allProgramLogics = TrafficLight.getAllProgramLogics(tlId);
         List<SumoTrafficLightLogic> logics = new ArrayList<>((int) allProgramLogics.size());
         for (int i = 0; i < allProgramLogics.size(); i++) {
@@ -50,6 +48,6 @@ public class TrafficLightGetPrograms implements org.eclipse.mosaic.fed.sumo.brid
                     traCILogic.getProgramID(), phases, traCILogic.getCurrentPhaseIndex()
             ));
         }
-        return Lists.newArrayList();
+        return logics;
     }
 }

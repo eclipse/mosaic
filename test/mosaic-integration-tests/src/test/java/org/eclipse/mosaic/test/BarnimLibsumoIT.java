@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.mosaic.fed.sumo.ambassador.LibSumoAmbassador;
 import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.starter.config.CRuntime;
+import org.eclipse.mosaic.test.junit.LibsumoCheckRule;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
 
@@ -30,6 +31,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 public class BarnimLibsumoIT {
+
+    @ClassRule
+    public static LibsumoCheckRule libsumoCheckRule = new LibsumoCheckRule();
 
     @ClassRule
     public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("DEBUG");
@@ -57,7 +61,7 @@ public class BarnimLibsumoIT {
         assertEquals(24,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Request to switch to new route for vehicle .*")
         );
-        assertEquals(13,
+        assertEquals(14,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Change to route [2-9] for vehicle .*")
         );
     }

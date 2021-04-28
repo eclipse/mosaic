@@ -277,21 +277,21 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private void propagateSumoVehiclesToRti() throws InternalFederateException {
-        final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        final List<String> departedVehicles = bridge.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
             if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
                 continue;
             }
             vehiclesAddedViaRouteFile.add(vehicleId);
-            vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
+            vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
             try {
                 rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
             }
             if (sumoConfig.subscribeToAllVehicles) {
-                traci.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
+                bridge.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
             }
         }
     }

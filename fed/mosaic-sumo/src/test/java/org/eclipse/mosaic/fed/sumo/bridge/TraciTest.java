@@ -426,7 +426,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(3 * TIME.SECOND);
         departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         assertEquals(1, departedVehicles.size());
-        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), departedVehicles.get(0));
+        assertEquals(TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), departedVehicles.get(0));
 
         traci.getSimulationControl().simulateUntil(4 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());
@@ -434,7 +434,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(7 * TIME.SECOND);
         departedVehicles = traci.getSimulationControl().getDepartedVehicles();
         assertEquals(1, departedVehicles.size());
-        assertEquals(TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), departedVehicles.get(0));
+        assertEquals(TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), departedVehicles.get(0));
 
         traci.getSimulationControl().simulateUntil(8 * TIME.SECOND);
         assertTrue(traci.getSimulationControl().getDepartedVehicles().isEmpty());

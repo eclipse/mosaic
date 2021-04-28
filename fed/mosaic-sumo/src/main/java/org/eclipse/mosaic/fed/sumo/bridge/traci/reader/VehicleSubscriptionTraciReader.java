@@ -39,7 +39,7 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
     @Override
     VehicleSubscriptionResult createSubscriptionResult(String id) {
         VehicleSubscriptionResult result = new VehicleSubscriptionResult();
-        result.id = TraciClient.VEHICLE_ID_TRANSFORMER.fromExternalId(id);
+        result.id = TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId(id);
         return result;
     }
 
