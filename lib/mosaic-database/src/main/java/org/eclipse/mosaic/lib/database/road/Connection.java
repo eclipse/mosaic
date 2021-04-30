@@ -255,35 +255,28 @@ public class Connection {
      * or the target will be removed from the outgoing connections.
      *
      * @param type   either 'only' or 'not'
-     * @param target the outgoing connection
+     * @param target the connection
      */
-    public void applyTurnRestrictionOutgoing(@Nonnull Restriction.Type type, @Nonnull Connection target) {
-        applyTurnRestriction(type, target, outgoing);
-    }
-
-    /**
-     * This applies a turn restriction to the connection. Restrictions can be of type 'only'
-     * or 'not' which will cause the incoming connections to be either trimmed down to the source
-     * or the source will be removed from the incoming connections.
-     *
-     * @param type   either 'only' or 'not'
-     * @param source the incoming connection
-     */
-    public void applyTurnRestrictionIncoming(@Nonnull Restriction.Type type, @Nonnull Connection source) {
-        applyTurnRestriction(type, source, incoming);
-    }
-
-    private void applyTurnRestriction(@Nonnull Restriction.Type type, @Nonnull Connection source, Map<String, Connection> incoming) {
+    public void applyTurnRestriction(@Nonnull Restriction.Type type, @Nonnull Connection target) {
         Objects.requireNonNull(type);
-        Objects.requireNonNull(source);
+        Objects.requireNonNull(target);
         switch (type) {
             case Only:
                 // this means there should be ONLY the target in the connection
-                incoming.clear();
-                incoming.put(source.getId(), source);
+                outgoing.clear();
+                outgoing.put(target.getId(), target);
+
+                for (Connection outgoingConnection : getTo().getOutgoingConnections()) {
+                    if (!outgoingConnection.getId().equals(target.getId())) {
+                        outgoingConnection.incoming.remove(getId());
+                    }
+                }
                 break;
             case Not:
-                incoming.remove(source.getId());
+                outgoing.remove(target.getId());
+                for (Connection outgoingConnection : getTo().getIncomingConnections()) {
+                    outgoingConnection.incoming.remove(getId());
+                }
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + type);

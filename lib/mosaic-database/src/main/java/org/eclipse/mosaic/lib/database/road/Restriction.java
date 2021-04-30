@@ -131,7 +131,7 @@ public class Restriction {
         for (Connection connection : via.getOutgoingConnections()) {
             if (connection.getWay().equals(target)) {
                 if (found) {
-                    // way found in multiple incomming connections,
+                    // way found in multiple incoming connections,
                     // this means we do not start here (which is a requirement from OSM)!
                     String error = "the 'to' way ({}) referenced in this restriction does "
                             + "not seem to start or end at the 'via' node ({}), "
@@ -148,8 +148,7 @@ public class Restriction {
 
         // last but not least actually filter
         if (from != null && to != null) {
-            from.applyTurnRestrictionOutgoing(type, to);
-            to.applyTurnRestrictionIncoming(type, from);
+            from.applyTurnRestriction(type, to);
         }
     }
 
