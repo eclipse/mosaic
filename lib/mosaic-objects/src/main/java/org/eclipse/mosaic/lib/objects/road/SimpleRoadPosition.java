@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -221,12 +222,12 @@ public class SimpleRoadPosition implements IRoadPosition {
 
         @Override
         public Collection<IConnection> getIncomingConnections() {
-            return null;
+            return new ArrayList<>();
         }
 
         @Override
         public Collection<IConnection> getOutgoingConnections() {
-            return null;
+            return new ArrayList<>();
         }
 
         @Override
