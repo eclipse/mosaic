@@ -242,8 +242,8 @@ public class GraphHopperRouting {
         PointList pointList = newPath.calcPoints();
         GHPoint pathTarget = Iterables.getLast(pointList);
         GHPoint origTarget = new GHPoint(targetPosition.getPosition().getLatitude(), targetPosition.getPosition().getLongitude());
-        if (pathTarget == null
-                || distanceCalculation.calcDist(pathTarget.lat, pathTarget.lon, origTarget.lat, origTarget.lon) > MAX_DISTANCE_TO_TARGET) {
+        double distanceToOriginalTarget = distanceCalculation.calcDist(pathTarget.lat, pathTarget.lon, origTarget.lat, origTarget.lon);
+        if (distanceToOriginalTarget > MAX_DISTANCE_TO_TARGET) {
             return null;
         }
         Iterator<EdgeIteratorState> edgesIt = newPath.calcEdges().iterator();
