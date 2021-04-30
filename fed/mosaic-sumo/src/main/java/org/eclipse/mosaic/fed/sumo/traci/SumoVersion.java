@@ -33,6 +33,7 @@ public enum SumoVersion {
     SUMO_1_6_x("1.6.*", TraciVersion.API_20),
     SUMO_1_7_x("1.7.*", TraciVersion.API_20),
     SUMO_1_8_x("1.8.*", TraciVersion.API_20),
+    SUMO_1_9_x("1.9.*", TraciVersion.API_20),
 
     /**
      * the lowest version supported by this client.
@@ -86,8 +87,6 @@ public enum SumoVersion {
     }
 
     public boolean isGreaterOrEqualThan(SumoVersion other) {
-        return this.getApiVersion() > other.getApiVersion()
-                || this.major > other.major
-                || this.minor > other.minor;
+        return this.major > other.major || (this.major == other.major && this.minor >= other.minor);
     }
 }
