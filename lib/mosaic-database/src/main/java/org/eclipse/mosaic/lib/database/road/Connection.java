@@ -274,8 +274,10 @@ public class Connection {
                 break;
             case Not:
                 outgoing.remove(target.getId());
-                for (Connection outgoingConnection : getTo().getIncomingConnections()) {
-                    outgoingConnection.incoming.remove(getId());
+                for (Connection outgoingConnection : getTo().getOutgoingConnections()) {
+                    if (outgoingConnection.getId().equals(target.getId())) {
+                        outgoingConnection.incoming.remove(getId());
+                    }
                 }
                 break;
             default:
