@@ -54,43 +54,10 @@ public class VehicleAdd
                 .writeStringWithType("current") // arrival speed
                 .writeStringWithType("") // from taz
                 .writeStringWithType("") // to taz
-                .writeStringParamWithType() // line (for public transport)
-                .writeIntParamWithType() // person capacity
-                .writeIntParamWithType(); // person number
+                .writeStringWithType("") // line (for public transport)
+                .writeIntWithType(0) // person capacity
+                .writeIntWithType(0); // person number
 
-    }
-
-    /**
-     * This method executes the command with the given arguments in order to add a vehicle with its specific properties.
-     *
-     * @param con             Connection to Traci.
-     * @param vehicleId       Id of the vehicle.
-     * @param routeId         Id of the route.
-     * @param vehicleType     Type of the vehicle.
-     * @param departLane      Lane of the departure. Possible values: [int] or random", "free", "allowed", "best", "first"
-     * @param departPosition  Position of the departure. Possible values: [int] or "random", "free", "base", "last", "random free"
-     * @param departSpeed     Speed at departure. Possible Values: [double] or "max", "random"
-     * @param line            Line for public transport.
-     * @param personCapacity  The amount of persons a vehicle can hold.
-     * @param personNumber    The amount of people in the vehicle.
-     * @throws CommandException     If the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException If some serious error occurs during writing or reading. The TraCI connection is shut down.
-     */
-    public void execute(Bridge con, String vehicleId, String routeId, String vehicleType,
-                        String departLane, String departPosition, String departSpeed,
-                        String line, int personCapacity, int personNumber) throws CommandException, InternalFederateException {
-
-        super.execute(con,
-                vehicleId,
-                routeId,
-                vehicleType,
-                departLane,
-                departPosition,
-                departSpeed,
-                line,
-                personCapacity,
-                personNumber
-        );
     }
 
     /**
@@ -111,16 +78,13 @@ public class VehicleAdd
                         String departLane, String departPosition, String departSpeed)
             throws CommandException, InternalFederateException {
 
-        this.execute(con,
+        super.execute(con,
                 vehicleId,
                 routeId,
                 vehicleType,
                 departLane,
                 departPosition,
-                departSpeed,
-                "", // default for line
-                0, // default for personCapacity
-                0 // default for personNumber
+                departSpeed
         );
     }
 

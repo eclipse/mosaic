@@ -17,6 +17,8 @@ package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 
 import com.google.common.collect.Lists;
+import org.eclipse.sumo.libsumo.SWIGTYPE_p_std__vectorT_std__vectorT_libsumo__TraCILink_t_t;
+import org.eclipse.sumo.libsumo.TrafficLight;
 
 import java.util.List;
 
@@ -24,7 +26,9 @@ public class TrafficLightGetControlledLinks implements org.eclipse.mosaic.fed.su
 
 
     public List<TrafficLightControlledLink> execute(Bridge bridge, String tlId) {
-        //TODO how??
+        SWIGTYPE_p_std__vectorT_std__vectorT_libsumo__TraCILink_t_t controlledLinks
+                = TrafficLight.getControlledLinks(tlId);
+        //TODO currently not implemented on libsumo side
         return Lists.newArrayList();
     }
 
