@@ -274,11 +274,7 @@ public class Connection {
                 break;
             case Not:
                 outgoing.remove(target.getId());
-                for (Connection outgoingConnection : getTo().getOutgoingConnections()) {
-                    if (outgoingConnection.getId().equals(target.getId())) {
-                        outgoingConnection.incoming.remove(getId());
-                    }
-                }
+                target.incoming.remove(getId());
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
