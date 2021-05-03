@@ -30,6 +30,7 @@ import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.DijkstraCamvitChoice
 import org.eclipse.mosaic.lib.routing.graphhopper.extended.ExtendedGraphHopper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.routing.Path;
@@ -43,7 +44,11 @@ import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.weighting.TurnWeighting;
 import com.graphhopper.storage.TurnCostExtension;
 import com.graphhopper.storage.index.QueryResult;
+import com.graphhopper.util.DistanceCalc;
+import com.graphhopper.util.DistancePlaneProjection;
 import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.PointList;
+import com.graphhopper.util.shapes.GHPoint;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +68,17 @@ public class GraphHopperRouting {
      */
     public static double TARGET_REQUEST_CONNECTION_THRESHOLD = 5d;
 
+    /**
+     * Sometimes edges are dead ends. In these cases routing fails and invalid
+     * routes are returned. To omit this, we check if the distance between the route end
+     * and the original query target lies within the given threshold.
+     */
+    private static final double MAX_DISTANCE_TO_TARGET = 500d;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private GraphHopper ghApi;
+    private final DistanceCalc distanceCalculation = new DistancePlaneProjection();
 
     private GraphhopperToDatabaseMapper graphMapper;
     private Database db;
@@ -185,7 +198,7 @@ public class GraphHopperRouting {
     /**
      * Checks the {@param duplicateSet} whether it contains the {@param route}'s nodeIdList.
      *
-     * @param route Route to check for duplicate.
+     * @param route        Route to check for duplicate.
      * @param duplicateSet Set of node Ids.
      * @return True, if not duplicate in the set.
      */
@@ -226,6 +239,13 @@ public class GraphHopperRouting {
     }
 
     private CandidateRoute preparePath(Path newPath, QueryGraph queryGraph, QueryResult source, QueryResult target, RoutingPosition targetPosition) {
+        PointList pointList = newPath.calcPoints();
+        GHPoint pathTarget = Iterables.getLast(pointList);
+        GHPoint origTarget = new GHPoint(targetPosition.getPosition().getLatitude(), targetPosition.getPosition().getLongitude());
+        double distanceToOriginalTarget = distanceCalculation.calcDist(pathTarget.lat, pathTarget.lon, origTarget.lat, origTarget.lon);
+        if (distanceToOriginalTarget > MAX_DISTANCE_TO_TARGET) {
+            return null;
+        }
         Iterator<EdgeIteratorState> edgesIt = newPath.calcEdges().iterator();
         if (!edgesIt.hasNext()) {
             return null;
@@ -240,7 +260,7 @@ public class GraphHopperRouting {
              * If the requested source or target point is in the middle of the road, an artificial node
              * (and artificial edges) is created in the QueryGraph. As a consequence, the first
              * and/or last edge of the route might be such virtual edge. We use the queried source
-             * and target to extract the original edge where the requested points have been matched on.             *
+             * and target to extract the original edge where the requested points have been matched on.
              */
             if (queryGraph.isVirtualEdge(ghEdge.getEdge())) {
                 if (pathConnections.isEmpty() && queryGraph.isVirtualNode(source.getClosestNode())) {
