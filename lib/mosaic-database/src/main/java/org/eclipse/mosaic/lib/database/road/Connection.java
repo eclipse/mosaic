@@ -265,9 +265,16 @@ public class Connection {
                 // this means there should be ONLY the target in the connection
                 outgoing.clear();
                 outgoing.put(target.getId(), target);
+
+                for (Connection outgoingConnection : getTo().getOutgoingConnections()) {
+                    if (!outgoingConnection.getId().equals(target.getId())) {
+                        outgoingConnection.incoming.remove(getId());
+                    }
+                }
                 break;
             case Not:
                 outgoing.remove(target.getId());
+                target.incoming.remove(getId());
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
