@@ -41,6 +41,7 @@ public class AStar<T extends AStar.Node<T, P>, P extends Point<P>> {
         CostNode destinationNode = null;
         closedList.clear();
         openList.clear();
+        openListNodes.clear();
         boolean routeFound = false;
 
         openList.add(new CostNode(from, 0));

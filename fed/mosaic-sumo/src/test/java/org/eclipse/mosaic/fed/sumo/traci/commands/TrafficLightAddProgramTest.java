@@ -17,9 +17,9 @@ package org.eclipse.mosaic.fed.sumo.traci.commands;
 
 import static org.junit.Assert.assertEquals;
 
-import org.eclipse.mosaic.fed.sumo.traci.TraciVersion;
+import org.eclipse.mosaic.fed.sumo.traci.SumoVersion;
 import org.eclipse.mosaic.fed.sumo.traci.complex.SumoTrafficLightLogic.Phase;
-import org.eclipse.mosaic.fed.sumo.traci.junit.SinceTraci;
+import org.eclipse.mosaic.fed.sumo.traci.junit.SinceSumo;
 import org.eclipse.mosaic.fed.sumo.traci.junit.SumoRunner;
 import org.eclipse.mosaic.rti.TIME;
 
@@ -32,7 +32,7 @@ import java.util.List;
 @RunWith(SumoRunner.class)
 public class TrafficLightAddProgramTest extends AbstractTraciCommandTest {
 
-    @SinceTraci(TraciVersion.API_20)
+    @SinceSumo(SumoVersion.SUMO_1_9_x)
     @Test
     public void execute() throws Exception {
         List<Phase> phases = Lists.newArrayList(
@@ -44,14 +44,14 @@ public class TrafficLightAddProgramTest extends AbstractTraciCommandTest {
 
         // ASSERT
         new TrafficLightSetProgram().execute(traci.getTraciConnection(), "2", "1");
-        simulateStep.execute(traci.getTraciConnection(), 10 * TIME.SECOND);
+        simulateStep.execute(traci.getTraciConnection(), 6 * TIME.SECOND);
 
         String currentState = new TrafficLightGetState().execute(traci.getTraciConnection(), "2");
-        assertEquals("ggggggggggg", currentState);
-
-        simulateStep.execute(traci.getTraciConnection(), 20 * TIME.SECOND);
-        currentState = new TrafficLightGetState().execute(traci.getTraciConnection(), "2");
         assertEquals("rrrrrrrrrrr", currentState);
+
+        simulateStep.execute(traci.getTraciConnection(), 16 * TIME.SECOND);
+        currentState = new TrafficLightGetState().execute(traci.getTraciConnection(), "2");
+        assertEquals("ggggggggggg", currentState);
     }
 
 }
