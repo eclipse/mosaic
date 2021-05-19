@@ -12,6 +12,9 @@ spec:
     command:
     - cat
     tty: true
+    volumeMounts:
+    - name: m2-repo
+      mountPath: /home/jenkins/.m2/repository
     resources:
       limits:
         memory: "2Gi"
