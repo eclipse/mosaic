@@ -58,13 +58,13 @@ public class WeatherWarningAppTest {
     private UnitLogger log;
 
     @Mock
-    private final VehicleData vehicleData = mock(VehicleData.class);
+    private VehicleData vehicleData;
 
     @Mock
-    private final NavigationModule navigationModuleMock = mock(NavigationModule.class);
+    private NavigationModule navigationModuleMock;
 
     @Mock
-    private final AdHocModule adHocModuleMock = mock(AdHocModule.class);
+    private AdHocModule adHocModuleMock;
 
     @Before
     public void setup() {
