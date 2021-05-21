@@ -1,4 +1,4 @@
-FROM ubuntu:disco
+FROM ubuntu:bionic
 
 LABEL \
     description="Docker image containing the MOSAIC adapted OMNeT++ federate" \
