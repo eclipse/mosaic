@@ -65,7 +65,7 @@ public class CentralNavigationComponentTestRule extends ExternalResource {
         AmbassadorParameter ambassadorParameters = new AmbassadorParameter("test", configCopy.getParentFile());
         centralNavigationComponent = new CentralNavigationComponent(ambassadorParameters, applicationConfig.navigationConfiguration) {
             @Override
-            Routing createFromType(String type) throws InternalFederateException {
+            protected Routing createFromType(String type) throws InternalFederateException {
                 return routingMock;
             }
         };

@@ -115,11 +115,11 @@ public class CentralNavigationComponent {
     /**
      * This method initializes the {@link CentralNavigationComponent}. It is called
      * by the {@link ApplicationAmbassador}.
-     * The {@link #routingApi} will be created and initialized and other simulators will be informed
+     * The {@link #routing} will be created and initialized and other simulators will be informed
      * using a {@link VehicleRoutesInitialization} interaction.
      *
      * @param rtiAmbassador the ambassador of the run time infrastructure
-     * @throws InternalFederateException if the {@link #routingApi} couldn't be initialized or the
+     * @throws InternalFederateException if the {@link #routing} couldn't be initialized or the
      *                                   {@link VehicleRoutesInitialization} interaction couldn't be send to the rti
      */
     public void initialize(RtiAmbassador rtiAmbassador) throws InternalFederateException {
@@ -151,7 +151,7 @@ public class CentralNavigationComponent {
         }
     }
 
-    Routing createFromType(String type) throws InternalFederateException {
+    protected Routing createFromType(String type) throws InternalFederateException {
         if (type == null || "database".equalsIgnoreCase(type) || "graphhopper".equalsIgnoreCase(type)) {
             return new DatabaseRouting();
         } else if ("no-routing".equalsIgnoreCase(type)) {
