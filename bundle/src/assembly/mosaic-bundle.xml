@@ -23,6 +23,7 @@
         <fileSet>
             <directory>src/assembly/resources/fed</directory>
             <outputDirectory>bin/fed</outputDirectory>
+            <filtered>true</filtered>
             <includes>
                 <include>**</include>
             </includes>
