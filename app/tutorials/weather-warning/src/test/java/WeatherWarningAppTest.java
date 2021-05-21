@@ -92,7 +92,7 @@ public class WeatherWarningAppTest {
         // RUN
         app.onVehicleUpdated(vehicleData, vehicleData);
 
-        // ASSERT;
+        // ASSERT
         verify(operatingSystem.getAdHocModule()).sendV2xMessage(
                 argThat(v2xMessage -> v2xMessage instanceof Denm && assertDenm((Denm) v2xMessage))
         );
@@ -111,7 +111,7 @@ public class WeatherWarningAppTest {
         // RUN
         app.onMessageReceived(new ReceivedV2xMessage(denmMock, new V2xReceiverInformation(0)));
 
-        // ASSERT;
+        // ASSERT
         verify(operatingSystem.getNavigationModule()).switchRoute(any());
     }
 
