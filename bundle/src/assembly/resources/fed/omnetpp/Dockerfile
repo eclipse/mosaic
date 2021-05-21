@@ -21,7 +21,7 @@ RUN \
 
 WORKDIR /home/mosaic/bin/fed/omnetpp
 
-COPY ./* ./
+COPY ./*.tgz omnet_installer.sh ./
 
 RUN \
     ls -all && \
