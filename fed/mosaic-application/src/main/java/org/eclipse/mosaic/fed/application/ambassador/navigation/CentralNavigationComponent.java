@@ -151,7 +151,7 @@ public class CentralNavigationComponent {
         }
     }
 
-    protected Routing createFromType(String type) throws InternalFederateException {
+    Routing createFromType(String type) throws InternalFederateException {
         if (type == null || "database".equalsIgnoreCase(type) || "graphhopper".equalsIgnoreCase(type)) {
             return new DatabaseRouting();
         } else if ("no-routing".equalsIgnoreCase(type)) {
