@@ -53,24 +53,26 @@ public class LibSumoAmbassador extends SumoAmbassador {
         if (bridge != null) {
             return;
         }
-        try {
-            // first, try to load libsumo it directly from java.library.path
-            System.loadLibrary("libsumojni");
-        } catch (Throwable e) {
-            CLocalHost.OperatingSystem operatingSystem = CLocalHost.OperatingSystem.getSystemOperatingSystem();
 
-            String libsumoLibrary;
-            if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
-                libsumoLibrary = getSumoExecutable("libsumojni.dll");
-            } else {
-                libsumoLibrary = getSumoExecutable("liblibsumojni.so");
-            }
+        CLocalHost.OperatingSystem operatingSystem = CLocalHost.OperatingSystem.getSystemOperatingSystem();
 
-            if (!new File(libsumoLibrary).exists()) {
+        final String libsumoLibrary;
+        if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
+            libsumoLibrary = getSumoExecutable("libsumojni.dll");
+        } else {
+            libsumoLibrary = getSumoExecutable("liblibsumojni.so");
+        }
+
+        if (new File(libsumoLibrary).exists()) {
+            System.load(libsumoLibrary);
+        } else {
+            try {
+                // if no file found, try to load libsumo it directly from java.library.path
+                System.loadLibrary("libsumojni");
+            } catch (Throwable e) {
                 throw new InternalFederateException("The required libsumo library could not be found in " + libsumoLibrary + ". "
                         + "Make sure SUMO_HOME is set properly and that your SUMO installation contains the libsumojni library.");
             }
-            System.load(libsumoLibrary);
         }
 
         try {
