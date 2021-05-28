@@ -1,4 +1,4 @@
-FROM ubuntu:disco
+FROM ubuntu:bionic
 
 LABEL \
     description="Docker image containing the MOSAIC adapted OMNeT++ federate" \
@@ -21,7 +21,7 @@ RUN \
 
 WORKDIR /home/mosaic/bin/fed/omnetpp
 
-COPY ./* ./
+COPY ./*.tgz omnet_installer.sh ./
 
 RUN \
     ls -all && \
