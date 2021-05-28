@@ -80,7 +80,6 @@
 
     <properties>
         <mosaic.version>21.1-SNAPSHOT</mosaic.version>
-        <parent.dir>.</parent.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceTarget>1.8</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
@@ -112,6 +111,7 @@
         <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
+        <version.libsumo>1.9.2</version.libsumo>
     </properties>
 
     <dependencies>
@@ -673,7 +673,7 @@
                                 <configuration>
                                     <outputDirectory>.</outputDirectory>
                                     <includedScopes>runtime,compile</includedScopes>
-                                    <excludedGroups>org.eclipse.mosaic</excludedGroups>
+                                    <excludedGroups>org.eclipse.mosaic|org.eclipse.sumo</excludedGroups>
                                     <failOnMissing>true</failOnMissing>
                                     <sortArtifactByName>true</sortArtifactByName>
                                     <thirdPartyFilename>NOTICE-THIRD-PARTY.md</thirdPartyFilename>
@@ -710,7 +710,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
-                                    <excludedGroups>org.eclipse.mosaic</excludedGroups>
+                                    <excludedGroups>org.eclipse.mosaic|org.eclipse.sumo</excludedGroups>
                                     <includedScopes>compile</includedScopes>
                                     <failOnMissing>true</failOnMissing>
                                     <sortArtifactByName>true</sortArtifactByName>
@@ -727,7 +727,7 @@
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>copy-legal-information</id>
+                                <id>copy-legal-information-${parent.dir}</id>
                                 <phase>generate-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>

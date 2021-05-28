@@ -1,0 +1,116 @@
+/*
+ * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
+package org.eclipse.mosaic.fed.sumo.bridge;
+
+
+import org.eclipse.mosaic.fed.sumo.bridge.facades.PoiFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.RouteFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.SimulationFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.TrafficLightFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.facades.VehicleFacade;
+import org.eclipse.mosaic.fed.sumo.config.CSumo;
+
+import org.eclipse.sumo.libsumo.Simulation;
+import org.eclipse.sumo.libsumo.StringVector;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.List;
+
+public class LibSumoBridge implements Bridge {
+
+    private final CommandRegister commandRegister;
+    private final SumoVersion sumoVersion;
+
+    private final SimulationFacade simulationControl;
+    private final TrafficLightFacade trafficLightControl;
+    private final VehicleFacade vehicleControl;
+    private final RouteFacade routeControl;
+    private final PoiFacade poiControl;
+
+    public LibSumoBridge(CSumo sumoConfiguration, List<String> parameters) {
+
+        Simulation.load(new StringVector(parameters));
+
+        this.sumoVersion = SumoVersion.UNKNOWN; // not important for this kind of bridge;
+
+        this.commandRegister = new CommandRegister(sumoConfiguration, "libsumo");
+        this.commandRegister.setBridge(this);
+
+        this.simulationControl = new SimulationFacade(this, sumoConfiguration);
+
+        this.vehicleControl = new VehicleFacade(this);
+        this.trafficLightControl = new TrafficLightFacade(this);
+        this.routeControl = new RouteFacade(this);
+        this.poiControl = new PoiFacade(this);
+    }
+
+
+    @Override
+    public SumoVersion getCurrentVersion() {
+        return sumoVersion;
+    }
+
+    @Override
+    public CommandRegister getCommandRegister() {
+        return commandRegister;
+    }
+
+    @Override
+    public SimulationFacade getSimulationControl() {
+        return simulationControl;
+    }
+
+    @Override
+    public VehicleFacade getVehicleControl() {
+        return vehicleControl;
+    }
+
+    @Override
+    public TrafficLightFacade getTrafficLightControl() {
+        return trafficLightControl;
+    }
+
+    @Override
+    public RouteFacade getRouteControl() {
+        return routeControl;
+    }
+
+    @Override
+    public PoiFacade getPoiControl() {
+        return poiControl;
+    }
+
+    @Override
+    public void close() {
+        Simulation.close();
+    }
+
+    @Override
+    public void emergencyExit(Throwable e) {
+        // should not be called
+    }
+
+    @Override
+    public DataInputStream getIn() {
+        throw new UnsupportedOperationException("This SUMO bridge implementation does not provide a socket connection.");
+    }
+
+    @Override
+    public DataOutputStream getOut() {
+        throw new UnsupportedOperationException("This SUMO bridge implementation does not provide a socket connection.");
+    }
+
+}
