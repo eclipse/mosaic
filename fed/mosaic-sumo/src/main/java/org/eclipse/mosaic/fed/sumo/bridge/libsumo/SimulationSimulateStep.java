@@ -129,7 +129,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             for (String vehicle: InductionLoop.getLastStepVehicleIDs(inductionLoop)) {
                 InductionLoopVehicleData vehicleData = new InductionLoopVehicleData();
                 vehicleData.vehicleId = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle);
-                //TODO add more vehicle data!! (use InductionLoop.getVehicleData(inductionLoop)
+                //TODO add more vehicle data! (use InductionLoop.getVehicleData(inductionLoop), which is not fully implemented yet)
                 result.vehiclesOnInductionLoop.add(vehicleData);
             }
             results.add(result);
