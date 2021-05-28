@@ -15,10 +15,10 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -63,7 +63,7 @@ public class TrafficManagementCenterSpawner extends ServerSpawner {
      * @throws InternalFederateException if {@link TmcRegistration} couldn't be handled by rti
      */
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
-        String name = NameGenerator.getTmcName();
+        String name = UnitNameGenerator.nextTmcName();
         TmcRegistration interaction = new TmcRegistration(0, name, group, getAppList(), getInductionLoopList(), getLaneAreaList());
         try {
             LOG.info("Creating TMC " + this.toString());

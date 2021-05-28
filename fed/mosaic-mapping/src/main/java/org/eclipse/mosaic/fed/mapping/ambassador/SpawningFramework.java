@@ -39,9 +39,9 @@ import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -496,7 +496,7 @@ public class SpawningFramework {
             if (prototype != null) {
                 apps = prototype.getAppList();
                 group = ObjectUtils.defaultIfNull(prototype.getGroup(), tl.getGroupId());
-                name = NameGenerator.getTlName();
+                name = UnitNameGenerator.nextTlName();
             } else {
                 apps = new ArrayList<>();
                 group = null;
