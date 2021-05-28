@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * This class represents the traci command which allows to subscribe the vehicle to the application.
+ * This class represents the SUMO command which allows to subscribe the vehicle to the application.
  * Several options for vehicle subscription are implemented in this class.
  */
 public class VehicleSubscribe
@@ -136,7 +136,7 @@ public class VehicleSubscribe
     /**
      * Creates a new {@link VehicleSubscribe} object.
      *
-     * @param bridge   Connection to Traci.
+     * @param bridge            Connection to Traci.
      * @param sumoConfiguration The sumo configuration file.
      */
     public VehicleSubscribe(Bridge bridge, CSumo sumoConfiguration) {
@@ -147,7 +147,7 @@ public class VehicleSubscribe
      * Creates a new {@link VehicleSubscribe} object.
      * Access needs to be public, because command is called using Reflection.
      *
-     * @param bridge   Connection to Traci.
+     * @param bridge            Connection to Traci.
      * @param subscriptionCodes The parameters for an applicable configuration.
      */
     @SuppressWarnings("WeakerAccess")
@@ -189,15 +189,15 @@ public class VehicleSubscribe
     /**
      * This method executes the command with the given arguments in order to subscribe the vehicle to the application.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge    Connection to SUMO.
      * @param vehicleId The Id of the Vehicle.
      * @param startTime The time to subscribe the vehicle.
      * @param endTime   The end time of the subscription of the vehicle in the application.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, long startTime, long endTime) throws CommandException, InternalFederateException {
-        super.execute(traciCon, ((double) startTime) / TIME.SECOND, ((double) endTime) / TIME.SECOND, vehicleId);
+    public void execute(Bridge bridge, String vehicleId, long startTime, long endTime) throws CommandException, InternalFederateException {
+        super.execute(bridge, ((double) startTime) / TIME.SECOND, ((double) endTime) / TIME.SECOND, vehicleId);
     }
 
     @Override

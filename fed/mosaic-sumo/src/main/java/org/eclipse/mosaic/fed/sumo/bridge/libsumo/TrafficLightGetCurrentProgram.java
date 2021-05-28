@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetCurrentProgram implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetCurrentProgram {
 
-    public String execute(Bridge con, String tlId) {
+    public String execute(Bridge bridge, String tlId) {
         return TrafficLight.getProgram(tlId);
     }
 }

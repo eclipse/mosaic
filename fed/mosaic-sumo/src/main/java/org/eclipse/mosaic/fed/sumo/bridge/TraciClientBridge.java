@@ -23,14 +23,10 @@ import org.eclipse.mosaic.fed.sumo.bridge.facades.RouteFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.SimulationFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.TrafficLightFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.VehicleFacade;
-import org.eclipse.mosaic.fed.sumo.bridge.traci.AbstractTraciCommand;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
-import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
-import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,20 +39,11 @@ import java.net.Socket;
 import javax.annotation.Nonnull;
 
 /**
- * Implementation of the bridge between MOSAIC and SUMO using a own TraCI client implementation.
+ * Implementation of the bridge between MOSAIC and SUMO using an own TraCI client implementation.
  */
 public class TraciClientBridge implements Bridge {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    /**
-     * Defines the {@link IdTransformer} which transforms the vehicle IDs if required. Every
-     * {@link AbstractTraciCommand} which reads or writes a vehicle ID, uses this transformer. Per default
-     * no transformation is done, i.e. passing the vehicle IDs as is. However, for other scenarios
-     * a custom transformer may be defined here, which converts the vehicle IDs known by SUMO to
-     * vehicle IDs known by the consumer (e.g. MOSAIC) of this TraciClient.
-     */
-    public static final IdTransformer<String, String> VEHICLE_ID_TRANSFORMER = new MosaicConformVehicleIdTransformer();
 
     private final CommandRegister commandRegister;
 

@@ -21,5 +21,5 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 public interface VehicleSetVehicleLength {
 
-    void execute(Bridge traciCon, String vehicleId, double value) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, double value) throws CommandException, InternalFederateException;
 }

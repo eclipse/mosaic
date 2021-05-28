@@ -20,19 +20,19 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to get the version of the Traci API.
+ * This class represents the SUMO command which allows to get the version of the Traci API.
  */
 public interface SimulationGetVersion {
 
     /**
      * This method executes the command with the given arguments in order to get the version of the Traci API.
      *
-     * @param traciCon Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @return Traci API version.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    CurrentVersion execute(Bridge traciCon) throws CommandException, InternalFederateException;
+    CurrentVersion execute(Bridge bridge) throws CommandException, InternalFederateException;
 
     class CurrentVersion {
         public String sumoVersion;

@@ -64,14 +64,14 @@ public class TrafficLightGetPrograms
     /**
      * This method executes the command with the given arguments in order to get the complete definitions of all traffic light programs.
      *
-     * @param con  Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param tlId Id of the traffic light.
      * @return The traffic light programs.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public List<SumoTrafficLightLogic> execute(Bridge con, String tlId) throws CommandException, InternalFederateException {
-        return executeAndReturn(con, tlId).orElse(Lists.newArrayList());
+    public List<SumoTrafficLightLogic> execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
+        return executeAndReturn(bridge, tlId).orElse(Lists.newArrayList());
     }
 
     @Override

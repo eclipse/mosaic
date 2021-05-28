@@ -20,9 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetSpeedFactor implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetSpeedFactor {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, double value) {
-        Vehicle.setSpeedFactor(vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, double value) {
+        Vehicle.setSpeedFactor(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
     }
 
 }

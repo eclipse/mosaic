@@ -20,8 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetCurrentPhase implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetCurrentPhase {
 
-    @Override
-    public int execute(Bridge con, String tlId) {
+    public int execute(Bridge bridge, String tlId) {
         return TrafficLight.getPhase(tlId);
     }
 

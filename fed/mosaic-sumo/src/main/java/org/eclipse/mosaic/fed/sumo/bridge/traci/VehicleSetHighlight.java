@@ -58,14 +58,14 @@ public class VehicleSetHighlight
      * This method executes the command with the given arguments in order to highlight a vehicle in the SUMO-GUI with a circle
      * which is visible for 10 seconds.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param vehicleId Id of the vehicle.
      * @param color     the color to highlight the vehicle with
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, Color color) throws CommandException, InternalFederateException {
-        super.execute(traciCon, vehicleId, color.getRed(), color.getGreen(), color.getBlue());
+    public void execute(Bridge bridge, String vehicleId, Color color) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, color.getRed(), color.getGreen(), color.getBlue());
     }
 
     @Override

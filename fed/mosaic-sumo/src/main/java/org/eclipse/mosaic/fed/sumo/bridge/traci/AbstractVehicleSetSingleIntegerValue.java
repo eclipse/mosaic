@@ -45,8 +45,8 @@ public abstract class AbstractVehicleSetSingleIntegerValue extends AbstractTraci
                 .writeIntParamWithType();
     }
 
-    public void execute(Bridge traciCon, String vehicleId, int value) throws CommandException, InternalFederateException {
-        super.execute(traciCon, vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, int value) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, value);
     }
 
     @Override

@@ -21,5 +21,5 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 public interface TrafficLightSetRemainingPhaseDuration {
 
-    void execute(Bridge con, String tlId, double remainingDurationS) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String tlId, double remainingDurationS) throws CommandException, InternalFederateException;
 }

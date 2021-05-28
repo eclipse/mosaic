@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.bridge.traci.reader;
 
-import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
@@ -39,7 +39,7 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
     @Override
     VehicleSubscriptionResult createSubscriptionResult(String id) {
         VehicleSubscriptionResult result = new VehicleSubscriptionResult();
-        result.id = TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId(id);
+        result.id = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(id);
         return result;
     }
 

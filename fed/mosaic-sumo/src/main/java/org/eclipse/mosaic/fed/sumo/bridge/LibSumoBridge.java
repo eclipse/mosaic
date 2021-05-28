@@ -42,11 +42,9 @@ public class LibSumoBridge implements Bridge {
 
     public LibSumoBridge(CSumo sumoConfiguration, List<String> parameters) {
 
-        StringVector s = new StringVector();
-        parameters.forEach(s::add);
-        Simulation.load(s);
+        Simulation.load(new StringVector(parameters));
 
-        this.sumoVersion = SumoVersion.UNKNOWN; // not important for this kind of brigde;
+        this.sumoVersion = SumoVersion.UNKNOWN; // not important for this kind of bridge;
 
         this.commandRegister = new CommandRegister(sumoConfiguration, "libsumo");
         this.commandRegister.setBridge(this);
@@ -107,12 +105,12 @@ public class LibSumoBridge implements Bridge {
 
     @Override
     public DataInputStream getIn() {
-        throw new UnsupportedOperationException("This TraCI client implementation does not provide a socket connection.");
+        throw new UnsupportedOperationException("This SUMO bridge implementation does not provide a socket connection.");
     }
 
     @Override
     public DataOutputStream getOut() {
-        throw new UnsupportedOperationException("This TraCI client implementation does not provide a socket connection.");
+        throw new UnsupportedOperationException("This SUMO bridge implementation does not provide a socket connection.");
     }
 
 }

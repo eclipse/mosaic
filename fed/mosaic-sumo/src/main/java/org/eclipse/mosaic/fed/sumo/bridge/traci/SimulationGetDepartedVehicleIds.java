@@ -28,7 +28,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which allows to get the Id's of the vehicles departed the simulation.
+ * This class represents the SUMO command which allows to get the Id's of the vehicles departed the simulation.
  */
 public class SimulationGetDepartedVehicleIds
         extends AbstractTraciCommand<List<String>>
@@ -59,13 +59,13 @@ public class SimulationGetDepartedVehicleIds
      * This method executes the command with the given arguments in order to get the vehicles Id's
      * in the simulation, which departed the simulation.
      *
-     * @param con Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @return List of vehicle Id's.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public List<String> execute(Bridge con) throws CommandException, InternalFederateException {
-        return executeAndReturn(con).orElseThrow(
+    public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {
+        return executeAndReturn(bridge).orElseThrow(
                 () -> new CommandException("Couldn't get departed Vehicles.", new Status((byte) Status.STATUS_ERR, ""))
         );
     }

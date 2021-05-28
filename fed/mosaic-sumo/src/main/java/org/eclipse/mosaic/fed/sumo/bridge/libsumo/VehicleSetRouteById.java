@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetRouteById implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetRouteById {
 
-    public void execute(Bridge traciCon, String vehicleId, String routeId) {
-        Vehicle.setRouteID(vehicleId, routeId);
+    public void execute(Bridge bridge, String vehicleId, String routeId) {
+        Vehicle.setRouteID(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), routeId);
     }
 }

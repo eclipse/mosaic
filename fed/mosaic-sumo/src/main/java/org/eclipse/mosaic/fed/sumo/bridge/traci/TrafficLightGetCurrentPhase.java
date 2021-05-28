@@ -47,8 +47,8 @@ public class TrafficLightGetCurrentPhase
                 .readIntegerWithType();
     }
 
-    public int execute(Bridge con, String tlId) throws CommandException, InternalFederateException {
-        return executeAndReturn(con, tlId).orElseThrow(
+    public int execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
+        return executeAndReturn(bridge, tlId).orElseThrow(
                 () -> new CommandException(
                         String.format(Locale.ENGLISH, "Couldn't get current Phase for TrafficLight: %s", tlId),
                         new Status((byte) Status.STATUS_ERR, "")

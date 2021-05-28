@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to subscribe the vehicle to the application.
+ * This class represents the SUMO command which allows to subscribe the vehicle to the application.
  * Several options for vehicle subscription are implemented in this class.
  */
 public interface VehicleSubscribe {
@@ -28,12 +28,12 @@ public interface VehicleSubscribe {
     /**
      * This method executes the command with the given arguments in order to subscribe the vehicle to the application.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge    Connection to SUMO.
      * @param vehicleId The Id of the Vehicle.
      * @param startTime The time to subscribe the vehicle.
      * @param endTime   The end time of the subscription of the vehicle in the application.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    void execute(Bridge traciCon, String vehicleId, long startTime, long endTime) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, long startTime, long endTime) throws CommandException, InternalFederateException;
 }

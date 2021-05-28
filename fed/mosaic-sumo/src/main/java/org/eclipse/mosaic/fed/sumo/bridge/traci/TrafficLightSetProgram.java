@@ -23,7 +23,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeTrafficLi
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set the traffic light program.
+ * This class represents the SUMO command which allows to set the traffic light program.
  */
 public class TrafficLightSetProgram
         extends AbstractTraciCommand<Void>
@@ -49,14 +49,14 @@ public class TrafficLightSetProgram
     /**
      * This method executes the command with the given arguments in order to set the traffic light program.
      *
-     * @param con       Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param tlId      Id of the traffic light.
      * @param programId Id of the traffic light program.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge con, String tlId, String programId) throws CommandException, InternalFederateException {
-        super.execute(con, tlId, programId);
+    public void execute(Bridge bridge, String tlId, String programId) throws CommandException, InternalFederateException {
+        super.execute(bridge, tlId, programId);
     }
 
     @Override

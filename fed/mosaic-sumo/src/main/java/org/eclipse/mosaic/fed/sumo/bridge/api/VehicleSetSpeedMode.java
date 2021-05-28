@@ -20,11 +20,11 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set the speed mode for the vehicle.
+ * This class represents the SUMO command which allows to set the speed mode for the vehicle.
  * Per default, the vehicle may only drive slower than the maximum permitted speed on the route and
  * it follows the right-of-way rules. Furthermore, tt may not exceed the bounds on acceleration and deceleration.
  */
 public interface VehicleSetSpeedMode {
 
-    void execute(Bridge traciCon, String vehicleId, int value) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, int value) throws CommandException, InternalFederateException;
 }

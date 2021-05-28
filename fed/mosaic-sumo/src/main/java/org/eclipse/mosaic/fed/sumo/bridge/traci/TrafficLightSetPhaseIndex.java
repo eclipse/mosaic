@@ -41,8 +41,8 @@ public class TrafficLightSetPhaseIndex
                 .writeIntParamWithType();
     }
 
-    public void execute(Bridge con, String tlId, int phaseIndex) throws CommandException, InternalFederateException {
-        super.execute(con, tlId, phaseIndex);
+    public void execute(Bridge bridge, String tlId, int phaseIndex) throws CommandException, InternalFederateException {
+        super.execute(bridge, tlId, phaseIndex);
     }
 
     @Override

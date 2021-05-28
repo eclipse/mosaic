@@ -23,18 +23,18 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which allows to set the simulation step.
+ * This class represents the SUMO command which allows to set the simulation step.
  */
 public interface SimulationSimulateStep {
 
     /**
      * This method executes the command with the given arguments in order to set the simulation step.
      *
-     * @param traciCon Connection to Traci.
-     * @param time     Time step.
+     * @param bridge Connection to SUMO.
+     * @param time   Time step.
      * @return List of the results.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    List<AbstractSubscriptionResult> execute(Bridge traciCon, long time) throws CommandException, InternalFederateException;
+    List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException;
 }

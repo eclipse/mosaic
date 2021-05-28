@@ -105,13 +105,13 @@ public abstract class AbstractTraciCommand<T> {
      * Call this method to execute the command with the given arguments. The order of arguments must match
      * the order of parameter writers which have been defined in the constructor. No result is returned.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    protected void execute(Bridge con, Object... arguments) throws CommandException, InternalFederateException {
-        if (checkVersion(con)) {
-            sendMessageToTraci(con, arguments);
-            readResults(con, false);
+    protected void execute(Bridge bridge, Object... arguments) throws CommandException, InternalFederateException {
+        if (checkVersion(bridge)) {
+            sendMessageToTraci(bridge, arguments);
+            readResults(bridge, false);
         }
     }
 
@@ -122,13 +122,13 @@ public abstract class AbstractTraciCommand<T> {
      * to {@link #constructResult(Status, Object...)}. All objects constructed by this method are added to the list which
      * eventually will be returned by this method.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    protected List<T> executeAndReturnList(Bridge con, Object... arguments) throws CommandException, InternalFederateException {
-        if (checkVersion(con)) {
-            sendMessageToTraci(con, arguments);
-            return readResults(con, true);
+    protected List<T> executeAndReturnList(Bridge bridge, Object... arguments) throws CommandException, InternalFederateException {
+        if (checkVersion(bridge)) {
+            sendMessageToTraci(bridge, arguments);
+            return readResults(bridge, true);
         } else {
             return Lists.newArrayList();
         }
@@ -140,13 +140,13 @@ public abstract class AbstractTraciCommand<T> {
      * readers are called and the resulting objects are passed to {@link #constructResult(Status, Object...)}. The
      * object constructed by this method will be returned by this method.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    protected Optional<T> executeAndReturn(Bridge con, Object... arguments) throws CommandException, InternalFederateException {
-        if (checkVersion(con)) {
-            sendMessageToTraci(con, arguments);
-            return Optional.ofNullable(Iterables.getFirst(readResults(con, false), null));
+    protected Optional<T> executeAndReturn(Bridge bridge, Object... arguments) throws CommandException, InternalFederateException {
+        if (checkVersion(bridge)) {
+            sendMessageToTraci(bridge, arguments);
+            return Optional.ofNullable(Iterables.getFirst(readResults(bridge, false), null));
         } else {
             return Optional.empty();
         }
@@ -172,7 +172,7 @@ public abstract class AbstractTraciCommand<T> {
      * are supposed to write variable content.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void sendMessageToTraci(Bridge con, Object[] arguments) throws InternalFederateException {
+    private void sendMessageToTraci(Bridge bridge, Object[] arguments) throws InternalFederateException {
         try {
 
             int messageLength = 0;
@@ -193,26 +193,26 @@ public abstract class AbstractTraciCommand<T> {
             );
 
             if (messageLength < 255) {
-                con.getOut().writeInt(4 + 1 + messageLength);
-                con.getOut().writeByte(1 + messageLength);
+                bridge.getOut().writeInt(4 + 1 + messageLength);
+                bridge.getOut().writeByte(1 + messageLength);
             } else {
                 // 255 is the maximum possible command length. Other cases require to set the
                 // command length to zero and use an integer field instead.
-                con.getOut().writeInt(4 + 1 + 4 + messageLength);
-                con.getOut().writeByte(0);
-                con.getOut().writeInt(1 + 4 + messageLength);
+                bridge.getOut().writeInt(4 + 1 + 4 + messageLength);
+                bridge.getOut().writeByte(0);
+                bridge.getOut().writeInt(1 + 4 + messageLength);
             }
 
             i = 0;
             for (AbstractTraciParameterWriter block : writers) {
                 if (block.isVariable()) {
-                    block.writeVariableArgument(con.getOut(), arguments[i++]);
+                    block.writeVariableArgument(bridge.getOut(), arguments[i++]);
                 } else {
-                    block.write(con.getOut());
+                    block.write(bridge.getOut());
                 }
             }
         } catch (Exception t) {
-            con.emergencyExit(t);
+            bridge.emergencyExit(t);
             throw new InternalFederateException("Error during executing TraCI command " + this.getClass().getSimpleName(), t);
         }
     }
@@ -231,14 +231,14 @@ public abstract class AbstractTraciCommand<T> {
      * @return a list of results. If listMode is disabled, this list contains only ONE item.
      */
     @SuppressWarnings(value = "RR_NOT_CHECKED", justification = "It's fine to ignore some of the bytes when reading the stream.")
-    private List<T> readResults(Bridge con, boolean listMode) throws CommandException, InternalFederateException {
+    private List<T> readResults(Bridge bridge, boolean listMode) throws CommandException, InternalFederateException {
         try {
-            int messageBytesLeft = con.getIn().readInt() - 4;
+            int messageBytesLeft = bridge.getIn().readInt() - 4;
 
-            COMMAND_LENGTH_READER.read(con.getIn(), messageBytesLeft);
+            COMMAND_LENGTH_READER.read(bridge.getIn(), messageBytesLeft);
             messageBytesLeft -= COMMAND_LENGTH_READER.getNumberOfBytesRead();
 
-            Status status = STATUS_READER.read(con.getIn(), messageBytesLeft);
+            Status status = STATUS_READER.read(bridge.getIn(), messageBytesLeft);
             messageBytesLeft -= STATUS_READER.getNumberOfBytesRead();
 
             final List<T> results = new ArrayList<>();
@@ -246,21 +246,21 @@ public abstract class AbstractTraciCommand<T> {
 
                 int iterations = 1;
                 if (listMode) {
-                    iterations = con.getIn().readInt();
+                    iterations = bridge.getIn().readInt();
                     messageBytesLeft -= 4;
                 }
 
                 while (iterations > 0 && messageBytesLeft > 0) {
                     iterations--;
 
-                    int commandLength = COMMAND_LENGTH_READER.read(con.getIn(), messageBytesLeft);
+                    int commandLength = COMMAND_LENGTH_READER.read(bridge.getIn(), messageBytesLeft);
                     messageBytesLeft -= commandLength;
 
                     int actualBytesRead = COMMAND_LENGTH_READER.getNumberOfBytesRead();
 
                     ArrayList<Object> resultObjects = new ArrayList<>();
                     for (AbstractTraciResultReader<?> reader : readers) {
-                        Object o = reader.read(con.getIn(), commandLength - actualBytesRead);
+                        Object o = reader.read(bridge.getIn(), commandLength - actualBytesRead);
                         actualBytesRead += reader.getNumberOfBytesRead();
                         if (o != null) {
                             resultObjects.add(o);
@@ -273,7 +273,7 @@ public abstract class AbstractTraciCommand<T> {
                     if (actualBytesRead < commandLength) {
                         //discard any unused bytes
                         //noinspection ResultOfMethodCallIgnored, reasoning: just flush buffer
-                        con.getIn().read(new byte[commandLength - actualBytesRead]);
+                        bridge.getIn().read(new byte[commandLength - actualBytesRead]);
                     }
                 }
             } else {
@@ -283,7 +283,7 @@ public abstract class AbstractTraciCommand<T> {
         } catch (CommandException e) {
             throw e;
         } catch (Exception t) {
-            con.emergencyExit(t);
+            bridge.emergencyExit(t);
             String className = this.getClass().getSimpleName();
             throw new InternalFederateException("Error during reading response from TraCI command " + className + ".", t);
         }

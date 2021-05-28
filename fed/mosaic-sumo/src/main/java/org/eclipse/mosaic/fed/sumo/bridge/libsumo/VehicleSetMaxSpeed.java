@@ -20,8 +20,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetMaxSpeed implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetMaxSpeed {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, double value) {
-        Vehicle.setMaxSpeed(vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, double value) {
+        Vehicle.setMaxSpeed(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
     }
 }

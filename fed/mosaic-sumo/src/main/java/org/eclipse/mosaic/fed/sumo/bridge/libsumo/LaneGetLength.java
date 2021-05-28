@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.Lane;
 
 public class LaneGetLength implements org.eclipse.mosaic.fed.sumo.bridge.api.LaneGetLength {
 
-    public Double execute(Bridge traciCon, String edgeId, int laneIndex) {
+    public Double execute(Bridge bridge, String edgeId, int laneIndex) {
         return Lane.getLength(edgeId + "_" + laneIndex);
     }
 

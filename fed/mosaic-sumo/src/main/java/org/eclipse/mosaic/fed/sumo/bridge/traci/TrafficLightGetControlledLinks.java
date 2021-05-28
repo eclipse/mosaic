@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * This class represents the traci command which allows to get the links controlled by a traffic light.
+ * This class represents the SUMO command which allows to get the links controlled by a traffic light.
  */
 public class TrafficLightGetControlledLinks
         extends AbstractTraciCommand<List<org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledLinks.TrafficLightControlledLink>>

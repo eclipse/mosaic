@@ -22,8 +22,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleAdd implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleAdd {
 
-    @Override
-    public void execute(Bridge con, String vehicleId, String routeId, String vehicleType, String departLane, String departPosition, String departSpeed) throws CommandException, InternalFederateException {
+    public void execute(Bridge bridge, String vehicleId, String routeId, String vehicleType, String departLane, String departPosition, String departSpeed) throws CommandException, InternalFederateException {
         Vehicle.add(
                 vehicleId,
                 routeId,

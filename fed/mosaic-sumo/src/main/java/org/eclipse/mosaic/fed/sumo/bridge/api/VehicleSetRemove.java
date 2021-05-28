@@ -23,13 +23,13 @@ public interface VehicleSetRemove {
     /**
      * This method executes the command with the given arguments in order to set the remove type.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge    Connection to SUMO.
      * @param vehicleId The Id of the vehicle.
      * @param reason    The reason for the remove the vehicle from the simulation.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    void execute(Bridge traciCon, String vehicleId, Reason reason) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, Reason reason) throws CommandException, InternalFederateException;
 
     /**
      * Enum class that represents the different remove type.

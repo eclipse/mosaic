@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightSetProgram implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightSetProgram {
 
-    public void execute(Bridge con, String tlId, String programId) {
+    public void execute(Bridge bridge, String tlId, String programId) {
         TrafficLight.setProgram(tlId, programId);
     }
 }

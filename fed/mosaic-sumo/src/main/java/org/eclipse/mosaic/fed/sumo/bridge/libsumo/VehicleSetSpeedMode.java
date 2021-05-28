@@ -20,9 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetSpeedMode implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetSpeedMode {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, int value) {
-        Vehicle.setSpeedMode(vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, int value) {
+        Vehicle.setSpeedMode(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
     }
     
 }

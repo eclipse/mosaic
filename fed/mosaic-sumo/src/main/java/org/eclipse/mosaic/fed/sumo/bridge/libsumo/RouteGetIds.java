@@ -17,21 +17,13 @@ package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 
 import org.eclipse.sumo.libsumo.Route;
-import org.eclipse.sumo.libsumo.StringVector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RouteGetIds implements org.eclipse.mosaic.fed.sumo.bridge.api.RouteGetIds {
 
-    public List<String> execute(Bridge traciCon) {
-        StringVector vector = Route.getIDList();
-
-        List<String> result = new ArrayList<>((int) vector.size());
-        for (int i = 0; i < vector.size(); i++) {
-            result.add(vector.get(i));
-        }
-        return result;
+    public List<String> execute(Bridge bridge) {
+        return Route.getIDList();
     }
 
 }

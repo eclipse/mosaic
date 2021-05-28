@@ -21,7 +21,6 @@ import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.eclipse.sumo.libsumo.TraCILogic;
-import org.eclipse.sumo.libsumo.TraCILogicVector;
 import org.eclipse.sumo.libsumo.TraCIPhase;
 import org.eclipse.sumo.libsumo.TraCIPhaseVector;
 import org.eclipse.sumo.libsumo.TrafficLight;
@@ -31,22 +30,16 @@ import java.util.List;
 
 public class TrafficLightGetPrograms implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetPrograms {
 
-    public List<SumoTrafficLightLogic> execute(Bridge con, String tlId) throws CommandException, InternalFederateException {
-        TraCILogicVector allProgramLogics = TrafficLight.getAllProgramLogics(tlId);
-        List<SumoTrafficLightLogic> logics = new ArrayList<>((int) allProgramLogics.size());
-        for (int i = 0; i < allProgramLogics.size(); i++) {
-            TraCILogic traCILogic = allProgramLogics.get(i);
-
+    public List<SumoTrafficLightLogic> execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
+        List<SumoTrafficLightLogic> logics = new ArrayList<>();
+        for (TraCILogic traciLogic : TrafficLight.getAllProgramLogics(tlId)) {
             List<SumoTrafficLightLogic.Phase> phases = new ArrayList<>();
-            TraCIPhaseVector traCIPhases = traCILogic.getPhases();
-            for (int p = 0; p < traCIPhases.size(); p++) {
-                TraCIPhase traCIPhase = traCIPhases.get(p);
-                phases.add(new SumoTrafficLightLogic.Phase((int) (traCIPhase.getDuration() * TIME.MILLI_SECOND), traCIPhase.getState()));
+            TraCIPhaseVector traciPhases = traciLogic.getPhases();
+            for (TraCIPhase traciPhase : traciPhases) {
+                phases.add(new SumoTrafficLightLogic.Phase((int) (traciPhase.getDuration() * TIME.MILLI_SECOND), traciPhase.getState()));
             }
 
-            logics.add(new SumoTrafficLightLogic(
-                    traCILogic.getProgramID(), phases, traCILogic.getCurrentPhaseIndex()
-            ));
+            logics.add(new SumoTrafficLightLogic(traciLogic.getProgramID(), phases, traciLogic.getCurrentPhaseIndex()));
         }
         return logics;
     }

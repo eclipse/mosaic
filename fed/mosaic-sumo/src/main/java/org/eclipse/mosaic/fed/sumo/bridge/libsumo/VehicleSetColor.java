@@ -21,7 +21,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetColor implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetColor {
 
-    public void execute(Bridge traciCon, String vehicleId, int red, int green, int blue, int alpha) {
-        Vehicle.setColor(vehicleId, new TraCIColor(red, green, blue, alpha));
+    public void execute(Bridge bridge, String vehicleId, int red, int green, int blue, int alpha) {
+        Vehicle.setColor(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), new TraCIColor(red, green, blue, alpha));
     }
 }

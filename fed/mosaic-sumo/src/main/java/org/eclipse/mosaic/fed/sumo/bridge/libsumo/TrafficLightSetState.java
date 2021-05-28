@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightSetState implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightSetState {
 
-    public void execute(Bridge con, String tlId, String phaseDefinition) {
+    public void execute(Bridge bridge, String tlId, String phaseDefinition) {
         TrafficLight.setRedYellowGreenState(tlId, phaseDefinition);
     }
 

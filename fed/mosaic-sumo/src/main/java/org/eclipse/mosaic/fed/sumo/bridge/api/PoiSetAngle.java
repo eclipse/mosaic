@@ -26,11 +26,11 @@ public interface PoiSetAngle {
     /**
      * Executes the command in order to set the direction of a previously added PoI object.
      *
-     * @param traciCon Connection to Traci.
-     * @param poiId    the unique ID of the PoI to remove
-     * @param angle    the angle in degrees
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @param bridge Connection to SUMO.
+     * @param poiId  the unique ID of the PoI to remove
+     * @param angle  the angle in degrees
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    void execute(Bridge traciCon, String poiId, double angle) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String poiId, double angle) throws CommandException, InternalFederateException;
 }

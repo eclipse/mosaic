@@ -20,8 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
-import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.junit.SumoRunner;
 import org.eclipse.mosaic.rti.TIME;
@@ -46,7 +46,7 @@ public class VehicleGetLeaderTest extends AbstractTraciCommandTest {
 
         // ASSERT
         assertNotNull(leading);
-        assertEquals(TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), leading.getLeadingVehicleId());
+        assertEquals(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), leading.getLeadingVehicleId());
     }
 
     @Test

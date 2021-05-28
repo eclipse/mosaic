@@ -53,14 +53,14 @@ public class TrafficLightGetCurrentProgram
     /**
      * This method executes the command with the given arguments in order to get the current traffic light application.
      *
-     * @param con  Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param tlId Id of the traffic light.
      * @return The traffic light application.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public String execute(Bridge con, String tlId) throws CommandException, InternalFederateException {
-        return executeAndReturn(con, tlId).orElseThrow(
+    public String execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
+        return executeAndReturn(bridge, tlId).orElseThrow(
                 () -> new CommandException(String.format(
                         Locale.ENGLISH, "Couldn't get current Program for TrafficLight: %s", tlId),
                         new Status((byte) Status.STATUS_ERR, "")

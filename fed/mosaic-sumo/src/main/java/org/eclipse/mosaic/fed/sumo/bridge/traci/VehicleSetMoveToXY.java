@@ -25,7 +25,7 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set the vehicle move to explicit position.
+ * This class represents the SUMO command which allows to set the vehicle move to explicit position.
  */
 public class VehicleSetMoveToXY
         extends AbstractTraciCommand<Void>
@@ -58,18 +58,18 @@ public class VehicleSetMoveToXY
     /**
      * This method executes the command with the given arguments in order to set the vehicle move to a position.
      *
-     * @param traciCon      Connection to Traci.
+     * @param bridge        Connection to SUMO.
      * @param vehicleId     The Id of the vehicle.
      * @param edgeId        The Id of the edge.
      * @param laneIndex     The index of the lane.
      * @param position      The cartesian position to move it.
      * @param angle         Angle of the move.
      * @param keepRouteMode Move mode.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, String edgeId, int laneIndex, CartesianPoint position, double angle, Mode keepRouteMode) throws CommandException, InternalFederateException {
-        super.execute(traciCon, vehicleId, edgeId, laneIndex, position.getX(), position.getY(), angle, keepRouteMode.mode);
+    public void execute(Bridge bridge, String vehicleId, String edgeId, int laneIndex, CartesianPoint position, double angle, Mode keepRouteMode) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, edgeId, laneIndex, position.getX(), position.getY(), angle, keepRouteMode.mode);
     }
 
     @Override

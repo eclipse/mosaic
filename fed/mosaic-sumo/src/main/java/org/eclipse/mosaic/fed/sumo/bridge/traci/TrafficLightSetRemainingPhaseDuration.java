@@ -43,8 +43,8 @@ public class TrafficLightSetRemainingPhaseDuration
                 .writeDoubleParamWithType();
     }
 
-    public void execute(Bridge con, String tlId, double remainingDurationS) throws CommandException, InternalFederateException {
-        super.execute(con, tlId, remainingDurationS);
+    public void execute(Bridge bridge, String tlId, double remainingDurationS) throws CommandException, InternalFederateException {
+        super.execute(bridge, tlId, remainingDurationS);
     }
 
     @Override

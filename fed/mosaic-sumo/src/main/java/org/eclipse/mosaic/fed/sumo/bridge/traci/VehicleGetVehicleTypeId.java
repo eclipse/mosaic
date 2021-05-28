@@ -25,7 +25,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.Locale;
 
 /**
- * This class represents the traci command which allows to get the Id of the vehicle type.
+ * This class represents the SUMO command which allows to get the Id of the vehicle type.
  */
 public class VehicleGetVehicleTypeId
         extends AbstractTraciCommand<String>
@@ -54,14 +54,14 @@ public class VehicleGetVehicleTypeId
     /**
      * This method executes the command with the given arguments in order to get the Id of a vehicle route.
      *
-     * @param con     Connection to Traci.
+     * @param bridge  Connection to SUMO.
      * @param vehicle Id of the vehicle.
      * @return Id of the vehicle type.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public String execute(Bridge con, String vehicle) throws CommandException, InternalFederateException {
-        return executeAndReturn(con, vehicle).orElseThrow(
+    public String execute(Bridge bridge, String vehicle) throws CommandException, InternalFederateException {
+        return executeAndReturn(bridge, vehicle).orElseThrow(
                 () -> new CommandException(
                         String.format(Locale.ENGLISH, "Couldn't get TypeId for Vehicle: %s.", vehicle),
                         new Status((byte) Status.STATUS_ERR, "")

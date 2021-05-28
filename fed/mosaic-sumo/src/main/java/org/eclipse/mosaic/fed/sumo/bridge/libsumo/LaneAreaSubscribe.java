@@ -18,7 +18,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 
 public class LaneAreaSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.LaneAreaSubscribe {
 
-    public void execute(Bridge traciCon, String laneAreaId, long startTime, long endTime) {
+    public void execute(Bridge bridge, String laneAreaId, long startTime, long endTime) {
         SimulationSimulateStep.LANE_AREA_SUBSCRIPTIONS.add(laneAreaId);
     }
 }

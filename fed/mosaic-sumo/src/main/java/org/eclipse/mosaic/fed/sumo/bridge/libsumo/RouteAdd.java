@@ -23,12 +23,8 @@ import java.util.List;
 
 public class RouteAdd implements org.eclipse.mosaic.fed.sumo.bridge.api.RouteAdd {
 
-
-    public void execute(Bridge traciCon, String routeId, List<String> edges) {
-        StringVector edgesVector = new StringVector();
-        edges.forEach(edgesVector::add);
-        Route.add(routeId, edgesVector);
+    public void execute(Bridge bridge, String routeId, List<String> edges) {
+        Route.add(routeId, new StringVector(edges));
     }
-
 
 }

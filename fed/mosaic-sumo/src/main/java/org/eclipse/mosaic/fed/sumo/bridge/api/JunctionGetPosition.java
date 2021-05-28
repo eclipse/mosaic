@@ -25,11 +25,11 @@ public interface JunctionGetPosition {
     /**
      * This method executes the command with the given arguments and returns the position of the junction.
      *
-     * @param traciCon Connection to Traci.
-     * @param junctionId  Id of the junction
+     * @param bridge     Connection to SUMO.
+     * @param junctionId Id of the junction
      * @return Position of the junction.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    Position execute(Bridge traciCon, String junctionId) throws CommandException, InternalFederateException ;
+    Position execute(Bridge bridge, String junctionId) throws CommandException, InternalFederateException;
 }

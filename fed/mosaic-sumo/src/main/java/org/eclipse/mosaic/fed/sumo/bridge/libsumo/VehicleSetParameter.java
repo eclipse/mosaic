@@ -31,29 +31,29 @@ public class VehicleSetParameter implements org.eclipse.mosaic.fed.sumo.bridge.a
      * This method executes the command with the given arguments in order to set the
      * value (as double) of a specific parameter of the given vehicle.
      *
-     * @param traciCon             Connection to Traci.
+     * @param bridge             Connection to Traci.
      * @param vehicleId            Id of the vehicle.
      * @param parameterName        the name of the parameter to set
      * @param parameterDoubleValue the value of the parameter to set
      * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, String parameterName, double parameterDoubleValue) throws CommandException, InternalFederateException {
-        Vehicle.setParameter(vehicleId, parameterName, String.format(Locale.ENGLISH, "%.4f", parameterDoubleValue));
+    public void execute(Bridge bridge, String vehicleId, String parameterName, double parameterDoubleValue) throws CommandException, InternalFederateException {
+        Vehicle.setParameter(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), parameterName, String.format(Locale.ENGLISH, "%.4f", parameterDoubleValue));
     }
 
     /**
      * This method executes the command with the given arguments in order to set the
      * value (as String) of a specific parameter of the given vehicle.
      *
-     * @param traciCon       Connection to Traci.
+     * @param bridge       Connection to Traci.
      * @param vehicleId      Id of the vehicle.
      * @param parameterName  the name of the parameter to set
      * @param parameterValue the value of the parameter to set
      * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, String parameterName, String parameterValue) throws CommandException, InternalFederateException {
-        Vehicle.setParameter(vehicleId, parameterName, parameterValue);
+    public void execute(Bridge bridge, String vehicleId, String parameterName, String parameterValue) throws CommandException, InternalFederateException {
+        Vehicle.setParameter(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), parameterName, parameterValue);
     }
 }

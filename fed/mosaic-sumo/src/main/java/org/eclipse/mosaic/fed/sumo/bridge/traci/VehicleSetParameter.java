@@ -56,30 +56,30 @@ public class VehicleSetParameter
      * This method executes the command with the given arguments in order to set the
      * value (as double) of a specific parameter of the given vehicle.
      *
-     * @param traciCon             Connection to Traci.
+     * @param bridge               Connection to SUMO.
      * @param vehicleId            Id of the vehicle.
      * @param parameterName        the name of the parameter to set
      * @param parameterDoubleValue the value of the parameter to set
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, String parameterName, double parameterDoubleValue) throws CommandException, InternalFederateException {
-        execute(traciCon, vehicleId, parameterName, String.format(Locale.ENGLISH, "%.5f", parameterDoubleValue));
+    public void execute(Bridge bridge, String vehicleId, String parameterName, double parameterDoubleValue) throws CommandException, InternalFederateException {
+        execute(bridge, vehicleId, parameterName, String.format(Locale.ENGLISH, "%.5f", parameterDoubleValue));
     }
 
     /**
      * This method executes the command with the given arguments in order to set the
      * value (as String) of a specific parameter of the given vehicle.
      *
-     * @param traciCon       Connection to Traci.
+     * @param bridge         Connection to SUMO.
      * @param vehicleId      Id of the vehicle.
      * @param parameterName  the name of the parameter to set
      * @param parameterValue the value of the parameter to set
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, String parameterName, String parameterValue) throws CommandException, InternalFederateException {
-        super.execute(traciCon, vehicleId, parameterName, parameterValue);
+    public void execute(Bridge bridge, String vehicleId, String parameterName, String parameterValue) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, parameterName, parameterValue);
     }
 
     @Override

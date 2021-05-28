@@ -18,7 +18,7 @@ package org.eclipse.mosaic.fed.sumo.bridge.traci;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.junit.SumoRunner;
 import org.eclipse.mosaic.rti.TIME;
 
@@ -45,8 +45,8 @@ public class SimulationGetDepartedVehicleIdsTest extends AbstractTraciCommandTes
 
         // ASSERT
         assertEquals(2, vehicleIdsDeparted.size());
-        assertEquals(TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), vehicleIdsDeparted.get(0));
-        assertEquals(TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), vehicleIdsDeparted.get(1));
+        assertEquals(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), vehicleIdsDeparted.get(0));
+        assertEquals(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), vehicleIdsDeparted.get(1));
 
         simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
 

@@ -28,7 +28,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which allows to get the Id's of the traffic light groups.
+ * This class represents the SUMO command which allows to get the Id's of the traffic light groups.
  */
 public class SimulationGetTrafficLightIds
         extends AbstractTraciCommand<List<String>>
@@ -60,7 +60,7 @@ public class SimulationGetTrafficLightIds
      *
      * @param bridge Connection to Traci.
      * @return List of the traffic lights Id's.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {

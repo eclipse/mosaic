@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetLane implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetLane {
 
-    public void execute(Bridge traciCon, String vehicleId, int laneIndex, int durationMs) {
-        Vehicle.changeLane(vehicleId, laneIndex, durationMs / 1000d);
+    public void execute(Bridge bridge, String vehicleId, int laneIndex, int durationMs) {
+        Vehicle.changeLane(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), laneIndex, durationMs / 1000d);
     }
 }

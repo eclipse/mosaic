@@ -20,8 +20,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetImperfection implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetImperfection {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, double value) {
-        Vehicle.setImperfection(vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, double value) {
+        Vehicle.setImperfection(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
     }
 }

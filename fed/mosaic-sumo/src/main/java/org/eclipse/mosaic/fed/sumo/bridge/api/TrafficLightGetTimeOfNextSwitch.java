@@ -21,5 +21,5 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 public interface TrafficLightGetTimeOfNextSwitch {
 
-    double execute(Bridge con, String tlId) throws CommandException, InternalFederateException;
+    double execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException;
 }

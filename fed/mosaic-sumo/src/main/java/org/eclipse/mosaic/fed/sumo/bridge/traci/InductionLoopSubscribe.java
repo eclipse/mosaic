@@ -84,15 +84,15 @@ public class InductionLoopSubscribe
     /**
      * This method executes the command with the given arguments.
      *
-     * @param traciCon        Connection to traci.
+     * @param bridge        Connection to traci.
      * @param inductionLoopId Id of the induction loop.
      * @param startTime       start time to subscribe to induction loop.
      * @param endTime         end time of subscribe.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String inductionLoopId, long startTime, long endTime) throws CommandException, InternalFederateException {
-        super.execute(traciCon, ((double) startTime) / TIME.SECOND, ((double) endTime) / TIME.SECOND, inductionLoopId);
+    public void execute(Bridge bridge, String inductionLoopId, long startTime, long endTime) throws CommandException, InternalFederateException {
+        super.execute(bridge, ((double) startTime) / TIME.SECOND, ((double) endTime) / TIME.SECOND, inductionLoopId);
     }
 
     @Override

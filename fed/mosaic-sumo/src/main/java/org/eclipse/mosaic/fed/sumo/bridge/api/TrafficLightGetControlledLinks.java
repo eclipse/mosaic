@@ -22,7 +22,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which allows to get the links controlled by a traffic light.
+ * This class represents the SUMO command which allows to get the links controlled by a traffic light.
  */
 public interface TrafficLightGetControlledLinks {
 

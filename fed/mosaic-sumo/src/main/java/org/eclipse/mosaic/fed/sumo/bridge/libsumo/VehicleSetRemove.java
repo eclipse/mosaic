@@ -21,8 +21,9 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetRemove implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetRemove {
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, Reason reason) throws CommandException, InternalFederateException {
-        Vehicle.remove(vehicleId, (char) reason.reasonByte);
+
+    public void execute(Bridge bridge, String vehicleId, Reason reason) throws CommandException, InternalFederateException {
+        Vehicle.remove(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), (char) reason.reasonByte);
     }
+
 }

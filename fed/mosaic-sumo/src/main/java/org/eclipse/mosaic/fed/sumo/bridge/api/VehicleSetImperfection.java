@@ -20,9 +20,9 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set an imperfection value for the driver.
+ * This class represents the SUMO command which allows to set an imperfection value for the driver.
  */
 public interface VehicleSetImperfection {
 
-    void execute(Bridge traciCon, String vehicleId, double value) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, double value) throws CommandException, InternalFederateException;
 }

@@ -54,8 +54,8 @@ public class RouteGetIds
                 .readComplex(new ListTraciReader<>(new StringTraciReader()));
     }
 
-    public List<String> execute(Bridge traciCon) throws CommandException, InternalFederateException {
-        return super.executeAndReturn(traciCon).orElseThrow(
+    public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {
+        return super.executeAndReturn(bridge).orElseThrow(
                 () -> new CommandException("Couldn't get Route-Id's.", new Status((byte) Status.STATUS_ERR, ""))
         );
     }

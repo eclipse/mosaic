@@ -23,7 +23,7 @@ import org.eclipse.sumo.libsumo.TraCIPosition;
 
 public class JunctionGetPosition implements org.eclipse.mosaic.fed.sumo.bridge.api.JunctionGetPosition {
 
-    public Position execute(Bridge traciCon, String junctionId) {
+    public Position execute(Bridge bridge, String junctionId) {
         TraCIPosition traCIPosition = Junction.getPosition(junctionId);
         return new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
     }

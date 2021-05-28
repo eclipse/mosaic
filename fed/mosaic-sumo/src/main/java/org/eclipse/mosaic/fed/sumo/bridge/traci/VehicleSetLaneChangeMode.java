@@ -19,7 +19,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeVehicleValue;
 
 /**
- * This class represents the traci command which allows to set the lane-change-mode as following.
+ * This class represents the SUMO command which allows to set the lane-change-mode as following.
  * - Strategic (change lanes to continue the route)
  * - Cooperative (change in order to allow others to change)
  * - Speed gain (the other lane allows for faster driving)

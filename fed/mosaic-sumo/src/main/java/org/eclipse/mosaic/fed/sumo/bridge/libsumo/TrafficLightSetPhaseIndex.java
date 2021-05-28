@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightSetPhaseIndex implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightSetPhaseIndex {
 
-    public void execute(Bridge con, String tlId, int phaseIndex) {
+    public void execute(Bridge bridge, String tlId, int phaseIndex) {
         TrafficLight.setPhase(tlId, phaseIndex);
     }
 

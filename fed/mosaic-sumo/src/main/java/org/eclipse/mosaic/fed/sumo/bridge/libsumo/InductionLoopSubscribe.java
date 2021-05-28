@@ -19,7 +19,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 
 public class InductionLoopSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.InductionLoopSubscribe {
 
-    public void execute(Bridge traciCon, String inductionLoopId, long startTime, long endTime) {
+    public void execute(Bridge bridge, String inductionLoopId, long startTime, long endTime) {
         SimulationSimulateStep.INDUCTION_LOOP_SUBSCRIPTIONS.add(inductionLoopId);
     }
 

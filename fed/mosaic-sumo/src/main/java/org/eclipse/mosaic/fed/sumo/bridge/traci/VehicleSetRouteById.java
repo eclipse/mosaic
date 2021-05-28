@@ -23,7 +23,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeVehicleVa
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to change the vehicles route to the route with the given id.
+ * This class represents the SUMO command which allows to change the vehicles route to the route with the given id.
  */
 public class VehicleSetRouteById
         extends AbstractTraciCommand<Void>
@@ -47,14 +47,14 @@ public class VehicleSetRouteById
     /**
      * This method executes the command with the given arguments in order to set the vehicles route to the route with the given id.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge    Connection to SUMO.
      * @param vehicleId The Id of the vehicle to change the route.
      * @param routeId   The Id of the route.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String vehicleId, String routeId) throws CommandException, InternalFederateException {
-        super.execute(traciCon, vehicleId, routeId);
+    public void execute(Bridge bridge, String vehicleId, String routeId) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, routeId);
     }
 
     @Override

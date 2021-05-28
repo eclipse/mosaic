@@ -23,10 +23,8 @@ import java.util.List;
 
 public class LaneSetAllow implements org.eclipse.mosaic.fed.sumo.bridge.api.LaneSetAllow {
 
-    public void execute(Bridge traciCon, String laneId, List<String> allowedVClasses) {
-        StringVector allowedVClassesVector = new StringVector();
-        allowedVClasses.forEach(allowedVClassesVector::add);
-        Lane.setAllowed(laneId, allowedVClassesVector);
+    public void execute(Bridge bridge, String laneId, List<String> allowedVClasses) {
+        Lane.setAllowed(laneId, new StringVector(allowedVClasses));
     }
 
 }

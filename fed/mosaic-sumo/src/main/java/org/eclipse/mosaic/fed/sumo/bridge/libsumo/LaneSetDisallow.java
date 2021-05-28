@@ -23,9 +23,7 @@ import java.util.List;
 
 public class LaneSetDisallow implements org.eclipse.mosaic.fed.sumo.bridge.api.LaneSetDisallow {
 
-    public void execute(Bridge traciCon, String laneId, List<String> disallowedVClasses) {
-        StringVector disallowedVClassesVector = new StringVector();
-        disallowedVClasses.forEach(disallowedVClassesVector::add);
-        Lane.setDisallowed(laneId, disallowedVClassesVector);
+    public void execute(Bridge bridge, String laneId, List<String> disallowedVClasses) {
+        Lane.setDisallowed(laneId, new StringVector(disallowedVClasses));
     }
 }

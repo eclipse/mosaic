@@ -23,7 +23,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetVehicleLength implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetVehicleLength {
 
-    public void execute(Bridge traciCon, String vehicleId, double value) throws CommandException, InternalFederateException {
-        Vehicle.setLength(vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, double value) throws CommandException, InternalFederateException {
+        Vehicle.setLength(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
     }
 }

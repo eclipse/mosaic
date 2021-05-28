@@ -19,7 +19,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeVehicleValue;
 
 /**
- * This class represents the traci command which allows to set a maximum acceleration for the vehicle.
+ * This class represents the SUMO command which allows to set a maximum acceleration for the vehicle.
  */
 public class VehicleSetMaxAcceleration
         extends AbstractVehicleSetSingleDoubleValue

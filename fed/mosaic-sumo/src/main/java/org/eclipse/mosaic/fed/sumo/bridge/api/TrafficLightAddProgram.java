@@ -27,5 +27,5 @@ import java.util.List;
  */
 public interface TrafficLightAddProgram {
 
-    void execute(Bridge con, String tlId, String programId, int phaseIndex, List<SumoTrafficLightLogic.Phase> phases) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String tlId, String programId, int phaseIndex, List<SumoTrafficLightLogic.Phase> phases) throws CommandException, InternalFederateException;
 }

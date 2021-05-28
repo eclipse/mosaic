@@ -26,12 +26,12 @@ import java.util.List;
 
 public class TrafficLightAddProgram implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightAddProgram {
 
-    public void execute(Bridge con, String tlId, String programId, int phaseIndex, List<SumoTrafficLightLogic.Phase> phases) {
-        TraCIPhaseVector traCIphases = new TraCIPhaseVector();
+    public void execute(Bridge bridge, String tlId, String programId, int phaseIndex, List<SumoTrafficLightLogic.Phase> phases) {
+        TraCIPhaseVector traciPhases = new TraCIPhaseVector();
         for (SumoTrafficLightLogic.Phase phase : phases) {
-            traCIphases.add(new TraCIPhase(phase.getDuration() / 1000d, phase.getPhaseDef()));
+            traciPhases.add(new TraCIPhase(phase.getDuration() / 1000d, phase.getPhaseDef()));
         }
-        TraCILogic traCIlogic = new TraCILogic(programId, 0, phaseIndex, traCIphases);
-        TrafficLight.setProgramLogic(tlId, traCIlogic);
+        TraCILogic traciLogic = new TraCILogic(programId, 0, phaseIndex, traciPhases);
+        TrafficLight.setProgramLogic(tlId, traciLogic);
     }
 }

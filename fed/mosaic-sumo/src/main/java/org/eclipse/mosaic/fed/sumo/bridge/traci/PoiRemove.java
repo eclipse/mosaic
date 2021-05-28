@@ -49,14 +49,14 @@ public class PoiRemove
     /**
      * Executes the command in order to remove a previously added PoI in the SUMO-GUI.
      *
-     * @param traciCon Connection to Traci.
-     * @param poiId    the unique ID of the PoI to remove
-     * @param layer    the layer index of the PoI to remove
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @param bridge Connection to SUMO.
+     * @param poiId  the unique ID of the PoI to remove
+     * @param layer  the layer index of the PoI to remove
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String poiId, int layer) throws CommandException, InternalFederateException {
-        super.execute(traciCon, poiId, layer);
+    public void execute(Bridge bridge, String poiId, int layer) throws CommandException, InternalFederateException {
+        super.execute(bridge, poiId, layer);
     }
 
     @Override

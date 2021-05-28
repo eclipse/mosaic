@@ -22,17 +22,17 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which allows to get the edge Id's of a route.
+ * This class represents the SUMO command which allows to get the edge Id's of a route.
  */
 public interface RouteGetEdges {
     /**
      * This method executes the command with the given arguments and returns a list included edge Id's.
      *
-     * @param traciCon Connection to Traci.
-     * @param routeId  Id of the route.
+     * @param bridge  Connection to SUMO.
+     * @param routeId Id of the route.
      * @return List of edges.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    List<String> execute(Bridge traciCon, String routeId) throws CommandException, InternalFederateException;
+    List<String> execute(Bridge bridge, String routeId) throws CommandException, InternalFederateException;
 }

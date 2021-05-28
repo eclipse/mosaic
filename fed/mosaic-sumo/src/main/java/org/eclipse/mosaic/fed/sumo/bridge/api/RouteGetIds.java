@@ -23,5 +23,5 @@ import java.util.List;
 
 public interface RouteGetIds {
 
-    List<String> execute(Bridge traciCon) throws CommandException, InternalFederateException;
+    List<String> execute(Bridge bridge) throws CommandException, InternalFederateException;
 }

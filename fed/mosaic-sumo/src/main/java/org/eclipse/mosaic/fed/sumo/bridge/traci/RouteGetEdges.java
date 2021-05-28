@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * This class represents the traci command which allows to get the edge Id's of a route.
+ * This class represents the SUMO command which allows to get the edge Id's of a route.
  */
 public class RouteGetEdges
         extends AbstractTraciCommand<List<String>>
@@ -62,14 +62,14 @@ public class RouteGetEdges
     /**
      * This method executes the command with the given arguments and returns a list included edge Id's.
      *
-     * @param traciCon Connection to Traci.
-     * @param routeId  Id of the route.
+     * @param bridge  Connection to SUMO.
+     * @param routeId Id of the route.
      * @return List of edges.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public List<String> execute(Bridge traciCon, String routeId) throws CommandException, InternalFederateException {
-        return super.executeAndReturn(traciCon, routeId).orElseThrow(
+    public List<String> execute(Bridge bridge, String routeId) throws CommandException, InternalFederateException {
+        return super.executeAndReturn(bridge, routeId).orElseThrow(
                 () -> new CommandException(
                         String.format(Locale.ENGLISH, "Couldn't extract Edges of Route %s.", routeId),
                         new Status((byte) Status.STATUS_ERR, ""))

@@ -19,9 +19,9 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetLaneChangeMode implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetLaneChangeMode {
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, int value) {
-        Vehicle.setLaneChangeMode(vehicleId, value);
+
+    public void execute(Bridge bridge, String vehicleId, int value) {
+        Vehicle.setLaneChangeMode(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
 
     }
 }

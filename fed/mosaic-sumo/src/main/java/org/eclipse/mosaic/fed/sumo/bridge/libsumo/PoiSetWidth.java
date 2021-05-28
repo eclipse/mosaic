@@ -28,13 +28,13 @@ public class PoiSetWidth implements org.eclipse.mosaic.fed.sumo.bridge.api.PoiSe
     /**
      * Executes the command in order to set the width of a previously added PoI object.
      *
-     * @param traciCon Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param poiId    the unique ID of the PoI to remove
      * @param width    the width in degrees
      * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String poiId, double width) throws CommandException, InternalFederateException {
+    public void execute(Bridge bridge, String poiId, double width) throws CommandException, InternalFederateException {
         POI.setWidth(poiId, width);
     }
 }

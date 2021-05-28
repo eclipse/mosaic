@@ -20,24 +20,36 @@ import org.eclipse.mosaic.fed.sumo.bridge.facades.RouteFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.SimulationFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.TrafficLightFacade;
 import org.eclipse.mosaic.fed.sumo.bridge.facades.VehicleFacade;
+import org.eclipse.mosaic.fed.sumo.bridge.traci.AbstractTraciCommand;
+import org.eclipse.mosaic.fed.sumo.util.MosaicConformVehicleIdTransformer;
+import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 /**
- * Interface of a TraCI connection.
+ * Interface of the bridge connection to SUMO (either TraCI or libsumo).
  */
 public interface Bridge {
 
     /**
-     * Getter for the input stream.
+     * Defines the {@link IdTransformer} which transforms the vehicle IDs if required. Every
+     * {@link AbstractTraciCommand} which reads or writes a vehicle ID, uses this transformer. Per default
+     * no transformation is done, i.e. passing the vehicle IDs as is. However, for other scenarios
+     * a custom transformer may be defined here, which converts the vehicle IDs known by SUMO to
+     * vehicle IDs known by the consumer (e.g. MOSAIC) of this Bridge implementation.
+     */
+    IdTransformer<String, String> VEHICLE_ID_TRANSFORMER = new MosaicConformVehicleIdTransformer();
+
+    /**
+     * Getter for the input stream of the socket connection to SUMO.
      *
      * @return the input stream from the server for reading.
      */
     DataInputStream getIn();
 
     /**
-     * Getter for the output stream.
+     * Getter for the output stream of the socket connection to SUMO.
      *
      * @return the output stream towards the server for writing.
      */
@@ -88,7 +100,7 @@ public interface Bridge {
     void close();
 
     /**
-     * Call this method if the traci-connection should be closed immediately.
+     * Call this method if the connection to SUMO should be closed immediately.
      */
     void emergencyExit(Throwable e);
 }

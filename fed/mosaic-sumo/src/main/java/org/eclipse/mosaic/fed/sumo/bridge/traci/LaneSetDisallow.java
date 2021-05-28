@@ -27,7 +27,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which sets the disallowed classes to a specific lane.
+ * This class represents the SUMO command which sets the disallowed classes to a specific lane.
  */
 public class LaneSetDisallow
         extends AbstractTraciCommand<Void>
@@ -52,14 +52,14 @@ public class LaneSetDisallow
     /**
      * This method executes the command with the given arguments and sets the disallowed classes.
      *
-     * @param traciCon           Connection to Traci.
+     * @param bridge             Connection to SUMO.
      * @param laneId             Id of the lane.
      * @param disallowedVClasses Vehicle classes to disallow.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String laneId, List<String> disallowedVClasses) throws CommandException, InternalFederateException {
-        super.execute(traciCon, laneId, disallowedVClasses);
+    public void execute(Bridge bridge, String laneId, List<String> disallowedVClasses) throws CommandException, InternalFederateException {
+        super.execute(bridge, laneId, disallowedVClasses);
     }
 
     @Override

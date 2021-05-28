@@ -20,8 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetResume implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetResume {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId) {
-        Vehicle.resume(vehicleId);
+    public void execute(Bridge bridge, String vehicleId) {
+        Vehicle.resume(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId));
     }
+
 }

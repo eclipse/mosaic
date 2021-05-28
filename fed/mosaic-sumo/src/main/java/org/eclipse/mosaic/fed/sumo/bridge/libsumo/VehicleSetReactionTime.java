@@ -21,8 +21,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 public class VehicleSetReactionTime
         implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetReactionTime {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, double value) {
-        Vehicle.setTau(vehicleId, value);
+    public void execute(Bridge bridge, String vehicleId, double value) {
+        Vehicle.setTau(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), value);
     }
 }

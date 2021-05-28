@@ -21,5 +21,5 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 public interface TrafficLightGetCurrentPhase {
 
-    int execute(Bridge con, String tlId) throws CommandException, InternalFederateException;
+    int execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException;
 }

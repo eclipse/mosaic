@@ -20,8 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleGetRouteId implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetRouteId {
 
-    public String execute(Bridge con, String vehicle) {
-        return Vehicle.getRouteID(vehicle);
+    public String execute(Bridge bridge, String vehicle) {
+        return Vehicle.getRouteID(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicle));
     }
 
 }

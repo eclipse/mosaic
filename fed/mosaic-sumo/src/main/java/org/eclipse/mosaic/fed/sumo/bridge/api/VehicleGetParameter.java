@@ -26,12 +26,12 @@ public interface VehicleGetParameter {
     /**
      * This method executes the command with the given arguments in order to get the value of a specific parameter of the given vehicle.
      *
-     * @param traciCon      Connection to Traci.
+     * @param bridge        Connection to SUMO.
      * @param vehicleId     Id of the vehicle.
      * @param parameterName the name of the parameter to read
      * @return the value of the parameter, or {@code null} if not present
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    String execute(Bridge traciCon, String vehicleId, String parameterName) throws CommandException, InternalFederateException;
+    String execute(Bridge bridge, String vehicleId, String parameterName) throws CommandException, InternalFederateException;
 }

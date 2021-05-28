@@ -30,13 +30,13 @@ public interface PoiAdd {
     /**
      * Executes the command in order to add a new PoI in the SUMO-GUI.
      *
-     * @param traciCon Connection to Traci.
+     * @param bridge   Connection to SUMO.
      * @param poiId    the unique ID of the PoI
      * @param layer    the layer index of the PoI
      * @param position the cartesian position of the center of the PoI
      * @param color    the color of the PoI
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    void execute(Bridge traciCon, String poiId, int layer, CartesianPoint position, Color color) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String poiId, int layer, CartesianPoint position, Color color) throws CommandException, InternalFederateException;
 }

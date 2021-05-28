@@ -59,8 +59,8 @@ public class TrafficLightAddProgram
                 .writeInt(0);
     }
 
-    public void execute(Bridge con, String tlId, String programId, int phaseIndex, List<SumoTrafficLightLogic.Phase> phases) throws CommandException, InternalFederateException {
-        super.execute(con, tlId, programId, phaseIndex, phases);
+    public void execute(Bridge bridge, String tlId, String programId, int phaseIndex, List<SumoTrafficLightLogic.Phase> phases) throws CommandException, InternalFederateException {
+        super.execute(bridge, tlId, programId, phaseIndex, phases);
     }
 
     @Override

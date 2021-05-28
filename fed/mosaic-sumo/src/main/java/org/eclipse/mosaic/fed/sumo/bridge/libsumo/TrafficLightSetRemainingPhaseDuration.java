@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightSetRemainingPhaseDuration implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightSetRemainingPhaseDuration {
 
-    public void execute(Bridge con, String tlId, double remainingDurationS) {
+    public void execute(Bridge bridge, String tlId, double remainingDurationS) {
         TrafficLight.setPhaseDuration(tlId, remainingDurationS);
     }
 }

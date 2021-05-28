@@ -26,11 +26,11 @@ public interface TrafficLightGetState {
     /**
      * This method executes the command with the given arguments in order to get the traffic light state.
      *
-     * @param con  Connection to Traci.
-     * @param tlId Id of the traffic light.
+     * @param bridge Connection to SUMO.
+     * @param tlId   Id of the traffic light.
      * @return The current state of the traffic light program.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    String execute(Bridge con, String tlId) throws CommandException, InternalFederateException;
+    String execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException;
 }

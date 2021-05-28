@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set the lane-change-mode as following.
+ * This class represents the SUMO command which allows to set the lane-change-mode as following.
  * - Strategic (change lanes to continue the route)
  * - Cooperative (change in order to allow others to change)
  * - Speed gain (the other lane allows for faster driving)
@@ -28,5 +28,5 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
  */
 public interface VehicleSetLaneChangeMode {
 
-    void execute(Bridge traciCon, String vehicleId, int value) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, int value) throws CommandException, InternalFederateException;
 }

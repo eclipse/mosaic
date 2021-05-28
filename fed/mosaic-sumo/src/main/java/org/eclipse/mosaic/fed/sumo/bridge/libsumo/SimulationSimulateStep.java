@@ -55,7 +55,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         TRAFFIC_LIGHT_SUBSCRIPTIONS.clear();
     }
 
-    public List<AbstractSubscriptionResult> execute(Bridge traciCon, long time) throws CommandException, InternalFederateException {
+    public List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException {
         Simulation.step((double) (time) / TIME.SECOND);
 
         List<AbstractSubscriptionResult> results = new ArrayList<>();
@@ -68,11 +68,8 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     }
 
     private void readVehicles(List<AbstractSubscriptionResult> results) {
-        StringVector vector = Vehicle.getIDList();
-
-        String vehicle;
-        for (int i = 0; i < vector.size(); i++) {
-            vehicle = vector.get(i);
+        for (String vehicle : Vehicle.getIDList()) {
+            vehicle = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle);
 
             if (!VEHICLE_SUBSCRIPTIONS.contains(vehicle)) {
                 continue;
@@ -109,21 +106,16 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             results.add(result);
         }
 
-        StringVector arrived = Simulation.getArrivedIDList();
-
-        for (int i = 0; i < arrived.size(); i++) {
-            VEHICLE_SUBSCRIPTIONS.remove(arrived.get(i));
+        for (String arrived : Simulation.getArrivedIDList()) {
+            VEHICLE_SUBSCRIPTIONS.remove(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(arrived));
         }
     }
 
 
     private void readInductionLoops(List<AbstractSubscriptionResult> results) {
-        StringVector vector = InductionLoop.getIDList();
+        StringVector inductionLoopIds = InductionLoop.getIDList();
 
-        String inductionLoop;
-        for (int i = 0; i < vector.size(); i++) {
-            inductionLoop = vector.get(i);
-
+        for (String inductionLoop : inductionLoopIds) {
             if (!INDUCTION_LOOP_SUBSCRIPTIONS.contains(inductionLoop)) {
                 continue;
             }
@@ -134,13 +126,9 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.meanVehicleLength = InductionLoop.getLastStepMeanLength(inductionLoop);
             result.vehiclesOnInductionLoop = new ArrayList<>();
 
-            StringVector inductionLoopVehicles = InductionLoop.getLastStepVehicleIDs(inductionLoop);
-
-            String vehicle;
-            for (int v = 0; v < inductionLoopVehicles.size(); v++) {
-                vehicle = vector.get(i);
+            for (String vehicle: InductionLoop.getLastStepVehicleIDs(inductionLoop)) {
                 InductionLoopVehicleData vehicleData = new InductionLoopVehicleData();
-                vehicleData.vehicleId = vehicle;
+                vehicleData.vehicleId = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle);
                 //TODO add more vehicle data!! (use InductionLoop.getVehicleData(inductionLoop)
                 result.vehiclesOnInductionLoop.add(vehicleData);
             }
@@ -149,12 +137,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     }
 
     private void readLaneAreas(List<AbstractSubscriptionResult> results) {
-        StringVector vector = LaneArea.getIDList();
-
-        String laneArea;
-        for (int i = 0; i < vector.size(); i++) {
-            laneArea = vector.get(i);
-
+        for (String laneArea : LaneArea.getIDList()) {
             if (!LANE_AREA_SUBSCRIPTIONS.contains(laneArea)) {
                 continue;
             }
@@ -166,23 +149,15 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.haltingVehicles = LaneArea.getLastStepHaltingNumber(laneArea);
             result.length = LaneArea.getLength(laneArea);
 
-            StringVector laneAreaVehicles = LaneArea.getLastStepVehicleIDs(laneArea);
-
-            result.vehicles = new ArrayList<>((int) laneAreaVehicles.size());
-            for (int v = 0; v < laneAreaVehicles.size(); v++) {
-                result.vehicles.add(vector.get(i));
+            for (String vehicle: LaneArea.getLastStepVehicleIDs(laneArea)) {
+                result.vehicles.add(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle));
             }
             results.add(result);
         }
     }
 
     private void readTrafficLights(List<AbstractSubscriptionResult> results) {
-        StringVector vector = TrafficLight.getIDList();
-
-        String trafficLight;
-        for (int i = 0; i < vector.size(); i++) {
-            trafficLight = vector.get(i);
-
+        for (String trafficLight : TrafficLight.getIDList()) {
             if (!TRAFFIC_LIGHT_SUBSCRIPTIONS.contains(trafficLight)) {
                 continue;
             }

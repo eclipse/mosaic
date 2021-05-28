@@ -54,18 +54,18 @@ public class LaneGetLength
     /**
      * This method executes the command with the given arguments and returns the length of the lane.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge    Connection to SUMO.
      * @param edgeId    Id of the edge.
      * @param laneIndex Id of the lane.
      * @return The length of the lane.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public Double execute(Bridge traciCon, String edgeId, int laneIndex) throws CommandException, InternalFederateException {
-        return super.executeAndReturn(traciCon, edgeId + "_" + laneIndex).orElseThrow(
+    public Double execute(Bridge bridge, String edgeId, int laneIndex) throws CommandException, InternalFederateException {
+        return super.executeAndReturn(bridge, edgeId + "_" + laneIndex).orElseThrow(
                 () -> new CommandException(
                         String.format(Locale.ENGLISH, "Couldn't get Length of Edge %s on Lane %d.", edgeId, laneIndex),
-                        new Status((byte) Status.STATUS_ERR,"")
+                        new Status((byte) Status.STATUS_ERR, "")
                 )
         );
 

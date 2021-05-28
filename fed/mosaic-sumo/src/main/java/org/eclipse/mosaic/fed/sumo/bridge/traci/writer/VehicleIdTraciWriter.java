@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.bridge.traci.writer;
 
-import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 
 import java.io.DataOutputStream;
@@ -26,7 +26,7 @@ import java.io.IOException;
  * command execution. The vehicle ID passed to this writer is
  * transformed according to the configured {@link IdTransformer}.
  *
- * @see TraciClientBridge#VEHICLE_ID_TRANSFORMER
+ * @see Bridge#VEHICLE_ID_TRANSFORMER
  */
 public class VehicleIdTraciWriter extends StringTraciWriter {
 
@@ -36,11 +36,11 @@ public class VehicleIdTraciWriter extends StringTraciWriter {
 
     @Override
     public int getVariableLength(String argument) {
-        return super.getVariableLength(TraciClientBridge.VEHICLE_ID_TRANSFORMER.toExternalId(argument));
+        return super.getVariableLength(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(argument));
     }
 
     @Override
     public void writeVariableArgument(DataOutputStream out, String argument) throws IOException {
-        super.writeVariableArgument(out, TraciClientBridge.VEHICLE_ID_TRANSFORMER.toExternalId(argument));
+        super.writeVariableArgument(out, Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(argument));
     }
 }

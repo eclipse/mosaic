@@ -33,7 +33,7 @@ public class PoiAdd implements org.eclipse.mosaic.fed.sumo.bridge.api.PoiAdd {
     /**
      * Executes the command in order to add a new PoI in the SUMO-GUI.
      *
-     * @param traciCon Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param poiId    the unique ID of the PoI
      * @param layer    the layer index of the PoI
      * @param position the cartesian position of the center of the PoI
@@ -41,7 +41,7 @@ public class PoiAdd implements org.eclipse.mosaic.fed.sumo.bridge.api.PoiAdd {
      * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String poiId, int layer, CartesianPoint position, Color color) throws CommandException, InternalFederateException {
+    public void execute(Bridge bridge, String poiId, int layer, CartesianPoint position, Color color) throws CommandException, InternalFederateException {
         POI.add(poiId, position.getX(), position.getY(), new TraCIColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()), null, layer);
     }
 }

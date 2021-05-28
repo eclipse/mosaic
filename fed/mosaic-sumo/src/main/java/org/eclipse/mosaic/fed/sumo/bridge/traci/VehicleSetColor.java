@@ -24,7 +24,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.TraciDatatypes;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set the color of a vehicle.
+ * This class represents the SUMO command which allows to set the color of a vehicle.
  */
 public class VehicleSetColor
         extends AbstractTraciCommand<Void>
@@ -51,8 +51,8 @@ public class VehicleSetColor
                 .writeByteParam();
     }
 
-    public void execute(Bridge traciCon, String vehicleId, int red, int green, int blue, int alpha) throws CommandException, InternalFederateException {
-        super.execute(traciCon, vehicleId, red, green, blue, alpha);
+    public void execute(Bridge bridge, String vehicleId, int red, int green, int blue, int alpha) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, red, green, blue, alpha);
     }
 
     @Override

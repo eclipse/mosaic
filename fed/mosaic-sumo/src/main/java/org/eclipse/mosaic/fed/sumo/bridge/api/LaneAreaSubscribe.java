@@ -23,13 +23,13 @@ public interface LaneAreaSubscribe {
     /**
      * This method executes the command with the given arguments.
      *
-     * @param traciCon   Connection to Traci.
+     * @param bridge     Connection to SUMO.
      * @param laneAreaId Id of the lane area.
      * @param startTime  start time to subscribe.
      * @param endTime    end time of subscribe.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
 
-    void execute(Bridge traciCon, String laneAreaId, long startTime, long endTime) throws CommandException, InternalFederateException, InternalFederateException;
+    void execute(Bridge bridge, String laneAreaId, long startTime, long endTime) throws CommandException, InternalFederateException, InternalFederateException;
 }

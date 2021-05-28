@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 
 /**
- * This class represents the traci command which allows to get the leading vehicle.
+ * This class represents the SUMO command which allows to get the leading vehicle.
  */
 public class VehicleGetLeader
         extends AbstractTraciCommand<LeadingVehicle>
@@ -65,16 +65,16 @@ public class VehicleGetLeader
     /**
      * This method executes the command with the given arguments in order to get the leading vehicle.
      *
-     * @param con       Connection to Traci.
+     * @param bridge Connection to SUMO.
      * @param vehicle   Id of the vehicle.
      * @param lookahead look ahead.
      * @return Id of the leading vehicle.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     public @Nullable
-    LeadingVehicle execute(Bridge con, String vehicle, double lookahead) throws CommandException, InternalFederateException {
-        return executeAndReturn(con, vehicle, lookahead).orElse(null);
+    LeadingVehicle execute(Bridge bridge, String vehicle, double lookahead) throws CommandException, InternalFederateException {
+        return executeAndReturn(bridge, vehicle, lookahead).orElse(null);
     }
 
     @Override

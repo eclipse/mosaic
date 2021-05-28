@@ -22,17 +22,17 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the traci command which adds a route to the scenario.
+ * This class represents the SUMO command which adds a route to the scenario.
  */
 public interface RouteAdd {
     /**
      * This method executes the command with the given arguments and adds a new route.
      *
-     * @param traciCon Connection to Traci.
-     * @param routeId  Id of the route.
-     * @param edges    Route consisting of edges.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @param bridge  Connection to SUMO.
+     * @param routeId Id of the route.
+     * @param edges   Route consisting of edges.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    void execute(Bridge traciCon, String routeId, List<String> edges) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String routeId, List<String> edges) throws CommandException, InternalFederateException;
 }

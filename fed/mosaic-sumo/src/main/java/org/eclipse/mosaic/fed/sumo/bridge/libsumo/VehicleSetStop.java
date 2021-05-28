@@ -20,8 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetStop implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetStop {
 
-    public void execute(Bridge traciCon, String vehicleId, String edgeId, double position, int laneIndex, int durationInMs, int stopFlag) {
-        Vehicle.setStop(vehicleId, edgeId, position, laneIndex, durationInMs / 1000d, stopFlag);
+    public void execute(Bridge bridge, String vehicleId, String edgeId, double position, int laneIndex, int durationInMs, int stopFlag) {
+        Vehicle.setStop(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), edgeId, position, laneIndex, durationInMs / 1000d, stopFlag);
     }
 
 }

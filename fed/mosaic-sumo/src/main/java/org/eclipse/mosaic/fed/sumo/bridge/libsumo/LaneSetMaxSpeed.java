@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.Lane;
 
 public class LaneSetMaxSpeed implements org.eclipse.mosaic.fed.sumo.bridge.api.LaneSetMaxSpeed {
 
-    public void execute(Bridge traciCon, String laneId, double maxSpeed) {
+    public void execute(Bridge bridge, String laneId, double maxSpeed) {
         Lane.setMaxSpeed(laneId, maxSpeed);
     }
 }

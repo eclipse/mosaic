@@ -16,22 +16,14 @@ package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 
-import org.eclipse.sumo.libsumo.StringVector;
 import org.eclipse.sumo.libsumo.TrafficLight;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationGetTrafficLightIds implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationGetTrafficLightIds {
 
     public List<String> execute(Bridge bridge) {
-        StringVector vector = TrafficLight.getIDList();
-
-        List<String> result = new ArrayList<>((int) vector.size());
-        for (int i = 0; i < vector.size(); i++) {
-            result.add(vector.get(i));
-        }
-        return result;
+        return TrafficLight.getIDList();
     }
 
 }

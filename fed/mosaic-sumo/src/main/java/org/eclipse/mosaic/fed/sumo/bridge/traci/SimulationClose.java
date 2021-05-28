@@ -23,7 +23,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandSimulationContr
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which closes the simulation.
+ * This class represents the SUMO command which closes the simulation.
  */
 public class SimulationClose
         extends AbstractTraciCommand<Void>
@@ -44,12 +44,12 @@ public class SimulationClose
     /**
      * This method executes the command with the given arguments and it leads to closing the simulation.
      *
-     * @param traciCon Connection to Traci.
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @param bridge Connection to SUMO.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon) throws CommandException, InternalFederateException {
-        super.execute(traciCon);
+    public void execute(Bridge bridge) throws CommandException, InternalFederateException {
+        super.execute(bridge);
     }
 
     @Override

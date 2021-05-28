@@ -20,18 +20,18 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
- * This class represents the traci command which allows to set a lane for the vehicle for a specific time.
+ * This class represents the SUMO command which allows to set a lane for the vehicle for a specific time.
  */
 public interface VehicleSetLane {
     /**
      * This method executes the command with the given arguments in order to set a lane for the vehicle.
      *
-     * @param traciCon   Connection to Traci.
+     * @param bridge     Connection to SUMO.
      * @param vehicleId  The Id of the vehicle.
      * @param laneIndex  The index of the lane.
      * @param durationMs Set the lane for this time..
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
-     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    void execute(Bridge traciCon, String vehicleId, int laneIndex, int durationMs) throws CommandException, InternalFederateException;
+    void execute(Bridge bridge, String vehicleId, int laneIndex, int durationMs) throws CommandException, InternalFederateException;
 }

@@ -18,7 +18,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 
 public class VehicleSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe {
 
-    public void execute(Bridge traciCon, String vehicleId, long startTime, long endTime) {
+    public void execute(Bridge bridge, String vehicleId, long startTime, long endTime) {
         SimulationSimulateStep.VEHICLE_SUBSCRIPTIONS.add(vehicleId);
     }
 }

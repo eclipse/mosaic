@@ -48,14 +48,14 @@ public class PoiSetImage
     /**
      * Executes the command in order to set the image path of a previously added PoI object.
      *
-     * @param traciCon  Connection to Traci.
+     * @param bridge    Connection to SUMO.
      * @param poiId     the unique ID of the PoI to remove
      * @param imagePath the path to the image file (must be accessible relatively to the execution directory of SUMO)
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge traciCon, String poiId, String imagePath) throws CommandException, InternalFederateException {
-        super.execute(traciCon, poiId, imagePath);
+    public void execute(Bridge bridge, String poiId, String imagePath) throws CommandException, InternalFederateException {
+        super.execute(bridge, poiId, imagePath);
     }
 
     @Override

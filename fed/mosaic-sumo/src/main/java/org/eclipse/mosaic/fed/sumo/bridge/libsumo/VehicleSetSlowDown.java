@@ -20,9 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetSlowDown implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetSlowDown {
 
-    @Override
-    public void execute(Bridge traciCon, String vehicleId, double newSpeedMps, int timeInMs) {
-        Vehicle.slowDown(vehicleId, newSpeedMps, timeInMs / 1000d);
+    public void execute(Bridge bridge, String vehicleId, double newSpeedMps, int timeInMs) {
+        Vehicle.slowDown(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), newSpeedMps, timeInMs / 1000d);
     }
 
 }

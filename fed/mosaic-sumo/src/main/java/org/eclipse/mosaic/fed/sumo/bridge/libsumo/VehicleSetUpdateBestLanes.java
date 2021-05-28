@@ -20,8 +20,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetUpdateBestLanes implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetUpdateBestLanes {
 
-    public void execute(Bridge traciCon, String vehicleId) {
-        Vehicle.updateBestLanes(vehicleId);
+    public void execute(Bridge bridge, String vehicleId) {
+        Vehicle.updateBestLanes(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId));
     }
 
 }

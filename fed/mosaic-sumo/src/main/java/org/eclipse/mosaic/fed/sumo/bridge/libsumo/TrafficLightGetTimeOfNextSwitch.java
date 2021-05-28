@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetTimeOfNextSwitch implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetTimeOfNextSwitch {
 
-    public double execute(Bridge con, String tlId) {
+    public double execute(Bridge bridge, String tlId) {
         return TrafficLight.getNextSwitch(tlId);
     }
 }

@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetState implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetState {
 
-    public String execute(Bridge con, String tlId) {
+    public String execute(Bridge bridge, String tlId) {
         return TrafficLight.getRedYellowGreenState(tlId);
     }
 }

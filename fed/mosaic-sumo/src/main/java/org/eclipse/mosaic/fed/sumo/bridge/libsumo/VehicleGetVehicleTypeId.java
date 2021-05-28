@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleGetVehicleTypeId implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetVehicleTypeId {
 
-    public String execute(Bridge con, String vehicle) {
-        return Vehicle.getTypeID(vehicle);
+    public String execute(Bridge bridge, String vehicle) {
+        return Vehicle.getTypeID(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicle));
     }
 }

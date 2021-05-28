@@ -21,8 +21,8 @@ import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetMoveToXY implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetMoveToXY {
 
-    public void execute(Bridge traciCon, String vehicleId, String edgeId, int laneIndex, CartesianPoint position, double angle, Mode keepRouteMode) {
-        Vehicle.moveToXY(vehicleId, edgeId, laneIndex, position.getY(), position.getY(), angle, keepRouteMode.mode);
+    public void execute(Bridge bridge, String vehicleId, String edgeId, int laneIndex, CartesianPoint position, double angle, Mode keepRouteMode) {
+        Vehicle.moveToXY(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), edgeId, laneIndex, position.getY(), position.getY(), angle, keepRouteMode.mode);
     }
 
 }

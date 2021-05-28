@@ -20,7 +20,7 @@ import org.eclipse.sumo.libsumo.Simulation;
 
 public class SimulationClose implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationClose {
 
-    public void execute(Bridge traciCon) {
+    public void execute(Bridge bridge) {
         Simulation.close();
     }
 }

@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.bridge.traci.reader;
 
-import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 
 import java.io.DataInputStream;
@@ -26,12 +26,12 @@ import java.io.IOException;
  * command execution. The vehicle ID read out by this writer is
  * transformed according to the configured {@link IdTransformer}.
  *
- * @see TraciClientBridge#VEHICLE_ID_TRANSFORMER
+ * @see Bridge#VEHICLE_ID_TRANSFORMER
  */
 public class VehicleIdTraciReader extends StringTraciReader {
 
     @Override
     protected String readFromStream(DataInputStream in) throws IOException {
-        return TraciClientBridge.VEHICLE_ID_TRANSFORMER.fromExternalId(super.readFromStream(in));
+        return Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(super.readFromStream(in));
     }
 }

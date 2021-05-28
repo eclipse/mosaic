@@ -19,7 +19,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeVehicleValue;
 
 /**
- * This class represents the traci command which allows to set the vehicle headway in "traffic flow".
+ * This class represents the SUMO command which allows to set the vehicle headway in "traffic flow".
  */
 public class VehicleSetReactionTime
         extends AbstractVehicleSetSingleDoubleValue

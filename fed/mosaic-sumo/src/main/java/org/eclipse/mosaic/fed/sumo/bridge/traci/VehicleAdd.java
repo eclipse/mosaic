@@ -64,21 +64,21 @@ public class VehicleAdd
      * This method executes the command with the given arguments in order to add a vehicle with its specific properties.
      * This overload of {@link #execute} uses some default values
      *
-     * @param con            Connection to TraCI.
+     * @param bridge Connection to SUMO.
      * @param vehicleId      Id of the vehicle.
      * @param routeId        Id of the route.
      * @param vehicleType    Type of the vehicle.
      * @param departLane     Lane of the departure. Possible values: [int] or random", "free", "allowed", "best", "first"
      * @param departPosition Position of the departure. Possible values: [int] or "random", "free", "base", "last", "random free"
      * @param departSpeed    Speed at departure. Possible Values: [double] or "max", "random"
-     * @throws CommandException     If the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException     If the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException If some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge con, String vehicleId, String routeId, String vehicleType,
+    public void execute(Bridge bridge, String vehicleId, String routeId, String vehicleType,
                         String departLane, String departPosition, String departSpeed)
             throws CommandException, InternalFederateException {
 
-        super.execute(con,
+        super.execute(bridge,
                 vehicleId,
                 routeId,
                 vehicleType,
