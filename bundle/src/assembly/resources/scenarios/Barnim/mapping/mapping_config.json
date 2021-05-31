@@ -35,40 +35,33 @@
             "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherServerApp" ]
         }
     ],
-    "matrixMappers": [
+    "vehicles": [
         {
-            "points": [
-                {
-                    "name": "A",
-                    "position": {
-                        "center": {
-                            "latitude": 52.652839858552255,
-                            "longitude": 13.523196884998647
-                        },
-                        "radius": 50
-                    }
-                },
-                {
-                    "name": "B",
-                    "position": {
-                        "center": {
-                            "latitude": 52.6424769829078,
-                            "longitude": 13.534269043812124
-                        },
-                        "radius": 100
-                    }
-                }
-            ],
-            "maxTime": 300,
+            "startingTime": 5.0,
+            "targetFlow": 1800,
+            "maxNumberVehicles": 120,
+            "pos": 1417,
+            "route": "1",
+            "lanes": [ 0, 1 ],
             "types": [
                 {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherWarningAppCell", "org.eclipse.mosaic.app.tutorial.SlowDownApp" ],
                     "name": "Car",
-                    "weight": 1.0
+                    "group": "Cellular",
+                    "weight": 0.1
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherWarningApp", "org.eclipse.mosaic.app.tutorial.SlowDownApp" ],
+                    "name": "Car",
+                    "group": "AdHoc",
+                    "weight": 0.2
+                },
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.SlowDownApp" ],
+                    "name": "Car",
+                    "group": "Unequipped",
+                    "weight": 0.7
                 }
-            ],
-            "odValues": [
-                [ 100, 100 ],
-                [ 100, 100 ]
             ]
         }
     ]
