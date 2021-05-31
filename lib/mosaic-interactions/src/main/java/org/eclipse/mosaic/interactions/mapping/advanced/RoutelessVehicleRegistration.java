@@ -46,7 +46,7 @@ public final class RoutelessVehicleRegistration extends VehicleRegistration {
     /**
      * The trip consisting of the origin and the destination for the vehicle.
      */
-    private OriginDestinationPair trip;
+    private final OriginDestinationPair trip;
 
     /**
      * Constructor for {@link RoutelessVehicleRegistration}.
