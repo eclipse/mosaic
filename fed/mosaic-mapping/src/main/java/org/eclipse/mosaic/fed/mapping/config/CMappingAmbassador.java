@@ -16,12 +16,12 @@
 package org.eclipse.mosaic.fed.mapping.config;
 
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
+import org.eclipse.mosaic.fed.mapping.config.units.COriginDestinationMatrixMapper;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
 import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
-import org.eclipse.mosaic.fed.mapping.config.units.CVehicle.COriginDestinationMatrixMapper;
 
 import java.util.List;
 import java.util.Map;

@@ -19,6 +19,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.objects.mapping.OriginDestinationPair;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.rti.api.Interaction;
 
@@ -60,6 +61,23 @@ public final class RoutelessVehicleRegistration extends VehicleRegistration {
     public RoutelessVehicleRegistration(final long time, final String name, final String group, final List<String> applications,
                                         final VehicleType vehicleType, final OriginDestinationPair trip) {
         super(time, name, group, applications, null, vehicleType);
+        this.trip = trip;
+    }
+
+    /**
+     * Constructor for {@link RoutelessVehicleRegistration}.
+     *
+     * @param time         Timestamp of this interaction, unit: [ns]
+     * @param name         vehicle identifier
+     * @param group        vehicle group identifier
+     * @param applications installed applications of the vehicle
+     * @param departure    departure information for the vehicle
+     * @param vehicleType  vehicle type
+     * @param trip         origin-destination information for calculation of route.
+     */
+    public RoutelessVehicleRegistration(final long time, final String name, final String group, final List<String> applications,
+                                        final VehicleDeparture departure, final VehicleType vehicleType, final OriginDestinationPair trip) {
+        super(time, name, group, applications, departure, vehicleType);
         this.trip = trip;
     }
 
