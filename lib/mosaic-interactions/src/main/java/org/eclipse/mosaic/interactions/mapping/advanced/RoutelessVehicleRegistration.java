@@ -55,22 +55,6 @@ public final class RoutelessVehicleRegistration extends VehicleRegistration {
      * @param name         vehicle identifier
      * @param group        vehicle group identifier
      * @param applications installed applications of the vehicle
-     * @param vehicleType  vehicle type
-     * @param trip         origin-destination information for calculation of route.
-     */
-    public RoutelessVehicleRegistration(final long time, final String name, final String group, final List<String> applications,
-                                        final VehicleType vehicleType, final OriginDestinationPair trip) {
-        super(time, name, group, applications, null, vehicleType);
-        this.trip = trip;
-    }
-
-    /**
-     * Constructor for {@link RoutelessVehicleRegistration}.
-     *
-     * @param time         Timestamp of this interaction, unit: [ns]
-     * @param name         vehicle identifier
-     * @param group        vehicle group identifier
-     * @param applications installed applications of the vehicle
      * @param departure    departure information for the vehicle
      * @param vehicleType  vehicle type
      * @param trip         origin-destination information for calculation of route.
