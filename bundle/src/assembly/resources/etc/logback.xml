@@ -94,7 +94,7 @@
             <appender name="CommunicationDetailsLog" class="ch.qos.logback.core.FileAppender">
                 <file>${logDirectory}/CommunicationDetails.log</file>
                 <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                    <pattern>%msg%n</pattern>
+                    <pattern>%date %-5level %logger{0} - %msg%n</pattern>
                 </encoder>
                 <append>false</append>
             </appender>
