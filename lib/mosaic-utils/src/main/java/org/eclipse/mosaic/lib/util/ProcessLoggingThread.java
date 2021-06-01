@@ -69,28 +69,28 @@ public class ProcessLoggingThread extends Thread {
                         if (id == null || id.length() == 0) {
                             this.log.error(line);
                         } else {
-                            this.log.error("Process {} : {}", this.id, line);
+                            this.log.error(line);
                         }
                     }
                     if (this.level.equals(Level.Info)) {
                         if (id == null || id.length() == 0) {
                             this.log.info(line);
                         } else {
-                            this.log.info("Process {} : {}", this.id, line);
+                            this.log.info(line);
                         }
                     }
                     if (this.level.equals(Level.Debug)) {
                         if (id == null || id.length() == 0) {
                             this.log.debug(line);
                         } else {
-                            this.log.debug("Process {} : {}", this.id, line);
+                            this.log.debug(line);
                         }
                     }
                     if (this.level.equals(Level.Trace)) {
                         if (id == null || id.length() == 0) {
                             this.log.trace(line);
                         } else {
-                            this.log.trace("Process {} : {}", this.id, line);
+                            this.log.trace(line);
                         }
                     }
                 }
