@@ -184,19 +184,19 @@
                 <appender-ref ref="ActivityLog"/>
             </logger>
 
-            <logger name="Ns3AmbassadorOutput" additivity="false" level="INFO">
+            <logger name="Ns3Output" additivity="false" level="INFO">
                 <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
 
-            <logger name="Ns3AmbassadorError" additivity="false" level="ERROR">
+            <logger name="Ns3Error" additivity="false" level="ERROR">
                 <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
 
-            <logger name="OmnetppAmbassadorOutput" additivity="false" level="INFO">
+            <logger name="OmnetppOutput" additivity="false" level="INFO">
                 <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
 
-            <logger name="OmnetppAmbassadorError" additivity="false" level="ERROR">
+            <logger name="OmnetppError" additivity="false" level="ERROR">
                 <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
 
