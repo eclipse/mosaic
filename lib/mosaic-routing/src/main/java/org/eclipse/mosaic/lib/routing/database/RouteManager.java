@@ -17,18 +17,17 @@ package org.eclipse.mosaic.lib.routing.database;
 
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
-import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.IllegalRouteException;
 
+import com.google.common.collect.Iterables;
+
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Provides some helper methods which makes route handling easier.
@@ -100,60 +99,23 @@ public class RouteManager {
     public final Route createRouteByCandidateRoute(CandidateRoute candidateRoute) throws IllegalRouteException {
         // we always need to create a new Route
         Route route = new Route(Integer.toString(nextRouteId++));
-
-        // now need to loop over all nodes and find the correct edges to add to route
-        Node lastNode = null;
-        Node currentNode = null;
-        Optional<Connection> currentCon;
-        List<Connection> connectionCandidates = new LinkedList<>();
-        for (String nodeId : candidateRoute.getNodeIdList()) {
-            currentNode = database.getNode(nodeId);
-
-            if (lastNode != null) {
-                // somehow need to determine correct outgoing connection
-                connectionCandidates.clear();
-                // the node can either be part of a connection or start of a connection (not both)
-                // determine which is the case
-                List<Connection> checkConnections = !lastNode.getOutgoingConnections().isEmpty()
-                        ? lastNode.getOutgoingConnections()
-                        : lastNode.getPartOfConnections();
-                // now go through the possibilities and determine the correct one
-                for (Connection connection : checkConnections) {
-                    // the node list is complete, we need to check parts of connection
-                    int index = connection.getNodes().indexOf(lastNode);
-                    if (connection.getNodes().get(index + 1).equals(currentNode)) {
-                        connectionCandidates.add(connection);
-                    }
-                }
-
-                // check if we can create an edge or the route is invalid
-                currentCon = chooseFastest(connectionCandidates);
-                if (currentCon.isPresent()) {
-                    route.addConnection(currentCon.get());
-                } else {
-                    throw new IllegalRouteException(
-                            String.format("[addRouteByNodeList] given nodes represent an invalid route. "
-                                    + "There seems to be no valid connection between %s and %s", lastNode.getId(), currentNode.getId())
-                    );
-                }
-
+        for (String connectionId : candidateRoute.getConnectionIds()) {
+            Connection con = database.getConnection(connectionId);
+            if (con == null) {
+                throw new IllegalRouteException(
+                        String.format("[createRouteByCandidateRoute] given connection ids represent an invalid route. The connection %s is unknown.", connectionId)
+                );
             }
 
-            lastNode = currentNode;
+            Connection previousConnection = Iterables.getLast(route.getConnections(), null);
+            if (previousConnection != null && !previousConnection.getOutgoingConnections().contains(con)) {
+                throw new IllegalRouteException(
+                        String.format("[createRouteByCandidateRoute] given connection ids represent an invalid route. "
+                                + "Two subsequent connections %s and %s are not connected with each other.", previousConnection.getId(), con.getId())
+                );
+            }
+            route.addConnection(con);
         }
-
         return route;
-    }
-
-    private Optional<Connection> chooseFastest(List<Connection> connectionCandidates) {
-        double min = Double.MAX_VALUE;
-        Connection result = null;
-        for (Connection con : connectionCandidates) {
-            if (result == null || min > con.getLength() / con.getMaxSpeedInMs()) {
-                result = con;
-                min = con.getLength() / con.getMaxSpeedInMs();
-            }
-        }
-        return Optional.ofNullable(result);
     }
 }

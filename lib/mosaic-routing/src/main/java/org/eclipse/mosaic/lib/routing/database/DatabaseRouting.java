@@ -45,11 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * An implementation of the {@link Routing} interface which provides access to routing functions
@@ -211,38 +208,14 @@ public class DatabaseRouting implements Routing {
 
     @Override
     public CandidateRoute approximateCostsForCandidateRoute(CandidateRoute route, String lastNodeId) {
-        List<String> nodeIdList = route.getNodeIdList();
-
-        int fromIndex = nodeIdList.indexOf(lastNodeId);
-        if (fromIndex == -1) {
-            log.error("Node with ID {} not on candidate route {}.", lastNodeId, route);
-            return route;
-        }
-        List<String> nodeIdSubList = nodeIdList.subList(fromIndex, nodeIdList.size());
-
-        List<Node> intersectionList = new ArrayList<>();
-        for (String nodeId : nodeIdSubList) {
-            Node node = this.getScenarioDatabase().getNode(nodeId);
-            if (!node.getIncomingConnections().isEmpty() || !node.getOutgoingConnections().isEmpty()) {
-                intersectionList.add(node);
-            }
-        }
-
         double length = 0;
         double time = 0;
-        for (int i = 0; i < intersectionList.size() - 1; i++) {
-            Set<Connection> out = new HashSet<Connection>(intersectionList.get(i).getOutgoingConnections());
-            Set<Connection> inNextNode = new HashSet<Connection>(intersectionList.get(i + 1).getIncomingConnections());
-            out.retainAll(inNextNode);
-            if (out.size() == 1) {
-                Connection conn = out.iterator().next();
-                length += conn.getLength();
-                time += conn.getLength() / conn.getMaxSpeedInMs();
-            } else {
-                log.debug("Node {} does not share connection with Node {}.", intersectionList.get(i), intersectionList.get(i + 1));
-            }
+        for (String connectionId: route.getConnectionIds()) {
+            Connection con = getScenarioDatabase().getConnection(connectionId);
+            length += con.getLength();
+            time += con.getLength() / con.getMaxSpeedInMs();
         }
-        return new CandidateRoute(nodeIdSubList, length, time);
+        return new CandidateRoute(route.getConnectionIds(), length, time);
     }
 
     private Edge findClosestEdge(GeoPoint location) {

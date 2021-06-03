@@ -16,12 +16,13 @@
 package org.eclipse.mosaic.lib.objects.road;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * Provides information about a directional road segment.
  */
 public interface IConnection extends Serializable {
-    
+
     /**
      * Returns the ID of the road segment in the form {@code <id-way>_<id-start-junction>_<id-end-junction>}.
      */
@@ -51,6 +52,15 @@ public interface IConnection extends Serializable {
      * Returns the number of lanes on this road segment.
      */
     int getLanes();
-    
+
+    /**
+     * Returns all incoming connections.
+     */
+    Collection<IConnection> getIncomingConnections();
+
+    /**
+     * Returns all outgoing connections.
+     */
+    Collection<IConnection> getOutgoingConnections();
 
 }

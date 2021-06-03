@@ -154,6 +154,7 @@ public class DatabaseRoutingTest {
         assertEquals(22.222, speed, 0.001d);
     }
 
+    @Test
     public void getMaxSpeedOfConnection_noSuchConnection_noException() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
@@ -187,13 +188,13 @@ public class DatabaseRoutingTest {
         routingAPIScenarioDatabase.initialize(configuration, cfgDir);
 
         final CandidateRoute candidateRoute = new CandidateRoute(
-                Arrays.asList("423839224", "26704448", "27537750", "27537749", "252864801", "265786533", "252864802"), 0, 0);
+                Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749", "4609243_27537749_252864801", "4609243_252864801_252864802"), 0, 0);
         //RUN
         final VehicleRoute route = routingAPIScenarioDatabase.createRouteForRTI(candidateRoute);
 
         //ASSERT
         assertEquals(376.4d, route.getLength(), 0.1d);
-        assertEquals(candidateRoute.getNodeIdList(), route.getNodeIds());
+        assertEquals(candidateRoute.getConnectionIds(), route.getConnectionIds());
         assertEquals(Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750",
                 "4609244_27537750_27537749", "4609243_27537749_252864801", "4609243_252864801_252864802"),
                 route.getConnectionIds());
@@ -206,7 +207,7 @@ public class DatabaseRoutingTest {
         routingAPIScenarioDatabase.initialize(configuration, cfgDir);
 
         final CandidateRoute candidateRoute = new CandidateRoute(
-                Arrays.asList("423839224", "26704448", "27537750", "27537749", /* "252864801", */ "265786533"), 0, 0);
+                Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749", /* "4609243_27537749_252864801", */ "4609243_252864801_252864802"), 0, 0);
         //RUN (throw error)
         routingAPIScenarioDatabase.createRouteForRTI(candidateRoute);
     }
@@ -230,8 +231,8 @@ public class DatabaseRoutingTest {
         assertNotNull(response.getBestRoute());
         assertEquals(15.672, response.getBestRoute().getTime(), 0.1d);
         assertEquals(304.74, response.getBestRoute().getLength(), 0.1d);
-        assertEquals(Arrays.asList("26704482", "26938219", "26938220", "26785753", "26785752", "21487147", "26704584"),
-                response.getBestRoute().getNodeIdList());
+        assertEquals(Arrays.asList("32909782_26704482_26785753", "25185001_26785753_26704584"),
+                response.getBestRoute().getConnectionIds());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -281,19 +282,16 @@ public class DatabaseRoutingTest {
         DatabaseRouting spyRSDB = Mockito.spy(routingAPIScenarioDatabase);
         Mockito.doReturn(dbMock).when(spyRSDB).getScenarioDatabase();
 
-        Mockito.when(dbMock.getNode("0")).thenReturn(node0);
-        Mockito.when(dbMock.getNode("1")).thenReturn(node1);
-        Mockito.when(dbMock.getNode("2")).thenReturn(node2);
-        Mockito.when(dbMock.getNode("3")).thenReturn(node3);
-        Mockito.when(dbMock.getNode("4")).thenReturn(node4);
-        Mockito.when(dbMock.getNode("5")).thenReturn(node5);
+        Mockito.when(dbMock.getConnection("0-1")).thenReturn(node0ToNode1);
+        Mockito.when(dbMock.getConnection("1-3")).thenReturn(node1ToNode3);
+        Mockito.when(dbMock.getConnection("3-4")).thenReturn(node3ToNode4);
 
-        List<String> nodeIDList = Arrays.asList("0", "1", "2", "3", "4", "5");
-        CandidateRoute candidateRoute = new CandidateRoute(nodeIDList, 0.0, 0.0);
+        List<String> connectionIds = Arrays.asList("0-1", "1-3", "3-4");
+        CandidateRoute candidateRoute = new CandidateRoute(connectionIds, 0.0, 0.0);
 
         CandidateRoute approximatedCandidateRoute = spyRSDB.approximateCostsForCandidateRoute(candidateRoute, "1");
-        assertEquals(10, approximatedCandidateRoute.getLength(), 0);
-        assertEquals(5, approximatedCandidateRoute.getTime(), 0);
+        assertEquals(1010, approximatedCandidateRoute.getLength(), 0);
+        assertEquals(505, approximatedCandidateRoute.getTime(), 0);
     }
 
 }

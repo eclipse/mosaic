@@ -30,7 +30,6 @@ import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.DijkstraCamvitChoice
 import org.eclipse.mosaic.lib.routing.graphhopper.extended.ExtendedGraphHopper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
 
-import com.carrotsearch.hppc.cursors.IntCursor;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.graphhopper.GraphHopper;
@@ -45,22 +44,41 @@ import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.weighting.TurnWeighting;
 import com.graphhopper.storage.TurnCostExtension;
 import com.graphhopper.storage.index.QueryResult;
+import com.graphhopper.util.DistanceCalc;
+import com.graphhopper.util.DistancePlaneProjection;
+import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.PointList;
+import com.graphhopper.util.shapes.GHPoint;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class GraphHopperRouting {
+
+    /**
+     * If the requested target point is this X meters away from the last node of
+     * the found route, another connection is added on which the target
+     * point is matched on.
+     */
+    public static double TARGET_REQUEST_CONNECTION_THRESHOLD = 5d;
+
+    /**
+     * Sometimes edges are dead ends. In these cases routing fails and invalid
+     * routes are returned. To omit this, we check if the distance between the route end
+     * and the original query target lies within the given threshold.
+     */
+    private static final double MAX_DISTANCE_TO_TARGET = 500d;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private GraphHopper ghApi;
+    private final DistanceCalc distanceCalculation = new DistancePlaneProjection();
 
     private GraphhopperToDatabaseMapper graphMapper;
     private Database db;
@@ -143,16 +161,13 @@ public class GraphHopperRouting {
         //add alternative paths to path set
         paths.addAll(algo.getAlternativePaths());
 
-        final Node prefixNode = determinePrefixNode(source);
-        final Node endNode = determineEndNode(target);
-
         final Set<String> duplicateSet = new HashSet<>();
 
         // convert paths to routes
         for (Path path : paths) {
-            final CandidateRoute route = preparePath(queryGraph, path, prefixNode, endNode);
+            final CandidateRoute route = preparePath(path, queryGraph, qrFrom, qrTo, target);
             if (route != null
-                    && route.getNodeIdList().size() > 1
+                    && !route.getConnectionIds().isEmpty()
                     && checkForDuplicate(route, duplicateSet)
                     && checkRouteOnRequiredSourceConnection(route, source)) {
                 routesList.add(route);
@@ -183,12 +198,12 @@ public class GraphHopperRouting {
     /**
      * Checks the {@param duplicateSet} whether it contains the {@param route}'s nodeIdList.
      *
-     * @param route Route to check for duplicate.
+     * @param route        Route to check for duplicate.
      * @param duplicateSet Set of node Ids.
      * @return True, if not duplicate in the set.
      */
     private boolean checkForDuplicate(CandidateRoute route, Set<String> duplicateSet) {
-        String nodeIdList = StringUtils.join(route.getNodeIdList(), ",");
+        String nodeIdList = StringUtils.join(route.getConnectionIds(), ",");
         return duplicateSet.add(nodeIdList);
     }
 
@@ -216,19 +231,6 @@ public class GraphHopperRouting {
         return getClosestNode(source.getPosition());
     }
 
-    /**
-     * Determines the end node of the {@param target}. If no node available, the closest node to the {@param target}'s geo location is returned.
-     *
-     * @param target Target position as {@link RoutingPosition}.
-     * @return End node of the target.
-     */
-    private Node determineEndNode(final RoutingPosition target) {
-        if (target.getConnectionId() != null) {
-            return db.getConnection(target.getConnectionId()).getTo();
-        }
-        return getClosestNode(target.getPosition());
-    }
-
     private Node getClosestNode(GeoPoint position) {
         if (nodeFinder == null) {
             nodeFinder = new NodeFinder(db);
@@ -236,30 +238,55 @@ public class GraphHopperRouting {
         return nodeFinder.findClosestNode(position);
     }
 
-    private CandidateRoute preparePath(QueryGraph queryGraph, Path newPath, Node prefixNode, Node endNode) {
-        Iterator<IntCursor> nodesIt = newPath.calcNodes().iterator();
-        if (!nodesIt.hasNext()) {
+    private CandidateRoute preparePath(Path newPath, QueryGraph queryGraph, QueryResult source, QueryResult target, RoutingPosition targetPosition) {
+        PointList pointList = newPath.calcPoints();
+        GHPoint pathTarget = Iterables.getLast(pointList);
+        GHPoint origTarget = new GHPoint(targetPosition.getPosition().getLatitude(), targetPosition.getPosition().getLongitude());
+        double distanceToOriginalTarget = distanceCalculation.calcDist(pathTarget.lat, pathTarget.lon, origTarget.lat, origTarget.lon);
+        if (distanceToOriginalTarget > MAX_DISTANCE_TO_TARGET) {
+            return null;
+        }
+        Iterator<EdgeIteratorState> edgesIt = newPath.calcEdges().iterator();
+        if (!edgesIt.hasNext()) {
             return null;
         }
 
-        final List<String> pathVertices = new ArrayList<String>();
+        List<String> pathConnections = new ArrayList<>();
 
-        while (nodesIt.hasNext()) {
-            int internalId = nodesIt.next().value;
+        while (edgesIt.hasNext()) {
+            EdgeIteratorState ghEdge = edgesIt.next();
 
             /*
-             * Skip nodes that are not part of the scenario database.
-             * These nodes are just used for routing between database nodes
-             * and are not needed anymore.
+             * If the requested source or target point is in the middle of the road, an artificial node
+             * (and artificial edges) is created in the QueryGraph. As a consequence, the first
+             * and/or last edge of the route might be such virtual edge. We use the queried source
+             * and target to extract the original edge where the requested points have been matched on.
              */
-            if (queryGraph.isVirtualNode(internalId)) {
-                continue;
+            if (queryGraph.isVirtualEdge(ghEdge.getEdge())) {
+                if (pathConnections.isEmpty() && queryGraph.isVirtualNode(source.getClosestNode())) {
+                    ghEdge = queryGraph.getOriginalEdgeFromVirtNode(source.getClosestNode());
+                } else if (!edgesIt.hasNext() && queryGraph.isVirtualNode(target.getClosestNode())) {
+                    ghEdge = queryGraph.getOriginalEdgeFromVirtNode(target.getClosestNode());
+                } else {
+                    continue;
+                }
             }
 
+            Connection con = graphMapper.toConnection(ghEdge.getEdge());
+            if (con != null) {
+                /*
+                 * In some cases, virtual edges are created at the target even though they are only some
+                 * centimeters away from the requested node. In that case, we would have an unwanted
+                 * last connection at the end of the route, which is eliminated here.
+                 */
+                boolean lastConnectionStartsAtTarget = !edgesIt.hasNext()
+                        && targetPosition.getConnectionId() == null
+                        && targetPosition.getPosition().distanceTo(con.getFrom().getPosition()) < TARGET_REQUEST_CONNECTION_THRESHOLD;
+                if (lastConnectionStartsAtTarget) {
+                    continue;
+                }
 
-            Node node = graphMapper.toNode(internalId);
-            if (node != null) {
-                pathVertices.add(node.getId());
+                pathConnections.add(con.getId());
 
                 if (Double.isInfinite(newPath.getWeight())) {
                     log.warn(
@@ -268,166 +295,18 @@ public class GraphHopperRouting {
                     return null;
                 }
             } else {
-                log.debug(String.format("A node could be resolved by internal ID %d.", internalId));
+                log.debug(String.format("A connection could be resolved by internal ID %d.", ghEdge.getEdge()));
             }
         }
 
-        return new CandidateRoute(buildCompleteNodeIdList(prefixNode, pathVertices, endNode), newPath.getDistance(),
-                newPath.getTime() / (double) 1000);
-    }
-
-    /**
-     * This creates a complete list of node ID's out of the given node ID list.
-     * This should be used for the node ID list of a CandidateRoute for
-     * comparison with the node ID list of an existing route.
-     *
-     * @param abstractNodeIdList
-     * @return complete List<NodeIds>
-     */
-    private List<String> buildCompleteNodeIdList(Node prefixNode, List<String> abstractNodeIdList, Node finalNode) {
-        if (abstractNodeIdList.size() == 0) {
-            return abstractNodeIdList;
-        }
-        NodeListLastItemCheck completed = new NodeListLastItemCheck();
-
-        if (prefixNode != null) {
-            //fill from prefix node until start of path
-            completed = fillNodeListFromPrefix(completed, prefixNode, abstractNodeIdList);
-        }
-
-        //create list of all nodes on path (including nodes on connections)
-        completed = fillNodeListOfAbstractPath(completed, abstractNodeIdList);
-
-        if (finalNode != null) {
-            //fill from end of path until final node
-            completed = fillNodeListToFinalNode(completed, abstractNodeIdList, finalNode);
-        }
-
-        //transform to id list
-        final List<String> nodeIds = new ArrayList<>(completed.size());
-        for (Node node : completed) {
-            nodeIds.add(node.getId());
-        }
-        return nodeIds;
+        return new CandidateRoute(pathConnections, newPath.getDistance(), newPath.getTime() / (double) 1000);
     }
 
     private boolean checkRouteOnRequiredSourceConnection(CandidateRoute route, RoutingPosition source) {
         if (source.getConnectionId() != null) {
-            Connection con = db.getConnection(source.getConnectionId());
-            String node1 = Iterables.get(route.getNodeIdList(), 0);
-            String node2 = Iterables.get(route.getNodeIdList(), 1);
-
-            int indexOnConnectionNode1 = -1;
-            int indexOnConnectionNode2 = -1;
-
-            int i = 0;
-            for (Node n : con.getNodes()) {
-                if (n.getId().equals(node1)) {
-                    indexOnConnectionNode1 = i;
-                }
-                if (n.getId().equals(node2)) {
-                    indexOnConnectionNode2 = i;
-                }
-                i++;
-            }
-
-            if (!(indexOnConnectionNode1 >= 0 && indexOnConnectionNode2 > indexOnConnectionNode1)) {
-                return false;
-            }
+            return source.getConnectionId().equals(route.getConnectionIds().get(0));
         }
         return true;
-    }
-
-    /**
-     * This fills the node list with the nodes between the prefix node and the end node.
-     *
-     * @param nodeListResult List to store the nodes.
-     * @param prefixNode Current node of the route.
-     * @param abstractNodeIdList Node list of the current route.
-     * @return
-     */
-    private NodeListLastItemCheck fillNodeListFromPrefix(final NodeListLastItemCheck nodeListResult, final Node prefixNode, final List<String> abstractNodeIdList) {
-        final Node firstNode = db.getNode(Iterables.getFirst(abstractNodeIdList, null));
-        for (Connection incoming : firstNode.getIncomingConnections()) {
-            int indexOfNode = incoming.getNodes().indexOf(prefixNode);
-            if (indexOfNode >= 0) {
-                for (Node node : incoming.getNodes().subList(indexOfNode, incoming.getNodes().size())) {
-                    nodeListResult.add(node);
-                }
-            }
-        }
-        return nodeListResult;
-    }
-
-    private NodeListLastItemCheck fillNodeListOfAbstractPath(final NodeListLastItemCheck nodeListResult, final List<String> abstractNodeIdList) {
-        List<Connection> candidateConnections = new LinkedList<>();
-        Node lastNode = null;
-        Node currentNode;
-        for (String nodeId : abstractNodeIdList) {
-            currentNode = db.getNode(nodeId);
-
-            if (lastNode != null) {
-                candidateConnections.clear();
-                for (Connection outFromLast : lastNode.getOutgoingConnections()) {
-                    for (Connection inFromCurrent : currentNode.getIncomingConnections()) {
-                        if (inFromCurrent == outFromLast) {
-                            candidateConnections.add(inFromCurrent);
-                        }
-                    }
-                }
-
-                // special case: if there are two parallel connections with the same from- and to-node, then we choose the fastest one
-                Connection fastest = null;
-                for (Connection conBetween : candidateConnections) {
-                    if (fastest == null
-                            || (fastest.getLength() / fastest.getMaxSpeedInMs()) > (conBetween.getLength() / conBetween.getMaxSpeedInMs())) {
-                        fastest = conBetween;
-                    }
-                }
-                if (fastest != null) {
-                    nodeListResult.addAll(fastest.getNodes());
-                }
-
-            }
-            lastNode = currentNode;
-        }
-        return nodeListResult;
-    }
-
-    private NodeListLastItemCheck fillNodeListToFinalNode(
-            final NodeListLastItemCheck nodeListResult, final List<String> abstractNodeIdList, final Node finalNode
-    ) {
-
-        final Node lastNode = db.getNode(Iterables.getLast(abstractNodeIdList, null));
-        for (Connection outgoing : lastNode.getOutgoingConnections()) {
-            int indexOfNode = outgoing.getNodes().indexOf(finalNode);
-            if (indexOfNode >= 0) {
-                nodeListResult.addAll(outgoing.getNodes().subList(0, indexOfNode + 1));
-            }
-        }
-        return nodeListResult;
-    }
-
-    static class NodeListLastItemCheck extends ArrayList<Node> {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public boolean add(Node e) {
-            if (size() > 0 && get(size() - 1) == e) {
-                return false;
-            }
-            return super.add(e);
-        }
-
-        @Override
-        public boolean addAll(Collection<? extends Node> c) {
-            boolean result = false;
-            for (Node n : c) {
-                result |= add(n);
-            }
-            return result;
-        }
     }
 
 }

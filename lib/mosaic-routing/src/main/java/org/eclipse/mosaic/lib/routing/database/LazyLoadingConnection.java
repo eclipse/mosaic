@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.annotation.Nullable;
 
@@ -64,6 +65,8 @@ public class LazyLoadingConnection implements IConnection {
     private LazyLoadingNode conStartNode;
     private LazyLoadingNode conEndNode;
     private LazyLoadingWay way;
+    private Collection<IConnection> incomingConnections;
+    private Collection<IConnection> outgoingConnections;
 
     public LazyLoadingConnection(Connection connection) {
         this.id = connection.getId();
@@ -128,6 +131,34 @@ public class LazyLoadingConnection implements IConnection {
             }
         }
         return way;
+    }
+
+    @Override
+    public Collection<IConnection> getIncomingConnections() {
+        if (incomingConnections == null) {
+            final Connection con = getConnectionFromDatabase();
+            if (con != null) {
+                incomingConnections = new ArrayList<>();
+                for (Connection incomingConnection : con.getIncomingConnections()) {
+                    incomingConnections.add(new LazyLoadingConnection(incomingConnection));
+                }
+            }
+        }
+        return incomingConnections;
+    }
+
+    @Override
+    public Collection<IConnection> getOutgoingConnections() {
+        if (outgoingConnections == null) {
+            final Connection con = getConnectionFromDatabase();
+            if (con != null) {
+                outgoingConnections = new ArrayList<>();
+                for (Connection outgoingConnection : con.getOutgoingConnections()) {
+                    outgoingConnections.add(new LazyLoadingConnection(outgoingConnection));
+                }
+            }
+        }
+        return outgoingConnections;
     }
 
     Connection getConnectionFromDatabase() {
