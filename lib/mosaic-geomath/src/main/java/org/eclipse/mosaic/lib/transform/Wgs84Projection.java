@@ -128,7 +128,7 @@ public class Wgs84Projection extends GeoProjection {
 
     @Override
     public Vector3d utmToVector(UtmPoint utm, Vector3d result) {
-        return geographicToVector(utmToGeographic(utm));
+        return geographicToVector(utmToGeographic(utm), result);
     }
 
     @Override

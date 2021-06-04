@@ -20,6 +20,9 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Default implementation io {@link IRoadPosition} which
  * holds the raw data from the traffic simulation. Some of the
@@ -42,9 +45,9 @@ public class SimpleRoadPosition implements IRoadPosition {
     /**
      * Construct a {@link SimpleRoadPosition}.
      *
-     * @param connectionId        the ID of the connection.
-     * @param laneIndex           the index of the current lane.
-     * @param laneOffset          the lane offset.
+     * @param connectionId the ID of the connection.
+     * @param laneIndex    the index of the current lane.
+     * @param laneOffset   the lane offset.
      */
     public SimpleRoadPosition(String connectionId, int laneIndex, double laneOffset, double lateralOffset) {
         this.connection = new SimpleConnection(connectionId);
@@ -215,6 +218,16 @@ public class SimpleRoadPosition implements IRoadPosition {
         @Override
         public int getLanes() {
             return 0;
+        }
+
+        @Override
+        public Collection<IConnection> getIncomingConnections() {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public Collection<IConnection> getOutgoingConnections() {
+            return new ArrayList<>();
         }
 
         @Override

@@ -65,7 +65,7 @@ public class RouteManagerTest {
 
     @Test
     public void createRouteByCandidateRoute_routeIsComplete() throws IllegalRouteException {
-        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("27537749", "252864801", "265786533", "252864802"), 0, 0);
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), 0, 0);
 
         //RUN
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
@@ -78,12 +78,12 @@ public class RouteManagerTest {
         assertEquals(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), route.getConnectionIds());
 
         assertEquals(Arrays.asList("27537749", "252864801"), firstNodesOfConnections);
-        assertEquals(candidateRoute.getNodeIdList(), route.getNodeIds());
+        assertEquals(candidateRoute.getConnectionIds(), route.getConnectionIds());
     }
 
     @Test
     public void getRouteForRTI_transformationSuccessful() throws IllegalRouteException {
-        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("27537749", "252864801", "265786533", "252864802"), 0, 0);
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), 0, 0);
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
 
         //RUN
@@ -91,13 +91,13 @@ public class RouteManagerTest {
 
         assertEquals("1", rtiRoute.getId());
         assertEquals(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), rtiRoute.getConnectionIds());
-        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIds());
+        assertEquals(candidateRoute.getConnectionIds(), rtiRoute.getConnectionIds());
         assertEquals(290.5, rtiRoute.getLength(), 0.1d);
     }
 
     @Test
     public void getRouteForRTI_transformationSuccessful__twoConnectionsWithSameStartEndNode() throws IllegalRouteException {
-        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("21677261", "21668930", "27537748"), 0, 0);
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("32935480_21677261_21668930", "32935480_21668930_27537748"), 0, 0);
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
 
         //RUN
@@ -105,7 +105,7 @@ public class RouteManagerTest {
 
         assertEquals("1", rtiRoute.getId());
         assertEquals(Arrays.asList("32935480_21677261_21668930", "32935480_21668930_27537748"), rtiRoute.getConnectionIds());
-        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIds());
+        assertEquals(candidateRoute.getConnectionIds(), rtiRoute.getConnectionIds());
         assertEquals(291.7, rtiRoute.getLength(), 0.1d);
     }
 
@@ -115,7 +115,7 @@ public class RouteManagerTest {
         // override behavior of getImportOrigin to simulate import origin from network file
         doReturn(Database.IMPORT_ORIGIN_SUMO).when(database).getImportOrigin();
 
-        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("21677261", "21668930", "27537748"), 0, 0);
+        CandidateRoute candidateRoute = new CandidateRoute(Arrays.asList("32935480_21677261_21668930", "32935480_21668930_27537748"), 0, 0);
         Route route = instance.createRouteByCandidateRoute(candidateRoute);
 
         //RUN
@@ -123,7 +123,7 @@ public class RouteManagerTest {
 
         assertEquals("1", rtiRoute.getId());
         assertEquals(Arrays.asList("32935480_21677261_21668930", "32935480_21668930_27537748"), rtiRoute.getConnectionIds());
-        assertEquals(candidateRoute.getNodeIdList(), rtiRoute.getNodeIds());
+        assertEquals(candidateRoute.getConnectionIds(), rtiRoute.getConnectionIds());
         assertEquals(291.7, rtiRoute.getLength(), 0.1d);
     }
 

@@ -156,7 +156,7 @@ public class ConnectionTest {
     }
 
     /**
-     * Test of
+     * Test if turn restrictions are properly applied.
      */
     @Test
     public void testApplyTurnRestriction() {
@@ -177,7 +177,7 @@ public class ConnectionTest {
         instance.addOutgoingConnection(conn2);
         instance.applyTurnRestriction(Restriction.Type.Only, conn2);
 
-        assertEquals("Number of outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
+        assertEquals("# outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
         boolean hasId = false;
         for (Connection connection : instance.getOutgoingConnections()) {
             if (connection.getId().equals("2")) {
@@ -196,7 +196,7 @@ public class ConnectionTest {
         instance.addOutgoingConnection(conn2);
         instance.applyTurnRestriction(Restriction.Type.Not, conn2);
 
-        assertEquals("Number of outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
+        assertEquals("# outgoing connections after applying restrictions wasn't correct", 1, instance.getOutgoingConnections().size());
         hasId = false;
         for (Connection connection : instance.getOutgoingConnections()) {
             if (connection.getId().equals("1")) {
