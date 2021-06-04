@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.ambassador;
 
 import org.eclipse.mosaic.fed.sumo.bridge.LibSumoBridge;
@@ -25,7 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 
 /**
- * Implementation of the bridge between MOSAIC and SUMO using the native libsumo-jni binding provided with SUMO.
+ * Implementation of the bridge between MOSAIC and SUMO using the native libsumojni binding provided with SUMO.
  */
 public class LibSumoAmbassador extends SumoAmbassador {
 
@@ -70,7 +71,7 @@ public class LibSumoAmbassador extends SumoAmbassador {
                 // if no file found, try to load libsumo it directly from java.library.path
                 System.loadLibrary("libsumojni");
             } catch (Throwable e) {
-                throw new InternalFederateException("The required libsumo library could not be found in " + libsumoLibrary + ". "
+                throw new InternalFederateException("The required libsumojni library could not be found in " + libsumoLibrary + ". "
                         + "Make sure SUMO_HOME is set properly and that your SUMO installation contains the libsumojni library.");
             }
         }

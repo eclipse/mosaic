@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,6 +29,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.List;
 
+/**
+ * Implementation of the SumoBridge which uses methods provided by SUMO via JNI.
+ * The Jar file which provides the function is shipped with SUMO. This class expects a
+ * the libsumojni library (dll or shared object) to be already loaded.
+ */
 public class LibSumoBridge implements Bridge {
 
     private final CommandRegister commandRegister;
