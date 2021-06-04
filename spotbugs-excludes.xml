@@ -13,4 +13,11 @@
         <Class name="~.*\.C[A-Z]\w+.*"/>
         <Bug code="UwF,NP,UuF,UrF"/>
     </Match>
+
+    <Match>
+        <!-- Ignore that class names shadow their interface names for SUMO bridge implementations -->
+        <Class name="~org\.eclipse\.mosaic\.fed\.sumo\.bridge\..*"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
+    </Match>
+
 </FindBugsFilter>

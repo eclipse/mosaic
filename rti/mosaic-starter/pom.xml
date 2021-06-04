@@ -114,6 +114,32 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Tutorial applications -->
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>weather-warning</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>highway-management</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>traffic-light-communication</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>example-applications</artifactId>
+            <version>${mosaic.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
