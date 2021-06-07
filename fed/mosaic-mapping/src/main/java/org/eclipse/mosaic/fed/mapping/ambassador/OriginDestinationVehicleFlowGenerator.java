@@ -16,17 +16,19 @@
 package org.eclipse.mosaic.fed.mapping.ambassador;
 
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
+import org.eclipse.mosaic.fed.mapping.config.units.COriginDestinationMatrixMapper;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 
 import java.util.List;
 
 /**
- * See the {@link CVehicle.COriginDestinationMatrixMapper} for detailed description of the class and its fields.
+ * See the {@link COriginDestinationMatrixMapper} for detailed description of the class and its fields.
  * This class is used to generate a stream of vehicles between an origin- and a destination-point.
  */
 public class OriginDestinationVehicleFlowGenerator {
-    private final List<CVehicle.COriginDestinationPoint> originDestinationPointConfigurations;
+    private final List<COriginDestinationMatrixMapper.COriginDestinationPoint> originDestinationPointConfigurations;
     private final List<CPrototype> prototypeConfigurations;
     private final Boolean deterministic;
 
@@ -34,17 +36,25 @@ public class OriginDestinationVehicleFlowGenerator {
      * Values for the OD-matrix. Unit should be vehicles/hour.
      */
     private final List<List<Double>> odValues;
+    private final VehicleDeparture.LaneSelectionMode laneSelectionMode;
+    private final VehicleDeparture.DepartSpeedMode departSpeedMode;
+    private final double startingTime;
+    private final Double maxTime;
 
     /**
      * Constructor for {@link OriginDestinationVehicleFlowGenerator}.
      *
      * @param matrixMapperConfiguration the configuration of the matrix mapper set in the json configuration
      */
-    OriginDestinationVehicleFlowGenerator(CVehicle.COriginDestinationMatrixMapper matrixMapperConfiguration) {
+    OriginDestinationVehicleFlowGenerator(COriginDestinationMatrixMapper matrixMapperConfiguration) {
         this.originDestinationPointConfigurations = matrixMapperConfiguration.points;
         this.prototypeConfigurations = matrixMapperConfiguration.types;
         this.deterministic = matrixMapperConfiguration.deterministic;
         this.odValues = matrixMapperConfiguration.odValues;
+        this.startingTime = matrixMapperConfiguration.startingTime;
+        this.maxTime = matrixMapperConfiguration.maxTime;
+        this.laneSelectionMode = matrixMapperConfiguration.laneSelectionMode;
+        this.departSpeedMode = matrixMapperConfiguration.departSpeedMode;
     }
 
     /**
@@ -69,10 +79,12 @@ public class OriginDestinationVehicleFlowGenerator {
                 vehicleConfiguration.targetFlow = flow;
                 vehicleConfiguration.types = prototypeConfigurations;
                 vehicleConfiguration.deterministic = deterministic;
-                vehicleConfiguration.startingTime = 0;
-                //Assuming, if we only have set a flow, that we want to have an unlimited number of vehicles
-                vehicleConfiguration.maxNumberVehicles = Integer.MAX_VALUE;
 
+                vehicleConfiguration.startingTime = startingTime;
+                vehicleConfiguration.maxTime = maxTime;
+                vehicleConfiguration.laneSelectionMode = laneSelectionMode;
+                vehicleConfiguration.departSpeedMode = departSpeedMode;
+                // Assuming, if we only have set a flow, that we want to have an unlimited number of vehicles
 
                 framework.addVehicleStream(new VehicleFlowGenerator(vehicleConfiguration, randomNumberGenerator, flowNoise));
             }

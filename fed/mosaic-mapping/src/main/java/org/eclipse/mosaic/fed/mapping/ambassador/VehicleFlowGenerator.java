@@ -40,6 +40,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
+import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Iterables;
@@ -397,39 +398,14 @@ public class VehicleFlowGenerator {
         VehicleTypeSpawner type = selector.nextItem();
         String name = NameGenerator.getVehicleName();
 
-        if (origin == null) {
-            createVehicle(framework, name, group, laneSelector.nextLane(type), type);
-        } else {
-            createVehicle(framework, name, group, type);
-        }
+
+        createVehicle(framework, name, group, laneSelector.nextLane(type), type);
+
         return false;
     }
 
     private boolean notInTimeFrame(long time) {
         return time < start || time >= end;
-    }
-
-    private void createVehicle(SpawningFramework framework, String name, String group, VehicleTypeSpawner type) throws InternalFederateException {
-
-        if (notInTimeFrame(framework.getTime())) {
-            LOG.info("Omit raw vehicle spawner at time {} (not in time span)", framework.getTime());
-            return;
-        }
-        // if no group is defined in vehicle definition take group declared in prototype
-        group = ObjectUtils.defaultIfNull(group, type.getGroup());
-
-        RoutelessVehicleRegistration interaction =
-                new RoutelessVehicleRegistration(framework.getTime(), name, group, type.getAppList(), type.convertType(), odInfo);
-
-        try {
-            LOG.info("Creating Vehicle. Route=" + route + ", time=" + framework.getTime() + ", name="
-                    + name + ", pos=" + pos + ": " + type.toString() + ", departSpeed=" + departSpeed + ", odInfo="
-                    + odInfo);
-            framework.getRti().triggerInteraction(interaction);
-        } catch (IllegalValueException e) {
-            LOG.error("Couldn't send a RoutelessVehicleRegistration interaction in VehicleStreamGenerator.timeAdvance", e);
-            throw new InternalFederateException("Exception in VehicleStreamGenerator.timeAdvance()", e);
-        }
     }
 
     private void createVehicle(SpawningFramework framework, String name, String group, int lane, VehicleTypeSpawner type)
@@ -447,16 +423,23 @@ public class VehicleFlowGenerator {
                 .departureSpeed(departSpeedMode, departSpeed)
                 .create();
 
-        VehicleRegistration interaction = new VehicleRegistration(framework.getTime(), name, group, type.getAppList(), vehicleDeparture,
-                type.convertTypeAndVaryParameters(randomNumberGenerator)
-        );
+        Interaction interaction;
+        if (origin != null) {
+            interaction = new RoutelessVehicleRegistration(
+                    framework.getTime(), name, group, type.getAppList(), vehicleDeparture, type.convertType(), odInfo
+            );
+        } else {
+            interaction = new VehicleRegistration(framework.getTime(), name, group, type.getAppList(), vehicleDeparture,
+                    type.convertTypeAndVaryParameters(randomNumberGenerator)
+            );
+        }
 
         try {
             LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, pos={}, type={}, departSpeed={}",
-                    framework.getTime(), name, route, laneSelectionMode, lane, pos, type.toString(), departSpeed);
+                    framework.getTime(), name, route, laneSelectionMode, lane, pos, type, departSpeed);
             framework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
-            LOG.error("Couldn't send an VehicleRegistration interaction in VehicleStreamGenerator.timeAdvance()", e);
+            LOG.error("Couldn't send an {} interaction in VehicleStreamGenerator.timeAdvance()", interaction.getTypeId(), e);
             throw new InternalFederateException("Exception in VehicleStreamGenerator.timeAdvance()", e);
         }
     }
