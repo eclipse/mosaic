@@ -34,10 +34,10 @@ import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.RoutelessVehicleRegistration;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.mapping.OriginDestinationPair;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -334,7 +334,7 @@ public class VehicleFlowGenerator {
                 continue;
             }
             if ((key == null) || types.containsKey(key)) {
-                key = NameGenerator.getPrototypeName(vehicleTypeSpawner.getPrototype());
+                key = UnitNameGenerator.nextPrototypeName(vehicleTypeSpawner.getPrototype());
                 vehicleTypeSpawner.setPrototype(key);
             }
             types.put(key, vehicleTypeSpawner.convertType());
@@ -396,7 +396,7 @@ public class VehicleFlowGenerator {
         // determine the type of the vehicle to spawn by use of the selector
         // (either deterministic or stochastic, determined in constructor)
         VehicleTypeSpawner type = selector.nextItem();
-        String name = NameGenerator.getVehicleName();
+        String name = UnitNameGenerator.nextVehicleName();
 
 
         createVehicle(framework, name, group, laneSelector.nextLane(type), type);
