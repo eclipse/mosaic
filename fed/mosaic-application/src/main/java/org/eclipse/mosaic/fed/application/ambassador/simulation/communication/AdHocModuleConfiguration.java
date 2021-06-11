@@ -51,11 +51,6 @@ import java.util.List;
 public class AdHocModuleConfiguration implements CommunicationModuleConfiguration {
 
     /**
-     * Helper var in order to check if distance and power is not configured simultaneously.
-     */
-    private Boolean distanceConfigured = null;
-
-    /**
      * List of enabled and configured radios (usual cases operate with 1 (single) or 2 (dual) radios).
      */
     private final List<AdHocModuleRadioConfiguration> radios = new ArrayList<>();
@@ -108,15 +103,9 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
          * @return the current AdHocRadioConfiguration
          */
         public AdHocModuleRadioConfiguration power(int power) {
-            if (this.parent.distanceConfigured != null && this.parent.distanceConfigured) {
-                throw new RuntimeException(
-                        "A mixed configuration of distance and power is not allowed. Please be careful with configuring the adhoc module."
-                );
-            }
             if (power < -1) {
                 throw new RuntimeException("Negative power is not allowed within an AdHoc configuration.");
             }
-            this.parent.distanceConfigured = Boolean.FALSE;
             this.power = power;
             return this;
         }
@@ -129,15 +118,9 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
          * @return the current AdHocRadioConfiguration
          */
         public AdHocModuleRadioConfiguration distance(double distance) {
-            if (this.parent.distanceConfigured != null && !this.parent.distanceConfigured) {
-                throw new RuntimeException(
-                        "A mixed configuration of distance and power is not allowed. Please be careful with configuring the adhoc module."
-                );
-            }
             if (distance < 0) {
                 throw new RuntimeException("Negative distance is not allowed within an AdHoc configuration.");
             }
-            this.parent.distanceConfigured = Boolean.TRUE;
             this.distance = distance;
             return this;
         }

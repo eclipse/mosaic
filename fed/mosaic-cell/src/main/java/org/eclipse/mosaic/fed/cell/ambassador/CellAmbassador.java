@@ -101,6 +101,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      */
     private final Map<String, AtomicReference<CellConfiguration>> registeredVehicles = new HashMap<>();
 
+    private final List<CellularCommunicationConfiguration> pendingConfigurations = new ArrayList<>();
+
     private BandwidthMeasurementManager bandwidthMeasurementManager;
 
     /**
@@ -252,6 +254,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 )
         );
 
+        pendingConfigurations.remove(interaction);
+
         final String nodeId = cellConfiguration.getNodeId();
         final boolean isVehicle = registeredVehicles.containsKey(nodeId);
         Optional<HandoverInfo> handoverInfo = Optional.empty();
@@ -275,13 +279,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             } else if (registeredServers.containsKey(nodeId)) { // handle servers
                 handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else {
-                if (cellConfiguration.isCellCommunicationEnabled()) {
-                    throw new InternalFederateException(
-                            "Cell Ambassador: Cannot activate Cell module for \"" + nodeId + "\" because the id is unknown"
-                    );
-                } else {
-                    log.debug("Tried to deactivate the Cell module for a node with the unknown id: {}", nodeId);
-                }
+                pendingConfigurations.add(interaction);
+                return;
             }
         }
         handoverInfo.ifPresent((handover) -> {
@@ -297,7 +296,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      *
      * @param vehicleRegistration vehicle to be added to the cell simulation.
      */
-    private void process(VehicleRegistration vehicleRegistration) {
+    private void process(VehicleRegistration vehicleRegistration) throws InternalFederateException {
         VehicleMapping veh = vehicleRegistration.getMapping();
         if (veh.hasApplication()) {
             registeredVehicles.put(veh.getName(), new AtomicReference<>(null));
@@ -309,6 +308,9 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 log.debug("VEH (id={}) has NO application and is ignored in "
                         + "communication simulation", veh.getName());
             }
+        }
+        for (CellularCommunicationConfiguration pendingConfiguration: new ArrayList<>(pendingConfigurations)) {
+            process(pendingConfiguration);
         }
     }
 

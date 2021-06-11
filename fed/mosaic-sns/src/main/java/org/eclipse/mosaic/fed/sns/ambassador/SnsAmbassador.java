@@ -22,7 +22,6 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
@@ -32,7 +31,6 @@ import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
-import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.v2x.V2xReceiverInformation;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -111,9 +109,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 this.process((ChargingStationRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(TrafficLightRegistration.TYPE_ID)) {
                 this.process((TrafficLightRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleRegistration.TYPE_ID)) {
-                this.process((VehicleRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+            }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(AdHocCommunicationConfiguration.TYPE_ID)) {
                 this.process((AdHocCommunicationConfiguration) interaction);
@@ -148,18 +144,6 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         if (applicationTl.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationTl.getName(), applicationTl.getPosition().toCartesian());
             log.info("Added TrafficLight id={} @time={}", applicationTl.getName(), TIME.format(interaction.getTime()));
-        }
-    }
-
-    private void process(VehicleRegistration interaction) {
-        final VehicleMapping applicationVeh = interaction.getMapping();
-        if (applicationVeh.hasApplication()) {
-            registeredVehicles.put(applicationVeh.getName(), null);
-            log.debug(
-                    "Registered Vehicle (with application) for later adding id={} @time={}",
-                    applicationVeh.getName(),
-                    TIME.format(interaction.getTime())
-            );
         }
     }
 
@@ -208,11 +192,9 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                     if (adHocConfiguration.getConf0().getRadius() != null) {
                         communicationRadius = adHocConfiguration.getConf0().getRadius();
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug(
-                                    "Node {} is configured with a power value. The SNS supposed to handle configurations using radii.",
-                                    adHocConfiguration.getNodeId());
-                        }
+                        log.warn(
+                                "Node {} is configured with a power value. The SNS supposed to handle configurations using radii.",
+                                adHocConfiguration.getNodeId());
                     }
                 }
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
