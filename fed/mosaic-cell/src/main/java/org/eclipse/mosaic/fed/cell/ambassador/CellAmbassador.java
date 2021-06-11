@@ -298,18 +298,11 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      */
     private void process(VehicleRegistration vehicleRegistration) throws InternalFederateException {
         VehicleMapping veh = vehicleRegistration.getMapping();
-        if (veh.hasApplication()) {
-            registeredVehicles.put(veh.getName(), new AtomicReference<>(null));
-            log.debug("Registered VEH (id={}, with app(s)={}) for later adding upon VehicleUpdates, t={}",
-                    veh.getName(), veh.getApplications(),
-                    TIME.format(vehicleRegistration.getTime()));
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("VEH (id={}) has NO application and is ignored in "
-                        + "communication simulation", veh.getName());
-            }
-        }
-        for (CellularCommunicationConfiguration pendingConfiguration: new ArrayList<>(pendingConfigurations)) {
+        registeredVehicles.put(veh.getName(), new AtomicReference<>(null));
+        log.debug("Registered VEH (id={}, with app(s)={}) for later adding upon VehicleUpdates, t={}",
+                veh.getName(), veh.getApplications(),
+                TIME.format(vehicleRegistration.getTime()));
+        for (CellularCommunicationConfiguration pendingConfiguration : new ArrayList<>(pendingConfigurations)) {
             process(pendingConfiguration);
         }
     }
@@ -535,9 +528,10 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      * @return True if cellular communication enabled.
      */
     private boolean isVehicleCellEnabled(VehicleData added) {
-        return registeredVehicles.containsKey(added.getName())
-                && registeredVehicles.get(added.getName()).get() != null
-                && registeredVehicles.get(added.getName()).get().isCellCommunicationEnabled();
+        final AtomicReference<CellConfiguration> registeredVehicle = registeredVehicles.get(added.getName());
+        return registeredVehicle != null
+                && registeredVehicle.get() != null
+                && registeredVehicle.get().isCellCommunicationEnabled();
     }
 
     private Optional<HandoverInfo> handleVehicleCellConfiguration(String nodeId, CellConfiguration cellConfiguration, Long interactionTime) throws InternalFederateException {
