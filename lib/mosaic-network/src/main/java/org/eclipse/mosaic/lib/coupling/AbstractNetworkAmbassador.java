@@ -21,7 +21,6 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
-import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.coupling.ClientServerChannel.CMD;
 import org.eclipse.mosaic.lib.coupling.ClientServerChannel.NodeDataContainer;
@@ -279,8 +278,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         // 2nd step of time management cycle (deliver interactions to the federate)
         if (interaction.getTypeId().equals(VehicleRegistration.TYPE_ID)) {
             this.receiveTypedInteraction((VehicleRegistration) interaction);
-        } else if (interaction.getTypeId().equals(ScenarioVehicleRegistration.TYPE_ID)) {
-            this.receiveTypedInteraction((ScenarioVehicleRegistration) interaction);
         } else if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             this.receiveTypedInteraction((RsuRegistration) interaction);
         } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
@@ -382,29 +379,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         for (AdHocCommunicationConfiguration pendingConfiguration: new ArrayList<>(pendingConfigurations)) {
             receiveTypedInteraction(pendingConfiguration);
         }
-    }
-
-    /**
-     * Store nodes for later adding based on received vehicle mappings.
-     * <br>
-     * The unique mapping of RTI string-ids to federate integer-ids
-     * is also done in the handling of the vehicle movements
-     *
-     * @param interaction interaction containing a mapping of added vehicles
-     */
-    private synchronized void receiveTypedInteraction(ScenarioVehicleRegistration interaction) {
-        this.log.debug(
-                "Received ScenarioVehicleRegistration for vehicle {} at simulation time {} ",
-                interaction.getName(),
-                interaction.getTime()
-        );
-        // We have got this Vehicle already
-        if (idTransformer.containsInternalId(interaction.getName()) || newVirtualVehicles.containsKey(interaction.getName())) {
-            this.log.warn("A vehicle with ID {} was already added. Ignoring message.", interaction.getName());
-            return;
-        }
-        // Add new virtual vehicle-container without config message or position
-        newVirtualVehicles.put(interaction.getName(), new VirtualNodeContainer(null, null));
     }
 
     /**
@@ -662,12 +636,13 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             if (nc.position != null) { // If we now have AdHoc config and position add the vehicle
                 addVehicleToSimulation(nodeId, interaction.getTime());
             } else {
-                log.debug("Saving Configuration for later insertion as vehicle has not moved yet");
+                log.debug("Saving Configuration for later insertion as vehicle {} has not moved yet.", nodeId);
             }
         } else if (newVirtualRsus.containsKey(nodeId)) {
             newVirtualRsus.get(nodeId).configAdHoc = interaction;
             addRsuToSimulation(nodeId, interaction.getTime()); // RSUs get a position and add time, so we can add it now
         } else {
+            log.debug("Saving Configuration for later registration of vehicle {}", nodeId);
             // if no vehicle is present for this configuration, then we store it for later
             pendingConfigurations.add(interaction);
         }
