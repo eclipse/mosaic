@@ -275,7 +275,13 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             } else if (registeredServers.containsKey(nodeId)) { // handle servers
                 handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else {
-                log.warn("Could not handle unknown entity {}", nodeId);
+                if (cellConfiguration.isCellCommunicationEnabled()) {
+                    throw new InternalFederateException(
+                            "Cell Ambassador: Cannot activate Cell module for \"" + nodeId + "\" because the id is unknown"
+                    );
+                } else {
+                    log.debug("Tried to deactivate the Cell module for a node with the unknown id: {}", nodeId);
+                }
             }
         }
         handoverInfo.ifPresent((handover) -> {

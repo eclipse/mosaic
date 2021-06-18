@@ -18,6 +18,7 @@ package org.eclipse.mosaic.lib.coupling;
 import org.eclipse.mosaic.interactions.communication.AdHocCommunicationConfiguration;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -33,6 +34,7 @@ import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.addressing.DestinationAddressContainer;
 import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
+import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -279,6 +281,8 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             this.receiveTypedInteraction((RsuRegistration) interaction);
         } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
             this.receiveTypedInteraction((TrafficLightRegistration) interaction);
+        } else if (interaction.getTypeId().equals(ChargingStationRegistration.TYPE_ID)) {
+            this.receiveTypedInteraction((ChargingStationRegistration) interaction);
         } else if (interaction.getTypeId().equals(VehicleUpdates.TYPE_ID)) {
             this.receiveTypedInteraction((VehicleUpdates) interaction);
         } else if (interaction.getTypeId().equals(V2xMessageTransmission.TYPE_ID)) {
@@ -361,19 +365,19 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 interaction.getMapping().getName(),
                 interaction.getTime()
         );
-        RsuMapping ar = interaction.getMapping();
-        if (idTransformer.containsInternalId(ar.getName()) || newVirtualRsus.containsKey(ar.getName())) {  // We have got this RSU already
-            this.log.warn("A RSU with ID {} was already added. Ignoring message.", ar.getName());
+        RsuMapping mapping = interaction.getMapping();
+        if (idTransformer.containsInternalId(mapping.getName()) || newVirtualRsus.containsKey(mapping.getName())) {  // We have got this RSU already
+            this.log.warn("A RSU with ID {} was already added. Ignoring message.", mapping.getName());
             return;
         }
         // Put the new RSU into our list of virtually added RSUs with no AdHoc configuration yet
-        newVirtualRsus.put(ar.getName(), new VirtualNodeContainer(null, ar.getPosition().toCartesian()));
+        newVirtualRsus.put(mapping.getName(), new VirtualNodeContainer(null, mapping.getPosition().toCartesian()));
     }
 
     /**
      * Add nodes based on received traffic light mappings.
      * The method checks if the TLs are already present.
-     * If not, the positions are converted and a list of TLs and their positions is kept for later adding if an AdHocMessage is received.
+     * If not, the traffic light is added as a virtual node for later adding if an AdhocModuleConfiguration is received.
      *
      * @param interaction interaction containing a mapping of added traffic light
      */
@@ -392,6 +396,30 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         }
         // Put the new TL RSU into our list of virtually added RSUs with no AdHoc configuration yet
         newVirtualRsus.put(group.getGroupId(), new VirtualNodeContainer(null, group.getFirstPosition().toCartesian()));
+    }
+
+    /**
+     * Add nodes based on received charging station mappings.
+     * The method checks if the ChargingStation RSU is already present.
+     * If not, the charging station is added as a virtual node for later adding if an AdhocModuleConfiguration is received.
+     *
+     * @param interaction interaction containing a mapping of added traffic light
+     */
+    private synchronized void receiveTypedInteraction(ChargingStationRegistration interaction) {
+        this.log.debug(
+                "Add charging station RSU for CS {} at simulation time {} ",
+                interaction.getMapping().getName(),
+                interaction.getTime()
+        );
+        // ApplicationTrafficLight at = msg.getApplicationTrafficLight();
+        ChargingStationMapping mapping = interaction.getMapping();
+        // We have got this TL already
+        if (idTransformer.containsInternalId(mapping.getName()) || newVirtualRsus.containsKey(mapping.getName())) {
+            this.log.warn("A ChargingStation with ID {} was already added. Ignoring message.", mapping.getName());
+            return;
+        }
+        // Put the new TL RSU into our list of virtually added RSUs with no AdHoc configuration yet
+        newVirtualRsus.put(mapping.getName(), new VirtualNodeContainer(null, mapping.getPosition().toCartesian()));
     }
 
     /**
@@ -611,7 +639,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             newVirtualRsus.get(nodeId).configAdHoc = interaction;
             addRsuToSimulation(nodeId, interaction.getTime()); // RSUs get a position and add time, so we can add it now
         } else {
-            log.warn("Could not handle unknown entity {}", nodeId);
+            log.warn("Got AdHoc configuration for unknown node {}. Ignoring.", nodeId);
         }
     }
 
