@@ -1,16 +1,16 @@
 {
     "simulation": {
-        "id": "MosaicAndSumoVehicles",
-        "duration": "400s",
+        "id": "sumo-traci-app-interaction",
+        "duration": "12s",
         "randomSeed": 268965854,
         "projection": {
             "centerCoordinates": {
-                "latitude": 52.0,
-                "longitude": 13.0
+                "latitude": 13.0,
+                "longitude": 52.0
             },
             "cartesianOffset": {
-                "x": -385769.05,
-                "y": -5819239.15
+                "x": -384576.96,
+                "y": -5816898.16
             }
         },
         "network": {
@@ -25,9 +25,6 @@
     },
     "federates": {
         "application": true,
-        "cell": false,
-        "sns": false,
-        "sumo": true,
-        "output": false
+        "sumo": true
     }
 }

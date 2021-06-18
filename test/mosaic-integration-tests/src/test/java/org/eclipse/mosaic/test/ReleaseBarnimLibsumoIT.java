@@ -30,7 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class BarnimLibsumoIT {
+public class ReleaseBarnimLibsumoIT {
 
     @ClassRule
     public static LibsumoCheckRule libsumoCheckRule = new LibsumoCheckRule();

@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,10 +145,11 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     public MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory) {
         try {
-            return executeSimulation(scenarioDirectory,
-                    new ObjectInstantiation<>(CScenario.class)
-                            .readFile(scenarioDirectory.resolve("scenario_config.json").toFile())
-            );
+            File scenarioFile = scenarioDirectory.resolve("scenario_config.json").toFile();
+            if (scenarioFile.exists()) {
+                return executeSimulation(scenarioDirectory, new ObjectInstantiation<>(CScenario.class).readFile(scenarioFile));
+            }
+            throw new InstantiationException("Could not find scenario configuration in " + scenarioFile.getPath());
         } catch (InstantiationException e) {
             LOG.error("", e);
 
