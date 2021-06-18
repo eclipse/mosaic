@@ -102,6 +102,7 @@
             "start": true,
             "subscriptions": [
                 "RsuRegistration",
+                "ChargingStationRegistration",
                 "TrafficLightRegistration",
                 "VehicleUpdates",
                 "V2xMessageTransmission",
@@ -122,6 +123,7 @@
             "start": true,
             "subscriptions": [
                 "RsuRegistration",
+                "ChargingStationRegistration",
                 "TrafficLightRegistration",
                 "VehicleUpdates",
                 "V2xMessageTransmission",
