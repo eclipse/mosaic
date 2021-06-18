@@ -78,7 +78,6 @@
             "deploy": false,
             "start": false,
             "subscriptions": [
-                "VehicleRegistration",
                 "RsuRegistration",
                 "TmcRegistration",
                 "ServerRegistration",
@@ -102,7 +101,6 @@
             "deploy": true,
             "start": true,
             "subscriptions": [
-                "VehicleRegistration",
                 "RsuRegistration",
                 "TrafficLightRegistration",
                 "VehicleUpdates",
@@ -123,7 +121,6 @@
             "deploy": true,
             "start": true,
             "subscriptions": [
-                "VehicleRegistration",
                 "RsuRegistration",
                 "TrafficLightRegistration",
                 "VehicleUpdates",

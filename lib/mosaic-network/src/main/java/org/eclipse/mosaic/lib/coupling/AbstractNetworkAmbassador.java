@@ -29,11 +29,11 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.UnitData;
 import org.eclipse.mosaic.lib.objects.UnitNameComparator;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.addressing.DestinationAddressContainer;
 import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
-import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -56,7 +56,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 /**
  * The Ambassador for coupling a network simulator to MOSAIC RTI.
@@ -108,11 +110,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     private final Map<String, VirtualNodeContainer> newVirtualRsus;
 
     /**
-     * Holds adhoc configurations for vehicles which have not been registered yet.
-     */
-    private final List<AdHocCommunicationConfiguration> pendingConfigurations = new ArrayList<>();
-
-    /**
      * Holds a BiMap of internal (mosaic) and external (federate) unit ID's ({@code BiMap<String, Integer>}).
      * If simulated entity is in this map, the entity is present within the simulator.
      */
@@ -127,6 +124,8 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      * The actual federates name.
      */
     private final String federateName;
+
+    private VehicleUpdates latestVehicleUpdates = null;
 
     /**
      * A config object for whether to bypass federate destination type capability queries in
@@ -276,9 +275,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
         this.log.debug("ProcessInteraction {} at time={}", interaction.getTypeId(), interaction.getTime());
         // 2nd step of time management cycle (deliver interactions to the federate)
-        if (interaction.getTypeId().equals(VehicleRegistration.TYPE_ID)) {
-            this.receiveTypedInteraction((VehicleRegistration) interaction);
-        } else if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
+        if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             this.receiveTypedInteraction((RsuRegistration) interaction);
         } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
             this.receiveTypedInteraction((TrafficLightRegistration) interaction);
@@ -354,34 +351,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     }
 
     /**
-     * Store nodes for later adding based on received vehicle mappings.
-     * <br>
-     * The unique mapping of RTI string-ids to federate integer-ids
-     * is also done in the handling of the vehicle movements
-     *
-     * @param interaction interaction containing a mapping of added vehicles
-     */
-    private synchronized void receiveTypedInteraction(VehicleRegistration interaction) throws InternalFederateException {
-        this.log.debug(
-                "Received VehicleRegistration for vehicle {} at simulation time {} ",
-                interaction.getMapping().getName(),
-                interaction.getTime()
-        );
-        VehicleMapping av = interaction.getMapping();
-        // We have got this Vehicle already
-        if (idTransformer.containsInternalId(av.getName()) || newVirtualVehicles.containsKey(av.getName())) {
-            this.log.warn("A vehicle with ID {} was already added. Ignoring message.", av.getName());
-            return;
-        }
-        // Add new virtual vehicle-container without config message or position
-        newVirtualVehicles.put(av.getName(), new VirtualNodeContainer(null, null));
-
-        for (AdHocCommunicationConfiguration pendingConfiguration: new ArrayList<>(pendingConfigurations)) {
-            receiveTypedInteraction(pendingConfiguration);
-        }
-    }
-
-    /**
      * Add nodes based on received rsu mappings.
      *
      * @param interaction interaction containing a mapping of added rsu
@@ -447,6 +416,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     private synchronized void receiveTypedInteraction(VehicleUpdates interaction) throws InternalFederateException {
         try {
+            latestVehicleUpdates = interaction;
             // Process VehicleRegistrations in VehicleUpdates interaction
             // Sort vehicles alphanumerical just in case there are multiple ones in the msg
             // (this helps for a better human-readable mapping of RTI string-ids and federate int-ids)
@@ -624,16 +594,15 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      * @param interaction the AdHoc configuration interaction
      */
     protected synchronized void receiveTypedInteraction(AdHocCommunicationConfiguration interaction) throws InternalFederateException {
-        pendingConfigurations.remove(interaction);
         final String nodeId = interaction.getConfiguration().getNodeId();
         log.debug("Received AdHoc configuration for node {}", interaction.getConfiguration().getNodeId());
         if (idTransformer.containsInternalId(nodeId)) { // node is simulated -> send interaction
             log.debug("Sending Configuration now");
             sendAdHocCommunicationConfiguration(interaction, interaction.getTime());
-        } else if (newVirtualVehicles.containsKey(nodeId)) {
-            VirtualNodeContainer nc = newVirtualVehicles.get(nodeId);
-            nc.configAdHoc = interaction;
-            if (nc.position != null) { // If we now have AdHoc config and position add the vehicle
+        } else if (UnitNameGenerator.isVehicle(nodeId)) {
+            VehicleData latest = fetchVehicleDataFromLastUpdate(nodeId).orElse(null);
+            newVirtualVehicles.put(nodeId, new VirtualNodeContainer(interaction, latest != null ? latest.getProjectedPosition() : null));
+            if (latest != null) { // If we now have AdHoc config and position add the vehicle
                 addVehicleToSimulation(nodeId, interaction.getTime());
             } else {
                 log.debug("Saving Configuration for later insertion as vehicle {} has not moved yet.", nodeId);
@@ -642,10 +611,18 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             newVirtualRsus.get(nodeId).configAdHoc = interaction;
             addRsuToSimulation(nodeId, interaction.getTime()); // RSUs get a position and add time, so we can add it now
         } else {
-            log.debug("Saving Configuration for later registration of vehicle {}", nodeId);
-            // if no vehicle is present for this configuration, then we store it for later
-            pendingConfigurations.add(interaction);
+            log.warn("Could not handle unknown entity {}", nodeId);
         }
+    }
+
+    private synchronized Optional<VehicleData> fetchVehicleDataFromLastUpdate(String vehicleId) {
+        if (latestVehicleUpdates == null) {
+            return Optional.empty();
+        }
+        // see if vehicle was added or updated within the last vehicle update
+        return Stream.concat(latestVehicleUpdates.getAdded().stream(), latestVehicleUpdates.getUpdated().stream())
+                .filter(v -> v.getName().equals(vehicleId))
+                .findFirst();
     }
 
     private synchronized void addRsuToSimulation(String nodeId, long time) throws InternalFederateException {

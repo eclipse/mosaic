@@ -34,10 +34,10 @@ import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.communication.HandoverInfo;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
@@ -45,7 +45,6 @@ import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
 import org.eclipse.mosaic.lib.objects.mapping.ServerMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TmcMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
-import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.AbstractFederateAmbassador;
@@ -100,8 +99,6 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      * Vehicles to be added to {@link #simData} as soon as they configure cellular communication AND have moved in traffic simulation.
      */
     private final Map<String, AtomicReference<CellConfiguration>> registeredVehicles = new HashMap<>();
-
-    private final List<CellularCommunicationConfiguration> pendingConfigurations = new ArrayList<>();
 
     private BandwidthMeasurementManager bandwidthMeasurementManager;
 
@@ -209,9 +206,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         }
 
         // Process interactions as usual in all communication simulators
-        if (interaction.getTypeId().equals(VehicleRegistration.TYPE_ID)) {
-            process((VehicleRegistration) interaction);
-        } else if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
+        if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             process((RsuRegistration) interaction);
         } else if (interaction.getTypeId().equals(TmcRegistration.TYPE_ID)) {
             process((TmcRegistration) interaction);
@@ -254,17 +249,18 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 )
         );
 
-        pendingConfigurations.remove(interaction);
-
         final String nodeId = cellConfiguration.getNodeId();
-        final boolean isVehicle = registeredVehicles.containsKey(nodeId);
+        final boolean isVehicle = UnitNameGenerator.isVehicle(nodeId);
+
         Optional<HandoverInfo> handoverInfo = Optional.empty();
         if (!cellConfiguration.isEnabled()) {
             handoverInfo = disableCellForNode(nodeId);
             if (isVehicle) {
                 // keep the vehicle in the registeredVehicles map since it could enable the cell module again
                 // the update cell configuration has the cell module disabled
-                registeredVehicles.get(nodeId).set(cellConfiguration);
+                registeredVehicles
+                        .computeIfAbsent(nodeId, k -> new AtomicReference<>())
+                        .set(cellConfiguration);
             }
             log.info(
                     "Disabled Cell Communication for "
@@ -279,8 +275,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             } else if (registeredServers.containsKey(nodeId)) { // handle servers
                 handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else {
-                pendingConfigurations.add(interaction);
-                return;
+                log.warn("Could not handle unknown entity {}", nodeId);
             }
         }
         handoverInfo.ifPresent((handover) -> {
@@ -288,23 +283,6 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             CellularHandoverUpdates handoverUpdatesInteraction = new CellularHandoverUpdates(interactionTime, handoverInfos);
             chainManager.sendInteractionToRti(handoverUpdatesInteraction);
         });
-    }
-
-    /**
-     * Registers the new vehicle in the cell simulation.
-     * The cell configuration and the position have not been set yet.
-     *
-     * @param vehicleRegistration vehicle to be added to the cell simulation.
-     */
-    private void process(VehicleRegistration vehicleRegistration) throws InternalFederateException {
-        VehicleMapping veh = vehicleRegistration.getMapping();
-        registeredVehicles.put(veh.getName(), new AtomicReference<>(null));
-        log.debug("Registered VEH (id={}, with app(s)={}) for later adding upon VehicleUpdates, t={}",
-                veh.getName(), veh.getApplications(),
-                TIME.format(vehicleRegistration.getTime()));
-        for (CellularCommunicationConfiguration pendingConfiguration : new ArrayList<>(pendingConfigurations)) {
-            process(pendingConfiguration);
-        }
     }
 
     /**
@@ -535,7 +513,9 @@ public class CellAmbassador extends AbstractFederateAmbassador {
     }
 
     private Optional<HandoverInfo> handleVehicleCellConfiguration(String nodeId, CellConfiguration cellConfiguration, Long interactionTime) throws InternalFederateException {
-        registeredVehicles.get(nodeId).set(cellConfiguration);
+        registeredVehicles
+                .computeIfAbsent(nodeId, k -> new AtomicReference<>())
+                .set(cellConfiguration);
         Optional<HandoverInfo> handoverInfo = Optional.empty();
         // update the cell configuration if the cell module was already activated
         if (simData.containsCellConfigurationOfNode(nodeId)) {
