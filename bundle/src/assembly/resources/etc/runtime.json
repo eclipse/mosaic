@@ -141,8 +141,8 @@
             "deploy": false,
             "start": false,
             "subscriptions": [
-                "VehicleRegistration",
                 "RsuRegistration",
+                "ChargingStationRegistration",
                 "TrafficLightRegistration",
                 "VehicleUpdates",
                 "V2xMessageTransmission",
