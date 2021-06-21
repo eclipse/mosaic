@@ -25,7 +25,7 @@ public class SimulationGetDepartedVehicleIds implements org.eclipse.mosaic.fed.s
 
     public List<String> execute(Bridge bridge) {
         return Simulation.getDepartedIDList().stream()
-                .map(Bridge.VEHICLE_ID_TRANSFORMER::toExternalId)
+                .map(Bridge.VEHICLE_ID_TRANSFORMER::fromExternalId)
                 .collect(Collectors.toList());
     }
 

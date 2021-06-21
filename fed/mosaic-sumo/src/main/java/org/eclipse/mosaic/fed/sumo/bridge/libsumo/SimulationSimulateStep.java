@@ -68,40 +68,41 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     }
 
     private void readVehicles(List<AbstractSubscriptionResult> results) {
-        for (String vehicle : Vehicle.getIDList()) {
-            vehicle = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle);
+        String mosaicVehicleId;
+        for (String sumoVehicleId : Vehicle.getIDList()) {
+            mosaicVehicleId = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(sumoVehicleId);
 
-            if (!VEHICLE_SUBSCRIPTIONS.contains(vehicle)) {
+            if (!VEHICLE_SUBSCRIPTIONS.contains(mosaicVehicleId)) {
                 continue;
             }
 
             VehicleSubscriptionResult result = new VehicleSubscriptionResult();
-            result.id = vehicle;
-            result.speed = Vehicle.getSpeed(vehicle);
-            result.distanceDriven = Vehicle.getDistance(vehicle);
-            result.heading = Vehicle.getAngle(vehicle);
-            result.slope = Vehicle.getSlope(vehicle);
-            result.acceleration = Vehicle.getAcceleration(vehicle);
-            result.minGap = Vehicle.getMinGap(vehicle);
+            result.id = mosaicVehicleId;
+            result.speed = Vehicle.getSpeed(sumoVehicleId);
+            result.distanceDriven = Vehicle.getDistance(sumoVehicleId);
+            result.heading = Vehicle.getAngle(sumoVehicleId);
+            result.slope = Vehicle.getSlope(sumoVehicleId);
+            result.acceleration = Vehicle.getAcceleration(sumoVehicleId);
+            result.minGap = Vehicle.getMinGap(sumoVehicleId);
 
-            TraCIPosition traCIPosition = Vehicle.getPosition(vehicle);
+            TraCIPosition traCIPosition = Vehicle.getPosition(sumoVehicleId);
             result.position = new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
 
-            result.stoppedStateEncoded = Vehicle.getStopState(vehicle);
-            result.signalsEncoded = Vehicle.getSignals(vehicle);
+            result.stoppedStateEncoded = Vehicle.getStopState(sumoVehicleId);
+            result.signalsEncoded = Vehicle.getSignals(sumoVehicleId);
 
-            result.routeId = Vehicle.getRouteID(vehicle);
+            result.routeId = Vehicle.getRouteID(sumoVehicleId);
 
-            result.edgeId = Vehicle.getRoadID(vehicle);
-            result.lanePosition = Vehicle.getLanePosition(vehicle);
-            result.lateralLanePosition = Vehicle.getLateralLanePosition(vehicle);
+            result.edgeId = Vehicle.getRoadID(sumoVehicleId);
+            result.lanePosition = Vehicle.getLanePosition(sumoVehicleId);
+            result.lateralLanePosition = Vehicle.getLateralLanePosition(sumoVehicleId);
 
-            result.co2 = Vehicle.getCO2Emission(vehicle);
-            result.co = Vehicle.getCOEmission(vehicle);
-            result.hc = Vehicle.getHCEmission(vehicle);
-            result.pmx = Vehicle.getPMxEmission(vehicle);
-            result.nox = Vehicle.getNOxEmission(vehicle);
-            result.fuel = Vehicle.getFuelConsumption(vehicle);
+            result.co2 = Vehicle.getCO2Emission(sumoVehicleId);
+            result.co = Vehicle.getCOEmission(sumoVehicleId);
+            result.hc = Vehicle.getHCEmission(sumoVehicleId);
+            result.pmx = Vehicle.getPMxEmission(sumoVehicleId);
+            result.nox = Vehicle.getNOxEmission(sumoVehicleId);
+            result.fuel = Vehicle.getFuelConsumption(sumoVehicleId);
 
             results.add(result);
         }

@@ -36,7 +36,9 @@ public class ReleaseBarnimIT {
 
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeReleaseScenario("Barnim");
+        simulationResult = simulationRule
+                .scenarioConfigurationManipulator(scenario -> scenario.federates.put("cell", true))
+                .executeReleaseScenario("Barnim");
     }
 
     @Test
@@ -47,10 +49,12 @@ public class ReleaseBarnimIT {
 
     @Test
     public void navigationSuccessful() throws Exception {
-        assertEquals(24,
+        // 24 adhoc vehicles + 12 cell vehicles
+        assertEquals(36,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Request to switch to new route for vehicle .*")
         );
-        assertEquals(14,
+        // 14 adhoc vehicles + 12 cell vehicles
+        assertEquals(26,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Change to route [2-9] for vehicle .*")
         );
     }

@@ -56,6 +56,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
@@ -67,7 +68,9 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Path logDirectory;
 
     protected String logLevelOverride = null;
-    protected Map<String, String> federateOverride = new HashMap<>();
+    protected Consumer<CScenario> scenarioConfigManipulator = c -> {};
+    protected Map<String, Consumer<CRuntime.CFederate>> federateManipulators = new HashMap<>();
+
     protected long timeout = 5 * TIME.MINUTE;
 
     @Override
@@ -83,19 +86,14 @@ public class MosaicSimulationRule extends TemporaryFolder {
         return this;
     }
 
-    public MosaicSimulationRule federateOverride(String federateName, Class federateAmbassador) {
-        this.federateOverride.put(federateName, federateAmbassador.getCanonicalName());
+    public MosaicSimulationRule federateConfigurationManipulator(String federate, Consumer<CRuntime.CFederate> federateManipulator) {
+        this.federateManipulators.put(federate, federateManipulator);
         return this;
     }
 
-    private void setFederateOverride(Map<String, String> federateOverride) {
-        for (Map.Entry<String, String> federateEntry : federateOverride.entrySet()) {
-            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
-                if (federate.id.equals(federateEntry.getKey())) {
-                    federate.classname = federateEntry.getValue();
-                }
-            }
-        }
+    public MosaicSimulationRule scenarioConfigurationManipulator(Consumer<CScenario> manipulator) {
+        this.scenarioConfigManipulator = manipulator;
+        return this;
     }
 
     public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
@@ -165,7 +163,11 @@ public class MosaicSimulationRule extends TemporaryFolder {
             logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
-            setFederateOverride(federateOverride);
+            scenarioConfigManipulator.accept(scenarioConfiguration);
+            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
+                federateManipulators.getOrDefault(federate.id, f -> {}).accept(federate);
+            }
+
             return logError(timeout(() -> new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
