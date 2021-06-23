@@ -96,6 +96,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.edgeId = Vehicle.getRoadID(sumoVehicleId);
             result.lanePosition = Vehicle.getLanePosition(sumoVehicleId);
             result.lateralLanePosition = Vehicle.getLateralLanePosition(sumoVehicleId);
+            result.laneIndex = Vehicle.getLaneIndex(sumoVehicleId);
 
             result.co2 = Vehicle.getCO2Emission(sumoVehicleId);
             result.co = Vehicle.getCOEmission(sumoVehicleId);
