@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 /**
  * This interface extends the basic {@link OperatingSystem} and
  * is implemented by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit}
- * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUni}.
+ * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit}.
  */
 public interface VehicleOperatingSystem extends OperatingSystem, INavigationModuleOwner {
 

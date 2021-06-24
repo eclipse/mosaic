@@ -15,11 +15,11 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -59,7 +59,7 @@ public class RoadSideUnitSpawner extends UnitSpawner implements Spawner {
      * @throws InternalFederateException thrown if {@link RsuRegistration} couldn't be handled by rti
      */
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
-        String name = NameGenerator.getRsuName();
+        String name = UnitNameGenerator.nextRsuName();
         RsuRegistration interaction = new RsuRegistration(0, name, group, getAppList(), this.position);
         try {
             LOG.info("Creating RSU " + this.toString());

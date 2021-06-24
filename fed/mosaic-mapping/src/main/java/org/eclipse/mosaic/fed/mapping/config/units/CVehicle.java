@@ -40,52 +40,6 @@ import java.util.List;
  */
 public class CVehicle implements Comparable<CVehicle> {
 
-    /**
-     * Mapper to define an Origin-Destination Matrix. The mapper contains a list of points (with
-     * varying radius) and a matrix (arrays) of flow values. It creates a series of
-     * conventional vehicles spawners from the specified data.
-     */
-    public static class COriginDestinationMatrixMapper {
-
-        /**
-         * List of points that can be referenced from the OD-matrix.
-         */
-        public List<COriginDestinationPoint> points;
-
-        /**
-         * List of the vehicles that should be spawned.
-         */
-        public List<CPrototype> types;
-
-        /**
-         * If deterministic is true the spawning-process will be exactly the same
-         * with every execution. If left false the order is different and the
-         * selected weights will be reached slower than in the deterministic mode.
-         */
-        public Boolean deterministic = true;
-
-        /**
-         * Values for the OD-matrix. Unit should be vehicles/hour.
-         */
-        public List<List<Double>> odValues;
-    }
-
-    /**
-     * Defines a point that can be referenced from an OD-matrix.
-     */
-    public static class COriginDestinationPoint {
-        /**
-         * The name of the point.
-         */
-        public String name;
-
-        /**
-         * The center of the circle and the distance from the point from which vehicles will be spawned.
-         * If left empty (<code>0</code>) then only the closest node will be used.
-         */
-        public GeoCircle position;
-    }
-
     public enum SpawningMode {
         CONSTANT, POISSON,
         GROW, SHRINK, GROW_AND_SHRINK,
@@ -306,7 +260,7 @@ public class CVehicle implements Comparable<CVehicle> {
                 .toHashCode();
     }
 
-    private static class DepartSpeedModeTypeAdapter extends AbstractEnumDefaultValueTypeAdapter<DepartSpeedMode> {
+    static class DepartSpeedModeTypeAdapter extends AbstractEnumDefaultValueTypeAdapter<DepartSpeedMode> {
         public DepartSpeedModeTypeAdapter() {
             super(DepartSpeedMode.MAXIMUM);
         }
@@ -318,7 +272,7 @@ public class CVehicle implements Comparable<CVehicle> {
         }
     }
 
-    private static class LaneSelectionModeTypeAdapter extends AbstractEnumDefaultValueTypeAdapter<LaneSelectionMode> {
+    static class LaneSelectionModeTypeAdapter extends AbstractEnumDefaultValueTypeAdapter<LaneSelectionMode> {
         public LaneSelectionModeTypeAdapter() {
             super(LaneSelectionMode.DEFAULT);
         }

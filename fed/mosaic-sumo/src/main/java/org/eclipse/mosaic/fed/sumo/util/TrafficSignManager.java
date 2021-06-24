@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.util;
 
-import org.eclipse.mosaic.fed.sumo.traci.TraciClient;
+import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.objects.trafficsign.LaneAssignment;
@@ -42,7 +42,7 @@ public class TrafficSignManager {
 
     private Set<String> variableTrafficSigns = new HashSet<>();
 
-    private TraciClient traciClient;
+    private Bridge bridge;
 
     private File sumoWorkingDir;
 
@@ -53,8 +53,8 @@ public class TrafficSignManager {
         this.laneWidth = laneWidth;
     }
 
-    public void configure(TraciClient traciClient, File sumoWorkingDir) throws IOException {
-        this.traciClient = traciClient;
+    public void configure(Bridge bridge, File sumoWorkingDir) throws IOException {
+        this.bridge = bridge;
         this.sumoWorkingDir = sumoWorkingDir;
         imageCreatorLaneAssignments = TrafficSignImageCreator.forLaneAssignments(sumoWorkingDir.toPath());
         imageCreatorSpeedLimits = TrafficSignImageCreator.forSpeedLimits(sumoWorkingDir.toPath());
@@ -94,8 +94,8 @@ public class TrafficSignManager {
         double distanceFromBase = ((laneIndexFromLeft + 1) * laneWidth) - (laneWidth / 2);
         double x = basePoint.getX() + Math.sin(Math.toRadians(angle + 90)) * distanceFromBase;
         double y = basePoint.getY() + Math.cos(Math.toRadians(angle + 90)) * distanceFromBase;
-        if (traciClient != null && image != null) {
-            traciClient.getPoiControl().addImagePoi(id, CartesianPoint.xy(x, y), image, laneWidth, laneWidth, angle);
+        if (bridge != null && image != null) {
+            bridge.getPoiControl().addImagePoi(id, CartesianPoint.xy(x, y), image, laneWidth, laneWidth, angle);
         } else {
             LOG.error("Could not add traffic sign image.");
         }
@@ -109,8 +109,8 @@ public class TrafficSignManager {
 
         String id = String.format("%s_lane%d", trafficSignId, lane);
         String image = getImageForSpeedLimit(new SpeedLimit(lane, speedLimit));
-        if (traciClient != null && image != null) {
-            traciClient.getPoiControl().changeImage(id, image);
+        if (bridge != null && image != null) {
+            bridge.getPoiControl().changeImage(id, image);
         } else {
             LOG.error("Could not add traffic sign image.");
         }
@@ -124,8 +124,8 @@ public class TrafficSignManager {
 
         String id = String.format("%s_lane%d", trafficSignId, lane);
         String image = getImageForLaneAssignment(new LaneAssignment(lane, allowedVehicleClasses));
-        if (traciClient != null && image != null) {
-            traciClient.getPoiControl().changeImage(id, image);
+        if (bridge != null && image != null) {
+            bridge.getPoiControl().changeImage(id, image);
         } else {
             LOG.error("Could not add traffic sign image.");
         }

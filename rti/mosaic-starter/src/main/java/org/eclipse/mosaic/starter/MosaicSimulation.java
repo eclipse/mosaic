@@ -17,11 +17,11 @@ package org.eclipse.mosaic.starter;
 
 import org.eclipse.mosaic.lib.geo.UtmPoint;
 import org.eclipse.mosaic.lib.geo.UtmZone;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
 import org.eclipse.mosaic.lib.transform.UtmGeoCalculator;
 import org.eclipse.mosaic.lib.transform.Wgs84Projection;
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.lib.util.SocketUtils;
 import org.eclipse.mosaic.lib.util.XmlUtils;
 import org.eclipse.mosaic.rti.MosaicComponentParameters;
@@ -213,7 +213,7 @@ public class MosaicSimulation {
         GeoProjection.initialize(createTransformation(scenarioConfiguration));
         GeoProjection.getInstance().setGeoCalculator(new UtmGeoCalculator());
         IpResolver.setSingleton(createIpResolver(scenarioConfiguration));
-        NameGenerator.reset();
+        UnitNameGenerator.reset();
     }
 
     protected void printMosaicVersion() {

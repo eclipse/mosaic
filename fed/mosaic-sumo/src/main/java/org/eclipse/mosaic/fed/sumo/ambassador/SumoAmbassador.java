@@ -223,7 +223,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private void sumoStartupProcedure() throws InternalFederateException {
         writeTypesFromRti(cachedVehicleTypesInitialization);
         startSumoLocal();
-        initTraci();
+        initSumoConnection();
         readInitialRoutesFromTraci();
         addInitialRoutes();
     }
@@ -235,7 +235,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * @throws InternalFederateException if Traci connection couldn't be established
      */
     private void readInitialRoutesFromTraci() throws InternalFederateException {
-        for (String id : traci.getRouteControl().getRouteIds()) {
+        for (String id : bridge.getRouteControl().getRouteIds()) {
             if (!routeCache.containsKey(id)) {
                 VehicleRoute route = readRouteFromTraci(id);
                 routeCache.put(route.getId(), route);
@@ -277,21 +277,21 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private void propagateSumoVehiclesToRti() throws InternalFederateException {
-        final List<String> departedVehicles = traci.getSimulationControl().getDepartedVehicles();
+        final List<String> departedVehicles = bridge.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
         for (String vehicleId : departedVehicles) {
             if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
                 continue;
             }
             vehiclesAddedViaRouteFile.add(vehicleId);
-            vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicleId);
+            vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
             try {
                 rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
             }
             if (sumoConfig.subscribeToAllVehicles) {
-                traci.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
+                bridge.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
             }
         }
     }
@@ -318,7 +318,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                         );
                     }
 
-                    traci.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
+                    bridge.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
 
                     applyChangesInVehicleTypeForVehicle(
                             vehicleId,
@@ -344,7 +344,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             try {
                 // always subscribe to vehicles, that are came from SUMO and are in notYetSubscribedVehicles-list
                 if (vehiclesAddedViaRouteFile.contains(vehicleId) || currentVehicleRegistration.getTime() <= time) {
-                    traci.getSimulationControl().subscribeForVehicle(vehicleId, currentVehicleRegistration.getTime(), this.getEndTime());
+                    bridge.getSimulationControl().subscribeForVehicle(vehicleId, currentVehicleRegistration.getTime(), this.getEndTime());
                     iterator.remove();
                 }
             } catch (InternalFederateException e) {
@@ -361,27 +361,27 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getTau(), baseVehicleType.getTau())) {
             double minReactionTime = sumoConfig.updateInterval / 1000d;
-            traci.getVehicleControl().setReactionTime(
+            bridge.getVehicleControl().setReactionTime(
                     vehicleId, Math.max(minReactionTime, actualVehicleType.getTau() + sumoConfig.timeGapOffset)
             );
         }
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getMaxSpeed(), baseVehicleType.getMaxSpeed())) {
-            traci.getVehicleControl().setMaxSpeed(vehicleId, actualVehicleType.getMaxSpeed());
+            bridge.getVehicleControl().setMaxSpeed(vehicleId, actualVehicleType.getMaxSpeed());
         }
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getAccel(), baseVehicleType.getAccel())) {
-            traci.getVehicleControl().setMaxAcceleration(vehicleId, actualVehicleType.getAccel());
+            bridge.getVehicleControl().setMaxAcceleration(vehicleId, actualVehicleType.getAccel());
         }
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getDecel(), baseVehicleType.getDecel())) {
-            traci.getVehicleControl().setMaxDeceleration(vehicleId, actualVehicleType.getDecel());
+            bridge.getVehicleControl().setMaxDeceleration(vehicleId, actualVehicleType.getDecel());
         }
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getMinGap(), baseVehicleType.getMinGap())) {
-            traci.getVehicleControl().setMinimumGap(vehicleId, actualVehicleType.getMinGap());
+            bridge.getVehicleControl().setMinimumGap(vehicleId, actualVehicleType.getMinGap());
         }
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getLength(), baseVehicleType.getLength())) {
-            traci.getVehicleControl().setVehicleLength(vehicleId, actualVehicleType.getLength());
+            bridge.getVehicleControl().setVehicleLength(vehicleId, actualVehicleType.getLength());
         }
         if (!MathUtils.isFuzzyEqual(actualVehicleType.getSpeedFactor(), baseVehicleType.getSpeedFactor())) {
-            traci.getVehicleControl().setSpeedFactor(vehicleId, actualVehicleType.getSpeedFactor());
+            bridge.getVehicleControl().setSpeedFactor(vehicleId, actualVehicleType.getSpeedFactor());
         }
     }
 
@@ -432,7 +432,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             log.warn("Couldn't add Route {}, because it is already known to SUMO.", routeId);
         } else {
             routeCache.put(routeId, route);
-            traci.getRouteControl().addRoute(routeId, route.getConnectionIds());
+            bridge.getRouteControl().addRoute(routeId, route.getConnectionIds());
         }
     }
 

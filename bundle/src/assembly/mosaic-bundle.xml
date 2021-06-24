@@ -23,6 +23,7 @@
         <fileSet>
             <directory>src/assembly/resources/fed</directory>
             <outputDirectory>bin/fed</outputDirectory>
+            <filtered>true</filtered>
             <includes>
                 <include>**</include>
             </includes>
@@ -151,6 +152,7 @@
                 <include>com.google.protobuf:protobuf-java</include>
                 <include>org.xerial:sqlite-jdbc</include>
                 <include>org.java-websocket:Java-WebSocket</include>
+                <include>org.eclipse.sumo:libsumo</include>
             </includes>
         </dependencySet>
     </dependencySets>
