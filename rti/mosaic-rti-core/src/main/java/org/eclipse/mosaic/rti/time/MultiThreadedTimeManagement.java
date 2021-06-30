@@ -174,7 +174,7 @@ public class MultiThreadedTimeManagement extends AbstractTimeManagement {
         }
 
         this.logger.debug("{} shutdown", getEndTime());
-        this.finishSimulationRun(101);
+        this.finishSimulationRun(STATUS_CODE_SUCCESS);
     }
 
     private static int createEventId() {

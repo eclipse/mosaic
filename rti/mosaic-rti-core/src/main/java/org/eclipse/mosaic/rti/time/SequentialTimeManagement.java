@@ -110,7 +110,7 @@ public class SequentialTimeManagement extends AbstractTimeManagement {
             updateWatchDog();
         }
 
-        this.finishSimulationRun(101);
+        this.finishSimulationRun(STATUS_CODE_SUCCESS);
     }
 
 

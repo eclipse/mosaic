@@ -52,6 +52,8 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
      */
     private final static long SIMULATION_INFO_LOG_INTERVAL = 500 * TIME.MILLI_SECOND;
 
+    protected final static int STATUS_CODE_SUCCESS = 101;
+
     protected static final DecimalFormat FORMAT_ONE_DIGIT = new DecimalFormat("#0.0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
     protected static final DecimalFormat FORMAT_TWO_DIGIT = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
@@ -178,7 +180,11 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
                 DurationFormatUtils.formatDuration(durationMs, "HH'h' mm'm' ss.SSS's'"),
                 FORMAT_TWO_DIGIT.format((getEndTime() / TIME.MILLI_SECOND) / durationMs)
         );
-        progressLogger.info("Simulation finished: {}" + newLine, statusCode);
+        if (statusCode == STATUS_CODE_SUCCESS) {
+            progressLogger.info("Simulation finished: {}" + newLine, statusCode);
+        } else {
+            progressLogger.info("Simulation interrupted: {}" + newLine, statusCode);
+        }
     }
 
     @Override
