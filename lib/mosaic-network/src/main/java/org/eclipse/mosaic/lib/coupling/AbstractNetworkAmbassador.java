@@ -21,7 +21,6 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.coupling.ClientServerChannel.CMD;
 import org.eclipse.mosaic.lib.coupling.ClientServerChannel.NodeDataContainer;
@@ -67,15 +66,13 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassador {
 
-    protected DockerFederateExecutor dockerFederateExecutor = null;
+    private final static class RegisteredNode {
 
-    private final static class VirtualNodeContainer {
+        private AdHocCommunicationConfiguration configuration;
+        private CartesianPoint position;
 
-        private AdHocCommunicationConfiguration configAdHoc;
-        public CartesianPoint position;
-
-        private VirtualNodeContainer(AdHocCommunicationConfiguration configAdHoc, CartesianPoint position) {
-            this.configAdHoc = configAdHoc;
+        private RegisteredNode(AdHocCommunicationConfiguration configAdHoc, CartesianPoint position) {
+            this.configuration = configAdHoc;
             this.position = position;
         }
     }
@@ -93,23 +90,12 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     ClientServerChannel federateAmbassadorChannel;
 
     /**
-     * List of new virtual vehicles, which are only added when they have a position and enabled AdHoc Communication.
+     * List of new virtual nodes, either vehicles or RSUs, which are only added when they have a position AND enabled AdHoc Communication.
      * For a vehicle to be added, the ambassador must receive the following interactions:
-     * 1. {@link VehicleRegistration}
-     * 2. {@link VehicleUpdates}
-     * 3. {@link AdHocCommunicationConfiguration}
-     * The Add-message is expected to arrive first, then either the AdHoc configuration or the movement message.
-     */
-    private final Map<String, VirtualNodeContainer> newVirtualVehicles;
-
-    /**
-     * List of RSUs for which there was no configuration interaction yet.
-     * For an RSU to be added, the ambassador must receive the following interactions:
-     * 1. {@link RsuRegistration}
+     * 1. {@link VehicleUpdates}
      * 2. {@link AdHocCommunicationConfiguration}
-     * The registration interaction is expected to arrive first, then the AdHoc configuration
      */
-    private final Map<String, VirtualNodeContainer> newVirtualRsus;
+    private final Map<String, RegisteredNode> registeredNodes;
 
     /**
      * Holds a BiMap of internal (mosaic) and external (federate) unit ID's ({@code BiMap<String, Integer>}).
@@ -127,6 +113,10 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     private final String federateName;
 
+    /**
+     * This is used to fetch the most recent position of a vehicle when a {@link AdHocCommunicationConfiguration} interaction
+     * is processed.
+     */
     private VehicleUpdates latestVehicleUpdates = null;
 
     /**
@@ -134,6 +124,9 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      * {@link #receiveTypedInteraction(V2xMessageTransmission interaction)} if needed.
      */
     protected CAbstractNetworkAmbassador config;
+
+
+    protected DockerFederateExecutor dockerFederateExecutor = null;
 
     /**
      * Creates a new AbstractNetworkAmbassador.
@@ -146,8 +139,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         super(ambassadorParameter);
         this.ambassadorName = ambassadorName;
         this.federateName = federateName;
-        this.newVirtualVehicles = new HashMap<>();
-        this.newVirtualRsus = new HashMap<>();
+        this.registeredNodes = new HashMap<>();
         this.idTransformer = new NetworkEntityIdTransformer();
 
         try {
@@ -272,7 +264,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         }
     }
 
-    // HEA: Add priorities here?
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
         this.log.debug("ProcessInteraction {} at time={}", interaction.getTypeId(), interaction.getTime());
@@ -361,17 +352,17 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     private synchronized void receiveTypedInteraction(RsuRegistration interaction) {
         this.log.debug(
-                "Received AddedRSU for RSU {} at simulation time {} ",
+                "Add RSU {} at simulation time {} ",
                 interaction.getMapping().getName(),
                 interaction.getTime()
         );
         RsuMapping mapping = interaction.getMapping();
-        if (idTransformer.containsInternalId(mapping.getName()) || newVirtualRsus.containsKey(mapping.getName())) {  // We have got this RSU already
+        if (idTransformer.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
             this.log.warn("A RSU with ID {} was already added. Ignoring message.", mapping.getName());
             return;
         }
         // Put the new RSU into our list of virtually added RSUs with no AdHoc configuration yet
-        newVirtualRsus.put(mapping.getName(), new VirtualNodeContainer(null, mapping.getPosition().toCartesian()));
+        registeredNodes.put(mapping.getName(), new RegisteredNode(null, mapping.getPosition().toCartesian()));
     }
 
     /**
@@ -387,15 +378,13 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 interaction.getMapping().getName(),
                 interaction.getTime()
         );
-        // ApplicationTrafficLight at = msg.getApplicationTrafficLight();
         TrafficLightGroup group = interaction.getTrafficLightGroup();
-        // We have got this TL already
-        if (idTransformer.containsInternalId(group.getGroupId()) || newVirtualRsus.containsKey(group.getGroupId())) {
+        if (idTransformer.containsInternalId(group.getGroupId()) || registeredNodes.containsKey(group.getGroupId())) {
             this.log.warn("A TL with ID {} was already added. Ignoring message.", group.getGroupId());
             return;
         }
         // Put the new TL RSU into our list of virtually added RSUs with no AdHoc configuration yet
-        newVirtualRsus.put(group.getGroupId(), new VirtualNodeContainer(null, group.getFirstPosition().toCartesian()));
+        registeredNodes.put(group.getGroupId(), new RegisteredNode(null, group.getFirstPosition().toCartesian()));
     }
 
     /**
@@ -411,15 +400,13 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 interaction.getMapping().getName(),
                 interaction.getTime()
         );
-        // ApplicationTrafficLight at = msg.getApplicationTrafficLight();
         ChargingStationMapping mapping = interaction.getMapping();
-        // We have got this TL already
-        if (idTransformer.containsInternalId(mapping.getName()) || newVirtualRsus.containsKey(mapping.getName())) {
+        if (idTransformer.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
             this.log.warn("A ChargingStation with ID {} was already added. Ignoring message.", mapping.getName());
             return;
         }
-        // Put the new TL RSU into our list of virtually added RSUs with no AdHoc configuration yet
-        newVirtualRsus.put(mapping.getName(), new VirtualNodeContainer(null, mapping.getPosition().toCartesian()));
+        // Put the new Charging Station RSU into our list of virtually added RSUs with no AdHoc configuration yet
+        registeredNodes.put(mapping.getName(), new RegisteredNode(null, mapping.getPosition().toCartesian()));
     }
 
     /**
@@ -444,10 +431,9 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     private synchronized void receiveTypedInteraction(VehicleUpdates interaction) throws InternalFederateException {
         try {
+            // save the latest vehicle updates to fetch the most recent position for a vehicle when a Adhoc config arrives
             latestVehicleUpdates = interaction;
-            // Process VehicleRegistrations in VehicleUpdates interaction
-            // Sort vehicles alphanumerical just in case there are multiple ones in the msg
-            // (this helps for a better human-readable mapping of RTI string-ids and federate int-ids)
+
             if (!interaction.getAdded().isEmpty()) {
                 log.debug("Add Vehicles at first movement");
                 List<VehicleData> addedVehicles = interaction.getAdded();
@@ -457,16 +443,15 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     if (idTransformer.containsInternalId(vi.getName())) {
                         log.warn("Vehicle with ID {} was already added, ignoring entry.", vi.getName());
                         continue;
-                    } else if (!newVirtualVehicles.containsKey(vi.getName())) {
-                        log.warn("Vehicle with ID {} is not in the virtual list, ignoring entry.", vi.getName());
+                    } else if (!registeredNodes.containsKey(vi.getName())) {
+                        log.warn("Vehicle with ID {} is not in the registered list, ignoring entry.", vi.getName());
                         continue;
                     }
-                    VirtualNodeContainer nc = newVirtualVehicles.get(vi.getName());
-                    nc.position = vi.getProjectedPosition();
-                    if (nc.configAdHoc != null) {
-                        addVehicleToSimulation(vi.getName(), interaction.getTime());
-                    } else {
-                        log.debug("Saving vehicle for later insertion as no AdHoc is configuration present");
+                    RegisteredNode registeredNode = registeredNodes.get(vi.getName());
+                    registeredNode.position = vi.getProjectedPosition();
+                    if (registeredNode.configuration != null) {
+                        addVehicleNodeToSimulation(vi.getName(), registeredNode, interaction.getTime());
+                        registeredNodes.remove(vi.getName());
                     }
                 }
             }
@@ -487,9 +472,9 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                             log.debug("Pos: x({}) y({}) Geo: {}", projectedPosition.getX(), projectedPosition.getY(), geoPosition);
                         }
                         nodesToUpdate.add(new NodeDataContainer(id, projectedPosition));
-                    } else if (newVirtualVehicles.containsKey(vi.getName())) {
-                        // Node was not yet added to simulation, so update its entry in the virtual node list
-                        newVirtualVehicles.get(vi.getName()).position = projectedPosition;
+                    } else if (registeredNodes.containsKey(vi.getName())) {
+                        // Node was not yet added to simulation, so update its entry in the registered node list
+                        registeredNodes.get(vi.getName()).position = projectedPosition;
                         if (this.log.isDebugEnabled()) {
                             log.debug("UpdateNode (still virtual) : ID[int={}]", vi.getName());
                             log.debug("Pos: x({}) y({}) Point2D.Double: {}", projectedPosition.getX(), projectedPosition.getY(), geoPosition);
@@ -518,9 +503,9 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         this.log.info("removeNode ID[int={}, ext={}] time={}", id, idTransformer.toExternalId(id), time);
                         nodesToRemove.add(externalId); // If simulated, add to the list, which will be handed to the channel
                         idTransformer.removeUsingInternalId(id); // remove the vehicle from our internal list
-                    } else if (newVirtualVehicles.containsKey(id)) {
+                    } else if (registeredNodes.containsKey(id)) {
                         this.log.info("removeNode (still virtual) ID[int={}] time={}", id, time);
-                        newVirtualVehicles.remove(id);
+                        registeredNodes.remove(id);
                     } else {
                         this.log.warn("Node ID[int={}] is not simulated", id);
                     }
@@ -623,21 +608,28 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     protected synchronized void receiveTypedInteraction(AdHocCommunicationConfiguration interaction) throws InternalFederateException {
         final String nodeId = interaction.getConfiguration().getNodeId();
-        log.debug("Received AdHoc configuration for node {}", interaction.getConfiguration().getNodeId());
+        log.debug("Received AdHoc configuration for node {}", nodeId);
         if (idTransformer.containsInternalId(nodeId)) { // node is simulated -> send interaction
-            log.debug("Sending Configuration now");
+            log.debug("Updating Configuration for node {}", nodeId);
             sendAdHocCommunicationConfiguration(interaction, interaction.getTime());
         } else if (UnitNameGenerator.isVehicle(nodeId)) {
+            /* we fetch the latest position from the most recent VehicleUpdates. The alternative would be to create a RegisteredNode
+             * for each present vehicle which holds its latest position. This, however, would require to store and update positions for
+             * all present vehicles, which can be very slow in large scenarios. */
             VehicleData latest = fetchVehicleDataFromLastUpdate(nodeId).orElse(null);
-            newVirtualVehicles.put(nodeId, new VirtualNodeContainer(interaction, latest != null ? latest.getProjectedPosition() : null));
+            RegisteredNode registeredNode = new RegisteredNode(interaction, latest != null ? latest.getProjectedPosition() : null);
+            registeredNodes.put(nodeId, registeredNode);
             if (latest != null) { // If we now have AdHoc config and position add the vehicle
-                addVehicleToSimulation(nodeId, interaction.getTime());
+                addVehicleNodeToSimulation(nodeId, registeredNode, interaction.getTime());
+                registeredNodes.remove(nodeId);
             } else {
                 log.debug("Saving Configuration for later insertion as vehicle {} has not moved yet.", nodeId);
             }
-        } else if (newVirtualRsus.containsKey(nodeId)) {
-            newVirtualRsus.get(nodeId).configAdHoc = interaction;
-            addRsuToSimulation(nodeId, interaction.getTime()); // RSUs get a position and add time, so we can add it now
+        } else if (registeredNodes.containsKey(nodeId)) {
+            RegisteredNode registeredNode = registeredNodes.get(nodeId);
+            registeredNode.configuration = interaction;
+            addRsuNodeToSimulation(nodeId, registeredNode, interaction.getTime());
+            registeredNodes.remove(nodeId);
         } else {
             log.warn("Got AdHoc configuration for unknown node {}. Ignoring.", nodeId);
         }
@@ -653,21 +645,14 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 .findFirst();
     }
 
-    private synchronized void addRsuToSimulation(String nodeId, long time) throws InternalFederateException {
+    private synchronized void addRsuNodeToSimulation(String nodeId, RegisteredNode virtualNode, long time) throws InternalFederateException {
         List<NodeDataContainer> nodesToAdd = new ArrayList<>(); // Prepare a list for adding multiple RSUs
         try {
-            VirtualNodeContainer nc = newVirtualRsus.get(nodeId);
-            if (nc == null || nc.configAdHoc == null || nc.position == null) {
-                log.warn("Could not add RSU {} as it has incomplete information (AdHoc config or position)", nodeId);
-                return;
-            }
-            log.debug("Inserting RSU {} into simulation at position {} ", nodeId, nc.position);
-
             if (idTransformer.containsInternalId(nodeId)) {
                 this.log.warn("RSU with id (internal={}) couldn't be added: name already exists ", nodeId);
             } else {
                 int id = idTransformer.toExternalId(nodeId);
-                nodesToAdd.add(new NodeDataContainer(id, nc.position));  // Add TL to the list
+                nodesToAdd.add(new NodeDataContainer(id, virtualNode.position));  // Add TL to the list
                 // Let channel send list and get an acknowledgement
                 if (CMD.SUCCESS != ambassadorFederateChannel.writeAddRsuNodeMessage(time, nodesToAdd)) {
                     this.log.error("Could not add new RSU: {}", this.federateAmbassadorChannel.getLastStatusMessage());
@@ -677,10 +662,10 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 }
                 this.log.info(
                         "Added RSU ID[int= {}, ext={}] at projected position= {} time={}",
-                        idTransformer.fromExternalId(id), id, nc.position, time
+                        idTransformer.fromExternalId(id), id, virtualNode.position, time
                 );
-                log.debug("Sending saved AdHocCommunicationConfiguration message");
-                sendAdHocCommunicationConfiguration(nc.configAdHoc, time);
+                log.debug("Sending AdHocCommunicationConfiguration for RSU node {}", nodeId);
+                sendAdHocCommunicationConfiguration(virtualNode.configuration, time);
             }
         } catch (IOException | InternalFederateException e) {
             this.log.error(e.getMessage(), e);
@@ -688,38 +673,27 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         }
     }
 
-    private synchronized void addVehicleToSimulation(String nodeId, long time) throws InternalFederateException {
+    private synchronized void addVehicleNodeToSimulation(String nodeId, RegisteredNode registeredNode, long time) throws InternalFederateException {
         List<NodeDataContainer> nodesToAdd = new ArrayList<>();
         try {
-            VirtualNodeContainer nc = newVirtualVehicles.get(nodeId);
-            if (nc == null || nc.configAdHoc == null || nc.position == null) {
-                log.warn("Could not add Vehicle {} as it has incomplete information (AdHoc config or position)", nodeId);
-                return;
-            }
-            log.debug("Inserting vehicle into simulation at position {} ", nc.position);
-
             if (idTransformer.containsInternalId(nodeId)) {
                 this.log.warn("Vehicle with id(int={}) couldn't be added: name already exists ", nodeId);
-                return;
             } else {
                 int id = idTransformer.toExternalId(nodeId);
-                nodesToAdd.add(new NodeDataContainer(id, nc.position));
+                nodesToAdd.add(new NodeDataContainer(id, registeredNode.position));
+                if (CMD.SUCCESS != ambassadorFederateChannel.writeAddNodeMessage(time, nodesToAdd)) {
+                    this.log.error("Could not add new vehicles: {}", this.federateAmbassadorChannel.getLastStatusMessage());
+                    throw new InternalFederateException(
+                            "Error in " + this.federateName + ": " + this.federateAmbassadorChannel.getLastStatusMessage()
+                    );
+                }
                 this.log.info(
-                        "Adding vehicle ID[int={}, ext={}] at projected_position={} time={}",
-                        idTransformer.fromExternalId(id), id, nc.position, time
+                        "Added vehicle ID[int={}, ext={}] at position={} time={}",
+                        idTransformer.fromExternalId(id), id, registeredNode.position, time
                 );
+                log.debug("Sending AdHocCommunicationConfiguration for vehicle node {}.", nodeId);
+                sendAdHocCommunicationConfiguration(registeredNode.configuration, time);
             }
-            this.newVirtualVehicles.remove(nodeId);
-
-            if (CMD.SUCCESS != ambassadorFederateChannel.writeAddNodeMessage(time, nodesToAdd)) {
-                this.log.error("Could not add new vehicles: {}", this.federateAmbassadorChannel.getLastStatusMessage());
-                throw new InternalFederateException(
-                        "Error in " + this.federateName + ": " + this.federateAmbassadorChannel.getLastStatusMessage()
-                );
-            }
-            this.log.info("All vehicles were successfully added");
-            log.debug("Sending a saved AdHocCommunicationConfiguration message...");
-            sendAdHocCommunicationConfiguration(nc.configAdHoc, time);
         } catch (IOException | InternalFederateException e) {
             this.log.error(e.getMessage(), e);
             throw new InternalFederateException("Could not add new vehicle.", e);

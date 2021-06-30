@@ -275,7 +275,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             } else if (registeredServers.containsKey(nodeId)) { // handle servers
                 handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
             } else {
-                if (cellConfiguration.isCellCommunicationEnabled()) {
+                if (cellConfiguration.isEnabled()) {
                     throw new InternalFederateException(
                             "Cell Ambassador: Cannot activate Cell module for \"" + nodeId + "\" because the id is unknown"
                     );
@@ -515,7 +515,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         final AtomicReference<CellConfiguration> registeredVehicle = registeredVehicles.get(added.getName());
         return registeredVehicle != null
                 && registeredVehicle.get() != null
-                && registeredVehicle.get().isCellCommunicationEnabled();
+                && registeredVehicle.get().isEnabled();
     }
 
     private Optional<HandoverInfo> handleVehicleCellConfiguration(String nodeId, CellConfiguration cellConfiguration, Long interactionTime) throws InternalFederateException {
