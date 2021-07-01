@@ -33,8 +33,6 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 import org.eclipse.mosaic.rti.TIME;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -147,10 +145,9 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
     }
 
     /**
-     * Event is called to signal that the vehicle reached it's goal position and should now travel back to  it's
+     * Event is called to signal that the vehicle reached it's goal position and should now travel back to it's
      * start position.
      */
-    @SuppressFBWarnings("EQ_DOESNT_OVERRIDE_EQUALS")
     static class DriveBackEvent extends Event {
 
         private final GeoPoint currentPosition;
