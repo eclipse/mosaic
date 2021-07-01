@@ -18,6 +18,7 @@ package org.eclipse.mosaic.test.junit;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 
 import com.google.gson.GsonBuilder;
+import junit.framework.AssertionFailedError;
 import org.apache.commons.lang3.Validate;
 
 import java.io.FileOutputStream;
@@ -55,7 +56,7 @@ public class ConfigFileManipulator<T> implements Consumer<Path> {
                 new GsonBuilder().setPrettyPrinting().create().toJson(configFile, w);
             }
         } catch (InstantiationException | IOException e) {
-            e.printStackTrace();
+            throw new AssertionFailedError("Could not load or write " + configFile);
         }
     }
 }
