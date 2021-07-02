@@ -1,7 +1,7 @@
 {
     "simulation": {
-        "id": "SendAndReceive",
-        "duration": "400s",
+        "id": "sumo-steptime-subsecond",
+        "duration": "100s",
         "randomSeed": 268965854,
         "projection": {
             "centerCoordinates": {
@@ -9,8 +9,8 @@
                 "longitude": 13.0
             },
             "cartesianOffset": {
-                "x": -385769.05,
-                "y": -5819239.15
+                "x": -385281.93,
+                "y": -5816866.57
             }
         },
         "network": {
@@ -25,9 +25,8 @@
     },
     "federates": {
         "application": true,
-        "cell": true,
+        "output": true,
         "sns": true,
-        "sumo": true,
-        "output": true
+        "sumo": true
     }
 }

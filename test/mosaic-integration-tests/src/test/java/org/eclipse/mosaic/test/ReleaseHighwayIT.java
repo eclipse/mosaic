@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,19 +27,16 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class MosaicAndSumoVehiclesIT {
+public class ReleaseHighwayIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("TRACE");
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule();
 
     private static MosaicSimulation.SimulationResult simulationResult;
 
-    private final static String VEH_0_MAPPING = "apps/veh_0/MappingVehicle.log";
-    private final static String VEH_1_SUMO = "apps/veh_1/SumoVehicle.log";
-
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeTestScenario("MosaicAndSumoVehicles");
+        simulationResult = simulationRule.executeReleaseScenario("Highway");
     }
 
     @Test
@@ -48,9 +46,12 @@ public class MosaicAndSumoVehiclesIT {
     }
 
     @Test
-    public void allLogsCreated() {
-        LogAssert.exists(simulationRule, VEH_0_MAPPING);
-        LogAssert.exists(simulationRule, VEH_1_SUMO);
+    public void correctLanePropertyChanges() throws Exception {
+        assertEquals(10, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Change disallowed vehicle classes of lane with ID=.*"
+        ));
+        assertEquals(10, LogAssert.count(simulationRule, "Traffic.log",
+                ".*Change allowed vehicle classes of lane with ID=.*"
+        ));
     }
-
 }

@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,7 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class BarnimReleaseIT {
+public class ReleaseHelloWorldIT {
 
     @ClassRule
     public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("DEBUG");
@@ -36,7 +35,7 @@ public class BarnimReleaseIT {
 
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeReleaseScenario("Barnim");
+        simulationResult = simulationRule.executeReleaseScenario("HelloWorld");
     }
 
     @Test
@@ -46,31 +45,23 @@ public class BarnimReleaseIT {
     }
 
     @Test
-    public void navigationSuccessful() throws Exception {
-        assertEquals(24,
-                LogAssert.count(simulationRule, "Navigation.log", ".*Request to switch to new route for vehicle .*")
-        );
-        assertEquals(14,
-                LogAssert.count(simulationRule, "Navigation.log", ".*Change to route [2-9] for vehicle .*")
-        );
+    public void logFilesExisting() {
+        LogAssert.exists(simulationRule, "MOSAIC.log");
+        LogAssert.exists(simulationRule, "Traffic.log");
+        LogAssert.exists(simulationRule, "Application.log");
+        LogAssert.exists(simulationRule, "Mapping.log");
+        LogAssert.exists(simulationRule, "Communication.log");
+        LogAssert.exists(simulationRule, "apps/veh_2/VehicleCamSendingApp.log");
     }
 
     @Test
-    public void noMissingMethodError() throws Exception {
-        assertEquals(0, LogAssert.count(simulationRule, "MOSAIC.log",
-                ".*java.lang.Exception: No method found for Configuration root: .* Caused by OutputGenerator .*"
-        ));
+    public void allVehiclesLoaded() throws Exception {
+        LogAssert.contains(simulationRule, "Traffic.log", ".*sumo :  Inserted: 450.*");
     }
 
     @Test
-    public void correctUnitRegistrations() throws Exception {
-        assertEquals(1, LogAssert.count(simulationRule, "output.csv",
-                ".*RSU_REGISTRATION;.*"
-        ));
-        assertEquals(42, LogAssert.count(simulationRule, "output.csv",
-                ".*TRAFFICLIGHT_REGISTRATION;.*"
-        ));
-        LogAssert.contains(simulationRule, "output.csv", "RSU_REGISTRATION;0;rsu_0;52.65027;13.545;0.0;null;\\[.*\\]");
+    public void v2xMessageArrived() throws Exception {
+        LogAssert.contains(simulationRule, "Communication.log", ".*Receive v2xMessage\\.id=[0-9]+ on node=veh_[0_9]+.*");
     }
 
 }

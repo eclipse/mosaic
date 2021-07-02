@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,16 +27,16 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class HelloWorldIT {
+public class SumoSteptimeSubsecondIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("DEBUG");
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("TRACE");
 
     private static MosaicSimulation.SimulationResult simulationResult;
 
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeReleaseScenario("HelloWorld");
+        simulationResult = simulationRule.executeTestScenario("sumo-steptime-subsecond");
     }
 
     @Test
@@ -45,23 +46,9 @@ public class HelloWorldIT {
     }
 
     @Test
-    public void logFilesExisting() {
-        LogAssert.exists(simulationRule, "MOSAIC.log");
-        LogAssert.exists(simulationRule, "Traffic.log");
-        LogAssert.exists(simulationRule, "Application.log");
-        LogAssert.exists(simulationRule, "Mapping.log");
-        LogAssert.exists(simulationRule, "Communication.log");
-        LogAssert.exists(simulationRule, "apps/veh_2/VehicleCamSendingApp.log");
-    }
-
-    @Test
-    public void allVehiclesLoaded() throws Exception {
-        LogAssert.contains(simulationRule, "Traffic.log", ".*sumo :  Inserted: 450.*");
-    }
-
-    @Test
-    public void v2xMessageArrived() throws Exception {
-        LogAssert.contains(simulationRule, "Communication.log", ".*Receive v2xMessage\\.id=[0-9]+ on node=veh_[0_9]+.*");
+    public void allLogsCreated() throws Exception {
+        int simulationSteps = LogAssert.count(simulationRule, "Traffic.log", ".* Simulate traffic until.*");
+        assertEquals("Simulated 1001 steps (0-100 seconds)", 1001, simulationSteps);
     }
 
 }
