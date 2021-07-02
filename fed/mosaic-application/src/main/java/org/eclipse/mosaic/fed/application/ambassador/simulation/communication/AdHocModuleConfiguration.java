@@ -30,6 +30,12 @@ import java.util.List;
  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
  *     .addRadio().power(50).channel(AdHocChannel.CCH).create();
  * </pre>
+ * Single Radio Single Channel (with distance instead of power for SNS):
+ *  * <br>
+ *  * <pre>
+ *  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
+ *  *     .addRadio().distance(250).channel(AdHocChannel.CCH).create();
+ *  * </pre>
  * <br>
  * <br>
  * Single Radio Dual Channel:
@@ -40,12 +46,12 @@ import java.util.List;
  * </pre>
  * <br>
  * <br>
- * Dual Radio Single Channel (with distance instead of power for SNS):
+ * Dual Radio Single Channel:
  * <br>
  * <pre>
  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
- *     .addRadio().distance(250).channel(AdHocChannel.SCH1).create()
- *     .addRadio().distance(250).channel(AdHocChannel.CCH).create();
+ *     .addRadio().power(50).channel(AdHocChannel.SCH1).create()
+ *     .addRadio().power(50).channel(AdHocChannel.CCH).create();
  * </pre>
  */
 public class AdHocModuleConfiguration implements CommunicationModuleConfiguration {
@@ -83,7 +89,7 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
 
         private final AdHocModuleConfiguration parent;
 
-        private int power = -1;  // Default value 0 indicates power configuration through federate
+        private int power = -1;  // Default value -1 indicates power configuration through federate
         private Double distance = null;
 
         private AdHocChannel channel0;
