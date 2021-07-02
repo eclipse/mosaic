@@ -38,7 +38,7 @@ import java.util.List;
  *  * </pre>
  * <br>
  * <br>
- * Single Radio Dual Channel
+ * Single Radio Dual Channel:
  * <br>
  * <pre>
  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()

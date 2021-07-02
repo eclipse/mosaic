@@ -71,7 +71,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     /**
      * Construct the Ambassador.
      *
-     * @param ambassadorParameter parameter.
+     * @param ambassadorParameter ambassadorId and configuration.
      */
     public SnsAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
@@ -105,10 +105,10 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         try {
             if (interaction.getTypeId().startsWith(RsuRegistration.TYPE_ID)) {
                 this.process((RsuRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
-                this.process((ChargingStationRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(TrafficLightRegistration.TYPE_ID)) {
                 this.process((TrafficLightRegistration) interaction);
+            } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
+                this.process((ChargingStationRegistration) interaction);
             }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(AdHocCommunicationConfiguration.TYPE_ID)) {
@@ -131,19 +131,19 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         }
     }
 
-    private void process(ChargingStationRegistration interaction) {
-        final ChargingStationMapping applicationCs = interaction.getMapping();
-        if (applicationCs.hasApplication()) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
-            log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
-        }
-    }
-
     private void process(TrafficLightRegistration interaction) {
         final TrafficLightMapping applicationTl = interaction.getMapping();
         if (applicationTl.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationTl.getName(), applicationTl.getPosition().toCartesian());
             log.info("Added TrafficLight id={} @time={}", applicationTl.getName(), TIME.format(interaction.getTime()));
+        }
+    }
+
+    private void process(ChargingStationRegistration interaction) {
+        final ChargingStationMapping applicationCs = interaction.getMapping();
+        if (applicationCs.hasApplication()) {
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
+            log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
         }
     }
 
@@ -179,7 +179,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 }
                 break;
             case DUAL:
-                log.warn("SNS only supports single radio configuration. Ignoring configuration of second radio for node {}.", nodeId);
+                log.warn("SNS only supports single radio configuration. Configure first, while ignoring second, radio for node {}.", nodeId);
             case SINGLE:
                 double communicationRadius = this.singlehopRadius;
                 if (configuration.getConf0() != null && configuration.getConf0().getRadius() != null) {

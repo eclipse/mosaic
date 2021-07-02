@@ -90,8 +90,8 @@ public class CellAmbassador extends AbstractFederateAmbassador {
     private final Map<String, CartesianPoint> registeredEntities = new HashMap<>();
 
     /**
-     * A map of registered servers and their properties, which are position-less as they are treated as
-     * being located in the internet.
+     * A map of registered servers and their properties, which are position-less (in terms of radio cells)
+     * as they are treated as being located in the internet.
      */
     private final Map<String, CNetworkProperties> registeredServers = new HashMap<>();
 
@@ -100,12 +100,15 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      */
     private final Map<String, AtomicReference<CellConfiguration>> registeredVehicles = new HashMap<>();
 
-    private BandwidthMeasurementManager bandwidthMeasurementManager;
-
     /**
      * Store latest {@link VehicleUpdates} as they may be needed twice after enabling cell modules for vehicles.
      */
     private VehicleUpdates latestVehicleUpdates;
+
+    /**
+     * Manager for detailed statistic of network load (e.g. of Upstream and Downstream) in individual regions / cells.
+     */
+    private BandwidthMeasurementManager bandwidthMeasurementManager;
 
     /**
      * Constructor for the Cell Ambassador.
@@ -208,14 +211,14 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         // Process interactions as usual in all communication simulators
         if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             process((RsuRegistration) interaction);
-        } else if (interaction.getTypeId().equals(TmcRegistration.TYPE_ID)) {
-            process((TmcRegistration) interaction);
-        } else if (interaction.getTypeId().equals(ServerRegistration.TYPE_ID)) {
-            process((ServerRegistration) interaction);
         } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
             process((TrafficLightRegistration) interaction);
-        } else if (interaction instanceof ChargingStationRegistration) {
+        } else if (interaction.getTypeId().equals(ChargingStationRegistration.TYPE_ID)) {
             process((ChargingStationRegistration) interaction);
+        } else if (interaction.getTypeId().equals(ServerRegistration.TYPE_ID)) {
+            process((ServerRegistration) interaction);
+        } else if (interaction.getTypeId().equals(TmcRegistration.TYPE_ID)) {
+            process((TmcRegistration) interaction);
         } else if (interaction.getTypeId().equals(VehicleUpdates.TYPE_ID)) {
             process((VehicleUpdates) interaction);
         } else if (interaction.getTypeId().equals(CellularCommunicationConfiguration.TYPE_ID)) {
@@ -224,71 +227,6 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             // Communication dependent (cell) interactions go directly through the chainManager
             chainManager.startEvent((V2xMessageTransmission) interaction);
         }
-    }
-
-    /**
-     * Registers the cell configuration for vehicles the position has to be set as well
-     * before the vehicle can be considered for the cell simulation.
-     * Hence, the configuration is stored in {@link #registeredVehicles}.
-     *
-     * @param interaction Interaction to configure the cell communication node.
-     */
-    private void process(CellularCommunicationConfiguration interaction) throws InternalFederateException {
-        Validate.notNull(interaction.getConfiguration(), "CellConfiguration is null");
-        long interactionTime = interaction.getTime();
-        CellConfiguration cellConfiguration = interaction.getConfiguration();
-
-        cellConfiguration.setBitrates(
-                ObjectUtils.defaultIfNull(
-                        cellConfiguration.getMaxDownlinkBitrate(),
-                        ConfigurationData.INSTANCE.getNetworkConfig().defaultDownlinkCapacity
-                ),
-                ObjectUtils.defaultIfNull(
-                        cellConfiguration.getMaxUplinkBitrate(),
-                        ConfigurationData.INSTANCE.getNetworkConfig().defaultUplinkCapacity
-                )
-        );
-
-        final String nodeId = cellConfiguration.getNodeId();
-        final boolean isVehicle = UnitNameGenerator.isVehicle(nodeId);
-
-        Optional<HandoverInfo> handoverInfo = Optional.empty();
-        if (!cellConfiguration.isEnabled()) {
-            handoverInfo = disableCellForNode(nodeId);
-            if (isVehicle) {
-                // keep the vehicle in the registeredVehicles map since it could enable the cell module again
-                // the update cell configuration has the cell module disabled
-                registeredVehicles
-                        .computeIfAbsent(nodeId, k -> new AtomicReference<>())
-                        .set(cellConfiguration);
-            }
-            log.info(
-                    "Disabled Cell Communication for "
-                            + (isVehicle ? "vehicle" : "entity")
-                            + "={}, t={}", nodeId, TIME.format(interactionTime)
-            );
-        } else {
-            if (isVehicle) { // handle vehicles
-                handoverInfo = handleVehicleCellConfiguration(nodeId, cellConfiguration, interactionTime);
-            } else if (registeredEntities.containsKey(nodeId)) { // handle stationary entities
-                handleEntityCellConfiguration(nodeId, cellConfiguration, interactionTime);
-            } else if (registeredServers.containsKey(nodeId)) { // handle servers
-                handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
-            } else {
-                if (cellConfiguration.isEnabled()) {
-                    throw new InternalFederateException(
-                            "Cell Ambassador: Cannot activate Cell module for \"" + nodeId + "\" because the id is unknown"
-                    );
-                } else {
-                    log.debug("Tried to deactivate the Cell module for a node with the unknown id: {}", nodeId);
-                }
-            }
-        }
-        handoverInfo.ifPresent((handover) -> {
-            List<HandoverInfo> handoverInfos = Lists.newArrayList(handover);
-            CellularHandoverUpdates handoverUpdatesInteraction = new CellularHandoverUpdates(interactionTime, handoverInfos);
-            chainManager.sendInteractionToRti(handoverUpdatesInteraction);
-        });
     }
 
     /**
@@ -311,52 +249,6 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             if (log.isDebugEnabled()) {
                 log.debug("RSU (id={}) has NO application and is ignored in "
                         + "communication simulation", rsu.getName());
-            }
-        }
-    }
-
-    /**
-     * Registers the new Traffic Management Center (TMC) in the cell simulation.
-     *
-     * @param tmcRegistration TMC object to be added to the cell simulation.
-     */
-    private void process(TmcRegistration tmcRegistration) {
-        TmcMapping tmc = tmcRegistration.getMapping();
-        if (tmc.hasApplication()) {
-            registerServer(tmc.getName(), tmc.getGroup());
-            if (log.isDebugEnabled()) {
-                log.debug("Added Server (TMC) (id={}, with app(s)={}), t={}",
-                        tmc.getName(), tmc.getApplications(),
-                        TIME.format(tmcRegistration.getTime()));
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Server (TMC) (id={}) has NO application and is ignored in "
-                        + "communication simulation", tmc.getName());
-            }
-        }
-    }
-
-    /**
-     * Registers the new Traffic Management Center (TMC) in the cell simulation.
-     *
-     * @param serverRegistration TMC object to be added to the cell simulation.
-     */
-    private void process(ServerRegistration serverRegistration) {
-        ServerMapping server = serverRegistration.getMapping();
-        // only register servers that have applications and the group parameter set
-        if (server.hasApplication() && server.getGroup() != null) {
-            registerServer(server.getName(), server.getGroup());
-
-            if (log.isDebugEnabled()) {
-                log.debug("Added Server (id={}, with app(s)={}), t={}",
-                        server.getName(), server.getApplications(),
-                        TIME.format(serverRegistration.getTime()));
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Server (id={}) has NO application or group and is ignored in "
-                        + "communication simulation", server.getName());
             }
         }
     }
@@ -389,7 +281,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
      * Registers the new Charging Stations with its applications in the cell simulation while
      * transforming the geographic coordinates into the corresponding cartesian coordinates.
      *
-     * @param chargingStationRegistration Changing Station object to be added to the cell simulation.
+     * @param chargingStationRegistration Charging Station object to be added to the cell simulation.
      */
     private void process(ChargingStationRegistration chargingStationRegistration) {
         ChargingStationMapping cs = chargingStationRegistration.getMapping();
@@ -405,6 +297,52 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             if (log.isDebugEnabled()) {
                 log.debug("CS (id={}) has NO application and is ignored in "
                         + "communication simulation", cs.getName());
+            }
+        }
+    }
+
+    /**
+     * Registers the new Internet-Server in the cell simulation.
+     *
+     * @param serverRegistration TMC object to be added to the cell simulation.
+     */
+    private void process(ServerRegistration serverRegistration) {
+        ServerMapping server = serverRegistration.getMapping();
+        // only register servers that have applications and the group parameter set
+        if (server.hasApplication() && server.getGroup() != null) {
+            registerServer(server.getName(), server.getGroup());
+
+            if (log.isDebugEnabled()) {
+                log.debug("Added Server (id={}, with app(s)={}), t={}",
+                        server.getName(), server.getApplications(),
+                        TIME.format(serverRegistration.getTime()));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Server (id={}) has NO application or group and is ignored in "
+                        + "communication simulation", server.getName());
+            }
+        }
+    }
+
+    /**
+     * Registers the new Traffic Management Center (TMC) as position-less server in the cell simulation.
+     *
+     * @param tmcRegistration TMC object to be added to the cell simulation.
+     */
+    private void process(TmcRegistration tmcRegistration) {
+        TmcMapping tmc = tmcRegistration.getMapping();
+        if (tmc.hasApplication()) {
+            registerServer(tmc.getName(), tmc.getGroup());
+            if (log.isDebugEnabled()) {
+                log.debug("Added Server (TMC) (id={}, with app(s)={}), t={}",
+                        tmc.getName(), tmc.getApplications(),
+                        TIME.format(tmcRegistration.getTime()));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Server (TMC) (id={}) has NO application and is ignored in "
+                        + "communication simulation", tmc.getName());
             }
         }
     }
@@ -450,6 +388,71 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             CellularHandoverUpdates handoverUpdatesMessage = new CellularHandoverUpdates(vehicleUpdates.getTime(), handovers);
             chainManager.sendInteractionToRti(handoverUpdatesMessage);
         }
+    }
+
+    /**
+     * Configure the cellModule of a node (enable, disable or change parameters).
+     * For vehicles, the position has to be set as well before the vehicle can be considered for the cell simulation.
+     * Hence, the configuration is stored in {@link #registeredVehicles}.
+     *
+     * @param interaction Interaction to configure the cell communication node.
+     */
+    private void process(CellularCommunicationConfiguration interaction) throws InternalFederateException {
+        Validate.notNull(interaction.getConfiguration(), "CellConfiguration is null");
+        long interactionTime = interaction.getTime();
+        CellConfiguration cellConfiguration = interaction.getConfiguration();
+
+        cellConfiguration.setBitrates(
+                ObjectUtils.defaultIfNull(
+                        cellConfiguration.getMaxDownlinkBitrate(),
+                        ConfigurationData.INSTANCE.getNetworkConfig().defaultDownlinkCapacity
+                ),
+                ObjectUtils.defaultIfNull(
+                        cellConfiguration.getMaxUplinkBitrate(),
+                        ConfigurationData.INSTANCE.getNetworkConfig().defaultUplinkCapacity
+                )
+        );
+
+        final String nodeId = cellConfiguration.getNodeId();
+        final boolean isVehicle = UnitNameGenerator.isVehicle(nodeId);
+
+        Optional<HandoverInfo> handoverInfo = Optional.empty();
+        if (cellConfiguration.isEnabled()) {
+            if (isVehicle) { // handle vehicles
+                handoverInfo = handleVehicleCellConfiguration(nodeId, cellConfiguration, interactionTime);
+            } else if (registeredEntities.containsKey(nodeId)) { // handle stationary entities
+                handleEntityCellConfiguration(nodeId, cellConfiguration, interactionTime);
+            } else if (registeredServers.containsKey(nodeId)) { // handle servers (nodes in Internet, w/o radio region)
+                handleServerCellConfiguration(nodeId, cellConfiguration, interactionTime);
+            } else {
+                if (cellConfiguration.isEnabled()) {
+                    throw new InternalFederateException(
+                            "Cell Ambassador: Cannot activate Cell module for \"" + nodeId + "\" because the id is unknown"
+                    );
+                } else {
+                    log.debug("Tried to deactivate the Cell module for a node with the unknown id: {}", nodeId);
+                }
+            }
+        } else {
+            handoverInfo = disableCellForNode(nodeId);
+            if (isVehicle) {
+                // keep the vehicle in the registeredVehicles map since it could enable the cell module again (and move in the meantime)
+                // the update cell configuration has the cell module disabled
+                registeredVehicles
+                        .computeIfAbsent(nodeId, k -> new AtomicReference<>())
+                        .set(cellConfiguration);
+            }
+            log.info(
+                    "Disabled Cell Communication for "
+                            + (isVehicle ? "vehicle" : "entity")
+                            + "={}, t={}", nodeId, TIME.format(interactionTime)
+            );
+        }
+        handoverInfo.ifPresent((handover) -> {
+            List<HandoverInfo> handoverInfos = Lists.newArrayList(handover);
+            CellularHandoverUpdates handoverUpdatesInteraction = new CellularHandoverUpdates(interactionTime, handoverInfos);
+            chainManager.sendInteractionToRti(handoverUpdatesInteraction);
+        });
     }
 
     /**
@@ -532,21 +535,23 @@ public class CellAmbassador extends AbstractFederateAmbassador {
             log.info("Enabled (Configured) Cell Communication for vehicle={}, t={}",
                     nodeId, TIME.format(interactionTime));
 
-            if (latestVehicleUpdates != null) {
-                Optional<VehicleData> vehicleData = fetchVehicleDataFromLastUpdate(nodeId);
-                if (vehicleData.isPresent()) {
-                    handoverInfo = registerOrUpdateVehicle(interactionTime, vehicleData.get());
-                }
+            VehicleData vehicleData = fetchVehicleDataFromLastUpdate(nodeId);
+            if(vehicleData != null) {
+                handoverInfo = registerOrUpdateVehicle(interactionTime, vehicleData);
             }
         }
         return handoverInfo;
     }
 
-    private Optional<VehicleData> fetchVehicleDataFromLastUpdate(String vehicleId) {
+    private VehicleData fetchVehicleDataFromLastUpdate(String vehicleId) {
+        if (latestVehicleUpdates == null) {
+            return null;
+        }
         // see if vehicle was added or updated within the last vehicle update
-        return Stream.concat(latestVehicleUpdates.getAdded().stream(), latestVehicleUpdates.getUpdated().stream())
+        Optional<VehicleData> vehicleData = Stream.concat(latestVehicleUpdates.getAdded().stream(), latestVehicleUpdates.getUpdated().stream())
                 .filter(v -> v.getName().equals(vehicleId))
                 .findFirst();
+        return vehicleData.orElse(null);
     }
 
     private void handleEntityCellConfiguration(String nodeId, CellConfiguration cellConfiguration, long interactionTime) {
