@@ -35,7 +35,7 @@ import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
-import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
+import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.rti.api.AbstractFederateAmbassador;
@@ -381,13 +381,13 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 interaction.getMapping().getName(),
                 interaction.getTime()
         );
-        TrafficLightGroup group = interaction.getTrafficLightGroup();
-        if (simulatedNodes.containsInternalId(group.getGroupId()) || registeredNodes.containsKey(group.getGroupId())) {
-            this.log.warn("A TL with ID {} was already added. Ignoring message.", group.getGroupId());
+        TrafficLightMapping mapping = interaction.getMapping();
+        if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
+            this.log.warn("A TL with ID {} was already added. Ignoring message.", mapping.getName());
             return;
         }
         // Put the new TL RSU into our list of nodes to be added when AdHoc configuration is received
-        registeredNodes.put(group.getGroupId(), new RegisteredNode(null, group.getFirstPosition().toCartesian()));
+        registeredNodes.put(mapping.getName(), new RegisteredNode(null, mapping.getPosition().toCartesian()));
     }
 
     /**
