@@ -166,9 +166,6 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     private MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory, CScenario scenarioConfiguration) {
         try {
-            logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
-            final Path logConfiguration = prepareLogConfiguration(logDirectory);
-
             final Path scenarioExecutionDirectory;
             if (!scenarioDirectoryManipulator.isEmpty()) {
                 // if a test needs to manipulate a config file inside the scenario, we need to copy the scenario first to a temporary folder
@@ -178,11 +175,13 @@ public class MosaicSimulationRule extends TemporaryFolder {
             } else {
                 scenarioExecutionDirectory = scenarioDirectory;
             }
-
             scenarioConfigManipulator.accept(scenarioConfiguration);
             for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
                 federateManipulators.getOrDefault(federate.id, f -> {}).accept(federate);
             }
+
+            logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
+            final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
             return logError(timeout(() -> new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
