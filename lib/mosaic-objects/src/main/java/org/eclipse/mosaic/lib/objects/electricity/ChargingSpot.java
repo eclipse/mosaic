@@ -15,123 +15,121 @@
 
 package org.eclipse.mosaic.lib.objects.electricity;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.io.Serializable;
 
 /**
- * Definition of an {@link ChargingSpot} based on the <em>ETSI TS 101 556-1</em> definition.
- * <p>
- * <em>A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an EV.</em>
- * </p>
+ * Definition of an {@link ChargingSpot}.
  */
 public final class ChargingSpot implements Serializable {
+
+    /**
+     * The mode of this EV charging spot in compliance with current standards,
+     * including IEC 62196-2.
+     */
+    public enum ChargingMode {
+        /**
+         * Slow charging through household sockets 3,7kW.
+         */
+        MODE_1,
+        /**
+         * One to three-phased charging using coded signal 11kW.
+         */
+        MODE_2,
+        /**
+         * Specific plug/socket configurations with pilot- and control-contact 22kW.
+         */
+        MODE_3,
+        /**
+         * Fast charging controlled by external charger 44kW.
+         */
+        MODE_4;
+
+        public static int getVoltage(ChargingMode chargingMode) {
+            switch (chargingMode) {
+                case MODE_1:
+                    return 230;
+                case MODE_2:
+                case MODE_3:
+                case MODE_4:
+                    return 400;
+                default: // fall back
+                    return 0;
+            }
+        }
+
+        public static int getCurrent(ChargingMode chargingMode) {
+            switch (chargingMode) {
+                case MODE_1:
+                case MODE_2:
+                    return 16;
+                case MODE_3:
+                    return 32;
+                case MODE_4:
+                    return 63;
+                default: // fall back
+                    return 0;
+            }
+        }
+    }
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Unique identifier of the {@link ChargingSpot}.
      */
-    private final String name;
+    private final String chargingSpotId;
 
     /**
      * Type of this {@link ChargingSpot} in compliance with current standards, including.
      * <em>IEC 62196-2</em>.
      */
-    private final int type;
-
-    /**
-     * Number of available parking places, 1 to 4 parking places arranged around a pole.
-     */
-    private final int parkingPlaces;
+    private final ChargingMode chargingMode;
 
     /**
      * Flag, indicating if the {@link ChargingSpot} is available.
      */
-    private boolean available;
-
-    /**
-     * The {@link Reservation} existing for this {@link ChargingSpot}.
-     */
-    private Reservation reservation;
-
-    /**
-     * The id of the vehicle which is already docked to this {@link ChargingSpot}.
-     */
-    private String dockedVehicle;
+    private boolean available = true;
 
     /**
      * Creates a new {@link ChargingSpot} object.
      *
-     * @param name          Unique identifier of the {@link ChargingSpot}
-     * @param type          Type of this {@link ChargingSpot} in compliance with current standards,
-     *                      including <em>IEC 62196-2</em>
-     * @param parkingPlaces Number of available parking places, 1 to 4 parking places arranged around a pole
+     * @param chargingSpotId Unique identifier of the {@link ChargingSpot}
+     * @param type Type of this {@link ChargingSpot} in compliance with current standards,
+     *             including <em>IEC 62196-2</em> see {@link ChargingMode}
      */
-    public ChargingSpot(String name, int type, int parkingPlaces) {
-        this.name = name;
-        this.type = type;
-        this.parkingPlaces = parkingPlaces;
-        this.available = true;
-        this.reservation = new Reservation("no reservation", 0, 0);
-        this.dockedVehicle = null;
+    public ChargingSpot(String chargingSpotId, ChargingMode type) {
+        this.chargingSpotId = chargingSpotId;
+        this.chargingMode = type;
     }
 
-    public Reservation getReservation() {
-        return reservation;
+    public String getChargingSpotId() {
+        return chargingSpotId;
     }
 
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public int getParkingPlaces() {
-        return parkingPlaces;
+    public ChargingMode getChargingMode() {
+        return chargingMode;
     }
 
     /**
      * Returns the maximum voltage based on the type.
      *
-     * @return Maximum voltage available at this <code>ChargingSpot</code>, unit: [V]
+     * @return Maximum voltage available at this {@code ChargingSpot}, unit: [V]
      */
     public int getMaximumVoltage() {
-        switch (type) {
-            case 0: // Mode 1 3,7kW
-                return 230;
-            case 1: // Mode 2 11kW
-                return 400;
-            case 2: // Mode 3 22kW
-                return 400;
-            case 3: // Mode 4 44kW
-                return 400;
-            default: // fall back
-                return 0;
-        }
+        return ChargingMode.getVoltage(chargingMode);
     }
 
     /**
-     * @return Maximum current available at this <code>ChargingSpot</code>, unit: [A]
+     * Returns the maximum current based on the type.
+     *
+     * @return Maximum current available at this {@code ChargingSpot}, unit: [A]
      */
     public int getMaximumCurrent() {
-        switch (type) {
-            case 0: // Mode 1 3,7kW
-                return 16;
-            case 1: // Mode 2 11kW
-                return 16;
-            case 2: // Mode 3 22kW
-                return 32;
-            case 3: // Mode 4 44kW
-                return 63;
-            default: // fall back
-                return 0;
-        }
-
+        return ChargingMode.getCurrent(chargingMode);
     }
 
     /**
@@ -148,39 +146,21 @@ public final class ChargingSpot implements Serializable {
         return available;
     }
 
-    /**
-     * Returns {@code True}, if the {@link ChargingSpot} is reserved for a vehicle.
-     */
-    public boolean isReserved() {
-        return !(this.reservation.getReservedVehicleId().equals("no reservation"));
-    }
-
     public void setAvailable(boolean available) {
         this.available = available;
     }
 
-    public String getDockedVehicle() {
-        return dockedVehicle;
-    }
-
-    public void dock(String dockedVehicle) {
-        this.dockedVehicle = dockedVehicle;
-    }
-
-    public void undock() {
-        this.dockedVehicle = null;
-    }
-
-    public boolean isDocked() {
-        return dockedVehicle != null;
-    }
-
     @Override
     public String toString() {
-        return "ChargingSpot [name=" + name + ", type=" + type + ", parkingPlaces=" + parkingPlaces
-                + ", available=" + available + ", reservation=" + reservation.toString() + ", dockedVehicle=" + dockedVehicle + ", maximumVoltage=" + getMaximumVoltage()
-                + ", maximumCurrent=" + getMaximumCurrent() + ", maximumPower=" + getMaximumPower()
-                + "]";
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .append("ChargingSpot")
+                .append("chargingSpotId", chargingSpotId)
+                .append("chargingMode", chargingMode)
+                .append("available", available)
+                .append("maximumVoltage", getMaximumVoltage())
+                .append("maximumCurrent", getMaximumCurrent())
+                .append("maximumPower", getMaximumPower())
+                .toString();
     }
 
 }

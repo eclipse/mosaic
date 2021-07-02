@@ -18,10 +18,11 @@ package org.eclipse.mosaic.lib.objects.electricity;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.UnitData;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import com.google.common.collect.Lists;
+
+import java.util.HashMap;
 import java.util.List;
-import javax.annotation.Nonnull;
+import java.util.Map;
 
 /**
  * This class encapsulates the semi-persistent state of a ChargingStation based on the
@@ -36,106 +37,38 @@ public final class ChargingStationData extends UnitData {
     private static final long serialVersionUID = 1L;
 
     /**
-     * List of all {@link ChargingSpot} units belonging to this <code>ChargingStation</code>.
+     * Map of all {@link ChargingSpot} units belonging to this {@code ChargingStation}.
      */
-    private final List<ChargingSpot> chargingSpots;
-
-    private final ArrayList<String> rejectedVehicleIds;
-
-    private int acceptedChargeRequest;
-
-    private int deniedChargeRequest;
+    private final Map<String, ChargingSpot> chargingSpots = new HashMap<>();
 
     /**
-     * Number of vehicles the <code>ChargingStation</code> can serve at the same time.
-     */
-    private final int capacity;
-
-    /**
-     * Creates a new <code>ChargingStation</code> object.
+     * Creates a new charging station object.
      *
-     * @param time                  current simulation time
-     * @param name                  Unique identifier of the <code>ChargingStation</code>
-     * @param longLat               GPS coordinates (WGS 84 decimal degrees) of the <code>ChargingStation</code>, axis
-     *                              order: [x=longitude, y=latitude]
-     * @param chargingSpots         List of all {@link ChargingSpot ChargingSpots} belonging to this
-     *                              <code>ChargingStation</code>
-     * @param rejectedVehicleIds    a List of Vehicle Ids which were rejected because of no free charging spot
-     * @param acceptedChargeRequest number of accepted charge requests overall
-     * @param deniedChargeRequest   number of rejected charge requests overall
+     * @param time          current simulation time
+     * @param name          Unique identifier of the charging station
+     * @param position      position of the charging station
+     * @param chargingSpots List of all {@link ChargingSpot ChargingSpots} belonging to this charging station
      */
 
-    public ChargingStationData(long time, String name, GeoPoint longLat, List<ChargingSpot> chargingSpots,
-                               ArrayList<String> rejectedVehicleIds, int acceptedChargeRequest, int deniedChargeRequest) {
-        super(time, name, longLat);
-        this.chargingSpots = Collections.unmodifiableList(chargingSpots);
-        this.rejectedVehicleIds = rejectedVehicleIds;
-        this.acceptedChargeRequest = acceptedChargeRequest;
-        this.deniedChargeRequest = deniedChargeRequest;
-        int capacity = 0;
-        for (ChargingSpot chargingSpot : this.chargingSpots) {
-            capacity += chargingSpot.getParkingPlaces();
-        }
-        this.capacity = capacity;
+    public ChargingStationData(long time, String name, GeoPoint position, List<ChargingSpot> chargingSpots) {
+        super(time, name, position);
+        chargingSpots.forEach(chargingSpot -> this.chargingSpots.put(chargingSpot.getChargingSpotId(), chargingSpot));
     }
 
-    public ChargingStationData createNewTime(final long time) {
-        return new ChargingStationData(time, getName(), getPosition(), getChargingSpots(),
-                getRejectedVehicles(), getAcceptedChargeRequest(), getDeniedChargeRequest());
+
+    public List<ChargingSpot> getChargingSpots() {
+        return Lists.newArrayList(chargingSpots.values());
     }
 
+    public ChargingSpot getChargingSpot(String chargingSpotId) {
+        return chargingSpots.get(chargingSpotId);
+    }
     /**
-     * Sets a reservation for a free charging spot.
-     *
-     * @param reservation The vehicle reservation.
-     * @return true, if a free charging spot was found
-     */
-    public boolean addReservation(Reservation reservation) {
-        for (ChargingSpot chargingSpot : chargingSpots) {
-            if (chargingSpot.isAvailable()) {
-                chargingSpot.setAvailable(false);
-                chargingSpot.setReservation(reservation);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns a list of ids of all so far rejected vehicles.
-     */
-    public ArrayList<String> getRejectedVehicles() {
-        return this.rejectedVehicleIds;
-    }
-
-    /**
-     * Counts the rejected vehicles and adds them to a list.
-     *
-     * @param vehicleId of rejected vehicle
-     */
-    public void addRejectedVehicle(String vehicleId) {
-        deniedChargeRequest++;
-        this.rejectedVehicleIds.add(vehicleId);
-    }
-
-    public void incrementAcceptedChargeRequests() {
-        acceptedChargeRequest++;
-    }
-
-    /**
-     * Returns the number of vehicles the {@link ChargingSpot}s of this
-     * <code>ChargingStation</code> can serve at the same time.
-     */
-    public int getCapacity() {
-        return capacity;
-    }
-
-    /**
-     * Returns <code>True</code>, if the <code>ChargingStation</code> has a free {@link ChargingSpot} available.
+     * Returns {@code True}, if the {@code ChargingStation} has a free {@link ChargingSpot} available.
      * Charging Spots can be reserved by the Charging Station App or be engaged by a car without reservation app.
      */
     public boolean isAvailable() {
-        for (ChargingSpot chargingSpot : chargingSpots) {
+        for (ChargingSpot chargingSpot : chargingSpots.values()) {
             if (chargingSpot.isAvailable()) {
                 return true;
             }
@@ -143,86 +76,77 @@ public final class ChargingStationData extends UnitData {
         return false;
     }
 
+    public boolean isChargingSpotAvailable(String chargingSpotId) {
+        return chargingSpots.get(chargingSpotId) == null && chargingSpots.get(chargingSpotId).isAvailable();
+    }
+
     /**
-     * Returns the number of free {@link ChargingSpot}s.
+     * Returns the next available {@link ChargingSpot}. If none are available return {@code null}.
      *
-     * @return free spots.
+     * @return next available charging spot
      */
-    public int getNumberOfAvailableSpots() {
-        int available = 0;
-        for (ChargingSpot chargingSpot : chargingSpots) {
+    public String getNextAvailableChargingSpot() {
+        for (ChargingSpot chargingSpot : chargingSpots.values()) {
             if (chargingSpot.isAvailable()) {
-                available++;
+                return chargingSpot.getChargingSpotId();
             }
         }
-        return available;
+        return null;
     }
 
     /**
-     * Returns the number of reserved {@link ChargingSpot}s.
+     * Blocks the given charging spot, meaning a vehicle has docked at it.
      *
-     * @return reserved spots.
+     * @param chargingSpotId the charging spot id to block
      */
-    public int getNumberOfReservedSpots() {
-        int reserved = 0;
-        for (ChargingSpot chargingSpot : chargingSpots) {
-            if (chargingSpot.isReserved() && !chargingSpot.isDocked()) {
-                reserved++;
-            }
-        }
-        return reserved;
+    public void blockChargingSpot(String chargingSpotId) {
+        chargingSpots.get(chargingSpotId).setAvailable(false);
     }
 
-    /**
-     * Returns the number of blocked {@link ChargingSpot}s.
-     *
-     * @return blocked spots. (vehicle is currently docked to charging station)
-     */
-    public int getNumberOfBlockedSpots() {
-        int blocked = 0;
-        for (ChargingSpot chargingSpot : chargingSpots) {
-            if (chargingSpot.isDocked()) {
-                blocked++;
-            }
-        }
-        return blocked;
-    }
 
     /**
-     * Returns a list of {@link ChargingSpot}s.
+     * Unblocks the given charging spot, meaning a vehicle has undocked from it.
      *
-     * @return ChargingSpots
+     * @param chargingSpotId the charging spot id to unblock
      */
-    @Nonnull
-    public List<ChargingSpot> getChargingSpots() {
-        return this.chargingSpots;
+    public void unblockChargingSpot(String chargingSpotId) {
+        chargingSpots.get(chargingSpotId).setAvailable(true);
     }
 
     @Override
     public String toString() {
         final int maxLen = 10;
         return "ChargingStation [chargingSpots="
-                + chargingSpots.subList(0, Math.min(chargingSpots.size(), maxLen)) + ", capacity=" + capacity
+                + Lists.newArrayList(chargingSpots.values()).subList(0, Math.min(chargingSpots.size(), maxLen))
                 + ", name=" + getName() + ", position="
                 + getPosition() + "]";
     }
 
-    /**
-     * Returns the number of accepted Charge Requests.
-     *
-     * @return acceptedChargeRequests
-     */
+    public static class Builder {
+        private final long time;
+        private final String name;
+        private final GeoPoint position;
+        private List<ChargingSpot> chargingSpots;
 
-    public int getAcceptedChargeRequest() {
-        return acceptedChargeRequest;
-    }
 
-    /**
-     * Returns the number of denied Charge Requests.
-     *
-     * @return deniedChargeRequests
-     */
-    public int getDeniedChargeRequest() {
-        return deniedChargeRequest;
+        public Builder(long time, String name, GeoPoint position) {
+            this.time = time;
+            this.name = name;
+            this.position = position;
+        }
+
+        public Builder chargingSpots(List<ChargingSpot> chargingSpots) {
+            this.chargingSpots = chargingSpots;
+            return this;
+        }
+
+        public Builder copyFrom(ChargingStationData chargingStationData) {
+            chargingSpots = chargingStationData.getChargingSpots();
+            return this;
+        }
+
+        public ChargingStationData build() {
+            return new ChargingStationData(time, name, position, chargingSpots);
+        }
     }
 }

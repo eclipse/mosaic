@@ -40,12 +40,17 @@ public final class VehicleChargingStartRequest extends Interaction {
     /**
      * String identifying the vehicle sending this interaction.
      */
-    public String vehicleId;
+    private final String vehicleId;
 
     /**
      * The identifier of the charging station.
      */
-    public String chargingStationId;
+    private final String chargingStationId;
+
+    /**
+     * Optional identifier of the exact charging spot.
+     */
+    private final String chargingSpotId;
 
     /**
      * Creates a new {@link VehicleChargingStartRequest} interaction.
@@ -54,9 +59,20 @@ public final class VehicleChargingStartRequest extends Interaction {
      * @param vehicleId String identifying the vehicle sending this interaction
      */
     public VehicleChargingStartRequest(long time, String vehicleId, String chargingStationId) {
+        this(time, vehicleId, chargingStationId, null);
+    }
+
+    /**
+     * Creates a new {@link VehicleChargingStartRequest} interaction.
+     *
+     * @param time      Timestamp of this interaction, unit: [ns]
+     * @param vehicleId String identifying the vehicle sending this interaction
+     */
+    public VehicleChargingStartRequest(long time, String vehicleId, String chargingStationId, String chargingSpotId) {
         super(time);
         this.vehicleId = vehicleId;
         this.chargingStationId = chargingStationId;
+        this.chargingSpotId = chargingSpotId;
     }
 
     public String getVehicleId() {
@@ -65,6 +81,10 @@ public final class VehicleChargingStartRequest extends Interaction {
 
     public String getChargingStationId() {
         return chargingStationId;
+    }
+
+    public String getChargingSpotId() {
+        return chargingSpotId;
     }
 
     @Override

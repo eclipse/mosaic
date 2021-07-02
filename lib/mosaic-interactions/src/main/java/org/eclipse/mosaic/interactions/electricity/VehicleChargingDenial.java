@@ -28,14 +28,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * Application Simulator (the vehicles) when a charging station is already in use.
  * e.g. a vehicle wants to start charging on an engaged charging station then the charging request gets rejected
  */
-public final class ChargingDenialResponse extends Interaction {
+public final class VehicleChargingDenial extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * String identifying the type of this interaction.
      */
-    public static final String TYPE_ID = createTypeIdentifier(ChargingDenialResponse.class);
+    public static final String TYPE_ID = createTypeIdentifier(VehicleChargingDenial.class);
 
     /**
      * String identifying the vehicle sending this interaction.
@@ -48,23 +48,16 @@ public final class ChargingDenialResponse extends Interaction {
     private final String chargingStationId;
 
     /**
-     * Is {@code true}, if there is a free spot at the station, which is already reserved for another vehicle.
-     */
-    private final boolean reservedUnoccupiedSpot;
-
-    /**
-     * Creates a new {@link ChargingDenialResponse} message that is sent to a vehicle that requested to charge at this station.
+     * Creates a new {@link VehicleChargingDenial} message that is sent to a vehicle that requested to charge at this station.
      *
      * @param time                   Timestamp of this interaction, unit: [ns]
      * @param vehicleId              Vehicle identifier
      * @param chargingStationId      Charging station identifier
-     * @param reservedUnoccupiedSpot If {@code true} there exists an unoccupied spot, which is reserved for another vehicle.
      */
-    public ChargingDenialResponse(long time, String vehicleId, String chargingStationId, boolean reservedUnoccupiedSpot) {
+    public VehicleChargingDenial(long time, String vehicleId, String chargingStationId) {
         super(time);
         this.vehicleId = vehicleId;
         this.chargingStationId = chargingStationId;
-        this.reservedUnoccupiedSpot = reservedUnoccupiedSpot;
     }
 
     public String getVehicleId() {
@@ -75,16 +68,11 @@ public final class ChargingDenialResponse extends Interaction {
         return chargingStationId;
     }
 
-    public boolean isReservedUnoccupiedSpot() {
-        return this.reservedUnoccupiedSpot;
-    }
-
     @Override
     public int hashCode() {
         return new HashCodeBuilder(5, 59)
                 .append(getChargingStationId())
                 .append(getVehicleId())
-                .append(isReservedUnoccupiedSpot())
                 .toHashCode();
     }
 
@@ -100,11 +88,10 @@ public final class ChargingDenialResponse extends Interaction {
             return false;
         }
 
-        ChargingDenialResponse other = (ChargingDenialResponse) obj;
+        VehicleChargingDenial other = (VehicleChargingDenial) obj;
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.chargingStationId, other.chargingStationId)
-                .append(this.reservedUnoccupiedSpot, other.reservedUnoccupiedSpot)
                 .isEquals();
     }
 
@@ -114,7 +101,6 @@ public final class ChargingDenialResponse extends Interaction {
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
                 .append("chargingStationId", chargingStationId)
-                .append("reservedUnoccupiedSpot", reservedUnoccupiedSpot)
                 .toString();
     }
 }

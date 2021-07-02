@@ -18,11 +18,11 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.app.api.ElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSystem;
-import org.eclipse.mosaic.interactions.electricity.ChargingDenialResponse;
+import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingStartRequest;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingStopRequest;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
 /**
@@ -31,7 +31,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
  */
 public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleOperatingSystem {
 
-    private VehicleBatteryState vehicleBatteryState;
+    private BatteryData batteryData;
 
     /**
      * Creates a new ElectricVehicle.
@@ -45,31 +45,31 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
         setRequiredOperatingSystem(ElectricVehicleOperatingSystem.class);
     }
 
-    private void updateBatteryInformation(final VehicleBatteryState currentVehicleBatteryState) {
+    private void updateBatteryInformation(final BatteryData currentBatteryData) {
         // set the new vehicle electric info reference
-        VehicleBatteryState previousVehicleBatteryState = this.vehicleBatteryState;
-        this.vehicleBatteryState = currentVehicleBatteryState;
+        BatteryData previousBatteryData = this.batteryData;
+        this.batteryData = currentBatteryData;
 
         for (ElectricVehicleApplication application : getApplicationsIterator(ElectricVehicleApplication.class)) {
-            application.onBatteryStateUpdated(previousVehicleBatteryState, currentVehicleBatteryState);
+            application.onBatteryDataUpdated(previousBatteryData, currentBatteryData);
         }
     }
 
-    private void onVehicleChargingDenialResponse(final ChargingDenialResponse chargingDenialResponse) {
+    private void onVehicleChargingDenialResponse(final VehicleChargingDenial vehicleChargingDenial) {
         for (ElectricVehicleApplication application : getApplicationsIterator(ElectricVehicleApplication.class)) {
-            application.onChargingRequestRejected(chargingDenialResponse);
+            application.onChargingRequestRejected(vehicleChargingDenial);
         }
     }
 
     @Override
     protected boolean handleEventResource(Object resource, long eventType) {
-        if (resource instanceof VehicleBatteryState) {
-            updateBatteryInformation((VehicleBatteryState) resource);
+        if (resource instanceof BatteryData) {
+            updateBatteryInformation((BatteryData) resource);
             return true;
         }
 
-        if (resource instanceof ChargingDenialResponse) {
-            onVehicleChargingDenialResponse((ChargingDenialResponse) resource);
+        if (resource instanceof VehicleChargingDenial) {
+            onVehicleChargingDenialResponse((VehicleChargingDenial) resource);
             return true;
         }
 
@@ -77,18 +77,22 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
     }
 
     @Override
-    public VehicleBatteryState getBatteryState() {
-        return vehicleBatteryState;
+    public BatteryData getBatteryState() {
+        return batteryData;
     }
 
     @Override
     public void sendVehicleChargingStartRequest(String chargingStationId) {
-        VehicleChargingStartRequest vehicleChargingStartRequest = new VehicleChargingStartRequest(
-                SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
-                getId(),
-                chargingStationId
-        );
-        sendInteractionToRti(vehicleChargingStartRequest);
+        if (getVehicleData() != null && !getVehicleData().isStopped()) {
+            VehicleChargingStartRequest vehicleChargingStartRequest = new VehicleChargingStartRequest(
+                    SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
+                    getId(),
+                    chargingStationId
+            );
+            sendInteractionToRti(vehicleChargingStartRequest);
+        } else {
+            throw new RuntimeException("Cannot send VehicleChargingStartRequest, vehicle is not stopped.");
+        }
     }
 
     @Override

@@ -24,10 +24,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.io.Serializable;
 
 /**
- * This class provides electric information for a vehicle provided by
+ * This class provides battery information for a vehicle provided by
  * the electricity or battery simulator.
  */
-public class VehicleBatteryState implements Serializable {
+public class BatteryData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,7 +39,7 @@ public class VehicleBatteryState implements Serializable {
     /**
      * Time in [ns] until this information is valid.
      */
-    private final long time;
+    private long time;
 
     /**
      * Quotient of the current capacity and the initial capacity of the battery.
@@ -59,9 +59,9 @@ public class VehicleBatteryState implements Serializable {
     private boolean charging;
 
     /**
-     * Creates a new <code>VehicleElectricInformation</code> for an added vehicle.
+     * Creates a new {@link BatteryData} for an added vehicle.
      */
-    public VehicleBatteryState(String name, long time) {
+    public BatteryData(String name, long time) {
         this.name = name;
         this.time = time;
         this.stateOfCharge = -1.0;
@@ -70,17 +70,16 @@ public class VehicleBatteryState implements Serializable {
     }
 
     /**
-     * Returns a copy of this <code>VehicleElectricInformation</code> with updated battery data.
-     * This instance of <code>VehicleElectricInformation</code> is immutable and unaffected by this
-     * method call.
+     * Updates the {@link BatteryData}.
      *
+     * @param time          time when the battery data was last updated
      * @param stateOfCharge Quotient of the current capacity and the initial capacity of the battery, range:
      *                      [0=empty, 1=full]
      * @param capacity      Current capacity of the battery, unit: [Ah]
-     * @param charging      Flag, indicating if the vehicle is currently being charged at a
-     *                      {@link ChargingSpot}
+     * @param charging      Flag, indicating if the vehicle is currently being charged
      */
-    public void updateBatteryData(double stateOfCharge, double capacity, boolean charging) {
+    public void updateBatteryData(long time, double stateOfCharge, double capacity, boolean charging) {
+        this.time = time;
         this.stateOfCharge = MathUtils.clamp(0d, stateOfCharge, 1d);
         this.capacity = capacity;
         this.charging = charging;
@@ -152,7 +151,7 @@ public class VehicleBatteryState implements Serializable {
             return false;
         }
 
-        VehicleBatteryState other = (VehicleBatteryState) obj;
+        BatteryData other = (BatteryData) obj;
         return new EqualsBuilder()
                 .append(this.stateOfCharge, other.stateOfCharge)
                 .append(this.capacity, other.capacity)

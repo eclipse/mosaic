@@ -43,17 +43,6 @@ public final class ChargingStationRegistration extends Interaction {
     public static final String TYPE_ID = createTypeIdentifier(ChargingStationRegistration.class);
 
     /**
-     * Charging station operator (e.g. energy provider) identification
-     */
-    private final String operator;
-
-    /**
-     * Access restrictions, e.g. open to all or restricted to some communities,
-     * free of access or paying access.
-     */
-    private final String access;
-
-    /**
      * List of the {@link ChargingSpot} units belonging to this charging station.
      */
     private final List<ChargingSpot> chargingSpots;
@@ -70,28 +59,13 @@ public final class ChargingStationRegistration extends Interaction {
      * @param name          ITS identification of the charging station
      * @param group         The group identifier.
      * @param applications  List of applications the charging station is equipped with.
-     * @param operator      Charging station operator (e.g. energy provider) identification
      * @param position      The position of the charging station.
-     * @param access        Access restrictions, e.g. open to all or restricted to some communities, free of
-     *                      access or paying access
-     * @param chargingSpots List of the {@link ChargingSpot} units belonging to this charging station
      */
     public ChargingStationRegistration(long time, String name, final String group, List<String> applications,
-                                       GeoPoint position, String operator, String access,
-                                       List<ChargingSpot> chargingSpots) {
+                                       GeoPoint position, List<ChargingSpot> chargingSpots) {
         super(time);
-        this.operator = operator;
-        this.access = access;
         this.chargingSpots = Collections.unmodifiableList(chargingSpots);
         this.chargingStationMapping = new ChargingStationMapping(name, group, applications, position);
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public String getAccess() {
-        return access;
     }
 
     /**
@@ -100,7 +74,7 @@ public final class ChargingStationRegistration extends Interaction {
      * @return List of the {@link ChargingSpot} units.
      */
     public List<ChargingSpot> getChargingSpots() {
-        return Collections.unmodifiableList(chargingSpots);
+        return chargingSpots;
     }
 
     public ChargingStationMapping getMapping() {
@@ -110,8 +84,6 @@ public final class ChargingStationRegistration extends Interaction {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(5, 83)
-                .append(operator)
-                .append(access)
                 .append(chargingSpots)
                 .append(chargingStationMapping)
                 .toHashCode();
@@ -131,8 +103,6 @@ public final class ChargingStationRegistration extends Interaction {
 
         ChargingStationRegistration rhs = (ChargingStationRegistration) obj;
         return new EqualsBuilder()
-                .append(this.operator, rhs.operator)
-                .append(this.access, rhs.access)
                 .append(this.chargingSpots, rhs.chargingSpots)
                 .append(this.chargingStationMapping, rhs.chargingStationMapping)
                 .isEquals();
@@ -142,8 +112,6 @@ public final class ChargingStationRegistration extends Interaction {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("operator", operator)
-                .append("access", access)
                 .append("chargingSpots", chargingSpots)
                 .append("chargingStationMapping", chargingStationMapping)
                 .toString();

@@ -25,9 +25,9 @@ import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSys
 import org.eclipse.mosaic.fed.application.app.empty.ElectricVehicle;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.interactions.electricity.ChargingDenialResponse;
+import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -99,13 +99,13 @@ public class TestElectricVehicleApplication extends AbstractApplication<Electric
     }
 
     @Override
-    public void onBatteryStateUpdated(VehicleBatteryState previousState, VehicleBatteryState updatedState) {
-        thisApplicationSpy.onBatteryStateUpdated(previousState, updatedState);
+    public void onBatteryDataUpdated(BatteryData previousBatteryData, BatteryData updatedBatteryData) {
+        thisApplicationSpy.onBatteryDataUpdated(previousBatteryData, updatedBatteryData);
     }
 
     @Override
-    public void onChargingRequestRejected(ChargingDenialResponse chargingDenialResponse) {
-        thisApplicationSpy.onChargingRequestRejected(chargingDenialResponse);
+    public void onChargingRequestRejected(VehicleChargingDenial vehicleChargingDenial) {
+        thisApplicationSpy.onChargingRequestRejected(vehicleChargingDenial);
     }
 
     @Override

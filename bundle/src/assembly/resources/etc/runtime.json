@@ -19,8 +19,8 @@
                 "VehicleRegistration",
                 "ApplicationInteraction",
                 "ChargingStationUpdates",
-                "ChargingDenialResponse",
-                "VehicleElectricityUpdates",
+                "VehicleChargingDenial",
+                "VehicleBatteryUpdates",
                 "VehicleRouteRegistration",
                 "V2xMessageReception",
                 "V2xFullMessageReception",
@@ -184,6 +184,24 @@
             "javaClasspathEntries": []
         },
         {
+            "id": "charging",
+            "classname": "com.dcaiti.mosaic.fed.chargingstation.ambassador.ChargingStationAmbassador",
+            "configuration": "charging_config.json",
+            "priority": 50,
+            "host": "local",
+            "port": 0,
+            "deploy": false,
+            "start": false,
+            "subscriptions": [
+                "ChargingStationRegistration",
+                "VehicleRegistration",
+                "VehicleUpdates",
+                "VehicleChargingStartRequest",
+                "VehicleChargingStopRequest"
+            ],
+            "javaClasspathEntries": []
+        },
+        {
             "id": "output",
             "classname": "org.eclipse.mosaic.fed.output.ambassador.OutputAmbassador",
             "configuration": "output_config.xml",
@@ -213,7 +231,7 @@
                 "VehicleSlowDown",
                 "TrafficDetectorUpdates",
                 "TrafficLightUpdates",
-                "VehicleElectricityUpdates",
+                "VehicleBatteryUpdates",
                 "CellularHandoverUpdates",
                 "VehicleUpdates",
                 "VehicleRoutesInitialization",

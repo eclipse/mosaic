@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 
 import javax.annotation.Nullable;
 
@@ -32,7 +32,7 @@ public interface ElectricVehicleOperatingSystem extends VehicleOperatingSystem {
      * @return the electric vehicle information.
      */
     @Nullable
-    VehicleBatteryState getBatteryState();
+    BatteryData getBatteryState();
 
     /**
      * Sends a request to start charging the battery of the vehicle.
