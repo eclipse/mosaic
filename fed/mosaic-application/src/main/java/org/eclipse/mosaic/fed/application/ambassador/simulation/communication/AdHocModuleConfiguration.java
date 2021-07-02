@@ -30,6 +30,12 @@ import java.util.List;
  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
  *     .addRadio().power(50).channel(AdHocChannel.CCH).create();
  * </pre>
+ * Single Radio Single Channel (with distance instead of power for SNS):
+ *  * <br>
+ *  * <pre>
+ *  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
+ *  *     .addRadio().distance(250).channel(AdHocChannel.CCH).create();
+ *  * </pre>
  * <br>
  * <br>
  * Single Radio Dual Channel:
@@ -40,20 +46,15 @@ import java.util.List;
  * </pre>
  * <br>
  * <br>
- * Dual Radio Single Channel (with distance instead of power for SNS):
+ * Dual Radio Single Channel:
  * <br>
  * <pre>
  * AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
- *     .addRadio().distance(250).channel(AdHocChannel.SCH1).create()
- *     .addRadio().distance(250).channel(AdHocChannel.CCH).create();
+ *     .addRadio().power(50).channel(AdHocChannel.SCH1).create()
+ *     .addRadio().power(50).channel(AdHocChannel.CCH).create();
  * </pre>
  */
 public class AdHocModuleConfiguration implements CommunicationModuleConfiguration {
-
-    /**
-     * Helper var in order to check if distance and power is not configured simultaneously.
-     */
-    private Boolean distanceConfigured = null;
 
     /**
      * List of enabled and configured radios (usual cases operate with 1 (single) or 2 (dual) radios).
@@ -88,7 +89,7 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
 
         private final AdHocModuleConfiguration parent;
 
-        private int power = -1;  // Default value 0 indicates power configuration through federate
+        private int power = -1;  // Default value -1 indicates power configuration through federate
         private Double distance = null;
 
         private AdHocChannel channel0;
@@ -108,15 +109,9 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
          * @return the current AdHocRadioConfiguration
          */
         public AdHocModuleRadioConfiguration power(int power) {
-            if (this.parent.distanceConfigured != null && this.parent.distanceConfigured) {
-                throw new RuntimeException(
-                        "A mixed configuration of distance and power is not allowed. Please be careful with configuring the adhoc module."
-                );
-            }
             if (power < -1) {
                 throw new RuntimeException("Negative power is not allowed within an AdHoc configuration.");
             }
-            this.parent.distanceConfigured = Boolean.FALSE;
             this.power = power;
             return this;
         }
@@ -129,15 +124,9 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
          * @return the current AdHocRadioConfiguration
          */
         public AdHocModuleRadioConfiguration distance(double distance) {
-            if (this.parent.distanceConfigured != null && !this.parent.distanceConfigured) {
-                throw new RuntimeException(
-                        "A mixed configuration of distance and power is not allowed. Please be careful with configuring the adhoc module."
-                );
-            }
             if (distance < 0) {
                 throw new RuntimeException("Negative distance is not allowed within an AdHoc configuration.");
             }
-            this.parent.distanceConfigured = Boolean.TRUE;
             this.distance = distance;
             return this;
         }
