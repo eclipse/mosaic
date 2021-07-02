@@ -59,7 +59,7 @@ public class CLocalHost {
     /**
      * The operating system running on the host.
      */
-    public OperatingSystem operatingSystem = OperatingSystem.UNKNOWN;
+    public OperatingSystem operatingSystem = OperatingSystem.getSystemOperatingSystem();
 
     public CLocalHost() {
         // nop
