@@ -48,13 +48,16 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
@@ -66,7 +69,10 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Path logDirectory;
 
     protected String logLevelOverride = null;
-    protected Map<String, String> federateOverride = new HashMap<>();
+    protected Consumer<CScenario> scenarioConfigManipulator = c -> {};
+    protected List<Consumer<Path>> scenarioDirectoryManipulator = new ArrayList<>();
+    protected Map<String, Consumer<CRuntime.CFederate>> federateManipulators = new HashMap<>();
+
     protected long timeout = 5 * TIME.MINUTE;
 
     @Override
@@ -82,19 +88,19 @@ public class MosaicSimulationRule extends TemporaryFolder {
         return this;
     }
 
-    public MosaicSimulationRule federateOverride(String federateName, Class federateAmbassador) {
-        this.federateOverride.put(federateName, federateAmbassador.getCanonicalName());
+    public MosaicSimulationRule federateConfigurationManipulator(String federate, Consumer<CRuntime.CFederate> federateManipulator) {
+        this.federateManipulators.put(federate, federateManipulator);
         return this;
     }
 
-    private void setFederateOverride(Map<String, String> federateOverride) {
-        for (Map.Entry<String, String> federateEntry : federateOverride.entrySet()) {
-            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
-                if (federate.id.equals(federateEntry.getKey())) {
-                    federate.classname = federateEntry.getValue();
-                }
-            }
-        }
+    public MosaicSimulationRule scenarioConfigurationManipulator(Consumer<CScenario> manipulator) {
+        this.scenarioConfigManipulator = manipulator;
+        return this;
+    }
+
+    public MosaicSimulationRule addScenarioDirectoryManipulator(Consumer<Path> manipulator) {
+        this.scenarioDirectoryManipulator.add(manipulator);
+        return this;
     }
 
     public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
@@ -158,19 +164,32 @@ public class MosaicSimulationRule extends TemporaryFolder {
         }
     }
 
-    public MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory, CScenario scenarioConfiguration) {
+    private MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory, CScenario scenarioConfiguration) {
         try {
+            final Path scenarioExecutionDirectory;
+            if (!scenarioDirectoryManipulator.isEmpty()) {
+                // if a test needs to manipulate a config file inside the scenario, we need to copy the scenario first to a temporary folder
+                scenarioExecutionDirectory = super.newFolder(scenarioDirectory.getFileName().toString()).toPath();
+                FileUtils.copyDirectory(scenarioDirectory.toFile(), scenarioExecutionDirectory.toFile());
+                scenarioDirectoryManipulator.forEach(p -> p.accept(scenarioExecutionDirectory));
+            } else {
+                scenarioExecutionDirectory = scenarioDirectory;
+            }
+            scenarioConfigManipulator.accept(scenarioConfiguration);
+            for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
+                federateManipulators.getOrDefault(federate.id, f -> {}).accept(federate);
+            }
+
             logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
-            setFederateOverride(federateOverride);
             return logError(timeout(() -> new MosaicSimulation()
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
                     .setComponentProviderFactory(componentProviderFactory)
-                    .runSimulation(scenarioDirectory, scenarioConfiguration)));
+                    .runSimulation(scenarioExecutionDirectory, scenarioConfiguration)));
         } catch (Throwable e) {
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
             result.exception = e;

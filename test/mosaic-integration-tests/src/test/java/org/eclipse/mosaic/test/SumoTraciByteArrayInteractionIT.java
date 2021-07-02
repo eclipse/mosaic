@@ -27,16 +27,19 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class HighwayReleaseIT {
+public class SumoTraciByteArrayInteractionIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule();
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("TRACE");
 
     private static MosaicSimulation.SimulationResult simulationResult;
 
+    private final static String LOG_VEH_0 = "apps/veh_0/SumoTraciInteractionApp.log";
+    private final static String LOG_VEH_1 = "apps/veh_1/SumoTraciInteractionApp.log";
+
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeReleaseScenario("Highway");
+        simulationResult = simulationRule.executeTestScenario("sumo-traci-app-interaction");
     }
 
     @Test
@@ -46,12 +49,12 @@ public class HighwayReleaseIT {
     }
 
     @Test
-    public void correctLanePropertyChanges() throws Exception {
-        assertEquals(10, LogAssert.count(simulationRule, "Traffic.log",
-                ".*Change disallowed vehicle classes of lane with ID=.*"
-        ));
-        assertEquals(10, LogAssert.count(simulationRule, "Traffic.log",
-                ".*Change allowed vehicle classes of lane with ID=.*"
-        ));
-    }
+    public void allLogsCreated() throws Exception {
+        int receivedTraciResponseVeh0 = LogAssert.count(simulationRule, LOG_VEH_0,
+                ".*Received TraCI message from Sumo. Speed of vehicle veh_0 is.*");
+        int receivedTraciResponseVeh1 = LogAssert.count(simulationRule, LOG_VEH_0,
+                ".*Received TraCI message from Sumo. Speed of vehicle veh_0 is.*");
+        assertEquals(3, receivedTraciResponseVeh0);
+        assertEquals(3, receivedTraciResponseVeh1);
+}
 }

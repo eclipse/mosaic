@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.interactions.communication.AdHocCommunicationConfiguration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -53,7 +52,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@SuppressWarnings({"unchecked"})
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractNetworkAmbassadorTest {
 
@@ -106,31 +104,11 @@ public class AbstractNetworkAmbassadorTest {
     }
 
     @Test
-    public void vehicleAdded_noConfigurationMessageSent() throws Exception {
+    public void vehicleMoved_noConfigurationMessageSent() throws Exception {
         // Setup
         networkAmbassador.initialize(0, 1000);
 
         // Run
-        final Interaction vehicleRegistration =
-                new VehicleRegistration(1 * TIME.SECOND, "veh_0", "vehicle", Lists.newArrayList(), null, null);
-        networkAmbassador.processInteraction(vehicleRegistration);
-
-        // Assert
-        // they can only be called when processMessage(VehicleUpdates message) is called, which we haven't done yet
-        verify(ambassadorFederateChannelMock, never()).writeAddNodeMessage(anyLong(), anyList());
-        verify(ambassadorFederateChannelMock, never()).writeConfigMessage(anyLong(), anyInt(), anyInt(), isA(AdHocConfiguration.class));
-    }
-
-    @Test
-    public void vehicleAddedAndMoved_noConfigurationMessageSent() throws Exception {
-        // Setup
-        networkAmbassador.initialize(0, 1000);
-
-        // Run
-        final Interaction vehicleRegistration =
-                new VehicleRegistration(1 * TIME.SECOND, "veh_0", "vehicle", Lists.newArrayList(), null, null);
-        networkAmbassador.processInteraction(vehicleRegistration);
-
         final Interaction vehicleUpdates = new VehicleUpdates(
                 2 * TIME.SECOND,
                 Lists.newArrayList(createVehicleInfo("veh_0")),
@@ -147,20 +125,11 @@ public class AbstractNetworkAmbassadorTest {
     }
 
     @Test
-    public void vehicleAddedMovedConfigured_configurationMessageSent() throws Exception {
+    public void vehicleMovedConfigured_configurationMessageSent() throws Exception {
         // Setup
         networkAmbassador.initialize(0, 1000);
 
         // Run
-        final Interaction vehicleRegistration = new VehicleRegistration(
-                1 * TIME.SECOND,
-                "veh_0",
-                "vehicle",
-                Lists.newArrayList(),
-                null,
-                null
-        );
-        networkAmbassador.processInteraction(vehicleRegistration); // Add vehicle
 
         final Interaction vehicleUpdates = new VehicleUpdates(
                 2 * TIME.SECOND,
@@ -181,14 +150,11 @@ public class AbstractNetworkAmbassadorTest {
     }
 
     @Test
-    public void vehicleAddedConfiguredMoved_configurationMessageSent() throws Exception {
+    public void vehicleConfiguredMoved_configurationMessageSent() throws Exception {
         // Setup
         networkAmbassador.initialize(0, 1000);
 
         // Run
-        final Interaction vehicleRegistration = new VehicleRegistration(1 * TIME.SECOND, "veh_0", "vehicle", Lists.newArrayList(), null, null);
-        networkAmbassador.processInteraction(vehicleRegistration); // Add vehicle
-
         final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("veh_0").create();
         final Interaction adHocCommunicationConfiguration = new AdHocCommunicationConfiguration(2 * TIME.SECOND, adHocConfiguration);
         // Configure vehicle -> Add vehicle to simulation, send configuration to federate
