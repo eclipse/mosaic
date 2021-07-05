@@ -323,6 +323,33 @@
                         "type": "array",
                         "items": { "type": "number" }
                     }
+                },
+                "startingTime": {
+                    "description": "Time at which the first vehicle will be created.",
+                    "type": "number",
+                    "minimum": 0,
+                    "default": 0.0
+                },
+                "maxTime": {
+                    "description": "Simulation time in seconds at which no more vehicles will be created.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "departSpeedMode": {
+                    "description": "The depart speed mode determines the vehicle's speed at insertion.",
+                    "type": "string",
+                    "enum": [
+                        "PRECISE", "RANDOM", "MAXIMUM"
+                    ],
+                    "default": "MAXIMUM"
+                },
+                "laneSelectionMode": {
+                    "description": "The lane selection mode chooses the lane for the next departing vehicle.",
+                    "type": "string",
+                    "enum": [
+                        "DEFAULT", "ROUNDROBIN", "ROUNDROBIN_HIGHWAY", "HIGHWAY", "RANDOM", "FREE", "ALLOWED", "BEST", "FIRST"
+                    ],
+                    "default": "DEFAULT"
                 }
             },
             "required": [ "points", "odValues" ]

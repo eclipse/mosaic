@@ -15,10 +15,10 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -69,7 +69,7 @@ public class ServerSpawner extends UnitSpawner implements Spawner {
      */
     @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
-        String name = NameGenerator.getServerName();
+        String name = UnitNameGenerator.nextServerName();
         ServerRegistration interaction = new ServerRegistration(0, name, group, getAppList());
         try {
             LOG.info("Creating Server " + this.toString());

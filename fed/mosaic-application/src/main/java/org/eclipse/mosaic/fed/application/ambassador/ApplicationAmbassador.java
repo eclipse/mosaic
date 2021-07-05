@@ -355,7 +355,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void process(final RoutelessVehicleRegistration routelessVehicleRegistration) {
         final VehicleDeparture routeInfo = SimulationKernel.SimulationKernel.getCentralNavigationComponent().createRouteForOdInfo(
-                routelessVehicleRegistration.getTime(), routelessVehicleRegistration.getTrip()
+                routelessVehicleRegistration.getTime(), routelessVehicleRegistration.getTrip(), routelessVehicleRegistration.getDeparture()
         );
         if (routeInfo == null) {
             log.error(ErrorRegister.AMBASSADOR_ErrorCalculateDeparture.toString());

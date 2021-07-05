@@ -71,7 +71,7 @@ public class Ns3Ambassador extends AbstractNetworkAmbassador {
     }
 
     @Override
-    protected synchronized void receiveTypedInteraction(AdHocCommunicationConfiguration interaction) throws InternalFederateException {
+    protected synchronized void process(AdHocCommunicationConfiguration interaction) throws InternalFederateException {
 
         AdHocConfiguration conf = interaction.getConfiguration();
         RadioMode radioMode = conf.getRadioMode();
@@ -89,6 +89,6 @@ public class Ns3Ambassador extends AbstractNetworkAmbassador {
                     + "configuration message will be discarded");
             return;
         }
-        super.receiveTypedInteraction(interaction);
+        super.process(interaction);
     }
 }

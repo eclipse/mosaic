@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.util;
 
-import org.eclipse.mosaic.lib.util.NameGenerator;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.util.objects.IdTransformer;
 
 import com.google.common.collect.BiMap;
@@ -64,7 +64,7 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
     public String fromExternalId(String sumoVehicleId) {
         String mosaicVehicleId = sumoToMosaicVehicleIdMap.get(sumoVehicleId);
         if (mosaicVehicleId == null) {
-            mosaicVehicleId = NameGenerator.getVehicleName();
+            mosaicVehicleId = UnitNameGenerator.nextVehicleName();
             sumoToMosaicVehicleIdMap.put(sumoVehicleId, mosaicVehicleId);
             log.info("Assigned vehicle id {} to vehicle {}", mosaicVehicleId, sumoVehicleId);
         }

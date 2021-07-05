@@ -17,12 +17,12 @@ package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation.CChargingSpot;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -74,7 +74,7 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
      */
     @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
-        String chargingStationName = NameGenerator.getChargingStationName();
+        String chargingStationName = UnitNameGenerator.nextChargingStationName();
         List<ChargingSpot> chargingSpots = new ArrayList<>();
         int id = 0;
         for (CChargingSpot chargingSpot : chargingSpotConfigurations) {

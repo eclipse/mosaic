@@ -29,19 +29,19 @@ import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.CMappingConfiguration;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
+import org.eclipse.mosaic.fed.mapping.config.units.COriginDestinationMatrixMapper;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
 import org.eclipse.mosaic.fed.mapping.config.units.CServer;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficManagementCenter;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
-import org.eclipse.mosaic.fed.mapping.config.units.CVehicle.COriginDestinationMatrixMapper;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
-import org.eclipse.mosaic.lib.util.NameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -496,7 +496,7 @@ public class SpawningFramework {
             if (prototype != null) {
                 apps = prototype.getAppList();
                 group = ObjectUtils.defaultIfNull(prototype.getGroup(), tl.getGroupId());
-                name = NameGenerator.getTlName();
+                name = UnitNameGenerator.nextTlName();
             } else {
                 apps = new ArrayList<>();
                 group = null;

@@ -366,11 +366,12 @@ public class CentralNavigationComponent {
      * {@link VehicleDeparture}. Otherwise, a route will be generated and checked.
      * If that created route is valid it will be used for the {@link VehicleDeparture}.
      *
-     * @param time   Time of propagation message
-     * @param odInfo The {@link OriginDestinationPair}, that a route should be created for.
+     * @param time      Time of propagation message
+     * @param odInfo    The {@link OriginDestinationPair}, that a route should be created for.
+     * @param departure Prior departure information read from configuration.
      * @return A {@link VehicleDeparture} if a valid route was found, otherwise {@code null}.
      */
-    public VehicleDeparture createRouteForOdInfo(long time, OriginDestinationPair odInfo) {
+    public VehicleDeparture createRouteForOdInfo(long time, OriginDestinationPair odInfo, VehicleDeparture departure) {
 
         if (odInfo.origin != null && odInfo.destination != null) {
             // create request
@@ -402,7 +403,10 @@ public class CentralNavigationComponent {
                         return null;
                     }
                 }
-                return new VehicleDeparture.Builder(route.getId()).create();
+                return new VehicleDeparture.Builder(route.getId())
+                        .departureLane(departure.getLaneSelectionMode(), departure.getDepartureLane(), departure.getDeparturePos())
+                        .departureSpeed(departure.getDepartSpeedMode(), departure.getDepartSpeed())
+                        .create();
             }
         }
 
