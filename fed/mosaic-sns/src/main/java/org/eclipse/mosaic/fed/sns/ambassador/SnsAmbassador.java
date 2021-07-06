@@ -22,7 +22,6 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
@@ -32,7 +31,6 @@ import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
-import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.v2x.V2xReceiverInformation;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -61,7 +59,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     private TransmissionSimulator transmissionSimulator;
 
     /**
-     * Application supported vehicles (from VehicleRegistration) to be added with vehicle movements.
+     * Distance configurations of vehicles which have not been moved yet by the traffic simulator.
      */
     final private HashMap<String, Double> registeredVehicles = new HashMap<>();
 
@@ -73,7 +71,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     /**
      * Construct the Ambassador.
      *
-     * @param ambassadorParameter parameter.
+     * @param ambassadorParameter ambassadorId and configuration.
      */
     public SnsAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
@@ -107,13 +105,11 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         try {
             if (interaction.getTypeId().startsWith(RsuRegistration.TYPE_ID)) {
                 this.process((RsuRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
-                this.process((ChargingStationRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(TrafficLightRegistration.TYPE_ID)) {
                 this.process((TrafficLightRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleRegistration.TYPE_ID)) {
-                this.process((VehicleRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
+                this.process((ChargingStationRegistration) interaction);
+            }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(AdHocCommunicationConfiguration.TYPE_ID)) {
                 this.process((AdHocCommunicationConfiguration) interaction);
@@ -135,14 +131,6 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         }
     }
 
-    private void process(ChargingStationRegistration interaction) {
-        final ChargingStationMapping applicationCs = interaction.getMapping();
-        if (applicationCs.hasApplication()) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
-            log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
-        }
-    }
-
     private void process(TrafficLightRegistration interaction) {
         final TrafficLightMapping applicationTl = interaction.getMapping();
         if (applicationTl.hasApplication()) {
@@ -151,15 +139,11 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         }
     }
 
-    private void process(VehicleRegistration interaction) {
-        final VehicleMapping applicationVeh = interaction.getMapping();
-        if (applicationVeh.hasApplication()) {
-            registeredVehicles.put(applicationVeh.getName(), null);
-            log.debug(
-                    "Registered Vehicle (with application) for later adding id={} @time={}",
-                    applicationVeh.getName(),
-                    TIME.format(interaction.getTime())
-            );
+    private void process(ChargingStationRegistration interaction) {
+        final ChargingStationMapping applicationCs = interaction.getMapping();
+        if (applicationCs.hasApplication()) {
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
+            log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
         }
     }
 
@@ -182,38 +166,26 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     }
 
     private void process(AdHocCommunicationConfiguration interaction) {
-        AdHocConfiguration adHocConfiguration = interaction.getConfiguration();
-        String nodeId = adHocConfiguration.getNodeId();
+        AdHocConfiguration configuration = interaction.getConfiguration();
+        String nodeId = configuration.getNodeId();
         // Switch the communication modules for simulated nodes on or off
         // (SNS only supports configurations with one radio).
-        switch (adHocConfiguration.getRadioMode()) {
+        switch (configuration.getRadioMode()) {
             case OFF:
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
                     SimulationEntities.INSTANCE.disableWifi(nodeId);
-                } else {
-                    if (log.isDebugEnabled()) {
-                        // for really rare cases
-                        if (registeredVehicles.get(nodeId) != null) {
-                            log.debug("Disabled Wifi of vehicle, which was enabled before, but not yet moved (just to let you know)");
-                        }
-                    }
-                    registeredVehicles.put(nodeId, null);
+                } else if (registeredVehicles.put(nodeId, null) != null) {
+                    log.debug("Disabled Wifi of vehicle, which was enabled before, but not yet moved.");
                 }
                 break;
+            case DUAL:
+                log.warn("SNS only supports single radio configuration. Configure first, while ignoring second, radio for node {}.", nodeId);
             case SINGLE:
-                double communicationRadius;
-
-                communicationRadius = singlehopRadius;
-                if (adHocConfiguration.getConf0() != null) {
-                    if (adHocConfiguration.getConf0().getRadius() != null) {
-                        communicationRadius = adHocConfiguration.getConf0().getRadius();
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug(
-                                    "Node {} is configured with a power value. The SNS supposed to handle configurations using radii.",
-                                    adHocConfiguration.getNodeId());
-                        }
-                    }
+                double communicationRadius = this.singlehopRadius;
+                if (configuration.getConf0() != null && configuration.getConf0().getRadius() != null) {
+                    communicationRadius = configuration.getConf0().getRadius();
+                } else {
+                    log.warn("Node {} is not configured with a distance value. Using global singlehop radius from SNS configuration.", nodeId);
                 }
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
                     SimulationEntities.INSTANCE.enableWifi(nodeId, communicationRadius);
@@ -221,10 +193,8 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                     registeredVehicles.put(nodeId, communicationRadius);
                 }
                 break;
-            case DUAL:
             default:
-                log.warn("Tried to configure unsupported AdHocConfiguration (SNS only supports single radio): {}",
-                        adHocConfiguration.getRadioMode());
+                log.warn("Unknown radio mode {} configured for node {}. Ignoring.", configuration.getRadioMode(), nodeId);
         }
     }
 

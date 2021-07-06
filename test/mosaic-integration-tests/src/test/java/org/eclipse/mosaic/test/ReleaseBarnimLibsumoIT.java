@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.sumo.ambassador.LibSumoAmbassador;
 import org.eclipse.mosaic.starter.MosaicSimulation;
-import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.test.junit.LibsumoCheckRule;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
@@ -30,7 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class BarnimLibsumoIT {
+public class ReleaseBarnimLibsumoIT {
 
     @ClassRule
     public static LibsumoCheckRule libsumoCheckRule = new LibsumoCheckRule();
@@ -42,12 +41,9 @@ public class BarnimLibsumoIT {
 
     @BeforeClass
     public static void runSimulation() {
-        for (CRuntime.CFederate federate : simulationRule.getRuntimeConfiguration().federates) {
-            if ("sumo".equals(federate.id)) {
-                federate.classname = LibSumoAmbassador.class.getCanonicalName();
-            }
-        }
-        simulationResult = simulationRule.executeReleaseScenario("Barnim");
+        simulationResult = simulationRule
+                .federateConfigurationManipulator("sumo", fed -> fed.classname = LibSumoAmbassador.class.getCanonicalName())
+                .executeReleaseScenario("Barnim");
     }
 
     @Test

@@ -1,0 +1,18 @@
+{
+    "vehicles": [
+        {
+            "targetFlow": 50,
+            "route": "0",
+            "maxNumberVehicles": 2,
+            "lanes": [ 0, 1 ],
+            "types": [
+                {
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ],
+                    "name": "equipped",
+                    "sigma": 0,
+                    "tau": 1
+                }
+            ]
+        }
+    ]
+}
