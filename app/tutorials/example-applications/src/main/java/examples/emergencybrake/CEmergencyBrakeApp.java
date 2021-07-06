@@ -21,18 +21,29 @@ import org.eclipse.mosaic.rti.TIME;
  * Default configuration for the {@link EmergencyBrakeApp}.
  */
 public class CEmergencyBrakeApp {
-    // Minimal deceleration in m/s^2 for the emergency brake detection
+
+    /**
+     * Minimal deceleration in m/s^2 for the emergency brake detection
+     */
     public float emergencyBrakeThresh = 0.3f;
 
-    // Minimal duration of a deceleration to be detected as emergency break
+    /**
+     * Minimal duration of a deceleration to be detected as emergency break
+     */
     public long minimalBrakeDuration = 1 * TIME.SECOND;
 
-    // The deceleration in m/s^2 with which the vehicle slows down in case an obstacle is detected
+    /**
+     * The deceleration in m/s^2 with which the vehicle slows down in case an obstacle is detected
+     */
     public double deceleration = 5d;
 
-    // The speed in m/s the vehicle is trying to reach during slow down in case an obstacle is detected
+    /**
+     * The speed in m/s the vehicle is trying to reach during slow down in case an obstacle is detected
+     */
     public double targetSpeed = 3.0d;
 
-    // Time in seconds after the slow down the vehicle starts accelerating again in case an obstacle is detected
+    /**
+     * Time in seconds after the slow down the vehicle starts accelerating again in case an obstacle is detected
+     */
     public long idlePeriod = 8 * TIME.SECOND;
 }
