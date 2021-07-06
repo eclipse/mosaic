@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,19 +13,16 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.emergencybrake;
+package examples.emergencybrake;
 
 import org.eclipse.mosaic.rti.TIME;
 
 /**
- * Default configuration for the {@link EmergencyBrakeApp}
+ * Default configuration for the {@link EmergencyBrakeApp}.
  */
 public class CEmergencyBrakeApp {
     // Minimal deceleration in m/s^2 for the emergency brake detection
     public float emergencyBrakeThresh = 0.3f;
-
-    // Caller interval for the emergency brake detection
-    public long minimalTimerCallInterval = 300 * TIME.MILLI_SECOND;
 
     // Minimal duration of a deceleration to be detected as emergency break
     public long minimalBrakeDuration = 1 * TIME.SECOND;
@@ -37,5 +34,5 @@ public class CEmergencyBrakeApp {
     public double targetSpeed = 3.0d;
 
     // Time in seconds after the slow down the vehicle starts accelerating again in case an obstacle is detected
-    public double idlePeriod = 8d;
+    public long idlePeriod = 8 * TIME.SECOND;
 }

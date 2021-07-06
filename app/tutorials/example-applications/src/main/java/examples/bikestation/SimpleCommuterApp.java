@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.bikestation;
+package examples.bikestation;
 
 import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
@@ -39,8 +39,6 @@ import javax.annotation.Nullable;
 /**
  * This application simulates the behaviour of a commuting vehicle.
  * The vehicle will spend a specified amount of time at the goal position.
- *
- * @author karl.huebner@fokus.fraunhofer.de
  */
 public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
 
@@ -112,7 +110,8 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
 
         final CandidateRoute routeBack = navigationModule.calculateRoutes(targetPosition, routingParameters).getBestRoute();
         if (routeBack == null) {
-            getLog().error("Could not calculate from {} to {}.", getOs().getPosition(), event.getTargetPosition());
+            getLog().error("Could not calculate route from {} to {}.", getOs().getPosition(),
+                    event.getTargetPosition());
             return;
         }
 

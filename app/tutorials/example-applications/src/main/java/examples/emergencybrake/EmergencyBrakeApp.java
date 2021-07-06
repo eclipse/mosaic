@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.tutorial.emergencybrake;
+package examples.emergencybrake;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 /**
  * This class implements an application for vehicles.
  * In case the vehicle sensors detect an obstacle the vehicle will perform an emergency brake.
- * If the emergency brake endures a specified minimum time duration a DENMessage will be sent out.
+ * If the emergency brake endures a specified minimum time duration a DENMessage is sent out.
  */
 public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication,
         CommunicationApplication {
@@ -51,7 +51,7 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
     // Keep track of the vehicle movement for the emergency brake detection
     private float lastSpeed = 0;
     private float lastTime = 0;
-    private int brakeCounter = 0;
+    private long startedBrakingAt = Long.MIN_VALUE;
 
     // Keep status of the emergency brake performed on obstacle
     private boolean emergencyBrake = false;
@@ -60,31 +60,7 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
     @Override
     public void onStartup() {
         initConfig();
-        sample();
         getOs().getAdHocModule().enable();
-    }
-
-    /**
-     * Creates a new event to sample the emergency brake detection periodically in a specific interval.
-     */
-    private void sample() {
-        long eventTime = getOs().getSimulationTime() + configuration.minimalTimerCallInterval;
-        this.getOs().getEventManager().addEvent(eventTime, this);
-    }
-
-    /**
-     * Gets called periodically to execute the emergency brake detection.
-     *
-     * @param event the event to process
-     * @throws Exception
-     */
-    @Override
-    public void processEvent(Event event) throws Exception {
-        if (!isValidStateAndLog()) {
-            return;
-        }
-        sample();
-        detectEmergencyBrake();
     }
 
     /**
@@ -110,17 +86,26 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
         float curSpeed = (float) getOs().getNavigationModule().getVehicleData().getSpeed();
 
         // Calculate brake deceleration
-        float timeDifference = (float) ((getOs().getSimulationTime() - lastTime) / 1e9);
+        float timeDifference = ((getOs().getSimulationTime() - lastTime) / TIME.SECOND);
         float speedDifference = curSpeed - lastSpeed;
         float curDeceleration = (speedDifference / timeDifference) / 9.81f;
+
+        // If brake deceleration is low enough to qualify for an emergency brake, then keep track of the brake duration
         if (curDeceleration < -(configuration.emergencyBrakeThresh)) {
-            brakeCounter++;
+            if (startedBrakingAt < 0) {
+                startedBrakingAt = getOs().getSimulationTime();
+            }
         } else {
-            brakeCounter = 0;
+            startedBrakingAt = Long.MIN_VALUE;
         }
 
-        // 300: threshold in ms, braking time must be longer
-        if (brakeCounter == (configuration.minimalBrakeDuration / configuration.minimalTimerCallInterval)) {
+        long actualBrakeDuration = Long.MIN_VALUE;
+        if (startedBrakingAt > 0) {
+            actualBrakeDuration = getOs().getSimulationTime() - startedBrakingAt;
+        }
+
+        // If brake duration is high enough, then send a DENMessage
+        if (actualBrakeDuration >= configuration.minimalBrakeDuration) {
             getLog().info("Detected emergency brake in progress");
 
             // Vehicle info
@@ -129,7 +114,7 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
 
             // Prepare the DENMessage
             MessageRouting routing =
-                    getOs().getAdHocModule().createMessageRouting().viaChannel(AdHocChannel.SCH1).topoBroadCast();
+                    getOs().getAdHocModule().createMessageRouting().viaChannel(AdHocChannel.CCH).topoBroadCast();
             Denm denm = new Denm(routing, new DenmContent(getOs().getSimulationTime(), vehicleLongLat, roadId,
                     SensorType.SPEED, 1, curSpeed, curDeceleration * 9.81f, null,
                     null, null));
@@ -178,6 +163,11 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
 
     }
 
+    @Override
+    public void processEvent(Event event) throws Exception {
+
+    }
+
     /**
      * Checks for an obstacle detected by the vehicle sensors.
      * If an obstacle is detected an emergency brake will be performed.
@@ -190,7 +180,7 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
 
         boolean obstacleDetected = getOs().getStateOfEnvironmentSensor(SensorType.OBSTACLE) > 0;
 
-        /* Initiate emergency brake if obstacle is detected */
+        // Initiate emergency brake if obstacle is detected
         if (obstacleDetected && !emergencyBrake) {
             stoppedAt = getOs().getSimulationTime();
             getOs().changeSpeedWithForcedAcceleration(configuration.targetSpeed, configuration.deceleration);
@@ -198,7 +188,7 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
             getLog().infoSimTime(this, "Performing emergency brake caused by detected obstacle");
         }
 
-        /* Continue driving normal as soon emergency brake is done and no obstacle is detectable */
+        // Continue driving normal as soon emergency brake is done and no obstacle is detectable
         if (emergencyBrake && !obstacleDetected && idlePeriodOver(stoppedAt) && reachedSpeed(configuration.targetSpeed)) {
             getOs().resetSpeed();
             stoppedAt = Long.MIN_VALUE;
@@ -206,15 +196,16 @@ public class EmergencyBrakeApp extends AbstractApplication<VehicleOperatingSyste
             getLog().infoSimTime(this, "Passed obstacle");
         }
 
+        // Call emergency brake detection
+        detectEmergencyBrake();
+
     }
 
     private boolean idlePeriodOver(long stoppedAt) {
-        return getOs().getSimulationTime() > stoppedAt + configuration.idlePeriod * TIME.SECOND;
+        return getOs().getSimulationTime() > stoppedAt + configuration.idlePeriod;
     }
 
     private boolean reachedSpeed(double speed) {
         return Math.abs(getOs().getVehicleData().getSpeed() - speed) < 0.1d;
     }
-
-
 }
