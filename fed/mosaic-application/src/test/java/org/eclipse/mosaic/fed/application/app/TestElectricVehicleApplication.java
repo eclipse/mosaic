@@ -99,7 +99,7 @@ public class TestElectricVehicleApplication extends AbstractApplication<Electric
     }
 
     @Override
-    public void onBatteryDataUpdated(BatteryData previousBatteryData, BatteryData updatedBatteryData) {
+    public void onBatteryDataUpdated(@Nullable BatteryData previousBatteryData, @Nonnull BatteryData updatedBatteryData) {
         thisApplicationSpy.onBatteryDataUpdated(previousBatteryData, updatedBatteryData);
     }
 

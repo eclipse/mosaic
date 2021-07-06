@@ -18,6 +18,9 @@ package org.eclipse.mosaic.fed.application.app.api;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * All applications accessing electric vehicle functionality
  * are to implement this interface.
@@ -31,7 +34,7 @@ public interface ElectricVehicleApplication extends VehicleApplication, Applicat
      * @param previousBatteryData the {@link BatteryData} before the update
      * @param updatedBatteryData  the {@link BatteryData} after the update
      */
-    void onBatteryDataUpdated(BatteryData previousBatteryData, BatteryData updatedBatteryData);
+    void onBatteryDataUpdated(@Nullable BatteryData previousBatteryData, @Nonnull BatteryData updatedBatteryData);
 
     /**
      * This method is called after a charging request has been rejected by the battery ambassador.

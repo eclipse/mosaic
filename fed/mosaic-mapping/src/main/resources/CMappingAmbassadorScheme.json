@@ -496,7 +496,10 @@
             "properties": {
                 "chargingMode": {
                     "description": "The type of this electric vehicle charging spot in compliance with current standards, including IEC 62196-2.",
-                    "type": "object"
+                    "type": "string",
+                    "enum": [
+                        "MODE_1", "MODE_2", "MODE_3", "MODE_4"
+                    ]
                 }
             },
             "required": [ "chargingMode" ]

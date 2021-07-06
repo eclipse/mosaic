@@ -64,7 +64,7 @@ public class ElectricVehicle
 
 
     @Override
-    public void onBatteryDataUpdated(BatteryData previousBatteryData, BatteryData updatedBatteryData) {
+    public void onBatteryDataUpdated(@Nullable BatteryData previousBatteryData, @Nonnull BatteryData updatedBatteryData) {
     }
 
     @Override

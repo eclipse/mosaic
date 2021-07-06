@@ -57,6 +57,7 @@ public final class VehicleChargingStartRequest extends Interaction {
      *
      * @param time      Timestamp of this interaction, unit: [ns]
      * @param vehicleId String identifying the vehicle sending this interaction
+     * @param chargingStationId id of the charging station the vehicle wants to dock at
      */
     public VehicleChargingStartRequest(long time, String vehicleId, String chargingStationId) {
         this(time, vehicleId, chargingStationId, null);
@@ -67,6 +68,8 @@ public final class VehicleChargingStartRequest extends Interaction {
      *
      * @param time      Timestamp of this interaction, unit: [ns]
      * @param vehicleId String identifying the vehicle sending this interaction
+     * @param chargingStationId id of the charging station the vehicle wants to dock at
+     * @param chargingSpotId id of the charging spot the vehicle wants to dock at, can only be used in combination with chargingStationId
      */
     public VehicleChargingStartRequest(long time, String vehicleId, String chargingStationId, String chargingSpotId) {
         super(time);

@@ -63,6 +63,7 @@ public final class ChargingStationData extends UnitData {
     public ChargingSpot getChargingSpot(String chargingSpotId) {
         return chargingSpots.get(chargingSpotId);
     }
+
     /**
      * Returns {@code True}, if the {@code ChargingStation} has a free {@link ChargingSpot} available.
      * Charging Spots can be reserved by the Charging Station App or be engaged by a car without reservation app.

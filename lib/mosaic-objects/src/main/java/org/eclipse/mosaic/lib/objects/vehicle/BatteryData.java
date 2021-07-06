@@ -102,14 +102,14 @@ public class BatteryData implements Serializable {
     }
 
     /**
-     * Returns <code>True</code>, if the battery of the vehicle is fully depleted.
+     * Returns {@code true}, if the battery of the vehicle is fully depleted.
      */
     public boolean isBatteryEmpty() {
         return getStateOfCharge() <= 0.0;
     }
 
     /**
-     * Returns <code>True</code>, if the battery of the vehicle is fully charged.
+     * Returns {@code true}, if the battery of the vehicle is fully charged.
      */
     public boolean isBatteryFull() {
         return getStateOfCharge() >= 1.0;
@@ -124,7 +124,7 @@ public class BatteryData implements Serializable {
     }
 
     /**
-     * Returns <code>True</code> if the vehicle is currently being charged at a {@link ChargingSpot}.
+     * Returns {@code true} if the vehicle is currently being charged at a {@link ChargingSpot}.
      */
     public boolean isCharging() {
         return charging;
