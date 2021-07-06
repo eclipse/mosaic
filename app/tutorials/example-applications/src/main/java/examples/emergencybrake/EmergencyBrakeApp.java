@@ -37,6 +37,7 @@ import org.eclipse.mosaic.rti.TIME;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+
 /**
  * This class implements an application for vehicles.
  * In case the vehicle sensors detect an obstacle the vehicle will perform an emergency brake.
