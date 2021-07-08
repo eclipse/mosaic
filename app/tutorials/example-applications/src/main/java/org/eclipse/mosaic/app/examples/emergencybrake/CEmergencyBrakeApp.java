@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package examples.emergencybrake;
+package org.eclipse.mosaic.app.examples.emergencybrake;
 
 import org.eclipse.mosaic.rti.TIME;
 

@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package examples.bikestation;
+package org.eclipse.mosaic.app.examples.bikestation;
 
 import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
