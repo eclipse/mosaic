@@ -153,7 +153,6 @@ public final class ChargingSpot implements Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
-                .append("ChargingSpot")
                 .append("chargingSpotId", chargingSpotId)
                 .append("chargingMode", chargingMode)
                 .append("available", available)

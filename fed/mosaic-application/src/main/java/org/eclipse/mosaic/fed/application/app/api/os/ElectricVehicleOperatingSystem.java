@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 
 /**
  * This interface extends the basic {@link OperatingSystem} and
- * is implemented by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUni}
+ * is implemented by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit}
  * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.ElectricVehicleUnit}.
  */
 public interface ElectricVehicleOperatingSystem extends VehicleOperatingSystem {
@@ -39,10 +39,10 @@ public interface ElectricVehicleOperatingSystem extends VehicleOperatingSystem {
      *
      * @param chargingStationId The id of the charging station to send the request to.
      */
-    void sendVehicleChargingStartRequest(String chargingStationId);
+    void sendChargingStartRequest(String chargingStationId);
 
     /**
      * Sends a request to stop charging the battery of the vehicle.
      */
-    void sendVehicleChargingStopRequest();
+    void sendChargingStopRequest();
 }

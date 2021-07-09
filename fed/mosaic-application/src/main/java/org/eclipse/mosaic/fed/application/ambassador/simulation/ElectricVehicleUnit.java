@@ -82,7 +82,7 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
     }
 
     @Override
-    public void sendVehicleChargingStartRequest(String chargingStationId) {
+    public void sendChargingStartRequest(String chargingStationId) {
         if (getVehicleData() != null && !getVehicleData().isStopped()) {
             VehicleChargingStartRequest vehicleChargingStartRequest = new VehicleChargingStartRequest(
                     SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
@@ -96,7 +96,7 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
     }
 
     @Override
-    public void sendVehicleChargingStopRequest() {
+    public void sendChargingStopRequest() {
         VehicleChargingStopRequest vehicleChargingStopRequest = new VehicleChargingStopRequest(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId()
