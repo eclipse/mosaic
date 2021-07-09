@@ -60,13 +60,33 @@ public class BatteryData implements Serializable {
 
     /**
      * Creates a new {@link BatteryData} for an added vehicle.
+     *
+     * @param time timestamp of the data
+     * @param name of the vehicle that the data belongs to
      */
-    public BatteryData(String name, long time) {
+    public BatteryData(long time, String name) {
         this.name = name;
         this.time = time;
         this.stateOfCharge = -1.0;
         this.capacity = -1.0;
         this.charging = false;
+    }
+
+    /**
+     * Creates a new {@link BatteryData} for an added vehicle.
+     *
+     * @param time          timestamp of the data
+     * @param name          of the vehicle that the data belongs to
+     * @param stateOfCharge state of charge of the battery [0,1]
+     * @param capacity      current capacity of the battery
+     * @param charging      flag indicating whether battery is charging
+     */
+    private BatteryData(long time, String name, double stateOfCharge, double capacity, boolean charging) {
+        this.name = name;
+        this.time = time;
+        this.stateOfCharge = stateOfCharge;
+        this.capacity = capacity;
+        this.charging = charging;
     }
 
     /**
@@ -168,4 +188,39 @@ public class BatteryData implements Serializable {
                 + ", charging=" + charging + '}';
     }
 
+    public static class Builder {
+        private final long time;
+        private final String name;
+        private double stateOfCharge;
+        private double capacity;
+        private boolean charging;
+
+        public Builder(long time, String name) {
+            this.time = time;
+            this.name = name;
+        }
+
+        public Builder stateOfChargeInfo(double stateOfCharge, double capacity) {
+            this.stateOfCharge = stateOfCharge;
+            this.capacity = capacity;
+            return this;
+        }
+
+        public Builder charging(boolean charging) {
+            this.charging = charging;
+            return this;
+        }
+
+        public Builder copyFrom(BatteryData batteryData) {
+            stateOfCharge = batteryData.stateOfCharge;
+            capacity = batteryData.capacity;
+            charging = batteryData.charging;
+            return this;
+        }
+
+        public BatteryData build() {
+            return new BatteryData(time, name, stateOfCharge, capacity, charging);
+
+        }
+    }
 }

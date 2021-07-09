@@ -63,7 +63,7 @@ public class AbstractSimulationUnitTest {
 
         unit.processEvent(eventManager.newEvent(0, unit).withResource(Mockito.mock(VehicleData.class)).schedule());
         // no error should be thrown
-        unit.processEvent(eventManager.newEvent(0, unit).withResource(new BatteryData("veh_0", 0)).schedule());
+        unit.processEvent(eventManager.newEvent(0, unit).withResource(new BatteryData(0, "veh_0")).schedule());
 
         TestVehicleApplication app = unit.getApplicationsIterator(TestVehicleApplication.class).iterator().next();
         Mockito.verify(app.getApplicationSpy()).onVehicleUpdated(any(), any());
@@ -87,7 +87,7 @@ public class AbstractSimulationUnitTest {
 
         unit.processEvent(eventManager.newEvent(0, unit).withResource(Mockito.mock(VehicleData.class)).schedule());
         // no error should be thrown
-        unit.processEvent(eventManager.newEvent(0, unit).withResource(new BatteryData("veh_0", 0)).schedule());
+        unit.processEvent(eventManager.newEvent(0, unit).withResource(new BatteryData(0, "veh_0")).schedule());
 
         TestElectricVehicleApplication app = unit.getApplicationsIterator(TestElectricVehicleApplication.class).iterator().next();
         Mockito.verify(app.getApplicationSpy()).onVehicleUpdated(any(), any());

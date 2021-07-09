@@ -443,9 +443,9 @@ public class ApplicationAmbassadorTest {
         );
 
         List<BatteryData> updated = new Vector<>();
-        updated.add(new BatteryData("veh_0", 5 * TIME.NANO_SECOND));
-        updated.add(new BatteryData("veh_0", TIME.NANO_SECOND));
-        updated.add(new BatteryData("veh_1", 8 * TIME.NANO_SECOND));
+        updated.add(new BatteryData(5 * TIME.NANO_SECOND, "veh_0"));
+        updated.add(new BatteryData(TIME.NANO_SECOND, "veh_0"));
+        updated.add(new BatteryData(8 * TIME.NANO_SECOND, "veh_1"));
         VehicleBatteryUpdates vehicleBatteryUpdates = new VehicleBatteryUpdates(10 * TIME.SECOND, updated);
 
         // RUN: send interaction and process events

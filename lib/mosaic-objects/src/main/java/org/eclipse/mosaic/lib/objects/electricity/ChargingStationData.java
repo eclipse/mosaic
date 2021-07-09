@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.objects.UnitData;
 
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,8 +142,18 @@ public final class ChargingStationData extends UnitData {
             return this;
         }
 
+        /**
+         * Copies all information of {@link ChargingSpot}s to the builder.
+         * @param chargingStationData the data to copy
+         * @return A builder with the copied data
+         */
         public Builder copyFrom(ChargingStationData chargingStationData) {
-            chargingSpots = chargingStationData.getChargingSpots();
+            chargingSpots = new ArrayList<>();
+            for (ChargingSpot chargingSpot : chargingStationData.getChargingSpots()) {
+                ChargingSpot copiedChargingSpot = new ChargingSpot(chargingSpot.getChargingSpotId(), chargingSpot.getChargingMode());
+                copiedChargingSpot.setAvailable(chargingSpot.isAvailable());
+                chargingSpots.add(copiedChargingSpot);
+            }
             return this;
         }
 
