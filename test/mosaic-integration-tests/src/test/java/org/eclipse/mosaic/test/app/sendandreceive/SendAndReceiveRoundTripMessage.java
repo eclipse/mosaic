@@ -37,10 +37,14 @@ import javax.annotation.Nonnull;
  * properly calculated.
  */
 public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
-    final static String RECEIVER_NAME = "veh_2";
-    final static String SERVER_NAME = "tmc_0";
 
     private final static long SEND_TIME = 310 * TIME.SECOND;
+
+    private final String receiver;
+
+    public SendAndReceiveRoundTripMessage(String receiver) {
+        this.receiver = receiver;
+    }
 
     /**
      * Setup {@link org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule} and send message to
@@ -97,7 +101,7 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
     @Override
     public void processEvent(Event event) {
         if (event instanceof SendRoundTripMessageEvent) {
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(RECEIVER_NAME);
+            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(receiver);
             getOs().getCellModule().sendV2xMessage(new SimpleV2xMessage(routing));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }

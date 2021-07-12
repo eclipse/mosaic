@@ -46,7 +46,7 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
     /**
      * Road ID where hazard is located.
      */
-    private final static String HAZARD_ROAD = "-3366_2026362940_1313885502";
+    private final static String HAZARD_ROAD = "311964536_1313885442_2879911873";
 
     private final static SensorType SENSOR_TYPE = SensorType.ICE;
     private final static float SPEED = 25 / 3.6f;
