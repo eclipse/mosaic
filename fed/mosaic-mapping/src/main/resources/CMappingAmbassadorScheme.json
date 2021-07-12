@@ -461,23 +461,15 @@
         },
         "chargingStation": {
             "title": "chargingStation",
-            "description": "Object to define an electric vehicle charging station based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
+            "description": "Object to define an electric vehicle charging station. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
             "type": "object",
             "properties": {
                 "position": {
                     "description": "The geographic position at which the EV charging station will be created.",
                     "$ref": "#/definitions/geoPoint"
                 },
-                "operator": {
-                    "description": "The EV charging station operator (e.g. energy provider) identification.",
-                    "type": "string"
-                },
                 "group": {
-                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple charginStation entities.",
-                    "type": "string"
-                },
-                "access": {
-                    "description": "Access restrictions, e.g. open to all or restricted to some communities, free of access or paying access.",
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple chargingStation entities.",
                     "type": "string"
                 },
                 "name": {
@@ -495,31 +487,22 @@
                     "items": { "type": "string" }
                 }
             },
-            "required": [ "position", "operator", "access", "chargingSpots" ]
+            "required": [ "position", "chargingSpots" ]
         },
         "chargingSpot": {
             "title": "chargingSpot",
-            "description": "Object to define an electric vehicle charging spot based on ETSI TS 101 556-1. A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an electric vehicle.",
+            "description": "Object to define an electric vehicle charging spot.",
             "type": "object",
             "properties": {
-                "id": {
-                    "description": "Unique identifier of the charging spot.",
-                    "type": "number"
-                },
-                "type": {
+                "chargingMode": {
                     "description": "The type of this electric vehicle charging spot in compliance with current standards, including IEC 62196-2.",
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 3
-                },
-                "parkingPlaces": {
-                    "description": "Number of available parking places, i.e. 1 to 4 parking places arranged around a pole.",
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 4
+                    "type": "string",
+                    "enum": [
+                        "MODE_1", "MODE_2", "MODE_3", "MODE_4"
+                    ]
                 }
             },
-            "required": [ "type", "parkingPlaces" ]
+            "required": [ "chargingMode" ]
         },
         "odPoint": {
             "title": "odPoint",
@@ -569,7 +552,7 @@
                     "description": "North-south position of a point on earth.",
                     "type": "number",
                     "maximum": 90,
-                    "minimmum": -90
+                    "minimum": -90
                 }
             },
             "required": [ "longitude", "latitude" ]

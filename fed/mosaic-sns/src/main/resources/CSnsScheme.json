@@ -31,8 +31,8 @@
     },
     "definitions": {
         "adhocTransmissionModel": {
-            "title": "adocTransmissionModel",
-            "description": "Object to define an adhoc transimssion model.",
+            "title": "adhocTransmissionModel",
+            "description": "Object to define an adhoc transmission model.",
             "type": "object",
             "properties": {
                 "type": { 

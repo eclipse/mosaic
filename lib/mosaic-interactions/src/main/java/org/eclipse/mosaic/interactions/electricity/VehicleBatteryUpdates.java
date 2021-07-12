@@ -17,50 +17,49 @@ package org.eclipse.mosaic.interactions.electricity;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Collection;
+
 /**
- * This extension of {@link Interaction} is intended to be used to forward a request from a vehicle
- * to stop charging its battery at a {@link ChargingStationData} to the RTI.
+ * This extension of {@link Interaction} is used to inform the applications of simulation units about
+ * changed {@link BatteryData}.
  */
-public final class VehicleChargingStopRequest extends Interaction {
+public final class VehicleBatteryUpdates extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * String identifying the type of this interaction.
-     */
-    public static final String TYPE_ID = createTypeIdentifier(VehicleChargingStopRequest.class);
+    public final static String TYPE_ID = createTypeIdentifier(VehicleBatteryUpdates.class);
 
     /**
-     * String identifying the vehicle sending this interaction.
+     * The updated list of electricity information for each simulated electric vehicles.
      */
-    private final String vehicleId;
+    private final Collection<BatteryData> updated;
 
     /**
-     * Creates a new {@link VehicleChargingStopRequest} interaction.
+     * Creates a new {@link VehicleBatteryUpdates} interaction.
      *
-     * @param time      Timestamp of this interaction, unit: [ns]
-     * @param vehicleId String identifying the vehicle sending this interaction
+     * @param time    Timestamp of this interaction, unit: [ns]
+     * @param updated The payload of the interaction, a list of {@link BatteryData}.
      */
-    public VehicleChargingStopRequest(long time, String vehicleId) {
+    public VehicleBatteryUpdates(long time, Collection<BatteryData> updated) {
         super(time);
-        this.vehicleId = vehicleId;
+        this.updated = updated;
     }
 
-    public String getVehicleId() {
-        return vehicleId;
+    public Collection<BatteryData> getUpdated() {
+        return this.updated;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 41)
-                .append(vehicleId)
+                .append(updated)
                 .toHashCode();
     }
 
@@ -76,9 +75,9 @@ public final class VehicleChargingStopRequest extends Interaction {
             return false;
         }
 
-        VehicleChargingStopRequest other = (VehicleChargingStopRequest) obj;
+        VehicleBatteryUpdates other = (VehicleBatteryUpdates) obj;
         return new EqualsBuilder()
-                .append(this.vehicleId, other.vehicleId)
+                .append(this.updated, other.updated)
                 .isEquals();
     }
 
@@ -86,7 +85,7 @@ public final class VehicleChargingStopRequest extends Interaction {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("vehicleId", vehicleId)
+                .append("updated", updated)
                 .toString();
     }
 }

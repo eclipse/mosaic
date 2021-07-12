@@ -56,15 +56,6 @@ public class ChargingStationUnit extends AbstractSimulationUnit implements Charg
     }
 
     @Override
-    public void sendChargingStationUpdates(long time, ChargingStationData chargingStation) {
-        ChargingStationUpdates csu = new ChargingStationUpdates(
-                SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
-                chargingStation
-        );
-        sendInteractionToRti(csu);
-    }
-
-    @Override
     public ChargingStationData getChargingStationData() {
         return cs;
     }

@@ -54,11 +54,6 @@ public class VehicleData extends UnitData {
     private final VehicleSignals vehicleSignals;
 
     /**
-     * electric information for a vehicle including recuperation indices.
-     */
-    private final VehicleBatteryState electricInfo;
-
-    /**
      * projected position.
      */
     private final CartesianPoint projectedPosition;
@@ -239,10 +234,6 @@ public class VehicleData extends UnitData {
         return throttle;
     }
 
-    public VehicleBatteryState getElectricInfo() {
-        return electricInfo;
-    }
-
     /**
      * Returns the driving direction of the vehicle (forward/backward).
      * Supported simulators: [PHABMACS]
@@ -322,7 +313,6 @@ public class VehicleData extends UnitData {
             VehicleSignals vehicleSignals,
             VehicleEmissions vehicleEmissions,
             VehicleConsumptions vehicleConsumptions,
-            VehicleBatteryState electricInfo,
             IRoadPosition roadPosition,
             boolean stopped,
             String routeId,
@@ -340,7 +330,6 @@ public class VehicleData extends UnitData {
         this.vehicleSignals = vehicleSignals;
         this.vehicleEmissions = vehicleEmissions;
         this.vehicleConsumptions = vehicleConsumptions;
-        this.electricInfo = electricInfo;
         this.speed = speed;
         this.heading = heading;
         this.projectedPosition = projectedPosition;
@@ -363,7 +352,6 @@ public class VehicleData extends UnitData {
         return new HashCodeBuilder(3, 89)
                 .append(vehicleEmissions)
                 .append(vehicleConsumptions)
-                .append(electricInfo)
                 .append(vehicleSignals)
                 .append(projectedPosition)
                 .append(heading)
@@ -399,7 +387,6 @@ public class VehicleData extends UnitData {
         return new EqualsBuilder()
                 .append(this.vehicleEmissions, other.vehicleEmissions)
                 .append(this.vehicleConsumptions, other.vehicleConsumptions)
-                .append(this.electricInfo, other.electricInfo)
                 .append(this.vehicleSignals, other.vehicleSignals)
                 .append(this.projectedPosition, other.projectedPosition)
                 .append(this.heading, other.heading)
@@ -453,7 +440,6 @@ public class VehicleData extends UnitData {
         private VehicleSensors vehicleSensors;
         private VehicleEmissions vehicleEmissions;
         private VehicleConsumptions vehicleConsumptions;
-        private VehicleBatteryState electricInfo;
         private IRoadPosition roadPosition;
         private boolean stopped = false;
         private String routeId;
@@ -542,14 +528,6 @@ public class VehicleData extends UnitData {
         }
 
         /**
-         * Set information about the electric motor and the battery of the vehicle.
-         */
-        public Builder electric(VehicleBatteryState electricInfo) {
-            this.electricInfo = electricInfo;
-            return this;
-        }
-
-        /**
          * Set information about the signals state of the vehicle.
          */
         public Builder signals(VehicleSignals vehicleSignals) {
@@ -603,7 +581,6 @@ public class VehicleData extends UnitData {
             this.vehicleSensors = veh.getVehicleSensors();
             this.vehicleEmissions = veh.getVehicleEmissions();
             this.vehicleConsumptions = veh.getVehicleConsumptions();
-            this.electricInfo = veh.getElectricInfo();
             this.roadPosition = veh.getRoadPosition();
             this.stopped = veh.isStopped();
             this.routeId = veh.getRouteId();
@@ -625,7 +602,7 @@ public class VehicleData extends UnitData {
                     position, projectedPosition,
                     speed,
                     heading,
-                    vehicleSignals, vehicleEmissions, vehicleConsumptions, electricInfo,
+                    vehicleSignals, vehicleEmissions, vehicleConsumptions,
                     roadPosition,
                     stopped,
                     routeId,

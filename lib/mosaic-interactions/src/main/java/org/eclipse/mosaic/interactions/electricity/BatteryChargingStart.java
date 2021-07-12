@@ -17,7 +17,7 @@ package org.eclipse.mosaic.interactions.electricity;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -25,64 +25,62 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * This extension of {@link Interaction} is intended to be used to forward a stopped charging
- * process at a charging station to the RTI.
+ * This extension of {@link Interaction} is intended to be used to forward a started charging
+ * process at a {@link ChargingSpot} to the RTI.
  */
-public final class ChargingStopResponse extends Interaction {
+public final class BatteryChargingStart extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * String identifying the type of this interaction.
      */
-    public static final String TYPE_ID = createTypeIdentifier(ChargingStopResponse.class);
+    public static final String TYPE_ID = createTypeIdentifier(BatteryChargingStart.class);
 
     /**
-     * String identifying the vehicle sending this interaction.
+     * String identifying the vehicle that started charging.
      */
     private final String vehicleId;
 
     /**
-     * {@link ChargingStationData} at which the vehicle stopped charging.
+     * The voltage available for the charging process. [V]
      */
-    private final ChargingStationData chargingStation;
+    private final double voltage;
 
     /**
-     * Creates a new {@link ChargingStopResponse} interaction.
-     *
-     * @param time            Timestamp of this interaction, unit: [ns]
-     * @param vehicleId       String identifying the vehicle sending this interaction
-     * @param chargingStation {@link ChargingStationData} at which the vehicle stopped charging
+     * The voltage available for the charging process. [A]
      */
-    public ChargingStopResponse(long time, String vehicleId, ChargingStationData chargingStation) {
+    private final double current;
+
+    /**
+     * Creates a new {@link BatteryChargingStart} interaction.
+     *
+     * @param time         Timestamp of this interaction, unit: [ns]
+     * @param vehicleId    String identifying the vehicle that started charging
+     */
+    public BatteryChargingStart(long time, String vehicleId, double voltage, double current) {
         super(time);
         this.vehicleId = vehicleId;
-        this.chargingStation = chargingStation;
+        this.voltage = voltage;
+        this.current = current;
     }
 
-    /**
-     * Returns the identifier of the vehicle sending this interaction.
-     *
-     * @return vehicle identifier
-     */
     public String getVehicleId() {
         return vehicleId;
     }
 
-    /**
-     * Returns the {@link ChargingStationData} at which the vehicle stopped charging.
-     *
-     * @return charging station
-     */
-    public ChargingStationData getChargingStation() {
-        return chargingStation;
+    public double getVoltage() {
+        return voltage;
+    }
+
+    public double getCurrent() {
+        return current;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(3, 37)
+        return new HashCodeBuilder(9, 23)
                 .append(vehicleId)
-                .append(chargingStation)
                 .toHashCode();
     }
 
@@ -98,10 +96,9 @@ public final class ChargingStopResponse extends Interaction {
             return false;
         }
 
-        ChargingStopResponse other = (ChargingStopResponse) obj;
+        BatteryChargingStart other = (BatteryChargingStart) obj;
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
-                .append(this.chargingStation, other.chargingStation)
                 .isEquals();
     }
 
@@ -110,7 +107,6 @@ public final class ChargingStopResponse extends Interaction {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
-                .append("chargingStationId", chargingStation != null ? chargingStation.getName() : "null")
                 .toString();
     }
 }

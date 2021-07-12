@@ -27,14 +27,6 @@ import javax.annotation.Nullable;
 public interface ChargingStationOperatingSystem extends OperatingSystem {
 
     /**
-     * Send a message to the RTI, which indicates an update about the state of a {@link ChargingStationData}.
-     *
-     * @param time            The time of the update.
-     * @param chargingStation The {@link ChargingStationData} that is updated.
-     */
-    void sendChargingStationUpdates(long time, ChargingStationData chargingStation);
-
-    /**
      * Returns the charging station information.
      * Returns {@code null} if no information is given.
      * This could be the case if no charging stations ambassador is running.

@@ -24,8 +24,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.List;
+
 /**
- * This extension of {@link Interaction} is intended to be used to forward the updated state of a
+ * This extension of {@link Interaction} is intended to be used to forward updates of the
  * {@link ChargingStationData} to the RTI.
  */
 public final class ChargingStationUpdates extends Interaction {
@@ -37,19 +39,20 @@ public final class ChargingStationUpdates extends Interaction {
     public static final String TYPE_ID = createTypeIdentifier(ChargingStationUpdates.class);
 
     /**
-     * Updated {@link ChargingStationData}.
+     * List of updated {@link ChargingStationData}.
+
      */
-    private final ChargingStationData chargingStation;
+    private final List<ChargingStationData> updatedChargingStations;
 
     /**
      * Creates a new {@link ChargingStationUpdates} interaction.
      *
      * @param time            Timestamp of this interaction, unit: [ns]
-     * @param chargingStation Updated {@link ChargingStationData}
+     * @param updatedChargingStations List of updated {@link ChargingStationData}
      */
-    public ChargingStationUpdates(long time, ChargingStationData chargingStation) {
+    public ChargingStationUpdates(long time, List<ChargingStationData> updatedChargingStations) {
         super(time);
-        this.chargingStation = chargingStation;
+        this.updatedChargingStations = updatedChargingStations;
     }
 
     /**
@@ -57,14 +60,14 @@ public final class ChargingStationUpdates extends Interaction {
      *
      * @return updated charging station
      */
-    public ChargingStationData getChargingStation() {
-        return chargingStation;
+    public List<ChargingStationData> getUpdatedChargingStations() {
+        return updatedChargingStations;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(5, 41)
-                .append(chargingStation)
+                .append(updatedChargingStations)
                 .toHashCode();
     }
 
@@ -82,7 +85,7 @@ public final class ChargingStationUpdates extends Interaction {
 
         ChargingStationUpdates other = (ChargingStationUpdates) obj;
         return new EqualsBuilder()
-                .append(this.chargingStation, other.chargingStation)
+                .append(this.updatedChargingStations, other.updatedChargingStations)
                 .isEquals();
     }
 
@@ -90,7 +93,7 @@ public final class ChargingStationUpdates extends Interaction {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("chargingStation", chargingStation)
+                .append("updatedChargingStations", updatedChargingStations)
                 .toString();
     }
 
