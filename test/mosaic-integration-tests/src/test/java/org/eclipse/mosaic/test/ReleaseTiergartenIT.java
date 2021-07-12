@@ -27,7 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class TiergartenReleaseIT {
+public class ReleaseTiergartenIT {
 
     @ClassRule
     public static MosaicSimulationRule simulationRule = new MosaicSimulationRule();

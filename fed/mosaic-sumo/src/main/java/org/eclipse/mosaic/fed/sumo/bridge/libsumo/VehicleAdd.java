@@ -24,7 +24,7 @@ public class VehicleAdd implements org.eclipse.mosaic.fed.sumo.bridge.api.Vehicl
 
     public void execute(Bridge bridge, String vehicleId, String routeId, String vehicleType, String departLane, String departPosition, String departSpeed) throws CommandException, InternalFederateException {
         Vehicle.add(
-                vehicleId,
+                Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId),
                 routeId,
                 vehicleType,
                 "now",

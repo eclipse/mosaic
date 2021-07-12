@@ -22,7 +22,7 @@
     "tmcs": [
         {
             "group": "RoundTripServer",
-            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage" ],
+            "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage('veh_3')" ],
             "inductionLoops": [ ],
             "laneAreaDetectors": [ ]
         }
@@ -104,6 +104,18 @@
                     "applications": [
                         "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST_MBMS\", 150d, 300l, 400l)"
                     ]
+                }
+            ]
+        },
+        {
+            "startingTime": 230.0,
+            "route": "0",
+            "pos": 10,
+            "maxNumberVehicles": 1,
+            "types": [
+                {
+                    "name": "VEH",
+                    "applications": [ "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppAdHoc" ]
                 }
             ]
         },

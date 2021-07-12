@@ -46,10 +46,10 @@ import org.junit.Test;
  *     <li/> veh2: Sending Cams
  * </ul>
  */
-public class SendAndReceiveIT {
+public class CellSnsCamSendAndReceiveIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("TRACE");
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("DEBUG");
 
     private static MosaicSimulation.SimulationResult simulationResult;
 
@@ -63,14 +63,14 @@ public class SendAndReceiveIT {
     private final static String RSU_2_RECEIVE_MSG_APP_CELL_LOG = "apps/rsu_2/ReceiveMsgAppCell.log";
     private final static String RSU_3_RECEIVE_MSG_APP_ADHOC_LOG = "apps/rsu_3/ReceiveMsgAppAdHoc.log";
     private final static String TMC_ROUND_TRIP = "apps/tmc_0/SendAndReceiveRoundTripMessage.log";
-    private final static String VEH_ROUND_TRIP = "apps/veh_2/ReceiveAndReturnRoundTripMessage.log";
+    private final static String VEH_ROUND_TRIP = "apps/veh_3/ReceiveAndReturnRoundTripMessage.log";
     private final static String SERVER_NACK_RECEIVER = "apps/server_0/NackReceivingServer.log";
     private final static String SERVER_NO_CELL = "apps/server_3/NoCellCommunicationServer.log";
     private final static String SERVER_NO_GROUP = "apps/server_4/NoCellCommunicationServer.log";
 
     @BeforeClass
     public static void runSimulation() {
-        simulationResult = simulationRule.executeTestScenario("SendAndReceive");
+        simulationResult = simulationRule.executeTestScenario("cell-sns-cam-send-and-receive");
     }
 
     @Test
@@ -188,7 +188,10 @@ public class SendAndReceiveIT {
 
         // adhoc
         // test pattern no interference with ad hoc rsus
-        assertOccurrences(RSU_3_RECEIVE_MSG_APP_ADHOC_LOG, ".*Received CAM from veh.*", 0);
+        assertOccurrences(RSU_3_RECEIVE_MSG_APP_ADHOC_LOG, ".*Received CAM from veh_0.*", 0);
+        assertOccurrences(RSU_3_RECEIVE_MSG_APP_ADHOC_LOG, ".*Received CAM from veh_1.*", 0);
+        assertOccurrences(RSU_3_RECEIVE_MSG_APP_ADHOC_LOG, ".*Received CAM from veh_2.*", 72);
+        assertOccurrences(RSU_3_RECEIVE_MSG_APP_ADHOC_LOG, ".*Received CAM from veh_3.*", 0);
     }
 
     @Test
