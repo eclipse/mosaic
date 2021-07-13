@@ -34,12 +34,10 @@ public class WatchDogThread extends Thread implements WatchDog {
      */
     private final int maxIdleTime;
 
-    private volatile long lastTime = 0;
-
     /**
      * Current time in milliseconds, used to check if program is still alive.
      */
-    private volatile long currentTime = 0;
+    private volatile long timeOfLastUpdate = 0;
 
     /**
      * If set to true this thread will terminate.
@@ -58,7 +56,7 @@ public class WatchDogThread extends Thread implements WatchDog {
      * Updates the Watchdog with the current real time.
      */
     public void updateCurrentTime() {
-        this.currentTime = System.currentTimeMillis();
+        this.timeOfLastUpdate = System.currentTimeMillis();
     }
 
     @SuppressWarnings(value = "DM_EXIT", justification = "That's the purpose of the Watchdog")
@@ -66,16 +64,21 @@ public class WatchDogThread extends Thread implements WatchDog {
     public void run() {
         while (watching) {
             try {
-                Thread.sleep(this.maxIdleTime * 1000);
+                Thread.sleep(1000L);
             } catch (InterruptedException e) {
                 // be quiet
             }
-            if (lastTime == currentTime && !watching) {
+            long timeSinceLastUpdate = System.currentTimeMillis() - timeOfLastUpdate;
+            if (timeSinceLastUpdate > this.maxIdleTime * 1000L && watching) {
                 try {
                     System.out.println();
-                    System.err.println("-------------------------------------------------------------------");
-                    System.err.println("ERROR: MOSAIC detected an error probably caused by a federate. MOSAIC will now shutdown.");
-                    System.err.println("-------------------------------------------------------------------");
+                    System.err.println("-------------------------------------------------------------------------------------------------");
+                    System.err.println("ERROR: One or more federates did not respond for " + maxIdleTime + " seconds.");
+                    System.err.println("       This could be caused by an error in a federate.");
+                    System.err.println("       You can increase the timeout using the -w parameter. Using \"-w 0\" disables the watchdog.");
+                    System.err.println("-------------------------------------------------------------------------------------------------");
+                    System.err.println("       MOSAIC will now shut down.");
+                    System.err.println("-------------------------------------------------------------------------------------------------");
 
                     // wait a second to complete print lines
                     try {
@@ -92,16 +95,12 @@ public class WatchDogThread extends Thread implements WatchDog {
                     federation.getTimeManagement().finishSimulationRun(-1);
                     federation.getFederationManagement().stopFederation();
 
-                    // kill program
-                    System.exit(333);
-                    break;
                 } catch (Throwable e) {
                     // in this state something went already totally wrong, hence
                     // further errors can be ignored
-                    return;
                 }
+                System.exit(333);
             }
-            this.lastTime = currentTime;
         }
     }
 
