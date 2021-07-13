@@ -100,6 +100,7 @@ public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUn
             getLog().infoSimTime(this, "No message received within the last {} ns", timeSinceLastEval);
         }
         msgCountSinceLastEval = 0;
+        lastEvalTime = getOs().getSimulationTime();
     }
 
 
