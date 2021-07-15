@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
-import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.rti.TIME;
 
 public class SendCamAppAdHoc extends AbstractSenderApp {
@@ -31,14 +30,17 @@ public class SendCamAppAdHoc extends AbstractSenderApp {
 
     @SuppressWarnings("unused") // used by mapping
     public SendCamAppAdHoc(int power) {
-        this(AdHocChannel.CCH.toString(), power);
-    }
-
-    public SendCamAppAdHoc(String channel, int power) {
         super(TIME.SECOND, Long.MAX_VALUE);
 
         this.adHocModuleConfiguration = new AdHocModuleConfiguration()
-                .addRadio().power(power).channel(AdHocChannel.valueOf(channel)).create();
+                .addRadio().power(power).create();
+    }
+
+    public SendCamAppAdHoc(int power, double distance) {
+        super(TIME.SECOND, Long.MAX_VALUE);
+
+        this.adHocModuleConfiguration = new AdHocModuleConfiguration()
+                .addRadio().power(power).distance(distance).create();
     }
 
     @Override
