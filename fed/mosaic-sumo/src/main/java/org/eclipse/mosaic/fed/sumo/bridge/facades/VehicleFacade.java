@@ -131,7 +131,7 @@ public class VehicleFacade {
     public String getRouteId(String vehicleId) throws InternalFederateException {
         try {
             return getRouteId.execute(bridge, vehicleId);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not request route for vehicle " + vehicleId, e);
         }
     }
@@ -146,7 +146,7 @@ public class VehicleFacade {
     public String getVehicleTypeId(String vehicleId) throws InternalFederateException {
         try {
             return getVehicleTypeId.execute(bridge, vehicleId);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not request route for vehicle " + vehicleId, e);
         }
     }
@@ -162,7 +162,7 @@ public class VehicleFacade {
     public void changeLane(String vehicle, int lane, int durationMs) throws InternalFederateException {
         try {
             changeLane.execute(bridge, vehicle, lane, durationMs);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not change lane for vehicle {}", vehicle);
         }
     }
@@ -178,7 +178,7 @@ public class VehicleFacade {
     public void slowDown(String vehicle, double newSpeedMps, int durationMs) throws InternalFederateException {
         try {
             slowDown.execute(bridge, vehicle, newSpeedMps, durationMs);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not slow down vehicle {}", vehicle);
         }
     }
@@ -197,7 +197,7 @@ public class VehicleFacade {
     public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, byte stopFlag) throws InternalFederateException {
         try {
             stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, stopFlag);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not stop vehicle " + vehicle, e);
         }
     }
@@ -211,7 +211,7 @@ public class VehicleFacade {
     public void resume(String vehicle) throws InternalFederateException {
         try {
             resume.execute(bridge, vehicle);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not resume vehicle {}", vehicle);
         }
     }
@@ -226,7 +226,7 @@ public class VehicleFacade {
     public void setRouteById(String vehicle, String routeId) throws InternalFederateException {
         try {
             setRouteById.execute(bridge, vehicle, routeId);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Route for vehicle " + vehicle + " could not be changed", e);
         }
     }
@@ -234,7 +234,7 @@ public class VehicleFacade {
     public void highlight(String vehicleId, Color color) throws InternalFederateException {
         try {
             highlight.execute(bridge, vehicleId, color);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not highlight vehicle {}", vehicleId);
         }
     }
@@ -250,7 +250,7 @@ public class VehicleFacade {
     public void setMaxSpeed(String vehicleId, double speed) throws InternalFederateException {
         try {
             setMaxSpeed.execute(bridge, vehicleId, speed);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set max speed for vehicle {}", vehicleId);
         }
     }
@@ -265,7 +265,7 @@ public class VehicleFacade {
     public void setImperfection(String vehicleId, double imperfectionValue) throws InternalFederateException {
         try {
             setImperfection.execute(bridge, vehicleId, imperfectionValue);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set imperfection for vehicle {}", vehicleId);
         }
     }
@@ -280,7 +280,7 @@ public class VehicleFacade {
     public void setMaxAcceleration(String vehicleId, double maxAcceleration) throws InternalFederateException {
         try {
             setMaxAcceleration.execute(bridge, vehicleId, maxAcceleration);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set maximum acceleration for vehicle {}", vehicleId);
         }
     }
@@ -295,7 +295,7 @@ public class VehicleFacade {
     public void setMaxDeceleration(String vehicleId, double maxDeceleration) throws InternalFederateException {
         try {
             setMaxDeceleration.execute(bridge, vehicleId, maxDeceleration);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set maximum deceleration for vehicle {}", vehicleId);
         }
     }
@@ -310,7 +310,7 @@ public class VehicleFacade {
     public void setMinimumGap(String vehicleId, double minGap) throws InternalFederateException {
         try {
             setMinGap.execute(bridge, vehicleId, minGap);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set minimum gap for vehicle {}", vehicleId);
         }
     }
@@ -325,7 +325,7 @@ public class VehicleFacade {
     public void setReactionTime(String vehicleId, double reactionTime) throws InternalFederateException {
         try {
             setReactionTime.execute(bridge, vehicleId, reactionTime);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set reaction time for vehicle {}", vehicleId);
         }
     }
@@ -340,7 +340,7 @@ public class VehicleFacade {
     public void setVehicleLength(String vehicleId, double vehicleLength) throws InternalFederateException {
         try {
             setVehicleLength.execute(bridge, vehicleId, vehicleLength);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set vehicle length for vehicle {}", vehicleId);
         }
     }
@@ -356,7 +356,7 @@ public class VehicleFacade {
     public void setSpeedFactor(String vehicleId, double speedFactor) throws InternalFederateException {
         try {
             setSpeedFactor.execute(bridge, vehicleId, speedFactor);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set speed factor for vehicle {}", vehicleId);
         }
     }
@@ -371,7 +371,7 @@ public class VehicleFacade {
     public void setLaneChangeMode(String vehicleId, SumoLaneChangeMode laneChangeMode) throws InternalFederateException {
         try {
             setLaneChangeMode.execute(bridge, vehicleId, laneChangeMode.getAsInteger());
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set lane change mode for vehicle {}", vehicleId);
         }
     }
@@ -386,7 +386,7 @@ public class VehicleFacade {
     public void setSpeedMode(String vehicleId, SumoSpeedMode speedMode) throws InternalFederateException {
         try {
             setSpeedMode.execute(bridge, vehicleId, speedMode.getAsInteger());
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set speed mode for vehicle {}", vehicleId);
         }
     }
@@ -404,7 +404,7 @@ public class VehicleFacade {
     public void setColor(String vehicleId, int red, int green, int blue, int alpha) throws InternalFederateException {
         try {
             setColor.execute(bridge, vehicleId, red, green, blue, alpha);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set color for vehicle {}", vehicleId);
         }
     }
@@ -419,7 +419,7 @@ public class VehicleFacade {
     public void setSpeed(String vehicleId, double speed) throws InternalFederateException {
         try {
             setSpeed.execute(bridge, vehicleId, speed);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set speed for vehicle {}", vehicleId);
         }
     }
@@ -435,7 +435,7 @@ public class VehicleFacade {
     public void setParameter(String vehicleId, String parameter, String value) throws InternalFederateException {
         try {
             setParameter.execute(bridge, vehicleId, parameter, value);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set parameter {} for vehicle {}", parameter, vehicleId);
         }
     }
@@ -451,7 +451,7 @@ public class VehicleFacade {
     public void setParameter(String vehicleId, String parameter, double value) throws InternalFederateException {
         try {
             setParameter.execute(bridge, vehicleId, parameter, value);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not set parameter {} for vehicle {}", parameter, vehicleId);
         }
     }
@@ -467,7 +467,7 @@ public class VehicleFacade {
     public String getParameter(String vehicleId, String parameterName) throws InternalFederateException {
         try {
             return getParameter.execute(bridge, vehicleId, parameterName);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             log.error("Could not retrieve or transform parameter {} for vehicle {}.", parameterName, vehicleId);
             return null;
         }
@@ -505,7 +505,7 @@ public class VehicleFacade {
         try {
             log.trace("Trying to move vehicle {} to position {} with angle {} and mode {}", vehicleId, cartesianPoint, angle, mode);
             moveToXY.execute(bridge, vehicleId, "", 0, cartesianPoint, angle, mode);
-        } catch (CommandException e) {
+        } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not move vehicle " + vehicleId, e);
         }
     }
