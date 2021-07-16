@@ -28,7 +28,6 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.SimulationGetTrafficLightIds;
 import org.eclipse.mosaic.fed.sumo.bridge.api.SimulationSimulateStep;
 import org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightSubscribe;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleAdd;
-import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetLeader;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetRemove;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetUpdateBestLanes;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe;
@@ -95,7 +94,6 @@ public class SimulationFacade {
     private final SimulationGetTrafficLightIds getTrafficLightIds;
     private final VehicleAdd vehicleAdd;
     private final VehicleSetRemove remove;
-    private final VehicleGetLeader vehicleGetLeader;
 
     private final VehicleSubscribe vehicleSubscribe;
     private final InductionLoopSubscribe inductionloopSubscribe;
@@ -131,7 +129,6 @@ public class SimulationFacade {
         this.getTrafficLightIds = bridge.getCommandRegister().getOrCreate(SimulationGetTrafficLightIds.class);
         this.vehicleAdd = bridge.getCommandRegister().getOrCreate(VehicleAdd.class);
         this.remove = bridge.getCommandRegister().getOrCreate(VehicleSetRemove.class);
-        this.vehicleGetLeader = bridge.getCommandRegister().getOrCreate(VehicleGetLeader.class);
 
         this.inductionloopSubscribe = bridge.getCommandRegister().getOrCreate(InductionLoopSubscribe.class);
         this.laneAreaSubscribe = bridge.getCommandRegister().getOrCreate(LaneAreaSubscribe.class);
@@ -356,7 +353,7 @@ public class SimulationFacade {
 
             final List<AbstractSubscriptionResult> subscriptions = simulateStep.execute(bridge, time);
 
-            final Map<String, VehicleSensorData> vehicleSensorData = calculateBackSensorData(bridge, subscriptions);
+            final Map<String, VehicleSensorData> vehicleSensorData = calculateBackSensorData(subscriptions);
             final Map<String, String> vehicleSegmentInfo = calculateVehicleSegmentInfo(subscriptions);
 
             VehicleSubscriptionResult veh;
@@ -399,7 +396,7 @@ public class SimulationFacade {
                             .stopped(vehicleStopMode != null)
                             .consumptions(calculateConsumptions(veh, lastVehicleData))
                             .emissions(calculateEmissions(veh, lastVehicleData))
-                            .sensors(calculateSensorData(veh.id, veh.leadingVehicle, veh.minGap, vehicleSensorData.get(veh.id)))
+                            .sensors(calculateSensorData(veh.leadingVehicle, veh.minGap, vehicleSensorData.get(veh.id)))
                             .laneArea(vehicleSegmentInfo.get(veh.id))
                             .create();
                 }
@@ -560,13 +557,12 @@ public class SimulationFacade {
     /**
      * Calculates sensor data.
      *
-     * @param id                             The Id of the sensor.
      * @param leadingVehicleFromSubscription Information of the leading vehicle.
      * @param minGap                         The minimum gap.
      * @param sensorData                     The at sensor captured data.
      * @return Calculated sensor data.
      */
-    private VehicleSensors calculateSensorData(String id, LeadingVehicle leadingVehicleFromSubscription,
+    private VehicleSensors calculateSensorData(LeadingVehicle leadingVehicleFromSubscription,
                                                double minGap, VehicleSensorData sensorData) {
 
         if (sensorData == null) {
@@ -630,12 +626,11 @@ public class SimulationFacade {
     /**
      * Calculates the sensor data from rear.
      *
-     * @param bridge Connection to Traci.
      * @param subscriptions   Subscription data.
      * @return Calculated sensor data.
      * @throws InternalFederateException if leading vehicle for a vehicle couldn't be read
      */
-    private Map<String, VehicleSensorData> calculateBackSensorData(Bridge bridge, List<AbstractSubscriptionResult> subscriptions) throws InternalFederateException {
+    private Map<String, VehicleSensorData> calculateBackSensorData(List<AbstractSubscriptionResult> subscriptions) {
         if (vehiclesWithFrontSensor.isEmpty() && vehiclesWithBackSensor.isEmpty()) {
             return new HashMap<>();
         }
@@ -649,31 +644,25 @@ public class SimulationFacade {
                 continue;
             }
             if (queryingAllVehiclesRequired || vehiclesWithFrontSensor.containsKey(veh.id)) {
-                try {
-                    LeadingVehicle leader = ((VehicleSubscriptionResult) veh).leadingVehicle != null
-                            ? ((VehicleSubscriptionResult) veh).leadingVehicle
-                            : vehicleGetLeader.execute(bridge, veh.id, Double.MAX_VALUE);
+                LeadingVehicle leader = ((VehicleSubscriptionResult) veh).leadingVehicle;
 
-                    if (leader != null && vehiclesWithBackSensor.containsKey(leader.getLeadingVehicleId())) {
-                        distance = (leader.getLeadingVehicleDistance() <= vehiclesWithBackSensor.get(leader.getLeadingVehicleId()))
-                                ? leader.getLeadingVehicleDistance()
-                                : Double.POSITIVE_INFINITY;
-                        sensorResult.get(leader.getLeadingVehicleId()).rearDistance(distance);
+                if (leader != LeadingVehicle.NO_LEADER && vehiclesWithBackSensor.containsKey(leader.getLeadingVehicleId())) {
+                    distance = (leader.getLeadingVehicleDistance() <= vehiclesWithBackSensor.get(leader.getLeadingVehicleId()))
+                            ? leader.getLeadingVehicleDistance()
+                            : Double.POSITIVE_INFINITY;
+                    sensorResult.get(leader.getLeadingVehicleId()).rearDistance(distance);
+                }
+                if (leader != LeadingVehicle.NO_LEADER && vehiclesWithFrontSensor.containsKey(veh.id)) {
+                    VehicleData leaderInfo = getLastKnownVehicleData(leader.getLeadingVehicleId());
+                    if (leader.getLeadingVehicleDistance() <= vehiclesWithFrontSensor.get(veh.id)) {
+                        sensorResult.get(veh.id)
+                                .frontDistance(leader.getLeadingVehicleDistance())
+                                .frontSpeed(leaderInfo != null ? leaderInfo.getSpeed() : -1d);
+                    } else {
+                        sensorResult.get(veh.id)
+                                .frontDistance(Double.POSITIVE_INFINITY)
+                                .frontSpeed(-1d);
                     }
-                    if (leader != null && vehiclesWithFrontSensor.containsKey(veh.id)) {
-                        VehicleData leaderInfo = getLastKnownVehicleData(leader.getLeadingVehicleId());
-                        if (leader.getLeadingVehicleDistance() <= vehiclesWithFrontSensor.get(veh.id)) {
-                            sensorResult.get(veh.id)
-                                    .frontDistance(leader.getLeadingVehicleDistance())
-                                    .frontSpeed(leaderInfo != null ? leaderInfo.getSpeed() : -1d);
-                        } else {
-                            sensorResult.get(veh.id)
-                                    .frontDistance(Double.POSITIVE_INFINITY)
-                                    .frontSpeed(-1d);
-                        }
-                    }
-                } catch (CommandException e) {
-                    log.error("Could not read vehicle leader for vehicle {}", veh);
                 }
             }
         }
