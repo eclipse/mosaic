@@ -45,16 +45,6 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
         setRequiredOperatingSystem(ElectricVehicleOperatingSystem.class);
     }
 
-    private void updateBatteryInformation(final BatteryData currentBatteryData) {
-        // set the new vehicle electric info reference
-        BatteryData previousBatteryData = this.batteryData;
-        this.batteryData = currentBatteryData;
-
-        for (ElectricVehicleApplication application : getApplicationsIterator(ElectricVehicleApplication.class)) {
-            application.onBatteryDataUpdated(previousBatteryData, currentBatteryData);
-        }
-    }
-
     private void onVehicleChargingDenialResponse(final VehicleChargingDenial vehicleChargingDenial) {
         for (ElectricVehicleApplication application : getApplicationsIterator(ElectricVehicleApplication.class)) {
             application.onChargingRequestRejected(vehicleChargingDenial);
@@ -64,7 +54,7 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
     @Override
     protected boolean handleEventResource(Object resource, long eventType) {
         if (resource instanceof BatteryData) {
-            updateBatteryInformation((BatteryData) resource);
+            updateBatteryData((BatteryData) resource);
             return true;
         }
 
@@ -74,6 +64,16 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
         }
 
         return super.handleEventResource(resource, eventType);
+    }
+
+    private void updateBatteryData(final BatteryData currentBatteryData) {
+        // set the new vehicle electric info reference
+        BatteryData previousBatteryData = this.batteryData;
+        this.batteryData = currentBatteryData;
+
+        for (ElectricVehicleApplication application : getApplicationsIterator(ElectricVehicleApplication.class)) {
+            application.onBatteryDataUpdated(previousBatteryData, currentBatteryData);
+        }
     }
 
     @Override

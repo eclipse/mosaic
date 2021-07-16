@@ -303,7 +303,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     private void process(final VehicleBatteryUpdates vehicleBatteryUpdates) {
         // schedule all updated vehicles
         for (BatteryData batteryData : vehicleBatteryUpdates.getUpdated()) {
-            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(batteryData.getName());
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(batteryData.getOwnerId());
             // we don't simulate vehicles without application
             if (simulationUnit == null) {
                 continue;

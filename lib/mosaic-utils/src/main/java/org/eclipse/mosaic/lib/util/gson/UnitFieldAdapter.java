@@ -181,13 +181,11 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
             return (TypeAdapter<T>) new UnitFieldAdapter(true, WEIGHT_PATTERN) {
                 @Override
                 double determineUnitMultiplier(String prefix, String unit) {
-                    if (unit.startsWith("mile")) {
-                        //special case
-                        return 1609.344;
-                    } else if (StringUtils.isNotEmpty(prefix)) {
-                        return 0.001 * UNIT_MULTIPLIERS.getOrDefault(prefix, 1d);
+                    double multiplier = 1;
+                    if (StringUtils.isNotEmpty(prefix)) {
+                        multiplier = UNIT_MULTIPLIERS.getOrDefault(prefix, 1d);
                     }
-                    return 1d;
+                    return multiplier * 0.001;
                 }
             };
         }
@@ -195,7 +193,6 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
 
 
     public static class WeightKiloGramsQuiet implements TypeAdapterFactory {
-
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {

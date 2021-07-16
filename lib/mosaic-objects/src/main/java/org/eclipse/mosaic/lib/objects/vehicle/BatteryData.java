@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.lib.objects.vehicle;
 
-import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -32,40 +31,40 @@ public class BatteryData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The name of the vehicle this battery belongs to.
+     * The id of the vehicle this battery belongs to.
      */
-    private final String name;
+    private final String ownerId;
 
     /**
      * Time in [ns] until this information is valid.
      */
-    private long time;
+    private final long time;
 
     /**
      * Quotient of the current capacity and the initial capacity of the battery.
      * Range: [0=empty, 1=full]
      */
-    private double stateOfCharge;
+    private final double stateOfCharge;
 
     /**
      * Current capacity of the battery.
      * unit: [Ah]
      */
-    private double capacity;
+    private final double capacity;
 
     /**
      * Flag, indicating if the vehicle is currently being charged at a {@link ChargingSpot}.
      */
-    private boolean charging;
+    private final boolean charging;
 
     /**
      * Creates a new {@link BatteryData} for an added vehicle.
      *
-     * @param time timestamp of the data
-     * @param name of the vehicle that the data belongs to
+     * @param time    timestamp of the data
+     * @param ownerId of the vehicle that the data belongs to
      */
-    public BatteryData(long time, String name) {
-        this.name = name;
+    public BatteryData(long time, String ownerId) {
+        this.ownerId = ownerId;
         this.time = time;
         this.stateOfCharge = -1.0;
         this.capacity = -1.0;
@@ -76,37 +75,21 @@ public class BatteryData implements Serializable {
      * Creates a new {@link BatteryData} for an added vehicle.
      *
      * @param time          timestamp of the data
-     * @param name          of the vehicle that the data belongs to
+     * @param ownerId       id of the vehicle that the data belongs to
      * @param stateOfCharge state of charge of the battery [0,1]
      * @param capacity      current capacity of the battery
      * @param charging      flag indicating whether battery is charging
      */
-    private BatteryData(long time, String name, double stateOfCharge, double capacity, boolean charging) {
-        this.name = name;
+    private BatteryData(long time, String ownerId, double stateOfCharge, double capacity, boolean charging) {
+        this.ownerId = ownerId;
         this.time = time;
         this.stateOfCharge = stateOfCharge;
         this.capacity = capacity;
         this.charging = charging;
     }
 
-    /**
-     * Updates the {@link BatteryData}.
-     *
-     * @param time          time when the battery data was last updated
-     * @param stateOfCharge Quotient of the current capacity and the initial capacity of the battery, range:
-     *                      [0=empty, 1=full]
-     * @param capacity      Current capacity of the battery, unit: [Ah]
-     * @param charging      Flag, indicating if the vehicle is currently being charged
-     */
-    public void updateBatteryData(long time, double stateOfCharge, double capacity, boolean charging) {
-        this.time = time;
-        this.stateOfCharge = MathUtils.clamp(0d, stateOfCharge, 1d);
-        this.capacity = capacity;
-        this.charging = charging;
-    }
-
-    public String getName() {
-        return name;
+    public String getOwnerId() {
+        return ownerId;
     }
 
     public long getTime() {
@@ -182,7 +165,7 @@ public class BatteryData implements Serializable {
     @Override
     public String toString() {
         return "VehicleElectricInformation{"
-                + "VehicleID=" + name
+                + "VehicleID=" + ownerId
                 + ", rechargingType=" + stateOfCharge
                 + ", capacity=" + capacity
                 + ", charging=" + charging + '}';
@@ -190,14 +173,14 @@ public class BatteryData implements Serializable {
 
     public static class Builder {
         private final long time;
-        private final String name;
+        private final String ownerId;
         private double stateOfCharge;
         private double capacity;
         private boolean charging;
 
-        public Builder(long time, String name) {
+        public Builder(long time, String ownerId) {
             this.time = time;
-            this.name = name;
+            this.ownerId = ownerId;
         }
 
         public Builder stateOfChargeInfo(double stateOfCharge, double capacity) {
@@ -211,6 +194,12 @@ public class BatteryData implements Serializable {
             return this;
         }
 
+        /**
+         * Copies relevant data from a given {@link BatteryData} object.
+         *
+         * @param batteryData data to copy from
+         * @return the builder
+         */
         public Builder copyFrom(BatteryData batteryData) {
             stateOfCharge = batteryData.stateOfCharge;
             capacity = batteryData.capacity;
@@ -219,7 +208,7 @@ public class BatteryData implements Serializable {
         }
 
         public BatteryData build() {
-            return new BatteryData(time, name, stateOfCharge, capacity, charging);
+            return new BatteryData(time, ownerId, stateOfCharge, capacity, charging);
 
         }
     }
