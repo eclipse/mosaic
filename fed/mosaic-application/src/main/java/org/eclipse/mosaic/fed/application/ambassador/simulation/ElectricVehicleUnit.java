@@ -45,9 +45,9 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
         setRequiredOperatingSystem(ElectricVehicleOperatingSystem.class);
     }
 
-    private void onVehicleChargingDenialResponse(final VehicleChargingDenial vehicleChargingDenial) {
+    private void onVehicleChargingDenial(final VehicleChargingDenial vehicleChargingDenial) {
         for (ElectricVehicleApplication application : getApplicationsIterator(ElectricVehicleApplication.class)) {
-            application.onChargingRequestRejected(vehicleChargingDenial);
+            application.onVehicleChargingDenial(vehicleChargingDenial);
         }
     }
 
@@ -59,7 +59,7 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
         }
 
         if (resource instanceof VehicleChargingDenial) {
-            onVehicleChargingDenialResponse((VehicleChargingDenial) resource);
+            onVehicleChargingDenial((VehicleChargingDenial) resource);
             return true;
         }
 

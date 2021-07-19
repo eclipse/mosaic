@@ -408,7 +408,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final AbstractSimulationUnit simulationUnit =
                 UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
 
-        // we don't simulate vehicles without an application
         if (simulationUnit == null) {
             return;
         }

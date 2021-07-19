@@ -104,8 +104,8 @@ public class TestElectricVehicleApplication extends AbstractApplication<Electric
     }
 
     @Override
-    public void onChargingRequestRejected(VehicleChargingDenial vehicleChargingDenial) {
-        thisApplicationSpy.onChargingRequestRejected(vehicleChargingDenial);
+    public void onVehicleChargingDenial(VehicleChargingDenial vehicleChargingDenial) {
+        thisApplicationSpy.onVehicleChargingDenial(vehicleChargingDenial);
     }
 
     @Override

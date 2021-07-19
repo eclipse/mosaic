@@ -68,7 +68,7 @@ public class ElectricVehicle
     }
 
     @Override
-    public void onChargingRequestRejected(VehicleChargingDenial vehicleChargingDenial) {
+    public void onVehicleChargingDenial(VehicleChargingDenial vehicleChargingDenial) {
     }
 
     @Override

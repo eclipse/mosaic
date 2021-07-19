@@ -22,7 +22,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.io.Serializable;
 
 /**
- * Definition of an {@link ChargingSpot}.
+ * Definition of a {@link ChargingSpot}.
  */
 public final class ChargingSpot implements Serializable {
 

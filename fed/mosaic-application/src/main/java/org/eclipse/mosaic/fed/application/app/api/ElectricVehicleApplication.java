@@ -41,5 +41,5 @@ public interface ElectricVehicleApplication extends VehicleApplication, Applicat
      *
      * @param vehicleChargingDenial The interaction containing further information about the rejected charging request
      */
-    void onChargingRequestRejected(final VehicleChargingDenial vehicleChargingDenial);
+    void onVehicleChargingDenial(final VehicleChargingDenial vehicleChargingDenial);
 }
