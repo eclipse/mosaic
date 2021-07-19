@@ -31,9 +31,9 @@ import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.communication.V2xFullMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
-import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
@@ -262,8 +262,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((ServerRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleChargingDenial.TYPE_ID)) {
                 this.process((VehicleChargingDenial) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationUpdates.TYPE_ID)) {
-                this.process((ChargingStationUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(ChargingStationUpdate.TYPE_ID)) {
+                this.process((ChargingStationUpdate) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRouteRegistration.TYPE_ID)) {
                 this.process((VehicleRouteRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(V2xMessageReception.TYPE_ID)) {
@@ -403,23 +403,22 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         }
     }
 
-    private void process(final ChargingStationUpdates chargingStationUpdates) {
-        for (ChargingStationData chargingStationData : chargingStationUpdates.getUpdatedChargingStations()) {
-            final AbstractSimulationUnit simulationUnit =
-                    UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
+    private void process(final ChargingStationUpdate chargingStationUpdate) {
+        ChargingStationData chargingStationData = chargingStationUpdate.getUpdatedChargingStation();
+        final AbstractSimulationUnit simulationUnit =
+                UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
 
-            // we don't simulate vehicles without an application
-            if (simulationUnit == null) {
-                continue;
-            }
-            final Event event = new Event(
-                    chargingStationData.getTime(),
-                    simulationUnit,
-                    chargingStationData,
-                    EventNicenessPriorityRegister.updateChargingStation
-            );
-            addEvent(event);
+        // we don't simulate vehicles without an application
+        if (simulationUnit == null) {
+            return;
         }
+        final Event event = new Event(
+                chargingStationData.getTime(),
+                simulationUnit,
+                chargingStationData,
+                EventNicenessPriorityRegister.updateChargingStation
+        );
+        addEvent(event);
     }
 
     private void process(final VehicleChargingDenial vehicleChargingDenial) {
