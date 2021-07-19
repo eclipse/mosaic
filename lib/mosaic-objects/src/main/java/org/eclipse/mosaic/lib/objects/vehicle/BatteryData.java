@@ -48,7 +48,7 @@ public class BatteryData implements Serializable {
 
     /**
      * Current capacity of the battery.
-     * unit: [Ah]
+     * unit: [Ws]
      */
     private final double capacity;
 
@@ -120,7 +120,7 @@ public class BatteryData implements Serializable {
 
     /**
      * Returns Current capacity of the battery.
-     * unit: [Ah]
+     * unit: [Ws]
      */
     public double getCapacity() {
         return capacity;
