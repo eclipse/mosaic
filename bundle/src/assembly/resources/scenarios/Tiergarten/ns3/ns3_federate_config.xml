@@ -12,6 +12,7 @@
         <component name="MosaicNs3Server" value="warn|error|debug|info"/>
         <component name="MosaicNodeManager" value="warn|error|debug|info"/>
         <component name="MosaicProxyApp" value="warn|error|debug|info|function|func"/>
+        <component name="ClientServerChannel" value="warn|error"/>
 
         <component name="UdpSocketImpl" value="warn|error|info"/>
         <component name="UdpL4Protocol" value="warn|error|info"/>
@@ -20,6 +21,7 @@
         <component name="TrafficControlLayer" value="warn|error|info"/>
 
         <component name="PropagationLossModel" value="warn|error|info"/>
+        <component name="WifiPhy" value="warn|error|info|function"/>
         <component name="YansWifiPhy" value="warn|error|info"/>
         <component name="WaveNetDevice" value="warn|error|info"/>
         <component name="YansWifiChannel" value="warn|error|info"/>
@@ -61,18 +63,20 @@
     <default name="ns3::WifiPhy::TxPowerStart" value="17"/>
     <default name="ns3::WifiPhy::RxNoiseFigure" value="0"/>
     <default name="ns3::WifiPhy::ChannelSwitchDelay" value="+250000.0ns"/>
-    <default name="ns3::WifiPhy::ChannelNumber" value="178"/>
+    <default name="ns3::WifiPhy::ChannelNumber" value="180"/>
     <default name="ns3::WifiPhy::Frequency" value="5900"/>
-    <default name="ns3::WifiPhy::Antennas" value="1"/>
-    <default name="ns3::WifiPhy::ShortPlcpPreambleSupported" value="false"/>
     <default name="ns3::WifiPhy::ChannelWidth" value="10"/>
+    <default name="ns3::WifiPhy::Antennas" value="1"/>
+    <default name="ns3::WifiPhy::Slot" value="+9000.0ns"/>
+    <default name="ns3::WifiPhy::Pifs" value="+25000.0ns"/>
+    <default name="ns3::WifiPhy::Sifs" value="+16000.0ns"/>
+    <default name="ns3::WifiPhy::ShortPlcpPreambleSupported" value="false"/>
 
     <default name="ns3::ConstantRateWifiManager::DataMode" value="OfdmRate6Mbps"/>
     <default name="ns3::ConstantRateWifiManager::ControlMode" value="OfdmRate6Mbps"/>
 
     <default name="ns3::WifiMacQueue::MaxDelay" value="+500000000.0ns"/>
     <default name="ns3::WifiNetDevice::Mtu" value="2296"/>
-
     <default name="ns3::WifiMac::Ssid" value="default"/>
     <global name="RngSeed" value="1"/>
 </ns3>
