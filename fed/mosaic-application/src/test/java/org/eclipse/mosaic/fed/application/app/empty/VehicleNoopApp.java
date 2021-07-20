@@ -20,23 +20,20 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Re
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
-import org.eclipse.mosaic.fed.application.app.api.ElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
-import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
+import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
-import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ElectricVehicle
-        extends AbstractApplication<ElectricVehicleOperatingSystem>
-        implements ElectricVehicleApplication, MosaicApplication, CommunicationApplication {
+public class VehicleNoopApp extends AbstractApplication<VehicleOperatingSystem>
+        implements VehicleApplication, CommunicationApplication, MosaicApplication {
 
     @Override
     public void onStartup() {
@@ -55,24 +52,15 @@ public class ElectricVehicle
     }
 
     @Override
+    public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgedMessage) {
+    }
+
+    @Override
     public void processEvent(Event event) throws Exception {
     }
 
     @Override
     public void onInteractionReceived(ApplicationInteraction applicationInteraction) {
-    }
-
-
-    @Override
-    public void onBatteryDataUpdated(@Nullable BatteryData previousBatteryData, @Nonnull BatteryData updatedBatteryData) {
-    }
-
-    @Override
-    public void onVehicleChargingDenial(VehicleChargingDenial vehicleChargingDenial) {
-    }
-
-    @Override
-    public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgedMessage) {
     }
 
     @Override

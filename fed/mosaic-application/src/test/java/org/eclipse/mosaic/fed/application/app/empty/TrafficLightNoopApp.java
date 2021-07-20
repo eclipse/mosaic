@@ -26,8 +26,7 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
-public class TrafficLight
-        extends AbstractApplication<TrafficLightOperatingSystem>
+public class TrafficLightNoopApp extends AbstractApplication<TrafficLightOperatingSystem>
         implements TrafficLightApplication, CommunicationApplication {
 
     @Override

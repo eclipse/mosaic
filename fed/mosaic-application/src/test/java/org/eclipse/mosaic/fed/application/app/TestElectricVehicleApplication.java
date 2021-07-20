@@ -22,7 +22,7 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.ElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.empty.ElectricVehicle;
+import org.eclipse.mosaic.fed.application.app.empty.ElectricVehicleNoopApp;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
@@ -37,16 +37,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TestElectricVehicleApplication extends AbstractApplication<ElectricVehicleOperatingSystem>
-        implements TestApplicationWithSpy<ElectricVehicle>, ElectricVehicleApplication, CommunicationApplication, MosaicApplication {
+        implements TestApplicationWithSpy<ElectricVehicleNoopApp>, ElectricVehicleApplication, CommunicationApplication, MosaicApplication {
 
-    private ElectricVehicle thisApplicationSpy;
+    private ElectricVehicleNoopApp thisApplicationSpy;
 
     public TestElectricVehicleApplication() {
         // We use this mock to later count calls of the class' methods
-        thisApplicationSpy = Mockito.mock(ElectricVehicle.class);
+        thisApplicationSpy = Mockito.mock(ElectricVehicleNoopApp.class);
     }
 
-    public ElectricVehicle getApplicationSpy() {
+    public ElectricVehicleNoopApp getApplicationSpy() {
         return thisApplicationSpy;
     }
 
