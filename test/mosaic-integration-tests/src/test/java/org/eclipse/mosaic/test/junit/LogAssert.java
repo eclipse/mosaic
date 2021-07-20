@@ -15,18 +15,18 @@
 
 package org.eclipse.mosaic.test.junit;
 
-import static org.junit.Assert.fail;
-
 import com.google.common.base.Charsets;
 
 import java.nio.file.Files;
+
+import static org.junit.Assert.fail;
 
 public class LogAssert {
 
     public static void contains(MosaicSimulationRule rule, String logFile, String logPattern) throws Exception {
         exists(rule, logFile);
 
-        boolean found = Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.ISO_8859_1).anyMatch(
+        boolean found = Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).anyMatch(
                 line -> line.matches(logPattern)
         );
         if (!found) {
@@ -37,7 +37,7 @@ public class LogAssert {
     public static int count(MosaicSimulationRule rule, String logFile, String logPattern) throws Exception {
         exists(rule, logFile);
 
-        return (int) Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.ISO_8859_1).filter(
+        return (int) Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).filter(
                 line -> line.matches(logPattern)
         ).count();
     }
