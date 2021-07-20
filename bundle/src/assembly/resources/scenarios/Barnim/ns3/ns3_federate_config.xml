@@ -70,26 +70,12 @@
     <default name="ns3::WifiPhy::Sifs" value="+16000.0ns"/>
     <default name="ns3::WifiPhy::ShortPlcpPreambleSupported" value="false"/>
 
-    <!--default name="ns3::WifiPhy::ShortGuardEnabled" value="false"/--><!-- deprecated: use the HtConfiguration instead -->
-    <!--default name="ns3::WifiPhy::LdpcEnabled" value="false"/--><!--??-->
-    <!--default name="ns3::WifiPhy::STBCEnabled" value="false"/--><!--??-->
-    <!--default name="ns3::WifiPhy::GreenfieldEnabled" value="false"/--><!-- deprecated: use the HtConfiguration instead -->
-
     <default name="ns3::ConstantRateWifiManager::DataMode" value="OfdmRate6Mbps"/>
     <default name="ns3::ConstantRateWifiManager::ControlMode" value="OfdmRate6Mbps"/>
 
-    <!--<default name="ns3::QueueBase::MaxSize" value="400p"/> could not find out how to configure queue size :(-->
     <default name="ns3::WifiMacQueue::MaxDelay" value="+500000000.0ns"/>
     <default name="ns3::WifiNetDevice::Mtu" value="2296"/>
 
-    <!--<default name="ns3::WifiMac::CtsTimeout" value="+75000.0ns"/>--><!-- apparently not needed anymore ea3c08b10835bd99f433f2550196b8018299f40a -->
-    <!--<default name="ns3::WifiMac::AckTimeout" value="+75000.0ns"/>--><!-- apparently not needed anymore ea3c08b10835bd99f433f2550196b8018299f40a -->
-    <!--<default name="ns3::WifiMac::BasicBlockAckTimeout" value="+281000.0ns"/>--><!-- apparently not needed anymore ea3c08b10835bd99f433f2550196b8018299f40a -->
-    <!--<default name="ns3::WifiMac::CompressedBlockAckTimeout" value="+107000.0ns"/>--><!-- apparently not needed anymore ea3c08b10835bd99f433f2550196b8018299f40a -->
-    <!--<default name="ns3::WifiMac::EifsNoDifs" value="+60000.0ns"/>--><!--Not supported anymore 85f24694e9970307e6f080c5a3e728bac4795260-->
-    <!--<default name="ns3::WifiMac::Rifs" value="+2000.0ns"/>--><!-- Rifs support removed -->
-
-    <!--<default name="ns3::WifiMac::MaxPropagationDelay" value="+3333.0ns"/>--><!--??-->
     <default name="ns3::WifiMac::Ssid" value="default"/>
     <global name="RngSeed" value="1"/>
 </ns3>

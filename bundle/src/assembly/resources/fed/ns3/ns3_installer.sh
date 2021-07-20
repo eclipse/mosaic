@@ -49,7 +49,7 @@ required_programs=( python3 gcc unzip tar )
 required_libraries=( "libprotobuf-dev (or equal) 3.3.0" "libxml2-dev (or equal)" "libsqlite3-dev (or equal)" )
 
 ####### configurable parameters ##########
-ns3_version="3.33"
+ns3_version="3.34"
 
 ####### automated parameters #############
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
