@@ -15,14 +15,9 @@
 
 package org.eclipse.mosaic.app.examples.emergencybrake;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.ConfigurableApplication;
-import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
-import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -30,23 +25,18 @@ import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.DenmContent;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
-import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.File;
 
 /**
  * This class implements an application for vehicles.
  * In case the vehicle sensors detect an obstacle the vehicle will perform an emergency brake.
  * If the emergency brake endures a specified minimum time duration a DENMessage is sent out.
  */
-public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeApp, VehicleOperatingSystem> implements VehicleApplication,
-        CommunicationApplication {
-
-    CEmergencyBrakeApp configuration;
+public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeApp, VehicleOperatingSystem> implements VehicleApplication {
 
     // Keep track of the vehicle movement for the emergency brake detection
     private float lastSpeed = 0;
@@ -64,27 +54,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
 
     @Override
     public void onStartup() {
-        initConfig();
         getOs().getAdHocModule().enable();
-    }
-
-    @Override
-    public void onShutdown() {
-
-    }
-
-    /**
-     * Sets all relevant variables from the configuration file.
-     * Note: If the file is corrupted or contains invalid values, default values are assigned.
-     */
-    public void initConfig() {
-        try {
-            configuration = new ObjectInstantiation<>(CEmergencyBrakeApp.class)
-                    .readFile(new File("applications/vehicle/emergency_brake_config.json"));
-        } catch (InstantiationException e) {
-            getLog().error("Exception: ", e);
-        }
-        getLog().info("Initializing brake application");
     }
 
     /**
@@ -102,13 +72,13 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
         // Initiate emergency brake if obstacle is detected
         if (obstacleDetected && !emergencyBrake) {
             stoppedAt = getOs().getSimulationTime();
-            getOs().changeSpeedWithForcedAcceleration(configuration.targetSpeed, configuration.deceleration);
+            getOs().changeSpeedWithForcedAcceleration(getConfiguration().targetSpeed, getConfiguration().deceleration);
             emergencyBrake = true;
             getLog().infoSimTime(this, "Performing emergency brake caused by detected obstacle");
         }
 
         // Continue driving normal as soon emergency brake is done and no obstacle is detectable
-        if (emergencyBrake && !obstacleDetected && idlePeriodOver(stoppedAt) && reachedSpeed(configuration.targetSpeed)) {
+        if (emergencyBrake && !obstacleDetected && idlePeriodOver(stoppedAt) && reachedSpeed(getConfiguration().targetSpeed)) {
             getOs().resetSpeed();
             stoppedAt = Long.MIN_VALUE;
             emergencyBrake = false;
@@ -121,7 +91,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
     }
 
     private boolean idlePeriodOver(long stoppedAt) {
-        return getOs().getSimulationTime() > stoppedAt + configuration.idlePeriod;
+        return getOs().getSimulationTime() > stoppedAt + getConfiguration().idlePeriod;
     }
 
     private boolean reachedSpeed(double speed) {
@@ -142,7 +112,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
         float curDeceleration = (speedDifference / timeDifference) / 9.81f;
 
         // If brake deceleration is low enough to qualify for an emergency brake, then keep track of the brake duration
-        if (curDeceleration < -(configuration.emergencyBrakeThresh)) {
+        if (curDeceleration < -(getConfiguration().emergencyBrakeThresh)) {
             if (startedBrakingAt < 0) {
                 startedBrakingAt = getOs().getSimulationTime();
             }
@@ -156,7 +126,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
         }
 
         // If brake duration is high enough, then send a DENMessage
-        if (actualBrakeDuration >= configuration.minimalBrakeDuration) {
+        if (actualBrakeDuration >= getConfiguration().minimalBrakeDuration) {
             getLog().info("Detected emergency brake in progress");
 
             // Vehicle info
@@ -191,22 +161,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
     }
 
     @Override
-    public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-
-    }
-
-    @Override
-    public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
-
-    }
-
-    @Override
-    public void onCamBuilding(CamBuilder camBuilder) {
-
-    }
-
-    @Override
-    public void onMessageTransmitted(V2xMessageTransmission v2xMessageTransmission) {
+    public void onShutdown() {
 
     }
 
