@@ -9,7 +9,7 @@
 		"consumerOperatingVoltage": "12 V",
 		"recuperationEfficiency": 1.0,
 		"maxRecuperationPower": 60e3,
-		"consumers": [
+		"electricConsumers": [
 			{ "Radio": 10 },
 			{ "HeadLight": 100 }
 		]
