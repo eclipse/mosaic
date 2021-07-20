@@ -53,7 +53,7 @@ abstract class LogStatements {
 
     static String LANE_PROPERTY_CHANGE = "LanePropertyChange Interaction received";
 
-    static String MISSING_SUMO_CONFIG = "The SUMO Ambassador cannot be started without a valid configuration file.";
+    static String MISSING_SUMO_CONFIG = "The SUMO Ambassador cannot be started without a valid configuration file (*.sumocfg is missing).";
 
     /**
      * Prints SUMO start message to the console.
@@ -61,7 +61,7 @@ abstract class LogStatements {
     static void printStartSumoGuiInfo() {
         System.out.println(StringUtils.repeat("=", 70));
         System.out.println("| SUMO will now be started in GUI Mode." + StringUtils.repeat(" ", 30) + "|");
-        System.out.println("| Please make sure you have started Eclipse MOSAIC with \"-w 0\"" + StringUtils.repeat(" ", 14) + "|");
+        System.out.println("| Please make sure you have started Eclipse MOSAIC with \"-w 0\"" + StringUtils.repeat(" ", 7) + "|");
         System.out.println("| Start the simulation manually in SUMO-GUI." + StringUtils.repeat(" ", 25) + "|");
         System.out.println(StringUtils.repeat("=", 70));
     }

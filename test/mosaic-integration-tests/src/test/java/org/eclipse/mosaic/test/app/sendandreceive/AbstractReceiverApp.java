@@ -32,6 +32,7 @@ import org.eclipse.mosaic.test.app.sendandreceive.messages.TestMessage;
 public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUnit> implements CommunicationApplication {
 
     private final long evaluationInterval;
+    private long lastEvalTime = 0;
     private int msgCountSinceLastEval = 0;
 
     protected abstract void configureCommunication();
@@ -46,6 +47,7 @@ public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUn
     public void onStartup() {
         configureCommunication();
         printCommunicationState();
+        lastEvalTime = getOs().getSimulationTime();
         sample();
     }
 
@@ -91,12 +93,14 @@ public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUn
     }
 
     private void evaluate() {
+        final long timeSinceLastEval = getOs().getSimulationTime() - lastEvalTime;
         if (msgCountSinceLastEval > 0) {
-            getLog().infoSimTime(this, "Received {} message(s) within the last {} ns", msgCountSinceLastEval, evaluationInterval);
+            getLog().infoSimTime(this, "Received {} message(s) within the last {} ns", msgCountSinceLastEval, timeSinceLastEval);
         } else {
-            getLog().infoSimTime(this, "No message received within the last {} ns", evaluationInterval);
+            getLog().infoSimTime(this, "No message received within the last {} ns", timeSinceLastEval);
         }
         msgCountSinceLastEval = 0;
+        lastEvalTime = getOs().getSimulationTime();
     }
 
 

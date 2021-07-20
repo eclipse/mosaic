@@ -102,10 +102,6 @@ public class CellConfiguration implements Serializable {
         }
     }
 
-    public final boolean isCellCommunicationEnabled() {
-        return enabled;
-    }
-
     public final String getNodeId() {
         return nodeId;
     }

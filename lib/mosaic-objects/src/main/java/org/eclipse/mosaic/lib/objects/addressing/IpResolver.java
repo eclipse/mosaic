@@ -15,11 +15,13 @@
 
 package org.eclipse.mosaic.lib.objects.addressing;
 
+import org.eclipse.mosaic.lib.objects.UnitType;
 import org.eclipse.mosaic.rti.config.CIpResolver;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -31,28 +33,13 @@ import javax.annotation.Nonnull;
 /**
  * Class providing a singleton for global IP address management.
  */
-public final class IpResolver {
-
-    enum UnitType {
-        VEHICLE("veh"),
-        ROAD_SIDE_UNIT("rsu"),
-        TRAFFIC_MANAGEMENT_CENTER("tmc"),
-        TRAFFIC_LIGHT("tl"),
-        CHARGING_STATION("cs"),
-        SERVER("server");
-
-        private String prefix;
-
-        UnitType(String prefix) {
-            this.prefix = prefix;
-        }
-    }
+public final class IpResolver implements Serializable {
 
     private static IpResolver singleton;
 
     private final Inet4Address netMask;
 
-    private Map<UnitType, Inet4Address> unitNetworks = new HashMap<>();
+    private final Map<UnitType, Inet4Address> unitNetworks = new HashMap<>();
 
     private final int maxRange;
 

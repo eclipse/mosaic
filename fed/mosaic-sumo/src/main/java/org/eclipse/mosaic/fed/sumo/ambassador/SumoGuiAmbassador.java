@@ -64,8 +64,8 @@ public class SumoGuiAmbassador extends SumoAmbassador {
 
     @Override
     public void finishSimulation() {
-        if (traci != null) {
-            traci.close();
+        if (bridge != null) {
+            bridge.close();
         }
     }
 }

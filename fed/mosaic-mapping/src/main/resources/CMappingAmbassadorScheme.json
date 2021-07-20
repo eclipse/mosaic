@@ -85,12 +85,12 @@
                     "type": "boolean",
                     "default": false
                 },
-                "randomizeStartingTimes":{
+                "randomizeStartingTimes": {
                     "description": "If set to true, the starting times of all vehicle spawner definitions are randomized by +-60seconds.",
                     "type": "boolean",
                     "default": false
                 },
-                "randomizeWeights":{
+                "randomizeWeights": {
                     "description": "If set to true, the configured weights of all types are slightly randomized by +-1% of the sum of all weights.",
                     "type": "boolean",
                     "default": false
@@ -260,7 +260,7 @@
                 },
                 "route": {
                     "description": "Route that the vehicle(s) should use. If an origin and a destination are specified this route will be treated as a preference (i.e. it will be selected if it connects the two points in question).",
-                    "type": ["string"]
+                    "type": [ "string" ]
                 },
                 "lanes": {
                     "description": "Array of numbers to define the lanes to be used. The vehicles will be evenly distributed among the given lanes. When no value is given lane zero will be used for all vehicles.",
@@ -323,6 +323,33 @@
                         "type": "array",
                         "items": { "type": "number" }
                     }
+                },
+                "startingTime": {
+                    "description": "Time at which the first vehicle will be created.",
+                    "type": "number",
+                    "minimum": 0,
+                    "default": 0.0
+                },
+                "maxTime": {
+                    "description": "Simulation time in seconds at which no more vehicles will be created.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "departSpeedMode": {
+                    "description": "The depart speed mode determines the vehicle's speed at insertion.",
+                    "type": "string",
+                    "enum": [
+                        "PRECISE", "RANDOM", "MAXIMUM"
+                    ],
+                    "default": "MAXIMUM"
+                },
+                "laneSelectionMode": {
+                    "description": "The lane selection mode chooses the lane for the next departing vehicle.",
+                    "type": "string",
+                    "enum": [
+                        "DEFAULT", "ROUNDROBIN", "ROUNDROBIN_HIGHWAY", "HIGHWAY", "RANDOM", "FREE", "ALLOWED", "BEST", "FIRST"
+                    ],
+                    "default": "DEFAULT"
                 }
             },
             "required": [ "points", "odValues" ]
@@ -496,7 +523,6 @@
         },
         "odPoint": {
             "title": "odPoint",
-
             "description": "Object to define a point that can be referenced from an OD-matrix.",
             "type": "object",
             "properties": {
@@ -534,13 +560,13 @@
             "type": "object",
             "properties": {
                 "longitude": {
-                    "description":"East-west position of a point on earth.",
+                    "description": "East-west position of a point on earth.",
                     "type": "number",
                     "maximum": 180,
                     "minimum": -180
                 },
                 "latitude": {
-                    "description":"North-south position of a point on earth.",
+                    "description": "North-south position of a point on earth.",
                     "type": "number",
                     "maximum": 90,
                     "minimmum": -90

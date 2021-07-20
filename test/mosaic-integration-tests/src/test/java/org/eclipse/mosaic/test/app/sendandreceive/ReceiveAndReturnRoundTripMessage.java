@@ -15,9 +15,6 @@
 
 package org.eclipse.mosaic.test.app.sendandreceive;
 
-import static org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage.RECEIVER_NAME;
-import static org.eclipse.mosaic.test.app.sendandreceive.SendAndReceiveRoundTripMessage.SERVER_NAME;
-
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
@@ -43,10 +40,8 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
 
     @Override
     public void onStartup() {
-        if (getOs().getId().equals(RECEIVER_NAME)) {
-            getOs().getCellModule().enable();
-        }
-        sample(5 * TIME.SECOND);
+        getOs().getCellModule().enable();
+        getOs().getEventManager().addEvent(END_TIME, e -> getOs().getCellModule().disable());
     }
 
     @Override
@@ -59,9 +54,10 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
                     getOs().getSimulationTime(),
                     receivedV2xMessage.getMessage().getRouting().getDestination().getProtocolType()
             );
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(SERVER_NAME);
+            String roundtripReceiver = receivedV2xMessage.getMessage().getRouting().getSource().getSourceName();
+            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(roundtripReceiver);
             getOs().getCellModule().sendV2xMessage(new SimpleV2xMessage(routing));
-            getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", SERVER_NAME, getOs().getSimulationTime());
+            getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", roundtripReceiver, getOs().getSimulationTime());
         }
     }
 
@@ -89,19 +85,7 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
     public void onShutdown() {
     }
 
-    private void sample(long timeFromNow) {
-        getOs().getEventManager().addEvent(
-                getOs().getSimulationTime() + timeFromNow, this
-        );
-    }
-
     @Override
     public void processEvent(Event event) {
-        if (getOs().getSimulationTime() > END_TIME) {
-            if (getOs().getCellModule().isEnabled()) {
-                getOs().getCellModule().disable();
-            }
-        }
-        sample(5 * TIME.SECOND);
     }
 }
