@@ -31,14 +31,17 @@ public class SendCamAppAdHoc extends AbstractSenderApp {
 
     @SuppressWarnings("unused") // used by mapping
     public SendCamAppAdHoc(int power) {
-        this(AdHocChannel.CCH.toString(), power);
-    }
-
-    public SendCamAppAdHoc(String channel, int power) {
         super(TIME.SECOND, Long.MAX_VALUE);
 
         this.adHocModuleConfiguration = new AdHocModuleConfiguration()
-                .addRadio().power(power).channel(AdHocChannel.valueOf(channel)).create();
+                .addRadio().power(power).channel(AdHocChannel.CCH).create();
+    }
+
+    public SendCamAppAdHoc(int power, double distance) {
+        super(TIME.SECOND, Long.MAX_VALUE);
+
+        this.adHocModuleConfiguration = new AdHocModuleConfiguration()
+                .addRadio().power(power).distance(distance).channel(AdHocChannel.CCH).create();
     }
 
     @Override

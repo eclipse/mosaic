@@ -91,6 +91,13 @@
                     <pattern>%date %-5level %logger{0} - %msg%n</pattern>
                 </encoder>
             </appender>
+            <appender name="CommunicationDetailsLog" class="ch.qos.logback.core.FileAppender">
+                <file>${logDirectory}/CommunicationDetails.log</file>
+                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                    <pattern>%date %-5level %logger{0} - %msg%n</pattern>
+                </encoder>
+                <append>false</append>
+            </appender>
             <appender name="CellLog" class="ch.qos.logback.core.FileAppender">
                 <charset>UTF-8</charset>
                 <file>${logDirectory}/Cell.log</file>
@@ -175,6 +182,22 @@
 
             <logger name="activities" additivity="false" level="OFF">
                 <appender-ref ref="ActivityLog"/>
+            </logger>
+
+            <logger name="Ns3Output" additivity="false" level="INFO">
+                <appender-ref ref="CommunicationDetailsLog"/>
+            </logger>
+
+            <logger name="Ns3Error" additivity="false" level="ERROR">
+                <appender-ref ref="CommunicationDetailsLog"/>
+            </logger>
+
+            <logger name="OmnetppOutput" additivity="false" level="INFO">
+                <appender-ref ref="CommunicationDetailsLog"/>
+            </logger>
+
+            <logger name="OmnetppError" additivity="false" level="ERROR">
+                <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
 
             <!-- All other stuff, which was not logged by other loggers before goes
