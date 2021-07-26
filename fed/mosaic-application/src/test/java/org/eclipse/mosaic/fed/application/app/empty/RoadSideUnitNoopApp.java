@@ -26,7 +26,7 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
-public class RoadSideUnit extends AbstractApplication<RoadSideUnitOperatingSystem> implements CommunicationApplication {
+public class RoadSideUnitNoopApp extends AbstractApplication<RoadSideUnitOperatingSystem> implements CommunicationApplication {
 
     @Override
     public void onStartup() {

@@ -31,9 +31,9 @@ import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.communication.V2xFullMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
-import org.eclipse.mosaic.interactions.electricity.ChargingDenialResponse;
-import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
-import org.eclipse.mosaic.interactions.electricity.VehicleElectricityUpdates;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
+import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
+import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
@@ -49,13 +49,14 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.trafficsigns.VehicleSeenTrafficSignsUpdate;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.traffic.LaneAreaDetectorInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 import org.eclipse.mosaic.lib.util.FileUtils;
@@ -259,10 +260,10 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TmcRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(ServerRegistration.TYPE_ID)) {
                 this.process((ServerRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingDenialResponse.TYPE_ID)) {
-                this.process((ChargingDenialResponse) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationUpdates.TYPE_ID)) {
-                this.process((ChargingStationUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(VehicleChargingDenial.TYPE_ID)) {
+                this.process((VehicleChargingDenial) interaction);
+            } else if (interaction.getTypeId().startsWith(ChargingStationUpdate.TYPE_ID)) {
+                this.process((ChargingStationUpdate) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRouteRegistration.TYPE_ID)) {
                 this.process((VehicleRouteRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(V2xMessageReception.TYPE_ID)) {
@@ -283,8 +284,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TrafficLightUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleElectricityUpdates.TYPE_ID)) {
-                this.process((VehicleElectricityUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
+                this.process((VehicleBatteryUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
                 this.process((VehicleRoutesInitialization) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleTypesInitialization.TYPE_ID)) {
@@ -299,17 +300,17 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         }
     }
 
-    private void process(final VehicleElectricityUpdates electricInformationMessage) {
+    private void process(final VehicleBatteryUpdates vehicleBatteryUpdates) {
         // schedule all updated vehicles
-        for (VehicleBatteryState vehicleBatteryState : electricInformationMessage.getUpdated()) {
-            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(vehicleBatteryState.getName());
+        for (BatteryData batteryData : vehicleBatteryUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(batteryData.getOwnerId());
             // we don't simulate vehicles without application
             if (simulationUnit == null) {
                 continue;
             }
             final Event event = new Event(
-                    electricInformationMessage.getTime(), simulationUnit,
-                    vehicleBatteryState,
+                    vehicleBatteryUpdates.getTime(), simulationUnit,
+                    batteryData,
                     EventNicenessPriorityRegister.batteryUpdated
             );
             addEvent(event);
@@ -402,32 +403,33 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         }
     }
 
-    private void process(final ChargingStationUpdates chargingStationUpdates) {
+    private void process(final ChargingStationUpdate chargingStationUpdate) {
+        ChargingStationData chargingStationData = chargingStationUpdate.getUpdatedChargingStation();
         final AbstractSimulationUnit simulationUnit =
-                UnitSimulator.UnitSimulator.getUnitFromId(chargingStationUpdates.getChargingStation().getName());
-        // we don't simulate vehicles without an application
+                UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
+
         if (simulationUnit == null) {
             return;
         }
         final Event event = new Event(
-                chargingStationUpdates.getChargingStation().getTime(),
+                chargingStationData.getTime(),
                 simulationUnit,
-                chargingStationUpdates.getChargingStation(),
+                chargingStationData,
                 EventNicenessPriorityRegister.updateChargingStation
         );
         addEvent(event);
     }
 
-    private void process(final ChargingDenialResponse chargingDenialResponse) {
-        final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(chargingDenialResponse.getVehicleId());
+    private void process(final VehicleChargingDenial vehicleChargingDenial) {
+        final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(vehicleChargingDenial.getVehicleId());
         // we don't simulate vehicles without an application
         if (simulationUnit == null) {
             return;
         }
         final Event event = new Event(
-                chargingDenialResponse.getTime(),
+                vehicleChargingDenial.getTime(),
                 simulationUnit,
-                chargingDenialResponse,
+                vehicleChargingDenial,
                 EventNicenessPriorityRegister.chargingRejected
         );
         addEvent(event);

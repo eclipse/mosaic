@@ -17,23 +17,23 @@ package org.eclipse.mosaic.fed.application.app;
 
 import org.eclipse.mosaic.fed.application.app.api.ChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ChargingStationOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.empty.ChargingStation;
+import org.eclipse.mosaic.fed.application.app.empty.ChargingStationNoopApp;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
 import org.mockito.Mockito;
 
 public class TestChargingStationApplication extends AbstractApplication<ChargingStationOperatingSystem>
-        implements TestApplicationWithSpy<ChargingStation>, ChargingStationApplication {
+        implements TestApplicationWithSpy<ChargingStationNoopApp>, ChargingStationApplication {
 
-    private ChargingStation thisApplicationSpy;
+    private ChargingStationNoopApp thisApplicationSpy;
 
     public TestChargingStationApplication() {
         // We use this mock to later count calls of the class' methods
-        thisApplicationSpy = Mockito.mock(ChargingStation.class);
+        thisApplicationSpy = Mockito.mock(ChargingStationNoopApp.class);
     }
 
-    public ChargingStation getApplicationSpy() {
+    public ChargingStationNoopApp getApplicationSpy() {
         return thisApplicationSpy;
     }
 

@@ -17,23 +17,23 @@ package org.eclipse.mosaic.fed.application.app;
 
 import org.eclipse.mosaic.fed.application.app.api.TrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.TrafficLightOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.empty.TrafficLight;
+import org.eclipse.mosaic.fed.application.app.empty.TrafficLightNoopApp;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
 import org.mockito.Mockito;
 
 public class TestTrafficLightApplication extends AbstractApplication<TrafficLightOperatingSystem>
-        implements TestApplicationWithSpy<TrafficLight>, TrafficLightApplication {
+        implements TestApplicationWithSpy<TrafficLightNoopApp>, TrafficLightApplication {
 
-    private TrafficLight thisApplicationSpy;
+    private TrafficLightNoopApp thisApplicationSpy;
 
     public TestTrafficLightApplication() {
         // We use this mock to later count calls of the class' methods
-        thisApplicationSpy = Mockito.mock(TrafficLight.class);
+        thisApplicationSpy = Mockito.mock(TrafficLightNoopApp.class);
     }
 
-    public TrafficLight getApplicationSpy() {
+    public TrafficLightNoopApp getApplicationSpy() {
         return thisApplicationSpy;
     }
 

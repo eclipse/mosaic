@@ -25,46 +25,47 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * This extension of {@link Interaction} is intended to be used to forward the updated state of a
- * {@link ChargingStationData} to the RTI.
+ * This extension of {@link Interaction} is intended to be used to forward a stopped charging
+ * process at a charging station to the RTI.
  */
-public final class ChargingStationUpdates extends Interaction {
+public final class BatteryChargingStop extends Interaction {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * String identifying the type of this interaction.
      */
-    public static final String TYPE_ID = createTypeIdentifier(ChargingStationUpdates.class);
+    public static final String TYPE_ID = createTypeIdentifier(BatteryChargingStop.class);
 
     /**
-     * Updated {@link ChargingStationData}.
+     * String identifying the vehicle sending this interaction.
      */
-    private final ChargingStationData chargingStation;
+    private final String vehicleId;
 
     /**
-     * Creates a new {@link ChargingStationUpdates} interaction.
+     * Creates a new {@link BatteryChargingStop} interaction.
      *
      * @param time            Timestamp of this interaction, unit: [ns]
-     * @param chargingStation Updated {@link ChargingStationData}
+     * @param vehicleId       String identifying the vehicle sending this interaction
      */
-    public ChargingStationUpdates(long time, ChargingStationData chargingStation) {
+    public BatteryChargingStop(long time, String vehicleId) {
         super(time);
-        this.chargingStation = chargingStation;
+        this.vehicleId = vehicleId;
     }
 
     /**
-     * Returns the updated {@link ChargingStationData}.
+     * Returns the identifier of the vehicle sending this interaction.
      *
-     * @return updated charging station
+     * @return vehicle identifier
      */
-    public ChargingStationData getChargingStation() {
-        return chargingStation;
+    public String getVehicleId() {
+        return vehicleId;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(5, 41)
-                .append(chargingStation)
+        return new HashCodeBuilder(3, 37)
+                .append(vehicleId)
                 .toHashCode();
     }
 
@@ -80,9 +81,10 @@ public final class ChargingStationUpdates extends Interaction {
             return false;
         }
 
-        ChargingStationUpdates other = (ChargingStationUpdates) obj;
+        BatteryChargingStop other = (BatteryChargingStop) obj;
         return new EqualsBuilder()
-                .append(this.chargingStation, other.chargingStation)
+                .append(this.vehicleId, other.vehicleId)
+
                 .isEquals();
     }
 
@@ -90,8 +92,7 @@ public final class ChargingStationUpdates extends Interaction {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("chargingStation", chargingStation)
+                .append("vehicleId", vehicleId)
                 .toString();
     }
-
 }
