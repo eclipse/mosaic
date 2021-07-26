@@ -1,32 +1,32 @@
 {
-	"defaultVehicleModel": {
-		"type": "SimpleVehicleModel",
-		"vehicleMass": "1060 kg",
-		"referenceArea": 1.95,
-		"dragCoefficient": 0.375,
-		"tankToWheelEfficiency": 0.7,
-		"electricMotorOperatingVoltage": "350 V",
-		"consumerOperatingVoltage": "12 V",
-		"recuperationEfficiency": 1.0,
-		"maxRecuperationPower": 60e3,
-		"electricConsumers": [
-			{ "Radio": 10 },
-			{ "HeadLight": 100 }
-		]
-	},
-	"defaultBatteryModel": {
-		"type": "SimpleBatteryModel",
-		"cells": 93,
-		"cellVoltage": "4.3 V",
-		"cellCapacity": "50 Ah",
-		"chargingEfficiency": 0.8448,
-		"minStateOfCharge": 0.3,
-		"maxStateOfCharge": 0.7
-	},
-	"environmentModel": {
-		"type": "DefaultEnvironmentModel",
-		"fluidDensity": 1.293,
-		"rollingResistanceCoefficient": 0.01,
-		"gravitationalAcceleration": 9.81
-	}
+    "defaultVehicleModel": {
+        "type": "SimpleVehicleModel",
+        "vehicleMass": "1060 kg",
+        "referenceArea": 1.95,
+        "dragCoefficient": 0.375,
+        "tankToWheelEfficiency": 0.7,
+        "electricMotorOperatingVoltage": "350 V",
+        "consumerOperatingVoltage": "12 V",
+        "recuperationEfficiency": 1.0,
+        "maxRecuperationPower": 60e3,
+        "electricConsumers": [
+            { "Radio": 10 },
+            { "HeadLight": 100 }
+        ]
+    },
+    "defaultBatteryModel": {
+        "type": "SimpleBatteryModel",
+        "cells": 93,
+        "cellVoltage": "4.3 V",
+        "cellCapacity": "50 Ah",
+        "chargingEfficiency": 0.8448,
+        "minStateOfCharge": 0.3,
+        "maxStateOfCharge": 0.7
+    },
+    "environmentModel": {
+        "type": "DefaultEnvironmentModel",
+        "fluidDensity": 1.293,
+        "rollingResistanceCoefficient": 0.01,
+        "gravitationalAcceleration": 9.81
+    }
 }
