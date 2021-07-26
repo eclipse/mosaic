@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,6 +75,25 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Map<String, Consumer<CRuntime.CFederate>> federateManipulators = new HashMap<>();
 
     protected long timeout = 5 * TIME.MINUTE;
+
+    /**
+     * Create an environment for a MOSAIC Simulation which uses system default temporary-file
+     * directory to create temporary resources.
+     */
+    public MosaicSimulationRule() {
+        super();
+    }
+
+    public MosaicSimulationRule(String tempDirName) {
+        this(new File(tempDirName));
+    }
+
+    public MosaicSimulationRule(File tempDir) {
+        super(tempDir);
+        if (!tempDir.exists() && !tempDir.mkdirs()) {
+            LOG.warn("Could not create temporary directory at {}", tempDir.getAbsolutePath());
+        }
+    }
 
     @Override
     protected void before() throws Throwable {

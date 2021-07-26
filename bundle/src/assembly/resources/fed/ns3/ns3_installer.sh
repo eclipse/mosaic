@@ -49,10 +49,10 @@ required_programs=( python3 gcc unzip tar )
 required_libraries=( "libprotobuf-dev (or equal) 3.3.0" "libxml2-dev (or equal)" "libsqlite3-dev (or equal)" )
 
 ####### configurable parameters ##########
-ns3_version="3.28"
+ns3_version="3.34"
 
 ####### automated parameters #############
-premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha12/premake-5.0.0-alpha12-linux.tar.gz"
+premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
 premake5_tar="$(basename "$premake5_url")"
 premake5_autoconf_url="https://github.com/Blizzard/premake-autoconf/archive/master.zip"
 premake5_autoconf_zip="$(basename "$premake5_autoconf_url")"
@@ -69,8 +69,8 @@ ns3_scratch="${ns3_simulator_folder}/scratch"
 ns3_source="${ns3_simulator_folder}/src"
 
 ####### semi automatic parameters ########
-ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/21.0.zip"
-ns3_url="http://www.nsnam.org/release/$ns3_version_affix.tar.bz2"
+ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/heads/main.zip"
+ns3_url="https://www.nsnam.org/releases/$ns3_version_affix.tar.bz2"
 
 ###### more automatic parameters #########
 ns3_federate_filename="$(basename "$ns3_federate_url")"
@@ -377,7 +377,7 @@ build_ns3()
   # adjust build instruction to cover scrambled files
   sed -i -e "s|/usr/local|.|" premake5.lua
   sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build\"|" premake5.lua
-  sed -i -e "s|\"/usr/lib\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build\"|" premake5.lua
+  sed -i -e "s|\"/usr/lib\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/lib\"|" premake5.lua
   if [ "${arg_regen_protobuf}" == "true" ]; then
     ./premake5 gmake --generate-protobuf --install
   else
