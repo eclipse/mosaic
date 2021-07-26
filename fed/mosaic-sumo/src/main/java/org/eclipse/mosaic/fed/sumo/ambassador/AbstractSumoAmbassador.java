@@ -216,7 +216,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             sumoConfig = new ObjectInstantiation<>(CSumo.class, log)
                     .readFile(ambassadorParameter.configuration);
         } catch (InstantiationException e) {
-            log.error("Configuration object could not be instantiated: ", e);
+            log.error("Configuration object could not be instantiated. Using default ", e);
+            sumoConfig = new CSumo();
         }
 
         log.info("sumoConfig.updateInterval: " + sumoConfig.updateInterval);
