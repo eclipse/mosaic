@@ -22,12 +22,12 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.ElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.empty.ElectricVehicle;
+import org.eclipse.mosaic.fed.application.app.empty.ElectricVehicleNoopApp;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.interactions.electricity.ChargingDenialResponse;
+import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -37,16 +37,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TestElectricVehicleApplication extends AbstractApplication<ElectricVehicleOperatingSystem>
-        implements TestApplicationWithSpy<ElectricVehicle>, ElectricVehicleApplication, CommunicationApplication, MosaicApplication {
+        implements TestApplicationWithSpy<ElectricVehicleNoopApp>, ElectricVehicleApplication, CommunicationApplication, MosaicApplication {
 
-    private ElectricVehicle thisApplicationSpy;
+    private ElectricVehicleNoopApp thisApplicationSpy;
 
     public TestElectricVehicleApplication() {
         // We use this mock to later count calls of the class' methods
-        thisApplicationSpy = Mockito.mock(ElectricVehicle.class);
+        thisApplicationSpy = Mockito.mock(ElectricVehicleNoopApp.class);
     }
 
-    public ElectricVehicle getApplicationSpy() {
+    public ElectricVehicleNoopApp getApplicationSpy() {
         return thisApplicationSpy;
     }
 
@@ -99,13 +99,13 @@ public class TestElectricVehicleApplication extends AbstractApplication<Electric
     }
 
     @Override
-    public void onBatteryStateUpdated(VehicleBatteryState previousState, VehicleBatteryState updatedState) {
-        thisApplicationSpy.onBatteryStateUpdated(previousState, updatedState);
+    public void onBatteryDataUpdated(@Nullable BatteryData previousBatteryData, @Nonnull BatteryData updatedBatteryData) {
+        thisApplicationSpy.onBatteryDataUpdated(previousBatteryData, updatedBatteryData);
     }
 
     @Override
-    public void onChargingRequestRejected(ChargingDenialResponse chargingDenialResponse) {
-        thisApplicationSpy.onChargingRequestRejected(chargingDenialResponse);
+    public void onVehicleChargingDenial(VehicleChargingDenial vehicleChargingDenial) {
+        thisApplicationSpy.onVehicleChargingDenial(vehicleChargingDenial);
     }
 
     @Override

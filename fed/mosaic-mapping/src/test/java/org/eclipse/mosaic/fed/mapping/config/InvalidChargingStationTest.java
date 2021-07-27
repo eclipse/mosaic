@@ -42,8 +42,6 @@ public class InvalidChargingStationTest {
             mapping = new ObjectInstantiation<>(CMappingAmbassador.class).read(getClass().getResourceAsStream("/mapping/invalid/chargingStation/MissingProperties.json"));
         } catch (InstantiationException e) {
             assertTrue(e.getMessage().contains("[/chargingStations/0] The object must have a property whose name is \"position\""));
-            assertTrue(e.getMessage().contains("[/chargingStations/0] The object must have a property whose name is \"operator\""));
-            assertTrue(e.getMessage().contains("[/chargingStations/0] The object must have a property whose name is \"access\""));
             assertTrue(e.getMessage().contains("[/chargingStations/0] The object must have a property whose name is \"chargingSpots\""));
         }
         assertNull(mapping);
@@ -64,9 +62,7 @@ public class InvalidChargingStationTest {
             ));
         } catch (InstantiationException e) {
             assertTrue(e.getMessage().contains("[/chargingStations/0/chargingSpots/0]"
-                    + " The object must have a property whose name is \"type\""));
-            assertTrue(e.getMessage().contains("[/chargingStations/0/chargingSpots/0]"
-                    + " The object must have a property whose name is \"parkingPlaces\""));
+                    + " The object must have a property whose name is \"chargingMode\""));
         }
         assertNull(mapping);
     }

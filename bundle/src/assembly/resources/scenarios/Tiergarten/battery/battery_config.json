@@ -1,27 +1,32 @@
 {
-	"vehicleModelClass": "com.dcaiti.vsimrti.fed.battery.sim.models.vehicle.ElectricSmart",
-	"vehicleModelConfig": {
-		"Mass": 1060,
-        	"ReferenceArea": 1.95,
-        	"DragCoefficient": 0.375,
-        	"TankToWheelEfficiency": 0.7,
-        	"ElectricMotorOperatingVoltage": 350,
-        	"ConsumerOperatingVoltage": 12
-	},
-	"batteryModelClass": "com.dcaiti.vsimrti.fed.battery.sim.models.battery.VerySimpleBatteryModel",
-	"batteryModelConfig": {
-            "NumberOfCells": 93,
-            "CellVoltage": 4.3,
-            "CellCapacityInAh": 50,
-            "ChargeEfficiency": 0.8448,
-            "RechargingType": 2,
-            "MinSOC": 0.30,
-            "MaxSOC": 0.70
-        },
-	"environmentModelClass": "com.dcaiti.vsimrti.fed.battery.sim.models.environment.DefaultEnvironment",
-	"environmentModelConfig": {
-        	"FluidDensity": 1.293,
-        	"RollingResistanceCoefficient": 0.01
-    	},
-        "consumers": [ { "Radio": 10 }, { "HeadLight": 100 } ]
+    "defaultVehicleModel": {
+        "type": "SimpleVehicleModel",
+        "vehicleMass": "1060 kg",
+        "referenceArea": 1.95,
+        "dragCoefficient": 0.375,
+        "tankToWheelEfficiency": 0.7,
+        "electricMotorOperatingVoltage": "350 V",
+        "consumerOperatingVoltage": "12 V",
+        "recuperationEfficiency": 1.0,
+        "maxRecuperationPower": 60e3,
+        "electricConsumers": [
+            { "Radio": 10 },
+            { "HeadLight": 100 }
+        ]
+    },
+    "defaultBatteryModel": {
+        "type": "SimpleBatteryModel",
+        "cells": 93,
+        "cellVoltage": "4.3 V",
+        "cellCapacity": "50 Ah",
+        "chargingEfficiency": 0.8448,
+        "minStateOfCharge": 0.3,
+        "maxStateOfCharge": 0.7
+    },
+    "environmentModel": {
+        "type": "DefaultEnvironmentModel",
+        "fluidDensity": 1.293,
+        "rollingResistanceCoefficient": 0.01,
+        "gravitationalAcceleration": 9.81
+    }
 }
