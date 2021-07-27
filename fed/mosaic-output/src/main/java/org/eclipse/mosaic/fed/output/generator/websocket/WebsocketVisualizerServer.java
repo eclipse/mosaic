@@ -17,7 +17,7 @@ package org. eclipse.mosaic.fed.output.generator.websocket;
 
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
@@ -57,7 +57,7 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
     private final Queue<RsuRegistration> rsuRegistrations = createQueue();
     private final Queue<TrafficLightRegistration> trafficLightRegistrations = createQueue();
     private final Queue<ChargingStationRegistration> chargingStationRegistrations = createQueue();
-    private final Queue<ChargingStationUpdates> chargingStationUpdates = createQueue();
+    private final Queue<ChargingStationUpdate> chargingStationUpdates = createQueue();
 
     public WebsocketVisualizerServer(InetSocketAddress address) {
         super(address);
@@ -146,7 +146,7 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
         chargingStationRegistrations.add(interaction);
     }
 
-    public synchronized void updateChargingStation(ChargingStationUpdates interaction) {
+    public synchronized void updateChargingStation(ChargingStationUpdate interaction) {
         chargingStationUpdates.add(interaction);
     }
 

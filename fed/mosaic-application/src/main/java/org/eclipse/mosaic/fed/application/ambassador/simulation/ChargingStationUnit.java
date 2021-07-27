@@ -16,12 +16,10 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
-import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.app.api.ChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ChargingStationOperatingSystem;
-import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
 import org.eclipse.mosaic.lib.enums.RsuType;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
@@ -53,15 +51,6 @@ public class ChargingStationUnit extends AbstractSimulationUnit implements Charg
     @Override
     public GeoPoint getPosition() {
         return getInitialPosition();
-    }
-
-    @Override
-    public void sendChargingStationUpdates(long time, ChargingStationData chargingStation) {
-        ChargingStationUpdates csu = new ChargingStationUpdates(
-                SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
-                chargingStation
-        );
-        sendInteractionToRti(csu);
     }
 
     @Override

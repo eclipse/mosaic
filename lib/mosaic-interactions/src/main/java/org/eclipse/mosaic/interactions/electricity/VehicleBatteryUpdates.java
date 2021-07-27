@@ -17,7 +17,7 @@ package org.eclipse.mosaic.interactions.electricity;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -28,31 +28,31 @@ import java.util.Collection;
 
 /**
  * This extension of {@link Interaction} is used to inform the applications of simulation units about
- * changed {@link VehicleBatteryState}.
+ * changed {@link BatteryData}.
  */
-public final class VehicleElectricityUpdates extends Interaction {
+public final class VehicleBatteryUpdates extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
-    public final static String TYPE_ID = createTypeIdentifier(VehicleElectricityUpdates.class);
+    public final static String TYPE_ID = createTypeIdentifier(VehicleBatteryUpdates.class);
 
     /**
      * The updated list of electricity information for each simulated electric vehicles.
      */
-    private final Collection<VehicleBatteryState> updated;
+    private final Collection<BatteryData> updated;
 
     /**
-     * Creates a new {@link VehicleElectricityUpdates} interaction.
+     * Creates a new {@link VehicleBatteryUpdates} interaction.
      *
      * @param time    Timestamp of this interaction, unit: [ns]
-     * @param updated The payload of the interaction, a list of {@link VehicleBatteryState}.
+     * @param updated The payload of the interaction, a list of {@link BatteryData}.
      */
-    public VehicleElectricityUpdates(long time, Collection<VehicleBatteryState> updated) {
+    public VehicleBatteryUpdates(long time, Collection<BatteryData> updated) {
         super(time);
         this.updated = updated;
     }
 
-    public Collection<VehicleBatteryState> getUpdated() {
+    public Collection<BatteryData> getUpdated() {
         return this.updated;
     }
 
@@ -75,7 +75,7 @@ public final class VehicleElectricityUpdates extends Interaction {
             return false;
         }
 
-        VehicleElectricityUpdates other = (VehicleElectricityUpdates) obj;
+        VehicleBatteryUpdates other = (VehicleBatteryUpdates) obj;
         return new EqualsBuilder()
                 .append(this.updated, other.updated)
                 .isEquals();

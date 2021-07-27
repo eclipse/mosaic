@@ -21,7 +21,7 @@ import org.eclipse.mosaic.fed.application.app.api.os.ChargingStationOperatingSys
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
-public class ChargingStation extends AbstractApplication<ChargingStationOperatingSystem> implements ChargingStationApplication {
+public class ChargingStationNoopApp extends AbstractApplication<ChargingStationOperatingSystem> implements ChargingStationApplication {
 
     @Override
     public void onStartup() {
