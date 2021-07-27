@@ -22,7 +22,7 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.empty.Vehicle;
+import org.eclipse.mosaic.fed.application.app.empty.VehicleNoopApp;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
@@ -35,16 +35,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TestVehicleApplication extends AbstractApplication<VehicleOperatingSystem>
-        implements TestApplicationWithSpy<Vehicle>, VehicleApplication, CommunicationApplication, MosaicApplication {
+        implements TestApplicationWithSpy<VehicleNoopApp>, VehicleApplication, CommunicationApplication, MosaicApplication {
 
-    private Vehicle thisApplicationSpy;
+    private VehicleNoopApp thisApplicationSpy;
 
     public TestVehicleApplication() {
         // We use this mock to later count calls of the class' methods
-        thisApplicationSpy = Mockito.mock(Vehicle.class);
+        thisApplicationSpy = Mockito.mock(VehicleNoopApp.class);
     }
 
-    public Vehicle getApplicationSpy() {
+    public VehicleNoopApp getApplicationSpy() {
         return thisApplicationSpy;
     }
 

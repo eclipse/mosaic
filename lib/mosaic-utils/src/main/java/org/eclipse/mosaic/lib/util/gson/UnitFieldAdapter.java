@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * <br>for speeds: "10 km/h" -> 2.77, "10 m/s" -> 10, "35 mph" -> 15.6464
  * <br><br>
  * Usage:
- *  <pre>
+ * <pre>
  *
  *  &#64;JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
  *  public double distance;
@@ -53,6 +53,12 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
 
     private final static Pattern DISTANCE_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(miles|mile|meter|metre|m))$");
     private final static Pattern SPEED_PATTERN = Pattern.compile("^([0-9]+\\.?[0-9]*) ?(mph|kmh|(?:(|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(miles|mile|meter|metre|m)(?:p|per|\\/)(h|hr|s|sec|second|hour)))$");
+
+    private final static Pattern WEIGHT_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(g|gram|grams))$");
+
+    private final static Pattern VOLTAGE_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(volt|volts|v))$");
+    private final static Pattern CURRENT_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(ampere|amperes|a))$");
+    private final static Pattern CAPACITY_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(amperehour|ampereshour|amperehours|ampereshours|ah|ahr))$");
 
     private final static Map<String, Double> UNIT_MULTIPLIERS = ImmutableMap.<String, Double>builder()
             .put("n", 1 / 1_000_000_000d).put("nano", 1 / 1_000_000_000d)
@@ -122,7 +128,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         }
     }
 
-    private double determineUnitMultiplier(String prefix, String unit) {
+    double determineUnitMultiplier(String prefix, String unit) {
         if (unit.startsWith("mile")) {
             //special case
             return 1609.344;
@@ -165,6 +171,89 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
             return (TypeAdapter<T>) new UnitFieldAdapter(false, SPEED_PATTERN);
+        }
+    }
+
+    public static class WeightKiloGrams implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, WEIGHT_PATTERN) {
+                @Override
+                double determineUnitMultiplier(String prefix, String unit) {
+                    double multiplier = 1;
+                    if (StringUtils.isNotEmpty(prefix)) {
+                        multiplier = UNIT_MULTIPLIERS.getOrDefault(prefix, 1d);
+                    }
+                    return multiplier * 0.001;
+                }
+            };
+        }
+    }
+
+
+    public static class WeightKiloGramsQuiet implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, WEIGHT_PATTERN) {
+                @Override
+                double determineUnitMultiplier(String prefix, String unit) {
+                    double multiplier = 1;
+                    if (StringUtils.isNotEmpty(prefix)) {
+                        multiplier = UNIT_MULTIPLIERS.getOrDefault(prefix, 1d);
+                    }
+                    return multiplier * 0.001;
+                }
+            };
+        }
+    }
+
+    public static class VoltageVolt implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, VOLTAGE_PATTERN);
+        }
+    }
+
+    public static class VoltageVoltQuiet implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, VOLTAGE_PATTERN);
+        }
+    }
+
+    public static class CurrentAmpere implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, CURRENT_PATTERN);
+        }
+    }
+
+    public static class CurrentAmpereQuiet implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, CURRENT_PATTERN);
+        }
+    }
+
+    public static class CapacityAmpereHour implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, CAPACITY_PATTERN);
+        }
+    }
+
+    public static class CapacityAmpereHourQuiet implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, CAPACITY_PATTERN);
         }
     }
 }

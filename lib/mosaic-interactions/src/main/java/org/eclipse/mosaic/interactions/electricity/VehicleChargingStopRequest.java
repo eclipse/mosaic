@@ -40,7 +40,7 @@ public final class VehicleChargingStopRequest extends Interaction {
     /**
      * String identifying the vehicle sending this interaction.
      */
-    public String vehicleId;
+    private final String vehicleId;
 
     /**
      * Creates a new {@link VehicleChargingStopRequest} interaction.

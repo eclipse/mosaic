@@ -23,7 +23,7 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigatio
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
@@ -63,7 +63,7 @@ public class AbstractSimulationUnitTest {
 
         unit.processEvent(eventManager.newEvent(0, unit).withResource(Mockito.mock(VehicleData.class)).schedule());
         // no error should be thrown
-        unit.processEvent(eventManager.newEvent(0, unit).withResource(new VehicleBatteryState("veh_0", 0)).schedule());
+        unit.processEvent(eventManager.newEvent(0, unit).withResource(new BatteryData(0, "veh_0")).schedule());
 
         TestVehicleApplication app = unit.getApplicationsIterator(TestVehicleApplication.class).iterator().next();
         Mockito.verify(app.getApplicationSpy()).onVehicleUpdated(any(), any());
@@ -87,11 +87,11 @@ public class AbstractSimulationUnitTest {
 
         unit.processEvent(eventManager.newEvent(0, unit).withResource(Mockito.mock(VehicleData.class)).schedule());
         // no error should be thrown
-        unit.processEvent(eventManager.newEvent(0, unit).withResource(new VehicleBatteryState("veh_0", 0)).schedule());
+        unit.processEvent(eventManager.newEvent(0, unit).withResource(new BatteryData(0, "veh_0")).schedule());
 
         TestElectricVehicleApplication app = unit.getApplicationsIterator(TestElectricVehicleApplication.class).iterator().next();
         Mockito.verify(app.getApplicationSpy()).onVehicleUpdated(any(), any());
-        Mockito.verify(app.getApplicationSpy()).onBatteryStateUpdated(any(), any());
+        Mockito.verify(app.getApplicationSpy()).onBatteryDataUpdated(any(), any());
     }
 
     @Test(expected = RuntimeException.class)

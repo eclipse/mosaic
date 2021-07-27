@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- file version: 2015-01-23 -->
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/eclipse/mosaic/main/fed/mosaic-output/src/main/resources/output_config.xsd">
+    <output id="fileoutput" enabled="true" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
+        <filename>visualizer.csv</filename>
+        <directory>.</directory>
+        <separator>;</separator>
+        <subscriptions>
+            <subscription id="CellularHandoverUpdates">
+                <entries>
+                    <entry>"HANDOVER"</entry>
+                    <entry>Time</entry>
+                    <entry>Updated:NodeId</entry>
+                    <entry>Updated:PreviousRegion</entry>
+                    <entry>Updated:CurrentRegion</entry>
+                </entries>
+            </subscription>
+        </subscriptions>
+    </output>
+
+    <output id="websocket" enabled="false" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
+        <synchronized>true</synchronized>
+        <port>46587</port>
+        <subscriptions>
+            <subscription id="VehicleUpdates" enabled="true"/>
+            <subscription id="V2xMessageReception" enabled="true"/>
+            <subscription id="V2xMessageTransmission" enabled="true"/>
+            <subscription id="ReceiveCellMessage" enabled="false"/>
+            <subscription id="SendCellMessage" enabled="false"/>
+            <subscription id="RsuRegistration" enabled="true"/>
+            <subscription id="TrafficLightRegistration" enabled="false"/>
+            <subscription id="ChargingStationRegistration" enabled="false"/>
+            <subscription id="ChargingStartResponse" enabled="false"/>
+        </subscriptions>
+    </output>
+
+</configuration>
+

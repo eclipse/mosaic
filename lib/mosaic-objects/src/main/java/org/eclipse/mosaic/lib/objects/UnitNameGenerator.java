@@ -58,6 +58,30 @@ public class UnitNameGenerator {
         return nextUnitName(UnitType.CHARGING_STATION);
     }
 
+    public static boolean isVehicle(String name) {
+        return isUnitType(UnitType.VEHICLE, name);
+    }
+
+    public static boolean isRsu(String name) {
+        return isUnitType(UnitType.ROAD_SIDE_UNIT, name);
+    }
+
+    public static boolean isTmc(String name) {
+        return isUnitType(UnitType.TRAFFIC_MANAGEMENT_CENTER, name);
+    }
+
+    public static boolean isServer(String name) {
+        return isUnitType(UnitType.SERVER, name);
+    }
+
+    public static boolean isTrafficLight(String name) {
+        return isUnitType(UnitType.TRAFFIC_LIGHT, name);
+    }
+
+    public static boolean isChargingStation(String name) {
+        return isUnitType(UnitType.CHARGING_STATION, name);
+    }
+
     public static String nextPrototypeName(String prototype) {
         if (prototype != null) {
             return prototype + "_" + prototypeCounter.getAndIncrement();
@@ -68,6 +92,10 @@ public class UnitNameGenerator {
 
     private static String nextUnitName(UnitType unitType) {
         return unitType.prefix + "_" + unitCounters.get(unitType).getAndIncrement();
+    }
+
+    private static boolean isUnitType(UnitType unitType, String name) {
+        return name.startsWith(unitType.prefix + "_");
     }
 
     /**
