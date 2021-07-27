@@ -90,6 +90,53 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         return MathUtils.pnpoly(vertices.size(), verticesXValues, verticesYValues, (float) point.getX(), (float) point.getY());
     }
 
+    /**
+     * Returns true if rectangle intersects with the bounding box of the polygon.
+     *
+     * @param rectA
+     * @return
+     */
+    private boolean isIntersectingBoundingBox(CartesianRectangle rectA) {
+        CartesianRectangle rectB = calcBoundingBox(getVertices());
+        // rectA is left or right of rectB
+        if (rectA.getA().getX() > rectB.getB().getX() || rectB.getB().getX() < rectB.getA().getX()) {
+            return false;
+        }
+        // rectA is over or under rectB
+        if (rectA.getA().getY() < rectB.getB().getY() || rectA.getB().getY() > rectA.getA().getY()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns true if one polygon intersects another polygon.
+     *
+     * @param polygon
+     * @return
+     */
+    public boolean isIntersectingPolygon(CartesianPolygon polygon) {
+        // Test if bounding boxes intersect to reduce runtime
+        if (!isIntersectingBoundingBox(polygon.boundingBox)){
+            return false;
+        }
+        // Test if any corner of the one polygon lies within the other
+        for (CartesianPoint corner : polygon.getVertices()) {
+            if (contains(corner)) {
+                return true;
+            }
+        }
+        // Corner test for other polygon
+        for (CartesianPoint corner : vertices) {
+            if (polygon.contains(corner)) {
+                return true;
+            }
+        }
+
+        // TODO:Test if any edges intersect (sweep-line algorithm)
+
+        return false;
+    }
 
     public GeoPolygon toGeo() {
         return new GeoPolygon(
