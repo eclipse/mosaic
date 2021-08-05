@@ -17,6 +17,7 @@ package org.eclipse.mosaic.lib.spatial;
 
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -147,5 +148,26 @@ public class EdgeTest {
     public void lengthTest() {
         Edge<Vector3d> ed = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 2, 3));
         Assert.assertTrue(MathUtils.isFuzzyEqual(ed.getLength(), Math.sqrt(1 + 4 + 9)));
+    }
+
+    @Test
+    public void intersectionTest() {
+        Edge<Vector3d> edgeA = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0));
+        Edge<Vector3d> edgeB = new Edge<>(new Vector3d(0.5, 0.5, 0), new Vector3d(0.5, -0.5, 0));
+        Edge<Vector3d> edgeC = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0));
+        Edge<Vector3d> edgeD = new Edge<>(new Vector3d(0, 1, 0), new Vector3d(1, 1, 0));
+        Edge<Vector3d> edgeE = new Edge<>(new Vector3d(0.5, 1.5, 0), new Vector3d(0.5, 0.5, 0));
+
+        // Intersecting edges
+        assertTrue(edgeA.isIntersectingEdge(edgeB));
+
+        // Collinear edges
+        assertTrue(edgeA.isIntersectingEdge(edgeC));
+
+        // Parallel Edges
+        assertTrue(edgeA.isIntersectingEdge(edgeD));
+
+        // Non-parallel non-intersecting edges
+        assertTrue(edgeA.isIntersectingEdge(edgeE));
     }
 }
