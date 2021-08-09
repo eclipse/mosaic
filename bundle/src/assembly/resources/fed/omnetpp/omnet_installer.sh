@@ -46,7 +46,7 @@ check_shell
 required_programs=( unzip tar bison flex protoc gcc python )
 required_libraries=( "libprotobuf-dev >= 3.3.0" )
 
-omnet_federate_url="https://github.com/mosaic-addons/omnetpp-federate/archive/21.0.zip"
+omnet_federate_url="https://github.com/mosaic-addons/omnetpp-federate/archive/main.zip"
 inet_src_url="https://github.com/inet-framework/inet/releases/download/v4.1.1/inet-4.1.1-src.tgz"
 
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
