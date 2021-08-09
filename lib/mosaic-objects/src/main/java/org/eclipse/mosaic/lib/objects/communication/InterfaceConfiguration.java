@@ -53,7 +53,7 @@ public class InterfaceConfiguration implements Serializable {
      * The transmission power of the radio belonging to the interface.
      * Positive integer - power in mW
      */
-    private final Integer power;
+    private final Double power;
 
     /**
      * The transmission radius of the radio belonging to the interface.
@@ -73,7 +73,7 @@ public class InterfaceConfiguration implements Serializable {
      * @param power     the transmission power which the radio belonging to this interface should send (in mW)
      */
     private InterfaceConfiguration(@Nonnull Inet4Address newIP, @Nonnull Inet4Address newSubnet,
-                                   Integer power, Double radius, List<AdHocChannel> channels) {
+                                   Double power, Double radius, List<AdHocChannel> channels) {
         Validate.isTrue(channels.size() >= 1 && channels.size() <= 2, "Either single or dual channel");
         this.newIP = Objects.requireNonNull(newIP);
         this.newSubnet = Objects.requireNonNull(newSubnet);
@@ -122,7 +122,7 @@ public class InterfaceConfiguration implements Serializable {
         return newSubnet;
     }
 
-    public int getNewPower() {
+    public double getNewPower() {
         return power;
     }
 
@@ -168,7 +168,7 @@ public class InterfaceConfiguration implements Serializable {
 
         private Inet4Address newIP;
         private Inet4Address newSubnet;
-        private Integer newPower;
+        private Double newPower;
         private Double newRadius;
         private AdHocChannel channel0;
         private AdHocChannel channel1;
@@ -187,7 +187,7 @@ public class InterfaceConfiguration implements Serializable {
             return this;
         }
 
-        public Builder power(Integer power) {
+        public Builder power(Double power) {
             this.newPower = power;
             return this;
         }
