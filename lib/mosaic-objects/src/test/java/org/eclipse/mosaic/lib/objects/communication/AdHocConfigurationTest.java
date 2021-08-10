@@ -35,7 +35,7 @@ public class AdHocConfigurationTest {
     @Test(expected = NullPointerException.class) 
     public void testInstantiationFail1() {
         // RUN and FAIL
-        new InterfaceConfiguration.Builder(AdHocChannel.SCH1).power(100).create();
+        new InterfaceConfiguration.Builder(AdHocChannel.SCH1).power(100.).create();
     }
     
     @Test(expected = NullPointerException.class) 
@@ -43,7 +43,7 @@ public class AdHocConfigurationTest {
         Inet4Address addr1 = (Inet4Address)Inet4Address.getByName("10.1.0.50");
 
         // RUN and FAIL
-        new InterfaceConfiguration.Builder(AdHocChannel.SCH1).subnet(addr1).power(100).create();
+        new InterfaceConfiguration.Builder(AdHocChannel.SCH1).subnet(addr1).power(100.).create();
     }    
     
     @Test(expected = NullPointerException.class) 
@@ -51,7 +51,7 @@ public class AdHocConfigurationTest {
         Inet4Address addr1 = (Inet4Address)Inet4Address.getByName("10.1.0.50");
         Inet4Address sub1 = (Inet4Address)Inet4Address.getByName("255.0.0.0");
         // RUN and FAIL
-        new InterfaceConfiguration.Builder(null).ip(addr1).subnet(sub1).power(100).create();
+        new InterfaceConfiguration.Builder(null).ip(addr1).subnet(sub1).power(100.).create();
     }
     
     @Test
@@ -63,18 +63,18 @@ public class AdHocConfigurationTest {
         Inet4Address sub2 = (Inet4Address)Inet4Address.getByName("255.255.0.0");
 
         // RUN
-        InterfaceConfiguration ifconf1 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub1).power(100).create();
-        InterfaceConfiguration ifconf2 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub1).power(100).create();
+        InterfaceConfiguration ifconf1 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub1).power(100.).create();
+        InterfaceConfiguration ifconf2 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub1).power(100.).create();
         
-        InterfaceConfiguration ifconf3 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr2).subnet(sub1).power(100).create();
+        InterfaceConfiguration ifconf3 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr2).subnet(sub1).power(100.).create();
         
-        InterfaceConfiguration ifconf4 = new InterfaceConfiguration.Builder(AdHocChannel.CCH).ip(addr1).subnet(sub1).power(100).create();
+        InterfaceConfiguration ifconf4 = new InterfaceConfiguration.Builder(AdHocChannel.CCH).ip(addr1).subnet(sub1).power(100.).create();
                 
-        InterfaceConfiguration ifconf6 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub1).power(200).create();
+        InterfaceConfiguration ifconf6 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub1).power(200.).create();
         
-        InterfaceConfiguration ifconf7 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub2).power(100).create();
+        InterfaceConfiguration ifconf7 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).ip(addr1).subnet(sub2).power(100.).create();
         
-        InterfaceConfiguration ifconf8 = new InterfaceConfiguration.Builder(AdHocChannel.SCH6).ip(addr2).subnet(sub2).power(500).create();
+        InterfaceConfiguration ifconf8 = new InterfaceConfiguration.Builder(AdHocChannel.SCH6).ip(addr2).subnet(sub2).power(500.).create();
 
         //ASSERT
         assertEquals(ifconf1, ifconf2);
@@ -93,8 +93,8 @@ public class AdHocConfigurationTest {
         Inet4Address sub = (Inet4Address)Inet4Address.getByName("255.0.0.0");
 
         // RUN
-        InterfaceConfiguration ifconf1 = new InterfaceConfiguration.Builder(AdHocChannel.SCH6).ip(addr1).subnet(sub).power(100).create();
-        InterfaceConfiguration ifconf2 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).secondChannel(AdHocChannel.CCH).ip(addr2).subnet(sub).power(99999).create();
+        InterfaceConfiguration ifconf1 = new InterfaceConfiguration.Builder(AdHocChannel.SCH6).ip(addr1).subnet(sub).power(100.).create();
+        InterfaceConfiguration ifconf2 = new InterfaceConfiguration.Builder(AdHocChannel.SCH1).secondChannel(AdHocChannel.CCH).ip(addr2).subnet(sub).power(99999.).create();
         
         AdHocConfiguration aconfig1 = new AdHocConfiguration.Builder("veh_0").create();
         AdHocConfiguration aconfig2 = new AdHocConfiguration.Builder("veh_0").addInterface(ifconf1).create();
@@ -108,8 +108,8 @@ public class AdHocConfigurationTest {
         assertArrayEquals(addr2.getAddress(), aconfig3.getConf1().getNewIP().getAddress());
         assertArrayEquals(sub.getAddress(), aconfig3.getConf0().getNewSubnet().getAddress());
         assertArrayEquals(sub.getAddress(), aconfig3.getConf1().getNewSubnet().getAddress());
-        assertEquals(100, aconfig3.getConf0().getNewPower());
-        assertEquals(99999, aconfig3.getConf1().getNewPower());
+        assertEquals(100., aconfig3.getConf0().getNewPower(),1e-7);
+        assertEquals(99999., aconfig3.getConf1().getNewPower(), 1e-7);
         assertEquals(AdHocChannel.SCH6, aconfig2.getConf0().getChannel0());
         assertEquals(AdHocChannel.SCH6, aconfig3.getConf0().getChannel0());
         assertEquals(AdHocChannel.SCH1, aconfig3.getConf1().getChannel0());
