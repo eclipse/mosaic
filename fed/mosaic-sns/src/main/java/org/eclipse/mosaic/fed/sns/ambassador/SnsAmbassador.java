@@ -192,6 +192,8 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 } else {
                     registeredVehicles.put(nodeId, communicationRadius);
                 }
+                log.info("Radio configured in mode {} with communication radius {} for node id={} @time={}",
+                        configuration.getRadioMode(), communicationRadius, nodeId, TIME.format(interaction.getTime()));
                 break;
             default:
                 log.warn("Unknown radio mode {} configured for node {}. Ignoring.", configuration.getRadioMode(), nodeId);
