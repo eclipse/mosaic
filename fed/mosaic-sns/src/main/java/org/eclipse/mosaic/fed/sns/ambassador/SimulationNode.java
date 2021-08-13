@@ -47,4 +47,8 @@ public class SimulationNode {
     void setRadius(double radius) {
         this.radius = radius;
     }
+
+    public String toString() {
+        return "(" + position.getX() + ", " + position.getY() + ", " + position.getZ() + ")";
+    }
 }
