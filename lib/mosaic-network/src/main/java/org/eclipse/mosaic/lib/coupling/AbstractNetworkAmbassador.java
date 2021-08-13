@@ -288,7 +288,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
     @Override
     protected void processTimeAdvanceGrant(long time) throws InternalFederateException {
-        this.log.debug("ProcessTimeAdvanceGrant at time={}", time);
+        this.log.trace("ProcessTimeAdvanceGrant at time={}", time);
         try {
             // 3rd and last step of cycle: Allow events up to current time in network simulator scheduler
             ambassadorFederateChannel.writeAdvanceTimeMessage(time);
@@ -301,7 +301,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 switch (cmd) {
                     case CMD.NEXT_EVENT: // The federate has scheduled an event
                         long nextTime = this.federateAmbassadorChannel.readTimeBody();
-                        log.debug("Requested next_event at {} ", nextTime);
+                        log.trace("Requested next_event at {} ", nextTime);
                         // If the federates event is beyond our allowed time we have to request time advance from the RTI
                         if (nextTime > time) {
                             this.rti.requestAdvanceTime(nextTime);
@@ -324,7 +324,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         break;
                     case CMD.END:       // The federate has terminated the current time advance -> we are done here
                         long termTime = federateAmbassadorChannel.readTimeBody();
-                        log.debug("End ProcessTimeAdvanceGrant at: {}", termTime);
+                        log.trace("End ProcessTimeAdvanceGrant at: {}", termTime);
                         break command_loop; // break out of the infinite loop
                     default:
                         throw new InternalFederateException("Unknown command from federate at processTimeAdvanceGrant");
