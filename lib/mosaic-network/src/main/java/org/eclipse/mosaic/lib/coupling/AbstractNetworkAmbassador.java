@@ -717,8 +717,8 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     ? simulatedNodes.toExternalId(configuration.getNodeId())
                     : null;
             if (externalId != null) {   // If the node is simulated
-                if (this.log.isDebugEnabled()) {
-                    log.debug(
+                if (this.log.isTraceEnabled()) {
+                    log.trace(
                             "AdHocCommunicationConfiguration: from node ID[int={}, ext={}], at time = {} channels: [{},{}|{},{}]",
                             configuration.getNodeId(), externalId, time,
                             (configuration.getConf0() != null ? configuration.getConf0().getChannel0() : "null"),
