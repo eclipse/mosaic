@@ -49,6 +49,6 @@ public class SimulationNode {
     }
 
     public String toString() {
-        return "(" + position.getX() + ", " + position.getY() + ", " + position.getZ() + ")";
+        return "(" + position.getX() + ", " + position.getY() + ")";
     }
 }
