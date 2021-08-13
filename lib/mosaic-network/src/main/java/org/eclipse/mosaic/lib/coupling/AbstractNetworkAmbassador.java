@@ -438,7 +438,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             latestVehicleUpdates = interaction;
 
             if (!interaction.getAdded().isEmpty()) {
-                log.debug("Add Vehicles at first movement");
                 List<VehicleData> addedVehicles = interaction.getAdded();
                 Comparator<UnitData> comp = new UnitNameComparator();
                 addedVehicles.sort(comp);
@@ -461,7 +460,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             }
 
             if (!interaction.getUpdated().isEmpty()) {
-                this.log.debug("Update vehicle positions.");
                 long time = interaction.getTime();
                 List<VehicleData> nodes = interaction.getUpdated();
                 List<NodeDataContainer> nodesToUpdate = new ArrayList<>();
@@ -562,7 +560,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             );
             return;
         }
-        log.debug("This V2XMessage is applicable for this network simulator. Send this message. V2XMessage.id={}", interaction.getMessage().getId());
 
         try {
             Integer sourceId = simulatedNodes.containsInternalId(sac.getSourceName())
