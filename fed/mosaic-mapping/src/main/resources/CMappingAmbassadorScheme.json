@@ -502,12 +502,12 @@
                     ]
                 },
                 "maxVoltage": {
-                    "description": "Maximum voltage available at this charging spot."
+                    "description": "Maximum voltage available at this charging spot.",
                     "type": "number",
                     "minimum": 0.0
                 },
                 "maxCurrent": {
-                    "description": "Maximum current available at this charging spot."
+                    "description": "Maximum current available at this charging spot.",
                     "type": "number",
                     "minimum": 0.0
                 }
