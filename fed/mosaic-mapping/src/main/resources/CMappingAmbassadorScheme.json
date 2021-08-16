@@ -494,15 +494,25 @@
             "description": "Object to define an electric vehicle charging spot.",
             "type": "object",
             "properties": {
-                "chargingMode": {
-                    "description": "The type of this electric vehicle charging spot in compliance with current standards, including IEC 62196-2.",
+                "chargingType": {
+                    "description": "The type of this electric vehicle charging spot.",
                     "type": "string",
                     "enum": [
-                        "MODE_1", "MODE_2", "MODE_3", "MODE_4"
+                        "AC_1_PHASE", "AC_3_PHASE", "DC"
                     ]
+                },
+                "maxVoltage": {
+                    "description": "Maximum voltage available at this charging spot."
+                    "type": "number",
+                    "minimum": 0.0
+                },
+                "maxCurrent": {
+                    "description": "Maximum current available at this charging spot."
+                    "type": "number",
+                    "minimum": 0.0
                 }
             },
-            "required": [ "chargingMode" ]
+            "required": [ "chargingType", "maxVoltage", "maxCurrent" ]
         },
         "odPoint": {
             "title": "odPoint",
