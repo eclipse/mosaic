@@ -152,7 +152,7 @@ public final class ChargingStationData extends UnitData {
             for (ChargingSpot chargingSpot : chargingStationData.getChargingSpots()) {
                 ChargingSpot copiedChargingSpot = new ChargingSpot(
                         chargingSpot.getChargingSpotId(), chargingSpot.getChargingType(),
-                        chargingSpot.getMaximumVoltage(), chargingSpot.getMaximumVoltage()
+                        chargingSpot.getMaximumVoltage(), chargingSpot.getMaximumCurrent()
                 );
                 copiedChargingSpot.setAvailable(chargingSpot.isAvailable());
                 chargingSpots.add(copiedChargingSpot);
