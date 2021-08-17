@@ -72,6 +72,7 @@ public class RegionUtility {
      */
     public static CNetworkProperties getRegionForNode(String node) {
         if (node == null) {
+
             log.warn("nodeID is null, returning default region");
             return ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork;
         }
@@ -145,8 +146,8 @@ public class RegionUtility {
     /**
      * Get all regions for a destination area (of a geocast message).
      *
-     * @param geoArea destination geoArea
-     * @return list of all regions that intersect the destination area.
+     * @param geoArea The destination geoArea.
+     * @return List of all regions that intersect the destination area.
      */
     public static List<CNetworkProperties> getRegionsForDestinationArea(GeoArea geoArea) {
 
@@ -154,23 +155,14 @@ public class RegionUtility {
 
         if (geoArea instanceof GeoCircle) {
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (circlePolygonIntersection(region.getCapoArea(), ((GeoCircle) geoArea).toCartesian())){
+                if (circlePolygonCollision(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
                     regions.add(region);
                 }
             }
-        } else if (geoArea instanceof GeoRectangle) {
-            CartesianPolygon destPolygon = ((GeoRectangle) geoArea).toCartesian().toPolygon();
-            // TODO: efficient rectangle-rectangle/polygon intersection
-            for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (region.getCapoArea().isIntersectingPolygon(destPolygon)) {
-                    regions.add(region);
-                }
-            }
-        }
-        else {
+        } else {
             CartesianPolygon destPolygon = ((GeoPolygon) geoArea).toCartesian();
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (region.getCapoArea().isIntersectingPolygon(destPolygon)) {
+                if (region.getCapoArea().isCollidingWithPolygon(destPolygon)) {
                     regions.add(region);
                 }
             }
@@ -179,26 +171,28 @@ public class RegionUtility {
         return regions;
     }
 
-    private static boolean circlePolygonIntersection(CartesianPolygon regionalArea,
-                                                     CartesianCircle destinationArea) {
+    /**
+     * Collision detection for the collision of a circle with a polygon.
+     *
+     * @param destinationArea The circle.
+     * @param regionalArea The polygon.
+     * @return true if the circle and the polygon collide.
+     */
+    private static boolean circlePolygonCollision(CartesianCircle destinationArea, CartesianPolygon regionalArea) {
         // Check if arbitrary point of one area is contained within the other
-        if (regionalArea.contains(destinationArea.getCenter())) {
-            return true;
-        }
-        if (destinationArea.contains(regionalArea.getVertices().get(0))) {
+        if (regionalArea.contains(destinationArea.getCenter()) || destinationArea.contains(regionalArea.getVertices().get(0))) {
             return true;
         }
         // Check if any edge of the regionalArea intersects the circular destinationArea
-        CartesianPoint lastPoint = regionalArea.getVertices().get(-1);
+        CartesianPoint lastPoint = regionalArea.getVertices().get(regionalArea.getVertices().size()-1);
         CartesianPoint circleCenter = destinationArea.getCenter();
         for (CartesianPoint point : regionalArea.getVertices()) {
             double dx = lastPoint.getX() - point.getX();
             double dy = lastPoint.getY() - point.getY();
-            double distance =
+            double distanceFromCircleCenter =
                     Math.abs(dx * (point.getY() - circleCenter.getY()) - (point.getX() - circleCenter.getX()) * dy)
                             / Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-            if (distance < destinationArea.getRadius()) {
+            if (distanceFromCircleCenter < destinationArea.getRadius()) {
                 return true;
             }
         }
