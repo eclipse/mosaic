@@ -160,6 +160,9 @@ public class RegionUtility {
                 }
             }
         } else {
+            if (geoArea instanceof GeoRectangle) {
+                geoArea = ((GeoRectangle) geoArea).toPolygon();
+            }
             CartesianPolygon destPolygon = ((GeoPolygon) geoArea).toCartesian();
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
                 if (region.getCapoArea().isIntersectingPolygon(destPolygon)) {
