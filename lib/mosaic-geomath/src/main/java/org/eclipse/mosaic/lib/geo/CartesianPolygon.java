@@ -89,6 +89,33 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         return MathUtils.pnpoly(vertices.size(), verticesXValues, verticesYValues, (float) point.getX(), (float) point.getY());
     }
 
+    /**
+     *
+     * @param edge1A
+     * @param edge1B
+     * @param edge2A
+     * @param edge2B
+     * @return
+     */
+    public boolean isIntersectingEdge(Vector3d edge1A, Vector3d edge1B, Vector3d edge2A, Vector3d edge2B) {
+        Vector3d r = new Vector3d(edge1A.x - edge1B.x, 0, edge1A.z - edge1B.z);
+        Vector3d s = new Vector3d(edge2A.x - edge2B.x, 0, edge2A.z - edge2B.z);
+        Vector3d diff = edge2A.subtract(edge1A);
+        double crossprod1 = r.x * s.y - r.y * s.x;
+        double crossprod2 = diff.x * r.y - diff.y * r.x;
+
+        if (crossprod1 == 0 && crossprod2 == 0) {
+            // Vectors of edges are collinear, check for mutual line segment
+            return edge1A.x >= edge2A.x && edge1A.x < edge2B.x || edge1B.x >= edge2A.x && edge1B.x < edge2B.x ||
+                    edge2A.x >= edge1A.x && edge2A.x < edge1B.x || edge2B.x >= edge1A.x && edge2B.x < edge1B.x;
+        } else if (crossprod1 != 0) {
+            // Vectors of edges are neither parallel nor collinear, check for intersection
+            double u = crossprod2 / crossprod1;
+            double t = (diff.x * s.y - diff.y * s.x) / crossprod1;
+            return (u >= 0 && u <= 1 && t >= 0 && t <= 1) || (u <= 0 && u >= -1 && t <= 0 && t >= -1);
+        }
+        return false;
+    }
 
 
     /**
@@ -110,18 +137,16 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
             return true;
         }
         // Test if any edges of the polygons intersect
-        Vector3d lastVerticeP1 = vertices.get(vertices.size()-2).toVector3d();
-        for (CartesianPoint verticeP1 : vertices) {
-            Edge<Vector3d> edgeP1 = new Edge<>(lastVerticeP1, verticeP1.toVector3d());
-            Vector3d lastVerticeP2 = polygon.getVertices().get(polygon.getVertices().size()-2).toVector3d();
-            for (CartesianPoint verticeP2 : polygon.getVertices()){
-                Edge<Vector3d> edgeP2 = new Edge<>(lastVerticeP2, verticeP2.toVector3d());
-                lastVerticeP2 = verticeP2.toVector3d();
-                if (edgeP1.isIntersectingEdge(edgeP2)) {
+        for (int vIdx1 = 1; vIdx1 < vertices.size() ; vIdx1++) {
+            Vector3d edgeP1A = vertices.get(vIdx1 - 1).toVector3d();
+            Vector3d edgeP1B = vertices.get(vIdx1).toVector3d();
+            for (int vIdx2 = 1; vIdx2 < polygon.getVertices().size() ; vIdx2++) {
+                Vector3d edgeP2A = polygon.getVertices().get(vIdx2 - 1).toVector3d();
+                Vector3d edgeP2B = polygon.getVertices().get(vIdx2).toVector3d();
+                if (isIntersectingEdge(edgeP1A, edgeP1B, edgeP2A, edgeP2B)) {
                     return true;
-                };
+                }
             }
-            lastVerticeP1 = verticeP1.toVector3d();
         }
         return false;
     }
