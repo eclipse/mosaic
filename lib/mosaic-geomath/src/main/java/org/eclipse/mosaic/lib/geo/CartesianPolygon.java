@@ -90,14 +90,15 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
     }
 
     /**
+     * Returns true if there is an intersection between two line segments.
      *
-     * @param edge1A
-     * @param edge1B
-     * @param edge2A
-     * @param edge2B
+     * @param edge1A Start point of the first line segment.
+     * @param edge1B End point of the first line segment
+     * @param edge2A Start point of the second line segment.
+     * @param edge2B End point of the second line segment.
      * @return
      */
-    public boolean isIntersectingEdge(Vector3d edge1A, Vector3d edge1B, Vector3d edge2A, Vector3d edge2B) {
+    private boolean isIntersectingEdge(Vector3d edge1A, Vector3d edge1B, Vector3d edge2A, Vector3d edge2B) {
         Vector3d r = new Vector3d(edge1A.x - edge1B.x, 0, edge1A.z - edge1B.z);
         Vector3d s = new Vector3d(edge2A.x - edge2B.x, 0, edge2A.z - edge2B.z);
         Vector3d diff = edge2A.subtract(edge1A);
@@ -117,19 +118,15 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         return false;
     }
 
-
     /**
-     * Returns true if there is a collision with another polygon.
+     * Returns true if there is an intersection with another polygon.
      *
      * @param polygon The other polygon
-     * @return true if the polygons collide
+     * @return true if the polygons intersect.
      */
     public boolean isIntersectingPolygon(CartesianPolygon polygon) {
         // Test if bounding boxes intersect
-        CartesianRectangle rectA = polygon.boundingBox;
-        CartesianRectangle rectB = this.boundingBox;
-        if ((rectA.getA().getX() > rectB.getB().getX() || rectA.getB().getX() < rectB.getA().getX()
-                || rectA.getA().getY() < rectB.getB().getY() || rectA.getB().getY() > rectA.getA().getY())){
+        if (!polygon.boundingBox.isIntersectingRectangle(this.boundingBox)){
             return false;
         }
         // Test if any polygon is completely contained within the other polygon
