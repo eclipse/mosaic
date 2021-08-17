@@ -89,40 +89,6 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         return MathUtils.pnpoly(vertices.size(), verticesXValues, verticesYValues, (float) point.getX(), (float) point.getY());
     }
 
-    private static class ArrayIndexComparator implements Comparator<Integer>
-    {
-        private final List<CartesianPoint> verticeList;
-
-        public ArrayIndexComparator(List<CartesianPoint> verticeList)
-        {
-            this.verticeList = verticeList;
-        }
-
-        public List<Integer> createIndexArray()
-        {
-            List<Integer> indexes = new ArrayList<>();
-            for (int i = 0; i < verticeList.size(); i++)
-            {
-                indexes.add(i);
-            }
-            return indexes;
-        }
-
-        @Override
-        public int compare(Integer index1, Integer index2)
-        {
-            return Double.compare(verticeList.get(index1).getX(), verticeList.get(index2).getX());
-        }
-    }
-    public boolean sweepLineIntersection(List<Edge<Vector3d>> edgeList, Edge<Vector3d> edge) {
-        for (Edge<Vector3d> e : edgeList) {
-            if (edge.isIntersectingEdge(e)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Returns true if there is an intersection with another polygon.
      * The intersection detection is implemented with a sweep line algorithm.
@@ -130,133 +96,31 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
      * @param polygon The other polygon
      * @return true if the polygons intersect
      */
-    public boolean isIntersectingPolygon(CartesianPolygon polygon) {
+    public boolean isCollidingWithPolygon(CartesianPolygon polygon) {
         // Test if bounding boxes intersect
         CartesianRectangle rectA = polygon.boundingBox;
-        CartesianRectangle rectB = calcBoundingBox(getVertices());
+        CartesianRectangle rectB = calcBoundingBox(vertices);
         if ((rectA.getA().getX() > rectB.getB().getX() || rectB.getB().getX() < rectB.getA().getX()
                 || rectA.getA().getY() < rectB.getB().getY() || rectA.getB().getY() > rectA.getA().getY())){
             return false;
         }
-        // Test if any polygon is completely contained in the other polygon
-        if (contains(polygon.getVertices().get(0))) {
-            return true;
-        }
-        if (polygon.contains(getVertices().get(0))) {
+        // Test if any polygon is completely contained within the other polygon
+        if (contains(polygon.getVertices().get(0)) || polygon.contains(vertices.get(0))) {
             return true;
         }
 
-        // Test if any edges intersect (sweep-line algorithm)
-        ArrayIndexComparator comparatorP1 = new ArrayIndexComparator(getVertices());
-        List<Integer> indexesP1 = comparatorP1.createIndexArray();
-        ArrayIndexComparator comparatorP2 = new ArrayIndexComparator(getVertices());
-        List<Integer> indexesP2 = comparatorP2.createIndexArray();
-        Iterator<Integer> iteratorP1 = indexesP1.iterator();
-        Iterator<Integer> iteratorP2 = indexesP2.iterator();
-
-        int verticeIndexP1;
-        int verticeIndexP2;
-        int previousIndex;
-        int nextIndex;
-
-        Vector3d vertice1;
-        Vector3d vertice2;
-
-        List<Edge<Vector3d>> sweepLineStatusP1 = new ArrayList<>();
-        List<Edge<Vector3d>> sweepLineStatusP2 = new ArrayList<>();
-
-        verticeIndexP1 = iteratorP1.next();
-        verticeIndexP2 = iteratorP2.next();
-
-        boolean hasNextP1 = true;
-        boolean hasNextP2 = true;
-
-        while (hasNextP1 || hasNextP2) {
-            if (vertices.get(verticeIndexP1).getX() < polygon.getVertices().get(verticeIndexP2).getX() && hasNextP1) {
-                // update sweepLineStatusP1
-                vertice1 = getVertices().get(verticeIndexP1).toVector3d();
-                if (verticeIndexP1 == 0){
-                    previousIndex = getVertices().size() - 1;
-                } else {
-                    previousIndex = verticeIndexP1 - 1;
-                }
-                vertice2 = getVertices().get(previousIndex).toVector3d();
-                if(vertice2.x >= vertice1.x) {
-                    // If vertice is at the riht side of the sweep line add edge to sweepLineStatusP1
-                    sweepLineStatusP1.add(new Edge<>(vertice1, vertice2));
-                    if (sweepLineIntersection(sweepLineStatusP2, new Edge<>(vertice1, vertice2))) {
-                        return true;
-                    }
-                } else {
-                    // If vertice is at the left side of the sweep line remove edge from sweepLineStatusP1
-                    sweepLineStatusP1.remove(new Edge<>(vertice2, vertice1));
-                }
-                if (verticeIndexP1 == vertices.size() - 1){
-                    nextIndex = 0;
-                } else {
-                    nextIndex = verticeIndexP1 + 1;
-                }
-                vertice2 = vertices.get(nextIndex).toVector3d();
-                if(vertice2.x >= vertice1.x) {
-                    // If vertice is at the right side of the sweep line add edge to sweepLineStatusP1
-                    sweepLineStatusP1.add(new Edge<>(vertice1, vertice2));
-                    if (sweepLineIntersection(sweepLineStatusP2, new Edge<>(vertice1, vertice2))) {
-                        return true;
-                    }
-                } else {
-                    // If vertice is at the left side of the sweep line remove edge from sweepLineStatusP1
-                    sweepLineStatusP1.remove(new Edge<>(vertice2, vertice1));
-                }
-                // Get next vertex in x direction if possible
-                if (iteratorP1.hasNext()){
-                    verticeIndexP1 = iteratorP1.next();
-                } else {
-                    hasNextP1 = false;
-                }
-            } else if (hasNextP2) {
-                // Update sweepLineStatusP1
-                vertice1 = polygon.getVertices().get(verticeIndexP2).toVector3d();
-                // Check edge between current vertice and previous vertice
-                if (verticeIndexP2 == 0){
-                    previousIndex = polygon.getVertices().size() - 1;
-                } else {
-                    previousIndex = verticeIndexP2 - 1;
-                }
-                vertice2 = polygon.getVertices().get(previousIndex).toVector3d();
-                if(vertice2.x >= vertice1.x) {
-                    // If vertice is at the right side of the sweep line add edge to sweepLineStatusP1
-                    sweepLineStatusP2.add(new Edge<>(vertice1, vertice2));
-                    if (sweepLineIntersection(sweepLineStatusP1, new Edge<>(vertice1, vertice2))) {
-                        return true;
-                    }
-                } else {
-                    // If vertice is at the left side of the sweep line remove edge from sweepLineStatusP1
-                    sweepLineStatusP2.remove(new Edge<>(vertice2, vertice1));
-                }
-                // Check edge between current vertice and next vertice
-                if (verticeIndexP2 == polygon.getVertices().size() - 1){
-                    nextIndex = 0;
-                } else {
-                    nextIndex = verticeIndexP2 + 1;
-                }
-                vertice2 = polygon.getVertices().get(nextIndex).toVector3d();
-                if(vertice2.x >= vertice1.x) {
-                    // If vertice is at the right side of the sweep line add edge to sweepLineStatusP1
-                    sweepLineStatusP2.add(new Edge<>(vertice1, vertice2));
-                    if (sweepLineIntersection(sweepLineStatusP1, new Edge<>(vertice1, vertice2))) {
-                        return true;
-                    }
-                } else {
-                    // If vertice is at the left side of the sweep line remove edge from sweepLineStatusP1
-                    sweepLineStatusP2.remove(new Edge<>(vertice2, vertice1));
-                }
-                // Get next vertex in x direction if possible
-                if (iteratorP2.hasNext()){
-                    verticeIndexP2 = iteratorP2.next();
-                } else {
-                    hasNextP2 = false;
-                }
+        Vector3d lastVerticeP1 = vertices.get(vertices.size()-2).toVector3d();
+        for (CartesianPoint verticeP1 : vertices) {
+            Edge<Vector3d> edgeP1 = new Edge<>(lastVerticeP1, verticeP1.toVector3d());
+            Vector3d lastVerticeP2 = polygon.getVertices().get(polygon.getVertices().size()-2).toVector3d();
+            for (CartesianPoint verticeP2 : polygon.getVertices()){
+                Edge<Vector3d> edgeP2 = new Edge<>(lastVerticeP2, verticeP2.toVector3d());
+                lastVerticeP2 = verticeP2.toVector3d();
+                if (edgeP1.isCollidingWithEdge(edgeP2)) {
+                    return true;
+                };
             }
+            lastVerticeP1 = verticeP1.toVector3d();
         }
         return false;
     }
