@@ -147,7 +147,7 @@ public class Edge<T extends Vector3d> implements Serializable {
         return a.distanceTo(b);
     }
 
-    public boolean isCollidingWithEdge(Edge<Vector3d> otherEdge) {
+    public boolean isIntersectingEdge(Edge<Vector3d> otherEdge) {
         Vector3d r = new Vector3d(a.x - b.x, a.y - b.y, 0);
         Vector3d s = new Vector3d(otherEdge.a.x - otherEdge.b.x, otherEdge.a.y - otherEdge.b.y, 0);
         Vector3d diff = otherEdge.a.subtract(a);

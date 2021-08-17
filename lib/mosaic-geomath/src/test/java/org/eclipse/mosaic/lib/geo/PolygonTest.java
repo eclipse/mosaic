@@ -214,19 +214,19 @@ public class PolygonTest {
         );
 
         // One polygon is lies completely within another
-        assertTrue(polygonA.isCollidingWithPolygon(polygonB));
-        assertTrue(polygonB.isCollidingWithPolygon(polygonA));
+        assertTrue(polygonA.isIntersectingPolygon(polygonB));
+        assertTrue(polygonB.isIntersectingPolygon(polygonA));
 
         // Edges of the polygons intersect
-        assertTrue(polygonA.isCollidingWithPolygon(polygonC));
+        assertTrue(polygonA.isIntersectingPolygon(polygonC));
 
         // Corners of one polygon lie exactly of the edges of the other
-        assertTrue(polygonA.isCollidingWithPolygon(polygonD));
+        assertTrue(polygonA.isIntersectingPolygon(polygonD));
 
         // Corners of one polygon lie on the edge of another
-        assertTrue(polygonA.isCollidingWithPolygon(polygonE));
+        assertTrue(polygonA.isIntersectingPolygon(polygonE));
 
         // Polygons don't intersect
-        assertFalse(polygonA.isCollidingWithPolygon(polygonF));
+        assertFalse(polygonA.isIntersectingPolygon(polygonF));
     }
 }

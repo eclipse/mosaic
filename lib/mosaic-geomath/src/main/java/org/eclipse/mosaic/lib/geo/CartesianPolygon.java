@@ -90,13 +90,12 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
     }
 
     /**
-     * Returns true if there is an intersection with another polygon.
-     * The intersection detection is implemented with a sweep line algorithm.
+     * Returns true if there is a collision with another polygon.
      *
      * @param polygon The other polygon
-     * @return true if the polygons intersect
+     * @return true if the polygons collide
      */
-    public boolean isCollidingWithPolygon(CartesianPolygon polygon) {
+    public boolean isIntersectingPolygon(CartesianPolygon polygon) {
         // Test if bounding boxes intersect
         CartesianRectangle rectA = polygon.boundingBox;
         CartesianRectangle rectB = calcBoundingBox(vertices);
@@ -116,7 +115,7 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
             for (CartesianPoint verticeP2 : polygon.getVertices()){
                 Edge<Vector3d> edgeP2 = new Edge<>(lastVerticeP2, verticeP2.toVector3d());
                 lastVerticeP2 = verticeP2.toVector3d();
-                if (edgeP1.isCollidingWithEdge(edgeP2)) {
+                if (edgeP1.isIntersectingEdge(edgeP2)) {
                     return true;
                 };
             }

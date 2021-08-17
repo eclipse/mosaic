@@ -155,14 +155,14 @@ public class RegionUtility {
 
         if (geoArea instanceof GeoCircle) {
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (circlePolygonCollision(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
+                if (isCircleIntersectiongPolygon(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
                     regions.add(region);
                 }
             }
         } else {
             CartesianPolygon destPolygon = ((GeoPolygon) geoArea).toCartesian();
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (region.getCapoArea().isCollidingWithPolygon(destPolygon)) {
+                if (region.getCapoArea().isIntersectingPolygon(destPolygon)) {
                     regions.add(region);
                 }
             }
@@ -178,7 +178,8 @@ public class RegionUtility {
      * @param regionalArea The polygon.
      * @return true if the circle and the polygon collide.
      */
-    private static boolean circlePolygonCollision(CartesianCircle destinationArea, CartesianPolygon regionalArea) {
+    private static boolean isCircleIntersectiongPolygon(CartesianCircle destinationArea,
+                                                        CartesianPolygon regionalArea) {
         // Check if arbitrary point of one area is contained within the other
         if (regionalArea.contains(destinationArea.getCenter()) || destinationArea.contains(regionalArea.getVertices().get(0))) {
             return true;

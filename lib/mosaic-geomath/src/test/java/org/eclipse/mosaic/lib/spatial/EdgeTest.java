@@ -159,15 +159,15 @@ public class EdgeTest {
         Edge<Vector3d> edgeD = new Edge<>(new Vector3d(0.5, 1.5, 0), new Vector3d(0.5, 0.5, 0));
 
         // Intersecting edges
-       assertTrue(edgeA.isCollidingWithEdge(edgeB));
+       assertTrue(edgeA.isIntersectingEdge(edgeB));
 
         // Collinear edges
-        assertTrue(edgeA.isCollidingWithEdge(edgeA));
+        assertTrue(edgeA.isIntersectingEdge(edgeA));
 
         // Parallel Edges
-        assertFalse(edgeA.isCollidingWithEdge(edgeC));
+        assertFalse(edgeA.isIntersectingEdge(edgeC));
 
         // Non-parallel non-intersecting edges
-        assertFalse(edgeA.isCollidingWithEdge(edgeD));
+        assertFalse(edgeA.isIntersectingEdge(edgeD));
     }
 }
