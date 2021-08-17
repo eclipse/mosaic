@@ -24,7 +24,12 @@ import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
 import org.eclipse.mosaic.fed.cell.data.SimulationData;
 import org.eclipse.mosaic.fed.cell.junit.CellConfigurationRule;
 import org.eclipse.mosaic.fed.cell.junit.CellSimulationRule;
-import org.eclipse.mosaic.lib.geo.*;
+import org.eclipse.mosaic.lib.geo.GeoCircle;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.GeoPolygon;
+import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
+import org.eclipse.mosaic.lib.geo.UtmPoint;
+import org.eclipse.mosaic.lib.geo.UtmZone;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
 
