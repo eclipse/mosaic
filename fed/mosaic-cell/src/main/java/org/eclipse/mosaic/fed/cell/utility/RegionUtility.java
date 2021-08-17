@@ -155,7 +155,7 @@ public class RegionUtility {
 
         if (geoArea instanceof GeoCircle) {
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (isCircleIntersectiongPolygon(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
+                if (isCircleIntersectingPolygon(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
                     regions.add(region);
                 }
             }
@@ -178,7 +178,7 @@ public class RegionUtility {
      * @param regionalArea The polygon.
      * @return true if the circle and the polygon collide.
      */
-    private static boolean isCircleIntersectiongPolygon(CartesianCircle destinationArea,
+    private static boolean isCircleIntersectingPolygon(CartesianCircle destinationArea,
                                                         CartesianPolygon regionalArea) {
         // Check if arbitrary point of one area is contained within the other
         if (regionalArea.contains(destinationArea.getCenter()) || destinationArea.contains(regionalArea.getVertices().get(0))) {
