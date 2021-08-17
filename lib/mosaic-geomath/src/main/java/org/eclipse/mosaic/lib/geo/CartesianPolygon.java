@@ -107,7 +107,7 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         if (contains(polygon.getVertices().get(0)) || polygon.contains(vertices.get(0))) {
             return true;
         }
-
+        // Test if any edges of the polygons intersect
         Vector3d lastVerticeP1 = vertices.get(vertices.size()-2).toVector3d();
         for (CartesianPoint verticeP1 : vertices) {
             Edge<Vector3d> edgeP1 = new Edge<>(lastVerticeP1, verticeP1.toVector3d());
