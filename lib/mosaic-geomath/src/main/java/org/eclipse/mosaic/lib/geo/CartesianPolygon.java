@@ -16,8 +16,6 @@
 package org.eclipse.mosaic.lib.geo;
 
 import org.eclipse.mosaic.lib.math.MathUtils;
-import org.eclipse.mosaic.lib.math.Vector3d;
-import org.eclipse.mosaic.lib.spatial.Edge;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,23 +94,25 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
      * @param edge1B End point of the first line segment
      * @param edge2A Start point of the second line segment.
      * @param edge2B End point of the second line segment.
-     * @return
+     * @return true if the line segments intersect.
      */
-    private boolean isIntersectingEdge(Vector3d edge1A, Vector3d edge1B, Vector3d edge2A, Vector3d edge2B) {
-        Vector3d r = new Vector3d(edge1A.x - edge1B.x, 0, edge1A.z - edge1B.z);
-        Vector3d s = new Vector3d(edge2A.x - edge2B.x, 0, edge2A.z - edge2B.z);
-        Vector3d diff = edge2A.subtract(edge1A);
-        double crossprod1 = r.x * s.y - r.y * s.x;
-        double crossprod2 = diff.x * r.y - diff.y * r.x;
+    private boolean isIntersectingEdge(CartesianPoint edge1A, CartesianPoint edge1B, CartesianPoint edge2A, CartesianPoint edge2B) {
+        CartesianPoint r = new MutableCartesianPoint(edge1A.getX() - edge1B.getX(), 0, edge1A.getZ() - edge1B.getZ());
+        CartesianPoint s = new MutableCartesianPoint(edge2A.getX() - edge2B.getX(), 0, edge2A.getZ() - edge2B.getZ());
+        CartesianPoint diff = new MutableCartesianPoint(edge2A.getX() - edge1A.getX(), 0, edge2A.getY() - edge2B.getY());
+        double crossprod1 = r.getX() * s.getZ() - r.getZ() * s.getX();
+        double crossprod2 = diff.getX() * r.getZ() - diff.getZ() * r.getX();
 
         if (crossprod1 == 0 && crossprod2 == 0) {
             // Vectors of edges are collinear, check for mutual line segment
-            return edge1A.x >= edge2A.x && edge1A.x < edge2B.x || edge1B.x >= edge2A.x && edge1B.x < edge2B.x ||
-                    edge2A.x >= edge1A.x && edge2A.x < edge1B.x || edge2B.x >= edge1A.x && edge2B.x < edge1B.x;
+            return edge1A.getX() >= edge2A.getX() && edge1A.getX() < edge2B.getX() ||
+                    edge1B.getX() >= edge2A.getX() && edge1B.getX() < edge2B.getX() ||
+                    edge2A.getX() >= edge1A.getX() && edge2A.getX() < edge1B.getX() ||
+                    edge2B.getX() >= edge1A.getX() && edge2B.getX() < edge1B.getX();
         } else if (crossprod1 != 0) {
             // Vectors of edges are neither parallel nor collinear, check for intersection
             double u = crossprod2 / crossprod1;
-            double t = (diff.x * s.y - diff.y * s.x) / crossprod1;
+            double t = (diff.getX() * s.getZ() - diff.getZ() * s.getX()) / crossprod1;
             return (u >= 0 && u <= 1 && t >= 0 && t <= 1) || (u <= 0 && u >= -1 && t <= 0 && t >= -1);
         }
         return false;
@@ -135,11 +135,11 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         }
         // Test if any edges of the polygons intersect
         for (int vIdx1 = 1; vIdx1 < vertices.size() ; vIdx1++) {
-            Vector3d edgeP1A = vertices.get(vIdx1 - 1).toVector3d();
-            Vector3d edgeP1B = vertices.get(vIdx1).toVector3d();
+            CartesianPoint edgeP1A = vertices.get(vIdx1 - 1);
+            CartesianPoint edgeP1B = vertices.get(vIdx1);
             for (int vIdx2 = 1; vIdx2 < polygon.getVertices().size() ; vIdx2++) {
-                Vector3d edgeP2A = polygon.getVertices().get(vIdx2 - 1).toVector3d();
-                Vector3d edgeP2B = polygon.getVertices().get(vIdx2).toVector3d();
+                CartesianPoint edgeP2A = polygon.getVertices().get(vIdx2 - 1);
+                CartesianPoint edgeP2B = polygon.getVertices().get(vIdx2);
                 if (isIntersectingEdge(edgeP1A, edgeP1B, edgeP2A, edgeP2B)) {
                     return true;
                 }
