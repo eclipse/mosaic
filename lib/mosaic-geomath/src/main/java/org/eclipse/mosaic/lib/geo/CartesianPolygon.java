@@ -87,6 +87,12 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         return MathUtils.pnpoly(vertices.size(), verticesXValues, verticesYValues, (float) point.getX(), (float) point.getY());
     }
 
+    public GeoPolygon toGeo() {
+        return new GeoPolygon(
+                getVertices().stream().map(CartesianPoint::toGeo).collect(Collectors.toList())
+        );
+    }
+
     /**
      * Returns true if there is an intersection between two line segments.
      *
@@ -97,11 +103,11 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
      * @return true if the line segments intersect.
      */
     private boolean isIntersectingEdge(CartesianPoint edge1A, CartesianPoint edge1B, CartesianPoint edge2A, CartesianPoint edge2B) {
-        CartesianPoint r = new MutableCartesianPoint(edge1A.getX() - edge1B.getX(), 0, edge1A.getZ() - edge1B.getZ());
-        CartesianPoint s = new MutableCartesianPoint(edge2A.getX() - edge2B.getX(), 0, edge2A.getZ() - edge2B.getZ());
-        CartesianPoint diff = new MutableCartesianPoint(edge2A.getX() - edge1A.getX(), 0, edge2A.getY() - edge2B.getY());
-        double crossprod1 = r.getX() * s.getZ() - r.getZ() * s.getX();
-        double crossprod2 = diff.getX() * r.getZ() - diff.getZ() * r.getX();
+        CartesianPoint r = new MutableCartesianPoint(edge1A.getX() - edge1B.getX(), edge1A.getY() - edge1B.getY(), 0);
+        CartesianPoint s = new MutableCartesianPoint(edge2A.getX() - edge2B.getX(), edge2A.getY() - edge2B.getY(), 0);
+        CartesianPoint diff = new MutableCartesianPoint(edge2A.getX() - edge1A.getX(), edge2A.getY() - edge2B.getY(), 0);
+        double crossprod1 = r.getX() * s.getY() - r.getY() * s.getX();
+        double crossprod2 = diff.getX() * r.getY() - diff.getY() * r.getX();
 
         if (crossprod1 == 0 && crossprod2 == 0) {
             // Vectors of edges are collinear, check for mutual line segment
@@ -112,7 +118,7 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         } else if (crossprod1 != 0) {
             // Vectors of edges are neither parallel nor collinear, check for intersection
             double u = crossprod2 / crossprod1;
-            double t = (diff.getX() * s.getZ() - diff.getZ() * s.getX()) / crossprod1;
+            double t = (diff.getX() * s.getY() - diff.getY() * s.getX()) / crossprod1;
             return (u >= 0 && u <= 1 && t >= 0 && t <= 1) || (u <= 0 && u >= -1 && t <= 0 && t >= -1);
         }
         return false;
@@ -146,12 +152,6 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
             }
         }
         return false;
-    }
-
-    public GeoPolygon toGeo() {
-        return new GeoPolygon(
-                getVertices().stream().map(CartesianPoint::toGeo).collect(Collectors.toList())
-        );
     }
 
     @Override
