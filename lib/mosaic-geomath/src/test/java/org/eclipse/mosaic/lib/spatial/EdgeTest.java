@@ -18,6 +18,7 @@ package org.eclipse.mosaic.lib.spatial;
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -151,23 +152,22 @@ public class EdgeTest {
     }
 
     @Test
-    public void intersectionTest() {
+    public void collisionTest() {
         Edge<Vector3d> edgeA = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0));
         Edge<Vector3d> edgeB = new Edge<>(new Vector3d(0.5, 0.5, 0), new Vector3d(0.5, -0.5, 0));
-        Edge<Vector3d> edgeC = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0));
-        Edge<Vector3d> edgeD = new Edge<>(new Vector3d(0, 1, 0), new Vector3d(1, 1, 0));
-        Edge<Vector3d> edgeE = new Edge<>(new Vector3d(0.5, 1.5, 0), new Vector3d(0.5, 0.5, 0));
+        Edge<Vector3d> edgeC = new Edge<>(new Vector3d(0, 1, 0), new Vector3d(1, 1, 0));
+        Edge<Vector3d> edgeD = new Edge<>(new Vector3d(0.5, 1.5, 0), new Vector3d(0.5, 0.5, 0));
 
         // Intersecting edges
-        assertTrue(edgeA.isIntersectingEdge(edgeB));
+       assertTrue(edgeA.isCollidingWithEdge(edgeB));
 
         // Collinear edges
-        assertTrue(edgeA.isIntersectingEdge(edgeC));
+        assertTrue(edgeA.isCollidingWithEdge(edgeA));
 
         // Parallel Edges
-        assertTrue(edgeA.isIntersectingEdge(edgeD));
+        assertFalse(edgeA.isCollidingWithEdge(edgeC));
 
         // Non-parallel non-intersecting edges
-        assertTrue(edgeA.isIntersectingEdge(edgeE));
+        assertFalse(edgeA.isCollidingWithEdge(edgeD));
     }
 }

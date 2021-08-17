@@ -147,27 +147,22 @@ public class Edge<T extends Vector3d> implements Serializable {
         return a.distanceTo(b);
     }
 
-    public boolean isIntersectingEdge(Edge otherEdge) {
-        Vector3d v1 = new Vector3d(a.x - b.x, a.y - b.y, 0);
-        Vector3d v2 = new Vector3d(otherEdge.a.x - otherEdge.b.x, otherEdge.a.y - otherEdge.b.y, 0);
-        Vector3d diff = new Vector3d(otherEdge.a.x - a.x, otherEdge.a.y - a.y, 0);
-        double crossprod1 = v1.x * v2.y - v1.y * v2.x;
-        double crossprod2 = diff.x * v1.y - diff.y * v1.x;
+    public boolean isCollidingWithEdge(Edge<Vector3d> otherEdge) {
+        Vector3d r = new Vector3d(a.x - b.x, a.y - b.y, 0);
+        Vector3d s = new Vector3d(otherEdge.a.x - otherEdge.b.x, otherEdge.a.y - otherEdge.b.y, 0);
+        Vector3d diff = otherEdge.a.subtract(a);
+        double crossprod1 = r.x * s.y - r.y * s.x;
+        double crossprod2 = diff.x * r.y - diff.y * r.x;
 
         if (crossprod1 == 0 && crossprod2 == 0) {
             // Vectors of edges are collinear, check for mutual line segment
-            if (a.x >= otherEdge.a.x && a.x < otherEdge.b.x || b.x >= otherEdge.a.x && b.x < otherEdge.b.x ||
-                    otherEdge.a.x >= a.x && otherEdge.a.x < b.x || otherEdge.b.x >= a.x && otherEdge.b.x < b.x) {
-                return true;
-            }
+            return a.x >= otherEdge.a.x && a.x < otherEdge.b.x || b.x >= otherEdge.a.x && b.x < otherEdge.b.x ||
+                    otherEdge.a.x >= a.x && otherEdge.a.x < b.x || otherEdge.b.x >= a.x && otherEdge.b.x < b.x;
         } else if (crossprod1 != 0) {
             // Vectors of edges are neither parallel nor collinear, check for intersection
             double u = crossprod2 / crossprod1;
-            Vector3d diff2 = new Vector3d(a.x - otherEdge.a.x, a.y - otherEdge.a.y, 0);
-            double t = (diff2.x * v2.y - diff2.y * v2.x) / crossprod1;
-            if (u >= 0 && u <= 1 && t >= 0 && u <= 1) {
-                return true;
-            }
+            double t = (diff.x * s.y - diff.y * s.x) / crossprod1;
+            return (u >= 0 && u <= 1 && t >= 0 && t <= 1) || (u <= 0 && u >= -1 && t <= 0 && t >= -1);
         }
         return false;
     }
