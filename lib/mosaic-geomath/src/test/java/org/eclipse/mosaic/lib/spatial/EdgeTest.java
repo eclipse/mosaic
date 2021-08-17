@@ -151,23 +151,4 @@ public class EdgeTest {
         Assert.assertTrue(MathUtils.isFuzzyEqual(ed.getLength(), Math.sqrt(1 + 4 + 9)));
     }
 
-    @Test
-    public void collisionTest() {
-        Edge<Vector3d> edgeA = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 0, 0));
-        Edge<Vector3d> edgeB = new Edge<>(new Vector3d(0.5, 0.5, 0), new Vector3d(0.5, -0.5, 0));
-        Edge<Vector3d> edgeC = new Edge<>(new Vector3d(0, 1, 0), new Vector3d(1, 1, 0));
-        Edge<Vector3d> edgeD = new Edge<>(new Vector3d(0.5, 1.5, 0), new Vector3d(0.5, 0.5, 0));
-
-        // Intersecting edges
-       assertTrue(edgeA.isIntersectingEdge(edgeB));
-
-        // Collinear edges
-        assertTrue(edgeA.isIntersectingEdge(edgeA));
-
-        // Parallel Edges
-        assertFalse(edgeA.isIntersectingEdge(edgeC));
-
-        // Non-parallel non-intersecting edges
-        assertFalse(edgeA.isIntersectingEdge(edgeD));
-    }
 }
