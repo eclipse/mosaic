@@ -89,6 +89,8 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
         return MathUtils.pnpoly(vertices.size(), verticesXValues, verticesYValues, (float) point.getX(), (float) point.getY());
     }
 
+
+
     /**
      * Returns true if there is a collision with another polygon.
      *
@@ -98,8 +100,8 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
     public boolean isIntersectingPolygon(CartesianPolygon polygon) {
         // Test if bounding boxes intersect
         CartesianRectangle rectA = polygon.boundingBox;
-        CartesianRectangle rectB = calcBoundingBox(vertices);
-        if ((rectA.getA().getX() > rectB.getB().getX() || rectB.getB().getX() < rectB.getA().getX()
+        CartesianRectangle rectB = this.boundingBox;
+        if ((rectA.getA().getX() > rectB.getB().getX() || rectA.getB().getX() < rectB.getA().getX()
                 || rectA.getA().getY() < rectB.getB().getY() || rectA.getB().getY() > rectA.getA().getY())){
             return false;
         }
