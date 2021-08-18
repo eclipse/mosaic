@@ -47,6 +47,7 @@ required_programs=( unzip tar bison flex protoc gcc python )
 required_libraries=( "libprotobuf-dev >= 3.3.0" )
 
 omnet_federate_url="https://github.com/mosaic-addons/omnetpp-federate/archive/main.zip"
+omnet_src_url="https://github.com/omnetpp/omnetpp/releases/download/omnetpp-5.5.1/omnetpp-5.5.1-src-linux.tgz"
 inet_src_url="https://github.com/inet-framework/inet/releases/download/v4.1.1/inet-4.1.1-src.tgz"
 
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
@@ -72,6 +73,7 @@ omnet_dir_name_default="omnetpp-x.x"
 federate_path="bin/fed/omnetpp"
 omnet_dir_name="${omnet_dir_name_default}"
 omnet_federate_filename="$(basename "$omnet_federate_url")"
+omnet_src_filename="$(basename "$omnet_src_url")"
 inet_src_filename="$(basename "$inet_src_url")"
 working_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -810,7 +812,13 @@ build_omnet_federate() {
 
 # Install OMNeT++
 if [ "$omnetpp_install_ok" == "false" ] && [ "$arg_skip_omnetpp_installation" == "false" ]; then
-  extract_omnet "$arg_omnet_tar"
+  if [ ! -f "$arg_omnet_tar" ]; then
+    download "OMNeT++" "$omnet_src_url" "Please try using option '-o' to provide the path to your local OMNeT++ tar ball."
+    downloaded_files="$downloaded_files $omnet_src_filename"
+    extract_omnet "$omnet_src_filename"
+  else
+    extract_omnet "$arg_omnet_tar"
+  fi
   configure_omnet
   build_omnet
 fi
