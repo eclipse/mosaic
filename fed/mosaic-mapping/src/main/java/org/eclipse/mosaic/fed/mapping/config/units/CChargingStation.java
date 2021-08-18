@@ -17,26 +17,35 @@ package org.eclipse.mosaic.fed.mapping.config.units;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
 
 import java.util.List;
 
 /**
- * Definition of an EV charging station based on ETSI TS 101 556-1. An
- * infrastructure which provides one or several EV charging spots to supply
+ * Definition of an EV charging station.
+ * An infrastructure which provides one or several EV charging spots to supply
  * electric energy for charging EVs.
  */
 public class CChargingStation {
 
     /**
-     * Definition of an EV charging spot based on ETSI TS 101 556-1. A set of 1 to 4
-     * parking places arranged around a pole, where it is possible to charge an EV.
+     * Definition of an EV charging spot.
      */
     public static class CChargingSpot {
         /**
-         * The type of this EV charging spot in compliance with current standards,
-         * including IEC 62196-2 (mandatory).
+         * The type of this EV charging spot.
          */
-        public ChargingSpot.ChargingMode chargingMode;
+        public ChargingType chargingType;
+
+        /**
+         * The maximal voltage this charging spot can deliver.
+         */
+        public double maxVoltage;
+
+        /**
+         * The maximal current this charging spot can deliver.
+         */
+        public double maxCurrent;
     }
 
     /**
