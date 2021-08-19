@@ -67,7 +67,7 @@ public class RegionUtilityTest {
         CMobileNetworkProperties sampleRegion = ConfigurationData.INSTANCE.getRegionConfig().regions.get(2);
 
         // Test cirlce-polygon collision
-        GeoCircle geoC1 = new GeoCircle(new MutableGeoPoint(52.56,13.33), 1000);
+        GeoCircle geoC1 = new GeoCircle(new MutableGeoPoint(52.56,13.33), 10000);
         GeoCircle geoC2 = new GeoCircle(new MutableGeoPoint(52.40,13.33), 100);
         List<CNetworkProperties> regions = RegionUtility.getRegionsForDestinationArea(geoC1);
         assertEquals(1, regions.size());
