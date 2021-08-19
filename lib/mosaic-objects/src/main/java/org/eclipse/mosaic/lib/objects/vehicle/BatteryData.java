@@ -164,9 +164,9 @@ public class BatteryData implements Serializable {
 
     @Override
     public String toString() {
-        return "VehicleElectricInformation{"
+        return "BatteryData{"
                 + "VehicleID=" + ownerId
-                + ", rechargingType=" + stateOfCharge
+                + ", stateOfCharge=" + stateOfCharge
                 + ", capacity=" + capacity
                 + ", charging=" + charging + '}';
     }
