@@ -15,8 +15,6 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import static org.apache.commons.lang3.Validate.notNull;
-
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation.CChargingSpot;
@@ -77,10 +75,10 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
         String chargingStationName = UnitNameGenerator.nextChargingStationName();
         List<ChargingSpot> chargingSpots = new ArrayList<>();
         int id = 0;
-        for (CChargingSpot chargingSpot : chargingSpotConfigurations) {
+        for (CChargingSpot chargingSpotConfig : chargingSpotConfigurations) {
             chargingSpots.add(new ChargingSpot(
-                    chargingStationName + "_" + id,
-                    notNull(chargingSpot.chargingMode, "No type set for charging spot with id " + id)
+                    chargingStationName + "_" + id, chargingSpotConfig.chargingType,
+                    chargingSpotConfig.maxVoltage, chargingSpotConfig.maxCurrent
             ));
             id++;
         }
@@ -110,8 +108,8 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
             sb.append(delimiter)
                     .append("[chargingSpotId: ")
                     .append(id)
-                    .append(", chargingMode: ")
-                    .append(chargingSpotConfiguration.chargingMode)
+                    .append(", chargingType: ")
+                    .append(chargingSpotConfiguration.chargingType)
                     .append("]");
             delimiter = ", ";
             id++;

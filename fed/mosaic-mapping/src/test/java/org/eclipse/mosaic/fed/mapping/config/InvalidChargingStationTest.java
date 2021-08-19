@@ -62,7 +62,7 @@ public class InvalidChargingStationTest {
             ));
         } catch (InstantiationException e) {
             assertTrue(e.getMessage().contains("[/chargingStations/0/chargingSpots/0]"
-                    + " The object must have a property whose name is \"chargingMode\""));
+                    + " The object must have a property whose name is \"chargingType\""));
         }
         assertNull(mapping);
     }
