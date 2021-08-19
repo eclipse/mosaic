@@ -18,6 +18,7 @@ package org.eclipse.mosaic.interactions.electricity;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -53,16 +54,22 @@ public final class BatteryChargingStart extends Interaction {
     private final double current;
 
     /**
+     * The charging type to be used for charging.
+     */
+    private final ChargingType chargingType;
+
+    /**
      * Creates a new {@link BatteryChargingStart} interaction.
      *
-     * @param time         Timestamp of this interaction, unit: [ns]
-     * @param vehicleId    String identifying the vehicle that started charging
+     * @param time      Timestamp of this interaction, unit: [ns]
+     * @param vehicleId String identifying the vehicle that started charging
      */
-    public BatteryChargingStart(long time, String vehicleId, double voltage, double current) {
+    public BatteryChargingStart(long time, String vehicleId, double voltage, double current, ChargingType chargingType) {
         super(time);
         this.vehicleId = vehicleId;
         this.voltage = voltage;
         this.current = current;
+        this.chargingType = chargingType;
     }
 
     public String getVehicleId() {
@@ -77,10 +84,17 @@ public final class BatteryChargingStart extends Interaction {
         return current;
     }
 
+    public ChargingType getChargingType() {
+        return chargingType;
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder(9, 23)
                 .append(vehicleId)
+                .append(voltage)
+                .append(current)
+                .append(chargingType)
                 .toHashCode();
     }
 
@@ -99,6 +113,9 @@ public final class BatteryChargingStart extends Interaction {
         BatteryChargingStart other = (BatteryChargingStart) obj;
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
+                .append(this.voltage, other.voltage)
+                .append(this.current, other.current)
+                .append(this.chargingType, other.chargingType)
                 .isEquals();
     }
 
@@ -107,6 +124,9 @@ public final class BatteryChargingStart extends Interaction {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
+                .append("voltage", voltage)
+                .append("current", current)
+                .append("chargingType", chargingType)
                 .toString();
     }
 }
