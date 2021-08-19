@@ -184,8 +184,8 @@ public class RegionUtility {
     private static boolean isCircleIntersectingPolygon(CartesianCircle destinationArea,
                                                         CartesianPolygon regionalArea) {
         CartesianPoint circleCenter = destinationArea.getCenter();
-        // Check if circle center is contained in polygon
-        if (regionalArea.contains(circleCenter)) {
+        // Test if any area is completely contained within the other area
+        if (regionalArea.contains(circleCenter) || destinationArea.contains(regionalArea.getVertices().get(0))) {
             return true;
         }
         // Check if any edge of the regionalArea intersects the circular destinationArea
