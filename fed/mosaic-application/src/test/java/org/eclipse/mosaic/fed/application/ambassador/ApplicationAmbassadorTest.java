@@ -426,7 +426,7 @@ public class ApplicationAmbassadorTest {
     }
 
     /**
-     * Tests, if a VehicleElectricInformation is set on the correct vehicle.
+     * Tests, if a BatteryData is set on the correct vehicle.
      */
     @Test
     public void processInteraction_ElectricVehicleInformationUpdate() throws InternalFederateException, IOException {

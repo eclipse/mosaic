@@ -260,6 +260,11 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
             Application newApplication = classNameParser.createInstanceFromClassName(className, AbstractApplication.class);
 
+            if (newApplication == null) {
+                osLog.error("Could not load application with name {}", className);
+                continue;
+            }
+
             if (operatingSystemCheck != null) {
                 try {
                     // check if defined operating system is matching

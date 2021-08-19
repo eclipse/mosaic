@@ -80,7 +80,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             getOs().getAdHocModule().enable(new AdHocModuleConfiguration()
                     .addRadio()
                     .channel(AdHocChannel.CCH)
-                    .power(50)
+                    .power(50.)
                     .create());
             getLog().infoSimTime(this, "Activated AdHoc Module");
         }
