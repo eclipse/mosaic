@@ -183,20 +183,28 @@ public class RegionUtility {
      */
     private static boolean isCircleIntersectingPolygon(CartesianCircle destinationArea,
                                                         CartesianPolygon regionalArea) {
-        // Check if arbitrary point of one area is contained within the other
-        if (regionalArea.contains(destinationArea.getCenter()) || destinationArea.contains(regionalArea.getVertices().get(0))) {
+        CartesianPoint circleCenter = destinationArea.getCenter();
+        // Check if circle center is contained in polygon
+        if (regionalArea.contains(circleCenter)) {
             return true;
         }
         // Check if any edge of the regionalArea intersects the circular destinationArea
-        CartesianPoint lastPoint = regionalArea.getVertices().get(regionalArea.getVertices().size()-1);
-        CartesianPoint circleCenter = destinationArea.getCenter();
-        for (CartesianPoint point : regionalArea.getVertices()) {
-            double dx = lastPoint.getX() - point.getX();
-            double dy = lastPoint.getY() - point.getY();
-            double distanceFromCircleCenter =
-                    Math.abs(dx * (point.getY() - circleCenter.getY()) - (point.getX() - circleCenter.getX()) * dy)
-                            / Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-            if (distanceFromCircleCenter < destinationArea.getRadius()) {
+        for (int idx = 1; idx < regionalArea.getVertices().size() ; idx++) {
+            CartesianPoint verticeA = regionalArea.getVertices().get(idx - 1);
+            CartesianPoint verticeB = regionalArea.getVertices().get(idx);
+            double dx = verticeA.getX() - verticeB.getX();
+            double dy = verticeA.getY() - verticeB.getY();
+            double edgeLength = Math.sqrt(dx * dx + dy * dy);
+            double t = ((verticeB.getX() - circleCenter.getX()) * dx + (verticeB.getY() - circleCenter.getY()) * dy) / edgeLength;
+            if (t >= 0 && t <= 1) {
+                // If line through circle center and perpendicular to edge vector intersects the edge, check distance to circle center
+                double distanceToCircleCenter = Math.abs((verticeB.getX() - circleCenter.getX()) * dy
+                        - (verticeB.getY() - circleCenter.getY()) * dx)
+                        / edgeLength;
+                if ( distanceToCircleCenter <= destinationArea.getRadius() ) {
+                    return true;
+                }
+            } else if ( verticeB.distanceTo(circleCenter) <= destinationArea.getRadius() ) {
                 return true;
             }
         }
