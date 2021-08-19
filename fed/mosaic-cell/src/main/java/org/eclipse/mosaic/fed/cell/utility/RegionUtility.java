@@ -201,10 +201,10 @@ public class RegionUtility {
                 double distanceToCircleCenter = Math.abs((verticeB.getX() - circleCenter.getX()) * dy
                         - (verticeB.getY() - circleCenter.getY()) * dx)
                         / edgeLength;
-                if ( distanceToCircleCenter <= destinationArea.getRadius() ) {
+                if (distanceToCircleCenter <= destinationArea.getRadius()) {
                     return true;
                 }
-            } else if ( verticeB.distanceTo(circleCenter) <= destinationArea.getRadius() ) {
+            } else if (verticeB.distanceTo(circleCenter) <= destinationArea.getRadius()) {
                 return true;
             }
         }
