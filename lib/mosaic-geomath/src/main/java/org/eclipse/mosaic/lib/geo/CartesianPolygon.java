@@ -105,7 +105,7 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
     private boolean isIntersectingEdge(CartesianPoint edge1A, CartesianPoint edge1B, CartesianPoint edge2A, CartesianPoint edge2B) {
         CartesianPoint r = new MutableCartesianPoint(edge1A.getX() - edge1B.getX(), edge1A.getY() - edge1B.getY(), 0);
         CartesianPoint s = new MutableCartesianPoint(edge2A.getX() - edge2B.getX(), edge2A.getY() - edge2B.getY(), 0);
-        CartesianPoint diff = new MutableCartesianPoint(edge2A.getX() - edge1A.getX(), edge2A.getY() - edge2A.getY(), 0);
+        CartesianPoint diff = new MutableCartesianPoint(edge2A.getX() - edge1A.getX(), edge2A.getY() - edge1A.getY(), 0);
         double crossprod1 = r.getX() * s.getY() - r.getY() * s.getX();
         double crossprod2 = diff.getX() * r.getY() - diff.getY() * r.getX();
 
