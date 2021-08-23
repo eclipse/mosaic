@@ -50,7 +50,30 @@ public final class VehicleStop extends Interaction {
          * Parks the vehicle at the road side. Other vehicles won't be
          * disrupted by the parking vehicle.
          */
-        PARK
+        PARK,
+        /**
+         * Parks the vehicle at a parking area. The vehicle has to be close to the parking area.
+         */
+        PARKING_AREA;
+
+        /**
+         * Returns the corresponding integer for different stop modes according to
+         * <a href="https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html#stop_0x12">stop</a>.
+         *
+         * @return the corresponding int to the stop mode
+         */
+        public int stopModeToInt() {
+            switch (this) {
+                case STOP:
+                    return 0;
+                default:
+                    return -1;
+                case PARK:
+                    return 1;
+                case PARKING_AREA:
+                    return 64;
+            }
+        }
     }
 
     /**

@@ -86,7 +86,7 @@ public class VehicleFacade {
 
 
     /**
-     * Creates a new {@link TraciVehicleFacade} object.
+     * Creates a new {@link VehicleFacade} object.
      *
      * @param bridge Connection to Traci.
      */
@@ -194,7 +194,7 @@ public class VehicleFacade {
      * @param stopFlag  The flag indicating the type of the stop.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, byte stopFlag) throws InternalFederateException {
+    public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, int stopFlag) throws InternalFederateException {
         try {
             stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, stopFlag);
         } catch (IllegalArgumentException | CommandException e) {

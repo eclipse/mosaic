@@ -810,6 +810,9 @@ public class SimulationFacade {
      * @return The stop mode.
      */
     private VehicleStop.VehicleStopMode getStopMode(int stoppedStateEncoded) {
+        if ((stoppedStateEncoded & 0b10000000) > 0) {
+            return VehicleStop.VehicleStopMode.PARKING_AREA;
+        }
         if ((stoppedStateEncoded & 0b0010) > 0) {
             return VehicleStop.VehicleStopMode.PARK;
         }

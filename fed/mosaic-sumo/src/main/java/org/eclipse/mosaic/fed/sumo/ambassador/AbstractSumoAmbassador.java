@@ -594,15 +594,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 );
             }
 
-            byte stopFlag = 0;
-            switch (vehicleStop.getVehicleStopMode()) {
-                case STOP:
-                    break;
-                case PARK:
-                    stopFlag = 1;
-                    break;
-                default:
-                    log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
+            int stopFlag = vehicleStop.getVehicleStopMode().stopModeToInt();
+            if (stopFlag == -1) {
+                log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
             stopVehicleAt(vehicleStop.getVehicleId(), stopPos, stopFlag, vehicleStop.getDuration());
@@ -1084,14 +1078,15 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * than the edge's length, the stop command will fail. In such cases, the offset will decrease,
      * and the stop is requested again.
      */
-    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final byte stopFlag, final int duration)
+    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final int stopFlag, final int duration)
             throws InternalFederateException {
-
-        double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
-        double stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
-        stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
-
-        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
+        double stopPosition = 0;
+        if (stopFlag != VehicleStop.VehicleStopMode.PARKING_AREA.stopModeToInt()) {
+            double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
+            stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
+            stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
+        }
+        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, stopPos.getLaneIndex(), duration, stopFlag);
     }
 
     /**
@@ -1261,7 +1256,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * This handles the case that sumo handles routing and creates new routes while doing so.
      *
      * @param vehicleUpdates Vehicle movement in the simulation.
-     * @param time      Time at which the vehicle has moved.
+     * @param time           Time at which the vehicle has moved.
      * @throws InternalFederateException Exception if an error occurred while propagating new routes.
      */
     private void propagateNewRoutes(VehicleUpdates vehicleUpdates, long time) throws InternalFederateException {
