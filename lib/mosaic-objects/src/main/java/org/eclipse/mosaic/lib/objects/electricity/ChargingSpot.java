@@ -26,56 +26,6 @@ import java.io.Serializable;
  */
 public final class ChargingSpot implements Serializable {
 
-    /**
-     * The mode of this EV charging spot in compliance with current standards,
-     * including IEC 62196-2.
-     */
-    public enum ChargingMode {
-        /**
-         * Slow charging through household sockets 3,7kW.
-         */
-        MODE_1,
-        /**
-         * One to three-phased charging using coded signal 11kW.
-         */
-        MODE_2,
-        /**
-         * Specific plug/socket configurations with pilot- and control-contact 22kW.
-         */
-        MODE_3,
-        /**
-         * Fast charging controlled by external charger 44kW.
-         */
-        MODE_4;
-
-        public static int getVoltage(ChargingMode chargingMode) {
-            switch (chargingMode) {
-                case MODE_1:
-                    return 230;
-                case MODE_2:
-                case MODE_3:
-                case MODE_4:
-                    return 400;
-                default: // fall back
-                    return 0;
-            }
-        }
-
-        public static int getCurrent(ChargingMode chargingMode) {
-            switch (chargingMode) {
-                case MODE_1:
-                case MODE_2:
-                    return 16;
-                case MODE_3:
-                    return 32;
-                case MODE_4:
-                    return 63;
-                default: // fall back
-                    return 0;
-            }
-        }
-    }
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -84,10 +34,19 @@ public final class ChargingSpot implements Serializable {
     private final String chargingSpotId;
 
     /**
-     * Type of this {@link ChargingSpot} in compliance with current standards, including.
-     * <em>IEC 62196-2</em>.
+     * Type of this charging this {@link ChargingSpot} supports.
      */
-    private final ChargingMode chargingMode;
+    private final ChargingType chargingType;
+
+    /**
+     * Maximum voltage available at this {@code ChargingSpot}. [V]
+     */
+    private final double maxVoltage;
+
+    /**
+     * Maximum current available at this {@code ChargingSpot}. [A]
+     */
+    private final double maxCurrent;
 
     /**
      * Flag, indicating if the {@link ChargingSpot} is available.
@@ -98,44 +57,36 @@ public final class ChargingSpot implements Serializable {
      * Creates a new {@link ChargingSpot} object.
      *
      * @param chargingSpotId Unique identifier of the {@link ChargingSpot}
-     * @param type Type of this {@link ChargingSpot} in compliance with current standards,
-     *             including <em>IEC 62196-2</em> see {@link ChargingMode}
+     * @param type           Type of this {@link ChargingSpot} in compliance with current standards,
+     *                       including <em>IEC 62196-2</em> see {@link ChargingType}
      */
-    public ChargingSpot(String chargingSpotId, ChargingMode type) {
+    public ChargingSpot(String chargingSpotId, ChargingType type, double maxVoltage, double maxCurrent) {
         this.chargingSpotId = chargingSpotId;
-        this.chargingMode = type;
+        this.chargingType = type;
+        this.maxVoltage = maxVoltage;
+        this.maxCurrent = maxCurrent;
     }
 
     public String getChargingSpotId() {
         return chargingSpotId;
     }
 
-    public ChargingMode getChargingMode() {
-        return chargingMode;
+    public ChargingType getChargingType() {
+        return chargingType;
     }
 
-    /**
-     * Returns the maximum voltage based on the type.
-     *
-     * @return Maximum voltage available at this {@code ChargingSpot}, unit: [V]
-     */
-    public int getMaximumVoltage() {
-        return ChargingMode.getVoltage(chargingMode);
+    public double getMaximumVoltage() {
+        return maxVoltage;
     }
 
-    /**
-     * Returns the maximum current based on the type.
-     *
-     * @return Maximum current available at this {@code ChargingSpot}, unit: [A]
-     */
-    public int getMaximumCurrent() {
-        return ChargingMode.getCurrent(chargingMode);
+    public double getMaximumCurrent() {
+        return maxCurrent;
     }
 
     /**
      * Returns the maximum power available at this {@link ChargingSpot}, unit: [W].
      */
-    public int getMaximumPower() {
+    public double getMaximumPower() {
         return getMaximumVoltage() * getMaximumCurrent();
     }
 
@@ -154,7 +105,7 @@ public final class ChargingSpot implements Serializable {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .append("chargingSpotId", chargingSpotId)
-                .append("chargingMode", chargingMode)
+                .append("chargingType", chargingType)
                 .append("available", available)
                 .append("maximumVoltage", getMaximumVoltage())
                 .append("maximumCurrent", getMaximumCurrent())
