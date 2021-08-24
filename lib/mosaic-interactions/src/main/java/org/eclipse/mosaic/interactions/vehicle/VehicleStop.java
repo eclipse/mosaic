@@ -18,6 +18,7 @@ package org.eclipse.mosaic.interactions.vehicle;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -36,45 +37,6 @@ public final class VehicleStop extends Interaction {
      * String identifying the type of this interaction.
      */
     public static final String TYPE_ID = createTypeIdentifier(VehicleStop.class);
-
-    /**
-     * Describes how to stop the vehicle.
-     */
-    public enum VehicleStopMode {
-        /**
-         * Stops the vehicle on the specified lane index. Other vehicles,
-         * which approach behind the stopped vehicle, might be disrupted.
-         */
-        STOP,
-        /**
-         * Parks the vehicle at the road side. Other vehicles won't be
-         * disrupted by the parking vehicle.
-         */
-        PARK,
-        /**
-         * Parks the vehicle at a parking area. The vehicle has to be close to the parking area.
-         */
-        PARKING_AREA;
-
-        /**
-         * Returns the corresponding integer for different stop modes according to
-         * <a href="https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html#stop_0x12">stop</a>.
-         *
-         * @return the corresponding int to the stop mode
-         */
-        public int stopModeToInt() {
-            switch (this) {
-                case STOP:
-                    return 0;
-                default:
-                    return -1;
-                case PARK:
-                    return 1;
-                case PARKING_AREA:
-                    return 64;
-            }
-        }
-    }
 
     /**
      * String identifying the vehicle sending this interaction.

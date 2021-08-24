@@ -19,9 +19,9 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
 import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation.DistanceSensors;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
-import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
 import javax.annotation.Nullable;
@@ -109,7 +109,7 @@ public interface VehicleOperatingSystem extends OperatingSystem, INavigationModu
      * @param vehicleStopMode Stop mode
      * @param durationInMs    Duration of the stop, unit: [ms]
      */
-    void stop(IRoadPosition stopPosition, VehicleStop.VehicleStopMode vehicleStopMode, int durationInMs);
+    void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, int durationInMs);
 
     /**
      * Sends a stop message to stop the vehicle along the road or by the road side. The
@@ -118,7 +118,7 @@ public interface VehicleOperatingSystem extends OperatingSystem, INavigationModu
      * @param vehicleStopMode Stop mode
      * @param durationInMs    Duration of the stop, unit: [ms]
      */
-    void stopNow(VehicleStop.VehicleStopMode vehicleStopMode, int durationInMs);
+    void stopNow(VehicleStopMode vehicleStopMode, int durationInMs);
 
     /**
      * Resumes a previously stopped vehicle.

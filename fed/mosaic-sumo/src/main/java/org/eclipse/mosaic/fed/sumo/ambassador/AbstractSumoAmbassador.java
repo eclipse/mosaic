@@ -78,6 +78,7 @@ import org.eclipse.mosaic.lib.objects.trafficsign.TrafficSignSpeed;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleParameter;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.ProcessLoggingThread;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -1081,7 +1082,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final int stopFlag, final int duration)
             throws InternalFederateException {
         double stopPosition = 0;
-        if (stopFlag != VehicleStop.VehicleStopMode.PARKING_AREA.stopModeToInt()) {
+        if (stopFlag != VehicleStopMode.PARKING_AREA.stopModeToInt()) {
             double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
             stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
             stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);

@@ -45,7 +45,6 @@ import org.eclipse.mosaic.fed.sumo.util.TrafficLightStateDecoder;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
-import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
 import org.eclipse.mosaic.lib.enums.DriveDirection;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.road.SimpleRoadPosition;
@@ -60,6 +59,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleEmissions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleSensors;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleSignals;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.DistanceSensor;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
@@ -371,8 +371,8 @@ public class SimulationFacade {
 
                 lastVehicleData = this.lastVehicleData.get(veh.id);
 
-                VehicleStop.VehicleStopMode vehicleStopMode = getStopMode(veh.stoppedStateEncoded);
-                if (vehicleStopMode == VehicleStop.VehicleStopMode.PARK) {
+                VehicleStopMode vehicleStopMode = getStopMode(veh.stoppedStateEncoded);
+                if (vehicleStopMode == VehicleStopMode.PARK) {
                     if (lastVehicleData == null) {
                         log.warn("Skip vehicle {} which is inserted into simulation in STOPPED state.", veh.id);
                         continue;
@@ -380,7 +380,8 @@ public class SimulationFacade {
                     if (!lastVehicleData.isStopped()) {
                         log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
-                    vehicleData = new VehicleData.Builder(time, lastVehicleData.getName()).copyFrom(lastVehicleData).stopped(true).create();
+                    vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
+                            .copyFrom(lastVehicleData).stopped(true, vehicleStopMode).create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     // if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid. therefore we just continue
                     // however, if it has already been in the simulation (remove(id) returns true), then there seems to be an error with the vehicle and it is marked as removed.
@@ -396,7 +397,7 @@ public class SimulationFacade {
                             .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
                             .route(veh.routeId)
                             .signals(decodeVehicleSignals(veh.signalsEncoded))
-                            .stopped(vehicleStopMode != null)
+                            .stopped(vehicleStopMode != VehicleStopMode.NOT_STOPPED, vehicleStopMode)
                             .consumptions(calculateConsumptions(veh, lastVehicleData))
                             .emissions(calculateEmissions(veh, lastVehicleData))
                             .sensors(calculateSensorData(veh.id, veh.leadingVehicle, veh.minGap, vehicleSensorData.get(veh.id)))
@@ -809,17 +810,17 @@ public class SimulationFacade {
      * @param stoppedStateEncoded Encoded number indicating the stop mode.
      * @return The stop mode.
      */
-    private VehicleStop.VehicleStopMode getStopMode(int stoppedStateEncoded) {
+    private VehicleStopMode getStopMode(int stoppedStateEncoded) {
         if ((stoppedStateEncoded & 0b10000000) > 0) {
-            return VehicleStop.VehicleStopMode.PARKING_AREA;
+            return VehicleStopMode.PARKING_AREA;
         }
         if ((stoppedStateEncoded & 0b0010) > 0) {
-            return VehicleStop.VehicleStopMode.PARK;
+            return VehicleStopMode.PARK;
         }
         if ((stoppedStateEncoded & 0b0001) > 0) {
-            return VehicleStop.VehicleStopMode.STOP;
+            return VehicleStopMode.STOP;
         }
-        return null;
+        return VehicleStopMode.NOT_STOPPED;
     }
 
     /**

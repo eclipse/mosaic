@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.objects.vehicle;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import org.eclipse.mosaic.lib.enums.DriveDirection;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -27,7 +29,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -37,84 +41,83 @@ import javax.annotation.concurrent.Immutable;
 public class VehicleData extends UnitData {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Contains total emissions and current emission.
-     */
-    private final VehicleEmissions vehicleEmissions;
-
-    /**
-     * Contains total energy consumption and current consumption.
-     */
-    private final VehicleConsumptions vehicleConsumptions;
-
-    /**
-     * All vehicle specific signals e.g. car flasher, hazard flasher, see in {@link VehicleSignals}
-     */
-    private final VehicleSignals vehicleSignals;
-
     /**
      * projected position.
      */
     private final CartesianPoint projectedPosition;
-
-    /**
-     * Direction/Heading of the vehicle in degrees from north clockwise.
-     * Supported Traffic simulator: [SUMO, PHA]
-     */
-    private final Double heading;
-
-    /**
-     * Speed of the vehicle. Unit: [m/s].
-     * Supported Traffic simulator: [SUMO, PHA]
-     */
-    private final double speed;
-
-    /**
-     * The slope at the current vehicle position in degrees.
-     */
-    private final double slope;
-
-    /**
-     * The distance, the vehicle has already driven. Unit: [m]
-     * Supported Traffic simulator: [SUMO]
-     */
-    private final double distanceDriven;
-
-    /**
-     * Flag, indicating if the vehicle is currently stopped.
-     */
-    private final boolean stopped;
-
-    /**
-     * The ID of the route the vehicle currently follows.
-     * Supported Traffic simulator: [SUMO, PHA]
-     */
-    private final String routeId;
-
     /**
      * Contains information about the {@link IRoadPosition} the vehicle is currently driving on.
      */
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final IRoadPosition roadPosition;
-
+    /**
+     * The ID of the route the vehicle currently follows.
+     * Supported Traffic simulator: [SUMO, PHA]
+     */
+    private final String routeId;
+    /**
+     * Speed of the vehicle. Unit: [m/s].
+     * Supported Traffic simulator: [SUMO, PHA]
+     */
+    private final double speed;
+    /**
+     * Direction/Heading of the vehicle in degrees from north clockwise.
+     * Supported Traffic simulator: [SUMO, PHA]
+     */
+    private final Double heading;
+    /**
+     * The slope at the current vehicle position in degrees.
+     */
+    private final double slope;
     /**
      * This represents the acceleration of a vehicle in [m/s^2].
      */
     private final Double longitudinalAcceleration;
+    /**
+     * ID of the Lane area detector the vehicle is currently on.
+     */
+    private final String laneAreaId;
+    /**
+     * The distance, the vehicle has already driven. Unit: [m]
+     * Supported Traffic simulator: [SUMO]
+     */
+    private final double distanceDriven;
+    /**
+     * Flag, indicating if the vehicle is currently stopped.
+     * Supported traffic simulator: [SUMO]
+     */
+    private final boolean stopped;
+    /**
+     * The {@link VehicleStopMode} of the vehicle, if vehicle is not stopped.
+     */
+    private final VehicleStopMode vehicleStopMode;
 
+    /**
+     * Contains total emissions and current emission.
+     */
+    private final VehicleEmissions vehicleEmissions;
+    /**
+     * Contains total energy consumption and current consumption.
+     */
+    private final VehicleConsumptions vehicleConsumptions;
+    /**
+     * All vehicle specific signals e.g. car flasher, hazard flasher, see in {@link VehicleSignals}
+     */
+    private final VehicleSignals vehicleSignals;
+    /**
+     * Contains information about the vehicle sensor (Lidar-, Radar- or Distance sensor).
+     */
+    private final VehicleSensors vehicleSensors;
     /**
      * This dimensionless value represents the position of a brake pedal in [0 1].
      * Supported traffic simulator: [PHA]
      */
     private final Double brake;
-
     /**
      * This dimensionless value represents the position of a throttle pedal in [0 1].
      * Supported traffic simulator: [PHA]
      */
     private final Double throttle;
-
     /**
      * The direction currently driven on from the point of view of the vehicle.
      * This means forward/backward/unavailable.
@@ -122,17 +125,6 @@ public class VehicleData extends UnitData {
      * Supported Traffic simulator: [PHA]
      */
     private final DriveDirection driveDirection;
-
-    /**
-     * Contains information about the vehicle sensor (Lidar-, Radar- or Distance sensor).
-     */
-    private final VehicleSensors vehicleSensors;
-
-    /**
-     * ID of the Lane area.
-     */
-    private final String laneAreaId;
-
     /**
      * Arbitrary additional vehicle data produced by the vehicle or traffic simulator.
      */
@@ -140,60 +132,39 @@ public class VehicleData extends UnitData {
     private final Object additionalData;
 
     /**
-     * Getter for the vehicle heading in degrees from north clockwise.
-     * Supported Traffic simulators: [SUMO]
-     *
-     * @return the heading of the vehicle
+     * Private constructor, use {@link VehicleData.Builder} instead.
      */
-    public Double getHeading() {
-        return heading;
-    }
-
-    /**
-     * Getter for the speed. Unit: [m/s]. <br />
-     * Supported Traffic simulators: [PHABMACS, SUMO]
-     *
-     * @return The speed.
-     */
-    public double getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Returns information about the emissions ejected by the vehicle, e.g. CO2.
-     * Supported Traffic simulators: [SUMO]
-     *
-     * @return emissions ejected by the vehicle
-     */
-    public VehicleEmissions getVehicleEmissions() {
-        return vehicleEmissions;
-    }
-
-    /**
-     * Returns the slope of the current vehicle position in degrees.
-     */
-    public double getSlope() {
-        return slope;
-    }
-
-    /**
-     * Returns information about the consumptions of the vehicle, e.g. fuel consumption.
-     * Supported Traffic simulators: [SUMO]
-     *
-     * @return consumptions of the vehicle
-     */
-    public VehicleConsumptions getVehicleConsumptions() {
-        return vehicleConsumptions;
-    }
-
-    /**
-     * Returns information about the signal state of the vehicle, e.g. right/left indicator.
-     * Supported simulators: [SUMO]
-     *
-     * @return the state of the signals of the vehicle
-     */
-    public VehicleSignals getVehicleSignals() {
-        return vehicleSignals;
+    private VehicleData(
+            long time, String name, GeoPoint position,
+            CartesianPoint projectedPosition, IRoadPosition roadPosition, String routeId,
+            double speed, Double heading, double slope, Double longitudinalAcceleration,
+            String laneAreaId, double distanceDriven,
+            boolean stopped, VehicleStopMode vehicleStopMode,
+            VehicleEmissions vehicleEmissions, VehicleConsumptions vehicleConsumptions,
+            VehicleSignals vehicleSignals, VehicleSensors vehicleSensors,
+            Double brake, Double throttle, DriveDirection driveDirection,
+            Object additionalData
+    ) {
+        super(time, name, position);
+        this.projectedPosition = projectedPosition;
+        this.roadPosition = roadPosition;
+        this.routeId = routeId;
+        this.speed = speed;
+        this.heading = heading;
+        this.slope = slope;
+        this.longitudinalAcceleration = longitudinalAcceleration;
+        this.laneAreaId = laneAreaId;
+        this.distanceDriven = distanceDriven;
+        this.stopped = stopped;
+        this.vehicleStopMode = vehicleStopMode;
+        this.vehicleEmissions = vehicleEmissions;
+        this.vehicleConsumptions = vehicleConsumptions;
+        this.vehicleSignals = vehicleSignals;
+        this.vehicleSensors = vehicleSensors;
+        this.brake = brake;
+        this.throttle = throttle;
+        this.driveDirection = driveDirection;
+        this.additionalData = additionalData;
     }
 
     /**
@@ -207,6 +178,13 @@ public class VehicleData extends UnitData {
     }
 
     /**
+     * Returns the position of the vehicle in the road network.
+     */
+    public IRoadPosition getRoadPosition() {
+        return roadPosition;
+    }
+
+    /**
      * Getter for the current vehicle route id.
      * Supported Traffic simulators: [PHABMACS, SUMO]
      *
@@ -214,6 +192,33 @@ public class VehicleData extends UnitData {
      */
     public String getRouteId() {
         return routeId;
+    }
+
+    /**
+     * Getter for the speed. Unit: [m/s]. <br />
+     * Supported Traffic simulators: [PHABMACS, SUMO]
+     *
+     * @return The speed.
+     */
+    public double getSpeed() {
+        return speed;
+    }
+
+    /**
+     * Getter for the vehicle heading in degrees from north clockwise.
+     * Supported Traffic simulators: [SUMO]
+     *
+     * @return the heading of the vehicle
+     */
+    public Double getHeading() {
+        return heading;
+    }
+
+    /**
+     * Returns the slope of the current vehicle position in degrees.
+     */
+    public double getSlope() {
+        return slope;
     }
 
     /**
@@ -226,32 +231,13 @@ public class VehicleData extends UnitData {
         return longitudinalAcceleration;
     }
 
-    public Double getBrake() {
-        return brake;
-    }
-
-    public Double getThrottle() {
-        return throttle;
-    }
-
     /**
-     * Returns the driving direction of the vehicle (forward/backward).
-     * Supported simulators: [PHABMACS]
-     *
-     * @return the drive direction of the vehicle
+     * Returns the identifier of the lane area in which
+     * the vehicle is currently driving. Might be <code>null</code>.
      */
-    public DriveDirection getDriveDirection() {
-        return driveDirection;
-    }
-
-    /**
-     * Returns information about the sensors of the vehicle.
-     * Supported simulators: [PHABMACS, SUMO (only front/rear sensor, opt-in)]
-     *
-     * @return the sensor state of the vehicle
-     */
-    public VehicleSensors getVehicleSensors() {
-        return vehicleSensors;
+    public @Nullable
+    String getLaneAreaId() {
+        return laneAreaId;
     }
 
     /**
@@ -277,18 +263,70 @@ public class VehicleData extends UnitData {
     }
 
     /**
-     * Returns the position of the vehicle in the road network.
+     * Getter for the stop mode of the vehicle.
+     *
+     * @return if vehicle is not stopped returns {@link VehicleStopMode#NOT_STOPPED} else the according stop mode is returned
      */
-    public IRoadPosition getRoadPosition() {
-        return roadPosition;
+    public VehicleStopMode getVehicleStopMode() {
+        return vehicleStopMode;
     }
 
     /**
-     * Returns the identifier of the lane area in which
-     * the vehicle is currently driving. Might be <code>null</code>.
+     * Returns information about the emissions ejected by the vehicle, e.g. CO2.
+     * Supported Traffic simulators: [SUMO]
+     *
+     * @return emissions ejected by the vehicle
      */
-    public String getLaneAreaId() {
-        return laneAreaId;
+    public VehicleEmissions getVehicleEmissions() {
+        return vehicleEmissions;
+    }
+
+    /**
+     * Returns information about the consumptions of the vehicle, e.g. fuel consumption.
+     * Supported Traffic simulators: [SUMO]
+     *
+     * @return consumptions of the vehicle
+     */
+    public VehicleConsumptions getVehicleConsumptions() {
+        return vehicleConsumptions;
+    }
+
+    /**
+     * Returns information about the signal state of the vehicle, e.g. right/left indicator.
+     * Supported simulators: [SUMO]
+     *
+     * @return the state of the signals of the vehicle
+     */
+    public VehicleSignals getVehicleSignals() {
+        return vehicleSignals;
+    }
+
+    /**
+     * Returns information about the sensors of the vehicle.
+     * Supported simulators: [PHABMACS, SUMO (only front/rear sensor, opt-in)]
+     *
+     * @return the sensor state of the vehicle
+     */
+    public VehicleSensors getVehicleSensors() {
+        return vehicleSensors;
+    }
+
+    public Double getBrake() {
+        return brake;
+    }
+
+    public Double getThrottle() {
+        return throttle;
+    }
+
+    /**
+     * Returns the driving direction of the vehicle (forward/backward).
+     * Supported simulators: [PHABMACS]
+     *
+     * @return the drive direction of the vehicle
+     */
+    public DriveDirection getDriveDirection() {
+        return driveDirection;
     }
 
     /**
@@ -300,73 +338,28 @@ public class VehicleData extends UnitData {
         return additionalData;
     }
 
-    /**
-     * Private constructor, use {@link VehicleData.Builder} instead.
-     */
-    private VehicleData(
-            long time,
-            String name,
-            GeoPoint position,
-            CartesianPoint projectedPosition,
-            double speed,
-            Double heading,
-            VehicleSignals vehicleSignals,
-            VehicleEmissions vehicleEmissions,
-            VehicleConsumptions vehicleConsumptions,
-            IRoadPosition roadPosition,
-            boolean stopped,
-            String routeId,
-            Double longitudinalAcceleration,
-            Double brake,
-            Double throttle,
-            DriveDirection driveDirection,
-            VehicleSensors vehicleSensors,
-            double distanceDriven,
-            double slope,
-            String laneAreaId,
-            Object additionalData
-    ) {
-        super(time, name, position);
-        this.vehicleSignals = vehicleSignals;
-        this.vehicleEmissions = vehicleEmissions;
-        this.vehicleConsumptions = vehicleConsumptions;
-        this.speed = speed;
-        this.heading = heading;
-        this.projectedPosition = projectedPosition;
-        this.stopped = stopped;
-        this.routeId = routeId;
-        this.longitudinalAcceleration = longitudinalAcceleration;
-        this.driveDirection = driveDirection;
-        this.brake = brake;
-        this.throttle = throttle;
-        this.vehicleSensors = vehicleSensors;
-        this.distanceDriven = distanceDriven;
-        this.roadPosition = roadPosition;
-        this.slope = slope;
-        this.laneAreaId = laneAreaId;
-        this.additionalData = additionalData;
-    }
-
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 89)
+                .appendSuper(super.hashCode())
+                .append(projectedPosition)
+                .append(roadPosition)
+                .append(routeId)
+                .append(speed)
+                .append(heading)
+                .append(slope)
+                .append(longitudinalAcceleration)
+                .append(laneAreaId)
+                .append(distanceDriven)
+                .append(stopped)
+                .append(vehicleStopMode)
                 .append(vehicleEmissions)
                 .append(vehicleConsumptions)
                 .append(vehicleSignals)
-                .append(projectedPosition)
-                .append(heading)
-                .append(speed)
-                .append(stopped)
-                .append(roadPosition)
-                .append(routeId)
-                .append(longitudinalAcceleration)
-                .append(driveDirection)
                 .append(vehicleSensors)
-                .append(distanceDriven)
                 .append(brake)
                 .append(throttle)
-                .append(slope)
-                .append(laneAreaId)
+                .append(driveDirection)
                 .append(additionalData)
                 .toHashCode();
     }
@@ -385,45 +378,54 @@ public class VehicleData extends UnitData {
 
         VehicleData other = (VehicleData) obj;
         return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(this.projectedPosition, other.projectedPosition)
+                .append(this.roadPosition, other.roadPosition)
+                .append(this.routeId, other.routeId)
+                .append(this.speed, other.speed)
+                .append(this.heading, other.heading)
+                .append(this.slope, other.slope)
+                .append(this.longitudinalAcceleration, other.longitudinalAcceleration)
+                .append(this.laneAreaId, other.laneAreaId)
+                .append(this.distanceDriven, other.distanceDriven)
+                .append(this.stopped, other.stopped)
+                .append(this.vehicleStopMode, other.vehicleStopMode)
                 .append(this.vehicleEmissions, other.vehicleEmissions)
                 .append(this.vehicleConsumptions, other.vehicleConsumptions)
                 .append(this.vehicleSignals, other.vehicleSignals)
-                .append(this.projectedPosition, other.projectedPosition)
-                .append(this.heading, other.heading)
-                .append(this.speed, other.speed)
-                .append(this.stopped, other.stopped)
-                .append(this.roadPosition, other.roadPosition)
-                .append(this.routeId, other.routeId)
-                .append(this.longitudinalAcceleration, other.longitudinalAcceleration)
+                .append(this.vehicleSensors, other.vehicleSensors)
                 .append(this.brake, other.brake)
                 .append(this.throttle, other.throttle)
                 .append(this.driveDirection, other.driveDirection)
-                .append(this.vehicleSensors, other.vehicleSensors)
-                .append(this.distanceDriven, other.distanceDriven)
-                .append(this.slope, other.slope)
-                .append(this.laneAreaId, other.laneAreaId)
                 .append(this.additionalData, other.additionalData)
                 .isEquals();
     }
 
     @Override
     public String toString() {
-        return "VehicleInfo{"
-                + "vehicleEmissions=" + this.vehicleEmissions
-                + ", vehicleConsumptions=" + this.vehicleConsumptions
-                + ", vehicleSignals=" + this.vehicleSignals
-                + ", projectedPosition=" + this.projectedPosition
-                + ", heading=" + this.heading
-                + ", speed=" + this.speed
-                + ", distanceDriven=" + this.distanceDriven
-                + ", slope=" + this.slope
-                + ", roadPosition=" + this.roadPosition
-                + ", stopped=" + this.stopped
-                + ", routeId=" + this.routeId
-                + ", longitudinalAcceleration=" + this.longitudinalAcceleration
-                + ", driveDirection=" + this.driveDirection
-                + ", vehicleSensors=" + this.vehicleSensors
-                + '}';
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .appendSuper(super.toString())
+                .append("projectedPosition", this.projectedPosition)
+                .append("roadPosition", this.roadPosition)
+                .append("routeId", this.routeId)
+                .append("speed", this.speed)
+                .append("heading", this.heading)
+                .append("slope", this.slope)
+                .append("longitudinalAcceleration", this.longitudinalAcceleration)
+                .append("laneAreaId", this.laneAreaId)
+                .append("distanceDriven", this.distanceDriven)
+                .append("stopped", this.stopped)
+                .append("vehicleStopMode", this.vehicleStopMode)
+                .append("vehicleEmissions", this.vehicleEmissions)
+                .append("vehicleConsumptions", this.vehicleConsumptions)
+                .append("vehicleSignals", this.vehicleSignals)
+                .append("vehicleSensors", this.vehicleSensors)
+                .append("brake", this.brake)
+                .append("throttle", this.throttle)
+                .append("driveDirection", this.driveDirection)
+                .append("additionalData", this.additionalData)
+                .build();
+
     }
 
     /**
@@ -434,20 +436,21 @@ public class VehicleData extends UnitData {
         private final String name;
         private GeoPoint position;
         private CartesianPoint projectedPosition;
+        private IRoadPosition roadPosition;
+        private String routeId;
         private double speed;
         private Double heading;
-        private VehicleSignals vehicleSignals;
-        private VehicleSensors vehicleSensors;
+        private double slope;
+        private double longitudinalAcceleration;
+        private String laneArea;
+        private double distanceDriven;
+        private boolean stopped = false;
+        private VehicleStopMode vehicleStopMode;
         private VehicleEmissions vehicleEmissions;
         private VehicleConsumptions vehicleConsumptions;
-        private IRoadPosition roadPosition;
-        private boolean stopped = false;
-        private String routeId;
-        private double longitudinalAcceleration;
+        private VehicleSignals vehicleSignals;
+        private VehicleSensors vehicleSensors;
         private DriveDirection driveDirection = DriveDirection.UNAVAILABLE;
-        private double distanceDriven;
-        private double slope;
-        private String laneArea;
         private Object additionalData;
 
         /**
@@ -464,6 +467,22 @@ public class VehicleData extends UnitData {
         public Builder position(GeoPoint position, CartesianPoint projectedPosition) {
             this.position = position;
             this.projectedPosition = projectedPosition;
+            return this;
+        }
+
+        /**
+         * Set the position on the road of the vehicle.
+         */
+        public Builder road(IRoadPosition roadPosition) {
+            this.roadPosition = roadPosition;
+            return this;
+        }
+
+        /**
+         * Set information about the route.
+         */
+        public Builder route(String routeId) {
+            this.routeId = routeId;
             return this;
         }
 
@@ -496,18 +515,19 @@ public class VehicleData extends UnitData {
         }
 
         /**
-         * Set the position on the road of the vehicle.
+         * Define, if the vehicle is currently in stopped state.
          */
-        public Builder road(IRoadPosition roadPosition) {
-            this.roadPosition = roadPosition;
+        public Builder stopped(boolean stopped, VehicleStopMode vehicleStopMode) {
+            this.stopped = stopped;
+            this.vehicleStopMode = vehicleStopMode;
             return this;
         }
 
         /**
-         * Set information about the route.
+         * Define the id of the lane area this vehicle is currently driving in.
          */
-        public Builder route(String routeId) {
-            this.routeId = routeId;
+        public Builder laneArea(String laneArea) {
+            this.laneArea = laneArea;
             return this;
         }
 
@@ -544,21 +564,8 @@ public class VehicleData extends UnitData {
         }
 
         /**
-         * Define, if the vehicle is currently in stopped state.
+         * Define additional data from traffic simulator.
          */
-        public Builder stopped(boolean stopped) {
-            this.stopped = stopped;
-            return this;
-        }
-
-        /**
-         * Define the id of the lane area this vehicle is currently driving in.
-         */
-        public Builder laneArea(String laneArea) {
-            this.laneArea = laneArea;
-            return this;
-        }
-
         public Builder additional(Object additionalData) {
             if (this.additionalData != null) {
                 throw new IllegalStateException("This vehicle data object cannot hold more than one additional data object.");
@@ -572,23 +579,23 @@ public class VehicleData extends UnitData {
          */
         public Builder copyFrom(VehicleData veh) {
             Validate.notNull(veh, "The vehicle info to be copied from must not be null.");
-
             this.position = veh.getPosition();
             this.projectedPosition = veh.getProjectedPosition();
+            this.roadPosition = veh.getRoadPosition();
+            this.routeId = veh.getRouteId();
             this.speed = veh.getSpeed();
             this.heading = veh.getHeading();
-            this.vehicleSignals = veh.getVehicleSignals();
-            this.vehicleSensors = veh.getVehicleSensors();
+            this.slope = veh.getSlope();
+            this.longitudinalAcceleration = veh.getLongitudinalAcceleration();
+            this.laneArea = veh.getLaneAreaId();
+            this.distanceDriven = veh.getDistanceDriven();
+            this.stopped = veh.isStopped();
+            this.vehicleStopMode = veh.getVehicleStopMode();
             this.vehicleEmissions = veh.getVehicleEmissions();
             this.vehicleConsumptions = veh.getVehicleConsumptions();
-            this.roadPosition = veh.getRoadPosition();
-            this.stopped = veh.isStopped();
-            this.routeId = veh.getRouteId();
-            this.longitudinalAcceleration = veh.getLongitudinalAcceleration();
+            this.vehicleSignals = veh.getVehicleSignals();
+            this.vehicleSensors = veh.getVehicleSensors();
             this.driveDirection = veh.getDriveDirection();
-            this.distanceDriven = veh.getDistanceDriven();
-            this.slope = veh.getSlope();
-            this.laneArea = veh.getLaneAreaId();
             this.additionalData = veh.getAdditionalData();
             return this;
         }
@@ -599,20 +606,11 @@ public class VehicleData extends UnitData {
         public VehicleData create() {
             return new VehicleData(
                     time, name,
-                    position, projectedPosition,
-                    speed,
-                    heading,
-                    vehicleSignals, vehicleEmissions, vehicleConsumptions,
-                    roadPosition,
-                    stopped,
-                    routeId,
-                    longitudinalAcceleration,
-                    0d, 0d,
-                    driveDirection,
-                    vehicleSensors,
-                    distanceDriven,
-                    slope,
-                    laneArea,
+                    position, projectedPosition, roadPosition, routeId, speed,
+                    heading, slope, longitudinalAcceleration, laneArea, distanceDriven,
+                    stopped, vehicleStopMode, vehicleEmissions,
+                    vehicleConsumptions, vehicleSignals, vehicleSensors,
+                    0d, 0d, driveDirection,
                     additionalData);
         }
     }

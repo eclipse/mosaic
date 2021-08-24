@@ -33,13 +33,13 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange.VehicleSpeedChangeType;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
-import org.eclipse.mosaic.interactions.vehicle.VehicleStop.VehicleStopMode;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.cam.VehicleAwarenessData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
