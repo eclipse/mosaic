@@ -68,6 +68,7 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -78,7 +79,6 @@ import org.eclipse.mosaic.lib.objects.trafficsign.TrafficSignSpeed;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleParameter;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.ProcessLoggingThread;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -567,7 +567,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     vehicleSlowDown.getInterval()
             );
         }
-        bridge.getVehicleControl().slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
+        bridge.getVehicleControl()
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
     }
 
     /**
@@ -594,13 +595,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         vehicleStop.getVehicleStopMode()
                 );
             }
-
-            int stopFlag = vehicleStop.getVehicleStopMode().stopModeToInt();
-            if (stopFlag == -1) {
+            if (vehicleStop.getVehicleStopMode() == VehicleStopMode.NOT_STOPPED) {
                 log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, stopFlag, vehicleStop.getDuration());
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), vehicleStop.getDuration());
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -1079,15 +1078,15 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * than the edge's length, the stop command will fail. In such cases, the offset will decrease,
      * and the stop is requested again.
      */
-    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final int stopFlag, final int duration)
+    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final VehicleStopMode stopMode, final int duration)
             throws InternalFederateException {
         double stopPosition = 0;
-        if (stopFlag != VehicleStopMode.PARKING_AREA.stopModeToInt()) {
+        if (stopMode != VehicleStopMode.PARKING_AREA) {
             double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
             stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
             stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
         }
-        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, stopPos.getLaneIndex(), duration, stopFlag);
+        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, stopPos.getLaneIndex(), duration, stopMode);
     }
 
     /**
@@ -1306,7 +1305,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     @Override
-    public void finishSimulation() throws InternalFederateException {
+    public void finishSimulation() {
         log.info("Closing SUMO connection");
         if (bridge != null) {
             bridge.close();

@@ -36,6 +36,7 @@ import org.eclipse.mosaic.fed.sumo.junit.SumoTraciRule;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SpeedMode;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
 import org.eclipse.mosaic.lib.geo.UtmZone;
@@ -43,7 +44,6 @@ import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.SensorValue.SensorStatus;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -142,8 +142,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park)
-        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE,
-                VehicleStopMode.PARK.stopModeToInt());
+        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -173,8 +172,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park) at parking Area
-        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200,
-                0, Integer.MAX_VALUE, VehicleStopMode.PARKING_AREA.stopModeToInt());
+        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARKING_AREA);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }

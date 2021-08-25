@@ -17,8 +17,8 @@ package org.eclipse.mosaic.interactions.vehicle;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;

@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.lib.objects.vehicle;
+package org.eclipse.mosaic.lib.enums;
 
 /**
  * Describes how to stop the vehicle / how the vehicle is stopped.
@@ -38,25 +38,4 @@ public enum VehicleStopMode {
      * Parks the vehicle at a parking area. The vehicle has to be close to the parking area.
      */
     PARKING_AREA;
-
-    /**
-     * Returns the corresponding integer for different stop modes according to
-     * <a href="https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html#stop_0x12">stop</a>.
-     *
-     * @return the corresponding int to the stop mode
-     */
-    public int stopModeToInt() {
-        switch (this) {
-            case STOP:
-                return 0;
-            case PARK:
-                return 1;
-            case PARKING_AREA: // these flags are additive (see sumo docs)
-                return 64 + PARK.stopModeToInt();
-            case NOT_STOPPED:
-            default:
-                return -1;
-        }
-    }
-
 }

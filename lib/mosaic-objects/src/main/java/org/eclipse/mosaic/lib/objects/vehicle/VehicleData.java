@@ -18,6 +18,7 @@ package org.eclipse.mosaic.lib.objects.vehicle;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import org.eclipse.mosaic.lib.enums.DriveDirection;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.UnitData;

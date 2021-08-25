@@ -19,9 +19,9 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
 import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation.DistanceSensors;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
 import javax.annotation.Nullable;

@@ -42,6 +42,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetStop;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetVehicleLength;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoLaneChangeMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoSpeedMode;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -191,12 +192,13 @@ public class VehicleFacade {
      * @param position  The position of the stop.
      * @param laneIndex The index of the lane on which to stop.
      * @param duration  The duration for stop in [ms].
-     * @param stopFlag  The flag indicating the type of the stop.
+     * @param stopMode  The mode indicating the type of the stop.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, int stopFlag) throws InternalFederateException {
+    public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, VehicleStopMode stopMode) throws InternalFederateException {
         try {
-            stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, stopFlag);
+
+            stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, vehicleStopModeToInt(stopMode));
         } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not stop vehicle " + vehicle, e);
         }
@@ -238,7 +240,6 @@ public class VehicleFacade {
             log.warn("Could not highlight vehicle {}", vehicleId);
         }
     }
-
 
     /**
      * Setter for the maximum speed.
@@ -333,7 +334,7 @@ public class VehicleFacade {
     /**
      * Setter for the vehicle's length.
      *
-     * @param vehicleId    The Id of the vehicle.
+     * @param vehicleId     The Id of the vehicle.
      * @param vehicleLength The new length to set.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
@@ -507,6 +508,26 @@ public class VehicleFacade {
             moveToXY.execute(bridge, vehicleId, "", 0, cartesianPoint, angle, mode);
         } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not move vehicle " + vehicleId, e);
+        }
+    }
+
+    /**
+     * Returns the corresponding integer for different stop modes according to
+     * <a href="https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html#stop_0x12">stop</a>.
+     *
+     * @return the corresponding int to the stop mode
+     */
+    private int vehicleStopModeToInt(VehicleStopMode vehicleStopMode) {
+        switch (vehicleStopMode) {
+            case STOP:
+                return 0;
+            case PARK:
+                return 1;
+            case PARKING_AREA: // these flags are additive (see sumo docs)
+                return 64 + vehicleStopModeToInt(VehicleStopMode.PARK);
+            case NOT_STOPPED:
+            default:
+                return -1;
         }
     }
 }
