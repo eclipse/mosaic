@@ -19,11 +19,15 @@ import static org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties.GLOBAL
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.mosaic.fed.cell.config.model.CMobileNetworkProperties;
+import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
 import org.eclipse.mosaic.fed.cell.data.SimulationData;
 import org.eclipse.mosaic.fed.cell.junit.CellConfigurationRule;
 import org.eclipse.mosaic.fed.cell.junit.CellSimulationRule;
+import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.GeoPolygon;
+import org.eclipse.mosaic.lib.geo.MutableGeoPoint;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
 import org.eclipse.mosaic.lib.geo.UtmZone;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
@@ -32,6 +36,9 @@ import org.eclipse.mosaic.lib.transform.GeoProjection;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that tests methods of the RegionUtility of the cell.
@@ -46,12 +53,38 @@ public class RegionUtilityTest {
             UtmPoint.eastNorth(UtmZone.from(GeoPoint.lonLat(13, 52)), 388405.53, 5820063.64)
     );
 
-
     @Rule
     public RuleChain ruleChain = RuleChain.outerRule(transformationRule).around(configRule);
 
     @Rule
     public CellSimulationRule simulationRule = new CellSimulationRule();
+
+    /**
+     * Tests if the right region is returned for an area.
+     */
+    @Test
+    public void testGetRegionForArea() {
+        CMobileNetworkProperties sampleRegion = ConfigurationData.INSTANCE.getRegionConfig().regions.get(2);
+
+        // Test cirlce-polygon collision
+        GeoCircle geoC1 = new GeoCircle(new MutableGeoPoint(52.56,13.33), 10000);
+        GeoCircle geoC2 = new GeoCircle(new MutableGeoPoint(52.40,13.33), 100);
+        List<CNetworkProperties> regions = RegionUtility.getRegionsForDestinationArea(geoC1);
+        assertEquals(1, regions.size());
+        assertEquals(sampleRegion.id, regions.get(0).id);
+        regions = RegionUtility.getRegionsForDestinationArea(geoC2);
+        assertEquals(0, regions.size());
+
+        // Test polygon-polygon collision
+        List<GeoPoint> geoPoints = new ArrayList<>();
+        geoPoints.add(new MutableGeoPoint(52.53,13.31));
+        geoPoints.add(new MutableGeoPoint(52.56, 13.34));
+        geoPoints.add(new MutableGeoPoint(53.56,13.31));
+        GeoPolygon geoP1 = new GeoPolygon(geoPoints);
+        regions = RegionUtility.getRegionsForDestinationArea(geoP1);
+        assertEquals(1, regions.size());
+        assertEquals(sampleRegion.id, regions.get(0).id);
+    }
 
     /**
      * Tests if the right region is returned for a node.
