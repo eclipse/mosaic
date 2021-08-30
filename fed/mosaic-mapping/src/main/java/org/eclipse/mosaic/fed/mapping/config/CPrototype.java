@@ -66,6 +66,18 @@ public class CPrototype {
     public Double length;
 
     /**
+     * Width of the vehicle in meter.
+     */
+    @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
+    public Double width;
+
+    /**
+     * Height of the vehicle in meter.
+     */
+    @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
+    public Double height;
+
+    /**
      * Distance in meter between front bumper of a vehicle
      * and the back bumper of its leader in a traffic jam.
      */
@@ -148,6 +160,8 @@ public class CPrototype {
         copy.weight = weight;
         copy.applications = applications;
         copy.length = length;
+        copy.width = width;
+        copy.height = height;
         copy.minGap = minGap;
         copy.maxSpeed = maxSpeed;
         copy.vehicleClass = vehicleClass;
@@ -170,6 +184,8 @@ public class CPrototype {
                 + ", group: " + (group != null ? group : "null")
                 + ", weight: " + (weight != null ? weight : "null")
                 + ", length: " + (length != null ? length : "null")
+                + ", width: " + (width != null ? width : "null")
+                + ", height: " + (height != null ? height : "null")
                 + ", minGap: " + (minGap != null ? minGap : "null")
                 + ", maxSpeed: " + (maxSpeed != null ? maxSpeed : "null")
                 + ", accel: " + (accel != null ? accel : "null")
