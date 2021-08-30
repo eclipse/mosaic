@@ -1239,7 +1239,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                                 external.getKey(),
                                 latestVehicleData.getPosition().toCartesian(),
                                 latestVehicleData.getHeading(),
-                                VehicleSetMoveToXY.Mode.KEEP_ROUTE
+                                VehicleSetMoveToXY.Mode.EXACT_POSITION
                         );
                     } catch (InternalFederateException e) {
                         log.warn("Could not set position of vehicle " + external.getKey(), e);
