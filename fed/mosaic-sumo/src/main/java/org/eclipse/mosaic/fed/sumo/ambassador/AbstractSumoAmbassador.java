@@ -1081,7 +1081,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final VehicleStopMode stopMode, final int duration)
             throws InternalFederateException {
         double stopPosition = 0;
-        if (stopMode != VehicleStopMode.PARKING_AREA) {
+        if (stopMode != VehicleStopMode.PARK_IN_PARKING_AREA) {
             double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
             stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
             stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);

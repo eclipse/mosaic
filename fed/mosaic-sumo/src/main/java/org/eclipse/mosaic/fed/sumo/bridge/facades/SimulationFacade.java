@@ -119,7 +119,7 @@ public class SimulationFacade {
     /**
      * Creates a new {@link SimulationFacade} object.
      *
-     * @param bridge   Connection to Traci.
+     * @param bridge            Connection to Traci.
      * @param sumoConfiguration The SUMO configuration file.
      */
     public SimulationFacade(final Bridge bridge, final CSumo sumoConfiguration) {
@@ -372,7 +372,7 @@ public class SimulationFacade {
                 lastVehicleData = this.lastVehicleData.get(veh.id);
 
                 VehicleStopMode vehicleStopMode = getStopMode(veh.stoppedStateEncoded);
-                if (vehicleStopMode == VehicleStopMode.PARK) {
+                if (vehicleStopMode == VehicleStopMode.PARK_ON_ROADSIDE) {
                     if (lastVehicleData == null) {
                         log.warn("Skip vehicle {} which is inserted into simulation in STOPPED state.", veh.id);
                         continue;
@@ -383,8 +383,9 @@ public class SimulationFacade {
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
                             .copyFrom(lastVehicleData).stopped(true, vehicleStopMode).create();
                 } else if (veh.position == null || !veh.position.isValid()) {
-                    // if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid. therefore we just continue
-                    // however, if it has already been in the simulation (remove(id) returns true), then there seems to be an error with the vehicle and it is marked as removed.
+                    /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
+                     * Therefore we just continue however, if it has already been in the simulation (remove(id) returns true),
+                     * then there seems to be an error with the vehicle and it is marked as removed. */
                     if (removedVehicles.remove(veh.id)) {
                         log.warn("vehicle {} has not properly arrived at its destination and will be removed", veh.id);
                     }
@@ -500,7 +501,7 @@ public class SimulationFacade {
     /**
      * Updates the lanes before next simulation step.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The TraCI connection is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The TraCI connection is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     private void updateBestLanesIfNecessary() throws CommandException, InternalFederateException {
@@ -631,8 +632,8 @@ public class SimulationFacade {
     /**
      * Calculates the sensor data from rear.
      *
-     * @param bridge Connection to Traci.
-     * @param subscriptions   Subscription data.
+     * @param bridge        Connection to Traci.
+     * @param subscriptions Subscription data.
      * @return Calculated sensor data.
      * @throws InternalFederateException if leading vehicle for a vehicle couldn't be read
      */
@@ -812,10 +813,10 @@ public class SimulationFacade {
      */
     private VehicleStopMode getStopMode(int stoppedStateEncoded) {
         if ((stoppedStateEncoded & 0b10000000) > 0) {
-            return VehicleStopMode.PARKING_AREA;
+            return VehicleStopMode.PARK_IN_PARKING_AREA;
         }
         if ((stoppedStateEncoded & 0b0010) > 0) {
-            return VehicleStopMode.PARK;
+            return VehicleStopMode.PARK_ON_ROADSIDE;
         }
         if ((stoppedStateEncoded & 0b0001) > 0) {
             return VehicleStopMode.STOP;

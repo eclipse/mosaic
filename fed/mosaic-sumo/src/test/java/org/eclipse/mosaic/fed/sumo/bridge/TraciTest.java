@@ -142,7 +142,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park)
-        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK);
+        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK_ON_ROADSIDE);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -172,7 +172,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park) at parking Area
-        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARKING_AREA);
+        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK_IN_PARKING_AREA);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }

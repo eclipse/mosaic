@@ -521,10 +521,10 @@ public class VehicleFacade {
         switch (vehicleStopMode) {
             case STOP:
                 return 0;
-            case PARK:
+            case PARK_ON_ROADSIDE:
                 return 1;
-            case PARKING_AREA: // these flags are additive (see sumo docs)
-                return 64 + vehicleStopModeToInt(VehicleStopMode.PARK);
+            case PARK_IN_PARKING_AREA: // these flags are additive (see sumo docs)
+                return 64 + vehicleStopModeToInt(VehicleStopMode.PARK_ON_ROADSIDE);
             case NOT_STOPPED:
             default:
                 return -1;

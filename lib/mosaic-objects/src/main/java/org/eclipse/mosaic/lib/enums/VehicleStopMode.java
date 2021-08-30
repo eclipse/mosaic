@@ -33,9 +33,9 @@ public enum VehicleStopMode {
      * Parks the vehicle at the road side. Other vehicles won't be
      * disrupted by the parking vehicle.
      */
-    PARK,
+    PARK_ON_ROADSIDE,
     /**
      * Parks the vehicle at a parking area. The vehicle has to be close to the parking area.
      */
-    PARKING_AREA;
+    PARK_IN_PARKING_AREA
 }
