@@ -58,10 +58,13 @@ public class VehicleSignals implements Serializable {
         return blinkerLeft;
     }
 
+    public boolean isBlinkerEmergency() {
+        return blinkerEmergency;
+    }
+
     public boolean isBrakeLight() {
         return brakeLight;
     }
-
 
     public boolean isReverseDrive() {
         return reverseDrive;
