@@ -37,9 +37,9 @@ public class ClassNameParser {
 
     // ^([a-zA-Z_$][a-zA-Z\d\._$]*)(?:|\((.+)\))$
     private final static Pattern classPattern = Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d\\._$]*)(?:|\\((.+)\\))$");
-    // ^(\d+|\d+\.\d+|\"[^\"\n]*\"|false|true)$
+    // ^(\d+|\d+\.\d*|\"[^\"\n]*\"|false|true)$
     private final static Pattern parameterPattern =
-            Pattern.compile("^(?:((?:\\d+\\.\\d+|\\d+d))|(\\d+l)|(\\d+)|\\\"([^\\\"\\n]*)\\\"|'([^'\\n]*)'|(false|true))$");
+            Pattern.compile("^(?:((?:\\d+\\.\\d*|\\d+d))|(\\d+l)|(\\d+)|\\\"([^\\\"\\n]*)\\\"|'([^'\\n]*)'|(false|true))$");
 
     private final Logger logger;
     private final ClassLoader urlClassLoader;

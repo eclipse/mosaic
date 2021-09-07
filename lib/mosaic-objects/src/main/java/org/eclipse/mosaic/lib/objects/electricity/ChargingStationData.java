@@ -150,7 +150,10 @@ public final class ChargingStationData extends UnitData {
         public Builder copyFrom(ChargingStationData chargingStationData) {
             chargingSpots = new ArrayList<>();
             for (ChargingSpot chargingSpot : chargingStationData.getChargingSpots()) {
-                ChargingSpot copiedChargingSpot = new ChargingSpot(chargingSpot.getChargingSpotId(), chargingSpot.getChargingMode());
+                ChargingSpot copiedChargingSpot = new ChargingSpot(
+                        chargingSpot.getChargingSpotId(), chargingSpot.getChargingType(),
+                        chargingSpot.getMaximumVoltage(), chargingSpot.getMaximumCurrent()
+                );
                 copiedChargingSpot.setAvailable(chargingSpot.isAvailable());
                 chargingSpots.add(copiedChargingSpot);
             }

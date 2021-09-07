@@ -167,4 +167,66 @@ public class PolygonTest {
         assertTrue(polygon.contains(xy(3, 3))); // left limit
         assertTrue(polygon.contains(xy(7, 3))); // right limit
     }
+
+    @Test
+    public void intersection() {
+
+        CartesianPolygon polygonA = new CartesianPolygon(
+                xy(0, 0),
+                xy(0, 1),
+                xy(1, 1),
+                xy(1, 0)
+        );
+
+        CartesianPolygon polygonB = new CartesianPolygon(
+                xy(0.1, 0.1),
+                xy(0.1, 0.9),
+                xy(0.9, 0.9),
+                xy(0.9, 0.1)
+        );
+
+        CartesianPolygon polygonC = new CartesianPolygon(
+                xy(-0.2, 0.5),
+                xy(0.5, -0.2),
+                xy(1.2, 0.5),
+                xy(0.5, 1.2)
+        );
+
+        CartesianPolygon polygonD = new CartesianPolygon(
+                xy(0, 0),
+                xy(0, 1),
+                xy(1, 1),
+                xy(1, 0)
+        );
+
+        CartesianPolygon polygonE = new CartesianPolygon(
+                xy(2, 0),
+                xy(2, 1),
+                xy(1, 1),
+                xy(1, 0)
+        );
+
+        CartesianPolygon polygonF= new CartesianPolygon(
+                xy(2, 0),
+                xy(2, 1),
+                xy(3, 1),
+                xy(3, 0)
+        );
+
+        // One polygon is lies completely within another
+        assertTrue(polygonA.isIntersectingPolygon(polygonB));
+        assertTrue(polygonB.isIntersectingPolygon(polygonA));
+
+        // Edges of the polygons intersect
+        assertTrue(polygonA.isIntersectingPolygon(polygonC));
+
+        // Corners of one polygon lie exactly of the edges of the other
+        assertTrue(polygonA.isIntersectingPolygon(polygonD));
+
+        // Corners of one polygon lie on the edge of another
+        assertTrue(polygonA.isIntersectingPolygon(polygonE));
+
+        // Polygons don't intersect
+        assertFalse(polygonA.isIntersectingPolygon(polygonF));
+    }
 }
