@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExecutableFederateExecutor implements FederateExecutor {
 
-    private static Logger log = LoggerFactory.getLogger(ExecutableFederateExecutor.class);
+    private static final Logger log = LoggerFactory.getLogger(ExecutableFederateExecutor.class);
 
     private final FederateDescriptor descriptor;
     private final String command;
@@ -63,7 +64,12 @@ public class ExecutableFederateExecutor implements FederateExecutor {
     public Process startLocalFederate(File workingDir) throws FederateStarterException {
         log.debug("start: (command={} {})", command, StringUtils.join(args, " "));
         try {
-            List<String> commandWithArgs = Lists.newArrayList(command);
+            List<String> commandWithArgs = new ArrayList<>();
+            if (command.endsWith(".bat")) {
+                commandWithArgs.addAll(Lists.newArrayList("cmd.exe", "/C", command));
+            } else {
+                commandWithArgs.add(command);
+            }
             commandWithArgs.addAll(args);
             currentLocalProcess = new ProcessBuilder(commandWithArgs).directory(workingDir).start();
             return currentLocalProcess;
