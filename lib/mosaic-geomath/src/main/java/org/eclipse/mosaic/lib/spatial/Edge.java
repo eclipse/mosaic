@@ -146,4 +146,5 @@ public class Edge<T extends Vector3d> implements Serializable {
     public double getLength() {
         return a.distanceTo(b);
     }
+    
 }
