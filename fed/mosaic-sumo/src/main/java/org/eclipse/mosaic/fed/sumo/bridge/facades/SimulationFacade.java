@@ -372,16 +372,16 @@ public class SimulationFacade {
                 lastVehicleData = this.lastVehicleData.get(veh.id);
 
                 VehicleStopMode vehicleStopMode = getStopMode(veh.stoppedStateEncoded);
-                if (vehicleStopMode == VehicleStopMode.PARK_ON_ROADSIDE) {
+                if (vehicleStopMode == VehicleStopMode.PARK_ON_ROADSIDE || vehicleStopMode == VehicleStopMode.PARK_IN_PARKING_AREA) {
                     if (lastVehicleData == null) {
-                        log.warn("Skip vehicle {} which is inserted into simulation in STOPPED state.", veh.id);
+                        log.warn("Skip vehicle {} which is inserted into simulation in PARKED state.", veh.id);
                         continue;
                     }
                     if (!lastVehicleData.isStopped()) {
                         log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
-                            .copyFrom(lastVehicleData).stopped(true, vehicleStopMode).create();
+                            .copyFrom(lastVehicleData).stopped(vehicleStopMode).create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
                      * Therefore we just continue however, if it has already been in the simulation (remove(id) returns true),
@@ -398,7 +398,7 @@ public class SimulationFacade {
                             .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
                             .route(veh.routeId)
                             .signals(decodeVehicleSignals(veh.signalsEncoded))
-                            .stopped(vehicleStopMode != VehicleStopMode.NOT_STOPPED, vehicleStopMode)
+                            .stopped(vehicleStopMode)
                             .consumptions(calculateConsumptions(veh, lastVehicleData))
                             .emissions(calculateEmissions(veh, lastVehicleData))
                             .sensors(calculateSensorData(veh.id, veh.leadingVehicle, veh.minGap, vehicleSensorData.get(veh.id)))

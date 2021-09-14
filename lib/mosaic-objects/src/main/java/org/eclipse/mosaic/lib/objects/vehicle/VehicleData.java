@@ -84,15 +84,9 @@ public class VehicleData extends UnitData {
      */
     private final double distanceDriven;
     /**
-     * Flag, indicating if the vehicle is currently stopped.
-     * Supported traffic simulator: [SUMO]
-     */
-    private final boolean stopped;
-    /**
      * The {@link VehicleStopMode} of the vehicle, if vehicle is not stopped.
      */
     private final VehicleStopMode vehicleStopMode;
-
     /**
      * Contains total emissions and current emission.
      */
@@ -139,8 +133,7 @@ public class VehicleData extends UnitData {
             long time, String name, GeoPoint position,
             CartesianPoint projectedPosition, IRoadPosition roadPosition, String routeId,
             double speed, Double heading, double slope, Double longitudinalAcceleration,
-            String laneAreaId, double distanceDriven,
-            boolean stopped, VehicleStopMode vehicleStopMode,
+            String laneAreaId, double distanceDriven, VehicleStopMode vehicleStopMode,
             VehicleEmissions vehicleEmissions, VehicleConsumptions vehicleConsumptions,
             VehicleSignals vehicleSignals, VehicleSensors vehicleSensors,
             Double brake, Double throttle, DriveDirection driveDirection,
@@ -156,7 +149,6 @@ public class VehicleData extends UnitData {
         this.longitudinalAcceleration = longitudinalAcceleration;
         this.laneAreaId = laneAreaId;
         this.distanceDriven = distanceDriven;
-        this.stopped = stopped;
         this.vehicleStopMode = vehicleStopMode;
         this.vehicleEmissions = vehicleEmissions;
         this.vehicleConsumptions = vehicleConsumptions;
@@ -257,10 +249,9 @@ public class VehicleData extends UnitData {
      *
      * @return Flag, indicating if the vehicle is currently stopped
      * <code>True</code>, if the vehicle is currently stopped, otherwise <code>false</code>
-     * @see VehicleData#stopped
      */
     public boolean isStopped() {
-        return stopped;
+        return vehicleStopMode != null && vehicleStopMode != VehicleStopMode.NOT_STOPPED;
     }
 
     /**
@@ -352,7 +343,6 @@ public class VehicleData extends UnitData {
                 .append(longitudinalAcceleration)
                 .append(laneAreaId)
                 .append(distanceDriven)
-                .append(stopped)
                 .append(vehicleStopMode)
                 .append(vehicleEmissions)
                 .append(vehicleConsumptions)
@@ -389,7 +379,6 @@ public class VehicleData extends UnitData {
                 .append(this.longitudinalAcceleration, other.longitudinalAcceleration)
                 .append(this.laneAreaId, other.laneAreaId)
                 .append(this.distanceDriven, other.distanceDriven)
-                .append(this.stopped, other.stopped)
                 .append(this.vehicleStopMode, other.vehicleStopMode)
                 .append(this.vehicleEmissions, other.vehicleEmissions)
                 .append(this.vehicleConsumptions, other.vehicleConsumptions)
@@ -415,7 +404,6 @@ public class VehicleData extends UnitData {
                 .append("longitudinalAcceleration", this.longitudinalAcceleration)
                 .append("laneAreaId", this.laneAreaId)
                 .append("distanceDriven", this.distanceDriven)
-                .append("stopped", this.stopped)
                 .append("vehicleStopMode", this.vehicleStopMode)
                 .append("vehicleEmissions", this.vehicleEmissions)
                 .append("vehicleConsumptions", this.vehicleConsumptions)
@@ -445,7 +433,6 @@ public class VehicleData extends UnitData {
         private double longitudinalAcceleration;
         private String laneArea;
         private double distanceDriven;
-        private boolean stopped = false;
         private VehicleStopMode vehicleStopMode;
         private VehicleEmissions vehicleEmissions;
         private VehicleConsumptions vehicleConsumptions;
@@ -518,8 +505,7 @@ public class VehicleData extends UnitData {
         /**
          * Define, if the vehicle is currently in stopped state.
          */
-        public Builder stopped(boolean stopped, VehicleStopMode vehicleStopMode) {
-            this.stopped = stopped;
+        public Builder stopped(VehicleStopMode vehicleStopMode) {
             this.vehicleStopMode = vehicleStopMode;
             return this;
         }
@@ -590,7 +576,6 @@ public class VehicleData extends UnitData {
             this.longitudinalAcceleration = veh.getLongitudinalAcceleration();
             this.laneArea = veh.getLaneAreaId();
             this.distanceDriven = veh.getDistanceDriven();
-            this.stopped = veh.isStopped();
             this.vehicleStopMode = veh.getVehicleStopMode();
             this.vehicleEmissions = veh.getVehicleEmissions();
             this.vehicleConsumptions = veh.getVehicleConsumptions();
@@ -609,7 +594,7 @@ public class VehicleData extends UnitData {
                     time, name,
                     position, projectedPosition, roadPosition, routeId, speed,
                     heading, slope, longitudinalAcceleration, laneArea, distanceDriven,
-                    stopped, vehicleStopMode, vehicleEmissions,
+                    vehicleStopMode, vehicleEmissions,
                     vehicleConsumptions, vehicleSignals, vehicleSensors,
                     0d, 0d, driveDirection,
                     additionalData);
