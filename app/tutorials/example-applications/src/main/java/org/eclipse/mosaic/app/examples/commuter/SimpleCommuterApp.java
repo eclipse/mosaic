@@ -22,7 +22,7 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
-import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -71,7 +71,7 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
         if (!initialTripPlanned) {
             IRoadPosition roadPosition =
                     RoadPositionFactory.createAtEndOfRoute(getOs().getNavigationModule().getCurrentRoute(), 0);
-            getOs().stop(roadPosition, VehicleStop.VehicleStopMode.PARK, Integer.MAX_VALUE);
+            getOs().stop(roadPosition, VehicleStopMode.PARK_ON_ROADSIDE, Integer.MAX_VALUE);
             initialTripPlanned = true;
             stopWatch.start();
         }
