@@ -15,10 +15,13 @@
 
 package org.eclipse.mosaic.lib.objects;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
@@ -49,8 +52,8 @@ public abstract class UnitData implements Serializable {
     /**
      * Creates a new {@link UnitData}.
      *
-     * @param time    time of the last update
-     * @param name    name of the unit
+     * @param time     time of the last update
+     * @param name     name of the unit
      * @param position position of the unit
      */
     public UnitData(long time, String name, GeoPoint position) {
@@ -71,6 +74,7 @@ public abstract class UnitData implements Serializable {
 
     /**
      * Returns the unique string identifying the unit.
+     *
      * @see UnitData#name
      */
     public String getName() {
@@ -115,7 +119,11 @@ public abstract class UnitData implements Serializable {
 
     @Override
     public String toString() {
-        return "UnitData{" + "time=" + time + ", name=" + name + ", position=" + position + '}';
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .append("time", this.time)
+                .append("name", this.name)
+                .append("position", this.position)
+                .build();
     }
 
 }

@@ -110,7 +110,7 @@ public final class IpResolver implements Serializable {
     }
 
     /**
-     * returns the maxumum number of units that can be assigned IPs.
+     * returns the maximum number of units that can be assigned IPs.
      *
      * @return the maximum range as an int
      */
