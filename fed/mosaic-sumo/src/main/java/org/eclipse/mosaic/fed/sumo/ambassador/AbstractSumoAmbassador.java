@@ -37,7 +37,6 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciClientBridge;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoLaneChangeMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoSpeedMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
-import org.eclipse.mosaic.fed.sumo.bridge.traci.VehicleSetMoveToXY;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.VehicleSetRemove;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
@@ -1234,7 +1233,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                                 external.getKey(),
                                 latestVehicleData.getPosition().toCartesian(),
                                 latestVehicleData.getHeading(),
-                                VehicleSetMoveToXY.Mode.EXACT_POSITION
+                                sumoConfig.moveToXyMode
                         );
                     } catch (InternalFederateException e) {
                         log.warn("Could not set position of vehicle " + external.getKey(), e);

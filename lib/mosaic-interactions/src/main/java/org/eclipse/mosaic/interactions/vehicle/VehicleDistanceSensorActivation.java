@@ -44,33 +44,49 @@ public final class VehicleDistanceSensorActivation extends Interaction {
     }
 
     /**
+     * Sensor type.
+     */
+    private final SensorTypes sensorType;
+
+    /**
      * String identifying a simulated vehicle.
      */
     private final String vehicleId;
+    /**
+     * list of distance sensors.
+     */
+    private final DistanceSensors[] sensors;
 
     /**
      * The maximum distance to look ahead for a leading vehicle.
      */
     private final double maximumLookahead;
-
     /**
-     * list of distance sensors.
+     * True if sensor shall be spawned, False if it shall be destroyed.
      */
-    private DistanceSensors[] sensors;
+    private final boolean activate;
 
     /**
      * Creates a new {@link VehicleDistanceSensorActivation} interaction.
      *
      * @param time             Timestamp of this interaction, unit: [ns]
      * @param vehicleId        vehicle identifier
+     * @param sensorType
      * @param maximumLookahead maximum distance to look ahead for a leading vehicle
+     * @param activate
      * @param sensors          list of distance sensors
      */
-    public VehicleDistanceSensorActivation(long time, String vehicleId, double maximumLookahead, DistanceSensors... sensors) {
+    public VehicleDistanceSensorActivation(long time, String vehicleId, SensorTypes sensorType, double maximumLookahead, boolean activate, DistanceSensors... sensors) {
         super(time);
         this.vehicleId = vehicleId;
+        this.sensorType = sensorType;
         this.maximumLookahead = maximumLookahead;
+        this.activate = activate;
         this.sensors = sensors;
+    }
+
+    public SensorTypes getSensorType() {
+        return sensorType;
     }
 
     public String getVehicleId() {
@@ -85,12 +101,17 @@ public final class VehicleDistanceSensorActivation extends Interaction {
         return sensors;
     }
 
+    public boolean isActivate() {
+        return activate;
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 23)
                 .append(vehicleId)
                 .append(maximumLookahead)
                 .append(sensors)
+                .append(sensorType)
                 .toHashCode();
     }
 
@@ -111,6 +132,7 @@ public final class VehicleDistanceSensorActivation extends Interaction {
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.maximumLookahead, other.maximumLookahead)
                 .append(this.sensors, other.sensors)
+                .append(this.sensorType, other.sensorType)
                 .isEquals();
     }
 
@@ -121,6 +143,14 @@ public final class VehicleDistanceSensorActivation extends Interaction {
                 .append("vehicleId", vehicleId)
                 .append("maximumLookahead", maximumLookahead)
                 .append("sensors", Arrays.toString(sensors))
+                .append("sensorType", sensorType)
                 .toString();
+    }
+
+    /**
+     * Possible sensor types to be spawned.
+     */
+    public enum SensorTypes {
+        UNKNOWN, LiDAR
     }
 }
