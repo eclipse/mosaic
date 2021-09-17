@@ -36,6 +36,7 @@ import org.eclipse.mosaic.fed.sumo.junit.SumoTraciRule;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SpeedMode;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
 import org.eclipse.mosaic.lib.geo.UtmZone;
@@ -141,7 +142,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park)
-        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, (byte) 0);
+        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK_ON_ROADSIDE);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -149,6 +150,35 @@ public class TraciTest {
         // ASSERT
         VehicleData vehData = traci.getSimulationControl().getLastKnownVehicleData("veh_0");
         assertEquals(200, vehData.getRoadPosition().getOffset(), 2d);
+        assertTrue(vehData.isStopped());
+
+        // RUN (resume)
+        traci.getVehicleControl().resume("veh_0");
+        for (int t = 101; t < 200; t++) {
+            traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
+        }
+        // ASSERT
+        vehData = traci.getSimulationControl().getLastKnownVehicleData("veh_0");
+        assertTrue(vehData.getSpeed() > 0d);
+        assertFalse(vehData.isStopped());
+    }
+
+    @Test
+    public void stopVehicleAtParkingAreaAndResume() throws InternalFederateException {
+        final TraciClientBridge traci = traciRule.getTraciClient();
+
+        traci.getSimulationControl().addVehicle("veh_0", "0", "PKW", "0", "0", "max");
+        traci.getSimulationControl().subscribeForVehicle("veh_0", 0L, 400 * TIME.SECOND);
+        traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
+
+        // RUN (park) at parking Area
+        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK_IN_PARKING_AREA);
+        for (int t = 11; t < 100; t++) {
+            traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
+        }
+
+        // ASSERT
+        VehicleData vehData = traci.getSimulationControl().getLastKnownVehicleData("veh_0");
         assertTrue(vehData.isStopped());
 
         // RUN (resume)

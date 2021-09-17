@@ -17,6 +17,8 @@ package org.eclipse.mosaic.lib.spatial;
 
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -148,4 +150,5 @@ public class EdgeTest {
         Edge<Vector3d> ed = new Edge<>(new Vector3d(0, 0, 0), new Vector3d(1, 2, 3));
         Assert.assertTrue(MathUtils.isFuzzyEqual(ed.getLength(), Math.sqrt(1 + 4 + 9)));
     }
+
 }

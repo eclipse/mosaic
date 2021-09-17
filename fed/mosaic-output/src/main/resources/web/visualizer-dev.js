@@ -15,6 +15,7 @@ const Rsu = {
   latitude: 0,
   longitude: 0,
   marker: null,
+  timeStateChange: 0,
   state: {},
 
   init(name, latitude, longitude) {
@@ -49,6 +50,7 @@ const Rsu = {
   setState(stateName) {
     if (this.state[stateName] !== undefined) {
       this.state[stateName] = true
+      this.timeStateChange = Date.now();
     }
   },
 
@@ -63,9 +65,13 @@ const Rsu = {
     const style = this.createStyle()
     this.marker.setStyle(style)
 
-    // Clear sending/receiving states
-    this.state.sending = false
-    this.state.receiving =  false
+    if ((Date.now() - this.timeStateChange) > 500) {
+      // Clear sending/receiving states
+      this.state.sending = false
+      this.state.receiving =  false
+      this.timeStateChange = 0
+    }
+
   },
 
   /**
@@ -99,6 +105,7 @@ const Vehicle = {
   latitude: 0,
   longitude: 0,
   marker: null,
+  timeStateChange: 0,
   state: {},
 
   init(name, latitude, longitude) {
@@ -137,6 +144,7 @@ const Vehicle = {
   setState(stateName) {
     if (this.state[stateName] !== undefined) {
       this.state[stateName] = true
+      this.timeStateChange = Date.now();
     }
   },
 
@@ -151,9 +159,13 @@ const Vehicle = {
     const style = this.createStyle()
     this.marker.setStyle(style)
 
-    // Clear sending/receiving states
-    this.state.sending = false
-    this.state.receiving =  false
+    if ((Date.now() - this.timeStateChange) > 500) {
+      // Clear sending/receiving states
+      this.state.sending = false
+      this.state.receiving =  false
+      this.timeStateChange = 0
+    }
+
   },
 
   /**
@@ -193,6 +205,7 @@ const TrafficLight = {
   latitude: 0,
   longitude: 0,
   marker: null,
+  timeStateChange: 0,
   state: {},
 
   init(name, latitude, longitude) {
@@ -227,6 +240,7 @@ const TrafficLight = {
   setState(stateName) {
     if (this.state[stateName] !== undefined) {
       this.state[stateName] = true
+      this.timeStateChange = Date.now();
     }
   },
 
@@ -241,9 +255,12 @@ const TrafficLight = {
     const style = this.createStyle()
     this.marker.setStyle(style)
 
-    // Clear sending/receiving states
-    this.state.sending = false
-    this.state.receiving =  false
+    if ((Date.now() - this.timeStateChange) > 500) {
+      // Clear sending/receiving states
+      this.state.sending = false
+      this.state.receiving =  false
+      this.timeStateChange = 0
+    }
   },
 
   /**

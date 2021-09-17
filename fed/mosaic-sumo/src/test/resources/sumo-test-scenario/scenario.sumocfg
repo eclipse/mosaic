@@ -2,6 +2,6 @@
     <input>
         <net-file value="scenario.net.xml"/>
         <route-files value="scenario.rou.xml"/>
-        <additional-files value="scenario.detector.xml"/>
+        <additional-files value="scenario.detector.xml,parking.add.xml"/>
     </input>
 </configuration>
