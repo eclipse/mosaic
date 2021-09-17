@@ -48,7 +48,7 @@
             "items": { "$ref": "#/definitions/trafficLights" }
         },
         "chargingStations": {
-            "description": "Array of electric vehicle charging stations based on ETSI TS 101 556-1. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
+            "description": "Array of electric vehicle charging stations. An infrastructure which provides one or several electric vehicle charging spots to supply electric energy for charging electric vehicles.",
             "type": "array",
             "items": { "$ref": "#/definitions/chargingStation" }
         }

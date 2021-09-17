@@ -20,12 +20,7 @@ import org.eclipse.mosaic.fed.cell.config.model.CMobileNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
 import org.eclipse.mosaic.fed.cell.data.SimulationData;
-import org.eclipse.mosaic.lib.geo.CartesianArea;
-import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.geo.CartesianPolygon;
-import org.eclipse.mosaic.lib.geo.GeoArea;
-import org.eclipse.mosaic.lib.geo.GeoCircle;
-import org.eclipse.mosaic.lib.geo.GeoRectangle;
+import org.eclipse.mosaic.lib.geo.*;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.lang3.Validate;
@@ -77,6 +72,7 @@ public class RegionUtility {
      */
     public static CNetworkProperties getRegionForNode(String node) {
         if (node == null) {
+
             log.warn("nodeID is null, returning default region");
             return ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork;
         }
@@ -150,45 +146,69 @@ public class RegionUtility {
     /**
      * Get all regions for a destination area (of a geocast message).
      *
-     * @param geoArea destination geoArea (GeoCircle or GeoRectangle).
-     * @return list of all regions that intersect the destination area.
+     * @param geoArea The destination geoArea.
+     * @return List of all regions that intersect the destination area.
      */
     public static List<CNetworkProperties> getRegionsForDestinationArea(GeoArea geoArea) {
 
-        CartesianPolygon destPolygon;
-        if (geoArea instanceof GeoCircle) {
-            destPolygon = ((GeoCircle) geoArea).toCartesian().toPolygon();
-        } else {
-            destPolygon = ((GeoRectangle) geoArea).toCartesian().toPolygon();
-        }
-
         List<CNetworkProperties> regions = new ArrayList<>();
-        for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-            if (regionContainsOrIntersectsWithDestinationArea(region, destPolygon)) {
-                regions.add(region);
+
+        if (geoArea instanceof GeoCircle) {
+            for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
+                if (isCircleIntersectingPolygon(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
+                    regions.add(region);
+                }
+            }
+        } else {
+            if (geoArea instanceof GeoRectangle) {
+                geoArea = ((GeoRectangle) geoArea).toPolygon();
+            }
+            CartesianPolygon destPolygon = ((GeoPolygon) geoArea).toCartesian();
+            for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
+                if (region.getCapoArea().isIntersectingPolygon(destPolygon)) {
+                    regions.add(region);
+                }
             }
         }
 
         return regions;
     }
 
-    private static boolean regionContainsOrIntersectsWithDestinationArea(CMobileNetworkProperties regionalProperties,
-                                                                         CartesianPolygon destinationArea) {
-        // TODO might be slow, check if there's a better algorithm and implement it in mosaic-geomath
-        if (regionalProperties.getCapoArea() == null) {
-            return false;
+    /**
+     * Collision detection for the collision of a circle with a polygon.
+     *
+     * @param destinationArea The circle.
+     * @param regionalArea The polygon.
+     * @return true if the circle and the polygon collide.
+     */
+    private static boolean isCircleIntersectingPolygon(CartesianCircle destinationArea,
+                                                        CartesianPolygon regionalArea) {
+        CartesianPoint circleCenter = destinationArea.getCenter();
+        // Check if circle center is contained in polygon
+        if (regionalArea.contains(circleCenter)) {
+            return true;
+        }
+        // Check if any edge of the regionalArea intersects the circular destinationArea
+        for (int idx = 1; idx < regionalArea.getVertices().size() ; idx++) {
+            CartesianPoint verticeA = regionalArea.getVertices().get(idx - 1);
+            CartesianPoint verticeB = regionalArea.getVertices().get(idx);
+            double dx = verticeA.getX() - verticeB.getX();
+            double dy = verticeA.getY() - verticeB.getY();
+            double edgeLength = Math.sqrt(dx * dx + dy * dy);
+            double t = ((verticeB.getX() - circleCenter.getX()) * dx + (verticeB.getY() - circleCenter.getY()) * dy) / edgeLength;
+            if (t >= 0 && t <= 1) {
+                // If line through circle center and perpendicular to edge vector intersects the edge, check distance to circle center
+                double distanceToCircleCenter = Math.abs((verticeB.getX() - circleCenter.getX()) * dy
+                        - (verticeB.getY() - circleCenter.getY()) * dx)
+                        / edgeLength;
+                if (distanceToCircleCenter <= destinationArea.getRadius()) {
+                    return true;
+                }
+            } else if (verticeB.distanceTo(circleCenter) <= destinationArea.getRadius()) {
+                return true;
+            }
         }
 
-        for (CartesianPoint corner : destinationArea.getVertices()) {
-            if (regionalProperties.getCapoArea().contains(corner)) {
-                return true;
-            }
-        }
-        for (CartesianPoint otherCorner : regionalProperties.getCapoArea().getVertices()) {
-            if (destinationArea.contains(otherCorner)) {
-                return true;
-            }
-        }
         return false;
     }
 

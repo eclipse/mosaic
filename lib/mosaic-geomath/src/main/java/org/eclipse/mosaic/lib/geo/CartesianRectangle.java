@@ -128,4 +128,15 @@ public class CartesianRectangle implements Rectangle<CartesianPoint>, Bounds<Car
         return (int) (longHash ^ (longHash >>> 32));
     }
 
+    /**
+     * Returns true if there is an intersection with another rectangle.
+     *
+     * @param rectangle The other rectangle.
+     * @return true if the rectangles intersect.
+     */
+    public boolean isIntersectingRectangle(CartesianRectangle rectangle) {
+        return !(getA().getX() > rectangle.getB().getX() || getB().getX() < rectangle.getA().getX()
+                || getA().getY() < rectangle.getB().getY() || getB().getY() > rectangle.getA().getY());
+    }
+
 }
