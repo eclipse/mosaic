@@ -17,9 +17,8 @@ package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
-import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation;
-import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation.DistanceSensors;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation.SensorType;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -171,8 +170,7 @@ public interface VehicleOperatingSystem extends OperatingSystem, INavigationModu
      * Activates the detection of the leading vehicle within in a given distance.
      *
      * @param sensorRange The maximum distance to look ahead for leading vehicles.
-     * @param sensorType  The type of the sensor (e.g. LIDAR)
+     * @param sensors     List of distance sensors
      */
-    void activateVehicleDistanceSensors(double sensorRange, VehicleDistanceSensorActivation.SensorTypes sensorType,
-                                        DistanceSensors... sensors);
+    void activateVehicleSensors(double sensorRange, SensorType... sensors);
 }

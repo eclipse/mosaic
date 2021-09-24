@@ -30,63 +30,46 @@ import java.util.Arrays;
  * This extension of {@link Interaction} is intended to be used to enable distance sensors of vehicles.
  */
 @SuppressWarnings({"EI_EXPOSE_REP2", "EI_EXPOSE_REP"})
-public final class VehicleDistanceSensorActivation extends Interaction {
+public final class VehicleSensorActivation extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * String identifying the type of this interaction.
      */
-    public final static String TYPE_ID = createTypeIdentifier(VehicleDistanceSensorActivation.class);
-
-    public enum DistanceSensors {
-        FRONT, LEFT, RIGHT, REAR
-    }
-
+    public final static String TYPE_ID = createTypeIdentifier(VehicleSensorActivation.class);
     /**
-     * Sensor type.
+     * list of distance sensors.
      */
-    private final SensorTypes sensorType;
+    private final SensorType[] sensors;
 
     /**
      * String identifying a simulated vehicle.
      */
     private final String vehicleId;
+
     /**
-     * list of distance sensors.
+     * Creates a new {@link VehicleSensorActivation} interaction.
+     *
+     * @param time             Timestamp of this interaction, unit: [ns]
+     * @param vehicleId        vehicle identifier
+     * @param maximumLookahead maximum distance to look ahead for a leading vehicle
+     * @param sensors          list of distance sensors
      */
-    private final DistanceSensors[] sensors;
+    public VehicleSensorActivation(long time, String vehicleId, double maximumLookahead, SensorType... sensors) {
+        super(time);
+        this.vehicleId = vehicleId;
+        this.maximumLookahead = maximumLookahead;
+        this.sensors = sensors;
+    }
 
     /**
      * The maximum distance to look ahead for a leading vehicle.
      */
     private final double maximumLookahead;
-    /**
-     * True if sensor shall be spawned, False if it shall be destroyed.
-     */
-    private final boolean activate;
 
-    /**
-     * Creates a new {@link VehicleDistanceSensorActivation} interaction.
-     *
-     * @param time             Timestamp of this interaction, unit: [ns]
-     * @param vehicleId        vehicle identifier
-     * @param sensorType
-     * @param maximumLookahead maximum distance to look ahead for a leading vehicle
-     * @param activate
-     * @param sensors          list of distance sensors
-     */
-    public VehicleDistanceSensorActivation(long time, String vehicleId, SensorTypes sensorType, double maximumLookahead, boolean activate, DistanceSensors... sensors) {
-        super(time);
-        this.vehicleId = vehicleId;
-        this.sensorType = sensorType;
-        this.maximumLookahead = maximumLookahead;
-        this.activate = activate;
-        this.sensors = sensors;
-    }
-
-    public SensorTypes getSensorType() {
-        return sensorType;
+    public SensorType[] getSensors() {
+        return sensors;
     }
 
     public String getVehicleId() {
@@ -95,24 +78,6 @@ public final class VehicleDistanceSensorActivation extends Interaction {
 
     public double getMaximumLookahead() {
         return maximumLookahead;
-    }
-
-    public DistanceSensors[] getSensors() {
-        return sensors;
-    }
-
-    public boolean isActivate() {
-        return activate;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(3, 23)
-                .append(vehicleId)
-                .append(maximumLookahead)
-                .append(sensors)
-                .append(sensorType)
-                .toHashCode();
     }
 
     @Override
@@ -127,13 +92,25 @@ public final class VehicleDistanceSensorActivation extends Interaction {
             return false;
         }
 
-        VehicleDistanceSensorActivation other = (VehicleDistanceSensorActivation) obj;
+        VehicleSensorActivation other = (VehicleSensorActivation) obj;
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.maximumLookahead, other.maximumLookahead)
                 .append(this.sensors, other.sensors)
-                .append(this.sensorType, other.sensorType)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(3, 23)
+                .append(vehicleId)
+                .append(maximumLookahead)
+                .append(sensors)
+                .toHashCode();
+    }
+
+    public enum SensorType {
+        LIDAR, RADAR_FRONT, RADAR_LEFT, RADAR_RIGHT, RADAR_REAR
     }
 
     @Override
@@ -143,14 +120,6 @@ public final class VehicleDistanceSensorActivation extends Interaction {
                 .append("vehicleId", vehicleId)
                 .append("maximumLookahead", maximumLookahead)
                 .append("sensors", Arrays.toString(sensors))
-                .append("sensorType", sensorType)
                 .toString();
-    }
-
-    /**
-     * Possible sensor types to be spawned.
-     */
-    public enum SensorTypes {
-        UNKNOWN, LiDAR
     }
 }
