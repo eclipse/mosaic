@@ -312,12 +312,12 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public void activateVehicleSensors(double sensorRange, SensorType... sensors) {
+    public void activateVehicleSensors(double sensorRange, SensorType... sensorTypes) {
         sendInteractionToRti(new VehicleSensorActivation(
                         SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                         getId(),
                         sensorRange,
-                        sensors
+                        sensorTypes
                 )
         );
     }

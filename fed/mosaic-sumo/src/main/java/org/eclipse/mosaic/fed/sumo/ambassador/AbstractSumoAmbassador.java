@@ -54,8 +54,6 @@ import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.trafficsigns.TrafficSignLaneAssignmentChange;
 import org.eclipse.mosaic.interactions.trafficsigns.TrafficSignRegistration;
 import org.eclipse.mosaic.interactions.trafficsigns.TrafficSignSpeedLimitChange;
-import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation;
-import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation.DistanceSensors;
 import org.eclipse.mosaic.interactions.vehicle.VehicleFederateAssignment;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange.VehicleLaneChangeMode;
@@ -63,6 +61,8 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation.SensorType;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
@@ -486,8 +486,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             receiveInteraction((VehicleResume) interaction);
         } else if (interaction.getTypeId().equals(VehicleParametersChange.TYPE_ID)) {
             receiveInteraction((VehicleParametersChange) interaction);
-        } else if (interaction.getTypeId().equals(VehicleDistanceSensorActivation.TYPE_ID)) {
-            receiveInteraction((VehicleDistanceSensorActivation) interaction);
+        } else if (interaction.getTypeId().equals(VehicleSensorActivation.TYPE_ID)) {
+            receiveInteraction((VehicleSensorActivation) interaction);
         } else if (interaction.getTypeId().equals(VehicleSpeedChange.TYPE_ID)) {
             receiveInteraction((VehicleSpeedChange) interaction);
         } else if (interaction.getTypeId().equals(InductionLoopDetectorSubscription.TYPE_ID)) {
@@ -974,27 +974,27 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     /**
-     * Extract data from received {@link VehicleDistanceSensorActivation} interaction and forward to SUMO.
+     * Extract data from received {@link VehicleSensorActivation} interaction and forward to SUMO.
      *
-     * @param vehicleDistanceSensorActivation Interaction that indicating to enable of the distance sensors for vehicle.
+     * @param vehicleSensorActivation Interaction that indicating to enable of the distance sensors for vehicle.
      */
-    private void receiveInteraction(VehicleDistanceSensorActivation vehicleDistanceSensorActivation) {
+    private void receiveInteraction(VehicleSensorActivation vehicleSensorActivation) {
         log.info(
                 "Enabling distance sensors for vehicle \"{}\" at simulation time {}",
-                vehicleDistanceSensorActivation.getVehicleId(),
-                TIME.format(vehicleDistanceSensorActivation.getTime())
+                vehicleSensorActivation.getVehicleId(),
+                TIME.format(vehicleSensorActivation.getTime())
         );
         log.info("Please keep in mind that the calculation of the sensor values may slow down the simulation.");
 
         bridge.getSimulationControl().enableDistanceSensors(
-                vehicleDistanceSensorActivation.getVehicleId(),
-                vehicleDistanceSensorActivation.getMaximumLookahead(),
-                ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.FRONT),
-                ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.REAR)
+                vehicleSensorActivation.getVehicleId(),
+                vehicleSensorActivation.getMaximumLookahead(),
+                ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_FRONT),
+                ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_REAR)
         );
 
-        if (ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.LEFT)
-                || ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.RIGHT)) {
+        if (ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_LEFT)
+                || ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_RIGHT)) {
             log.warn("Left or right distance sensors for vehicles are not supported.");
         }
     }

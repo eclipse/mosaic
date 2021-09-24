@@ -27,21 +27,26 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Arrays;
 
 /**
- * This extension of {@link Interaction} is intended to be used to enable distance sensors of vehicles.
+ * This extension of {@link Interaction} is intended to be used to activate vehicle sensors.
  */
 @SuppressWarnings({"EI_EXPOSE_REP2", "EI_EXPOSE_REP"})
 public final class VehicleSensorActivation extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
+    public enum SensorType {
+        LIDAR, RADAR_FRONT, RADAR_LEFT, RADAR_RIGHT, RADAR_REAR
+    }
+
     /**
      * String identifying the type of this interaction.
      */
     public final static String TYPE_ID = createTypeIdentifier(VehicleSensorActivation.class);
+
     /**
-     * list of distance sensors.
+     * list of sensor types to be activated
      */
-    private final SensorType[] sensors;
+    private final SensorType[] sensorTypes;
 
     /**
      * String identifying a simulated vehicle.
@@ -49,27 +54,27 @@ public final class VehicleSensorActivation extends Interaction {
     private final String vehicleId;
 
     /**
+     * The maximum range of the sensor
+     */
+    private final double maximumLookahead;
+
+    /**
      * Creates a new {@link VehicleSensorActivation} interaction.
      *
      * @param time             Timestamp of this interaction, unit: [ns]
      * @param vehicleId        vehicle identifier
      * @param maximumLookahead maximum distance to look ahead for a leading vehicle
-     * @param sensors          list of distance sensors
+     * @param sensorTypes          list of distance sensors
      */
-    public VehicleSensorActivation(long time, String vehicleId, double maximumLookahead, SensorType... sensors) {
+    public VehicleSensorActivation(long time, String vehicleId, double maximumLookahead, SensorType... sensorTypes) {
         super(time);
         this.vehicleId = vehicleId;
         this.maximumLookahead = maximumLookahead;
-        this.sensors = sensors;
+        this.sensorTypes = sensorTypes;
     }
 
-    /**
-     * The maximum distance to look ahead for a leading vehicle.
-     */
-    private final double maximumLookahead;
-
-    public SensorType[] getSensors() {
-        return sensors;
+    public SensorType[] getSensorTypes() {
+        return sensorTypes;
     }
 
     public String getVehicleId() {
@@ -96,7 +101,7 @@ public final class VehicleSensorActivation extends Interaction {
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.maximumLookahead, other.maximumLookahead)
-                .append(this.sensors, other.sensors)
+                .append(this.sensorTypes, other.sensorTypes)
                 .isEquals();
     }
 
@@ -105,12 +110,8 @@ public final class VehicleSensorActivation extends Interaction {
         return new HashCodeBuilder(3, 23)
                 .append(vehicleId)
                 .append(maximumLookahead)
-                .append(sensors)
+                .append(sensorTypes)
                 .toHashCode();
-    }
-
-    public enum SensorType {
-        LIDAR, RADAR_FRONT, RADAR_LEFT, RADAR_RIGHT, RADAR_REAR
     }
 
     @Override
@@ -119,7 +120,7 @@ public final class VehicleSensorActivation extends Interaction {
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
                 .append("maximumLookahead", maximumLookahead)
-                .append("sensors", Arrays.toString(sensors))
+                .append("sensors", Arrays.toString(sensorTypes))
                 .toString();
     }
 }
