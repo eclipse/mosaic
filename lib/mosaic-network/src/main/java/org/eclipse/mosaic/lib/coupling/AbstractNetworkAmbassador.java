@@ -569,9 +569,9 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
             if (sourceId != null) {
                 log.debug(
-                        "insertV2XMessage: id={} from node ID[int={} , ext={}] channel:{} time={}",
+                        "sendV2XMessage: id={} from node ID[int={} , ext={}] channel:{} type:{} time={}",
                         interaction.getMessageId(),
-                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), interaction.getTime()
+                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), dac.getType(), interaction.getTime()
                 ); // Write the message onto the channel and to the federate
                 // Then wait for ack
                 int ack = ambassadorFederateChannel.writeSendMessage(
