@@ -70,6 +70,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Path logDirectory;
 
     protected String logLevelOverride = null;
+    protected int watchdogInterval = 20;
     protected Consumer<CScenario> scenarioConfigManipulator = c -> {};
     protected List<Consumer<Path>> scenarioDirectoryManipulator = new ArrayList<>();
     protected Map<String, Consumer<CRuntime.CFederate>> federateManipulators = new HashMap<>();
@@ -125,6 +126,11 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     public MosaicSimulationRule componentProviderFactory(MosaicSimulation.ComponentProviderFactory factory) {
         this.componentProviderFactory = factory;
+        return this;
+    }
+
+    public MosaicSimulationRule watchdog(int watchdogInterval) {
+        this.watchdogInterval = watchdogInterval;
         return this;
     }
 
@@ -207,6 +213,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
             simulation = new MosaicSimulation()
+                    .setWatchdogInterval(watchdogInterval)
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
