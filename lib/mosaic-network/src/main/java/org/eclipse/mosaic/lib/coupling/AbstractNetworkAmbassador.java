@@ -191,7 +191,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             throw new InternalFederateException("Could not establish connection to federate. The federate may not have started properly.");
         }
 
-        log.debug("{} finished ConnectToFederate", ambassadorName);
+        log.trace("{} finished ConnectToFederate", ambassadorName);
     }
 
     /**
