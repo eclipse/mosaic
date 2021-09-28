@@ -15,10 +15,13 @@
 
 package org.eclipse.mosaic.lib.objects.vehicle;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
@@ -164,11 +167,12 @@ public class BatteryData implements Serializable {
 
     @Override
     public String toString() {
-        return "BatteryData{"
-                + "VehicleID=" + ownerId
-                + ", stateOfCharge=" + stateOfCharge
-                + ", capacity=" + capacity
-                + ", charging=" + charging + '}';
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .append("vehicleId", ownerId)
+                .append("stateOfCharge", stateOfCharge)
+                .append("capacity", capacity)
+                .append("charging", charging)
+                .build();
     }
 
     public static class Builder {
