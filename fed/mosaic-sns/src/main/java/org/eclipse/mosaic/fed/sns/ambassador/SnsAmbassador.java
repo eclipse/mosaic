@@ -291,6 +291,11 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     }
 
     @Override
+    public void finishSimulation() throws InternalFederateException {
+        log.info("Finished simulation");
+    }
+
+    @Override
     public boolean isTimeConstrained() {
         return true;
     }
