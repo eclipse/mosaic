@@ -469,16 +469,16 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     CartesianPoint projectedPosition = vi.getProjectedPosition();
                     if (simulatedNodes.containsInternalId(vi.getName())) { // if the vehicle is already present in the simulation
                         Integer id = simulatedNodes.toExternalId(vi.getName());
-                        if (this.log.isDebugEnabled()) {
-                            log.debug("UpdateNode : ID: [int={}, ext={}] Pos: x({}) y({}) Geo: {}", vi.getName(), id,
+                        if (this.log.isTraceEnabled()) {
+                            log.trace("UpdateNode : ID: [int={}, ext={}] Pos: x({}) y({}) Geo: {}", vi.getName(), id,
                                     projectedPosition.getX(), projectedPosition.getY(), geoPosition);
                         }
                         nodesToUpdate.add(new NodeDataContainer(id, projectedPosition));
                     } else if (registeredNodes.containsKey(vi.getName())) {
                         // Node was not yet added to simulation, so update its entry in the registered node list
                         registeredNodes.get(vi.getName()).position = projectedPosition;
-                        if (this.log.isDebugEnabled()) {
-                            log.debug("UpdateNode (still virtual) : ID[int={}] Pos: x({}) y({}) Geo: {}", vi.getName(),
+                        if (this.log.isTraceEnabled()) {
+                            log.trace("UpdateNode (still virtual) : ID[int={}] Pos: x({}) y({}) Geo: {}", vi.getName(),
                                     projectedPosition.getX(), projectedPosition.getY(), geoPosition);
                         }
                     } else {
