@@ -269,8 +269,8 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         for (Map.Entry<String, TransmissionResult> transmissionResultEntry : transmissionResults.entrySet()) {
             if (transmissionResultEntry.getValue().success) {
                 long receiveTime = v2xMessageTransmission.getTime() + transmissionResultEntry.getValue().delay;
-                if (log.isTraceEnabled()) {
-                    log.trace("Receive v2xMessage.id={} on node={} @time={}",
+                if (log.isDebugEnabled()) {
+                    log.debug("Receive v2xMessage.id={} on node={} @time={}",
                             v2xMessageTransmission.getMessageId(), transmissionResultEntry.getKey(), TIME.format(receiveTime)
                     );
                 }

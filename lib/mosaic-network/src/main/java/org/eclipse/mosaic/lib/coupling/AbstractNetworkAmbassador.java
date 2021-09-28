@@ -319,7 +319,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                                     rcvMsgContainer.msgId,
                                     rcvMsgContainer.receiverInformation
                             );
-                            log.trace("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), msg.getTime());
+                            log.debug("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), msg.getTime());
                             this.rti.triggerInteraction(msg);  // Hand the received message to the RTI and thus the other federates
                         }
                         break;
