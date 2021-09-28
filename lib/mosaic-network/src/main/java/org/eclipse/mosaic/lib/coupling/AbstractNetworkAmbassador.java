@@ -270,7 +270,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
-        this.log.debug("ProcessInteraction {} at time={}", interaction.getTypeId(), interaction.getTime());
+        this.log.trace("ProcessInteraction {} at time={}", interaction.getTypeId(), interaction.getTime());
         // 2nd step of time management cycle: Deliver interactions to the federate
         if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             this.process((RsuRegistration) interaction);
