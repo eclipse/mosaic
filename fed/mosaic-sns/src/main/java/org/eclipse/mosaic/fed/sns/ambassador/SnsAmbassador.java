@@ -186,7 +186,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 if (configuration.getConf0() != null && configuration.getConf0().getRadius() != null) {
                     communicationRadius = configuration.getConf0().getRadius();
                 } else {
-                    log.warn("Node {} is not configured with a distance value. Using global singlehop radius from SNS configuration.", nodeId);
+                    log.debug("Node {} is not configured with a distance value. Using global singlehop radius from SNS configuration.", nodeId);
                 }
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
                     SimulationEntities.INSTANCE.enableWifi(nodeId, communicationRadius);
