@@ -568,7 +568,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     : null;
 
             if (sourceId != null) {
-                log.info(
+                log.debug(
                         "insertV2XMessage: id={} from node ID[int={} , ext={}] channel:{} time={}",
                         interaction.getMessageId(),
                         sac.getSourceName(), sourceId, dac.getAdhocChannelId(), interaction.getTime()
