@@ -191,7 +191,9 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
                     SimulationEntities.INSTANCE.enableWifi(nodeId, communicationRadius);
                 } else {
+                    // Vehicle has not been simulated by the SNS, yet. Radio is configured for the first time.
                     registeredVehicles.put(nodeId, communicationRadius);
+                    log.info("Added Vehicle id={} @time={}", nodeId, TIME.format(interaction.getTime()));
                 }
                 log.info("Radio configured in mode {} with communication radius {} for node id={} @time={}",
                         configuration.getRadioMode(), communicationRadius, nodeId, TIME.format(interaction.getTime()));
