@@ -38,6 +38,7 @@ import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.AbstractFederateAmbassador;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -357,7 +358,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.log.debug(
                 "Add RSU {} at simulation time {} ",
                 interaction.getMapping().getName(),
-                interaction.getTime()
+                TIME.format(interaction.getTime())
         );
         RsuMapping mapping = interaction.getMapping();
         if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
@@ -379,7 +380,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.log.debug(
                 "Add traffic light RSU for TL {} at simulation time {} ",
                 interaction.getMapping().getName(),
-                interaction.getTime()
+                TIME.format(interaction.getTime())
         );
         TrafficLightMapping mapping = interaction.getMapping();
         if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
@@ -401,7 +402,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.log.debug(
                 "Add charging station RSU for CS {} at simulation time {} ",
                 interaction.getMapping().getName(),
-                interaction.getTime()
+                TIME.format(interaction.getTime())
         );
         ChargingStationMapping mapping = interaction.getMapping();
         if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
