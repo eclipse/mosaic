@@ -128,7 +128,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         final RsuMapping applicationRsu = interaction.getMapping();
         if (applicationRsu.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationRsu.getName(), applicationRsu.getPosition().toCartesian());
-            log.info("Added RSU id={} @time={}", applicationRsu.getName(), TIME.format(interaction.getTime()));
+            log.info("Added RSU id={} position={} @time={}", applicationRsu.getName(), applicationRsu.getPosition(), TIME.format(interaction.getTime()));
         }
     }
 
@@ -136,7 +136,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         final TrafficLightMapping applicationTl = interaction.getMapping();
         if (applicationTl.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationTl.getName(), applicationTl.getPosition().toCartesian());
-            log.info("Added TrafficLight id={} @time={}", applicationTl.getName(), TIME.format(interaction.getTime()));
+            log.info("Added TrafficLight id={} position={} @time={}", applicationTl.getName(), applicationTl.getPosition(), TIME.format(interaction.getTime()));
         }
     }
 
@@ -144,14 +144,14 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         final ChargingStationMapping applicationCs = interaction.getMapping();
         if (applicationCs.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
-            log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
+            log.info("Added ChargingStation id={} position={} @time={}", applicationCs.getName(), applicationCs.getPosition(), TIME.format(interaction.getTime()));
         }
     }
 
     private void process(VehicleUpdates interaction) {
         for (VehicleData added : interaction.getAdded()) {
             if (addOrUpdateVehicle(added)) {
-                log.info("Added Vehicle id={} @time={}", added.getName(), TIME.format(interaction.getTime()));
+                log.info("Added Vehicle id={} position={} @time={}", added.getName(), added.getPosition(), TIME.format(interaction.getTime()));
             }
         }
         for (VehicleData updated : interaction.getUpdated()) {
