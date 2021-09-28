@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * This class contains a main method that configures a Eclipse MOSAIC simulation based
@@ -134,9 +131,7 @@ public class MosaicStarter {
 
         final MosaicSimulation.SimulationResult result = simulation.runSimulation(scenarioDirectory, scenarioConfiguration);
 
-        if (result.success) {
-            printSuccessfulSimulation(simulation.getLogger(), result.durationMs);
-        } else {
+        if (!result.success) {
             printErrorInformation(simulation.getLogger(), result.exception);
             throw new ExecutionException();
         }
@@ -295,24 +290,6 @@ public class MosaicStarter {
         if (getLogger() != null) {
             getLogger().error(string, reason);
         }
-    }
-
-    /**
-     * Print the start time, end time and the duration of the simulation
-     * in case of successful simulation.
-     *
-     * @param durationMs the duration of the simulation in milliseconds
-     */
-    private void printSuccessfulSimulation(Logger logger, long durationMs) {
-        long endTime = System.currentTimeMillis();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date startDate = new Date(endTime - durationMs);
-        Date endDate = new Date(endTime);
-        logger.info("Simulation started: " + sdf.format(startDate));
-        logger.info("Simulation ended: " + sdf.format(endDate));
-        logger.info("Finishing simulation (duration: {})", DurationFormatUtils.formatDuration(durationMs, "HH'h' mm'm' ss.SSS's'"));
-        System.out.println();
-        System.out.println();
     }
 
     private void printErrorInformation(Logger logger, Throwable exception) {

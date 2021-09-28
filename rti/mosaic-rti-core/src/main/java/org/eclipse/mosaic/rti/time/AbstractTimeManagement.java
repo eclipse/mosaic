@@ -34,7 +34,9 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Queue;
@@ -67,11 +69,11 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
     /**
      * Ordered queue holding all requested times of federates.
      * TODO: the ordering of this queue has to be revisited:
-     *  <ul>
-     *      <li/> {@link org.eclipse.mosaic.rti.api.parameters.FederatePriority} is used as reference values
-     *      <li/> {@link FederateEvent#compareTo} orders events reversed as described FederatePriority
-     *      <li/> maybe it's enough to just reverse the compareTo logic
-     *  </ul>
+     * <ul>
+     *     <li/> {@link org.eclipse.mosaic.rti.api.parameters.FederatePriority} is used as reference values
+     *     <li/> {@link FederateEvent#compareTo} orders events reversed as described FederatePriority
+     *     <li/> maybe it's enough to just reverse the compareTo logic
+     * </ul>
      */
     protected final Queue<FederateEvent> events;
 
@@ -153,16 +155,16 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
     public void finishSimulationRun(int statusCode) throws InternalFederateException {
         long durationMs = (System.nanoTime() - simStartRealtimeNs) / TIME.MILLI_SECOND;
 
-        this.stopWatchDog();
-
-        Collection<FederateAmbassador> ambassadors = federation.getFederationManagement().getAmbassadors();
-        for (FederateAmbassador fed : ambassadors) {
-            fed.finishSimulation();
+        try {
+            this.stopWatchDog();
+            for (FederateAmbassador fed : federation.getFederationManagement().getAmbassadors()) {
+                fed.finishSimulation();
+            }
+        } finally {
+            // always print simulation finished even if federate throws exception on finishing
+            printSimulationFinished(durationMs, statusCode);
+            federation.getMonitor().onEndSimulation(federation.getFederationManagement(), this, durationMs, statusCode);
         }
-
-        federation.getMonitor().onEndSimulation(federation.getFederationManagement(), this, durationMs, statusCode);
-
-        printSimulationFinished(durationMs, statusCode);
     }
 
     private void printSimulationFinished(long durationMs, int statusCode) {
@@ -173,19 +175,26 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
                 FORMAT_ONE_DIGIT.format((time * 100d) / getEndTime())
         );
 
-        String newLine = System.lineSeparator();
+        progressLogger.info(System.lineSeparator());
 
-        progressLogger.info(newLine);
-        progressLogger.info("Duration: {} (RTF: {})" + newLine,
+        final long currentTime = System.currentTimeMillis();
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        logger.info("Simulation ended after {}s of {}s ({}%)", time / TIME.SECOND, getEndTime() / TIME.SECOND, (time * 100) / getEndTime());
+        logger.info("Started: " + dateFormat.format(new Date(currentTime - durationMs)));
+        logger.info("Ended: " + dateFormat.format(new Date(currentTime)));
+        logger.info("Duration: {} (RTF: {})",
                 DurationFormatUtils.formatDuration(durationMs, "HH'h' mm'm' ss.SSS's'"),
                 FORMAT_TWO_DIGIT.format((getEndTime() / TIME.MILLI_SECOND) / durationMs)
         );
+        logger.info("");
         if (statusCode == STATUS_CODE_SUCCESS) {
-            progressLogger.info("Simulation finished: {}" + newLine, statusCode);
+            logger.info("Simulation finished: {}", statusCode);
         } else {
-            progressLogger.info("Simulation interrupted: {}" + newLine, statusCode);
+            logger.info("Simulation interrupted: {}", statusCode);
         }
     }
+
+
 
     @Override
     public long getNextEventTimestamp() throws IllegalValueException {
