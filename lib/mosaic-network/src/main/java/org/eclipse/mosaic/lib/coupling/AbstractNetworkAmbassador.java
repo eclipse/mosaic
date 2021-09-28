@@ -171,7 +171,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             // do not close outputScanner, as it would close the underlying stream.
 
             if (matchedOutPort != null) {
-                log.debug("Found string \"{}\" in stdout", matchedOutPort);
+                log.trace("Found string \"{}\" in stdout", matchedOutPort);
                 int port = Integer.parseInt(matchedOutPort.split("=")[1]);
                 port = getHostPortFromDockerPort(port);
                 this.connectToFederate(host, port); // Connection with the read port
