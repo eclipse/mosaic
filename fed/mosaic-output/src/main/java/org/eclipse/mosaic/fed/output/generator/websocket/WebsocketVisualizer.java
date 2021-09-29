@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.output.ambassador.Handle;
 
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdates;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
@@ -74,7 +74,7 @@ public class WebsocketVisualizer extends AbstractOutputGenerator {
     }
 
     @Handle
-    public void visualizeInteraction(ChargingStationUpdates interaction) throws Exception {
+    public void visualizeInteraction(ChargingStationUpdate interaction) throws Exception {
         websocketVisualizerServer.updateChargingStation(interaction);
     }
 

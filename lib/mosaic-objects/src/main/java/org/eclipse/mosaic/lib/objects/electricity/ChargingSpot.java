@@ -15,13 +15,14 @@
 
 package org.eclipse.mosaic.lib.objects.electricity;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.io.Serializable;
 
 /**
- * Definition of an {@link ChargingSpot} based on the <em>ETSI TS 101 556-1</em> definition.
- * <p>
- * <em>A set of 1 to 4 parking places arranged around a pole, where it is possible to charge an EV.</em>
- * </p>
+ * Definition of a {@link ChargingSpot}.
  */
 public final class ChargingSpot implements Serializable {
 
@@ -30,114 +31,62 @@ public final class ChargingSpot implements Serializable {
     /**
      * Unique identifier of the {@link ChargingSpot}.
      */
-    private final String name;
+    private final String chargingSpotId;
 
     /**
-     * Type of this {@link ChargingSpot} in compliance with current standards, including.
-     * <em>IEC 62196-2</em>.
+     * Type of this charging this {@link ChargingSpot} supports.
      */
-    private final int type;
+    private final ChargingType chargingType;
 
     /**
-     * Number of available parking places, 1 to 4 parking places arranged around a pole.
+     * Maximum voltage available at this {@code ChargingSpot}. [V]
      */
-    private final int parkingPlaces;
+    private final double maxVoltage;
+
+    /**
+     * Maximum current available at this {@code ChargingSpot}. [A]
+     */
+    private final double maxCurrent;
 
     /**
      * Flag, indicating if the {@link ChargingSpot} is available.
      */
-    private boolean available;
-
-    /**
-     * The {@link Reservation} existing for this {@link ChargingSpot}.
-     */
-    private Reservation reservation;
-
-    /**
-     * The id of the vehicle which is already docked to this {@link ChargingSpot}.
-     */
-    private String dockedVehicle;
+    private boolean available = true;
 
     /**
      * Creates a new {@link ChargingSpot} object.
      *
-     * @param name          Unique identifier of the {@link ChargingSpot}
-     * @param type          Type of this {@link ChargingSpot} in compliance with current standards,
-     *                      including <em>IEC 62196-2</em>
-     * @param parkingPlaces Number of available parking places, 1 to 4 parking places arranged around a pole
+     * @param chargingSpotId Unique identifier of the {@link ChargingSpot}
+     * @param type           Type of this {@link ChargingSpot} in compliance with current standards,
+     *                       including <em>IEC 62196-2</em> see {@link ChargingType}
      */
-    public ChargingSpot(String name, int type, int parkingPlaces) {
-        this.name = name;
-        this.type = type;
-        this.parkingPlaces = parkingPlaces;
-        this.available = true;
-        this.reservation = new Reservation("no reservation", 0, 0);
-        this.dockedVehicle = null;
+    public ChargingSpot(String chargingSpotId, ChargingType type, double maxVoltage, double maxCurrent) {
+        this.chargingSpotId = chargingSpotId;
+        this.chargingType = type;
+        this.maxVoltage = maxVoltage;
+        this.maxCurrent = maxCurrent;
     }
 
-    public Reservation getReservation() {
-        return reservation;
+    public String getChargingSpotId() {
+        return chargingSpotId;
     }
 
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
+    public ChargingType getChargingType() {
+        return chargingType;
     }
 
-    public String getName() {
-        return name;
+    public double getMaximumVoltage() {
+        return maxVoltage;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public int getParkingPlaces() {
-        return parkingPlaces;
-    }
-
-    /**
-     * Returns the maximum voltage based on the type.
-     *
-     * @return Maximum voltage available at this <code>ChargingSpot</code>, unit: [V]
-     */
-    public int getMaximumVoltage() {
-        switch (type) {
-            case 0: // Mode 1 3,7kW
-                return 230;
-            case 1: // Mode 2 11kW
-                return 400;
-            case 2: // Mode 3 22kW
-                return 400;
-            case 3: // Mode 4 44kW
-                return 400;
-            default: // fall back
-                return 0;
-        }
-    }
-
-    /**
-     * @return Maximum current available at this <code>ChargingSpot</code>, unit: [A]
-     */
-    public int getMaximumCurrent() {
-        switch (type) {
-            case 0: // Mode 1 3,7kW
-                return 16;
-            case 1: // Mode 2 11kW
-                return 16;
-            case 2: // Mode 3 22kW
-                return 32;
-            case 3: // Mode 4 44kW
-                return 63;
-            default: // fall back
-                return 0;
-        }
-
+    public double getMaximumCurrent() {
+        return maxCurrent;
     }
 
     /**
      * Returns the maximum power available at this {@link ChargingSpot}, unit: [W].
      */
-    public int getMaximumPower() {
+    public double getMaximumPower() {
         return getMaximumVoltage() * getMaximumCurrent();
     }
 
@@ -148,39 +97,20 @@ public final class ChargingSpot implements Serializable {
         return available;
     }
 
-    /**
-     * Returns {@code True}, if the {@link ChargingSpot} is reserved for a vehicle.
-     */
-    public boolean isReserved() {
-        return !(this.reservation.getReservedVehicleId().equals("no reservation"));
-    }
-
     public void setAvailable(boolean available) {
         this.available = available;
     }
 
-    public String getDockedVehicle() {
-        return dockedVehicle;
-    }
-
-    public void dock(String dockedVehicle) {
-        this.dockedVehicle = dockedVehicle;
-    }
-
-    public void undock() {
-        this.dockedVehicle = null;
-    }
-
-    public boolean isDocked() {
-        return dockedVehicle != null;
-    }
-
     @Override
     public String toString() {
-        return "ChargingSpot [name=" + name + ", type=" + type + ", parkingPlaces=" + parkingPlaces
-                + ", available=" + available + ", reservation=" + reservation.toString() + ", dockedVehicle=" + dockedVehicle + ", maximumVoltage=" + getMaximumVoltage()
-                + ", maximumCurrent=" + getMaximumCurrent() + ", maximumPower=" + getMaximumPower()
-                + "]";
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .append("chargingSpotId", chargingSpotId)
+                .append("chargingType", chargingType)
+                .append("available", available)
+                .append("maximumVoltage", getMaximumVoltage())
+                .append("maximumCurrent", getMaximumCurrent())
+                .append("maximumPower", getMaximumPower())
+                .toString();
     }
 
 }

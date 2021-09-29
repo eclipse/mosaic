@@ -97,6 +97,101 @@ public class UnitFieldAdapterTest {
         testConversion("-10 km/h", 0);
     }
 
+    @Test
+    public void weightReadString() throws IOException {
+        adapterUnderTest = new UnitFieldAdapter.WeightKiloGramsQuiet().create(null, null);
+
+        testConversion("50.1 kg", 50.1);
+        testConversion("50.1 kilograms", 50.1);
+        testConversion("1 g", 0.001);
+        testConversion("1337 kg", 1337);
+        testConversion("1mg", 0.000001);
+        testConversion("1100 ng", 0.0000000011);
+        testConversion("1100nanograms", 0.0000000011);
+        testConversion("0.5kilograms", 0.5);
+        testConversion("-5kg", -5);
+        testConversion("0kg", 0);
+
+        testConversion("", 0);
+        testConversion("10 m/s", 0);
+        testConversion("10km/h", 0);
+        testConversion("10kmh", 0);
+        testConversion("10mph", 0);
+        testConversion("hour", 0);
+    }
+
+    @Test
+    public void voltageReadString() throws IOException {
+        adapterUnderTest = new UnitFieldAdapter.VoltageVoltQuiet().create(null, null);
+
+        testConversion("50.1 volt", 50.1);
+        testConversion("50.1 volts", 50.1);
+        testConversion("1 V", 1);
+        testConversion("1 v", 1);
+        testConversion("1.337 kV", 1337);
+        testConversion("1mV", 0.001);
+        testConversion("1100 nV", 0.0000011);
+        testConversion("1100nanovolt", 0.0000011);
+        testConversion("0.5kilovolt", 500);
+        testConversion("-5V", -5);
+        testConversion("0V", 0);
+
+        testConversion("", 0);
+        testConversion("10 m/s", 0);
+        testConversion("10km/h", 0);
+        testConversion("10kmh", 0);
+        testConversion("10mph", 0);
+        testConversion("hour", 0);
+    }
+
+    @Test
+    public void currentReadString() throws IOException {
+        adapterUnderTest = new UnitFieldAdapter.CurrentAmpereQuiet().create(null, null);
+
+        testConversion("50.1 ampere", 50.1);
+        testConversion("50.1 amperes", 50.1);
+        testConversion("1 A", 1);
+        testConversion("1.337 kA", 1337);
+        testConversion("1mA", 0.001);
+        testConversion("1100 nA", 0.0000011);
+        testConversion("1100nanoampere", 0.0000011);
+        testConversion("0.5kiloampere", 500);
+        testConversion("-5A", -5);
+        testConversion("0A", 0);
+
+        testConversion("", 0);
+        testConversion("10 m/s", 0);
+        testConversion("10km/h", 0);
+        testConversion("10kmh", 0);
+        testConversion("10mph", 0);
+        testConversion("hour", 0);
+    }
+
+    @Test
+    public void capacityReadString() throws IOException {
+        adapterUnderTest = new UnitFieldAdapter.CapacityAmpereHourQuiet().create(null, null);
+
+        testConversion("50.1 Ah", 50.1);
+        testConversion("50.1 ampereshours", 50.1);
+        testConversion("1 Ah", 1);
+        testConversion("1.337 kAh", 1337);
+        testConversion("1mAh", 0.001);
+        testConversion("1100 nAh", 0.0000011);
+        testConversion("1100nanoamperehours", 0.0000011);
+        testConversion("0.5kiloamperehours", 500);
+        testConversion("-5Ah", -5);
+        testConversion("0Ah", 0);
+
+        testConversion("10A", 0);
+        testConversion("", 0);
+        testConversion("10 m/s", 0);
+        testConversion("10km/h", 0);
+        testConversion("10kmh", 0);
+        testConversion("10mph", 0);
+        testConversion("hour", 0);
+    }
+
+
     private void testConversion(String input, double expected) throws IOException {
         //SETUP
         when(jsonReader.peek()).thenReturn(JsonToken.STRING);

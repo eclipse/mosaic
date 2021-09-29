@@ -41,7 +41,7 @@ import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
-import org.eclipse.mosaic.interactions.electricity.VehicleElectricityUpdates;
+import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
@@ -58,7 +58,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.V2xReceiverInformation;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
@@ -104,8 +104,6 @@ public class ApplicationAmbassadorTest {
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
-
-
 
     @Rule
     public SimulationKernelRule simulationKernel = new SimulationKernelRule(null, null, mock(CentralNavigationComponent.class));
@@ -428,7 +426,7 @@ public class ApplicationAmbassadorTest {
     }
 
     /**
-     * Tests, if a VehicleElectricInformation is set on the correct vehicle.
+     * Tests, if a BatteryData is set on the correct vehicle.
      */
     @Test
     public void processInteraction_ElectricVehicleInformationUpdate() throws InternalFederateException, IOException {
@@ -444,19 +442,19 @@ public class ApplicationAmbassadorTest {
                 InteractionTestHelper.createVehicleRegistration_ElectricVehicle("veh_0", 5, TestElectricVehicleApplication.class)
         );
 
-        List<VehicleBatteryState> updated = new Vector<>();
-        updated.add(new VehicleBatteryState("veh_0", 5 * TIME.NANO_SECOND));
-        updated.add(new VehicleBatteryState("veh_0", TIME.NANO_SECOND));
-        updated.add(new VehicleBatteryState("veh_1", 8 * TIME.NANO_SECOND));
-        VehicleElectricityUpdates vehicleElectricityUpdates = new VehicleElectricityUpdates(10 * TIME.SECOND, updated);
+        List<BatteryData> updated = new Vector<>();
+        updated.add(new BatteryData(5 * TIME.NANO_SECOND, "veh_0"));
+        updated.add(new BatteryData(TIME.NANO_SECOND, "veh_0"));
+        updated.add(new BatteryData(8 * TIME.NANO_SECOND, "veh_1"));
+        VehicleBatteryUpdates vehicleBatteryUpdates = new VehicleBatteryUpdates(10 * TIME.SECOND, updated);
 
         // RUN: send interaction and process events
-        ambassador.processInteraction(vehicleElectricityUpdates);
-        assertEquals(vehicleElectricityUpdates.getTime(), lastAdvanceTime);
+        ambassador.processInteraction(vehicleBatteryUpdates);
+        assertEquals(vehicleBatteryUpdates.getTime(), lastAdvanceTime);
         ambassador.processTimeAdvanceGrant(lastAdvanceTime);
 
         // ASSERT that the correct methods are called
-        Mockito.verify(app.getApplicationSpy(), Mockito.times(2)).onBatteryStateUpdated(any(), any());
+        Mockito.verify(app.getApplicationSpy(), Mockito.times(2)).onBatteryDataUpdated(any(), any());
 
         // finish simulation
         ambassador.finishSimulation();

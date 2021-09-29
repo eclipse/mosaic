@@ -16,38 +16,36 @@
 package org.eclipse.mosaic.fed.mapping.config.units;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
 
 import java.util.List;
 
 /**
- * Definition of an EV charging station based on ETSI TS 101 556-1. An
- * infrastructure which provides one or several EV charging spots to supply
+ * Definition of an EV charging station.
+ * An infrastructure which provides one or several EV charging spots to supply
  * electric energy for charging EVs.
  */
 public class CChargingStation {
 
     /**
-     * Definition of an EV charging spot based on ETSI TS 101 556-1. A set of 1 to 4
-     * parking places arranged around a pole, where it is possible to charge an EV.
+     * Definition of an EV charging spot.
      */
     public static class CChargingSpot {
+        /**
+         * The type of this EV charging spot.
+         */
+        public ChargingType chargingType;
 
         /**
-         * Unique identifier of the charging spot.
+         * The maximal voltage this charging spot can deliver.
          */
-        public Integer id;
+        public double maxVoltage;
 
         /**
-         * The type of this EV charging spot in compliance with current standards,
-         * including IEC 62196-2 (mandatory).
+         * The maximal current this charging spot can deliver.
          */
-        public Integer type;
-
-        /**
-         * Number of available parking places, i.e. 1 to 4 parking places arranged
-         * around a pole (mandatory).
-         */
-        public Integer parkingPlaces;
+        public double maxCurrent;
     }
 
     /**
@@ -60,18 +58,6 @@ public class CChargingStation {
      * The group name.
      */
     public String group;
-
-    /**
-     * The EV charging station operator (e.g. energy provider) identification
-     * (mandatory).
-     */
-    public String operator;
-
-    /**
-     * Access restrictions, e.g. open to all or restricted to some communities,
-     * free of access or paying access (mandatory).
-     */
-    public String access;
 
     /**
      * List of the EV charging spots associated with this EV charging station

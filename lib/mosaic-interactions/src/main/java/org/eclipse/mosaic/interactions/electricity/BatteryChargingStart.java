@@ -18,6 +18,7 @@ package org.eclipse.mosaic.interactions.electricity;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -28,14 +29,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * This extension of {@link Interaction} is intended to be used to forward a started charging
  * process at a {@link ChargingSpot} to the RTI.
  */
-public final class ChargingStartResponse extends Interaction {
+public final class BatteryChargingStart extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * String identifying the type of this interaction.
      */
-    public static final String TYPE_ID = createTypeIdentifier(ChargingStartResponse.class);
+    public static final String TYPE_ID = createTypeIdentifier(BatteryChargingStart.class);
 
     /**
      * String identifying the vehicle that started charging.
@@ -43,46 +44,57 @@ public final class ChargingStartResponse extends Interaction {
     private final String vehicleId;
 
     /**
-     * {@link ChargingSpot} at which the vehicle started charging.
+     * The voltage available for the charging process. [V]
      */
-    private final ChargingSpot chargingSpot;
+    private final double voltage;
 
     /**
-     * Creates a new {@link ChargingStartResponse} interaction.
-     *
-     * @param time         Timestamp of this interaction, unit: [ns]
-     * @param vehicleId    String identifying the vehicle that started charging
-     * @param chargingSpot {@link ChargingSpot} at which the vehicle started charging
+     * The voltage available for the charging process. [A]
      */
-    public ChargingStartResponse(long time, String vehicleId, ChargingSpot chargingSpot) {
+    private final double current;
+
+    /**
+     * The charging type to be used for charging.
+     */
+    private final ChargingType chargingType;
+
+    /**
+     * Creates a new {@link BatteryChargingStart} interaction.
+     *
+     * @param time      Timestamp of this interaction, unit: [ns]
+     * @param vehicleId String identifying the vehicle that started charging
+     */
+    public BatteryChargingStart(long time, String vehicleId, double voltage, double current, ChargingType chargingType) {
         super(time);
         this.vehicleId = vehicleId;
-        this.chargingSpot = chargingSpot;
+        this.voltage = voltage;
+        this.current = current;
+        this.chargingType = chargingType;
     }
 
-    /**
-     * Returns the identifier of the vehicle that started charging.
-     *
-     * @return vehicle identifier
-     */
     public String getVehicleId() {
         return vehicleId;
     }
 
-    /**
-     * Returns the {@link ChargingSpot} at which the vehicle started charging.
-     *
-     * @return the charging spot
-     */
-    public ChargingSpot getChargingSpot() {
-        return chargingSpot;
+    public double getVoltage() {
+        return voltage;
+    }
+
+    public double getCurrent() {
+        return current;
+    }
+
+    public ChargingType getChargingType() {
+        return chargingType;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(9, 23)
                 .append(vehicleId)
-                .append(chargingSpot)
+                .append(voltage)
+                .append(current)
+                .append(chargingType)
                 .toHashCode();
     }
 
@@ -98,10 +110,12 @@ public final class ChargingStartResponse extends Interaction {
             return false;
         }
 
-        ChargingStartResponse other = (ChargingStartResponse) obj;
+        BatteryChargingStart other = (BatteryChargingStart) obj;
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
-                .append(this.chargingSpot, other.chargingSpot)
+                .append(this.voltage, other.voltage)
+                .append(this.current, other.current)
+                .append(this.chargingType, other.chargingType)
                 .isEquals();
     }
 
@@ -110,7 +124,9 @@ public final class ChargingStartResponse extends Interaction {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
-                .append("chargingSpot", chargingSpot)
+                .append("voltage", voltage)
+                .append("current", current)
+                .append("chargingType", chargingType)
                 .toString();
     }
 }

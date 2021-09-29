@@ -16,7 +16,7 @@
             <subscription id="RsuRegistration" enabled="true"/>
             <subscription id="TrafficLightRegistration" enabled="false"/>
             <subscription id="ChargingStationRegistration" enabled="false"/>
-            <subscription id="ChargingStationUpdates" enabled="false"/>
+            <subscription id="ChargingStationUpdate" enabled="false"/>
         </subscriptions>
     </output>
 

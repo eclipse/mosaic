@@ -68,6 +68,7 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -567,7 +568,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     vehicleSlowDown.getInterval()
             );
         }
-        bridge.getVehicleControl().slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
+        bridge.getVehicleControl()
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
     }
 
     /**
@@ -594,19 +596,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         vehicleStop.getVehicleStopMode()
                 );
             }
-
-            byte stopFlag = 0;
-            switch (vehicleStop.getVehicleStopMode()) {
-                case STOP:
-                    break;
-                case PARK:
-                    stopFlag = 1;
-                    break;
-                default:
-                    log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
+            if (vehicleStop.getVehicleStopMode() == VehicleStopMode.NOT_STOPPED) {
+                log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, stopFlag, vehicleStop.getDuration());
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), vehicleStop.getDuration());
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -1085,14 +1079,15 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * than the edge's length, the stop command will fail. In such cases, the offset will decrease,
      * and the stop is requested again.
      */
-    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final byte stopFlag, final int duration)
+    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final VehicleStopMode stopMode, final int duration)
             throws InternalFederateException {
-
-        double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
-        double stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
-        stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
-
-        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, (byte) stopPos.getLaneIndex(), duration, stopFlag);
+        double stopPosition = 0;
+        if (stopMode != VehicleStopMode.PARK_IN_PARKING_AREA) {
+            double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
+            stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
+            stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
+        }
+        bridge.getVehicleControl().stop(vehicleId, stopPos.getConnectionId(), stopPosition, stopPos.getLaneIndex(), duration, stopMode);
     }
 
     /**
@@ -1262,7 +1257,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * This handles the case that sumo handles routing and creates new routes while doing so.
      *
      * @param vehicleUpdates Vehicle movement in the simulation.
-     * @param time      Time at which the vehicle has moved.
+     * @param time           Time at which the vehicle has moved.
      * @throws InternalFederateException Exception if an error occurred while propagating new routes.
      */
     private void propagateNewRoutes(VehicleUpdates vehicleUpdates, long time) throws InternalFederateException {
@@ -1311,7 +1306,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     @Override
-    public void finishSimulation() throws InternalFederateException {
+    public void finishSimulation() {
         log.info("Closing SUMO connection");
         if (bridge != null) {
             bridge.close();

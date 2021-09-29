@@ -15,8 +15,11 @@
 
 package org.eclipse.mosaic.fed.application.app.api;
 
-import org.eclipse.mosaic.interactions.electricity.ChargingDenialResponse;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
+import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * All applications accessing electric vehicle functionality
@@ -25,18 +28,18 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleBatteryState;
 public interface ElectricVehicleApplication extends VehicleApplication, Application {
 
     /**
-     * This method is called whenever {@link VehicleBatteryState} of the vehicle unit has changed.
+     * This method is called whenever {@link BatteryData} of the vehicle unit has changed.
      * (this requires the BatteryAmbassador to be activated and configured properly)
      *
-     * @param previousState the {@link VehicleBatteryState} before the update
-     * @param updatedState  the {@link VehicleBatteryState} after the update
+     * @param previousBatteryData the {@link BatteryData} before the update
+     * @param updatedBatteryData  the {@link BatteryData} after the update
      */
-    void onBatteryStateUpdated(VehicleBatteryState previousState, VehicleBatteryState updatedState);
+    void onBatteryDataUpdated(@Nullable BatteryData previousBatteryData, @Nonnull BatteryData updatedBatteryData);
 
     /**
      * This method is called after a charging request has been rejected by the battery ambassador.
      *
-     * @param chargingDenialResponse The interaction containing further information about the rejected charging request
+     * @param vehicleChargingDenial The interaction containing further information about the rejected charging request
      */
-    void onChargingRequestRejected(final ChargingDenialResponse chargingDenialResponse);
+    void onVehicleChargingDenial(final VehicleChargingDenial vehicleChargingDenial);
 }

@@ -16,22 +16,22 @@
 package org.eclipse.mosaic.fed.application.app;
 
 import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.empty.RoadSideUnit;
+import org.eclipse.mosaic.fed.application.app.empty.RoadSideUnitNoopApp;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
 import org.mockito.Mockito;
 
 public class TestRoadSideUnitApplication extends AbstractApplication<RoadSideUnitOperatingSystem>
-        implements TestApplicationWithSpy<RoadSideUnit> {
+        implements TestApplicationWithSpy<RoadSideUnitNoopApp> {
 
-    private RoadSideUnit thisApplicationSpy;
+    private RoadSideUnitNoopApp thisApplicationSpy;
 
     public TestRoadSideUnitApplication() {
         // We use this mock to later count calls of the class' methods
-        thisApplicationSpy = Mockito.mock(RoadSideUnit.class);
+        thisApplicationSpy = Mockito.mock(RoadSideUnitNoopApp.class);
     }
 
-    public RoadSideUnit getApplicationSpy() {
+    public RoadSideUnitNoopApp getApplicationSpy() {
         return thisApplicationSpy;
     }
 

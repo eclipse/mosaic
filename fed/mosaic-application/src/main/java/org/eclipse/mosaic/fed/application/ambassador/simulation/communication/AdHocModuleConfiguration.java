@@ -89,7 +89,7 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
 
         private final AdHocModuleConfiguration parent;
 
-        private int power = -1;  // Default value -1 indicates power configuration through federate
+        private double power = -1;  // Default value -1 indicates power configuration through federate
         private Double distance = null;
 
         private AdHocChannel channel0;
@@ -108,7 +108,7 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
          * @param power the transmission power in mW
          * @return the current AdHocRadioConfiguration
          */
-        public AdHocModuleRadioConfiguration power(int power) {
+        public AdHocModuleRadioConfiguration power(double power) {
             if (power < -1) {
                 throw new RuntimeException("Negative power is not allowed within an AdHoc configuration.");
             }
@@ -161,7 +161,7 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
             return parent;
         }
 
-        public int getPower() {
+        public double getPower() {
             return power;
         }
 

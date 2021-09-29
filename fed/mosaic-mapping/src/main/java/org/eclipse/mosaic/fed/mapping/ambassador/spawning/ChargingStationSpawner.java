@@ -15,8 +15,6 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
-import static org.apache.commons.lang3.Validate.notNull;
-
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation.CChargingSpot;
@@ -45,19 +43,11 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
      * The position of the ChargingStation defined by a {@link GeoPoint}.
      */
     private final GeoPoint position;
-    /**
-     * The operator of the ChargingStation (e.g. RWE, Vattenfall, etc.)
-     */
-    private String operator;
-    /**
-     * Access restrictions, e.g. open to all or restricted to some communities,
-     * free of access or paying access (mandatory).
-     */
-    private String access;
+
     /**
      * A list of all configurations of ChargingSpots belonging to the ChargingStation.
      */
-    private List<CChargingSpot> chargingSpotConfigurations;
+    private final List<CChargingSpot> chargingSpotConfigurations;
 
     /**
      * Constructor for {@link ChargingStationSpawner}.
@@ -69,8 +59,6 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
     public ChargingStationSpawner(CChargingStation chargingStationConfiguration) {
         super(chargingStationConfiguration.applications, chargingStationConfiguration.name, chargingStationConfiguration.group);
         this.position = chargingStationConfiguration.position;
-        this.operator = chargingStationConfiguration.operator;
-        this.access = chargingStationConfiguration.access;
 
         this.chargingSpotConfigurations = ObjectUtils.defaultIfNull(chargingStationConfiguration.chargingSpots, new ArrayList<>());
     }
@@ -84,23 +72,20 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
      */
     @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
-        String name = UnitNameGenerator.nextChargingStationName();
+        String chargingStationName = UnitNameGenerator.nextChargingStationName();
         List<ChargingSpot> chargingSpots = new ArrayList<>();
         int id = 0;
-        for (CChargingSpot chargingSpot : chargingSpotConfigurations) {
-            if (chargingSpot.id == null) {
-                chargingSpot.id = id++;
-            }
+        for (CChargingSpot chargingSpotConfig : chargingSpotConfigurations) {
             chargingSpots.add(new ChargingSpot(
-                    name + "_" + chargingSpot.id,
-                    notNull(chargingSpot.type, "No type set for charging spot with id " + chargingSpot.id),
-                    notNull(chargingSpot.parkingPlaces, "No parkingPlaces set for charging spot with id " + chargingSpot.id)
+                    chargingStationName + "_" + id, chargingSpotConfig.chargingType,
+                    chargingSpotConfig.maxVoltage, chargingSpotConfig.maxCurrent
             ));
+            id++;
         }
-        ChargingStationRegistration chargingStationRegistration = new ChargingStationRegistration(0, name, group, getAppList(),
-                position, operator, access, chargingSpots);
+        ChargingStationRegistration chargingStationRegistration =
+                new ChargingStationRegistration(0, chargingStationName, group, getAppList(), position, chargingSpots);
         try {
-            LOG.info("Creating Charging Station " + this.toString());
+            LOG.info("Creating Charging Station " + this);
             spawningFramework.getRti().triggerInteraction(chargingStationRegistration);
         } catch (IllegalValueException e) {
             LOG.error("Exception while sending ChargingStationRegistration interaction in ChargingStationSpawner.init()");
@@ -115,23 +100,19 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
 
         sb.append("@position: ")
                 .append(position)
-                .append(", operator: ")
-                .append(operator)
-                .append(", access: ")
-                .append(access)
                 .append(", charging spots: ");
 
         String delimiter = "";
+        int id = 0;
         for (CChargingSpot chargingSpotConfiguration : chargingSpotConfigurations) {
             sb.append(delimiter)
-                    .append("[id: ")
-                    .append(chargingSpotConfiguration.id)
-                    .append(", type: ")
-                    .append(chargingSpotConfiguration.type)
-                    .append(", parking places: ")
-                    .append(chargingSpotConfiguration.parkingPlaces)
+                    .append("[chargingSpotId: ")
+                    .append(id)
+                    .append(", chargingType: ")
+                    .append(chargingSpotConfiguration.chargingType)
                     .append("]");
             delimiter = ", ";
+            id++;
         }
 
         sb.append("] with apps: ");
