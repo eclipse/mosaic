@@ -999,7 +999,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             return;
         }
 
-        bridge.getSimulationControl().enableDistanceSensors(
+        bridge.getSimulationControl().configureDistanceSensors(
                 vehicleDistanceSensorActivation.getVehicleId(),
                 vehicleDistanceSensorActivation.getMaximumLookahead(),
                 ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.FRONT),

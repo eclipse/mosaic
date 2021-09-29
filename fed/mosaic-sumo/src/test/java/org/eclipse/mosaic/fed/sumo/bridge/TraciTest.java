@@ -294,7 +294,7 @@ public class TraciTest {
         traci.getSimulationControl().subscribeForVehicle("veh_0", 5 * TIME.SECOND, 4000 * TIME.SECOND);
 
         // RUN(enable distance sensor)
-        traci.getSimulationControl().enableDistanceSensors("veh_0", 200d, true, false);
+        traci.getSimulationControl().configureDistanceSensors("veh_0", 200d, true, false);
 
         TraciSimulationStepResult result = null;
         for (int t = 6; t < 20; t++) {
@@ -320,7 +320,7 @@ public class TraciTest {
         traci.getSimulationControl().subscribeForVehicle("veh_0", 100 * TIME.SECOND, 4000 * TIME.SECOND);
 
         // RUN
-        traci.getSimulationControl().enableDistanceSensors("veh_0", 200d, false, true);
+        traci.getSimulationControl().configureDistanceSensors("veh_0", 200d, false, true);
 
         TraciSimulationStepResult result = null;
         for (int t = 106; t < 110; t++) {

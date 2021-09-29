@@ -322,16 +322,20 @@ public class SimulationFacade {
     /**
      * Enables the calculation of distance sensor values for the given vehicle.
      */
-    public void enableDistanceSensors(String vehicleId, double maximumLookahead, boolean front, boolean rear) {
+    public void configureDistanceSensors(String vehicleId, double maximumLookahead, boolean front, boolean rear) {
         if (front) {
-            vehiclesWithFrontSensor.put(vehicleId, maximumLookahead);
-        } else {
-            vehiclesWithFrontSensor.remove(vehicleId);
+            if (maximumLookahead > 0) {
+                vehiclesWithFrontSensor.put(vehicleId, maximumLookahead);
+            } else {
+                vehiclesWithFrontSensor.remove(vehicleId);
+            }
         }
         if (rear) {
-            vehiclesWithBackSensor.put(vehicleId, maximumLookahead);
-        } else {
-            vehiclesWithBackSensor.remove(vehicleId);
+            if (maximumLookahead > 0) {
+                vehiclesWithBackSensor.put(vehicleId, maximumLookahead);
+            } else {
+                vehiclesWithBackSensor.remove(vehicleId);
+            }
         }
     }
 
