@@ -986,7 +986,18 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 vehicleDistanceSensorActivation.getVehicleId(),
                 TIME.format(vehicleDistanceSensorActivation.getTime())
         );
-        log.info("Please keep in mind that the calculation of the sensor values may slow down the simulation.");
+
+        if (ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.LEFT)
+                || ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.RIGHT)) {
+            log.warn("Left or right distance sensors for vehicles are not supported.");
+            return;
+        }
+
+        if (!sumoConfig.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER)) {
+            log.warn("You tried to configure a front or rear sensor but no leader information is subscribed. "
+                    + "Please add \"{}\" to the list of \"subscriptions\" in the sumo_config.json file.", CSumo.SUBSCRIPTION_LEADER);
+            return;
+        }
 
         bridge.getSimulationControl().enableDistanceSensors(
                 vehicleDistanceSensorActivation.getVehicleId(),
@@ -994,11 +1005,6 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.FRONT),
                 ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.REAR)
         );
-
-        if (ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.LEFT)
-                || ArrayUtils.contains(vehicleDistanceSensorActivation.getSensors(), DistanceSensors.RIGHT)) {
-            log.warn("Left or right distance sensors for vehicles are not supported.");
-        }
     }
 
     /**
