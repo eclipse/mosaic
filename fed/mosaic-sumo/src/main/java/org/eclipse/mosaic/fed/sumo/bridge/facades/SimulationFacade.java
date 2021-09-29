@@ -353,7 +353,7 @@ public class SimulationFacade {
 
             final List<AbstractSubscriptionResult> subscriptions = simulateStep.execute(bridge, time);
 
-            final Map<String, VehicleSensorData> vehicleSensorData = calculateBackSensorData(subscriptions);
+            final Map<String, Double> followerDistances = calcFollowerDistancesBasedOnLeadingVehicles(subscriptions);
             final Map<String, String> vehicleSegmentInfo = calculateVehicleSegmentInfo(subscriptions);
 
             VehicleSubscriptionResult veh;
@@ -398,7 +398,7 @@ public class SimulationFacade {
                             .stopped(vehicleStopMode)
                             .consumptions(calculateConsumptions(veh, lastVehicleData))
                             .emissions(calculateEmissions(veh, lastVehicleData))
-                            .sensors(calculateSensorData(veh.leadingVehicle, veh.minGap, vehicleSensorData.get(veh.id)))
+                            .sensors(createSensorData(veh.id, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
                             .laneArea(vehicleSegmentInfo.get(veh.id))
                             .create();
                 }
@@ -557,53 +557,35 @@ public class SimulationFacade {
     }
 
     /**
-     * Calculates sensor data.
+     * Creates an immutable object holding front and rear distance sensor data based on leading vehicle information.
      *
-     * @param leadingVehicleFromSubscription Information of the leading vehicle.
-     * @param minGap                         The minimum gap.
-     * @param sensorData                     The at sensor captured data.
-     * @return Calculated sensor data.
+     * @param vehicleId         The id of the vehicle the VehicleSensors object should be created for
+     * @param leadingVehicle   Information of the leading vehicle.
+     * @param minGap           The minimum gap of the current vehicle.
+     * @param followerDistance The distance to the follower of the current vehicle
+     * @return an immutable sensor data object
      */
-    private VehicleSensors calculateSensorData(LeadingVehicle leadingVehicleFromSubscription,
-                                               double minGap, VehicleSensorData sensorData) {
+    private VehicleSensors createSensorData(String vehicleId, LeadingVehicle leadingVehicle, double minGap, Double followerDistance) {
 
-        if (sensorData == null) {
-            final VehicleData leading = leadingVehicleFromSubscription != null
-                    ? getLastKnownVehicleData(leadingVehicleFromSubscription.getLeadingVehicleId())
-                    : null;
-            return new VehicleSensors(new DistanceSensor(
-                    leadingVehicleFromSubscription != null
-                            ? leadingVehicleFromSubscription.getLeadingVehicleDistance() + minGap
-                            : -1, -1d, -1d, -1d),
-                    new RadarSensor(leading != null ? leading.getSpeed() : -1d)
-            );
+        boolean hasFrontSensorActivated = vehiclesWithFrontSensor.containsKey(vehicleId);
+        boolean hasBackSensorActivated = vehiclesWithBackSensor.containsKey(vehicleId);
+
+        double frontDistance = hasFrontSensorActivated ? Double.POSITIVE_INFINITY : -1;
+        double leaderSpeed = hasFrontSensorActivated ? Double.POSITIVE_INFINITY : -1;
+        double rearDistance = hasBackSensorActivated ? Double.POSITIVE_INFINITY : -1;
+
+        if (hasFrontSensorActivated && leadingVehicle != LeadingVehicle.NO_LEADER) {
+            frontDistance = leadingVehicle.getLeadingVehicleDistance() + minGap;
+            VehicleData leadingVehicleData = getLastKnownVehicleData(leadingVehicle.getLeadingVehicleId());
+            leaderSpeed = leadingVehicleData != null ? leadingVehicleData.getSpeed() : -1;
+        }
+        if (hasBackSensorActivated && followerDistance != null) {
+            rearDistance = followerDistance;
         }
         return new VehicleSensors(
-                new DistanceSensor(sensorData.frontDistance, sensorData.rearDistance, -1d, -1d),
-                new RadarSensor(sensorData.frontSpeed)
+                new DistanceSensor(frontDistance, rearDistance, -1d, -1d),
+                new RadarSensor(leaderSpeed)
         );
-    }
-
-    private static class VehicleSensorData {
-        private double frontDistance = -1d;
-        private double frontSpeed = -1d;
-        private double rearDistance = -1d;
-
-        private VehicleSensorData frontDistance(double frontDistance) {
-            this.frontDistance = frontDistance;
-            return this;
-        }
-
-        @SuppressWarnings("UnusedReturnValue")
-        private VehicleSensorData frontSpeed(double frontSpeed) {
-            this.frontSpeed = frontSpeed;
-            return this;
-        }
-
-        private VehicleSensorData rearDistance(double rearDistance) {
-            this.rearDistance = rearDistance;
-            return this;
-        }
     }
 
     /**
@@ -626,71 +608,30 @@ public class SimulationFacade {
     }
 
     /**
-     * Calculates the sensor data from rear.
+     * Calculates the distance towards the follower vehicle based on leading vehicle information.
      *
      * @param subscriptions Subscription data.
-     * @return Calculated sensor data.
-     * @throws InternalFederateException if leading vehicle for a vehicle couldn't be read
+     * @return The distance to the follower for each vehicle.
      */
-    private Map<String, VehicleSensorData> calculateBackSensorData(List<AbstractSubscriptionResult> subscriptions) {
-        if (vehiclesWithFrontSensor.isEmpty() && vehiclesWithBackSensor.isEmpty()) {
+    private Map<String, Double> calcFollowerDistancesBasedOnLeadingVehicles(List<AbstractSubscriptionResult> subscriptions) {
+        if (vehiclesWithBackSensor.isEmpty()) {
             return new HashMap<>();
         }
 
-        final boolean queryingAllVehiclesRequired = !vehiclesWithBackSensor.isEmpty();
-
-        final Map<String, VehicleSensorData> sensorResult = initSensorData();
-        double distance;
+        final Map<String, Double> rearDistances = new HashMap<>();
         for (AbstractSubscriptionResult veh : subscriptions) {
             if (!(veh instanceof VehicleSubscriptionResult)) {
                 continue;
             }
-            if (queryingAllVehiclesRequired || vehiclesWithFrontSensor.containsKey(veh.id)) {
-                LeadingVehicle leader = ((VehicleSubscriptionResult) veh).leadingVehicle;
-
-                if (leader != LeadingVehicle.NO_LEADER && vehiclesWithBackSensor.containsKey(leader.getLeadingVehicleId())) {
-                    distance = (leader.getLeadingVehicleDistance() <= vehiclesWithBackSensor.get(leader.getLeadingVehicleId()))
-                            ? leader.getLeadingVehicleDistance()
-                            : Double.POSITIVE_INFINITY;
-                    sensorResult.get(leader.getLeadingVehicleId()).rearDistance(distance);
-                }
-                if (leader != LeadingVehicle.NO_LEADER && vehiclesWithFrontSensor.containsKey(veh.id)) {
-                    VehicleData leaderInfo = getLastKnownVehicleData(leader.getLeadingVehicleId());
-                    if (leader.getLeadingVehicleDistance() <= vehiclesWithFrontSensor.get(veh.id)) {
-                        sensorResult.get(veh.id)
-                                .frontDistance(leader.getLeadingVehicleDistance())
-                                .frontSpeed(leaderInfo != null ? leaderInfo.getSpeed() : -1d);
-                    } else {
-                        sensorResult.get(veh.id)
-                                .frontDistance(Double.POSITIVE_INFINITY)
-                                .frontSpeed(-1d);
-                    }
-                }
+            LeadingVehicle leader = ((VehicleSubscriptionResult) veh).leadingVehicle;
+            if (leader != LeadingVehicle.NO_LEADER) {
+                double distance = (leader.getLeadingVehicleDistance() <= vehiclesWithBackSensor.get(leader.getLeadingVehicleId()))
+                        ? leader.getLeadingVehicleDistance() + ((VehicleSubscriptionResult) veh).minGap
+                        : Double.POSITIVE_INFINITY;
+                rearDistances.put(leader.getLeadingVehicleId(), distance);
             }
         }
-        return sensorResult;
-    }
-
-    /**
-     * Initialize the sensor data.
-     *
-     * @return Initialized sensor data.
-     */
-    private Map<String, VehicleSensorData> initSensorData() {
-        final Map<String, VehicleSensorData> sensorResult = new HashMap<>();
-        for (String id : vehiclesWithFrontSensor.keySet()) {
-            sensorResult.put(id, new VehicleSensorData().frontDistance(Double.POSITIVE_INFINITY));
-        }
-        VehicleSensorData vehSensorData;
-        for (String id : vehiclesWithBackSensor.keySet()) {
-            vehSensorData = sensorResult.get(id);
-            if (vehSensorData == null) {
-                sensorResult.put(id, new VehicleSensorData().rearDistance(Double.POSITIVE_INFINITY));
-            } else {
-                vehSensorData.rearDistance(Double.POSITIVE_INFINITY);
-            }
-        }
-        return sensorResult;
+        return rearDistances;
     }
 
     /**
