@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.config;
 
+import org.eclipse.mosaic.fed.sumo.bridge.traci.VehicleSetMoveToXY;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -134,10 +135,17 @@ public class CSumo implements Serializable {
     public Collection<String> highlights = new ArrayList<>();
 
     /**
-     * Allows to configure specialised vType parameters, which can't be configured via Mapping.
+     * Allows configuring specialised vType parameters, which can't be configured via Mapping.
      * E.g. parameters for the lane change model of vehicles.
      */
     public Map<String, Map<String, String>> additionalVehicleTypeParameters = new HashMap<>();
+
+
+    /**
+     * Configure the mode with which a vehicle is moved to a explicit postion with the SUMO command moveToXY().
+     * (SWITCH_ROUTE, KEEP_ROUTE or EXACT_POSITION)
+     */
+    public VehicleSetMoveToXY.Mode moveToXyMode = org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetMoveToXY.Mode.SWITCH_ROUTE;
 
     public final static String HIGHLIGHT_CHANGE_LANE = "changeLane";
     public final static String HIGHLIGHT_CHANGE_ROUTE = "changeRoute";

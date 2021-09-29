@@ -41,6 +41,16 @@ public class VehicleType implements Serializable {
     public final static double DEFAULT_VEHICLE_LENGTH = 5;
 
     /**
+     * The default width of a vehicle. Unit: [m]
+     */
+    public final static double DEFAULT_VEHICLE_WIDTH = 1.8;
+
+    /**
+     * The default height of a vehicle. Unit: [m]
+     */
+    public final static double DEFAULT_VEHICLE_HEIGHT = 1.5;
+
+    /**
      * The default minimum distance between two vehicles. Unit: [m]
      */
     public final static double DEFAULT_MINIMAL_GAP = 2.5;
@@ -80,7 +90,6 @@ public class VehicleType implements Serializable {
      */
     public final static double DEFAULT_SPEED_DEVIATION = 0.0;
 
-
     /**
      * Name of the vehicle type.
      */
@@ -90,6 +99,16 @@ public class VehicleType implements Serializable {
      * The length of the vehicle. Unit: [m].
      */
     private final double length;
+
+    /**
+     * The width of the vehicle. Unit: [m].
+     */
+    private final double width;
+
+    /**
+     * The height of the vehicle. Unit: [m].
+     */
+    private final double height;
 
     /**
      * Minimal distance between front bumper of a vehicle
@@ -160,7 +179,7 @@ public class VehicleType implements Serializable {
      *  @param name           Name of the vehicle type.
      * @param length         Length of the vehicle. Unit: [m].
      * @param minGap         Distance between front bumper of a vehicle
- *                       and the back bumper of its leader in a traffic jam. Unit: [m].
+     *                       and the back bumper of its leader in a traffic jam. Unit: [m].
      * @param maxSpeed       Maximal speed. Unit: [m/s].
      * @param vehicleClass   Class of the vehicle.
      * @param accel          Acceleration. Unit: [m/s^2].
@@ -171,7 +190,8 @@ public class VehicleType implements Serializable {
      * @param laneChangeMode Lane change mode of the Vehicle.
      * @param speedMode      Speed mode of the Vehicle.
      */
-    public VehicleType(String name, Double length, Double minGap,
+    public VehicleType(String name, Double length, Double width,
+                       Double height, Double minGap,
                        Double maxSpeed, VehicleClass vehicleClass,
                        Double accel, Double decel, Double emergencyDecel,
                        Double sigma, Double tau, Double speedFactor,
@@ -179,6 +199,8 @@ public class VehicleType implements Serializable {
                        SpeedMode speedMode) {
         this.name = name;
         this.length = defaultIfNull(length, DEFAULT_VEHICLE_LENGTH);
+        this.width = defaultIfNull(width, DEFAULT_VEHICLE_WIDTH);
+        this.height = defaultIfNull(height, DEFAULT_VEHICLE_HEIGHT);
         this.minGap = defaultIfNull(minGap, DEFAULT_MINIMAL_GAP);
         this.maxSpeed = defaultIfNull(maxSpeed, DEFAULT_MAX_SPEED_MS);
         this.vehicleClass = defaultIfNull(vehicleClass, VehicleClass.Car);
@@ -200,7 +222,7 @@ public class VehicleType implements Serializable {
      * @param name Name of the vehicle type
      */
     public VehicleType(String name) {
-        this(name, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        this(name, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     public String getName() {
@@ -209,6 +231,14 @@ public class VehicleType implements Serializable {
 
     public double getLength() {
         return length;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
     }
 
     public double getMinGap() {
@@ -264,6 +294,8 @@ public class VehicleType implements Serializable {
         return new HashCodeBuilder(7, 79)
                 .append(name)
                 .append(length)
+                .append(width)
+                .append(height)
                 .append(minGap)
                 .append(maxSpeed)
                 .append(vehicleClass)
@@ -295,6 +327,8 @@ public class VehicleType implements Serializable {
         return new EqualsBuilder()
                 .append(this.name, other.name)
                 .append(this.length, other.length)
+                .append(this.width, other.width)
+                .append(this.height, other.height)
                 .append(this.minGap, other.minGap)
                 .append(this.maxSpeed, other.maxSpeed)
                 .append(this.vehicleClass, other.vehicleClass)
@@ -315,6 +349,8 @@ public class VehicleType implements Serializable {
         return "VehicleType["
                 + "name='" + name + '\''
                 + ", length=" + length
+                + ", width=" + width
+                + ", height=" + height
                 + ", minGap=" + minGap
                 + ", maxSpeed=" + maxSpeed
                 + ", vehicleClass=" + vehicleClass
