@@ -21,6 +21,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class CParameterDeviations {
 
     public double length = 0.0;
+    public double width = 0.0;
+    public double height = 0.0;
     public double minGap = 0.0;
     public double maxSpeed = 0.0;
     public double speedFactor = 0.0;
@@ -42,6 +44,8 @@ public class CParameterDeviations {
 
         return new EqualsBuilder()
                 .append(length, that.length)
+                .append(width, that.width)
+                .append(height, that.height)
                 .append(minGap, that.minGap)
                 .append(maxSpeed, that.maxSpeed)
                 .append(speedFactor, that.speedFactor)
@@ -55,6 +59,8 @@ public class CParameterDeviations {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(length)
+                .append(width)
+                .append(height)
                 .append(minGap)
                 .append(maxSpeed)
                 .append(speedFactor)

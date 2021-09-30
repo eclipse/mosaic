@@ -46,5 +46,5 @@ public class VehicleSubscriptionResult extends AbstractSubscriptionResult {
     public double fuel;
     public double electricity;
 
-    public LeadingVehicle leadingVehicle;
+    public LeadingVehicle leadingVehicle = LeadingVehicle.NO_LEADER;
 }
