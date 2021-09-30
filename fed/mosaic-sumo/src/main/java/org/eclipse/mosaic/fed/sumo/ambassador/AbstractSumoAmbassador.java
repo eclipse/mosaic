@@ -216,7 +216,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             sumoConfig = new ObjectInstantiation<>(CSumo.class, log)
                     .readFile(ambassadorParameter.configuration);
         } catch (InstantiationException e) {
-            log.error("Configuration object could not be instantiated: ", e);
+            log.error("Configuration object could not be instantiated. Using default ", e);
+            sumoConfig = new CSumo();
         }
 
         log.info("sumoConfig.updateInterval: " + sumoConfig.updateInterval);
@@ -984,19 +985,25 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 vehicleSensorActivation.getVehicleId(),
                 TIME.format(vehicleSensorActivation.getTime())
         );
-        log.info("Please keep in mind that the calculation of the sensor values may slow down the simulation.");
 
-        bridge.getSimulationControl().enableDistanceSensors(
+        if (ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_LEFT)
+                || ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_RIGHT)) {
+            log.warn("Left or right distance sensors for vehicles are not supported.");
+            return;
+        }
+
+        if (!sumoConfig.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER)) {
+            log.warn("You tried to configure a front or rear sensor but no leader information is subscribed. "
+                    + "Please add \"{}\" to the list of \"subscriptions\" in the sumo_config.json file.", CSumo.SUBSCRIPTION_LEADER);
+            return;
+        }
+
+        bridge.getSimulationControl().configureDistanceSensors(
                 vehicleSensorActivation.getVehicleId(),
                 vehicleSensorActivation.getMaximumLookahead(),
                 ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_FRONT),
                 ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_REAR)
         );
-
-        if (ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_LEFT)
-                || ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_RIGHT)) {
-            log.warn("Left or right distance sensors for vehicles are not supported.");
-        }
     }
 
     /**
