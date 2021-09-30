@@ -116,8 +116,8 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
             readByte(in);
             double leaderDistance = readDouble(in);
 
-            if (StringUtils.isEmpty(leaderId)) {
-                return null;
+            if (StringUtils.isEmpty(leaderId) || leaderDistance < 0.0) {
+                return LeadingVehicle.NO_LEADER;
             }
             return new LeadingVehicle(leaderId, leaderDistance);
         }

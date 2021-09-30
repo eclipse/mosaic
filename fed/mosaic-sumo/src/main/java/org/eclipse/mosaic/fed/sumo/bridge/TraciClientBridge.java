@@ -88,6 +88,13 @@ public class TraciClientBridge implements Bridge {
         this.commandRegister = commandRegister;
         this.commandRegister.setBridge(this);
 
+        try {
+            // tests the connection to SUMO by calling GetVersion before continuing to setup other commands
+            new org.eclipse.mosaic.fed.sumo.bridge.traci.SimulationGetVersion().execute(this);
+        } catch (InternalFederateException | CommandException e) {
+            throw new IOException("Could not load establish connection to SUMO due to an unknown error.", e);
+        }
+
         this.simulationControl = new SimulationFacade(this, sumoConfiguration);
 
         this.vehicleControl = new VehicleFacade(this);

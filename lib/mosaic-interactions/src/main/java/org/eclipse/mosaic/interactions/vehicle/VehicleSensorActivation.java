@@ -27,21 +27,26 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Arrays;
 
 /**
- * This extension of {@link Interaction} is intended to be used to enable distance sensors of vehicles.
+ * This extension of {@link Interaction} is intended to be used to activate vehicle sensors.
  */
 @SuppressWarnings({"EI_EXPOSE_REP2", "EI_EXPOSE_REP"})
-public final class VehicleDistanceSensorActivation extends Interaction {
+public final class VehicleSensorActivation extends Interaction {
 
     private static final long serialVersionUID = 1L;
+
+    public enum SensorType {
+        LIDAR, RADAR_FRONT, RADAR_LEFT, RADAR_RIGHT, RADAR_REAR
+    }
 
     /**
      * String identifying the type of this interaction.
      */
-    public final static String TYPE_ID = createTypeIdentifier(VehicleDistanceSensorActivation.class);
+    public final static String TYPE_ID = createTypeIdentifier(VehicleSensorActivation.class);
 
-    public enum DistanceSensors {
-        FRONT, LEFT, RIGHT, REAR
-    }
+    /**
+     * list of sensor types to be activated
+     */
+    private final SensorType[] sensorTypes;
 
     /**
      * String identifying a simulated vehicle.
@@ -49,28 +54,27 @@ public final class VehicleDistanceSensorActivation extends Interaction {
     private final String vehicleId;
 
     /**
-     * The maximum distance to look ahead for a leading vehicle.
+     * The maximum range of the sensor
      */
     private final double maximumLookahead;
 
     /**
-     * list of distance sensors.
-     */
-    private DistanceSensors[] sensors;
-
-    /**
-     * Creates a new {@link VehicleDistanceSensorActivation} interaction.
+     * Creates a new {@link VehicleSensorActivation} interaction.
      *
      * @param time             Timestamp of this interaction, unit: [ns]
      * @param vehicleId        vehicle identifier
      * @param maximumLookahead maximum distance to look ahead for a leading vehicle
-     * @param sensors          list of distance sensors
+     * @param sensorTypes          list of distance sensors
      */
-    public VehicleDistanceSensorActivation(long time, String vehicleId, double maximumLookahead, DistanceSensors... sensors) {
+    public VehicleSensorActivation(long time, String vehicleId, double maximumLookahead, SensorType... sensorTypes) {
         super(time);
         this.vehicleId = vehicleId;
         this.maximumLookahead = maximumLookahead;
-        this.sensors = sensors;
+        this.sensorTypes = sensorTypes;
+    }
+
+    public SensorType[] getSensorTypes() {
+        return sensorTypes;
     }
 
     public String getVehicleId() {
@@ -79,19 +83,6 @@ public final class VehicleDistanceSensorActivation extends Interaction {
 
     public double getMaximumLookahead() {
         return maximumLookahead;
-    }
-
-    public DistanceSensors[] getSensors() {
-        return sensors;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(3, 23)
-                .append(vehicleId)
-                .append(maximumLookahead)
-                .append(sensors)
-                .toHashCode();
     }
 
     @Override
@@ -106,12 +97,21 @@ public final class VehicleDistanceSensorActivation extends Interaction {
             return false;
         }
 
-        VehicleDistanceSensorActivation other = (VehicleDistanceSensorActivation) obj;
+        VehicleSensorActivation other = (VehicleSensorActivation) obj;
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.maximumLookahead, other.maximumLookahead)
-                .append(this.sensors, other.sensors)
+                .append(this.sensorTypes, other.sensorTypes)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(3, 23)
+                .append(vehicleId)
+                .append(maximumLookahead)
+                .append(sensorTypes)
+                .toHashCode();
     }
 
     @Override
@@ -120,7 +120,7 @@ public final class VehicleDistanceSensorActivation extends Interaction {
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
                 .append("maximumLookahead", maximumLookahead)
-                .append("sensors", Arrays.toString(sensors))
+                .append("sensors", Arrays.toString(sensorTypes))
                 .toString();
     }
 }

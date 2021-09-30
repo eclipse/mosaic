@@ -172,7 +172,7 @@
                 "VehicleStop",
                 "VehicleResume",
                 "SumoTraciRequest",
-                "VehicleDistanceSensorActivation",
+                "VehicleSensorActivation",
                 "VehicleSpeedChange",
                 "VehicleFederateAssignment",
                 "VehicleParametersChange",
