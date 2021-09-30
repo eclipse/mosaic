@@ -41,10 +41,21 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
      * The weight of the Vehicle (used for spawning selection).
      */
     private Double weight;
+
     /**
      * Length of the vehicle in meter.
      */
     private Double length;
+
+    /**
+     * Width of the vehicle in meter.
+     */
+    private Double width;
+
+    /**
+     * Height of the vehicle in meter.
+     */
+    private Double height;
 
     /**
      * Distance in meters between front bumper of a vehicle
@@ -124,6 +135,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         this.weight = prototypeConfiguration.weight;
 
         this.length = prototypeConfiguration.length;
+        this.width = prototypeConfiguration.width;
+        this.height = prototypeConfiguration.height;
         this.minGap = prototypeConfiguration.minGap;
         this.maxSpeed = prototypeConfiguration.maxSpeed;
         this.vehicleClass = prototypeConfiguration.vehicleClass;
@@ -145,6 +158,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         }
         return new VehicleType(prototype,
                 deviateWithBounds(random, length, deviations.length),
+                deviateWithBounds(random, width, deviations.width),
+                deviateWithBounds(random, height, deviations.height),
                 deviateWithBounds(random, minGap, deviations.minGap),
                 deviateWithBounds(random, maxSpeed, deviations.maxSpeed),
                 vehicleClass,
@@ -188,6 +203,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         return new VehicleType(
                 prototype,
                 length,
+                width,
+                height,
                 minGap,
                 maxSpeed,
                 vehicleClass,
@@ -232,6 +249,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         decel = defaultIfNull(decel, prototypeConfiguration.decel);
         emergencyDecel = defaultIfNull(emergencyDecel, prototypeConfiguration.emergencyDecel);
         length = defaultIfNull(length, prototypeConfiguration.length);
+        width = defaultIfNull(width, prototypeConfiguration.width);
+        height = defaultIfNull(height, prototypeConfiguration.height);
         maxSpeed = defaultIfNull(maxSpeed, prototypeConfiguration.maxSpeed);
         minGap = defaultIfNull(minGap, prototypeConfiguration.minGap);
 
@@ -258,6 +277,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
                 .append(decel)
                 .append(emergencyDecel)
                 .append(length)
+                .append(width)
+                .append(height)
                 .append(maxSpeed)
                 .append(minGap)
                 .append(sigma)
@@ -292,6 +313,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
                 .append(decel, other.decel)
                 .append(emergencyDecel, other.emergencyDecel)
                 .append(length, other.length)
+                .append(width, other.width)
+                .append(height, other.height)
                 .append(maxSpeed, other.maxSpeed)
                 .append(minGap, other.minGap)
                 .append(sigma, other.sigma)

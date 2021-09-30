@@ -24,6 +24,8 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class LeadingVehicle {
 
+    public static final LeadingVehicle NO_LEADER = new LeadingVehicle("", Double.POSITIVE_INFINITY) ;
+
     private final String leadingVehicleId;
     private final double leadingVehicleDistance;
 

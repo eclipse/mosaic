@@ -47,6 +47,7 @@ required_programs=( unzip tar bison flex protoc gcc python )
 required_libraries=( "libprotobuf-dev >= 3.3.0" )
 
 omnet_federate_url="https://github.com/mosaic-addons/omnetpp-federate/archive/main.zip"
+omnet_src_url="https://github.com/omnetpp/omnetpp/releases/download/omnetpp-5.5.1/omnetpp-5.5.1-src-linux.tgz"
 inet_src_url="https://github.com/inet-framework/inet/releases/download/v4.1.1/inet-4.1.1-src.tgz"
 
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
@@ -72,6 +73,7 @@ omnet_dir_name_default="omnetpp-x.x"
 federate_path="bin/fed/omnetpp"
 omnet_dir_name="${omnet_dir_name_default}"
 omnet_federate_filename="$(basename "$omnet_federate_url")"
+omnet_src_filename="$(basename "$omnet_src_url")"
 inet_src_filename="$(basename "$inet_src_url")"
 working_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -266,24 +268,19 @@ user_configuration_installation_type() {
   done;
 }
 
-# Checks if the path to the omnetpp tar ball is provided as program argument.
-user_configuration_check_path_to_omnetpp_tar() {
-  if [ "$arg_uninstall" == "false" ] && [ "$arg_omnet_tar" == "" ]; then
-    fail "Please provide at least the path to the omnet installer tar. This is required in installation type 'USER'.\n./omnet_installer.sh -o /path/to/omnetpp-src.tgz\nYou can download the file here: https://omnetpp.org/download/\n\nHint: Use -h or --help to list the options."
-    exit 1
-  fi
-}
-
 user_configuration_extract_omnet_dir_name() {
   if [ "$arg_omnet_tar" != "" ]; then
-    arg_omnet_tar_filename="$(basename "${arg_omnet_tar}" )"
-    tmp_dir_name="${arg_omnet_tar_filename%-src*}"
-    if [ "${arg_omnet_tar_filename}" == "${tmp_dir_name}" ]; then
-      log "Warning: falling back to ${omnet_dir_name_default} as name for installation directory"
-      omnet_dir_name="${omnet_dir_name_default}"
-    else
-      omnet_dir_name="${tmp_dir_name}"
-    fi
+    tar_filename="$(basename "${arg_omnet_tar}" )"
+  else
+    tar_filename="$(basename "${omnet_src_url}" )"
+  fi
+
+  tmp_dir_name="${tar_filename%-src*}"
+  if [ "${tar_filename}" == "${tmp_dir_name}" ]; then
+    log "Warning: falling back to ${omnet_dir_name_default} as name for installation directory"
+    omnet_dir_name="${omnet_dir_name_default}"
+  else
+    omnet_dir_name="${tmp_dir_name}"
   fi
 }
 
@@ -295,7 +292,6 @@ user_configuration() {
 
   if [ "$arg_installation_type" == "USER" ]; then
     # Check if path to omnetpp tar ball is provided as program argument (option -o)
-    user_configuration_check_path_to_omnetpp_tar
     user_configuration_extract_omnet_dir_name
   fi
 }
@@ -661,7 +657,7 @@ extract_premake() {
 # OMNeT++
 # ----------------------------------------
 extract_omnet() {
-  progress "Extracting OMNeT++ from '$arg_omnet_tar'..."
+   progress "Extracting OMNeT++ from '$1'..."
    cd "$working_directory"
    arg1="$1" #omnet archive
    if [ -f "$1" ]; then
@@ -810,7 +806,13 @@ build_omnet_federate() {
 
 # Install OMNeT++
 if [ "$omnetpp_install_ok" == "false" ] && [ "$arg_skip_omnetpp_installation" == "false" ]; then
-  extract_omnet "$arg_omnet_tar"
+  if [ ! -f "$arg_omnet_tar" ]; then
+    download "OMNeT++" "$omnet_src_url" "Please try using option '-o' to provide the path to your local OMNeT++ tar ball."
+    downloaded_files="$downloaded_files $omnet_src_filename"
+    extract_omnet "$omnet_src_filename"
+  else
+    extract_omnet "$arg_omnet_tar"
+  fi
   configure_omnet
   build_omnet
 fi

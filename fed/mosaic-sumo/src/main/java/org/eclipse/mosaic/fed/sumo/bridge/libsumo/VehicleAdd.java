@@ -30,7 +30,10 @@ public class VehicleAdd implements org.eclipse.mosaic.fed.sumo.bridge.api.Vehicl
                 "now",
                 departLane,
                 departPosition,
-                departSpeed
+                departSpeed,
+                "current",
+                "max",
+                "current"
         );
     }
 }

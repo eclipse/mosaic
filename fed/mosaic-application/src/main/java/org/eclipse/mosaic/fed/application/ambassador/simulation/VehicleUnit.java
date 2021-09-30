@@ -24,11 +24,11 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ca
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
-import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation;
-import org.eclipse.mosaic.interactions.vehicle.VehicleDistanceSensorActivation.DistanceSensors;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation.SensorType;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange.VehicleSpeedChangeType;
@@ -312,12 +312,12 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public void activateVehicleDistanceSensors(double sensorRange, DistanceSensors... sensors) {
-        sendInteractionToRti(new VehicleDistanceSensorActivation(
+    public void activateVehicleSensors(double sensorRange, SensorType... sensorTypes) {
+        sendInteractionToRti(new VehicleSensorActivation(
                         SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                         getId(),
                         sensorRange,
-                        sensors
+                        sensorTypes
                 )
         );
     }

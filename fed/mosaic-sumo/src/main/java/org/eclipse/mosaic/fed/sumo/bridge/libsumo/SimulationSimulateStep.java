@@ -20,6 +20,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.AbstractSubscriptionResult
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopVehicleData;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
@@ -104,6 +105,9 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.pmx = Vehicle.getPMxEmission(sumoVehicleId);
             result.nox = Vehicle.getNOxEmission(sumoVehicleId);
             result.fuel = Vehicle.getFuelConsumption(sumoVehicleId);
+
+            //FIXME use Vehicle.getLeader() to retrieve leader (currently not possible with API)
+            result.leadingVehicle = LeadingVehicle.NO_LEADER;
 
             results.add(result);
         }
