@@ -670,7 +670,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     );
                 }
                 this.log.info(
-                        "Added RSU ID[int= {}, ext={}] at projected position= {} time={}",
+                        "Added RSU ID[int={}, ext={}] at projected position={} time={}",
                         simulatedNodes.fromExternalId(id), id, virtualNode.position, TIME.format(time)
                 );
                 log.debug("Sending AdHocCommunicationConfiguration for RSU node {}", nodeId);
