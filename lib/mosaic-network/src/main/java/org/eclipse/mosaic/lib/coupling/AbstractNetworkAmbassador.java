@@ -325,7 +325,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                                     rcvMsgContainer.msgId,
                                     rcvMsgContainer.receiverInformation
                             );
-                            log.debug("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), msg.getTime());
+                            log.debug("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), TIME.format(msg.getTime()));
                             this.rti.triggerInteraction(msg);  // Hand the received message to the RTI and thus the other federates
                         }
                         break;
@@ -579,7 +579,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 log.debug(
                         "sendV2XMessage: id={} from node ID[int={} , ext={}] channel:{} type:{} time={}",
                         interaction.getMessageId(),
-                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), dac.getType(), interaction.getTime()
+                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), dac.getType(), TIME.format(interaction.getTime())
                 ); // Write the message onto the channel and to the federate
                 // Then wait for ack
                 int ack = ambassadorFederateChannel.writeSendMessage(
@@ -671,7 +671,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 }
                 this.log.info(
                         "Added RSU ID[int= {}, ext={}] at projected position= {} time={}",
-                        simulatedNodes.fromExternalId(id), id, virtualNode.position, time
+                        simulatedNodes.fromExternalId(id), id, virtualNode.position, TIME.format(time)
                 );
                 log.debug("Sending AdHocCommunicationConfiguration for RSU node {}", nodeId);
                 sendAdHocCommunicationConfiguration(virtualNode.configuration, time);
@@ -698,7 +698,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 }
                 this.log.info(
                         "Added vehicle ID[int={}, ext={}] at position={} time={}",
-                        simulatedNodes.fromExternalId(id), id, registeredNode.position, time
+                        simulatedNodes.fromExternalId(id), id, registeredNode.position, TIME.format(time)
                 );
                 log.debug("Sending AdHocCommunicationConfiguration for vehicle node {}.", nodeId);
                 sendAdHocCommunicationConfiguration(registeredNode.configuration, time);
