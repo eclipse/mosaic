@@ -80,7 +80,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     @Override
     public void initialize(final long startTime, final long endTime) throws InternalFederateException {
         super.initialize(startTime, endTime);
-        this.log.info("Init simulation with startTime={}, stopTime={}", startTime, endTime);
+        this.log.info("Init simulation with startTime={}, endTime={}", startTime, endTime);
 
         if (log.isTraceEnabled()) {
             log.trace("subscribedMessages: {}", Arrays.toString(this.rti.getSubscribedInteractions().toArray()));
