@@ -121,6 +121,11 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     private final NetworkEntityIdTransformer simulatedNodes;
 
     /**
+     * Ids of nodes which has been added and removed.
+     */
+    protected final List<String> removedNodes;
+
+    /**
      * This is used to fetch the most recent position of a vehicle when a {@link AdHocCommunicationConfiguration} interaction
      * is processed.
      */
@@ -145,6 +150,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.federateName = federateName;
         this.registeredNodes = new HashMap<>();
         this.simulatedNodes = new NetworkEntityIdTransformer();
+        this.removedNodes = new ArrayList<>();
 
         try {
             config = new ObjectInstantiation<>(CAbstractNetworkAmbassador.class).readFile(ambassadorParameter.configuration);
@@ -504,9 +510,11 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         this.log.info("removeNode ID[int={}, ext={}] time={}", id, simulatedNodes.toExternalId(id), time);
                         nodesToRemove.add(externalId); // If simulated, add to the list, which will be handed to the channel
                         simulatedNodes.removeUsingInternalId(id); // remove the vehicle from our internal list
+                        removedNodes.add(id);
                     } else if (registeredNodes.containsKey(id)) {
                         this.log.info("removeNode (still virtual) ID[int={}] time={}", id, time);
                         registeredNodes.remove(id);
+                        removedNodes.add(id);
                     } else {
                         this.log.warn("Node ID[int={}] is not simulated", id);
                     }
@@ -620,7 +628,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             RegisteredNode configuredNode = new RegisteredNode(interaction, latestData != null ? latestData.getProjectedPosition() : null);
             if (latestData != null) {
                 addVehicleNodeToSimulation(nodeId, configuredNode, interaction.getTime());
-            } else {
+            } else if (!removedNodes.contains(nodeId)) {
                 log.debug("Saving Configuration for later insertion as vehicle {} has not moved yet.", nodeId);
                 registeredNodes.put(nodeId, configuredNode);
             }
