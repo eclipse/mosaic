@@ -72,13 +72,14 @@ public class WatchDogThread extends Thread implements WatchDog {
             if (timeSinceLastUpdate > this.maxIdleTime * 1000L && watching) {
                 try {
                     System.out.println();
-                    System.err.println("-------------------------------------------------------------------------------------------------");
+                    System.err.println("--------------------------------------------------------------------------------");
                     System.err.println("ERROR: One or more federates did not respond for " + maxIdleTime + " seconds.");
                     System.err.println("       This could be caused by an error in a federate.");
-                    System.err.println("       You can increase the timeout using the -w parameter. Using \"-w 0\" disables the watchdog.");
-                    System.err.println("-------------------------------------------------------------------------------------------------");
+                    System.err.println("       You can increase the timeout using the -w parameter.");
+                    System.err.println("       Using \"-w 0\" disables the watchdog.");
+                    System.err.println("--------------------------------------------------------------------------------");
                     System.err.println("       MOSAIC will now shut down.");
-                    System.err.println("-------------------------------------------------------------------------------------------------");
+                    System.err.println("--------------------------------------------------------------------------------");
 
                     // wait a second to complete print lines
                     try {

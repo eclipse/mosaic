@@ -308,7 +308,7 @@ public class MosaicStarter {
         }
 
         System.err.println();
-        System.err.println("-------------------------------------------------------------------");
+        System.err.println("--------------------------------------------------------------------------------");
         System.err.println(" Stopping simulation due to a critical error:");
         System.err.println("\t- " + ExceptionUtils.getMessage(exception));
         System.err.println("\t- Root Cause: " + ExceptionUtils.getRootCauseMessage(exception));
@@ -318,7 +318,7 @@ public class MosaicStarter {
         }
         System.err.println();
         System.err.println(" MOSAIC will now shut down.");
-        System.err.println("-------------------------------------------------------------------");
+        System.err.println("--------------------------------------------------------------------------------");
         System.err.println();
 
         if (logger == null || logger.isDebugEnabled()) {
@@ -326,7 +326,7 @@ public class MosaicStarter {
             System.err.println();
             System.err.println(ExceptionUtils.getStackTrace(exception));
             System.err.println();
-            System.err.println("-------------------------------------------------------------------");
+            System.err.println("--------------------------------------------------------------------------------");
         }
 
         if (logger != null) {
