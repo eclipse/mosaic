@@ -316,7 +316,7 @@ public class MosaicStarter {
             System.err.println(" Please see the log files for details.");
             System.err.println("\t- Log-Directory: " + logDirectory);
         }
-        System.err.println();
+        System.err.println("--------------------------------------------------------------------------------");
         System.err.println(" MOSAIC will now shut down.");
         System.err.println("--------------------------------------------------------------------------------");
         System.err.println();
