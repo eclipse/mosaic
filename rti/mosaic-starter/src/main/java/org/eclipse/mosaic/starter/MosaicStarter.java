@@ -293,6 +293,12 @@ public class MosaicStarter {
     }
 
     private void printErrorInformation(Logger logger, Throwable exception) {
+        try {
+            // workaround to avoid mixing output streams of logback
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            //
+        }
         String logDirectory = null;
         try {
             logDirectory = ((LoggerContext) LoggerFactory.getILoggerFactory()).getProperty("logDirectory");
@@ -311,7 +317,7 @@ public class MosaicStarter {
             System.err.println("\t- Log-Directory: " + logDirectory);
         }
         System.err.println();
-        System.err.println(" Eclipse MOSAIC will now shutdown.");
+        System.err.println(" MOSAIC will now shut down.");
         System.err.println("-------------------------------------------------------------------");
         System.err.println();
 

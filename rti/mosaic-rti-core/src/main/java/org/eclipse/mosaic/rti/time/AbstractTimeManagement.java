@@ -153,7 +153,9 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
 
     @Override
     public void finishSimulationRun(int statusCode) throws InternalFederateException {
-        long durationMs = (System.nanoTime() - simStartRealtimeNs) / TIME.MILLI_SECOND;
+        long durationMs = simStartRealtimeNs > 0
+                ? (System.nanoTime() - simStartRealtimeNs) / TIME.MILLI_SECOND
+                : 0;
 
         try {
             this.stopWatchDog();
@@ -184,7 +186,7 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
         logger.info("Ended: " + dateFormat.format(new Date(currentTime)));
         logger.info("Duration: {} (RTF: {})",
                 DurationFormatUtils.formatDuration(durationMs, "HH'h' mm'm' ss.SSS's'"),
-                FORMAT_TWO_DIGIT.format((getEndTime() / TIME.MILLI_SECOND) / durationMs)
+                durationMs > 0 ? FORMAT_TWO_DIGIT.format((getEndTime() / TIME.MILLI_SECOND) / durationMs) : 0
         );
         logger.info("");
         if (statusCode == STATUS_CODE_SUCCESS) {
