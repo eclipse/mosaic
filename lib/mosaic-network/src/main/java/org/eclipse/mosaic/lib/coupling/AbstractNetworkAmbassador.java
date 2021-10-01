@@ -453,7 +453,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         log.warn("Vehicle with ID {} was already added, ignoring entry.", vi.getName());
                         continue;
                     } else if (!registeredNodes.containsKey(vi.getName())) {
-                        log.warn("Vehicle with ID {} is not in the registered list (no config arrived yet), ignoring entry.", vi.getName());
+                        log.debug("Vehicle with ID {} is not in the registered list (no config arrived yet)", vi.getName());
                         continue;
                     }
                     // add vehicles with stored config in the case: AdHocCommunicationConfiguration arrived before VehicleUpdates
