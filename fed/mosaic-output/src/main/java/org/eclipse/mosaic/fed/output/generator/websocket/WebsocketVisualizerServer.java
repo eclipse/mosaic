@@ -123,7 +123,7 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
     }
 
     private void sendVehicleUpdates(WebSocket socket) {
-        if (vehicleUpdatesReference.get() != null) {
+        if (vehicleUpdatesReference.get() != null && !vehicleUpdatesReference.get().getUpdated().isEmpty()) {
             VehicleUpdates reduced = reduceVehicleUpdates(vehicleUpdatesReference.get());
             JsonElement jsonElement = new Gson().toJsonTree(reduced);
             JsonObject jsonObject = new JsonObject();

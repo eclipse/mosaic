@@ -15,6 +15,8 @@
 
 package org. eclipse.mosaic.fed.output.generator.websocket;
 
+import static org.junit.Assert.assertNull;
+
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.DriveDirection;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -56,31 +58,62 @@ public class WebsocketVisualizerServerTest {
     }
 
     /**
-     * Test for ticket #3999.
-     *
-     * <blockquote>
-     * I am having some problems with VSimRTI. One of which is the distance sensors,
-     * if I activate them the visualizer does not work giving the error:<br>
-     *
-     * <code>ERROR WebsocketVisualizerServer - WebsocketError: Infinity is not a valid double value as per JSON specification</code> *
-     * </blockquote>
+     * Tests if the vehicle updates are reduced to only necessary data before sending them to the client.
      */
     @Test
-    public void infiniteValueForDistanceSensor_sameVehicleInfoAfterRoundtrip() {
+    public void collectRemovedVehiclesBeforeTransport() {
+        // setup
+        websocketVisualizer.updateVehicleUpdates(
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList("veh_0"))
+        );
+        websocketVisualizer.updateVehicleUpdates(
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList())
+        );
+        websocketVisualizer.updateVehicleUpdates(
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList("veh_1", "veh_2"))
+        );
+
+        // all vehicles to be removed should be sent to the client
+        websocketVisualizer.onMessage(socketMock, (String) null);
+        Assert.assertEquals("{\"VehiclesRemove\":[\"veh_0\",\"veh_1\",\"veh_2\"]}", sentString.get());
+
+        // send another vehicle to be removed -> only this vehicle is expected in the message to be sent
+        websocketVisualizer.updateVehicleUpdates(
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList("veh_4"))
+        );
+        websocketVisualizer.onMessage(socketMock, (String) null);
+        Assert.assertEquals("{\"VehiclesRemove\":[\"veh_4\"]}", sentString.get());
+
+        // send no more removed vehicles -> expect no message to be sent
+        sentString.set(null);
+        websocketVisualizer.updateVehicleUpdates(
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList())
+        );
+        websocketVisualizer.onMessage(socketMock, (String) null);
+        assertNull(sentString.get());
+
+
+    }
+
+    /**
+     * Tests if the vehicle updates are reduced to only necessary data before sending them to the client.
+     */
+    @Test
+    public void reduceVehicleDataBeforeTransport() {
         // setup
         // no vehicle in front, 50m behind, no sensors left/right available
         final DistanceSensor distanceSensor = new DistanceSensor(Double.POSITIVE_INFINITY, 50d, -1, -1);
         final VehicleSensors vehSensors = new VehicleSensors(distanceSensor, null);
-        final VehicleData vehicleData = new VehicleData.Builder(111, "1")
+        final VehicleData vehicleDataToSend = new VehicleData.Builder(111, "1")
                 .position(GeoPoint.lonLat(11, 10), null)
                 .movement(10, 0d, 0d)
                 .orientation(DriveDirection.UNAVAILABLE, -18.0, 0d)
                 .road(new SimpleRoadPosition("prev", "upcoming", 0, 1d))
                 .sensors(vehSensors)
                 .create();
-        final VehicleUpdates vehMovements =
-                new VehicleUpdates(0, Lists.newArrayList(vehicleData), Lists.newArrayList(), Lists.newArrayList());
-        websocketVisualizer.updateVehicleUpdates(vehMovements);
+        final VehicleUpdates vehMovementsToSend =
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(vehicleDataToSend), Lists.newArrayList());
+        websocketVisualizer.updateVehicleUpdates(vehMovementsToSend);
 
         // run
         websocketVisualizer.onMessage(socketMock, (String) null);
@@ -88,11 +121,17 @@ public class WebsocketVisualizerServerTest {
         // read sent json back to object 
         final Gson gson = new Gson();
         final JsonElement jsonElement = gson.fromJson(sentString.get(), JsonElement.class);
-        final VehicleUpdates roundTripVehMovements =
+        final VehicleUpdates actualVehMovementsReceived =
                 gson.fromJson(jsonElement.getAsJsonObject().get(VehicleUpdates.TYPE_ID), VehicleUpdates.class);
 
-        // assert 
-        Assert.assertEquals(vehMovements, roundTripVehMovements);
+        // assert
+        final VehicleData vehicleDataToReceive = new VehicleData.Builder(111, "1")
+                .position(GeoPoint.lonLat(11, 10), null)
+                .create();
+        final VehicleUpdates vehMovementsToReceive =
+                new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(vehicleDataToReceive), Lists.newArrayList());
+
+        Assert.assertEquals(vehMovementsToReceive, actualVehMovementsReceived);
     }
 
 }
