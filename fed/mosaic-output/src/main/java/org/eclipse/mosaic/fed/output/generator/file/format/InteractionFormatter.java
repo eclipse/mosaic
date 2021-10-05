@@ -47,7 +47,7 @@ public class InteractionFormatter {
         this.methodManagers = new HashMap<>();
 
         Map<String, Class<?>> interactionClasses = InteractionUtils.getAllSupportedInteractions(
-                "com.dcaiti.vsimrti", "com.dcaiti.mosaic"
+                "com.dcaiti.mosaic"
         );
 
         for (Entry<String, List<List<String>>> e : interactionDefinitions.entrySet()) {
