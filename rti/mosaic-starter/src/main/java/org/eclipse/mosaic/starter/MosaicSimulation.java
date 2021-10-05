@@ -31,6 +31,7 @@ import org.eclipse.mosaic.rti.api.ComponentProvider;
 import org.eclipse.mosaic.rti.api.FederateAmbassador;
 import org.eclipse.mosaic.rti.api.FederationManagement;
 import org.eclipse.mosaic.rti.api.InteractionManagement;
+import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.MosaicVersion;
 import org.eclipse.mosaic.rti.api.TimeManagement;
 import org.eclipse.mosaic.rti.api.WatchDog;
@@ -184,27 +185,23 @@ public class MosaicSimulation {
 
             federation = createFederation(simParams, federates);
 
-            final long startTime = System.currentTimeMillis();
-
             federation.getTimeManagement().runSimulation();
 
             stopFederation(federation);
 
-            simulationResult.durationMs = System.currentTimeMillis() - startTime;
             simulationResult.success = true;
 
         } catch (Throwable e) {
             if (federation != null) {
-                federation.getMonitor().onEndSimulation(
-                        federation.getFederationManagement(),
-                        federation.getTimeManagement(),
-                        -1,
-                        -1
-                );
+                try {
+                    federation.getTimeManagement().finishSimulationRun(-1);
+                } catch (InternalFederateException e2) {
+                    log.error("Could not finish simulation after error.", e2);
+                }
             }
+
             stopFederation(federation);
             simulationResult.exception = e;
-
         }
         return simulationResult;
     }
@@ -615,7 +612,6 @@ public class MosaicSimulation {
      */
     public static class SimulationResult {
         public boolean success;
-        public long durationMs;
         public Throwable exception;
     }
 
