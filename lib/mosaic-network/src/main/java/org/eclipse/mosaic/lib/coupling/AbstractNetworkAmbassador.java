@@ -500,7 +500,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             }
 
             if (!interaction.getRemovedNames().isEmpty()) {
-                this.log.debug("Remove Vehicles");
                 List<Integer> nodesToRemove = new ArrayList<>();
                 long time = interaction.getTime();
                 for (String id : interaction.getRemovedNames()) {
