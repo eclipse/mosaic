@@ -91,8 +91,6 @@ public class WebsocketVisualizerServerTest {
         );
         websocketVisualizer.onMessage(socketMock, (String) null);
         assertNull(sentString.get());
-
-
     }
 
     /**
