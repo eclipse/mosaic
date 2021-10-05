@@ -268,7 +268,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         "Error in " + this.federateName + ": " + this.federateAmbassadorChannel.getLastStatusMessage()
                 );
             }
-            this.log.info("Init simulation with startTime={}, stopTime={}", startTime, endTime);
+            this.log.info("Init simulation with startTime={}, stopTime={}", TIME.format(startTime), TIME.format(endTime));
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize " + ambassadorName, e);
         }
@@ -276,7 +276,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
-        this.log.trace("ProcessInteraction {} at time={}", interaction.getTypeId(), interaction.getTime());
+        this.log.trace("ProcessInteraction {} at time={}", interaction.getTypeId(), TIME.format(interaction.getTime()));
         // 2nd step of time management cycle: Deliver interactions to the federate
         if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             this.process((RsuRegistration) interaction);
@@ -295,7 +295,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
     @Override
     protected void processTimeAdvanceGrant(long time) throws InternalFederateException {
-        this.log.trace("ProcessTimeAdvanceGrant at time={}", time);
+        this.log.trace("ProcessTimeAdvanceGrant at time={}", TIME.format(time));
         try {
             // 3rd and last step of cycle: Allow events up to current time in network simulator scheduler
             ambassadorFederateChannel.writeAdvanceTimeMessage(time);
@@ -506,12 +506,12 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     // verify the vehicles are simulated in the current simulation
                     Integer externalId = simulatedNodes.containsInternalId(id) ? simulatedNodes.toExternalId(id) : null;
                     if (externalId != null) {
-                        this.log.info("removeNode ID[int={}, ext={}] time={}", id, simulatedNodes.toExternalId(id), time);
+                        this.log.info("removeNode ID[int={}, ext={}] time={}", id, simulatedNodes.toExternalId(id), TIME.format(time));
                         nodesToRemove.add(externalId); // If simulated, add to the list, which will be handed to the channel
                         simulatedNodes.removeUsingInternalId(id); // remove the vehicle from our internal list
                         removedNodes.add(id);
                     } else if (registeredNodes.containsKey(id)) {
-                        this.log.info("removeNode (still virtual) ID[int={}] time={}", id, time);
+                        this.log.info("removeNode (still virtual) ID[int={}] time={}", id, TIME.format(time));
                         registeredNodes.remove(id);
                         removedNodes.add(id);
                     } else {
