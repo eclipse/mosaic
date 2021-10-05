@@ -66,8 +66,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
 
 
     /**
-     * This method is called by VSimRTI when the vehicle that has been equipped with this application
-     * enters the simulation.
+     * This method is called by mosaic-application when the vehicle enters the simulation.
      * It is the first method called of this class during a simulation.
      */
     @Override
@@ -91,8 +90,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
     }
 
     /**
-     * This method is called by VSimRTI when the vehicle that has been equipped with this application
-     * leaves the simulation.
+     * This method is called by mosaic-application when the vehicle leaves the simulation.
      * It is the last method called of this class during a simulation.
      */
     @Override
@@ -218,9 +216,9 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         }
 
         /*
-         * We want to send a DENM (Decentralized Environment Notification Message). A DENM, as a subclass of
-         * V2XMessage, requires a MessageRouting (so VSimRTI knows source and destination of the message),
-         * and a payload in the form of a DENMContent object. It contains fields such as the current timestamp
+         * We want to send a DENM (Decentralized Environment Notification Message). A Denm, as a subclass of
+         * V2xMessage, requires a MessageRouting (so the communication simulator knows source and destination of the message),
+         * and a payload in the form of a DenmContent object. It contains fields such as the current timestamp
          * of the sending node, the geo position of the sending node, warning type and event strength.
          */
         Denm denm = new Denm(mr, new DenmContent(getOs().getSimulationTime(), vehicleLongLat, roadId, type, strength, SPEED, 0.0f, vehicleLongLat, null, null));
@@ -238,14 +236,6 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
     }
 
     private void reactUponDENMessageChangeRoute(Denm denm) {
-        /*
-         * NOTE: The route change happens only once. Further rerouting is not
-         * possible at the moment. The route information which could be used for
-         * rerouting is static. It was requested only once by VSimRTI from
-         * the traffic simulator. Otherwise the traffic simulator performance
-         * would decrease dramatically. This may change in the future.
-         * Until this, the routeChanged variable is used.
-         */
         final String affectedConnectionId = denm.getEventRoadId();
         final VehicleRoute routeInfo = Objects.requireNonNull(getOs().getNavigationModule().getCurrentRoute());
 
