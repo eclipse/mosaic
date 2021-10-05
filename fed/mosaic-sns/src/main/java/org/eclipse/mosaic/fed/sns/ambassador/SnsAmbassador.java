@@ -150,9 +150,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
 
     private void process(VehicleUpdates interaction) {
         for (VehicleData added : interaction.getAdded()) {
-            if (addOrUpdateVehicle(added)) {
-                log.info("Added Vehicle id={} position={} @time={}", added.getName(), added.getPosition(), TIME.format(interaction.getTime()));
-            }
+            addOrUpdateVehicle(added);
         }
         for (VehicleData updated : interaction.getUpdated()) {
             if (addOrUpdateVehicle(updated) && log.isTraceEnabled()) {
@@ -236,6 +234,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         Double communicationRadius = registeredVehicles.get(vehicleName);
         if (communicationRadius != null) {
             SimulationEntities.INSTANCE.createOnlineNode(vehicleName, vehicleData.getProjectedPosition(), communicationRadius);
+            log.info("Added Vehicle id={} position={} @time={}", vehicleData.getName(), vehicleData.getPosition(), TIME.format(vehicleData.getTime()));
             return true;
         }
 
