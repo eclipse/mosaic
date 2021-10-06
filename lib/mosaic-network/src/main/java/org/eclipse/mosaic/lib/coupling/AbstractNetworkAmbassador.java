@@ -38,6 +38,7 @@ import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
 import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.AbstractFederateAmbassador;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -120,6 +121,11 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     private final NetworkEntityIdTransformer simulatedNodes;
 
     /**
+     * Ids of nodes which has been added and removed.
+     */
+    protected final List<String> removedNodes;
+
+    /**
      * This is used to fetch the most recent position of a vehicle when a {@link AdHocCommunicationConfiguration} interaction
      * is processed.
      */
@@ -144,6 +150,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.federateName = federateName;
         this.registeredNodes = new HashMap<>();
         this.simulatedNodes = new NetworkEntityIdTransformer();
+        this.removedNodes = new ArrayList<>();
 
         try {
             config = new ObjectInstantiation<>(CAbstractNetworkAmbassador.class).readFile(ambassadorParameter.configuration);
@@ -170,7 +177,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             // do not close outputScanner, as it would close the underlying stream.
 
             if (matchedOutPort != null) {
-                log.debug("Found string \"{}\" in stdout", matchedOutPort);
+                log.trace("Found string \"{}\" in stdout", matchedOutPort);
                 int port = Integer.parseInt(matchedOutPort.split("=")[1]);
                 port = getHostPortFromDockerPort(port);
                 this.connectToFederate(host, port); // Connection with the read port
@@ -190,7 +197,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             throw new InternalFederateException("Could not establish connection to federate. The federate may not have started properly.");
         }
 
-        log.debug("{} finished ConnectToFederate", ambassadorName);
+        log.trace("{} finished ConnectToFederate", ambassadorName);
     }
 
     /**
@@ -261,7 +268,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         "Error in " + this.federateName + ": " + this.federateAmbassadorChannel.getLastStatusMessage()
                 );
             }
-            this.log.info("Init simulation with startTime={}, stopTime={}", startTime, endTime);
+            this.log.info("Init simulation with startTime={}, stopTime={}", TIME.format(startTime), TIME.format(endTime));
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize " + ambassadorName, e);
         }
@@ -269,7 +276,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
-        this.log.debug("ProcessInteraction {} at time={}", interaction.getTypeId(), interaction.getTime());
+        this.log.trace("ProcessInteraction {} at time={}", interaction.getTypeId(), TIME.format(interaction.getTime()));
         // 2nd step of time management cycle: Deliver interactions to the federate
         if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
             this.process((RsuRegistration) interaction);
@@ -288,7 +295,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
 
     @Override
     protected void processTimeAdvanceGrant(long time) throws InternalFederateException {
-        this.log.debug("ProcessTimeAdvanceGrant at time={}", time);
+        this.log.trace("ProcessTimeAdvanceGrant at time={}", TIME.format(time));
         try {
             // 3rd and last step of cycle: Allow events up to current time in network simulator scheduler
             ambassadorFederateChannel.writeAdvanceTimeMessage(time);
@@ -301,7 +308,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 switch (cmd) {
                     case CMD.NEXT_EVENT: // The federate has scheduled an event
                         long nextTime = this.federateAmbassadorChannel.readTimeBody();
-                        log.debug("Requested next_event at {} ", nextTime);
+                        log.trace("Requested next_event at {} ", nextTime);
                         // If the federates event is beyond our allowed time we have to request time advance from the RTI
                         if (nextTime > time) {
                             this.rti.requestAdvanceTime(nextTime);
@@ -318,13 +325,13 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                                     rcvMsgContainer.msgId,
                                     rcvMsgContainer.receiverInformation
                             );
-                            log.info("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), msg.getTime());
+                            log.debug("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), TIME.format(msg.getTime()));
                             this.rti.triggerInteraction(msg);  // Hand the received message to the RTI and thus the other federates
                         }
                         break;
                     case CMD.END:       // The federate has terminated the current time advance -> we are done here
                         long termTime = federateAmbassadorChannel.readTimeBody();
-                        log.debug("End ProcessTimeAdvanceGrant at: {}", termTime);
+                        log.trace("End ProcessTimeAdvanceGrant at: {}", termTime);
                         break command_loop; // break out of the infinite loop
                     default:
                         throw new InternalFederateException("Unknown command from federate at processTimeAdvanceGrant");
@@ -357,7 +364,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.log.debug(
                 "Add RSU {} at simulation time {} ",
                 interaction.getMapping().getName(),
-                interaction.getTime()
+                TIME.format(interaction.getTime())
         );
         RsuMapping mapping = interaction.getMapping();
         if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
@@ -379,7 +386,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.log.debug(
                 "Add traffic light RSU for TL {} at simulation time {} ",
                 interaction.getMapping().getName(),
-                interaction.getTime()
+                TIME.format(interaction.getTime())
         );
         TrafficLightMapping mapping = interaction.getMapping();
         if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
@@ -401,7 +408,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         this.log.debug(
                 "Add charging station RSU for CS {} at simulation time {} ",
                 interaction.getMapping().getName(),
-                interaction.getTime()
+                TIME.format(interaction.getTime())
         );
         ChargingStationMapping mapping = interaction.getMapping();
         if (simulatedNodes.containsInternalId(mapping.getName()) || registeredNodes.containsKey(mapping.getName())) {
@@ -438,7 +445,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             latestVehicleUpdates = interaction;
 
             if (!interaction.getAdded().isEmpty()) {
-                log.debug("Add Vehicles at first movement");
                 List<VehicleData> addedVehicles = interaction.getAdded();
                 Comparator<UnitData> comp = new UnitNameComparator();
                 addedVehicles.sort(comp);
@@ -447,7 +453,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         log.warn("Vehicle with ID {} was already added, ignoring entry.", vi.getName());
                         continue;
                     } else if (!registeredNodes.containsKey(vi.getName())) {
-                        log.warn("Vehicle with ID {} is not in the registered list (no config arrived yet), ignoring entry.", vi.getName());
+                        log.debug("Vehicle with ID {} is not in the registered list (no config arrived yet)", vi.getName());
                         continue;
                     }
                     // add vehicles with stored config in the case: AdHocCommunicationConfiguration arrived before VehicleUpdates
@@ -461,7 +467,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             }
 
             if (!interaction.getUpdated().isEmpty()) {
-                this.log.debug("Update vehicle positions.");
                 long time = interaction.getTime();
                 List<VehicleData> nodes = interaction.getUpdated();
                 List<NodeDataContainer> nodesToUpdate = new ArrayList<>();
@@ -470,17 +475,17 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     CartesianPoint projectedPosition = vi.getProjectedPosition();
                     if (simulatedNodes.containsInternalId(vi.getName())) { // if the vehicle is already present in the simulation
                         Integer id = simulatedNodes.toExternalId(vi.getName());
-                        if (this.log.isDebugEnabled()) {
-                            log.debug("UpdateNode : ID[int={}, ext={}]", vi.getName(), id);
-                            log.debug("Pos: x({}) y({}) Geo: {}", projectedPosition.getX(), projectedPosition.getY(), geoPosition);
+                        if (this.log.isTraceEnabled()) {
+                            log.trace("UpdateNode : ID: [int={}, ext={}] Pos: x({}) y({}) Geo: {}", vi.getName(), id,
+                                    projectedPosition.getX(), projectedPosition.getY(), geoPosition);
                         }
                         nodesToUpdate.add(new NodeDataContainer(id, projectedPosition));
                     } else if (registeredNodes.containsKey(vi.getName())) {
                         // Node was not yet added to simulation, so update its entry in the registered node list
                         registeredNodes.get(vi.getName()).position = projectedPosition;
-                        if (this.log.isDebugEnabled()) {
-                            log.debug("UpdateNode (still virtual) : ID[int={}]", vi.getName());
-                            log.debug("Pos: x({}) y({}) Point2D.Double: {}", projectedPosition.getX(), projectedPosition.getY(), geoPosition);
+                        if (this.log.isTraceEnabled()) {
+                            log.trace("UpdateNode (still virtual) : ID[int={}] Pos: x({}) y({}) Geo: {}", vi.getName(),
+                                    projectedPosition.getX(), projectedPosition.getY(), geoPosition);
                         }
                     } else {
                         this.log.warn("Node ID[int={}] is not simulated", vi.getName());
@@ -495,19 +500,20 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             }
 
             if (!interaction.getRemovedNames().isEmpty()) {
-                this.log.debug("Remove Vehicles");
                 List<Integer> nodesToRemove = new ArrayList<>();
                 long time = interaction.getTime();
                 for (String id : interaction.getRemovedNames()) {
                     // verify the vehicles are simulated in the current simulation
                     Integer externalId = simulatedNodes.containsInternalId(id) ? simulatedNodes.toExternalId(id) : null;
                     if (externalId != null) {
-                        this.log.info("removeNode ID[int={}, ext={}] time={}", id, simulatedNodes.toExternalId(id), time);
+                        this.log.info("removeNode ID[int={}, ext={}] time={}", id, simulatedNodes.toExternalId(id), TIME.format(time));
                         nodesToRemove.add(externalId); // If simulated, add to the list, which will be handed to the channel
                         simulatedNodes.removeUsingInternalId(id); // remove the vehicle from our internal list
+                        removedNodes.add(id);
                     } else if (registeredNodes.containsKey(id)) {
-                        this.log.info("removeNode (still virtual) ID[int={}] time={}", id, time);
+                        this.log.info("removeNode (still virtual) ID[int={}] time={}", id, TIME.format(time));
                         registeredNodes.remove(id);
+                        removedNodes.add(id);
                     } else {
                         this.log.warn("Node ID[int={}] is not simulated", id);
                     }
@@ -562,7 +568,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             );
             return;
         }
-        log.debug("This V2XMessage is applicable for this network simulator. Send this message. V2XMessage.id={}", interaction.getMessage().getId());
 
         try {
             Integer sourceId = simulatedNodes.containsInternalId(sac.getSourceName())
@@ -570,10 +575,10 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     : null;
 
             if (sourceId != null) {
-                log.info(
-                        "insertV2XMessage: id={} from node ID[int={} , ext={}] channel:{} time={}",
+                log.debug(
+                        "sendV2XMessage: id={} from node ID[int={} , ext={}] channel:{} type:{} time={}",
                         interaction.getMessageId(),
-                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), interaction.getTime()
+                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), dac.getType(), TIME.format(interaction.getTime())
                 ); // Write the message onto the channel and to the federate
                 // Then wait for ack
                 int ack = ambassadorFederateChannel.writeSendMessage(
@@ -622,7 +627,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
             RegisteredNode configuredNode = new RegisteredNode(interaction, latestData != null ? latestData.getProjectedPosition() : null);
             if (latestData != null) {
                 addVehicleNodeToSimulation(nodeId, configuredNode, interaction.getTime());
-            } else {
+            } else if (!removedNodes.contains(nodeId)) {
                 log.debug("Saving Configuration for later insertion as vehicle {} has not moved yet.", nodeId);
                 registeredNodes.put(nodeId, configuredNode);
             }
@@ -664,8 +669,8 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     );
                 }
                 this.log.info(
-                        "Added RSU ID[int= {}, ext={}] at projected position= {} time={}",
-                        simulatedNodes.fromExternalId(id), id, virtualNode.position, time
+                        "Added RSU ID[int={}, ext={}] at projected position={} time={}",
+                        simulatedNodes.fromExternalId(id), id, virtualNode.position, TIME.format(time)
                 );
                 log.debug("Sending AdHocCommunicationConfiguration for RSU node {}", nodeId);
                 sendAdHocCommunicationConfiguration(virtualNode.configuration, time);
@@ -692,7 +697,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 }
                 this.log.info(
                         "Added vehicle ID[int={}, ext={}] at position={} time={}",
-                        simulatedNodes.fromExternalId(id), id, registeredNode.position, time
+                        simulatedNodes.fromExternalId(id), id, registeredNode.position, TIME.format(time)
                 );
                 log.debug("Sending AdHocCommunicationConfiguration for vehicle node {}.", nodeId);
                 sendAdHocCommunicationConfiguration(registeredNode.configuration, time);
@@ -720,8 +725,8 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     ? simulatedNodes.toExternalId(configuration.getNodeId())
                     : null;
             if (externalId != null) {   // If the node is simulated
-                if (this.log.isDebugEnabled()) {
-                    log.debug(
+                if (this.log.isTraceEnabled()) {
+                    log.trace(
                             "AdHocCommunicationConfiguration: from node ID[int={}, ext={}], at time = {} channels: [{},{}|{},{}]",
                             configuration.getNodeId(), externalId, time,
                             (configuration.getConf0() != null ? configuration.getConf0().getChannel0() : "null"),
