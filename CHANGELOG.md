@@ -1,17 +1,17 @@
 # Changelog Eclipse MOSAIC 21.1 (October 2021)
 
-* [A+] Server units are now able to access to street routing module.
+* [A+] Server units are now able to access the central navigation component for routing purposes.
 * [A+] The stop mode has been revised, allowing vehicles to park in parking areas (SUMO).
-* [M+] Made import of SUMO net files faster and more reliable in scenario-convert.
 * [M-] WebVisualizer now removes vehicles correctly and shows V2X indicators longer.
 * [M-] Fixed a bug in matrix mappers configuration in mapping.
 * [C+] Upgraded ns-3 federate to support ns3-34.
 * [C+] Major improvement of logging for SNS, OMNeT++, and ns-3.
 * [C-] Fixed a bug in polygon intersection test used by reachability check in mosaic-cell.
-* [M+] Major overhaul of battery and charging station simulation (Extended).
-* [M+] Added new consumption model for Li-Ion based batteries (Extended).
+* [S+] Improved scenario-convert for faster and more reliable import of SUMO net files.
 * [T+] You can now use LibSumo as an alternative to TraCI (experimental).
 * [T+] Now supports SUMO 1.10.0
+* [X+] Major overhaul of battery and charging station simulation (Extended).
+* [X+] Added new consumption model for Li-Ion based batteries (Extended).
 
 # Changelog Eclipse MOSAIC 21.0 (March 2021)
 
@@ -204,4 +204,4 @@ Please note, this version only works with sumo v0.21.0 or higher
 Please note, this version only works with sumo v0.21.0 or higher
 
 Changelog (Features and Bugfixes) Legend:
-* [M] MOSAIC * [V] VSimRTI * [A] Application simulator * [B] Battery simulator * [C] Communication simulator * [E] Environment simulator * [N] Navigation component * [S] Scenario-convert * [T] Traffic simulator * [+/-] new Feature/Bugfix
+[M] MOSAIC [V] VSimRTI [A] Application simulator [C] Communication simulator [E] Environment simulator [N] Navigation component [S] Scenario-convert [T] Traffic simulator [X] MOSAIC Extended [+/-] new Feature/Bugfix
