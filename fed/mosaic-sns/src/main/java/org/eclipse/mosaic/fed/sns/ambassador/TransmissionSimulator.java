@@ -41,7 +41,7 @@ import java.util.Map;
 
 public class TransmissionSimulator {
 
-    private final static Logger log = LoggerFactory.getLogger(TransmissionSimulator.class);
+    private final static Logger log = LoggerFactory.getLogger(SnsAmbassador.class);
 
     /**
      * TTL for 1 (ONE) hop.

@@ -127,9 +127,6 @@
                 <appender-ref ref="STDOUT"/>
                 <appender-ref ref="MosaicLog"/>
             </logger>
-            <logger name="org.eclipse.mosaic.rti.time" additivity="false" level="DEBUG">
-                <appender-ref ref="MosaicLog"/>
-            </logger>
             <logger name="org.eclipse.mosaic.lib" additivity="false" level="INFO">
                 <appender-ref ref="MosaicLog"/>
             </logger>

@@ -75,12 +75,13 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
      */
     public SnsAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
-        log.info("Start Simulation");
     }
 
     @Override
     public void initialize(final long startTime, final long endTime) throws InternalFederateException {
         super.initialize(startTime, endTime);
+        this.log.info("Init simulation with startTime={}, endTime={}", startTime, endTime);
+
         if (log.isTraceEnabled()) {
             log.trace("subscribedMessages: {}", Arrays.toString(this.rti.getSubscribedInteractions().toArray()));
         }
@@ -127,7 +128,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         final RsuMapping applicationRsu = interaction.getMapping();
         if (applicationRsu.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationRsu.getName(), applicationRsu.getPosition().toCartesian());
-            log.info("Added RSU id={} @time={}", applicationRsu.getName(), TIME.format(interaction.getTime()));
+            log.info("Added RSU id={} position={} @time={}", applicationRsu.getName(), applicationRsu.getPosition(), TIME.format(interaction.getTime()));
         }
     }
 
@@ -135,7 +136,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         final TrafficLightMapping applicationTl = interaction.getMapping();
         if (applicationTl.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationTl.getName(), applicationTl.getPosition().toCartesian());
-            log.info("Added TrafficLight id={} @time={}", applicationTl.getName(), TIME.format(interaction.getTime()));
+            log.info("Added TrafficLight id={} position={} @time={}", applicationTl.getName(), applicationTl.getPosition(), TIME.format(interaction.getTime()));
         }
     }
 
@@ -143,15 +144,13 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         final ChargingStationMapping applicationCs = interaction.getMapping();
         if (applicationCs.hasApplication()) {
             SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationCs.getName(), applicationCs.getPosition().toCartesian());
-            log.info("Added ChargingStation id={} @time={}", applicationCs.getName(), TIME.format(interaction.getTime()));
+            log.info("Added ChargingStation id={} position={} @time={}", applicationCs.getName(), applicationCs.getPosition(), TIME.format(interaction.getTime()));
         }
     }
 
     private void process(VehicleUpdates interaction) {
         for (VehicleData added : interaction.getAdded()) {
-            if (addOrUpdateVehicle(added)) {
-                log.info("Added Vehicle id={} @time={}", added.getName(), TIME.format(interaction.getTime()));
-            }
+            addOrUpdateVehicle(added);
         }
         for (VehicleData updated : interaction.getUpdated()) {
             if (addOrUpdateVehicle(updated) && log.isTraceEnabled()) {
@@ -185,13 +184,15 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 if (configuration.getConf0() != null && configuration.getConf0().getRadius() != null) {
                     communicationRadius = configuration.getConf0().getRadius();
                 } else {
-                    log.warn("Node {} is not configured with a distance value. Using global singlehop radius from SNS configuration.", nodeId);
+                    log.debug("Node {} is not configured with a distance value. Using global singlehop radius from SNS configuration.", nodeId);
                 }
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
                     SimulationEntities.INSTANCE.enableWifi(nodeId, communicationRadius);
                 } else {
                     registeredVehicles.put(nodeId, communicationRadius);
                 }
+                log.info("Radio configured in mode {} with communication radius {} for node id={} @time={}",
+                        configuration.getRadioMode(), communicationRadius, nodeId, TIME.format(interaction.getTime()));
                 break;
             default:
                 log.warn("Unknown radio mode {} configured for node {}. Ignoring.", configuration.getRadioMode(), nodeId);
@@ -233,6 +234,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         Double communicationRadius = registeredVehicles.get(vehicleName);
         if (communicationRadius != null) {
             SimulationEntities.INSTANCE.createOnlineNode(vehicleName, vehicleData.getProjectedPosition(), communicationRadius);
+            log.info("Added Vehicle id={} position={} @time={}", vehicleData.getName(), vehicleData.getPosition(), TIME.format(vehicleData.getTime()));
             return true;
         }
 
@@ -285,6 +287,11 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
             }
         }
 
+    }
+
+    @Override
+    public void finishSimulation() throws InternalFederateException {
+        log.info("Finished simulation");
     }
 
     @Override

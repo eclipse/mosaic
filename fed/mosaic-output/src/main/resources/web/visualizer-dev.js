@@ -617,10 +617,8 @@ const WebSocketClient = (function() {
             updatedUnits.push(vehicle.name)
           })
         }
-        if (data.VehicleUpdates.removedNames) {
-          // Remove vehicles from map
-          data.VehicleUpdates.removedNames.forEach(map.removeUnit)
-        }
+      } else if (data.VehiclesRemove) {
+        data.VehiclesRemove.forEach(map.removeUnit)
       } else if (data.VehicleRegistration) {
         // determine if vehicle is equipped with an application
         let equipped = data.VehicleRegistration.vehicleMapping.applications.length > 0;

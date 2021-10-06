@@ -191,6 +191,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
     }
 
     private MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory, CScenario scenarioConfiguration) {
+        MosaicSimulation simulation = null;
         try {
             final Path scenarioExecutionDirectory;
             if (!scenarioDirectoryManipulator.isEmpty()) {
@@ -203,35 +204,52 @@ public class MosaicSimulationRule extends TemporaryFolder {
             }
             scenarioConfigManipulator.accept(scenarioConfiguration);
             for (CRuntime.CFederate federate : runtimeConfiguration.federates) {
-                federateManipulators.getOrDefault(federate.id, f -> {}).accept(federate);
+                federateManipulators.getOrDefault(federate.id, f -> {
+                }).accept(federate);
             }
 
-            logDirectory = Paths.get("./log").resolve(scenarioConfiguration.simulation.id);
+            String testName = getNameOfCallingTest(scenarioConfiguration.simulation.id);
+            logDirectory = Paths.get("./log").resolve(testName);
             final Path logConfiguration = prepareLogConfiguration(logDirectory);
 
-            return logError(timeout(() -> new MosaicSimulation()
+            simulation = new MosaicSimulation()
                     .setWatchdogInterval(watchdogInterval)
                     .setRuntimeConfiguration(runtimeConfiguration)
                     .setHostsConfiguration(hostsConfiguration)
                     .setLogbackConfigurationFile(logConfiguration)
                     .setLogLevelOverride(logLevelOverride)
-                    .setComponentProviderFactory(componentProviderFactory)
-                    .runSimulation(scenarioExecutionDirectory, scenarioConfiguration)));
+                    .setComponentProviderFactory(componentProviderFactory);
+
+            final MosaicSimulation simulationToRun = simulation; //lambda expression below requires final variable
+            final MosaicSimulation.SimulationResult result = timeout(
+                    () -> simulationToRun.runSimulation(scenarioExecutionDirectory, scenarioConfiguration)
+            );
+            return logResult(simulation.getLogger(), result);
         } catch (Throwable e) {
             MosaicSimulation.SimulationResult result = new MosaicSimulation.SimulationResult();
             result.exception = e;
             result.success = false;
-            return logError(result);
+            return logResult(simulation != null ? simulation.getLogger() : LOG, result);
         } finally {
             resetSingletons();
         }
     }
 
-    private MosaicSimulation.SimulationResult logError(MosaicSimulation.SimulationResult simulationResult) {
-        if (!simulationResult.success && simulationResult.exception != null) {
-            LOG.error("Error during test execution.", simulationResult.exception);
+    private String getNameOfCallingTest(String fallbackName) {
+        StackTraceElement[] strackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < strackTrace.length; i++) {
+            if (!strackTrace[i].getClassName().equals(this.getClass().getName())) {
+                return StringUtils.substringAfterLast(strackTrace[i].getClassName(), ".");
+            }
         }
-        return simulationResult;
+        return fallbackName;
+    }
+
+    private MosaicSimulation.SimulationResult logResult(Logger logger, MosaicSimulation.SimulationResult result) {
+        if (!result.success && result.exception != null) {
+            logger.error("Error during test execution.", result.exception);
+        }
+        return result;
     }
 
     protected Path prepareLogConfiguration(Path logDirectory) throws IOException {

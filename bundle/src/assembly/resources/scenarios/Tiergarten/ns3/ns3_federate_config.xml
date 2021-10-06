@@ -7,25 +7,30 @@
         <!-- possible prefix values: func time node level prefix_func prefix_time prefix_node prefix_level prefix_all -->
         <component name="*" value="prefix_level|prefix_time"/>
 
-        <component name="MosaicStarter" value="warn|error|debug|info"/>
-        <component name="MosaicSimulatorImpl" value="warn|error|debug|info"/>
-        <component name="MosaicNs3Server" value="warn|error|debug|info"/>
-        <component name="MosaicNodeManager" value="warn|error|debug|info"/>
-        <component name="MosaicProxyApp" value="warn|error|debug|info|function|func"/>
-        <component name="ClientServerChannel" value="warn|error"/>
+        <!-- These are setting suggestions for verbosity levels
+             which are equivalent to MOSAIC's log level INFO and DEBUG
 
-        <component name="UdpSocketImpl" value="warn|error|info"/>
-        <component name="UdpL4Protocol" value="warn|error|info"/>
-        <component name="Ipv4L3Protocol" value="warn|error|info"/>
-        <component name="Ipv4Interface" value="warn|error|info"/>
-        <component name="TrafficControlLayer" value="warn|error|info"/>
+             MOSAIC log level equivalent:             INFO                                       DEBUG
+        .....................................................................................................................-->
+        <component name="MosaicStarter"        value="warn|error|debug|info"/>       <!-- value="warn|error|debug|info"      -->
+        <component name="MosaicSimulatorImpl"  value="warn|error|debug|info"/>       <!-- value="warn|error|debug|info"      -->
+        <component name="MosaicNs3Server"      value="warn|error"/>                  <!-- value="warn|error"                 -->
+        <component name="MosaicNodeManager"    value="warn|error|debug"/>            <!-- value="warn|error|debug"           -->
+        <component name="MosaicProxyApp"       value="warn|error|debug|func|info"/>  <!-- value="warn|error|debug|func|info" -->
+        <component name="ClientServerChannel"  value="warn|error"/>                  <!-- value="warn|error"                 -->
 
-        <component name="PropagationLossModel" value="warn|error|info"/>
-        <component name="WifiPhy" value="warn|error|info|function"/>
-        <component name="YansWifiPhy" value="warn|error|info"/>
-        <component name="WaveNetDevice" value="warn|error|info"/>
-        <component name="YansWifiChannel" value="warn|error|info"/>
-        <component name="InterferenceHelper" value="warn|error|info"/>
+        <component name="UdpSocketImpl"        value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="UdpL4Protocol"        value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="Ipv4L3Protocol"       value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="Ipv4Interface"        value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="TrafficControlLayer"  value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+
+        <component name="PropagationLossModel" value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="WifiPhy"              value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="YansWifiPhy"          value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="WaveNetDevice"        value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="YansWifiChannel"      value="warn|error"/>                  <!-- value="warn|error|debug"           -->
+        <component name="InterferenceHelper"   value="warn|error"/>                  <!-- value="warn|error|debug"           -->
         <!-- List can be extendy by other components to set logging for -->
     </LogLevel>
 
