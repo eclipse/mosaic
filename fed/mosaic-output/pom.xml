@@ -56,7 +56,8 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <includes>
-                        <include>META-INF/**/*.*</include>
+                        <include>META-INF/*</include>
+                        <include>META-INF/**/*</include>
                         <include>org/**/*.*</include>
                         <include>web/markers/*.*</include>
                         <include>web/visualizer.html</include>
