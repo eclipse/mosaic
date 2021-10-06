@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>21.1-SNAPSHOT</version>
+        <version>21.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -56,7 +56,8 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <includes>
-                        <include>META-INF/**/*.*</include>
+                        <include>META-INF/*</include>
+                        <include>META-INF/**/*</include>
                         <include>org/**/*.*</include>
                         <include>web/markers/*.*</include>
                         <include>web/visualizer.html</include>

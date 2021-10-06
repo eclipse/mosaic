@@ -66,8 +66,8 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
     }
 
     /**
-     * This method is called by VSimRTI when a previously triggered event is handed over to the
-     * application by VSimRTI for processing.
+     * This method is called by mosaic-application when a previously triggered event is handed over to the
+     * application for processing.
      * Events can be triggered be this application itself, e.g. to run a routine periodically.
      *
      * @param event The event to be processed
@@ -81,7 +81,7 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
      * Method to let the WeatherServer send a DEN message periodically.
      * <p>
      * This method sends a DEN message and generates a new event during each call.
-     * When said event is triggered (via VSimRTI), processEvent() is called, which in turn calls sample().
+     * When said event is triggered, processEvent() is called, which in turn calls sample().
      * This way, sample() is called periodically at a given interval (given by the generated event time)
      * and thus the DENM is sent periodically at this interval.
      */
@@ -127,9 +127,7 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
     }
 
     /**
-     * This method is called by VSimRTI when the vehicle that has been equipped with this application
-     * leaves the simulation.
-     * It is the last method called of this class during a simulation.
+     * This method is called by mosaic-application when the simulation has finished.
      */
     @Override
     public void onShutdown() {

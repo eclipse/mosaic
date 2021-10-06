@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.lib.docker;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class DockerClient {
         }
 
         final Process p;
-        if ("true".equals(System.getProperty("mosaic.docker.no-detach"))) {
+        if ("true".equals(System.getProperty("mosaic.docker.no-detach", SystemUtils.IS_OS_WINDOWS ? "true" : "false"))) {
             logger.info("Starting container without detaching.");
             p = docker.run(image, options);
         } else {

@@ -59,6 +59,8 @@ public class DockerClientTest {
 
         when(commandLine.status(anyString())).thenReturn("", "", "Up 2 seconds");
         when(commandLine.port(anyString())).thenReturn("1337/tcp -> 0.0.0.0:7331\n");
+
+        System.setProperty("mosaic.docker.no-detach", "false");
     }
 
     @Test
