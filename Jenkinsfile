@@ -142,6 +142,7 @@ spec:
                     // which makes it impossible to mount the correct settings.xml
                     // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
                     // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
+                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn install -DskipTests'
                     sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
                 }
             }
