@@ -382,7 +382,9 @@ public class SimulationFacade {
                         log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
-                            .copyFrom(lastVehicleData).stopped(vehicleStopMode).create();
+                            .copyFrom(lastVehicleData)
+                            .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
+                            .stopped(vehicleStopMode).create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
                      * Therefore we just continue however, if it has already been in the simulation (remove(id) returns true),
