@@ -992,18 +992,21 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             return;
         }
 
-        if (!sumoConfig.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER)) {
-            log.warn("You tried to configure a front or rear sensor but no leader information is subscribed. "
-                    + "Please add \"{}\" to the list of \"subscriptions\" in the sumo_config.json file.", CSumo.SUBSCRIPTION_LEADER);
-            return;
-        }
+        if (ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_FRONT)
+                || ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_REAR)) {
+            if (!sumoConfig.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER)) {
+                log.warn("You tried to configure a front or rear sensor but no leader information is subscribed. "
+                        + "Please add \"{}\" to the list of \"subscriptions\" in the sumo_config.json file.", CSumo.SUBSCRIPTION_LEADER);
+                return;
+            }
 
-        bridge.getSimulationControl().configureDistanceSensors(
-                vehicleSensorActivation.getVehicleId(),
-                vehicleSensorActivation.getMaximumLookahead(),
-                ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_FRONT),
-                ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_REAR)
-        );
+            bridge.getSimulationControl().configureDistanceSensors(
+                    vehicleSensorActivation.getVehicleId(),
+                    vehicleSensorActivation.getMaximumLookahead(),
+                    ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_FRONT),
+                    ArrayUtils.contains(vehicleSensorActivation.getSensorTypes(), SensorType.RADAR_REAR)
+            );
+        }
     }
 
     /**
