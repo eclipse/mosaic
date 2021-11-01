@@ -238,7 +238,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
     private String getNameOfCallingTest(String fallbackName) {
         StackTraceElement[] strackTrace = Thread.currentThread().getStackTrace();
         for (int i = 2; i < strackTrace.length; i++) {
-            if (!strackTrace[i].getClassName().equals(this.getClass().getName())) {
+            if (!strackTrace[i].getClassName().endsWith("Rule")) {
                 return StringUtils.substringAfterLast(strackTrace[i].getClassName(), ".");
             }
         }
