@@ -45,6 +45,11 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.zeromq.SocketType;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZContext;
+
 @SuppressWarnings("UnstableApiUsage")
 public class SocketZeromqServer extends WebSocketServer implements Runnable {
 
