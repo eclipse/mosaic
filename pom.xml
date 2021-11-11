@@ -59,9 +59,7 @@
         <module>lib/mosaic-objects</module>
         <module>lib/mosaic-routing</module>
         <module>lib/mosaic-utils</module>
-        <module>lib/mosaic-zeromq</module>
-
-
+        
         <module>fed/mosaic-application</module>
         <module>fed/mosaic-environment</module>
         <module>fed/mosaic-cell</module>
@@ -351,7 +349,7 @@
             <url>https://repo1.maven.apache.org/maven2/</url>
         </repository>
         <repository>
-            <id>eclipse</id>
+            <id>ccentral</id>
             <name>Maven Central Repository</name>
             <url>https://repo1.maven.apache.org/maven2/</url>
         </repository>

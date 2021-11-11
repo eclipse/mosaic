@@ -25,6 +25,13 @@
             }
         }
     ],
+    "servers": [
+        {
+            "name": "ZeromqServer",
+            "group": "PerfectTransmissionServer",
+            "applications": [ "org.eclipse.mosaic.app.ZeromqServer" ]
+        }
+    ],
     "rsus": [
         {
             "position": {
