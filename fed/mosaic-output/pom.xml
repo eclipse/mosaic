@@ -47,6 +47,11 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.zeromq</groupId>
+            <artifactId>jeromq</artifactId>
+            <version>${version.zeromq}</version>
+        </dependency>
     </dependencies>
 
     <build>

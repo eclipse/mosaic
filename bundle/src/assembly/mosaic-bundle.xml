@@ -1,7 +1,7 @@
 <assembly>
     <id>Eclipse MOSAIC</id>
     <formats>
-        <format>zip</format>
+        <format>dir</format>
     </formats>
     <baseDirectory>.</baseDirectory>
 

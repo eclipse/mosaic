@@ -77,6 +77,14 @@ Commons JXPath (1.3)
  * Source: https://svn.apache.org/repos/asf/commons/proper/jxpath/trunk
 
 
+eu.neilalexander:jnacl (1.0.0)
+
+ * License: The BSD 2-Clause License
+ * Maven artifact: `eu.neilalexander:jnacl:1.0.0`
+ * Project: https://github.com/neilalexander/jnacl
+ * Source: https://github.com/neilalexander/jnacl
+
+
 Findbugs Annotations under Apache License (1.3.9-1)
 
  * License: Apache License, Version 2.0
@@ -187,6 +195,14 @@ Java-WebSocket (1.3.9)
  * Maven artifact: `org.java-websocket:Java-WebSocket:1.3.9`
  * Project: https://github.com/TooTallNate/Java-WebSocket
  * Source: https://github.com/TooTallNate/Java-WebSocket
+
+
+JeroMQ (0.5.2)
+
+ * License: Mozilla Public License version 2.0
+ * Maven artifact: `org.zeromq:jeromq:0.5.2`
+ * Project: https://github.com/zeromq/jeromq
+ * Source: https://github.com/zeromq/jeromq
 
 
 Johnzon :: Core (1.1.13)

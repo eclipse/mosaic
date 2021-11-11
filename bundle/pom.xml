@@ -124,6 +124,11 @@
             <artifactId>mosaic-sumo</artifactId>
             <version>${mosaic.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.zeromq</groupId>
+            <artifactId>jeromq</artifactId>
+            <version>${version.zeromq}</version>
+        </dependency>
 
         <!-- Tutorial Applications -->
 

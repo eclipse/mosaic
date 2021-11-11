@@ -66,3 +66,6 @@ tmp/
 *.log
 credentials.cached
 *.lcs
+.vscode/settings.json
+
+.bak/

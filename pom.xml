@@ -25,9 +25,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:eclipse/mosaic.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse/mosaic.git</developerConnection>
-        <url>git@github.com:eclipse/mosaic.git</url>
+        <connection>scm:git:git@github.com:ide3a/mosaic.git</connection>
+        <developerConnection>scm:git:git@github.com:ide3a/mosaic.git</developerConnection>
+        <url>git@github.com:ide3a/mosaic.git</url>
     </scm>
 
     <distributionManagement>
@@ -59,7 +59,7 @@
         <module>lib/mosaic-objects</module>
         <module>lib/mosaic-routing</module>
         <module>lib/mosaic-utils</module>
-
+        
         <module>fed/mosaic-application</module>
         <module>fed/mosaic-environment</module>
         <module>fed/mosaic-cell</module>
@@ -112,6 +112,7 @@
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
         <version.libsumo>1.9.2</version.libsumo>
+        <version.zeromq>0.5.2</version.zeromq>
     </properties>
 
     <dependencies>
@@ -345,7 +346,12 @@
         <repository>
             <id>central</id>
             <name>Maven Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2/</url>
+            <url>https://repo1.maven.apache.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>ccentral</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo1.maven.apache.org/maven2/</url>
         </repository>
     </repositories>
 
