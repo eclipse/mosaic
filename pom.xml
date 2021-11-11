@@ -346,12 +346,12 @@
         <repository>
             <id>central</id>
             <name>Maven Central Repository</name>
-            <url>https://repo1.maven.apache.org/maven2/</url>
+            <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
         <repository>
             <id>ccentral</id>
             <name>Maven Central Repository</name>
-            <url>https://repo1.maven.apache.org/maven2/</url>
+            <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
     </repositories>
 
