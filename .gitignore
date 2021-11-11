@@ -67,3 +67,5 @@ tmp/
 credentials.cached
 *.lcs
 .vscode/settings.json
+
+.bak/
