@@ -22,6 +22,7 @@ import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -51,9 +52,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZContext;
 
 @SuppressWarnings("UnstableApiUsage")
-public class SocketZeromqServer extends WebSocketServer implements Runnable {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+public class SocketZeromqServer implements Runnable {
 
     private static final int MAX_MESSAGES_LIST = 1000;
 
@@ -73,42 +72,15 @@ public class SocketZeromqServer extends WebSocketServer implements Runnable {
     private final Queue<RsuRegistration> rsuRegistrations = createQueue();
     private final Queue<TrafficLightRegistration> trafficLightRegistrations = createQueue();
     private final Queue<ChargingStationRegistration> chargingStationRegistrations = createQueue();
+    private final Queue<TmcRegistration> TmcRegistrations = createQueue();
     private final Queue<ChargingStationUpdate> chargingStationUpdates = createQueue();
 
-    public SocketZeromqServer(InetSocketAddress address) {
-        super(address);
-    }
-
-    @Override
-    public void onStart() {
-        log.debug("Started");
-    }
-
-    @Override
-    public void onClose(WebSocket arg0, int arg1, String arg2, boolean arg3) {
-        log.debug("Closed");
-    }
-
-    @Override
-    public void onError(WebSocket arg0, Exception ex) {
-        log.error("WebsocketError", ex);
-    }
-
-    @Override
-    public synchronized void onMessage(WebSocket socket, String arg1) {
-
-        sendInteractions(socket, vehicleRegistrations);
-        sendInteractions(socket, rsuRegistrations);
-        sendInteractions(socket, trafficLightRegistrations);
-        sendInteractions(socket, chargingStationRegistrations);
-
-        sendVehicleUpdates(socket);
-        sendVehiclesToBeRemoved(socket);
-
-        sendInteractions(socket, sentV2xMessages);
-        sendInteractions(socket, receivedV2xMessages);
-
-        sendInteractions(socket, chargingStationUpdates);
+    public SocketZeromqServer(Integer port) {
+        ZContext context = new ZContext();
+        Socket publisher = context.createSocket(SocketType.PUB);
+        String address = "tcp://127.0.0.1:" + port.toString();
+        publisher.setSndHWM(1);
+        publisher.bind(address);
     }
 
     private void sendVehiclesToBeRemoved(WebSocket socket) {
@@ -161,11 +133,6 @@ public class SocketZeromqServer extends WebSocketServer implements Runnable {
         }
     }
 
-    @Override
-    public void onOpen(WebSocket arg0, ClientHandshake arg1) {
-
-    }
-
     public synchronized void updateVehicleUpdates(VehicleUpdates interaction) {
         vehicleUpdatesReference.set(interaction);
         /* VehicleUpdates can be dropped as only the latest VehicleUpdates is sent when the server is ready for the next message.
@@ -203,6 +170,15 @@ public class SocketZeromqServer extends WebSocketServer implements Runnable {
 
     private static <T> Queue<T> createQueue() {
         return Queues.synchronizedQueue(EvictingQueue.create(MAX_MESSAGES_LIST));
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void start() {
     }
 
 }
