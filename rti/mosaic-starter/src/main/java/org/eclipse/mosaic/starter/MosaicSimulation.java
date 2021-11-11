@@ -195,7 +195,7 @@ public class MosaicSimulation {
             if (federation != null) {
                 try {
                     federation.getTimeManagement().finishSimulationRun(-1);
-                } catch (InternalFederateException e2) {
+                } catch (Throwable e2) {
                     log.error("Could not finish simulation after error.", e2);
                 }
             }
