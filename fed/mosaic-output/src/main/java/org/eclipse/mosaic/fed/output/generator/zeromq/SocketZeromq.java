@@ -31,51 +31,51 @@ import java.net.InetSocketAddress;
 
 public class SocketZeromq extends AbstractOutputGenerator {
 
-    private final SocketZeromqServer websocketVisualizerServer;
+    private final SocketZeromqServer socketZeromqServer;
 
-    public SocketZeromq(int port) {
-        websocketVisualizerServer = new SocketZeromqServer(new InetSocketAddress(port));
-        websocketVisualizerServer.start();
+    public SocketZeromq(Integer port) {
+        socketZeromqServer = new SocketZeromqServer(port);
+        socketZeromqServer.start();
     }
 
     @Handle
-    public void visualizeInteraction(VehicleUpdates interaction) throws Exception {
-        websocketVisualizerServer.updateVehicleUpdates(interaction);
+    public void messageInteraction(VehicleUpdates interaction) throws Exception {
+        socketZeromqServer.updateVehicleUpdates(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(V2xMessageTransmission interaction) throws Exception {
-        websocketVisualizerServer.sendV2xMessage(interaction);
+    public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
+        socketZeromqServer.sendV2xMessage(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(V2xMessageReception interaction) throws Exception {
-        websocketVisualizerServer.receiveV2xMessage(interaction);
+    public void messageInteraction(V2xMessageReception interaction) throws Exception {
+        socketZeromqServer.receiveV2xMessage(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(VehicleRegistration interaction) throws Exception {
-        websocketVisualizerServer.addVehicle(interaction);
+    public void messageInteraction(VehicleRegistration interaction) throws Exception {
+        socketZeromqServer.addVehicle(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(RsuRegistration interaction) throws Exception {
-        websocketVisualizerServer.addRoadsideUnit(interaction);
+    public void messageInteraction(RsuRegistration interaction) throws Exception {
+        socketZeromqServer.addRoadsideUnit(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(TrafficLightRegistration interaction) throws Exception {
-        websocketVisualizerServer.addTrafficLight(interaction);
+    public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
+        socketZeromqServer.addTrafficLight(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(ChargingStationRegistration interaction) throws Exception {
-        websocketVisualizerServer.addChargingStation(interaction);
+    public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
+        socketZeromqServer.addChargingStation(interaction);
     }
 
     @Handle
-    public void visualizeInteraction(ChargingStationUpdate interaction) throws Exception {
-        websocketVisualizerServer.updateChargingStation(interaction);
+    public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
+        socketZeromqServer.updateChargingStation(interaction);
     }
 
 }
