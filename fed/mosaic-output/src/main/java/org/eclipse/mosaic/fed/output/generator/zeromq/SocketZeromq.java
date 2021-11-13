@@ -29,6 +29,13 @@ import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 
 import java.net.InetSocketAddress;
 
+import org.zeromq.SocketType;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZContext;
+
+import java.lang.Integer;
+
 public class SocketZeromq extends AbstractOutputGenerator {
 
     private final SocketZeromqServer socketZeromqServer;
