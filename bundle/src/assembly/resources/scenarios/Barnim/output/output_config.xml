@@ -209,6 +209,8 @@
             <subscription id="V2xMessageTransmission" enabled="true"/>
             <subscription id="VehicleRegistration" enabled="true"/>
             <subscription id="RsuRegistration" enabled="true"/>
+            <subscription id="TrafficDetectorUpdates" enabled="true"/>
+            <subscription id="TmcRegistration" enabled="true"/>
         </subscriptions>
     </output>
 

@@ -23,8 +23,10 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 
 import java.net.InetSocketAddress;
@@ -83,6 +85,16 @@ public class SocketZeromq extends AbstractOutputGenerator {
     @Handle
     public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
         socketZeromqServer.updateChargingStation(interaction);
+    }
+
+    @Handle
+    public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
+        socketZeromqServer.updateTrafficDetectors(interaction);
+    }
+
+    @Handle
+    public void messageInteraction(TmcRegistration interaction) throws Exception {
+        socketZeromqServer.addTrafficManagementCenter(interaction);
     }
 
 }
