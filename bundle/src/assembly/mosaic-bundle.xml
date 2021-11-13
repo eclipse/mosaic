@@ -153,6 +153,7 @@
                 <include>org.xerial:sqlite-jdbc</include>
                 <include>org.java-websocket:Java-WebSocket</include>
                 <include>org.eclipse.sumo:libsumo</include>
+                <include>org.zeromq:jeromq</include>
             </includes>
         </dependencySet>
     </dependencySets>
