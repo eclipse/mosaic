@@ -23,7 +23,6 @@ import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
-import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -33,7 +32,13 @@ import com.google.common.collect.Queues;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -47,7 +52,7 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZContext;
 
 @SuppressWarnings("UnstableApiUsage")
-public class SocketZeromqServer extends ZContext {
+public class SocketZeromqServer implements Runnable {
 
     private static final int MAX_MESSAGES_LIST = 1000;
 
@@ -62,20 +67,46 @@ public class SocketZeromqServer extends ZContext {
 
     private final Queue<V2xMessageTransmission> sentV2xMessages = createQueue();
     private final Queue<V2xMessageReception> receivedV2xMessages = createQueue();
-    private final Queue<TrafficDetectorUpdates> trafficDetectorUpdates = createQueue();
 
     private final Queue<VehicleRegistration> vehicleRegistrations = createQueue();
     private final Queue<RsuRegistration> rsuRegistrations = createQueue();
     private final Queue<TrafficLightRegistration> trafficLightRegistrations = createQueue();
     private final Queue<ChargingStationRegistration> chargingStationRegistrations = createQueue();
-    private final Queue<TmcRegistration> TrafficManagementCenterRegistrations = createQueue();
+    private final Queue<TmcRegistration> TmcRegistrations = createQueue();
     private final Queue<ChargingStationUpdate> chargingStationUpdates = createQueue();
 
-    ZContext context = new ZContext();
-    Socket publisher = context.createSocket(SocketType.XPUB);
-
     public SocketZeromqServer(Integer port) {
+        ZContext context = new ZContext();
+        Socket publisher = context.createSocket(SocketType.PUB);
+        String address = "tcp://127.0.0.1:" + port.toString();
+        publisher.setSndHWM(1);
+        publisher.bind(address);
+    }
 
+    private void sendVehiclesToBeRemoved(WebSocket socket) {
+        if (!vehiclesToRemove.isEmpty()) {
+            // copy (and remove) vehicles from queue to separate list in a thread-safe manner
+            final List<String> toRemove = new ArrayList<>(vehiclesToRemove.size());
+            for (Iterator<String> iterator = vehiclesToRemove.iterator(); iterator.hasNext(); ) {
+                toRemove.add(iterator.next());
+                iterator.remove();
+            }
+
+            JsonElement jsonElement = new Gson().toJsonTree(toRemove);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(VEHICLES_REMOVE_TYPE_ID, jsonElement);
+            socket.send(jsonObject.toString());
+        }
+    }
+
+    private void sendVehicleUpdates(WebSocket socket) {
+        if (vehicleUpdatesReference.get() != null && !vehicleUpdatesReference.get().getUpdated().isEmpty()) {
+            VehicleUpdates reduced = reduceVehicleUpdates(vehicleUpdatesReference.get());
+            JsonElement jsonElement = new Gson().toJsonTree(reduced);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(VehicleUpdates.TYPE_ID, jsonElement);
+            socket.send(jsonObject.toString());
+        }
     }
 
     private VehicleUpdates reduceVehicleUpdates(VehicleUpdates original) {
@@ -86,6 +117,20 @@ public class SocketZeromqServer extends ZContext {
                     .create());
         }
         return new VehicleUpdates(original.getTime(), Collections.EMPTY_LIST, reducedUpdates, Collections.EMPTY_LIST);
+    }
+
+    private <T extends Interaction> void sendInteractions(WebSocket socket, Queue<T> interactionsQueue) {
+        for (Iterator<T> iterator = interactionsQueue.iterator(); iterator.hasNext(); ) {
+            T interaction = iterator.next();
+
+            Gson gson = new Gson();
+            JsonElement jsonElement = gson.toJsonTree(interaction);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(interaction.getTypeId(), jsonElement);
+            socket.send(jsonObject.toString());
+
+            iterator.remove();
+        }
     }
 
     public synchronized void updateVehicleUpdates(VehicleUpdates interaction) {
@@ -115,14 +160,6 @@ public class SocketZeromqServer extends ZContext {
         chargingStationRegistrations.add(interaction);
     }
 
-    public synchronized void addTrafficManagementCenter(TmcRegistration interaction) {
-        TrafficManagementCenterRegistrations.add(interaction);
-    }
-
-    public synchronized void updateTrafficDetectors(TrafficDetectorUpdates interaction) {
-        trafficDetectorUpdates.add(interaction);
-    }
-
     public synchronized void updateChargingStation(ChargingStationUpdate interaction) {
         chargingStationUpdates.add(interaction);
     }
@@ -133,6 +170,12 @@ public class SocketZeromqServer extends ZContext {
 
     private static <T> Queue<T> createQueue() {
         return Queues.synchronizedQueue(EvictingQueue.create(MAX_MESSAGES_LIST));
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        
     }
 
     public void start() {

@@ -59,7 +59,7 @@
         <module>lib/mosaic-objects</module>
         <module>lib/mosaic-routing</module>
         <module>lib/mosaic-utils</module>
-
+        
         <module>fed/mosaic-application</module>
         <module>fed/mosaic-environment</module>
         <module>fed/mosaic-cell</module>
