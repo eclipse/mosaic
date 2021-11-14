@@ -23,59 +23,101 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
+import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 
-import java.net.InetSocketAddress;
+import org.zeromq.SocketType;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZContext;
+
+import java.lang.Integer;
 
 public class SocketZeromq extends AbstractOutputGenerator {
 
-    private final SocketZeromqServer socketZeromqServer;
+    // private final SocketZeromqServer // socketZeromqServer;
+    private final ZContext context = new ZContext();
+    private final Socket publisher = context.createSocket(SocketType.XPUB);
 
     public SocketZeromq(Integer port) {
-        socketZeromqServer = new SocketZeromqServer(port);
-        socketZeromqServer.start();
+        String address = "tcp://127.0.0.1:" + port.toString();
+        publisher.bind(address);
+        publisher.setSndHWM(100);
+        // // socketZeromqServer = new SocketZeromqServer(port);
     }
 
     @Handle
     public void messageInteraction(VehicleUpdates interaction) throws Exception {
-        socketZeromqServer.updateVehicleUpdates(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.updateVehicleUpdates(interaction);
     }
 
     @Handle
     public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
-        socketZeromqServer.sendV2xMessage(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.sendV2xMessage(interaction);
     }
 
     @Handle
     public void messageInteraction(V2xMessageReception interaction) throws Exception {
-        socketZeromqServer.receiveV2xMessage(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.receiveV2xMessage(interaction);
     }
 
     @Handle
     public void messageInteraction(VehicleRegistration interaction) throws Exception {
-        socketZeromqServer.addVehicle(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.addVehicle(interaction);
     }
 
     @Handle
     public void messageInteraction(RsuRegistration interaction) throws Exception {
-        socketZeromqServer.addRoadsideUnit(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.addRoadsideUnit(interaction);
     }
 
     @Handle
     public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
-        socketZeromqServer.addTrafficLight(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.addTrafficLight(interaction);
     }
+
 
     @Handle
     public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
-        socketZeromqServer.addChargingStation(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.addChargingStation(interaction);
     }
 
     @Handle
     public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
-        socketZeromqServer.updateChargingStation(interaction);
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.updateChargingStation(interaction);
+    }
+
+    @Handle
+    public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.updateTrafficDetectors(interaction);
+    }
+
+    @Handle
+    public void messageInteraction(TmcRegistration interaction) throws Exception {
+        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        publisher.send(interaction.toString(), 0);
+        // socketZeromqServer.addTrafficManagementCenter(interaction);
     }
 
 }

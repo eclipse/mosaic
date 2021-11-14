@@ -3,7 +3,7 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/eclipse/mosaic/main/fed/mosaic-output/src/main/resources/output_config.xsd">
 
-    <output id="fileoutput" enabled="true" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
+    <output id="fileoutput" enabled="false" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
         <filename>output.csv</filename>
         <directory>.</directory>
         <separator>;</separator>
@@ -188,7 +188,7 @@
         </subscriptions>
     </output>
 
-    <output id="websocket" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
+    <output id="websocket" enabled="false" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
         <synchronized>true</synchronized>
         <port>46587</port>
         <subscriptions>
@@ -197,6 +197,20 @@
             <subscription id="V2xMessageTransmission" enabled="true"/>
             <subscription id="VehicleRegistration" enabled="true"/>
             <subscription id="RsuRegistration" enabled="true"/>
+        </subscriptions>
+    </output>
+
+    <output id="zeromq" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.zeromq.SocketZeromqLoader">
+        <synchronized>true</synchronized>
+        <port>5321</port>
+        <subscriptions>
+            <subscription id="VehicleUpdates" enabled="true"/>
+            <subscription id="V2xMessageReception" enabled="true"/>
+            <subscription id="V2xMessageTransmission" enabled="true"/>
+            <subscription id="VehicleRegistration" enabled="true"/>
+            <subscription id="RsuRegistration" enabled="true"/>
+            <subscription id="TrafficDetectorUpdates" enabled="true"/>
+            <subscription id="TmcRegistration" enabled="true"/>
         </subscriptions>
     </output>
 
