@@ -72,12 +72,10 @@ public class SocketZeromqServer extends ZContext {
     private final Queue<ChargingStationUpdate> chargingStationUpdates = createQueue();
 
     ZContext context = new ZContext();
+    Socket publisher = context.createSocket(SocketType.XPUB);
 
     public SocketZeromqServer(Integer port) {
-        Socket publisher = context.createSocket(SocketType.XPUB);
-        String address = "tcp://127.0.0.1:" + port.toString();
-        publisher.bind(address);
-        publisher.setSndHWM(100);
+
     }
 
     private VehicleUpdates reduceVehicleUpdates(VehicleUpdates original) {
