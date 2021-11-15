@@ -38,6 +38,7 @@ import org.zeromq.ZContext;
 
 import java.lang.Integer;
 
+import com.google.protobuf.Message;
 import com.google.protobuf.MessageLite;
 
 public class SocketZeromq extends AbstractOutputGenerator {
@@ -50,7 +51,11 @@ public class SocketZeromq extends AbstractOutputGenerator {
         String address = "tcp://127.0.0.1:" + port.toString();
         publisher.bind(address);
         publisher.setSndHWM(100);
-        // // socketZeromqServer = new SocketZeromqServer(port);
+    }
+
+    private void zmqPublish(Socket publisher, MessageLite message, String topic){
+        publisher.send(String.format(topic), ZMQ.SNDMORE);
+        publisher.send(message.toByteArray());
     }
 
     @Handle
@@ -58,9 +63,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-        // publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        // publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.updateVehicleUpdates(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -68,9 +72,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-        // publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        // publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.sendV2xMessage(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -78,10 +81,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.receiveV2xMessage(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -89,10 +90,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addVehicle(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -100,10 +99,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addRoadsideUnit(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -111,10 +108,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addTrafficLight(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
 
@@ -123,10 +118,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addChargingStation(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -134,10 +127,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.updateChargingStation(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -145,10 +136,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.updateTrafficDetectors(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
@@ -156,10 +145,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = utility.createZMessageLite();
-
-        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        //publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addTrafficManagementCenter(interaction);
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
 }

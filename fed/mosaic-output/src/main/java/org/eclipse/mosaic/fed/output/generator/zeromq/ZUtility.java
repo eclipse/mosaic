@@ -51,6 +51,10 @@ public class ZUtility {
         return this.generic.build();
     }
 
+    public String createPubTopic(){
+        return generic.getSenderId();
+    }
+
     @Handle
     public void process(TrafficLightRegistration interaction){
     }
