@@ -69,7 +69,6 @@ credentials.cached
 .vscode/settings.json
 
 .bak/
-protoc/
 .DS_STORE
 lib/mosaic-zeromq/
 
