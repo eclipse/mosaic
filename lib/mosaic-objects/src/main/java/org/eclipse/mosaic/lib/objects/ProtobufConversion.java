@@ -20,6 +20,6 @@ public interface ProtobufConversion<ProtobufT> {
     ProtobufT toProto();
 
     interface Builder<ProtobufT> {
-        Builder fromProto(ProtobufT protobufType);
+        Builder<ProtobufT> fromProto(ProtobufT protobufType);
     }
 }
