@@ -29,7 +29,6 @@ import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.objects.vehicle.*;
 
-
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import java.util.Arrays;
@@ -47,7 +46,7 @@ class ZMosaic {
         generic.setSenderId(interaction.getSenderId());
         generic.setTypeId(interaction.getTypeId());
         
-        ZUtility utility = new ZUtility(generic);
+        ZUtility utility = new ZUtility();
 
         if (interaction instanceof V2xMessageReception) {
             utility.process((V2xMessageReception) interaction);
