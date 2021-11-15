@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.zeromq;
+package org.eclipse.mosaic.fed.output.generator.zeromq;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.Handle;
@@ -29,12 +29,17 @@ import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 
+
+
 import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZContext;
 
 import java.lang.Integer;
+
+import com.google.protobuf.Message;
+import com.google.protobuf.MessageLite;
 
 public class SocketZeromq extends AbstractOutputGenerator {
 
@@ -46,78 +51,102 @@ public class SocketZeromq extends AbstractOutputGenerator {
         String address = "tcp://127.0.0.1:" + port.toString();
         publisher.bind(address);
         publisher.setSndHWM(100);
-        // // socketZeromqServer = new SocketZeromqServer(port);
+    }
+
+    private void zmqPublish(Socket publisher, MessageLite message, String topic){
+        publisher.send(String.format(topic), ZMQ.SNDMORE);
+        publisher.send(message.toByteArray());
     }
 
     @Handle
     public void messageInteraction(VehicleUpdates interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.updateVehicleUpdates(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.sendV2xMessage(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(V2xMessageReception interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.receiveV2xMessage(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(VehicleRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addVehicle(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(RsuRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addRoadsideUnit(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addTrafficLight(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
 
     @Handle
     public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addChargingStation(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.updateChargingStation(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.updateTrafficDetectors(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
     @Handle
     public void messageInteraction(TmcRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
-        // socketZeromqServer.addTrafficManagementCenter(interaction);
+        ZUtility utility = new ZUtility(interaction);
+        utility.process(interaction);
+        MessageLite message = utility.createZMessageLite();
+        String topic = utility.createPubTopic();
+        zmqPublish(publisher, message, topic);
     }
 
 }
