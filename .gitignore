@@ -71,4 +71,5 @@ credentials.cached
 .bak/
 .DS_STORE
 lib/mosaic-zeromq/
+client/__pycache__
 
