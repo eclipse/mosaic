@@ -45,7 +45,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     // private final SocketZeromqServer // socketZeromqServer;
     private final ZContext context = new ZContext();
-    private final Socket publisher = context.createSocket(SocketType.XPUB);
+    private final Socket publisher = context.createSocket(SocketType.PUB);
 
     public SocketZeromq(Integer port) {
         String address = "tcp://127.0.0.1:" + port.toString();
