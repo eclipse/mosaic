@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 class ZmqMosaicInterface {
-    static GenericInteract add(Interaction interaction) throws Exception {
+    public GenericInteract createMessageLite(Interaction interaction) throws Exception {
         GenericInteract.Builder generic = GenericInteract.newBuilder();
 
         generic.setTime(interaction.getTime());
@@ -51,7 +51,8 @@ class ZmqMosaicInterface {
             builder.setSendTime(v2xinteraction.getReceiverInformation().getSendTime());
             builder.setReceiveTime(v2xinteraction.getReceiverInformation().getReceiveTime());
             builder.setReceiveSignalStrength(v2xinteraction.getReceiverInformation().getReceiveSignalStrength());
-        
+            generic.setV2XMessageReception(builder);
+
         } else if (interaction instanceof V2xMessageTransmission) {
             NoOp();
         
@@ -72,6 +73,7 @@ class ZmqMosaicInterface {
 
             List<Double> position = Arrays.asList(lat, lon, alt);
             builder.addAllPosition(position);
+            generic.setRsuRegistration(builder);
         
         } else if (interaction instanceof TmcRegistration) {
             NoOp();
@@ -89,6 +91,7 @@ class ZmqMosaicInterface {
             builder.setGroup(vehicleRegistration.getMapping().getGroup());
             List<String> applications = vehicleRegistration.getMapping().getApplications();
             builder.addAllApplications(applications);
+            generic.setVehicleRegistration(builder);
         
         } else if (interaction instanceof TrafficDetectorUpdates) {
             NoOp();
@@ -118,6 +121,9 @@ class ZmqMosaicInterface {
                 vehicle_data_builder.setLongitudinalAcc(element.getLongitudinalAcceleration());
                 
                 vehicle_updates_builder.addAdded(vehicle_data_builder);
+                generic.setVehicleUpdates(vehicle_updates_builder);
+
+
             }
 
             List<VehicleData> updatedVehicles = vehicleUpdates.getUpdated();
@@ -135,7 +141,9 @@ class ZmqMosaicInterface {
                 vehicle_data_builder.setSpeed(element.getSpeed());
                 vehicle_data_builder.setLongitudinalAcc(element.getLongitudinalAcceleration());
                 
-                vehicle_updates_builder.addAdded(vehicle_data_builder);
+                vehicle_updates_builder.addUpdated(vehicle_data_builder);
+                generic.setVehicleUpdates(vehicle_updates_builder);
+
             }
 
         } else {
