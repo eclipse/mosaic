@@ -28,7 +28,7 @@ import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
-import org.eclipse.mosaic.fed.output.generator.zeromq.ZmqMosaicInterface;
+import org.eclipse.mosaic.fed.output.generator.zeromq.ZMosaic;
 
 
 import org.zeromq.SocketType;
@@ -45,7 +45,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
     // private final SocketZeromqServer // socketZeromqServer;
     private final ZContext context = new ZContext();
     private final Socket publisher = context.createSocket(SocketType.XPUB);
-    private final ZmqMosaicInterface zmqMosaicInterface = new ZmqMosaicInterface();
+    private final ZMosaic zmqMosaicInterface = new ZMosaic();
 
     public SocketZeromq(Integer port) {
         String address = "tcp://127.0.0.1:" + port.toString();
@@ -56,7 +56,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(VehicleUpdates interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
         // publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         // publisher.send(interaction.toString(), 0);
         // socketZeromqServer.updateVehicleUpdates(interaction);
@@ -64,7 +64,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
         // publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         // publisher.send(interaction.toString(), 0);
         // socketZeromqServer.sendV2xMessage(interaction);
@@ -72,7 +72,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(V2xMessageReception interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -81,7 +81,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(VehicleRegistration interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -90,7 +90,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(RsuRegistration interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -99,7 +99,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -109,7 +109,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -118,7 +118,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -127,7 +127,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
         //publisher.send(interaction.toString(), 0);
@@ -136,7 +136,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(TmcRegistration interaction) throws Exception {
-        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        MessageLite message = zmqMosaicInterface.createMessageLiteNew(interaction);
 
         
         //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
