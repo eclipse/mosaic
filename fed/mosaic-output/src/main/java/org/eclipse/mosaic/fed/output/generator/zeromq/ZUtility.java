@@ -35,6 +35,7 @@ import org.eclipse.mosaic.rti.api.Interaction;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.io.ByteArrayDataOutput;
 import com.google.protobuf.ByteString;
 
 public class ZUtility {
@@ -57,8 +58,9 @@ public class ZUtility {
         return generic.getTypeId();
     }
 
-    public ByteString createPubTopicByteString(){
-        return generic.getTypeIdBytes();
+    public byte[] createPubTopicByteArray(){
+        byte[] ser = generic.getTypeIdBytes().toByteArray();
+        return ser;
     }
 
     @Handle
