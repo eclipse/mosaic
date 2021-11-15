@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.zeromq;
+package org.eclipse.mosaic.fed.output.generator.zeromq;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.Handle;
@@ -28,6 +28,8 @@ import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
+import org.eclipse.mosaic.fed.output.generator.zeromq.ZmqMosaicInterface;
+
 
 import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
@@ -36,11 +38,14 @@ import org.zeromq.ZContext;
 
 import java.lang.Integer;
 
+import com.google.protobuf.MessageLite;
+
 public class SocketZeromq extends AbstractOutputGenerator {
 
     // private final SocketZeromqServer // socketZeromqServer;
     private final ZContext context = new ZContext();
     private final Socket publisher = context.createSocket(SocketType.XPUB);
+    private final ZmqMosaicInterface zmqMosaicInterface = new ZmqMosaicInterface();
 
     public SocketZeromq(Integer port) {
         String address = "tcp://127.0.0.1:" + port.toString();
@@ -51,72 +56,91 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(VehicleUpdates interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        // publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        // publisher.send(interaction.toString(), 0);
         // socketZeromqServer.updateVehicleUpdates(interaction);
     }
 
     @Handle
     public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+        // publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        // publisher.send(interaction.toString(), 0);
         // socketZeromqServer.sendV2xMessage(interaction);
     }
 
     @Handle
     public void messageInteraction(V2xMessageReception interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.receiveV2xMessage(interaction);
     }
 
     @Handle
     public void messageInteraction(VehicleRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.addVehicle(interaction);
     }
 
     @Handle
     public void messageInteraction(RsuRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.addRoadsideUnit(interaction);
     }
 
     @Handle
     public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.addTrafficLight(interaction);
     }
 
 
     @Handle
     public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.addChargingStation(interaction);
     }
 
     @Handle
     public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.updateChargingStation(interaction);
     }
 
     @Handle
     public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.updateTrafficDetectors(interaction);
     }
 
     @Handle
     public void messageInteraction(TmcRegistration interaction) throws Exception {
-        publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
-        publisher.send(interaction.toString(), 0);
+        MessageLite message = zmqMosaicInterface.createMessageLite(interaction);
+
+        
+        //publisher.send(String.format(interaction.getSenderId()), ZMQ.SNDMORE);
+        //publisher.send(interaction.toString(), 0);
         // socketZeromqServer.addTrafficManagementCenter(interaction);
     }
 
