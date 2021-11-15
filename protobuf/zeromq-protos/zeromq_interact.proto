@@ -1,24 +1,24 @@
 syntax = "proto3";
 
-package GenericInteractSpace;
+package ZInteractSpace;
 option java_multiple_files = true;
 option java_package = "org.eclipse.mosaic.fed.output.generator.zeromq";
-option java_outer_classname = "GenericInteractProtos";
+option java_outer_classname = "ZInteractProtos";
 option optimize_for = LITE_RUNTIME;
 
 
-message GenericInteract {
+message ZInteract {
    int64 time = 1;
    int64 id = 2;
    string sender_id = 3;
    string type_id = 4;
 
-   message RsuRegistrationBuf {
+   message ZRsuRegistration {
       string name = 1;
       repeated double position = 2;
    }
 
-   message VehicleDataBuf {
+   message ZVehicleData {
       int64 time = 1;
       string name = 2;
       repeated double position = 3;
@@ -32,21 +32,20 @@ message GenericInteract {
       double longitudinal_acc = 7;
    }
 
-
-   message VehicleUpdatesBuf {
+   message ZVehicleUpdates {
       int64 time = 1;
-      repeated VehicleDataBuf added = 2;
-      repeated VehicleDataBuf updated = 3;
+      repeated ZVehicleData added = 2;
+      repeated ZVehicleData updated = 3;
    }
 
 
-   message VehicleRegistrationBuf {
+   message ZVehicleRegistration {
       string name = 1;
       string group = 2;
       repeated string applications = 3;
    }
 
-   message V2xMessageReceptionBuf {
+   message ZV2xMessageReception {
       string receiver_name = 1;
       int64 message_id = 2;
       int64 send_time = 3;
@@ -54,10 +53,10 @@ message GenericInteract {
       double receive_signal_strength = 5;
    }
 
-   oneof Interaction {
-      RsuRegistrationBuf rsu_registration = 5;
-      VehicleUpdatesBuf vehicle_updates = 6;
-      VehicleRegistrationBuf vehicle_registration = 7;
-      V2xMessageReceptionBuf v2x_message_reception = 8;
+   oneof interaction_type {
+      ZRsuRegistration z_rsu_registration = 5;
+      ZVehicleUpdates z_vehicle_updates = 6;
+      ZVehicleRegistration z_vehicle_registration = 7;
+      ZV2xMessageReception z_v2x_message_reception = 8;
    }
 }
