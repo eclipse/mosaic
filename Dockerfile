@@ -11,8 +11,8 @@ RUN apt update && apt install sumo sumo-tools sumo-doc -y && apt install python3
 RUN pip3 install pyzmq numpy scipy matplotlib jupyter pandas flake8 protobuf
 
 RUN useradd -ms /bin/bash mosaic
-COPY protoc/bin /usr/local/bin/
-COPY protoc/include /usr/local/bin
+COPY protobuf/protoc/bin /usr/local/bin/
+COPY protobuf/protoc/include /usr/local/bin
 USER mosaic
 WORKDIR /home/mosaic
 
