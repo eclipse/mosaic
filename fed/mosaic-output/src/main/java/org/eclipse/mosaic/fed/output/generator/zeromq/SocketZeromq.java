@@ -49,13 +49,14 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     public SocketZeromq(Integer port) {
         String address = "tcp://127.0.0.1:" + port.toString();
-        publisher.bind(address);
-        publisher.setSndHWM(100);
+        publisher.connect(address);
+        publisher.setSndHWM(100000);
+        System.out.println("Testestst");
     }
 
     private void zmqPublish(Socket publisher, MessageLite message, String topic){
-        publisher.send(String.format(topic), ZMQ.SNDMORE);
-        publisher.send(message.toByteArray());
+        //publisher.send(String.format(topic), ZMQ.SNDMORE);
+        publisher.send(message.toByteArray(), 0);
     }
 
     @Handle

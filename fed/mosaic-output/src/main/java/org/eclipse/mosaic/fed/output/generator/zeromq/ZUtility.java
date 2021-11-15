@@ -35,6 +35,8 @@ import org.eclipse.mosaic.rti.api.Interaction;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.protobuf.ByteString;
+
 public class ZUtility {
 
     ZInteract.Builder generic = ZInteract.newBuilder();
@@ -52,7 +54,11 @@ public class ZUtility {
     }
 
     public String createPubTopic(){
-        return generic.getSenderId();
+        return generic.getTypeId();
+    }
+
+    public ByteString createPubTopicByteString(){
+        return generic.getTypeIdBytes();
     }
 
     @Handle
