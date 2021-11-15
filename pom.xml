@@ -474,9 +474,9 @@
                             <exclude>target/**</exclude>
                             <exclude>**/ClientServerChannelProtos.java</exclude>
                             <exclude>**/ClientServerChannelProtos.proto</exclude>
-                            <exclude>**/GenericInteract.java</exclude>
-                            <exclude>**/GenericInteract.proto</exclude>
-                            <exclude>**/GenericInteractOrBuilder.java</exclude>
+                            <exclude>**/ZInteract.java</exclude>
+                            <exclude>**/ZInteract.proto</exclude>
+                            <exclude>**/ZInteractOrBuilder.java</exclude>
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -779,9 +779,9 @@
                                     <excludes>
                                         <exclude>**/*Protos.java</exclude>
                                         <exclude>**/mosaic-starter/bin/**</exclude>
-                                        <exclude>**/GenericInteract.java</exclude>
-                                        <exclude>**/GenericInteract.proto</exclude>
-                                        <exclude>**/GenericInteractOrBuilder.java</exclude>
+                                        <exclude>**/ZInteract.java</exclude>
+                                        <exclude>**/ZInteract.proto</exclude>
+                                        <exclude>**/ZInteractOrBuilder.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
@@ -815,9 +815,9 @@
                                         <exclude>**/*Protos.java</exclude>
                                         <exclude>**/protos/**</exclude>
                                         <exclude>**/mosaic-starter/bin/**</exclude>
-                                        <exclude>**/GenericInteract.java</exclude>
-                                        <exclude>**/GenericInteract.proto</exclude>
-                                        <exclude>**/GenericInteractOrBuilder.java</exclude>
+                                        <exclude>**/ZInteract.java</exclude>
+                                        <exclude>**/ZInteract.proto</exclude>
+                                        <exclude>**/ZInteractOrBuilder.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
