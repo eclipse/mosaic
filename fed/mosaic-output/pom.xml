@@ -52,6 +52,11 @@
             <artifactId>jeromq</artifactId>
             <version>${version.zeromq}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${version.protobuf}</version>
+        </dependency>
     </dependencies>
 
     <build>
