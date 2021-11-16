@@ -1,5 +1,5 @@
 import zmq
-from ZmqProtoToolbox import ProtoParser
+from ZmqProtoToolbox import LiveSerDes
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
 
     while True:
         msg = subscriber.recv_multipart()
-        ProtoParser(msg)
+        live_data = LiveSerDes(msg)
         print(msg)
 
 
