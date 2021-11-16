@@ -56,7 +56,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     private void zmqPublish(Socket publisher, MessageLite message, String topic){
         publisher.send(topic, ZMQ.SNDMORE);
-        publisher.send(message.toString(), 0);
+        publisher.send(message.toByteArray(), 0);
     }
 
     private MessageLite returnMessage(ZUtility utility){
