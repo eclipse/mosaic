@@ -54,9 +54,9 @@ public class SocketZeromq extends AbstractOutputGenerator {
         System.out.println("Testestst");
     }
 
-    private void zmqPublish(Socket publisher, MessageLite message, byte[] topic){
+    private void zmqPublish(Socket publisher, MessageLite message, String topic){
         publisher.send(topic, ZMQ.SNDMORE);
-        publisher.send(message.toByteArray(), 0);
+        publisher.send(message.toString(), 0);
     }
 
     private MessageLite returnMessage(ZUtility utility){
@@ -72,7 +72,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -81,7 +81,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -90,7 +90,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -99,7 +99,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -108,7 +108,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -117,7 +117,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -127,7 +127,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -136,7 +136,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -145,7 +145,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 
@@ -154,7 +154,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
         ZUtility utility = new ZUtility(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
-        byte[] topic = returnPubTopicByteArray(utility);
+        String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
 

@@ -19,7 +19,8 @@
 		"vscjava.vscode-java-pack",
 		"github.vscode-pull-request-github",
 		"github.copilot",
-		"ms-vscode-remote.remote-containers"
+		"ms-vscode-remote.remote-containers",
+		"kevinrose.vsc-python-indent"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

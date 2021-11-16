@@ -5,7 +5,7 @@ set -e
 javaMemorySizeXmx="2g"
 
 # uncomment to activate remote debugging
-javaRemoteDebugging="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=9630"
+# javaRemoteDebugging="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=9630"
 
 # mosaic
 dir_mosaic=./lib/mosaic
