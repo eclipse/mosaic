@@ -60,7 +60,7 @@ import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class VehicleRoutApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication{
+public class NightDriver extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication{
 
 
     private final long activityDuration;
