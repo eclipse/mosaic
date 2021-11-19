@@ -7,11 +7,11 @@
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
         <version>22.0-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.eclipse.mosaic.app</groupId>
-    <artifactId>hackathon-monaco</artifactId>
+    <artifactId>monaco</artifactId>
     <packaging>jar</packaging>
 
     <name>Monaco Scenario for Hackathon</name>

@@ -76,7 +76,7 @@
         <module>app/tutorials/highway-management</module>
         <module>app/tutorials/traffic-light-communication</module>
         <module>app/tutorials/weather-warning</module>
-        <module>app/hackathon-monaco</module>
+        <module>app/monaco</module>
 
     </modules>
 
