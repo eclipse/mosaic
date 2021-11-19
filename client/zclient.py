@@ -1,5 +1,5 @@
-from zeromq_interact_pb2 import ZInteract
 import zmq
+from ZmqProtoToolbox import LiveSerDes
 
 
 def main():
@@ -9,10 +9,11 @@ def main():
     subscriber.connect("tcp://127.0.0.1:6666")
     print("Subscriber connected to port 6666...")
 
-
     while True:
         msg = subscriber.recv_multipart()
+        live_data = LiveSerDes(msg)
         print(msg)
+
 
 if __name__ == '__main__':
     main()
