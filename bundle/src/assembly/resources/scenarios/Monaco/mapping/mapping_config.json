@@ -25,21 +25,11 @@
           }
       }
   ],
-  "rsus": [
-      {
-          "position": {
-              "latitude": 52.65027,
-              "longitude": 13.54500
-          },
-          "name": "WeatherServer",
-          "applications": [ ]
-      }
-  ],
   "vehicles": [
       {
           "startingTime": 5.0,
           "targetFlow": 1800,
-          "maxNumberVehicles": 2000,
+          "maxNumberVehicles": 4000,
           "types": [
               {
                   "applications": [ ],
@@ -61,5 +51,75 @@
               }
           ]
       }
-  ]
+  ],
+
+  "matrixMappers": [
+    {
+        "points": [ 
+            {
+                "name": "Entrance1", 
+                "position": {
+                    "center": {
+                        "latitude": 43.7499265,
+                        "longitude": 7.4386451
+                    },
+                    "radius": 500
+                }       
+            },
+            {
+                "name": "Entrance2", 
+                "position": {
+                    "center": {
+                        "latitude": 43.7317945,
+                        "longitude": 7.4064367
+                    },
+                    "radius": 500
+                }       
+            },
+            {
+                "name": "Entrance3", 
+                "position": {
+                    "center": {
+                        "latitude": 43.7414511,
+                        "longitude": 7.4234243
+                    },
+                    "radius": 500
+                }       
+            },
+            {
+                "name": "Entrance4", 
+                "position": {
+                    "center": {
+                        "latitude": 43.72636,
+                        "longitude": 7.4173167
+                    },
+                    "radius": 500
+                }       
+            },
+            {
+                "name": "Entrance5", 
+                "position": {
+                    "center": {
+                        "latitude": 43.7464825,
+                        "longitude": 7.4287627
+                    },
+                    "radius": 500
+                }       
+            }
+        ],
+        "types": [
+            {
+                "name": "Car"
+            }
+        ],
+        "odValues": [
+            [0, 500, 500, 500, 500],
+            [500, 0, 500, 500, 500],
+            [500, 500, 0, 500, 500],
+            [500, 500, 500, 0, 500],
+            [500, 500, 500, 500, 0]
+        ]
+    }
+]
 }
+
