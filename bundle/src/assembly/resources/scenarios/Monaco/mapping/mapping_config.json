@@ -1,125 +1,41 @@
 {
   "prototypes": [
-      {
-          "name": "Car",
-          "vehicleClass": "Car",
-          "accel": 2.6,
-          "decel": 4.5,
-          "emergencyDecel": 6.0,
-          "length": 5.00,
-          "maxSpeed": 70.0,
-          "minGap": 2.5,
-          "sigma": 0.5,
-          "tau": 1,
-          "speedFactor": 1.0,
-          "speedMode": "DEFAULT",
-          "laneChangeMode": "DEFAULT",
-          "deviations": {
-              "speedFactor": 0.0,
-              "length": 0.0,
-              "minGap": 0.0,
-              "maxSpeed": 0.0,
-              "accel": 0.0,
-              "decel": 0.0,
-              "tau": 0.0
-          }
+    {
+      "name": "Car",
+      "length": 4.0,
+      "minGap": 2.5,
+      "maxSpeed": 70.0,
+      "vehicleClass": "Car",
+      "accel": 2.6,
+      "decel": 4.5,
+      "sigma": 0.5,
+      "tau": 1.0,
+      "speedFactor": 1.0,
+      "deviations": {
+        "length": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "minGap": 0.0,
+        "maxSpeed": 0.0,
+        "speedFactor": 0.1,
+        "accel": 0.0,
+        "decel": 0.0,
+        "tau": 0.0
       }
+    }
   ],
   "vehicles": [
-      {
-          "startingTime": 5.0,
-          "targetFlow": 1800,
-          "maxNumberVehicles": 4000,
-          "types": [
-              {
-                  "applications": [ ],
-                  "name": "Car",
-                  "group": "Cellular",
-                  "weight": 0.1
-              },
-              {
-                  "applications": [  ],
-                  "name": "Car",
-                  "group": "AdHoc",
-                  "weight": 0.2
-              },
-              {
-                  "applications": [ ],
-                  "name": "Car",
-                  "group": "Unequipped",
-                  "weight": 0.7
-              }
-          ]
-      }
-  ],
-
-  "matrixMappers": [
     {
-        "points": [ 
-            {
-                "name": "Entrance1", 
-                "position": {
-                    "center": {
-                        "latitude": 43.7499265,
-                        "longitude": 7.4386451
-                    },
-                    "radius": 500
-                }       
-            },
-            {
-                "name": "Entrance2", 
-                "position": {
-                    "center": {
-                        "latitude": 43.7317945,
-                        "longitude": 7.4064367
-                    },
-                    "radius": 500
-                }       
-            },
-            {
-                "name": "Entrance3", 
-                "position": {
-                    "center": {
-                        "latitude": 43.7414511,
-                        "longitude": 7.4234243
-                    },
-                    "radius": 500
-                }       
-            },
-            {
-                "name": "Entrance4", 
-                "position": {
-                    "center": {
-                        "latitude": 43.72636,
-                        "longitude": 7.4173167
-                    },
-                    "radius": 500
-                }       
-            },
-            {
-                "name": "Entrance5", 
-                "position": {
-                    "center": {
-                        "latitude": 43.7464825,
-                        "longitude": 7.4287627
-                    },
-                    "radius": 500
-                }       
-            }
-        ],
+        "startingTime": 5.0,
+        "targetFlow": 1800,
+        "maxNumberVehicles": 300,
+        "route": "1",
         "types": [
             {
-                "name": "Car"
+                "applications": [ ],
+                "name": "Car",
+                "group": "Cellular",
+                "weight": 1
             }
-        ],
-        "odValues": [
-            [0, 500, 500, 500, 500],
-            [500, 0, 500, 500, 500],
-            [500, 500, 0, 500, 500],
-            [500, 500, 500, 0, 500],
-            [500, 500, 500, 500, 0]
-        ]
-    }
-]
+          ]
 }
-

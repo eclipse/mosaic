@@ -6,15 +6,15 @@
       "ipv4AnycastAddress": false
     },
     "routingType": {
-      "CELL_GEOCAST": false,
-      "AD_HOC_TOPOCAST": true,
       "CELL_TOPOCAST": false,
+      "AD_HOC_TOPOCAST": true,
       "AD_HOC_GEOCAST": false,
+      "CELL_GEOCAST": false,
       "CELL_GEOCAST_MBMS": false
     },
     "protocolType": {
-      "UDP": true,
-      "TCP": false
+      "TCP": false,
+      "UDP": true
     }
   },
   "federateConfigurationFile": "omnetpp.ini"
