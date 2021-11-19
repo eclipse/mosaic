@@ -26,16 +26,60 @@
   ],
   "vehicles": [
     {
-        "startingTime": 5.0,
-        "targetFlow": 1800,
-        "maxNumberVehicles": 300,
-        "route": "1",
-        "types": [
-            {
-                "applications": [ ],
-                "name": "Car",
-                "group": "Cellular",
-                "weight": 1
-            }
-          ]
+      "startingTime": 5.0,
+      "targetFlow": 1800,
+      "maxNumberVehicles": 300,
+      "route": "1",
+      "types": [
+          {
+              "applications": [ ],
+              "name": "Car",
+              "group": "Cellular",
+              "weight": 1
+          }
+        ]
+      },
+  {
+    "startingTime": 5.0,
+    "targetFlow": 1800,
+    "maxNumberVehicles": 300,
+    "route": "8",
+    "types": [
+        {
+            "applications": [ ],
+            "name": "Car",
+            "group": "Cellular",
+            "weight": 1
+        }
+      ]
+    },
+    {
+      "startingTime": 5.0,
+      "targetFlow": 1800,
+      "maxNumberVehicles": 300,
+      "route": "21",
+      "types": [
+          {
+              "applications": [ ],
+              "name": "Car",
+              "group": "Cellular",
+              "weight": 1
+          }
+        ]
+      },
+  {
+    "startingTime": 5.0,
+    "targetFlow": 1800,
+    "maxNumberVehicles": 300,
+    "route": "15",
+    "types": [
+        {
+            "applications": [ ],
+            "name": "Car",
+            "group": "Cellular",
+            "weight": 1
+        }
+      ]
+    }
+  ]
 }
