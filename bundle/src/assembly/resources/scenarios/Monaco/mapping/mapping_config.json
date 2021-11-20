@@ -26,60 +26,17 @@
   ],
   "vehicles": [
     {
-      "startingTime": 5.0,
+      "startingTime": 1.0,
       "targetFlow": 1800,
-      "maxNumberVehicles": 300,
-      "route": "1",
+      "maxNumberVehicles": 600,
+      "route": "3",
       "types": [
           {
-              "applications": [ ],
+              "applications": ["org.eclipse.mosaic.app.trafficmonitor.NightRide"],
               "name": "Car",
-              "group": "Cellular",
               "weight": 1
           }
         ]
-      },
-  {
-    "startingTime": 5.0,
-    "targetFlow": 1800,
-    "maxNumberVehicles": 300,
-    "route": "8",
-    "types": [
-        {
-            "applications": [ ],
-            "name": "Car",
-            "group": "Cellular",
-            "weight": 1
-        }
-      ]
-    },
-    {
-      "startingTime": 5.0,
-      "targetFlow": 1800,
-      "maxNumberVehicles": 300,
-      "route": "21",
-      "types": [
-          {
-              "applications": [ ],
-              "name": "Car",
-              "group": "Cellular",
-              "weight": 1
-          }
-        ]
-      },
-  {
-    "startingTime": 5.0,
-    "targetFlow": 1800,
-    "maxNumberVehicles": 300,
-    "route": "15",
-    "types": [
-        {
-            "applications": [ ],
-            "name": "Car",
-            "group": "Cellular",
-            "weight": 1
-        }
-      ]
-    }
+      }
   ]
 }

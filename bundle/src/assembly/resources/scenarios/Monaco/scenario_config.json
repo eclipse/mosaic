@@ -1,8 +1,7 @@
 {
     "simulation": {
         "id": "Monaco",
-        "duration": "1000s",
-        "randomSeed": 268965854,
+        "duration": "24h",
         "projection": {
             "centerCoordinates": {
                 "latitude": 43.7402134,
@@ -26,11 +25,11 @@
     "federates": {
         "application": true,
         "environment": false,
-        "cell": false,
+        "cell": true,
         "ns3": false,
         "omnetpp": false,
         "output": true,
-        "sns": false,
+        "sns": true,
         "sumo": true,
         "phabmacs": false
     }
