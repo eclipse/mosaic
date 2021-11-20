@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>org.eclipse.mosaic.app</groupId>
-    <artifactId>monaco</artifactId>
+    <artifactId>trafficmonitor</artifactId>
     <packaging>jar</packaging>
 
-    <name>Monaco Scenario for Hackathon</name>
+    <name>Traffic Monitor for Monaco Scenario</name>
     <description>Traffic Monitoring and Advisory System apps.</description>
 
     <properties>

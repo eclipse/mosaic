@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.app.monaco;
+package org.eclipse.mosaic.app.trafficmonitor;
 
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
@@ -60,7 +60,7 @@ import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class NightDriver extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication{
+public class NightRide extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication {
 
 
     private final long activityDuration;
@@ -70,23 +70,22 @@ public class NightDriver extends AbstractApplication<VehicleOperatingSystem> imp
     private boolean initialTripPlanned = false;
     private boolean returnTripPlanned = false;
 
-
-    private Database database = Database.loadFromFile("Monaco.db");
+    private Database database = Database.loadFromFile("scenarios/Monaco/application/Monaco.db");
     private ArrayList<Node> nodeList = database.getNodes().stream().collect(Collectors.toCollection(ArrayList::new));
     // List<String> borderNodes = database.getBorderNodeIds();
     private Integer sizeNodes = nodeList.size();
     private RandomNumberGenerator rng;
 
-    public VehicleRoutApp(double activityDurationInHours) {
-        this.activityDuration =
-                Math.max(1, (long) (activityDurationInHours * TIME.SECOND * 3600) +
-                (getRandom().nextLong(0, 3600) - 1800) * TIME.SECOND);
+    private void adjustVehicleParameters(){
+        getOs().requestVehicleParametersUpdate().changeMaxSpeed(100).apply();
+        getOs().requestVehicleParametersUpdate().changeColor(Color.MAGENTA).apply();;
+        getLog().info("Vehicle parameters updated!");
     }
-
 
     @Override
     public void onStartup() {
         this.stopWatch = new StopWatch(this.getOs());
+        adjustVehicleParameters();
     }
 
     @Override
