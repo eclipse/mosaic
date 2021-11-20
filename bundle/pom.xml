@@ -152,6 +152,11 @@
             <artifactId>weather-warning</artifactId>
             <version>${mosaic.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic.app</groupId>
+            <artifactId>trafficmonitor</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
 
 
         <!-- Dependencies -->

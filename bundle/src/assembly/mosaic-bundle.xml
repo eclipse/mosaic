@@ -92,7 +92,7 @@
         <dependencySet>
             <outputDirectory>scenarios/Monaco/application</outputDirectory>
             <includes>
-                <include>org.eclipse.mosaic.app:hackathon-monaco</include>
+                <include>org.eclipse.mosaic.app:trafficmonitor</include>
             </includes>
         </dependencySet>
 
