@@ -61,20 +61,14 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class NightRide extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication {
-
-
-    private final long activityDuration;
+    
     private StopWatch stopWatch;
-
-
-    private boolean initialTripPlanned = false;
-    private boolean returnTripPlanned = false;
+    private static final long SAMPLING_INTERVAL = 2 * TIME.MINUTE;
 
     private Database database = Database.loadFromFile("scenarios/Monaco/application/Monaco.db");
     private ArrayList<Node> nodeList = database.getNodes().stream().collect(Collectors.toCollection(ArrayList::new));
     // List<String> borderNodes = database.getBorderNodeIds();
     private Integer sizeNodes = nodeList.size();
-    private RandomNumberGenerator rng;
 
     private void adjustVehicleParameters(){
         getOs().requestVehicleParametersUpdate().changeMaxSpeed(100).apply();
@@ -90,7 +84,7 @@ public class NightRide extends AbstractApplication<VehicleOperatingSystem> imple
 
     @Override
     public void onShutdown() {
-        stopWatch.stop(getLog());
+        stopWatch.stop();
     }
 
     @Override
@@ -101,7 +95,7 @@ public class NightRide extends AbstractApplication<VehicleOperatingSystem> imple
     }
 
     private GeoPoint randomNightDrive(){
-        int rngRoll = rng.nextInt(sizeNodes);
+        int rngRoll = getRandom().nextInt(sizeNodes);
         Node destNode = nodeList.get(rngRoll);
 
         String destId = destNode.getId();
@@ -130,33 +124,24 @@ public class NightRide extends AbstractApplication<VehicleOperatingSystem> imple
 
     @Override
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
-        if (!initialTripPlanned) {
-            IRoadPosition roadPosition =
-                    RoadPositionFactory.createAtEndOfRoute(getOs().getNavigationModule().getCurrentRoute(), 0);
-            getOs().stop(roadPosition, VehicleStopMode.PARK_ON_ROADSIDE, Integer.MAX_VALUE);
-            initialTripPlanned = true;
+        /*
+        if (!stopWatch.getStatus()) { // StopWatch off, turning on
             stopWatch.start();
-
         }
+        boolean intervalStatus = stopWatch.lap(SAMPLING_INTERVAL);
+        if (true) { // interval reached
+            stopWatch.stop(); // stop sw
+        */
 
-        if (!returnTripPlanned && getOs().getVehicleData().isStopped()) {
-            double distanceToTarget = getOs().getPosition().distanceTo(getOs().getNavigationModule().getTargetPosition());
-            if (distanceToTarget > 50) {
-                getLog().warn(
-                        "Vehicle stopped but is not close to it's target. This should not happen. (distance is {} m)",
-                        distanceToTarget
-                );
-            }
+            GeoPoint destGeo = randomNightDrive();
 
             for (Application app : getOs().getApplications()) {
                 Event event = new NightDriveEvent(
-                        getOs().getSimulationTime() + activityDuration, app,
-                        getOs().getPosition(), randomNightDrive()
+                        getOs().getSimulationTime() + SAMPLING_INTERVAL, app,
+                        getOs().getPosition(), destGeo
                 );
                 getOs().getEventManager().addEvent(event);
-            }
-            returnTripPlanned = true;
-        }
+        } 
     }
 
     @Override
@@ -201,12 +186,13 @@ public class NightRide extends AbstractApplication<VehicleOperatingSystem> imple
         GeoPoint getTargetPosition() {
             return nextPosition;
         }
-
     }
+
 
     static class StopWatch {
         private final VehicleOperatingSystem os;
         private long startTime;
+        private boolean stopWatchStatus = false;
 
         StopWatch(VehicleOperatingSystem os) {
             this.os = os;
@@ -214,13 +200,23 @@ public class NightRide extends AbstractApplication<VehicleOperatingSystem> imple
 
         public StopWatch start() {
             startTime = os.getSimulationTime();
+            this.stopWatchStatus = true;
             return this;
         }
 
-        public double stop(UnitLogger logger) {
-            double timeInS = ((double) (os.getSimulationTime() - startTime)) / TIME.SECOND;
-            logger.info("Trip finished. Duration: {} s, Distance driven: {}", timeInS, os.getVehicleData().getDistanceDriven());
+        public double stop() {
+            double timeInS = ((double) (os.getSimulationTime() - startTime));
+            this.stopWatchStatus = false;
             return timeInS;
+        }
+
+        public boolean lap(long lapTime){
+            double lap = ((double) (os.getSimulationTime() - startTime));
+            return lap > lapTime;
+        }
+
+        public boolean getStatus(){
+            return this.stopWatchStatus;
         }
     }
 }
