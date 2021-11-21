@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='zeromq_interact.proto',
   package='ZInteractSpace',
   syntax='proto3',
-  serialized_options=b'\n.org.eclipse.mosaic.fed.output.generator.zeromqB\017ZInteractProtosH\003P\001',
+  serialized_options=b'\n8org.eclipse.mosaic.fed.output.generator.zeromq.zprotobufB\017ZInteractProtosP\001',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15zeromq_interact.proto\x12\x0eZInteractSpace\"\xb9\x07\n\tZInteract\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\n\n\x02id\x18\x02 \x01(\x03\x12\x11\n\tsender_id\x18\x03 \x01(\t\x12\x0f\n\x07type_id\x18\x04 \x01(\t\x12H\n\x12z_rsu_registration\x18\x05 \x01(\x0b\x32*.ZInteractSpace.ZInteract.ZRsuRegistrationH\x00\x12\x46\n\x11z_vehicle_updates\x18\x06 \x01(\x0b\x32).ZInteractSpace.ZInteract.ZVehicleUpdatesH\x00\x12P\n\x16z_vehicle_registration\x18\x07 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZVehicleRegistrationH\x00\x12Q\n\x17z_v2x_message_reception\x18\x08 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZV2xMessageReceptionH\x00\x1a\x32\n\x10ZRsuRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08position\x18\x02 \x03(\x01\x1a\x88\x01\n\x0cZVehicleData\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08position\x18\x03 \x03(\x01\x12\x0f\n\x07road_id\x18\x04 \x01(\t\x12\x10\n\x08route_id\x18\x05 \x01(\t\x12\r\n\x05speed\x18\x06 \x01(\x01\x12\x18\n\x10longitudinal_acc\x18\x07 \x01(\x01\x1a\x8f\x01\n\x0fZVehicleUpdates\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x35\n\x05\x61\x64\x64\x65\x64\x18\x02 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x12\x37\n\x07updated\x18\x03 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x1aI\n\x14ZVehicleRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05group\x18\x02 \x01(\t\x12\x14\n\x0c\x61pplications\x18\x03 \x03(\t\x1a\x8b\x01\n\x14ZV2xMessageReception\x12\x15\n\rreceiver_name\x18\x01 \x01(\t\x12\x12\n\nmessage_id\x18\x02 \x01(\x03\x12\x11\n\tsend_time\x18\x03 \x01(\x03\x12\x14\n\x0creceive_time\x18\x04 \x01(\x03\x12\x1f\n\x17receive_signal_strength\x18\x05 \x01(\x01\x42\r\n\x0bInteractionBE\n.org.eclipse.mosaic.fed.output.generator.zeromqB\x0fZInteractProtosH\x03P\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15zeromq_interact.proto\x12\x0eZInteractSpace\"\xbe\x07\n\tZInteract\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\n\n\x02id\x18\x02 \x01(\x03\x12\x11\n\tsender_id\x18\x03 \x01(\t\x12\x0f\n\x07type_id\x18\x04 \x01(\t\x12H\n\x12z_rsu_registration\x18\x05 \x01(\x0b\x32*.ZInteractSpace.ZInteract.ZRsuRegistrationH\x00\x12\x46\n\x11z_vehicle_updates\x18\x06 \x01(\x0b\x32).ZInteractSpace.ZInteract.ZVehicleUpdatesH\x00\x12P\n\x16z_vehicle_registration\x18\x07 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZVehicleRegistrationH\x00\x12Q\n\x17z_v2x_message_reception\x18\x08 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZV2xMessageReceptionH\x00\x1a\x32\n\x10ZRsuRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08position\x18\x02 \x03(\x01\x1a\x88\x01\n\x0cZVehicleData\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08position\x18\x03 \x03(\x01\x12\x0f\n\x07road_id\x18\x04 \x01(\t\x12\x10\n\x08route_id\x18\x05 \x01(\t\x12\r\n\x05speed\x18\x06 \x01(\x01\x12\x18\n\x10longitudinal_acc\x18\x07 \x01(\x01\x1a\x8f\x01\n\x0fZVehicleUpdates\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x35\n\x05\x61\x64\x64\x65\x64\x18\x02 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x12\x37\n\x07updated\x18\x03 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x1aI\n\x14ZVehicleRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05group\x18\x02 \x01(\t\x12\x14\n\x0c\x61pplications\x18\x03 \x03(\t\x1a\x8b\x01\n\x14ZV2xMessageReception\x12\x15\n\rreceiver_name\x18\x01 \x01(\t\x12\x12\n\nmessage_id\x18\x02 \x01(\x03\x12\x11\n\tsend_time\x18\x03 \x01(\x03\x12\x14\n\x0creceive_time\x18\x04 \x01(\x03\x12\x1f\n\x17receive_signal_strength\x18\x05 \x01(\x01\x42\x12\n\x10interaction_typeBM\n8org.eclipse.mosaic.fed.output.generator.zeromq.zprotobufB\x0fZInteractProtosP\x01\x62\x06proto3'
 )
 
 
@@ -361,13 +361,13 @@ _ZINTERACT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='Interaction', full_name='ZInteractSpace.ZInteract.Interaction',
+      name='interaction_type', full_name='ZInteractSpace.ZInteract.interaction_type',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
   serialized_start=42,
-  serialized_end=995,
+  serialized_end=1000,
 )
 
 _ZINTERACT_ZRSUREGISTRATION.containing_type = _ZINTERACT
@@ -381,18 +381,18 @@ _ZINTERACT.fields_by_name['z_rsu_registration'].message_type = _ZINTERACT_ZRSURE
 _ZINTERACT.fields_by_name['z_vehicle_updates'].message_type = _ZINTERACT_ZVEHICLEUPDATES
 _ZINTERACT.fields_by_name['z_vehicle_registration'].message_type = _ZINTERACT_ZVEHICLEREGISTRATION
 _ZINTERACT.fields_by_name['z_v2x_message_reception'].message_type = _ZINTERACT_ZV2XMESSAGERECEPTION
-_ZINTERACT.oneofs_by_name['Interaction'].fields.append(
+_ZINTERACT.oneofs_by_name['interaction_type'].fields.append(
   _ZINTERACT.fields_by_name['z_rsu_registration'])
-_ZINTERACT.fields_by_name['z_rsu_registration'].containing_oneof = _ZINTERACT.oneofs_by_name['Interaction']
-_ZINTERACT.oneofs_by_name['Interaction'].fields.append(
+_ZINTERACT.fields_by_name['z_rsu_registration'].containing_oneof = _ZINTERACT.oneofs_by_name['interaction_type']
+_ZINTERACT.oneofs_by_name['interaction_type'].fields.append(
   _ZINTERACT.fields_by_name['z_vehicle_updates'])
-_ZINTERACT.fields_by_name['z_vehicle_updates'].containing_oneof = _ZINTERACT.oneofs_by_name['Interaction']
-_ZINTERACT.oneofs_by_name['Interaction'].fields.append(
+_ZINTERACT.fields_by_name['z_vehicle_updates'].containing_oneof = _ZINTERACT.oneofs_by_name['interaction_type']
+_ZINTERACT.oneofs_by_name['interaction_type'].fields.append(
   _ZINTERACT.fields_by_name['z_vehicle_registration'])
-_ZINTERACT.fields_by_name['z_vehicle_registration'].containing_oneof = _ZINTERACT.oneofs_by_name['Interaction']
-_ZINTERACT.oneofs_by_name['Interaction'].fields.append(
+_ZINTERACT.fields_by_name['z_vehicle_registration'].containing_oneof = _ZINTERACT.oneofs_by_name['interaction_type']
+_ZINTERACT.oneofs_by_name['interaction_type'].fields.append(
   _ZINTERACT.fields_by_name['z_v2x_message_reception'])
-_ZINTERACT.fields_by_name['z_v2x_message_reception'].containing_oneof = _ZINTERACT.oneofs_by_name['Interaction']
+_ZINTERACT.fields_by_name['z_v2x_message_reception'].containing_oneof = _ZINTERACT.oneofs_by_name['interaction_type']
 DESCRIPTOR.message_types_by_name['ZInteract'] = _ZINTERACT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

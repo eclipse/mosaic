@@ -6,18 +6,163 @@ package org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf;
 /**
  * Protobuf type {@code ZInteractSpace.ZInteract}
  */
-public  final class ZInteract extends
-    com.google.protobuf.GeneratedMessageLite<
-        ZInteract, ZInteract.Builder> implements
+public final class ZInteract extends
+    com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:ZInteractSpace.ZInteract)
     ZInteractOrBuilder {
+private static final long serialVersionUID = 0L;
+  // Use ZInteract.newBuilder() to construct.
+  private ZInteract(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    super(builder);
+  }
   private ZInteract() {
     senderId_ = "";
     typeId_ = "";
   }
+
+  @java.lang.Override
+  @SuppressWarnings({"unused"})
+  protected java.lang.Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new ZInteract();
+  }
+
+  @java.lang.Override
+  public final com.google.protobuf.UnknownFieldSet
+  getUnknownFields() {
+    return this.unknownFields;
+  }
+  private ZInteract(
+      com.google.protobuf.CodedInputStream input,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    this();
+    if (extensionRegistry == null) {
+      throw new java.lang.NullPointerException();
+    }
+    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+        com.google.protobuf.UnknownFieldSet.newBuilder();
+    try {
+      boolean done = false;
+      while (!done) {
+        int tag = input.readTag();
+        switch (tag) {
+          case 0:
+            done = true;
+            break;
+          case 8: {
+
+            time_ = input.readInt64();
+            break;
+          }
+          case 16: {
+
+            id_ = input.readInt64();
+            break;
+          }
+          case 26: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            senderId_ = s;
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            typeId_ = s;
+            break;
+          }
+          case 42: {
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder subBuilder = null;
+            if (interactionTypeCase_ == 5) {
+              subBuilder = ((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_).toBuilder();
+            }
+            interactionType_ =
+                input.readMessage(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_);
+              interactionType_ = subBuilder.buildPartial();
+            }
+            interactionTypeCase_ = 5;
+            break;
+          }
+          case 50: {
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder subBuilder = null;
+            if (interactionTypeCase_ == 6) {
+              subBuilder = ((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_).toBuilder();
+            }
+            interactionType_ =
+                input.readMessage(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_);
+              interactionType_ = subBuilder.buildPartial();
+            }
+            interactionTypeCase_ = 6;
+            break;
+          }
+          case 58: {
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder subBuilder = null;
+            if (interactionTypeCase_ == 7) {
+              subBuilder = ((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_).toBuilder();
+            }
+            interactionType_ =
+                input.readMessage(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_);
+              interactionType_ = subBuilder.buildPartial();
+            }
+            interactionTypeCase_ = 7;
+            break;
+          }
+          case 66: {
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder subBuilder = null;
+            if (interactionTypeCase_ == 8) {
+              subBuilder = ((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_).toBuilder();
+            }
+            interactionType_ =
+                input.readMessage(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_);
+              interactionType_ = subBuilder.buildPartial();
+            }
+            interactionTypeCase_ = 8;
+            break;
+          }
+          default: {
+            if (!parseUnknownField(
+                input, unknownFields, extensionRegistry, tag)) {
+              done = true;
+            }
+            break;
+          }
+        }
+      }
+    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+      throw e.setUnfinishedMessage(this);
+    } catch (java.io.IOException e) {
+      throw new com.google.protobuf.InvalidProtocolBufferException(
+          e).setUnfinishedMessage(this);
+    } finally {
+      this.unknownFields = unknownFields.build();
+      makeExtensionsImmutable();
+    }
+  }
+  public static final com.google.protobuf.Descriptors.Descriptor
+      getDescriptor() {
+    return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_descriptor;
+  }
+
+  @java.lang.Override
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internalGetFieldAccessorTable() {
+    return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_fieldAccessorTable
+        .ensureFieldAccessorsInitialized(
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.Builder.class);
+  }
+
   public interface ZRsuRegistrationOrBuilder extends
       // @@protoc_insertion_point(interface_extends:ZInteractSpace.ZInteract.ZRsuRegistration)
-      com.google.protobuf.MessageLiteOrBuilder {
+      com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>string name = 1;</code>
@@ -51,24 +196,131 @@ public  final class ZInteract extends
   /**
    * Protobuf type {@code ZInteractSpace.ZInteract.ZRsuRegistration}
    */
-  public  static final class ZRsuRegistration extends
-      com.google.protobuf.GeneratedMessageLite<
-          ZRsuRegistration, ZRsuRegistration.Builder> implements
+  public static final class ZRsuRegistration extends
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ZInteractSpace.ZInteract.ZRsuRegistration)
       ZRsuRegistrationOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ZRsuRegistration.newBuilder() to construct.
+    private ZRsuRegistration(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
     private ZRsuRegistration() {
       name_ = "";
       position_ = emptyDoubleList();
     }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ZRsuRegistration();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ZRsuRegistration(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 17: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                position_ = newDoubleList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              position_.addDouble(input.readDouble());
+              break;
+            }
+            case 18: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
+                position_ = newDoubleList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                position_.addDouble(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          position_.makeImmutable(); // C
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZRsuRegistration_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZRsuRegistration_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder.class);
+    }
+
     public static final int NAME_FIELD_NUMBER = 1;
-    private java.lang.String name_;
+    private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
      * @return The name.
      */
     @java.lang.Override
     public java.lang.String getName() {
-      return name_;
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
     }
     /**
      * <code>string name = 1;</code>
@@ -77,34 +329,16 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(name_);
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The name to set.
-     */
-    private void setName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      name_ = value;
-    }
-    /**
-     * <code>string name = 1;</code>
-     */
-    private void clearName() {
-      
-      name_ = getDefaultInstance().getName();
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The bytes for name to set.
-     */
-    private void setNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      name_ = value.toStringUtf8();
-      
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int POSITION_FIELD_NUMBER = 2;
@@ -122,7 +356,6 @@ public  final class ZInteract extends
      * <code>repeated double position = 2;</code>
      * @return The count of position.
      */
-    @java.lang.Override
     public int getPositionCount() {
       return position_.size();
     }
@@ -131,164 +364,390 @@ public  final class ZInteract extends
      * @param index The index of the element to return.
      * @return The position at the given index.
      */
-    @java.lang.Override
     public double getPosition(int index) {
       return position_.getDouble(index);
     }
     private int positionMemoizedSerializedSize = -1;
-    private void ensurePositionIsMutable() {
-      com.google.protobuf.Internal.DoubleList tmp = position_;
-      if (!tmp.isModifiable()) {
-        position_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
     }
-    /**
-     * <code>repeated double position = 2;</code>
-     * @param index The index to set the value at.
-     * @param value The position to set.
-     */
-    private void setPosition(
-        int index, double value) {
-      ensurePositionIsMutable();
-      position_.setDouble(index, value);
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+      }
+      if (getPositionList().size() > 0) {
+        output.writeUInt32NoTag(18);
+        output.writeUInt32NoTag(positionMemoizedSerializedSize);
+      }
+      for (int i = 0; i < position_.size(); i++) {
+        output.writeDoubleNoTag(position_.getDouble(i));
+      }
+      unknownFields.writeTo(output);
     }
-    /**
-     * <code>repeated double position = 2;</code>
-     * @param value The position to add.
-     */
-    private void addPosition(double value) {
-      ensurePositionIsMutable();
-      position_.addDouble(value);
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getPositionList().size();
+        size += dataSize;
+        if (!getPositionList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        positionMemoizedSerializedSize = dataSize;
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
     }
-    /**
-     * <code>repeated double position = 2;</code>
-     * @param values The position to add.
-     */
-    private void addAllPosition(
-        java.lang.Iterable<? extends java.lang.Double> values) {
-      ensurePositionIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, position_);
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration)) {
+        return super.equals(obj);
+      }
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration other = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getPositionList()
+          .equals(other.getPositionList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
-    /**
-     * <code>repeated double position = 2;</code>
-     */
-    private void clearPosition() {
-      position_ = emptyDoubleList();
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getPositionCount() > 0) {
+        hash = (37 * hash) + POSITION_FIELD_NUMBER;
+        hash = (53 * hash) + getPositionList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
+      return DEFAULT_INSTANCE.toBuilder();
     }
     public static Builder newBuilder(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     /**
      * Protobuf type {@code ZInteractSpace.ZInteract.ZRsuRegistration}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration, Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ZInteractSpace.ZInteract.ZRsuRegistration)
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder {
-      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.ZInteract.ZRsuRegistration.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZRsuRegistration_descriptor;
       }
 
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZRsuRegistration_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder.class);
+      }
 
+      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+
+        position_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZRsuRegistration_descriptor;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration getDefaultInstanceForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration build() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration buildPartial() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration result = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration(this);
+        int from_bitField0_ = bitField0_;
+        result.name_ = name_;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          position_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.position_ = position_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) {
+          return mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration other) {
+        if (other == org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance()) return this;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.position_.isEmpty()) {
+          if (position_.isEmpty()) {
+            position_ = other.position_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensurePositionIsMutable();
+            position_.addAll(other.position_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
        * @return The name.
        */
-      @java.lang.Override
       public java.lang.String getName() {
-        return instance.getName();
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <code>string name = 1;</code>
        * @return The bytes for name.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getNameBytes() {
-        return instance.getNameBytes();
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <code>string name = 1;</code>
@@ -297,8 +756,12 @@ public  final class ZInteract extends
        */
       public Builder setName(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setName(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -306,8 +769,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        copyOnWrite();
-        instance.clearName();
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
         return this;
       }
       /**
@@ -317,47 +781,58 @@ public  final class ZInteract extends
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setNameBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
         return this;
       }
 
+      private com.google.protobuf.Internal.DoubleList position_ = emptyDoubleList();
+      private void ensurePositionIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          position_ = mutableCopy(position_);
+          bitField0_ |= 0x00000001;
+         }
+      }
       /**
        * <code>repeated double position = 2;</code>
        * @return A list containing the position.
        */
-      @java.lang.Override
       public java.util.List<java.lang.Double>
           getPositionList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getPositionList());
+        return ((bitField0_ & 0x00000001) != 0) ?
+                 java.util.Collections.unmodifiableList(position_) : position_;
       }
       /**
        * <code>repeated double position = 2;</code>
        * @return The count of position.
        */
-      @java.lang.Override
       public int getPositionCount() {
-        return instance.getPositionCount();
+        return position_.size();
       }
       /**
        * <code>repeated double position = 2;</code>
        * @param index The index of the element to return.
        * @return The position at the given index.
        */
-      @java.lang.Override
       public double getPosition(int index) {
-        return instance.getPosition(index);
+        return position_.getDouble(index);
       }
       /**
        * <code>repeated double position = 2;</code>
+       * @param index The index to set the value at.
        * @param value The position to set.
        * @return This builder for chaining.
        */
       public Builder setPosition(
           int index, double value) {
-        copyOnWrite();
-        instance.setPosition(index, value);
+        ensurePositionIsMutable();
+        position_.setDouble(index, value);
+        onChanged();
         return this;
       }
       /**
@@ -366,8 +841,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder addPosition(double value) {
-        copyOnWrite();
-        instance.addPosition(value);
+        ensurePositionIsMutable();
+        position_.addDouble(value);
+        onChanged();
         return this;
       }
       /**
@@ -377,8 +853,10 @@ public  final class ZInteract extends
        */
       public Builder addAllPosition(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        copyOnWrite();
-        instance.addAllPosition(values);
+        ensurePositionIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, position_);
+        onChanged();
         return this;
       }
       /**
@@ -386,89 +864,67 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearPosition() {
-        copyOnWrite();
-        instance.clearPosition();
+        position_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
         return this;
       }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:ZInteractSpace.ZInteract.ZRsuRegistration)
     }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "name_",
-              "position_",
-            };
-            java.lang.String info =
-                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0001\u0000\u0001\u0208\u0002#";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration> parser = PARSER;
-          if (parser == null) {
-            synchronized (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
 
     // @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteract.ZRsuRegistration)
     private static final org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration DEFAULT_INSTANCE;
     static {
-      ZRsuRegistration defaultInstance = new ZRsuRegistration();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        ZRsuRegistration.class, defaultInstance);
+      DEFAULT_INSTANCE = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration();
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<ZRsuRegistration> PARSER;
+    private static final com.google.protobuf.Parser<ZRsuRegistration>
+        PARSER = new com.google.protobuf.AbstractParser<ZRsuRegistration>() {
+      @java.lang.Override
+      public ZRsuRegistration parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ZRsuRegistration(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<ZRsuRegistration> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
+      return PARSER;
     }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ZRsuRegistration> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public interface ZVehicleDataOrBuilder extends
       // @@protoc_insertion_point(interface_extends:ZInteractSpace.ZInteract.ZVehicleData)
-      com.google.protobuf.MessageLiteOrBuilder {
+      com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>int64 time = 1;</code>
@@ -564,17 +1020,142 @@ public  final class ZInteract extends
   /**
    * Protobuf type {@code ZInteractSpace.ZInteract.ZVehicleData}
    */
-  public  static final class ZVehicleData extends
-      com.google.protobuf.GeneratedMessageLite<
-          ZVehicleData, ZVehicleData.Builder> implements
+  public static final class ZVehicleData extends
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ZInteractSpace.ZInteract.ZVehicleData)
       ZVehicleDataOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ZVehicleData.newBuilder() to construct.
+    private ZVehicleData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
     private ZVehicleData() {
       name_ = "";
       position_ = emptyDoubleList();
       roadId_ = "";
       routeId_ = "";
     }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ZVehicleData();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ZVehicleData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              time_ = input.readInt64();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 25: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                position_ = newDoubleList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              position_.addDouble(input.readDouble());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000001) != 0) && input.getBytesUntilLimit() > 0) {
+                position_ = newDoubleList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                position_.addDouble(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              roadId_ = s;
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              routeId_ = s;
+              break;
+            }
+            case 49: {
+
+              speed_ = input.readDouble();
+              break;
+            }
+            case 57: {
+
+              longitudinalAcc_ = input.readDouble();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          position_.makeImmutable(); // C
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleData_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder.class);
+    }
+
     public static final int TIME_FIELD_NUMBER = 1;
     private long time_;
     /**
@@ -585,31 +1166,25 @@ public  final class ZInteract extends
     public long getTime() {
       return time_;
     }
-    /**
-     * <code>int64 time = 1;</code>
-     * @param value The time to set.
-     */
-    private void setTime(long value) {
-      
-      time_ = value;
-    }
-    /**
-     * <code>int64 time = 1;</code>
-     */
-    private void clearTime() {
-      
-      time_ = 0L;
-    }
 
     public static final int NAME_FIELD_NUMBER = 2;
-    private java.lang.String name_;
+    private volatile java.lang.Object name_;
     /**
      * <code>string name = 2;</code>
      * @return The name.
      */
     @java.lang.Override
     public java.lang.String getName() {
-      return name_;
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
     }
     /**
      * <code>string name = 2;</code>
@@ -618,34 +1193,16 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(name_);
-    }
-    /**
-     * <code>string name = 2;</code>
-     * @param value The name to set.
-     */
-    private void setName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      name_ = value;
-    }
-    /**
-     * <code>string name = 2;</code>
-     */
-    private void clearName() {
-      
-      name_ = getDefaultInstance().getName();
-    }
-    /**
-     * <code>string name = 2;</code>
-     * @param value The bytes for name to set.
-     */
-    private void setNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      name_ = value.toStringUtf8();
-      
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int POSITION_FIELD_NUMBER = 3;
@@ -663,7 +1220,6 @@ public  final class ZInteract extends
      * <code>repeated double position = 3;</code>
      * @return The count of position.
      */
-    @java.lang.Override
     public int getPositionCount() {
       return position_.size();
     }
@@ -672,55 +1228,13 @@ public  final class ZInteract extends
      * @param index The index of the element to return.
      * @return The position at the given index.
      */
-    @java.lang.Override
     public double getPosition(int index) {
       return position_.getDouble(index);
     }
     private int positionMemoizedSerializedSize = -1;
-    private void ensurePositionIsMutable() {
-      com.google.protobuf.Internal.DoubleList tmp = position_;
-      if (!tmp.isModifiable()) {
-        position_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
-    }
-    /**
-     * <code>repeated double position = 3;</code>
-     * @param index The index to set the value at.
-     * @param value The position to set.
-     */
-    private void setPosition(
-        int index, double value) {
-      ensurePositionIsMutable();
-      position_.setDouble(index, value);
-    }
-    /**
-     * <code>repeated double position = 3;</code>
-     * @param value The position to add.
-     */
-    private void addPosition(double value) {
-      ensurePositionIsMutable();
-      position_.addDouble(value);
-    }
-    /**
-     * <code>repeated double position = 3;</code>
-     * @param values The position to add.
-     */
-    private void addAllPosition(
-        java.lang.Iterable<? extends java.lang.Double> values) {
-      ensurePositionIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, position_);
-    }
-    /**
-     * <code>repeated double position = 3;</code>
-     */
-    private void clearPosition() {
-      position_ = emptyDoubleList();
-    }
 
     public static final int ROAD_ID_FIELD_NUMBER = 4;
-    private java.lang.String roadId_;
+    private volatile java.lang.Object roadId_;
     /**
      * <pre>
      * IRoadPosition start
@@ -732,7 +1246,16 @@ public  final class ZInteract extends
      */
     @java.lang.Override
     public java.lang.String getRoadId() {
-      return roadId_;
+      java.lang.Object ref = roadId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        roadId_ = s;
+        return s;
+      }
     }
     /**
      * <pre>
@@ -746,53 +1269,20 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getRoadIdBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(roadId_);
-    }
-    /**
-     * <pre>
-     * IRoadPosition start
-     *IRoadPosition IConnnection start
-     * </pre>
-     *
-     * <code>string road_id = 4;</code>
-     * @param value The roadId to set.
-     */
-    private void setRoadId(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      roadId_ = value;
-    }
-    /**
-     * <pre>
-     * IRoadPosition start
-     *IRoadPosition IConnnection start
-     * </pre>
-     *
-     * <code>string road_id = 4;</code>
-     */
-    private void clearRoadId() {
-      
-      roadId_ = getDefaultInstance().getRoadId();
-    }
-    /**
-     * <pre>
-     * IRoadPosition start
-     *IRoadPosition IConnnection start
-     * </pre>
-     *
-     * <code>string road_id = 4;</code>
-     * @param value The bytes for roadId to set.
-     */
-    private void setRoadIdBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      roadId_ = value.toStringUtf8();
-      
+      java.lang.Object ref = roadId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        roadId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int ROUTE_ID_FIELD_NUMBER = 5;
-    private java.lang.String routeId_;
+    private volatile java.lang.Object routeId_;
     /**
      * <pre>
      * IRoadPosition IConnnection end
@@ -804,7 +1294,16 @@ public  final class ZInteract extends
      */
     @java.lang.Override
     public java.lang.String getRouteId() {
-      return routeId_;
+      java.lang.Object ref = routeId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        routeId_ = s;
+        return s;
+      }
     }
     /**
      * <pre>
@@ -818,49 +1317,16 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getRouteIdBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(routeId_);
-    }
-    /**
-     * <pre>
-     * IRoadPosition IConnnection end
-     * IRoadPosition end
-     * </pre>
-     *
-     * <code>string route_id = 5;</code>
-     * @param value The routeId to set.
-     */
-    private void setRouteId(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      routeId_ = value;
-    }
-    /**
-     * <pre>
-     * IRoadPosition IConnnection end
-     * IRoadPosition end
-     * </pre>
-     *
-     * <code>string route_id = 5;</code>
-     */
-    private void clearRouteId() {
-      
-      routeId_ = getDefaultInstance().getRouteId();
-    }
-    /**
-     * <pre>
-     * IRoadPosition IConnnection end
-     * IRoadPosition end
-     * </pre>
-     *
-     * <code>string route_id = 5;</code>
-     * @param value The bytes for routeId to set.
-     */
-    private void setRouteIdBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      routeId_ = value.toStringUtf8();
-      
+      java.lang.Object ref = routeId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        routeId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int SPEED_FIELD_NUMBER = 6;
@@ -873,21 +1339,6 @@ public  final class ZInteract extends
     public double getSpeed() {
       return speed_;
     }
-    /**
-     * <code>double speed = 6;</code>
-     * @param value The speed to set.
-     */
-    private void setSpeed(double value) {
-      
-      speed_ = value;
-    }
-    /**
-     * <code>double speed = 6;</code>
-     */
-    private void clearSpeed() {
-      
-      speed_ = 0D;
-    }
 
     public static final int LONGITUDINAL_ACC_FIELD_NUMBER = 7;
     private double longitudinalAcc_;
@@ -899,124 +1350,451 @@ public  final class ZInteract extends
     public double getLongitudinalAcc() {
       return longitudinalAcc_;
     }
-    /**
-     * <code>double longitudinal_acc = 7;</code>
-     * @param value The longitudinalAcc to set.
-     */
-    private void setLongitudinalAcc(double value) {
-      
-      longitudinalAcc_ = value;
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
     }
-    /**
-     * <code>double longitudinal_acc = 7;</code>
-     */
-    private void clearLongitudinalAcc() {
-      
-      longitudinalAcc_ = 0D;
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (time_ != 0L) {
+        output.writeInt64(1, time_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
+      }
+      if (getPositionList().size() > 0) {
+        output.writeUInt32NoTag(26);
+        output.writeUInt32NoTag(positionMemoizedSerializedSize);
+      }
+      for (int i = 0; i < position_.size(); i++) {
+        output.writeDoubleNoTag(position_.getDouble(i));
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(roadId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, roadId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(routeId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, routeId_);
+      }
+      if (speed_ != 0D) {
+        output.writeDouble(6, speed_);
+      }
+      if (longitudinalAcc_ != 0D) {
+        output.writeDouble(7, longitudinalAcc_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (time_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, time_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getPositionList().size();
+        size += dataSize;
+        if (!getPositionList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        positionMemoizedSerializedSize = dataSize;
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(roadId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, roadId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(routeId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, routeId_);
+      }
+      if (speed_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(6, speed_);
+      }
+      if (longitudinalAcc_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(7, longitudinalAcc_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData)) {
+        return super.equals(obj);
+      }
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData other = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData) obj;
+
+      if (getTime()
+          != other.getTime()) return false;
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getPositionList()
+          .equals(other.getPositionList())) return false;
+      if (!getRoadId()
+          .equals(other.getRoadId())) return false;
+      if (!getRouteId()
+          .equals(other.getRouteId())) return false;
+      if (java.lang.Double.doubleToLongBits(getSpeed())
+          != java.lang.Double.doubleToLongBits(
+              other.getSpeed())) return false;
+      if (java.lang.Double.doubleToLongBits(getLongitudinalAcc())
+          != java.lang.Double.doubleToLongBits(
+              other.getLongitudinalAcc())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTime());
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      if (getPositionCount() > 0) {
+        hash = (37 * hash) + POSITION_FIELD_NUMBER;
+        hash = (53 * hash) + getPositionList().hashCode();
+      }
+      hash = (37 * hash) + ROAD_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getRoadId().hashCode();
+      hash = (37 * hash) + ROUTE_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getRouteId().hashCode();
+      hash = (37 * hash) + SPEED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getSpeed()));
+      hash = (37 * hash) + LONGITUDINAL_ACC_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getLongitudinalAcc()));
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
+      return DEFAULT_INSTANCE.toBuilder();
     }
     public static Builder newBuilder(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     /**
      * Protobuf type {@code ZInteractSpace.ZInteract.ZVehicleData}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ZInteractSpace.ZInteract.ZVehicleData)
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder {
-      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.ZInteract.ZVehicleData.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleData_descriptor;
       }
 
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder.class);
+      }
 
+      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        time_ = 0L;
+
+        name_ = "";
+
+        position_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        roadId_ = "";
+
+        routeId_ = "";
+
+        speed_ = 0D;
+
+        longitudinalAcc_ = 0D;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleData_descriptor;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData getDefaultInstanceForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData build() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData buildPartial() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData result = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData(this);
+        int from_bitField0_ = bitField0_;
+        result.time_ = time_;
+        result.name_ = name_;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          position_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.position_ = position_;
+        result.roadId_ = roadId_;
+        result.routeId_ = routeId_;
+        result.speed_ = speed_;
+        result.longitudinalAcc_ = longitudinalAcc_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData) {
+          return mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData other) {
+        if (other == org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.getDefaultInstance()) return this;
+        if (other.getTime() != 0L) {
+          setTime(other.getTime());
+        }
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.position_.isEmpty()) {
+          if (position_.isEmpty()) {
+            position_ = other.position_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensurePositionIsMutable();
+            position_.addAll(other.position_);
+          }
+          onChanged();
+        }
+        if (!other.getRoadId().isEmpty()) {
+          roadId_ = other.roadId_;
+          onChanged();
+        }
+        if (!other.getRouteId().isEmpty()) {
+          routeId_ = other.routeId_;
+          onChanged();
+        }
+        if (other.getSpeed() != 0D) {
+          setSpeed(other.getSpeed());
+        }
+        if (other.getLongitudinalAcc() != 0D) {
+          setLongitudinalAcc(other.getLongitudinalAcc());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private long time_ ;
       /**
        * <code>int64 time = 1;</code>
        * @return The time.
        */
       @java.lang.Override
       public long getTime() {
-        return instance.getTime();
+        return time_;
       }
       /**
        * <code>int64 time = 1;</code>
@@ -1024,8 +1802,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setTime(long value) {
-        copyOnWrite();
-        instance.setTime(value);
+        
+        time_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1033,27 +1812,45 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearTime() {
-        copyOnWrite();
-        instance.clearTime();
+        
+        time_ = 0L;
+        onChanged();
         return this;
       }
 
+      private java.lang.Object name_ = "";
       /**
        * <code>string name = 2;</code>
        * @return The name.
        */
-      @java.lang.Override
       public java.lang.String getName() {
-        return instance.getName();
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <code>string name = 2;</code>
        * @return The bytes for name.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getNameBytes() {
-        return instance.getNameBytes();
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <code>string name = 2;</code>
@@ -1062,8 +1859,12 @@ public  final class ZInteract extends
        */
       public Builder setName(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setName(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1071,8 +1872,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        copyOnWrite();
-        instance.clearName();
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
         return this;
       }
       /**
@@ -1082,47 +1884,58 @@ public  final class ZInteract extends
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setNameBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
         return this;
       }
 
+      private com.google.protobuf.Internal.DoubleList position_ = emptyDoubleList();
+      private void ensurePositionIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          position_ = mutableCopy(position_);
+          bitField0_ |= 0x00000001;
+         }
+      }
       /**
        * <code>repeated double position = 3;</code>
        * @return A list containing the position.
        */
-      @java.lang.Override
       public java.util.List<java.lang.Double>
           getPositionList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getPositionList());
+        return ((bitField0_ & 0x00000001) != 0) ?
+                 java.util.Collections.unmodifiableList(position_) : position_;
       }
       /**
        * <code>repeated double position = 3;</code>
        * @return The count of position.
        */
-      @java.lang.Override
       public int getPositionCount() {
-        return instance.getPositionCount();
+        return position_.size();
       }
       /**
        * <code>repeated double position = 3;</code>
        * @param index The index of the element to return.
        * @return The position at the given index.
        */
-      @java.lang.Override
       public double getPosition(int index) {
-        return instance.getPosition(index);
+        return position_.getDouble(index);
       }
       /**
        * <code>repeated double position = 3;</code>
+       * @param index The index to set the value at.
        * @param value The position to set.
        * @return This builder for chaining.
        */
       public Builder setPosition(
           int index, double value) {
-        copyOnWrite();
-        instance.setPosition(index, value);
+        ensurePositionIsMutable();
+        position_.setDouble(index, value);
+        onChanged();
         return this;
       }
       /**
@@ -1131,8 +1944,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder addPosition(double value) {
-        copyOnWrite();
-        instance.addPosition(value);
+        ensurePositionIsMutable();
+        position_.addDouble(value);
+        onChanged();
         return this;
       }
       /**
@@ -1142,8 +1956,10 @@ public  final class ZInteract extends
        */
       public Builder addAllPosition(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        copyOnWrite();
-        instance.addAllPosition(values);
+        ensurePositionIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, position_);
+        onChanged();
         return this;
       }
       /**
@@ -1151,11 +1967,13 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearPosition() {
-        copyOnWrite();
-        instance.clearPosition();
+        position_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
         return this;
       }
 
+      private java.lang.Object roadId_ = "";
       /**
        * <pre>
        * IRoadPosition start
@@ -1165,9 +1983,17 @@ public  final class ZInteract extends
        * <code>string road_id = 4;</code>
        * @return The roadId.
        */
-      @java.lang.Override
       public java.lang.String getRoadId() {
-        return instance.getRoadId();
+        java.lang.Object ref = roadId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          roadId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <pre>
@@ -1178,10 +2004,18 @@ public  final class ZInteract extends
        * <code>string road_id = 4;</code>
        * @return The bytes for roadId.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getRoadIdBytes() {
-        return instance.getRoadIdBytes();
+        java.lang.Object ref = roadId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          roadId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <pre>
@@ -1195,8 +2029,12 @@ public  final class ZInteract extends
        */
       public Builder setRoadId(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setRoadId(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        roadId_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1209,8 +2047,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearRoadId() {
-        copyOnWrite();
-        instance.clearRoadId();
+        
+        roadId_ = getDefaultInstance().getRoadId();
+        onChanged();
         return this;
       }
       /**
@@ -1225,11 +2064,17 @@ public  final class ZInteract extends
        */
       public Builder setRoadIdBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setRoadIdBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        roadId_ = value;
+        onChanged();
         return this;
       }
 
+      private java.lang.Object routeId_ = "";
       /**
        * <pre>
        * IRoadPosition IConnnection end
@@ -1239,9 +2084,17 @@ public  final class ZInteract extends
        * <code>string route_id = 5;</code>
        * @return The routeId.
        */
-      @java.lang.Override
       public java.lang.String getRouteId() {
-        return instance.getRouteId();
+        java.lang.Object ref = routeId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          routeId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <pre>
@@ -1252,10 +2105,18 @@ public  final class ZInteract extends
        * <code>string route_id = 5;</code>
        * @return The bytes for routeId.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getRouteIdBytes() {
-        return instance.getRouteIdBytes();
+        java.lang.Object ref = routeId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          routeId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <pre>
@@ -1269,8 +2130,12 @@ public  final class ZInteract extends
        */
       public Builder setRouteId(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setRouteId(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        routeId_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1283,8 +2148,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearRouteId() {
-        copyOnWrite();
-        instance.clearRouteId();
+        
+        routeId_ = getDefaultInstance().getRouteId();
+        onChanged();
         return this;
       }
       /**
@@ -1299,18 +2165,24 @@ public  final class ZInteract extends
        */
       public Builder setRouteIdBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setRouteIdBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        routeId_ = value;
+        onChanged();
         return this;
       }
 
+      private double speed_ ;
       /**
        * <code>double speed = 6;</code>
        * @return The speed.
        */
       @java.lang.Override
       public double getSpeed() {
-        return instance.getSpeed();
+        return speed_;
       }
       /**
        * <code>double speed = 6;</code>
@@ -1318,8 +2190,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setSpeed(double value) {
-        copyOnWrite();
-        instance.setSpeed(value);
+        
+        speed_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1327,18 +2200,20 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearSpeed() {
-        copyOnWrite();
-        instance.clearSpeed();
+        
+        speed_ = 0D;
+        onChanged();
         return this;
       }
 
+      private double longitudinalAcc_ ;
       /**
        * <code>double longitudinal_acc = 7;</code>
        * @return The longitudinalAcc.
        */
       @java.lang.Override
       public double getLongitudinalAcc() {
-        return instance.getLongitudinalAcc();
+        return longitudinalAcc_;
       }
       /**
        * <code>double longitudinal_acc = 7;</code>
@@ -1346,8 +2221,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setLongitudinalAcc(double value) {
-        copyOnWrite();
-        instance.setLongitudinalAcc(value);
+        
+        longitudinalAcc_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1355,95 +2231,67 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearLongitudinalAcc() {
-        copyOnWrite();
-        instance.clearLongitudinalAcc();
+        
+        longitudinalAcc_ = 0D;
+        onChanged();
         return this;
       }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:ZInteractSpace.ZInteract.ZVehicleData)
     }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "time_",
-              "name_",
-              "position_",
-              "roadId_",
-              "routeId_",
-              "speed_",
-              "longitudinalAcc_",
-            };
-            java.lang.String info =
-                "\u0000\u0007\u0000\u0000\u0001\u0007\u0007\u0000\u0001\u0000\u0001\u0002\u0002\u0208" +
-                "\u0003#\u0004\u0208\u0005\u0208\u0006\u0000\u0007\u0000";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> parser = PARSER;
-          if (parser == null) {
-            synchronized (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
 
     // @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteract.ZVehicleData)
     private static final org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData DEFAULT_INSTANCE;
     static {
-      ZVehicleData defaultInstance = new ZVehicleData();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        ZVehicleData.class, defaultInstance);
+      DEFAULT_INSTANCE = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData();
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<ZVehicleData> PARSER;
+    private static final com.google.protobuf.Parser<ZVehicleData>
+        PARSER = new com.google.protobuf.AbstractParser<ZVehicleData>() {
+      @java.lang.Override
+      public ZVehicleData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ZVehicleData(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<ZVehicleData> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
+      return PARSER;
     }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ZVehicleData> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public interface ZVehicleUpdatesOrBuilder extends
       // @@protoc_insertion_point(interface_extends:ZInteractSpace.ZInteract.ZVehicleUpdates)
-      com.google.protobuf.MessageLiteOrBuilder {
+      com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>int64 time = 1;</code>
@@ -1464,6 +2312,16 @@ public  final class ZInteract extends
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
      */
     int getAddedCount();
+    /**
+     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+     */
+    java.util.List<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
+        getAddedOrBuilderList();
+    /**
+     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+     */
+    org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder getAddedOrBuilder(
+        int index);
 
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
@@ -1478,19 +2336,126 @@ public  final class ZInteract extends
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
      */
     int getUpdatedCount();
+    /**
+     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+     */
+    java.util.List<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
+        getUpdatedOrBuilderList();
+    /**
+     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+     */
+    org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder getUpdatedOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code ZInteractSpace.ZInteract.ZVehicleUpdates}
    */
-  public  static final class ZVehicleUpdates extends
-      com.google.protobuf.GeneratedMessageLite<
-          ZVehicleUpdates, ZVehicleUpdates.Builder> implements
+  public static final class ZVehicleUpdates extends
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ZInteractSpace.ZInteract.ZVehicleUpdates)
       ZVehicleUpdatesOrBuilder {
-    private ZVehicleUpdates() {
-      added_ = emptyProtobufList();
-      updated_ = emptyProtobufList();
+  private static final long serialVersionUID = 0L;
+    // Use ZVehicleUpdates.newBuilder() to construct.
+    private ZVehicleUpdates(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
     }
+    private ZVehicleUpdates() {
+      added_ = java.util.Collections.emptyList();
+      updated_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ZVehicleUpdates();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ZVehicleUpdates(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              time_ = input.readInt64();
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                added_ = new java.util.ArrayList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              added_.add(
+                  input.readMessage(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.parser(), extensionRegistry));
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                updated_ = new java.util.ArrayList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              updated_.add(
+                  input.readMessage(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          added_ = java.util.Collections.unmodifiableList(added_);
+        }
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          updated_ = java.util.Collections.unmodifiableList(updated_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleUpdates_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleUpdates_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder.class);
+    }
+
     public static final int TIME_FIELD_NUMBER = 1;
     private long time_;
     /**
@@ -1501,24 +2466,9 @@ public  final class ZInteract extends
     public long getTime() {
       return time_;
     }
-    /**
-     * <code>int64 time = 1;</code>
-     * @param value The time to set.
-     */
-    private void setTime(long value) {
-      
-      time_ = value;
-    }
-    /**
-     * <code>int64 time = 1;</code>
-     */
-    private void clearTime() {
-      
-      time_ = 0L;
-    }
 
     public static final int ADDED_FIELD_NUMBER = 2;
-    private com.google.protobuf.Internal.ProtobufList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> added_;
+    private java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> added_;
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
      */
@@ -1529,6 +2479,7 @@ public  final class ZInteract extends
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
         getAddedOrBuilderList() {
       return added_;
@@ -1550,69 +2501,14 @@ public  final class ZInteract extends
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
      */
+    @java.lang.Override
     public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder getAddedOrBuilder(
         int index) {
       return added_.get(index);
     }
-    private void ensureAddedIsMutable() {
-      com.google.protobuf.Internal.ProtobufList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> tmp = added_;
-      if (!tmp.isModifiable()) {
-        added_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
-    }
-
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
-     */
-    private void setAdded(
-        int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-      value.getClass();
-  ensureAddedIsMutable();
-      added_.set(index, value);
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
-     */
-    private void addAdded(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-      value.getClass();
-  ensureAddedIsMutable();
-      added_.add(value);
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
-     */
-    private void addAdded(
-        int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-      value.getClass();
-  ensureAddedIsMutable();
-      added_.add(index, value);
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
-     */
-    private void addAllAdded(
-        java.lang.Iterable<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> values) {
-      ensureAddedIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, added_);
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
-     */
-    private void clearAdded() {
-      added_ = emptyProtobufList();
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
-     */
-    private void removeAdded(int index) {
-      ensureAddedIsMutable();
-      added_.remove(index);
-    }
 
     public static final int UPDATED_FIELD_NUMBER = 3;
-    private com.google.protobuf.Internal.ProtobufList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> updated_;
+    private java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> updated_;
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
      */
@@ -1623,6 +2519,7 @@ public  final class ZInteract extends
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
         getUpdatedOrBuilderList() {
       return updated_;
@@ -1644,169 +2541,435 @@ public  final class ZInteract extends
     /**
      * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
      */
+    @java.lang.Override
     public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder getUpdatedOrBuilder(
         int index) {
       return updated_.get(index);
     }
-    private void ensureUpdatedIsMutable() {
-      com.google.protobuf.Internal.ProtobufList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> tmp = updated_;
-      if (!tmp.isModifiable()) {
-        updated_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
     }
 
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
-     */
-    private void setUpdated(
-        int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-      value.getClass();
-  ensureUpdatedIsMutable();
-      updated_.set(index, value);
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (time_ != 0L) {
+        output.writeInt64(1, time_);
+      }
+      for (int i = 0; i < added_.size(); i++) {
+        output.writeMessage(2, added_.get(i));
+      }
+      for (int i = 0; i < updated_.size(); i++) {
+        output.writeMessage(3, updated_.get(i));
+      }
+      unknownFields.writeTo(output);
     }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
-     */
-    private void addUpdated(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-      value.getClass();
-  ensureUpdatedIsMutable();
-      updated_.add(value);
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (time_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, time_);
+      }
+      for (int i = 0; i < added_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, added_.get(i));
+      }
+      for (int i = 0; i < updated_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, updated_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
     }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
-     */
-    private void addUpdated(
-        int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-      value.getClass();
-  ensureUpdatedIsMutable();
-      updated_.add(index, value);
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates)) {
+        return super.equals(obj);
+      }
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates other = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) obj;
+
+      if (getTime()
+          != other.getTime()) return false;
+      if (!getAddedList()
+          .equals(other.getAddedList())) return false;
+      if (!getUpdatedList()
+          .equals(other.getUpdatedList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
-     */
-    private void addAllUpdated(
-        java.lang.Iterable<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> values) {
-      ensureUpdatedIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, updated_);
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
-     */
-    private void clearUpdated() {
-      updated_ = emptyProtobufList();
-    }
-    /**
-     * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
-     */
-    private void removeUpdated(int index) {
-      ensureUpdatedIsMutable();
-      updated_.remove(index);
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTime());
+      if (getAddedCount() > 0) {
+        hash = (37 * hash) + ADDED_FIELD_NUMBER;
+        hash = (53 * hash) + getAddedList().hashCode();
+      }
+      if (getUpdatedCount() > 0) {
+        hash = (37 * hash) + UPDATED_FIELD_NUMBER;
+        hash = (53 * hash) + getUpdatedList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
+      return DEFAULT_INSTANCE.toBuilder();
     }
     public static Builder newBuilder(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     /**
      * Protobuf type {@code ZInteractSpace.ZInteract.ZVehicleUpdates}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates, Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ZInteractSpace.ZInteract.ZVehicleUpdates)
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder {
-      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.ZInteract.ZVehicleUpdates.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleUpdates_descriptor;
       }
 
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleUpdates_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder.class);
+      }
 
+      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getAddedFieldBuilder();
+          getUpdatedFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        time_ = 0L;
+
+        if (addedBuilder_ == null) {
+          added_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          addedBuilder_.clear();
+        }
+        if (updatedBuilder_ == null) {
+          updated_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          updatedBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleUpdates_descriptor;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates getDefaultInstanceForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates build() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates buildPartial() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates result = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates(this);
+        int from_bitField0_ = bitField0_;
+        result.time_ = time_;
+        if (addedBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            added_ = java.util.Collections.unmodifiableList(added_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.added_ = added_;
+        } else {
+          result.added_ = addedBuilder_.build();
+        }
+        if (updatedBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) != 0)) {
+            updated_ = java.util.Collections.unmodifiableList(updated_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.updated_ = updated_;
+        } else {
+          result.updated_ = updatedBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) {
+          return mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates other) {
+        if (other == org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance()) return this;
+        if (other.getTime() != 0L) {
+          setTime(other.getTime());
+        }
+        if (addedBuilder_ == null) {
+          if (!other.added_.isEmpty()) {
+            if (added_.isEmpty()) {
+              added_ = other.added_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureAddedIsMutable();
+              added_.addAll(other.added_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.added_.isEmpty()) {
+            if (addedBuilder_.isEmpty()) {
+              addedBuilder_.dispose();
+              addedBuilder_ = null;
+              added_ = other.added_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              addedBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getAddedFieldBuilder() : null;
+            } else {
+              addedBuilder_.addAllMessages(other.added_);
+            }
+          }
+        }
+        if (updatedBuilder_ == null) {
+          if (!other.updated_.isEmpty()) {
+            if (updated_.isEmpty()) {
+              updated_ = other.updated_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureUpdatedIsMutable();
+              updated_.addAll(other.updated_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.updated_.isEmpty()) {
+            if (updatedBuilder_.isEmpty()) {
+              updatedBuilder_.dispose();
+              updatedBuilder_ = null;
+              updated_ = other.updated_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              updatedBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getUpdatedFieldBuilder() : null;
+            } else {
+              updatedBuilder_.addAllMessages(other.updated_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private long time_ ;
       /**
        * <code>int64 time = 1;</code>
        * @return The time.
        */
       @java.lang.Override
       public long getTime() {
-        return instance.getTime();
+        return time_;
       }
       /**
        * <code>int64 time = 1;</code>
@@ -1814,8 +2977,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setTime(long value) {
-        copyOnWrite();
-        instance.setTime(value);
+        
+        time_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -1823,39 +2987,69 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearTime() {
-        copyOnWrite();
-        instance.clearTime();
+        
+        time_ = 0L;
+        onChanged();
         return this;
       }
+
+      private java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> added_ =
+        java.util.Collections.emptyList();
+      private void ensureAddedIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          added_ = new java.util.ArrayList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData>(added_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> addedBuilder_;
 
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> getAddedList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getAddedList());
+        if (addedBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(added_);
+        } else {
+          return addedBuilder_.getMessageList();
+        }
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
-      @java.lang.Override
       public int getAddedCount() {
-        return instance.getAddedCount();
-      }/**
+        if (addedBuilder_ == null) {
+          return added_.size();
+        } else {
+          return addedBuilder_.getCount();
+        }
+      }
+      /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
-      @java.lang.Override
       public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData getAdded(int index) {
-        return instance.getAdded(index);
+        if (addedBuilder_ == null) {
+          return added_.get(index);
+        } else {
+          return addedBuilder_.getMessage(index);
+        }
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
       public Builder setAdded(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-        copyOnWrite();
-        instance.setAdded(index, value);
+        if (addedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAddedIsMutable();
+          added_.set(index, value);
+          onChanged();
+        } else {
+          addedBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
@@ -1863,17 +3057,29 @@ public  final class ZInteract extends
        */
       public Builder setAdded(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder builderForValue) {
-        copyOnWrite();
-        instance.setAdded(index,
-            builderForValue.build());
+        if (addedBuilder_ == null) {
+          ensureAddedIsMutable();
+          added_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          addedBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
       public Builder addAdded(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-        copyOnWrite();
-        instance.addAdded(value);
+        if (addedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAddedIsMutable();
+          added_.add(value);
+          onChanged();
+        } else {
+          addedBuilder_.addMessage(value);
+        }
         return this;
       }
       /**
@@ -1881,8 +3087,16 @@ public  final class ZInteract extends
        */
       public Builder addAdded(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-        copyOnWrite();
-        instance.addAdded(index, value);
+        if (addedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAddedIsMutable();
+          added_.add(index, value);
+          onChanged();
+        } else {
+          addedBuilder_.addMessage(index, value);
+        }
         return this;
       }
       /**
@@ -1890,8 +3104,13 @@ public  final class ZInteract extends
        */
       public Builder addAdded(
           org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder builderForValue) {
-        copyOnWrite();
-        instance.addAdded(builderForValue.build());
+        if (addedBuilder_ == null) {
+          ensureAddedIsMutable();
+          added_.add(builderForValue.build());
+          onChanged();
+        } else {
+          addedBuilder_.addMessage(builderForValue.build());
+        }
         return this;
       }
       /**
@@ -1899,9 +3118,13 @@ public  final class ZInteract extends
        */
       public Builder addAdded(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder builderForValue) {
-        copyOnWrite();
-        instance.addAdded(index,
-            builderForValue.build());
+        if (addedBuilder_ == null) {
+          ensureAddedIsMutable();
+          added_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          addedBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
@@ -1909,55 +3132,164 @@ public  final class ZInteract extends
        */
       public Builder addAllAdded(
           java.lang.Iterable<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> values) {
-        copyOnWrite();
-        instance.addAllAdded(values);
+        if (addedBuilder_ == null) {
+          ensureAddedIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, added_);
+          onChanged();
+        } else {
+          addedBuilder_.addAllMessages(values);
+        }
         return this;
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
       public Builder clearAdded() {
-        copyOnWrite();
-        instance.clearAdded();
+        if (addedBuilder_ == null) {
+          added_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          addedBuilder_.clear();
+        }
         return this;
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
        */
       public Builder removeAdded(int index) {
-        copyOnWrite();
-        instance.removeAdded(index);
+        if (addedBuilder_ == null) {
+          ensureAddedIsMutable();
+          added_.remove(index);
+          onChanged();
+        } else {
+          addedBuilder_.remove(index);
+        }
         return this;
       }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder getAddedBuilder(
+          int index) {
+        return getAddedFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder getAddedOrBuilder(
+          int index) {
+        if (addedBuilder_ == null) {
+          return added_.get(index);  } else {
+          return addedBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+       */
+      public java.util.List<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
+           getAddedOrBuilderList() {
+        if (addedBuilder_ != null) {
+          return addedBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(added_);
+        }
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder addAddedBuilder() {
+        return getAddedFieldBuilder().addBuilder(
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder addAddedBuilder(
+          int index) {
+        return getAddedFieldBuilder().addBuilder(
+            index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData added = 2;</code>
+       */
+      public java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder> 
+           getAddedBuilderList() {
+        return getAddedFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
+          getAddedFieldBuilder() {
+        if (addedBuilder_ == null) {
+          addedBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder>(
+                  added_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          added_ = null;
+        }
+        return addedBuilder_;
+      }
+
+      private java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> updated_ =
+        java.util.Collections.emptyList();
+      private void ensureUpdatedIsMutable() {
+        if (!((bitField0_ & 0x00000002) != 0)) {
+          updated_ = new java.util.ArrayList<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData>(updated_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> updatedBuilder_;
 
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
-      @java.lang.Override
       public java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> getUpdatedList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getUpdatedList());
+        if (updatedBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(updated_);
+        } else {
+          return updatedBuilder_.getMessageList();
+        }
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
-      @java.lang.Override
       public int getUpdatedCount() {
-        return instance.getUpdatedCount();
-      }/**
+        if (updatedBuilder_ == null) {
+          return updated_.size();
+        } else {
+          return updatedBuilder_.getCount();
+        }
+      }
+      /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
-      @java.lang.Override
       public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData getUpdated(int index) {
-        return instance.getUpdated(index);
+        if (updatedBuilder_ == null) {
+          return updated_.get(index);
+        } else {
+          return updatedBuilder_.getMessage(index);
+        }
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
       public Builder setUpdated(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-        copyOnWrite();
-        instance.setUpdated(index, value);
+        if (updatedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUpdatedIsMutable();
+          updated_.set(index, value);
+          onChanged();
+        } else {
+          updatedBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
@@ -1965,17 +3297,29 @@ public  final class ZInteract extends
        */
       public Builder setUpdated(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder builderForValue) {
-        copyOnWrite();
-        instance.setUpdated(index,
-            builderForValue.build());
+        if (updatedBuilder_ == null) {
+          ensureUpdatedIsMutable();
+          updated_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          updatedBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
       public Builder addUpdated(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-        copyOnWrite();
-        instance.addUpdated(value);
+        if (updatedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUpdatedIsMutable();
+          updated_.add(value);
+          onChanged();
+        } else {
+          updatedBuilder_.addMessage(value);
+        }
         return this;
       }
       /**
@@ -1983,8 +3327,16 @@ public  final class ZInteract extends
        */
       public Builder addUpdated(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData value) {
-        copyOnWrite();
-        instance.addUpdated(index, value);
+        if (updatedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUpdatedIsMutable();
+          updated_.add(index, value);
+          onChanged();
+        } else {
+          updatedBuilder_.addMessage(index, value);
+        }
         return this;
       }
       /**
@@ -1992,8 +3344,13 @@ public  final class ZInteract extends
        */
       public Builder addUpdated(
           org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder builderForValue) {
-        copyOnWrite();
-        instance.addUpdated(builderForValue.build());
+        if (updatedBuilder_ == null) {
+          ensureUpdatedIsMutable();
+          updated_.add(builderForValue.build());
+          onChanged();
+        } else {
+          updatedBuilder_.addMessage(builderForValue.build());
+        }
         return this;
       }
       /**
@@ -2001,9 +3358,13 @@ public  final class ZInteract extends
        */
       public Builder addUpdated(
           int index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder builderForValue) {
-        copyOnWrite();
-        instance.addUpdated(index,
-            builderForValue.build());
+        if (updatedBuilder_ == null) {
+          ensureUpdatedIsMutable();
+          updated_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          updatedBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
@@ -2011,109 +3372,162 @@ public  final class ZInteract extends
        */
       public Builder addAllUpdated(
           java.lang.Iterable<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData> values) {
-        copyOnWrite();
-        instance.addAllUpdated(values);
+        if (updatedBuilder_ == null) {
+          ensureUpdatedIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, updated_);
+          onChanged();
+        } else {
+          updatedBuilder_.addAllMessages(values);
+        }
         return this;
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
       public Builder clearUpdated() {
-        copyOnWrite();
-        instance.clearUpdated();
+        if (updatedBuilder_ == null) {
+          updated_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          updatedBuilder_.clear();
+        }
         return this;
       }
       /**
        * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
        */
       public Builder removeUpdated(int index) {
-        copyOnWrite();
-        instance.removeUpdated(index);
+        if (updatedBuilder_ == null) {
+          ensureUpdatedIsMutable();
+          updated_.remove(index);
+          onChanged();
+        } else {
+          updatedBuilder_.remove(index);
+        }
         return this;
       }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder getUpdatedBuilder(
+          int index) {
+        return getUpdatedFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder getUpdatedOrBuilder(
+          int index) {
+        if (updatedBuilder_ == null) {
+          return updated_.get(index);  } else {
+          return updatedBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+       */
+      public java.util.List<? extends org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
+           getUpdatedOrBuilderList() {
+        if (updatedBuilder_ != null) {
+          return updatedBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(updated_);
+        }
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder addUpdatedBuilder() {
+        return getUpdatedFieldBuilder().addBuilder(
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+       */
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder addUpdatedBuilder(
+          int index) {
+        return getUpdatedFieldBuilder().addBuilder(
+            index, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .ZInteractSpace.ZInteract.ZVehicleData updated = 3;</code>
+       */
+      public java.util.List<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder> 
+           getUpdatedBuilderList() {
+        return getUpdatedFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder> 
+          getUpdatedFieldBuilder() {
+        if (updatedBuilder_ == null) {
+          updatedBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleDataOrBuilder>(
+                  updated_,
+                  ((bitField0_ & 0x00000002) != 0),
+                  getParentForChildren(),
+                  isClean());
+          updated_ = null;
+        }
+        return updatedBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:ZInteractSpace.ZInteract.ZVehicleUpdates)
     }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "time_",
-              "added_",
-              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.class,
-              "updated_",
-              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleData.class,
-            };
-            java.lang.String info =
-                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0002\u0000\u0001\u0002\u0002\u001b" +
-                "\u0003\u001b";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates> parser = PARSER;
-          if (parser == null) {
-            synchronized (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
 
     // @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteract.ZVehicleUpdates)
     private static final org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates DEFAULT_INSTANCE;
     static {
-      ZVehicleUpdates defaultInstance = new ZVehicleUpdates();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        ZVehicleUpdates.class, defaultInstance);
+      DEFAULT_INSTANCE = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates();
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<ZVehicleUpdates> PARSER;
+    private static final com.google.protobuf.Parser<ZVehicleUpdates>
+        PARSER = new com.google.protobuf.AbstractParser<ZVehicleUpdates>() {
+      @java.lang.Override
+      public ZVehicleUpdates parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ZVehicleUpdates(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<ZVehicleUpdates> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
+      return PARSER;
     }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ZVehicleUpdates> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public interface ZVehicleRegistrationOrBuilder extends
       // @@protoc_insertion_point(interface_extends:ZInteractSpace.ZInteract.ZVehicleRegistration)
-      com.google.protobuf.MessageLiteOrBuilder {
+      com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>string name = 1;</code>
@@ -2158,8 +3572,8 @@ public  final class ZInteract extends
     java.lang.String getApplications(int index);
     /**
      * <code>repeated string applications = 3;</code>
-     * @param index The index of the element to return.
-     * @return The applications at the given index.
+     * @param index The index of the value to return.
+     * @return The bytes of the applications at the given index.
      */
     com.google.protobuf.ByteString
         getApplicationsBytes(int index);
@@ -2167,25 +3581,126 @@ public  final class ZInteract extends
   /**
    * Protobuf type {@code ZInteractSpace.ZInteract.ZVehicleRegistration}
    */
-  public  static final class ZVehicleRegistration extends
-      com.google.protobuf.GeneratedMessageLite<
-          ZVehicleRegistration, ZVehicleRegistration.Builder> implements
+  public static final class ZVehicleRegistration extends
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ZInteractSpace.ZInteract.ZVehicleRegistration)
       ZVehicleRegistrationOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ZVehicleRegistration.newBuilder() to construct.
+    private ZVehicleRegistration(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
     private ZVehicleRegistration() {
       name_ = "";
       group_ = "";
-      applications_ = com.google.protobuf.GeneratedMessageLite.emptyProtobufList();
+      applications_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ZVehicleRegistration();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ZVehicleRegistration(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              group_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                applications_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              applications_.add(s);
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          applications_ = applications_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleRegistration_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleRegistration_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder.class);
+    }
+
     public static final int NAME_FIELD_NUMBER = 1;
-    private java.lang.String name_;
+    private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
      * @return The name.
      */
     @java.lang.Override
     public java.lang.String getName() {
-      return name_;
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
     }
     /**
      * <code>string name = 1;</code>
@@ -2194,45 +3709,36 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(name_);
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The name to set.
-     */
-    private void setName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      name_ = value;
-    }
-    /**
-     * <code>string name = 1;</code>
-     */
-    private void clearName() {
-      
-      name_ = getDefaultInstance().getName();
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The bytes for name to set.
-     */
-    private void setNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      name_ = value.toStringUtf8();
-      
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int GROUP_FIELD_NUMBER = 2;
-    private java.lang.String group_;
+    private volatile java.lang.Object group_;
     /**
      * <code>string group = 2;</code>
      * @return The group.
      */
     @java.lang.Override
     public java.lang.String getGroup() {
-      return group_;
+      java.lang.Object ref = group_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        group_ = s;
+        return s;
+      }
     }
     /**
      * <code>string group = 2;</code>
@@ -2241,51 +3747,32 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getGroupBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(group_);
-    }
-    /**
-     * <code>string group = 2;</code>
-     * @param value The group to set.
-     */
-    private void setGroup(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      group_ = value;
-    }
-    /**
-     * <code>string group = 2;</code>
-     */
-    private void clearGroup() {
-      
-      group_ = getDefaultInstance().getGroup();
-    }
-    /**
-     * <code>string group = 2;</code>
-     * @param value The bytes for group to set.
-     */
-    private void setGroupBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      group_ = value.toStringUtf8();
-      
+      java.lang.Object ref = group_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        group_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int APPLICATIONS_FIELD_NUMBER = 3;
-    private com.google.protobuf.Internal.ProtobufList<java.lang.String> applications_;
+    private com.google.protobuf.LazyStringList applications_;
     /**
      * <code>repeated string applications = 3;</code>
      * @return A list containing the applications.
      */
-    @java.lang.Override
-    public java.util.List<java.lang.String> getApplicationsList() {
+    public com.google.protobuf.ProtocolStringList
+        getApplicationsList() {
       return applications_;
     }
     /**
      * <code>repeated string applications = 3;</code>
      * @return The count of applications.
      */
-    @java.lang.Override
     public int getApplicationsCount() {
       return applications_.size();
     }
@@ -2294,7 +3781,6 @@ public  final class ZInteract extends
      * @param index The index of the element to return.
      * @return The applications at the given index.
      */
-    @java.lang.Override
     public java.lang.String getApplications(int index) {
       return applications_.get(index);
     }
@@ -2303,178 +3789,399 @@ public  final class ZInteract extends
      * @param index The index of the value to return.
      * @return The bytes of the applications at the given index.
      */
-    @java.lang.Override
     public com.google.protobuf.ByteString
         getApplicationsBytes(int index) {
-      return com.google.protobuf.ByteString.copyFromUtf8(
-          applications_.get(index));
+      return applications_.getByteString(index);
     }
-    private void ensureApplicationsIsMutable() {
-      com.google.protobuf.Internal.ProtobufList<java.lang.String> tmp =
-          applications_;  if (!tmp.isModifiable()) {
-        applications_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
     }
-    /**
-     * <code>repeated string applications = 3;</code>
-     * @param index The index to set the value at.
-     * @param value The applications to set.
-     */
-    private void setApplications(
-        int index, java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  ensureApplicationsIsMutable();
-      applications_.set(index, value);
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(group_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, group_);
+      }
+      for (int i = 0; i < applications_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, applications_.getRaw(i));
+      }
+      unknownFields.writeTo(output);
     }
-    /**
-     * <code>repeated string applications = 3;</code>
-     * @param value The applications to add.
-     */
-    private void addApplications(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  ensureApplicationsIsMutable();
-      applications_.add(value);
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(group_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, group_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < applications_.size(); i++) {
+          dataSize += computeStringSizeNoTag(applications_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getApplicationsList().size();
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
     }
-    /**
-     * <code>repeated string applications = 3;</code>
-     * @param values The applications to add.
-     */
-    private void addAllApplications(
-        java.lang.Iterable<java.lang.String> values) {
-      ensureApplicationsIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, applications_);
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration)) {
+        return super.equals(obj);
+      }
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration other = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) obj;
+
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getGroup()
+          .equals(other.getGroup())) return false;
+      if (!getApplicationsList()
+          .equals(other.getApplicationsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
-    /**
-     * <code>repeated string applications = 3;</code>
-     */
-    private void clearApplications() {
-      applications_ = com.google.protobuf.GeneratedMessageLite.emptyProtobufList();
-    }
-    /**
-     * <code>repeated string applications = 3;</code>
-     * @param value The bytes of the applications to add.
-     */
-    private void addApplicationsBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      ensureApplicationsIsMutable();
-      applications_.add(value.toStringUtf8());
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + GROUP_FIELD_NUMBER;
+      hash = (53 * hash) + getGroup().hashCode();
+      if (getApplicationsCount() > 0) {
+        hash = (37 * hash) + APPLICATIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getApplicationsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
+      return DEFAULT_INSTANCE.toBuilder();
     }
     public static Builder newBuilder(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     /**
      * Protobuf type {@code ZInteractSpace.ZInteract.ZVehicleRegistration}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration, Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ZInteractSpace.ZInteract.ZVehicleRegistration)
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder {
-      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.ZInteract.ZVehicleRegistration.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleRegistration_descriptor;
       }
 
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleRegistration_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder.class);
+      }
 
+      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+
+        group_ = "";
+
+        applications_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZVehicleRegistration_descriptor;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration getDefaultInstanceForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration build() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration buildPartial() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration result = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration(this);
+        int from_bitField0_ = bitField0_;
+        result.name_ = name_;
+        result.group_ = group_;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          applications_ = applications_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.applications_ = applications_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) {
+          return mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration other) {
+        if (other == org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance()) return this;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getGroup().isEmpty()) {
+          group_ = other.group_;
+          onChanged();
+        }
+        if (!other.applications_.isEmpty()) {
+          if (applications_.isEmpty()) {
+            applications_ = other.applications_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureApplicationsIsMutable();
+            applications_.addAll(other.applications_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
        * @return The name.
        */
-      @java.lang.Override
       public java.lang.String getName() {
-        return instance.getName();
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <code>string name = 1;</code>
        * @return The bytes for name.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getNameBytes() {
-        return instance.getNameBytes();
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <code>string name = 1;</code>
@@ -2483,8 +4190,12 @@ public  final class ZInteract extends
        */
       public Builder setName(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setName(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -2492,8 +4203,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        copyOnWrite();
-        instance.clearName();
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
         return this;
       }
       /**
@@ -2503,27 +4215,49 @@ public  final class ZInteract extends
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setNameBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
         return this;
       }
 
+      private java.lang.Object group_ = "";
       /**
        * <code>string group = 2;</code>
        * @return The group.
        */
-      @java.lang.Override
       public java.lang.String getGroup() {
-        return instance.getGroup();
+        java.lang.Object ref = group_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          group_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <code>string group = 2;</code>
        * @return The bytes for group.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getGroupBytes() {
-        return instance.getGroupBytes();
+        java.lang.Object ref = group_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          group_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <code>string group = 2;</code>
@@ -2532,8 +4266,12 @@ public  final class ZInteract extends
        */
       public Builder setGroup(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setGroup(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        group_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -2541,8 +4279,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearGroup() {
-        copyOnWrite();
-        instance.clearGroup();
+        
+        group_ = getDefaultInstance().getGroup();
+        onChanged();
         return this;
       }
       /**
@@ -2552,47 +4291,54 @@ public  final class ZInteract extends
        */
       public Builder setGroupBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setGroupBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        group_ = value;
+        onChanged();
         return this;
       }
 
+      private com.google.protobuf.LazyStringList applications_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureApplicationsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          applications_ = new com.google.protobuf.LazyStringArrayList(applications_);
+          bitField0_ |= 0x00000001;
+         }
+      }
       /**
        * <code>repeated string applications = 3;</code>
        * @return A list containing the applications.
        */
-      @java.lang.Override
-      public java.util.List<java.lang.String>
+      public com.google.protobuf.ProtocolStringList
           getApplicationsList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getApplicationsList());
+        return applications_.getUnmodifiableView();
       }
       /**
        * <code>repeated string applications = 3;</code>
        * @return The count of applications.
        */
-      @java.lang.Override
       public int getApplicationsCount() {
-        return instance.getApplicationsCount();
+        return applications_.size();
       }
       /**
        * <code>repeated string applications = 3;</code>
        * @param index The index of the element to return.
        * @return The applications at the given index.
        */
-      @java.lang.Override
       public java.lang.String getApplications(int index) {
-        return instance.getApplications(index);
+        return applications_.get(index);
       }
       /**
        * <code>repeated string applications = 3;</code>
        * @param index The index of the value to return.
        * @return The bytes of the applications at the given index.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getApplicationsBytes(int index) {
-        return instance.getApplicationsBytes(index);
+        return applications_.getByteString(index);
       }
       /**
        * <code>repeated string applications = 3;</code>
@@ -2602,8 +4348,12 @@ public  final class ZInteract extends
        */
       public Builder setApplications(
           int index, java.lang.String value) {
-        copyOnWrite();
-        instance.setApplications(index, value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureApplicationsIsMutable();
+        applications_.set(index, value);
+        onChanged();
         return this;
       }
       /**
@@ -2613,8 +4363,12 @@ public  final class ZInteract extends
        */
       public Builder addApplications(
           java.lang.String value) {
-        copyOnWrite();
-        instance.addApplications(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureApplicationsIsMutable();
+        applications_.add(value);
+        onChanged();
         return this;
       }
       /**
@@ -2624,8 +4378,10 @@ public  final class ZInteract extends
        */
       public Builder addAllApplications(
           java.lang.Iterable<java.lang.String> values) {
-        copyOnWrite();
-        instance.addAllApplications(values);
+        ensureApplicationsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, applications_);
+        onChanged();
         return this;
       }
       /**
@@ -2633,8 +4389,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearApplications() {
-        copyOnWrite();
-        instance.clearApplications();
+        applications_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
         return this;
       }
       /**
@@ -2644,91 +4401,71 @@ public  final class ZInteract extends
        */
       public Builder addApplicationsBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.addApplicationsBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureApplicationsIsMutable();
+        applications_.add(value);
+        onChanged();
         return this;
       }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:ZInteractSpace.ZInteract.ZVehicleRegistration)
     }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "name_",
-              "group_",
-              "applications_",
-            };
-            java.lang.String info =
-                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0001\u0000\u0001\u0208\u0002\u0208" +
-                "\u0003\u021a";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration> parser = PARSER;
-          if (parser == null) {
-            synchronized (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
 
     // @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteract.ZVehicleRegistration)
     private static final org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration DEFAULT_INSTANCE;
     static {
-      ZVehicleRegistration defaultInstance = new ZVehicleRegistration();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        ZVehicleRegistration.class, defaultInstance);
+      DEFAULT_INSTANCE = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration();
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<ZVehicleRegistration> PARSER;
+    private static final com.google.protobuf.Parser<ZVehicleRegistration>
+        PARSER = new com.google.protobuf.AbstractParser<ZVehicleRegistration>() {
+      @java.lang.Override
+      public ZVehicleRegistration parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ZVehicleRegistration(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<ZVehicleRegistration> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
+      return PARSER;
     }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ZVehicleRegistration> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
   public interface ZV2xMessageReceptionOrBuilder extends
       // @@protoc_insertion_point(interface_extends:ZInteractSpace.ZInteract.ZV2xMessageReception)
-      com.google.protobuf.MessageLiteOrBuilder {
+      com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>string receiver_name = 1;</code>
@@ -2769,23 +4506,125 @@ public  final class ZInteract extends
   /**
    * Protobuf type {@code ZInteractSpace.ZInteract.ZV2xMessageReception}
    */
-  public  static final class ZV2xMessageReception extends
-      com.google.protobuf.GeneratedMessageLite<
-          ZV2xMessageReception, ZV2xMessageReception.Builder> implements
+  public static final class ZV2xMessageReception extends
+      com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ZInteractSpace.ZInteract.ZV2xMessageReception)
       ZV2xMessageReceptionOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ZV2xMessageReception.newBuilder() to construct.
+    private ZV2xMessageReception(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
     private ZV2xMessageReception() {
       receiverName_ = "";
     }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ZV2xMessageReception();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ZV2xMessageReception(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              receiverName_ = s;
+              break;
+            }
+            case 16: {
+
+              messageId_ = input.readInt64();
+              break;
+            }
+            case 24: {
+
+              sendTime_ = input.readInt64();
+              break;
+            }
+            case 32: {
+
+              receiveTime_ = input.readInt64();
+              break;
+            }
+            case 41: {
+
+              receiveSignalStrength_ = input.readDouble();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZV2xMessageReception_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZV2xMessageReception_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder.class);
+    }
+
     public static final int RECEIVER_NAME_FIELD_NUMBER = 1;
-    private java.lang.String receiverName_;
+    private volatile java.lang.Object receiverName_;
     /**
      * <code>string receiver_name = 1;</code>
      * @return The receiverName.
      */
     @java.lang.Override
     public java.lang.String getReceiverName() {
-      return receiverName_;
+      java.lang.Object ref = receiverName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        receiverName_ = s;
+        return s;
+      }
     }
     /**
      * <code>string receiver_name = 1;</code>
@@ -2794,34 +4633,16 @@ public  final class ZInteract extends
     @java.lang.Override
     public com.google.protobuf.ByteString
         getReceiverNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(receiverName_);
-    }
-    /**
-     * <code>string receiver_name = 1;</code>
-     * @param value The receiverName to set.
-     */
-    private void setReceiverName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      receiverName_ = value;
-    }
-    /**
-     * <code>string receiver_name = 1;</code>
-     */
-    private void clearReceiverName() {
-      
-      receiverName_ = getDefaultInstance().getReceiverName();
-    }
-    /**
-     * <code>string receiver_name = 1;</code>
-     * @param value The bytes for receiverName to set.
-     */
-    private void setReceiverNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      receiverName_ = value.toStringUtf8();
-      
+      java.lang.Object ref = receiverName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        receiverName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int MESSAGE_ID_FIELD_NUMBER = 2;
@@ -2834,21 +4655,6 @@ public  final class ZInteract extends
     public long getMessageId() {
       return messageId_;
     }
-    /**
-     * <code>int64 message_id = 2;</code>
-     * @param value The messageId to set.
-     */
-    private void setMessageId(long value) {
-      
-      messageId_ = value;
-    }
-    /**
-     * <code>int64 message_id = 2;</code>
-     */
-    private void clearMessageId() {
-      
-      messageId_ = 0L;
-    }
 
     public static final int SEND_TIME_FIELD_NUMBER = 3;
     private long sendTime_;
@@ -2859,21 +4665,6 @@ public  final class ZInteract extends
     @java.lang.Override
     public long getSendTime() {
       return sendTime_;
-    }
-    /**
-     * <code>int64 send_time = 3;</code>
-     * @param value The sendTime to set.
-     */
-    private void setSendTime(long value) {
-      
-      sendTime_ = value;
-    }
-    /**
-     * <code>int64 send_time = 3;</code>
-     */
-    private void clearSendTime() {
-      
-      sendTime_ = 0L;
     }
 
     public static final int RECEIVE_TIME_FIELD_NUMBER = 4;
@@ -2886,21 +4677,6 @@ public  final class ZInteract extends
     public long getReceiveTime() {
       return receiveTime_;
     }
-    /**
-     * <code>int64 receive_time = 4;</code>
-     * @param value The receiveTime to set.
-     */
-    private void setReceiveTime(long value) {
-      
-      receiveTime_ = value;
-    }
-    /**
-     * <code>int64 receive_time = 4;</code>
-     */
-    private void clearReceiveTime() {
-      
-      receiveTime_ = 0L;
-    }
 
     public static final int RECEIVE_SIGNAL_STRENGTH_FIELD_NUMBER = 5;
     private double receiveSignalStrength_;
@@ -2912,133 +4688,415 @@ public  final class ZInteract extends
     public double getReceiveSignalStrength() {
       return receiveSignalStrength_;
     }
-    /**
-     * <code>double receive_signal_strength = 5;</code>
-     * @param value The receiveSignalStrength to set.
-     */
-    private void setReceiveSignalStrength(double value) {
-      
-      receiveSignalStrength_ = value;
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
     }
-    /**
-     * <code>double receive_signal_strength = 5;</code>
-     */
-    private void clearReceiveSignalStrength() {
-      
-      receiveSignalStrength_ = 0D;
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(receiverName_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, receiverName_);
+      }
+      if (messageId_ != 0L) {
+        output.writeInt64(2, messageId_);
+      }
+      if (sendTime_ != 0L) {
+        output.writeInt64(3, sendTime_);
+      }
+      if (receiveTime_ != 0L) {
+        output.writeInt64(4, receiveTime_);
+      }
+      if (receiveSignalStrength_ != 0D) {
+        output.writeDouble(5, receiveSignalStrength_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(receiverName_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, receiverName_);
+      }
+      if (messageId_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, messageId_);
+      }
+      if (sendTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, sendTime_);
+      }
+      if (receiveTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(4, receiveTime_);
+      }
+      if (receiveSignalStrength_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(5, receiveSignalStrength_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception)) {
+        return super.equals(obj);
+      }
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception other = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) obj;
+
+      if (!getReceiverName()
+          .equals(other.getReceiverName())) return false;
+      if (getMessageId()
+          != other.getMessageId()) return false;
+      if (getSendTime()
+          != other.getSendTime()) return false;
+      if (getReceiveTime()
+          != other.getReceiveTime()) return false;
+      if (java.lang.Double.doubleToLongBits(getReceiveSignalStrength())
+          != java.lang.Double.doubleToLongBits(
+              other.getReceiveSignalStrength())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + RECEIVER_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getReceiverName().hashCode();
+      hash = (37 * hash) + MESSAGE_ID_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getMessageId());
+      hash = (37 * hash) + SEND_TIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getSendTime());
+      hash = (37 * hash) + RECEIVE_TIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getReceiveTime());
+      hash = (37 * hash) + RECEIVE_SIGNAL_STRENGTH_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getReceiveSignalStrength()));
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
+      return PARSER.parseFrom(data);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
+      return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
     }
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
+      return DEFAULT_INSTANCE.toBuilder();
     }
     public static Builder newBuilder(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     /**
      * Protobuf type {@code ZInteractSpace.ZInteract.ZV2xMessageReception}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception, Builder> implements
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ZInteractSpace.ZInteract.ZV2xMessageReception)
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder {
-      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.ZInteract.ZV2xMessageReception.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZV2xMessageReception_descriptor;
       }
 
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZV2xMessageReception_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder.class);
+      }
 
+      // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        receiverName_ = "";
+
+        messageId_ = 0L;
+
+        sendTime_ = 0L;
+
+        receiveTime_ = 0L;
+
+        receiveSignalStrength_ = 0D;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_ZV2xMessageReception_descriptor;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception getDefaultInstanceForType() {
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception build() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception buildPartial() {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception result = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception(this);
+        result.receiverName_ = receiverName_;
+        result.messageId_ = messageId_;
+        result.sendTime_ = sendTime_;
+        result.receiveTime_ = receiveTime_;
+        result.receiveSignalStrength_ = receiveSignalStrength_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) {
+          return mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception other) {
+        if (other == org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance()) return this;
+        if (!other.getReceiverName().isEmpty()) {
+          receiverName_ = other.receiverName_;
+          onChanged();
+        }
+        if (other.getMessageId() != 0L) {
+          setMessageId(other.getMessageId());
+        }
+        if (other.getSendTime() != 0L) {
+          setSendTime(other.getSendTime());
+        }
+        if (other.getReceiveTime() != 0L) {
+          setReceiveTime(other.getReceiveTime());
+        }
+        if (other.getReceiveSignalStrength() != 0D) {
+          setReceiveSignalStrength(other.getReceiveSignalStrength());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object receiverName_ = "";
       /**
        * <code>string receiver_name = 1;</code>
        * @return The receiverName.
        */
-      @java.lang.Override
       public java.lang.String getReceiverName() {
-        return instance.getReceiverName();
+        java.lang.Object ref = receiverName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          receiverName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <code>string receiver_name = 1;</code>
        * @return The bytes for receiverName.
        */
-      @java.lang.Override
       public com.google.protobuf.ByteString
           getReceiverNameBytes() {
-        return instance.getReceiverNameBytes();
+        java.lang.Object ref = receiverName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          receiverName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
        * <code>string receiver_name = 1;</code>
@@ -3047,8 +5105,12 @@ public  final class ZInteract extends
        */
       public Builder setReceiverName(
           java.lang.String value) {
-        copyOnWrite();
-        instance.setReceiverName(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        receiverName_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -3056,8 +5118,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearReceiverName() {
-        copyOnWrite();
-        instance.clearReceiverName();
+        
+        receiverName_ = getDefaultInstance().getReceiverName();
+        onChanged();
         return this;
       }
       /**
@@ -3067,18 +5130,24 @@ public  final class ZInteract extends
        */
       public Builder setReceiverNameBytes(
           com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setReceiverNameBytes(value);
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        receiverName_ = value;
+        onChanged();
         return this;
       }
 
+      private long messageId_ ;
       /**
        * <code>int64 message_id = 2;</code>
        * @return The messageId.
        */
       @java.lang.Override
       public long getMessageId() {
-        return instance.getMessageId();
+        return messageId_;
       }
       /**
        * <code>int64 message_id = 2;</code>
@@ -3086,8 +5155,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setMessageId(long value) {
-        copyOnWrite();
-        instance.setMessageId(value);
+        
+        messageId_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -3095,18 +5165,20 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearMessageId() {
-        copyOnWrite();
-        instance.clearMessageId();
+        
+        messageId_ = 0L;
+        onChanged();
         return this;
       }
 
+      private long sendTime_ ;
       /**
        * <code>int64 send_time = 3;</code>
        * @return The sendTime.
        */
       @java.lang.Override
       public long getSendTime() {
-        return instance.getSendTime();
+        return sendTime_;
       }
       /**
        * <code>int64 send_time = 3;</code>
@@ -3114,8 +5186,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setSendTime(long value) {
-        copyOnWrite();
-        instance.setSendTime(value);
+        
+        sendTime_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -3123,18 +5196,20 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearSendTime() {
-        copyOnWrite();
-        instance.clearSendTime();
+        
+        sendTime_ = 0L;
+        onChanged();
         return this;
       }
 
+      private long receiveTime_ ;
       /**
        * <code>int64 receive_time = 4;</code>
        * @return The receiveTime.
        */
       @java.lang.Override
       public long getReceiveTime() {
-        return instance.getReceiveTime();
+        return receiveTime_;
       }
       /**
        * <code>int64 receive_time = 4;</code>
@@ -3142,8 +5217,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setReceiveTime(long value) {
-        copyOnWrite();
-        instance.setReceiveTime(value);
+        
+        receiveTime_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -3151,18 +5227,20 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearReceiveTime() {
-        copyOnWrite();
-        instance.clearReceiveTime();
+        
+        receiveTime_ = 0L;
+        onChanged();
         return this;
       }
 
+      private double receiveSignalStrength_ ;
       /**
        * <code>double receive_signal_strength = 5;</code>
        * @return The receiveSignalStrength.
        */
       @java.lang.Override
       public double getReceiveSignalStrength() {
-        return instance.getReceiveSignalStrength();
+        return receiveSignalStrength_;
       }
       /**
        * <code>double receive_signal_strength = 5;</code>
@@ -3170,8 +5248,9 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder setReceiveSignalStrength(double value) {
-        copyOnWrite();
-        instance.setReceiveSignalStrength(value);
+        
+        receiveSignalStrength_ = value;
+        onChanged();
         return this;
       }
       /**
@@ -3179,117 +5258,95 @@ public  final class ZInteract extends
        * @return This builder for chaining.
        */
       public Builder clearReceiveSignalStrength() {
-        copyOnWrite();
-        instance.clearReceiveSignalStrength();
+        
+        receiveSignalStrength_ = 0D;
+        onChanged();
         return this;
       }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
 
       // @@protoc_insertion_point(builder_scope:ZInteractSpace.ZInteract.ZV2xMessageReception)
     }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "receiverName_",
-              "messageId_",
-              "sendTime_",
-              "receiveTime_",
-              "receiveSignalStrength_",
-            };
-            java.lang.String info =
-                "\u0000\u0005\u0000\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0002" +
-                "\u0003\u0002\u0004\u0002\u0005\u0000";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception> parser = PARSER;
-          if (parser == null) {
-            synchronized (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
 
     // @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteract.ZV2xMessageReception)
     private static final org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception DEFAULT_INSTANCE;
     static {
-      ZV2xMessageReception defaultInstance = new ZV2xMessageReception();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        ZV2xMessageReception.class, defaultInstance);
+      DEFAULT_INSTANCE = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception();
     }
 
     public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static volatile com.google.protobuf.Parser<ZV2xMessageReception> PARSER;
+    private static final com.google.protobuf.Parser<ZV2xMessageReception>
+        PARSER = new com.google.protobuf.AbstractParser<ZV2xMessageReception>() {
+      @java.lang.Override
+      public ZV2xMessageReception parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ZV2xMessageReception(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<ZV2xMessageReception> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
+      return PARSER;
     }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ZV2xMessageReception> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
   }
 
-  private int interactionCase_ = 0;
-  private java.lang.Object interaction_;
-  public enum InteractionCase {
+  private int interactionTypeCase_ = 0;
+  private java.lang.Object interactionType_;
+  public enum InteractionTypeCase
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     Z_RSU_REGISTRATION(5),
     Z_VEHICLE_UPDATES(6),
     Z_VEHICLE_REGISTRATION(7),
     Z_V2X_MESSAGE_RECEPTION(8),
-    INTERACTION_NOT_SET(0);
+    INTERACTIONTYPE_NOT_SET(0);
     private final int value;
-    private InteractionCase(int value) {
+    private InteractionTypeCase(int value) {
       this.value = value;
     }
     /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
-    public static InteractionCase valueOf(int value) {
+    public static InteractionTypeCase valueOf(int value) {
       return forNumber(value);
     }
 
-    public static InteractionCase forNumber(int value) {
+    public static InteractionTypeCase forNumber(int value) {
       switch (value) {
         case 5: return Z_RSU_REGISTRATION;
         case 6: return Z_VEHICLE_UPDATES;
         case 7: return Z_VEHICLE_REGISTRATION;
         case 8: return Z_V2X_MESSAGE_RECEPTION;
-        case 0: return INTERACTION_NOT_SET;
+        case 0: return INTERACTIONTYPE_NOT_SET;
         default: return null;
       }
     }
@@ -3298,16 +5355,10 @@ public  final class ZInteract extends
     }
   };
 
-  @java.lang.Override
-  public InteractionCase
-  getInteractionCase() {
-    return InteractionCase.forNumber(
-        interactionCase_);
-  }
-
-  private void clearInteraction() {
-    interactionCase_ = 0;
-    interaction_ = null;
+  public InteractionTypeCase
+  getInteractionTypeCase() {
+    return InteractionTypeCase.forNumber(
+        interactionTypeCase_);
   }
 
   public static final int TIME_FIELD_NUMBER = 1;
@@ -3320,21 +5371,6 @@ public  final class ZInteract extends
   public long getTime() {
     return time_;
   }
-  /**
-   * <code>int64 time = 1;</code>
-   * @param value The time to set.
-   */
-  private void setTime(long value) {
-    
-    time_ = value;
-  }
-  /**
-   * <code>int64 time = 1;</code>
-   */
-  private void clearTime() {
-    
-    time_ = 0L;
-  }
 
   public static final int ID_FIELD_NUMBER = 2;
   private long id_;
@@ -3346,31 +5382,25 @@ public  final class ZInteract extends
   public long getId() {
     return id_;
   }
-  /**
-   * <code>int64 id = 2;</code>
-   * @param value The id to set.
-   */
-  private void setId(long value) {
-    
-    id_ = value;
-  }
-  /**
-   * <code>int64 id = 2;</code>
-   */
-  private void clearId() {
-    
-    id_ = 0L;
-  }
 
   public static final int SENDER_ID_FIELD_NUMBER = 3;
-  private java.lang.String senderId_;
+  private volatile java.lang.Object senderId_;
   /**
    * <code>string sender_id = 3;</code>
    * @return The senderId.
    */
   @java.lang.Override
   public java.lang.String getSenderId() {
-    return senderId_;
+    java.lang.Object ref = senderId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      senderId_ = s;
+      return s;
+    }
   }
   /**
    * <code>string sender_id = 3;</code>
@@ -3379,45 +5409,36 @@ public  final class ZInteract extends
   @java.lang.Override
   public com.google.protobuf.ByteString
       getSenderIdBytes() {
-    return com.google.protobuf.ByteString.copyFromUtf8(senderId_);
-  }
-  /**
-   * <code>string sender_id = 3;</code>
-   * @param value The senderId to set.
-   */
-  private void setSenderId(
-      java.lang.String value) {
-    java.lang.Class<?> valueClass = value.getClass();
-  
-    senderId_ = value;
-  }
-  /**
-   * <code>string sender_id = 3;</code>
-   */
-  private void clearSenderId() {
-    
-    senderId_ = getDefaultInstance().getSenderId();
-  }
-  /**
-   * <code>string sender_id = 3;</code>
-   * @param value The bytes for senderId to set.
-   */
-  private void setSenderIdBytes(
-      com.google.protobuf.ByteString value) {
-    checkByteStringIsUtf8(value);
-    senderId_ = value.toStringUtf8();
-    
+    java.lang.Object ref = senderId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      senderId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int TYPE_ID_FIELD_NUMBER = 4;
-  private java.lang.String typeId_;
+  private volatile java.lang.Object typeId_;
   /**
    * <code>string type_id = 4;</code>
    * @return The typeId.
    */
   @java.lang.Override
   public java.lang.String getTypeId() {
-    return typeId_;
+    java.lang.Object ref = typeId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      typeId_ = s;
+      return s;
+    }
   }
   /**
    * <code>string type_id = 4;</code>
@@ -3426,350 +5447,641 @@ public  final class ZInteract extends
   @java.lang.Override
   public com.google.protobuf.ByteString
       getTypeIdBytes() {
-    return com.google.protobuf.ByteString.copyFromUtf8(typeId_);
-  }
-  /**
-   * <code>string type_id = 4;</code>
-   * @param value The typeId to set.
-   */
-  private void setTypeId(
-      java.lang.String value) {
-    java.lang.Class<?> valueClass = value.getClass();
-  
-    typeId_ = value;
-  }
-  /**
-   * <code>string type_id = 4;</code>
-   */
-  private void clearTypeId() {
-    
-    typeId_ = getDefaultInstance().getTypeId();
-  }
-  /**
-   * <code>string type_id = 4;</code>
-   * @param value The bytes for typeId to set.
-   */
-  private void setTypeIdBytes(
-      com.google.protobuf.ByteString value) {
-    checkByteStringIsUtf8(value);
-    typeId_ = value.toStringUtf8();
-    
+    java.lang.Object ref = typeId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      typeId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int Z_RSU_REGISTRATION_FIELD_NUMBER = 5;
   /**
    * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+   * @return Whether the zRsuRegistration field is set.
    */
   @java.lang.Override
   public boolean hasZRsuRegistration() {
-    return interactionCase_ == 5;
+    return interactionTypeCase_ == 5;
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+   * @return The zRsuRegistration.
    */
   @java.lang.Override
   public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration getZRsuRegistration() {
-    if (interactionCase_ == 5) {
-       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interaction_;
+    if (interactionTypeCase_ == 5) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_;
     }
     return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
    */
-  private void setZRsuRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration value) {
-    value.getClass();
-  interaction_ = value;
-    interactionCase_ = 5;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
-   */
-  private void mergeZRsuRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration value) {
-    value.getClass();
-  if (interactionCase_ == 5 &&
-        interaction_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance()) {
-      interaction_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interaction_)
-          .mergeFrom(value).buildPartial();
-    } else {
-      interaction_ = value;
+  @java.lang.Override
+  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder getZRsuRegistrationOrBuilder() {
+    if (interactionTypeCase_ == 5) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_;
     }
-    interactionCase_ = 5;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
-   */
-  private void clearZRsuRegistration() {
-    if (interactionCase_ == 5) {
-      interactionCase_ = 0;
-      interaction_ = null;
-    }
+    return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
   }
 
   public static final int Z_VEHICLE_UPDATES_FIELD_NUMBER = 6;
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+   * @return Whether the zVehicleUpdates field is set.
    */
   @java.lang.Override
   public boolean hasZVehicleUpdates() {
-    return interactionCase_ == 6;
+    return interactionTypeCase_ == 6;
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+   * @return The zVehicleUpdates.
    */
   @java.lang.Override
   public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates getZVehicleUpdates() {
-    if (interactionCase_ == 6) {
-       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interaction_;
+    if (interactionTypeCase_ == 6) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_;
     }
     return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
    */
-  private void setZVehicleUpdates(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates value) {
-    value.getClass();
-  interaction_ = value;
-    interactionCase_ = 6;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
-   */
-  private void mergeZVehicleUpdates(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates value) {
-    value.getClass();
-  if (interactionCase_ == 6 &&
-        interaction_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance()) {
-      interaction_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interaction_)
-          .mergeFrom(value).buildPartial();
-    } else {
-      interaction_ = value;
+  @java.lang.Override
+  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder getZVehicleUpdatesOrBuilder() {
+    if (interactionTypeCase_ == 6) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_;
     }
-    interactionCase_ = 6;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
-   */
-  private void clearZVehicleUpdates() {
-    if (interactionCase_ == 6) {
-      interactionCase_ = 0;
-      interaction_ = null;
-    }
+    return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
   }
 
   public static final int Z_VEHICLE_REGISTRATION_FIELD_NUMBER = 7;
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+   * @return Whether the zVehicleRegistration field is set.
    */
   @java.lang.Override
   public boolean hasZVehicleRegistration() {
-    return interactionCase_ == 7;
+    return interactionTypeCase_ == 7;
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+   * @return The zVehicleRegistration.
    */
   @java.lang.Override
   public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration getZVehicleRegistration() {
-    if (interactionCase_ == 7) {
-       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interaction_;
+    if (interactionTypeCase_ == 7) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_;
     }
     return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
    */
-  private void setZVehicleRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration value) {
-    value.getClass();
-  interaction_ = value;
-    interactionCase_ = 7;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
-   */
-  private void mergeZVehicleRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration value) {
-    value.getClass();
-  if (interactionCase_ == 7 &&
-        interaction_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance()) {
-      interaction_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interaction_)
-          .mergeFrom(value).buildPartial();
-    } else {
-      interaction_ = value;
+  @java.lang.Override
+  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder getZVehicleRegistrationOrBuilder() {
+    if (interactionTypeCase_ == 7) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_;
     }
-    interactionCase_ = 7;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
-   */
-  private void clearZVehicleRegistration() {
-    if (interactionCase_ == 7) {
-      interactionCase_ = 0;
-      interaction_ = null;
-    }
+    return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
   }
 
   public static final int Z_V2X_MESSAGE_RECEPTION_FIELD_NUMBER = 8;
   /**
    * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+   * @return Whether the zV2xMessageReception field is set.
    */
   @java.lang.Override
   public boolean hasZV2XMessageReception() {
-    return interactionCase_ == 8;
+    return interactionTypeCase_ == 8;
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+   * @return The zV2xMessageReception.
    */
   @java.lang.Override
   public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception getZV2XMessageReception() {
-    if (interactionCase_ == 8) {
-       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interaction_;
+    if (interactionTypeCase_ == 8) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_;
     }
     return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
   }
   /**
    * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
    */
-  private void setZV2XMessageReception(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception value) {
-    value.getClass();
-  interaction_ = value;
-    interactionCase_ = 8;
-  }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
-   */
-  private void mergeZV2XMessageReception(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception value) {
-    value.getClass();
-  if (interactionCase_ == 8 &&
-        interaction_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance()) {
-      interaction_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interaction_)
-          .mergeFrom(value).buildPartial();
-    } else {
-      interaction_ = value;
+  @java.lang.Override
+  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder getZV2XMessageReceptionOrBuilder() {
+    if (interactionTypeCase_ == 8) {
+       return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_;
     }
-    interactionCase_ = 8;
+    return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
   }
-  /**
-   * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
-   */
-  private void clearZV2XMessageReception() {
-    if (interactionCase_ == 8) {
-      interactionCase_ = 0;
-      interaction_ = null;
+
+  private byte memoizedIsInitialized = -1;
+  @java.lang.Override
+  public final boolean isInitialized() {
+    byte isInitialized = memoizedIsInitialized;
+    if (isInitialized == 1) return true;
+    if (isInitialized == 0) return false;
+
+    memoizedIsInitialized = 1;
+    return true;
+  }
+
+  @java.lang.Override
+  public void writeTo(com.google.protobuf.CodedOutputStream output)
+                      throws java.io.IOException {
+    if (time_ != 0L) {
+      output.writeInt64(1, time_);
     }
+    if (id_ != 0L) {
+      output.writeInt64(2, id_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(senderId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, senderId_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(typeId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, typeId_);
+    }
+    if (interactionTypeCase_ == 5) {
+      output.writeMessage(5, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_);
+    }
+    if (interactionTypeCase_ == 6) {
+      output.writeMessage(6, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_);
+    }
+    if (interactionTypeCase_ == 7) {
+      output.writeMessage(7, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_);
+    }
+    if (interactionTypeCase_ == 8) {
+      output.writeMessage(8, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_);
+    }
+    unknownFields.writeTo(output);
+  }
+
+  @java.lang.Override
+  public int getSerializedSize() {
+    int size = memoizedSize;
+    if (size != -1) return size;
+
+    size = 0;
+    if (time_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(1, time_);
+    }
+    if (id_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(2, id_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(senderId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, senderId_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(typeId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, typeId_);
+    }
+    if (interactionTypeCase_ == 5) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(5, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_);
+    }
+    if (interactionTypeCase_ == 6) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(6, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_);
+    }
+    if (interactionTypeCase_ == 7) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(7, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_);
+    }
+    if (interactionTypeCase_ == 8) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(8, (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_);
+    }
+    size += unknownFields.getSerializedSize();
+    memoizedSize = size;
+    return size;
+  }
+
+  @java.lang.Override
+  public boolean equals(final java.lang.Object obj) {
+    if (obj == this) {
+     return true;
+    }
+    if (!(obj instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract)) {
+      return super.equals(obj);
+    }
+    org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract other = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract) obj;
+
+    if (getTime()
+        != other.getTime()) return false;
+    if (getId()
+        != other.getId()) return false;
+    if (!getSenderId()
+        .equals(other.getSenderId())) return false;
+    if (!getTypeId()
+        .equals(other.getTypeId())) return false;
+    if (!getInteractionTypeCase().equals(other.getInteractionTypeCase())) return false;
+    switch (interactionTypeCase_) {
+      case 5:
+        if (!getZRsuRegistration()
+            .equals(other.getZRsuRegistration())) return false;
+        break;
+      case 6:
+        if (!getZVehicleUpdates()
+            .equals(other.getZVehicleUpdates())) return false;
+        break;
+      case 7:
+        if (!getZVehicleRegistration()
+            .equals(other.getZVehicleRegistration())) return false;
+        break;
+      case 8:
+        if (!getZV2XMessageReception()
+            .equals(other.getZV2XMessageReception())) return false;
+        break;
+      case 0:
+      default:
+    }
+    if (!unknownFields.equals(other.unknownFields)) return false;
+    return true;
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    if (memoizedHashCode != 0) {
+      return memoizedHashCode;
+    }
+    int hash = 41;
+    hash = (19 * hash) + getDescriptor().hashCode();
+    hash = (37 * hash) + TIME_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getTime());
+    hash = (37 * hash) + ID_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getId());
+    hash = (37 * hash) + SENDER_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getSenderId().hashCode();
+    hash = (37 * hash) + TYPE_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getTypeId().hashCode();
+    switch (interactionTypeCase_) {
+      case 5:
+        hash = (37 * hash) + Z_RSU_REGISTRATION_FIELD_NUMBER;
+        hash = (53 * hash) + getZRsuRegistration().hashCode();
+        break;
+      case 6:
+        hash = (37 * hash) + Z_VEHICLE_UPDATES_FIELD_NUMBER;
+        hash = (53 * hash) + getZVehicleUpdates().hashCode();
+        break;
+      case 7:
+        hash = (37 * hash) + Z_VEHICLE_REGISTRATION_FIELD_NUMBER;
+        hash = (53 * hash) + getZVehicleRegistration().hashCode();
+        break;
+      case 8:
+        hash = (37 * hash) + Z_V2X_MESSAGE_RECEPTION_FIELD_NUMBER;
+        hash = (53 * hash) + getZV2XMessageReception().hashCode();
+        break;
+      case 0:
+      default:
+    }
+    hash = (29 * hash) + unknownFields.hashCode();
+    memoizedHashCode = hash;
+    return hash;
   }
 
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, data);
+    return PARSER.parseFrom(data);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, data, extensionRegistry);
+    return PARSER.parseFrom(data, extensionRegistry);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, data);
+    return PARSER.parseFrom(data);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, data, extensionRegistry);
+    return PARSER.parseFrom(data, extensionRegistry);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, data);
+    return PARSER.parseFrom(data);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, data, extensionRegistry);
+    return PARSER.parseFrom(data, extensionRegistry);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(java.io.InputStream input)
       throws java.io.IOException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, input);
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, input, extensionRegistry);
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input, extensionRegistry);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
-    return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    return com.google.protobuf.GeneratedMessageV3
+        .parseDelimitedWithIOException(PARSER, input);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
-    return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    return com.google.protobuf.GeneratedMessageV3
+        .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, input);
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input);
   }
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
-    return com.google.protobuf.GeneratedMessageLite.parseFrom(
-        DEFAULT_INSTANCE, input, extensionRegistry);
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
+  @java.lang.Override
+  public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
-    return (Builder) DEFAULT_INSTANCE.createBuilder();
+    return DEFAULT_INSTANCE.toBuilder();
   }
   public static Builder newBuilder(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract prototype) {
-    return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+  }
+  @java.lang.Override
+  public Builder toBuilder() {
+    return this == DEFAULT_INSTANCE
+        ? new Builder() : new Builder().mergeFrom(this);
   }
 
+  @java.lang.Override
+  protected Builder newBuilderForType(
+      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+    Builder builder = new Builder(parent);
+    return builder;
+  }
   /**
    * Protobuf type {@code ZInteractSpace.ZInteract}
    */
   public static final class Builder extends
-      com.google.protobuf.GeneratedMessageLite.Builder<
-        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract, Builder> implements
+      com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:ZInteractSpace.ZInteract)
       org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractOrBuilder {
-    // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.ZInteract.newBuilder()
-    private Builder() {
-      super(DEFAULT_INSTANCE);
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_descriptor;
     }
 
     @java.lang.Override
-    public InteractionCase
-        getInteractionCase() {
-      return instance.getInteractionCase();
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.class, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.Builder.class);
     }
 
-    public Builder clearInteraction() {
-      copyOnWrite();
-      instance.clearInteraction();
+    // Construct using org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.newBuilder()
+    private Builder() {
+      maybeForceBuilderInitialization();
+    }
+
+    private Builder(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      super(parent);
+      maybeForceBuilderInitialization();
+    }
+    private void maybeForceBuilderInitialization() {
+      if (com.google.protobuf.GeneratedMessageV3
+              .alwaysUseFieldBuilders) {
+      }
+    }
+    @java.lang.Override
+    public Builder clear() {
+      super.clear();
+      time_ = 0L;
+
+      id_ = 0L;
+
+      senderId_ = "";
+
+      typeId_ = "";
+
+      interactionTypeCase_ = 0;
+      interactionType_ = null;
+      return this;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.Descriptor
+        getDescriptorForType() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteractProtos.internal_static_ZInteractSpace_ZInteract_descriptor;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract getDefaultInstanceForType() {
+      return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.getDefaultInstance();
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract build() {
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract result = buildPartial();
+      if (!result.isInitialized()) {
+        throw newUninitializedMessageException(result);
+      }
+      return result;
+    }
+
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract buildPartial() {
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract result = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract(this);
+      result.time_ = time_;
+      result.id_ = id_;
+      result.senderId_ = senderId_;
+      result.typeId_ = typeId_;
+      if (interactionTypeCase_ == 5) {
+        if (zRsuRegistrationBuilder_ == null) {
+          result.interactionType_ = interactionType_;
+        } else {
+          result.interactionType_ = zRsuRegistrationBuilder_.build();
+        }
+      }
+      if (interactionTypeCase_ == 6) {
+        if (zVehicleUpdatesBuilder_ == null) {
+          result.interactionType_ = interactionType_;
+        } else {
+          result.interactionType_ = zVehicleUpdatesBuilder_.build();
+        }
+      }
+      if (interactionTypeCase_ == 7) {
+        if (zVehicleRegistrationBuilder_ == null) {
+          result.interactionType_ = interactionType_;
+        } else {
+          result.interactionType_ = zVehicleRegistrationBuilder_.build();
+        }
+      }
+      if (interactionTypeCase_ == 8) {
+        if (zV2XMessageReceptionBuilder_ == null) {
+          result.interactionType_ = interactionType_;
+        } else {
+          result.interactionType_ = zV2XMessageReceptionBuilder_.build();
+        }
+      }
+      result.interactionTypeCase_ = interactionTypeCase_;
+      onBuilt();
+      return result;
+    }
+
+    @java.lang.Override
+    public Builder clone() {
+      return super.clone();
+    }
+    @java.lang.Override
+    public Builder setField(
+        com.google.protobuf.Descriptors.FieldDescriptor field,
+        java.lang.Object value) {
+      return super.setField(field, value);
+    }
+    @java.lang.Override
+    public Builder clearField(
+        com.google.protobuf.Descriptors.FieldDescriptor field) {
+      return super.clearField(field);
+    }
+    @java.lang.Override
+    public Builder clearOneof(
+        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      return super.clearOneof(oneof);
+    }
+    @java.lang.Override
+    public Builder setRepeatedField(
+        com.google.protobuf.Descriptors.FieldDescriptor field,
+        int index, java.lang.Object value) {
+      return super.setRepeatedField(field, index, value);
+    }
+    @java.lang.Override
+    public Builder addRepeatedField(
+        com.google.protobuf.Descriptors.FieldDescriptor field,
+        java.lang.Object value) {
+      return super.addRepeatedField(field, value);
+    }
+    @java.lang.Override
+    public Builder mergeFrom(com.google.protobuf.Message other) {
+      if (other instanceof org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract) {
+        return mergeFrom((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract)other);
+      } else {
+        super.mergeFrom(other);
+        return this;
+      }
+    }
+
+    public Builder mergeFrom(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract other) {
+      if (other == org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.getDefaultInstance()) return this;
+      if (other.getTime() != 0L) {
+        setTime(other.getTime());
+      }
+      if (other.getId() != 0L) {
+        setId(other.getId());
+      }
+      if (!other.getSenderId().isEmpty()) {
+        senderId_ = other.senderId_;
+        onChanged();
+      }
+      if (!other.getTypeId().isEmpty()) {
+        typeId_ = other.typeId_;
+        onChanged();
+      }
+      switch (other.getInteractionTypeCase()) {
+        case Z_RSU_REGISTRATION: {
+          mergeZRsuRegistration(other.getZRsuRegistration());
+          break;
+        }
+        case Z_VEHICLE_UPDATES: {
+          mergeZVehicleUpdates(other.getZVehicleUpdates());
+          break;
+        }
+        case Z_VEHICLE_REGISTRATION: {
+          mergeZVehicleRegistration(other.getZVehicleRegistration());
+          break;
+        }
+        case Z_V2X_MESSAGE_RECEPTION: {
+          mergeZV2XMessageReception(other.getZV2XMessageReception());
+          break;
+        }
+        case INTERACTIONTYPE_NOT_SET: {
+          break;
+        }
+      }
+      this.mergeUnknownFields(other.unknownFields);
+      onChanged();
+      return this;
+    }
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      return true;
+    }
+
+    @java.lang.Override
+    public Builder mergeFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract parsedMessage = null;
+      try {
+        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        parsedMessage = (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract) e.getUnfinishedMessage();
+        throw e.unwrapIOException();
+      } finally {
+        if (parsedMessage != null) {
+          mergeFrom(parsedMessage);
+        }
+      }
+      return this;
+    }
+    private int interactionTypeCase_ = 0;
+    private java.lang.Object interactionType_;
+    public InteractionTypeCase
+        getInteractionTypeCase() {
+      return InteractionTypeCase.forNumber(
+          interactionTypeCase_);
+    }
+
+    public Builder clearInteractionType() {
+      interactionTypeCase_ = 0;
+      interactionType_ = null;
+      onChanged();
       return this;
     }
 
 
+    private long time_ ;
     /**
      * <code>int64 time = 1;</code>
      * @return The time.
      */
     @java.lang.Override
     public long getTime() {
-      return instance.getTime();
+      return time_;
     }
     /**
      * <code>int64 time = 1;</code>
@@ -3777,8 +6089,9 @@ public  final class ZInteract extends
      * @return This builder for chaining.
      */
     public Builder setTime(long value) {
-      copyOnWrite();
-      instance.setTime(value);
+      
+      time_ = value;
+      onChanged();
       return this;
     }
     /**
@@ -3786,18 +6099,20 @@ public  final class ZInteract extends
      * @return This builder for chaining.
      */
     public Builder clearTime() {
-      copyOnWrite();
-      instance.clearTime();
+      
+      time_ = 0L;
+      onChanged();
       return this;
     }
 
+    private long id_ ;
     /**
      * <code>int64 id = 2;</code>
      * @return The id.
      */
     @java.lang.Override
     public long getId() {
-      return instance.getId();
+      return id_;
     }
     /**
      * <code>int64 id = 2;</code>
@@ -3805,8 +6120,9 @@ public  final class ZInteract extends
      * @return This builder for chaining.
      */
     public Builder setId(long value) {
-      copyOnWrite();
-      instance.setId(value);
+      
+      id_ = value;
+      onChanged();
       return this;
     }
     /**
@@ -3814,27 +6130,45 @@ public  final class ZInteract extends
      * @return This builder for chaining.
      */
     public Builder clearId() {
-      copyOnWrite();
-      instance.clearId();
+      
+      id_ = 0L;
+      onChanged();
       return this;
     }
 
+    private java.lang.Object senderId_ = "";
     /**
      * <code>string sender_id = 3;</code>
      * @return The senderId.
      */
-    @java.lang.Override
     public java.lang.String getSenderId() {
-      return instance.getSenderId();
+      java.lang.Object ref = senderId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        senderId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
      * <code>string sender_id = 3;</code>
      * @return The bytes for senderId.
      */
-    @java.lang.Override
     public com.google.protobuf.ByteString
         getSenderIdBytes() {
-      return instance.getSenderIdBytes();
+      java.lang.Object ref = senderId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        senderId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
     /**
      * <code>string sender_id = 3;</code>
@@ -3843,8 +6177,12 @@ public  final class ZInteract extends
      */
     public Builder setSenderId(
         java.lang.String value) {
-      copyOnWrite();
-      instance.setSenderId(value);
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      senderId_ = value;
+      onChanged();
       return this;
     }
     /**
@@ -3852,8 +6190,9 @@ public  final class ZInteract extends
      * @return This builder for chaining.
      */
     public Builder clearSenderId() {
-      copyOnWrite();
-      instance.clearSenderId();
+      
+      senderId_ = getDefaultInstance().getSenderId();
+      onChanged();
       return this;
     }
     /**
@@ -3863,27 +6202,49 @@ public  final class ZInteract extends
      */
     public Builder setSenderIdBytes(
         com.google.protobuf.ByteString value) {
-      copyOnWrite();
-      instance.setSenderIdBytes(value);
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      senderId_ = value;
+      onChanged();
       return this;
     }
 
+    private java.lang.Object typeId_ = "";
     /**
      * <code>string type_id = 4;</code>
      * @return The typeId.
      */
-    @java.lang.Override
     public java.lang.String getTypeId() {
-      return instance.getTypeId();
+      java.lang.Object ref = typeId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        typeId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
      * <code>string type_id = 4;</code>
      * @return The bytes for typeId.
      */
-    @java.lang.Override
     public com.google.protobuf.ByteString
         getTypeIdBytes() {
-      return instance.getTypeIdBytes();
+      java.lang.Object ref = typeId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        typeId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
     /**
      * <code>string type_id = 4;</code>
@@ -3892,8 +6253,12 @@ public  final class ZInteract extends
      */
     public Builder setTypeId(
         java.lang.String value) {
-      copyOnWrite();
-      instance.setTypeId(value);
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      typeId_ = value;
+      onChanged();
       return this;
     }
     /**
@@ -3901,8 +6266,9 @@ public  final class ZInteract extends
      * @return This builder for chaining.
      */
     public Builder clearTypeId() {
-      copyOnWrite();
-      instance.clearTypeId();
+      
+      typeId_ = getDefaultInstance().getTypeId();
+      onChanged();
       return this;
     }
     /**
@@ -3912,31 +6278,58 @@ public  final class ZInteract extends
      */
     public Builder setTypeIdBytes(
         com.google.protobuf.ByteString value) {
-      copyOnWrite();
-      instance.setTypeIdBytes(value);
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      typeId_ = value;
+      onChanged();
       return this;
     }
 
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder> zRsuRegistrationBuilder_;
     /**
      * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+     * @return Whether the zRsuRegistration field is set.
      */
     @java.lang.Override
     public boolean hasZRsuRegistration() {
-      return instance.hasZRsuRegistration();
+      return interactionTypeCase_ == 5;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+     * @return The zRsuRegistration.
      */
     @java.lang.Override
     public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration getZRsuRegistration() {
-      return instance.getZRsuRegistration();
+      if (zRsuRegistrationBuilder_ == null) {
+        if (interactionTypeCase_ == 5) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
+      } else {
+        if (interactionTypeCase_ == 5) {
+          return zRsuRegistrationBuilder_.getMessage();
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
+      }
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
      */
     public Builder setZRsuRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration value) {
-      copyOnWrite();
-      instance.setZRsuRegistration(value);
+      if (zRsuRegistrationBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        interactionType_ = value;
+        onChanged();
+      } else {
+        zRsuRegistrationBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 5;
       return this;
     }
     /**
@@ -3944,47 +6337,140 @@ public  final class ZInteract extends
      */
     public Builder setZRsuRegistration(
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder builderForValue) {
-      copyOnWrite();
-      instance.setZRsuRegistration(builderForValue.build());
+      if (zRsuRegistrationBuilder_ == null) {
+        interactionType_ = builderForValue.build();
+        onChanged();
+      } else {
+        zRsuRegistrationBuilder_.setMessage(builderForValue.build());
+      }
+      interactionTypeCase_ = 5;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
      */
     public Builder mergeZRsuRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration value) {
-      copyOnWrite();
-      instance.mergeZRsuRegistration(value);
+      if (zRsuRegistrationBuilder_ == null) {
+        if (interactionTypeCase_ == 5 &&
+            interactionType_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance()) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          interactionType_ = value;
+        }
+        onChanged();
+      } else {
+        if (interactionTypeCase_ == 5) {
+          zRsuRegistrationBuilder_.mergeFrom(value);
+        }
+        zRsuRegistrationBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 5;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
      */
     public Builder clearZRsuRegistration() {
-      copyOnWrite();
-      instance.clearZRsuRegistration();
+      if (zRsuRegistrationBuilder_ == null) {
+        if (interactionTypeCase_ == 5) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+          onChanged();
+        }
+      } else {
+        if (interactionTypeCase_ == 5) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+        }
+        zRsuRegistrationBuilder_.clear();
+      }
       return this;
     }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+     */
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder getZRsuRegistrationBuilder() {
+      return getZRsuRegistrationFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+     */
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder getZRsuRegistrationOrBuilder() {
+      if ((interactionTypeCase_ == 5) && (zRsuRegistrationBuilder_ != null)) {
+        return zRsuRegistrationBuilder_.getMessageOrBuilder();
+      } else {
+        if (interactionTypeCase_ == 5) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder> 
+        getZRsuRegistrationFieldBuilder() {
+      if (zRsuRegistrationBuilder_ == null) {
+        if (!(interactionTypeCase_ == 5)) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.getDefaultInstance();
+        }
+        zRsuRegistrationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder>(
+                (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration) interactionType_,
+                getParentForChildren(),
+                isClean());
+        interactionType_ = null;
+      }
+      interactionTypeCase_ = 5;
+      onChanged();;
+      return zRsuRegistrationBuilder_;
+    }
 
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder> zVehicleUpdatesBuilder_;
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+     * @return Whether the zVehicleUpdates field is set.
      */
     @java.lang.Override
     public boolean hasZVehicleUpdates() {
-      return instance.hasZVehicleUpdates();
+      return interactionTypeCase_ == 6;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+     * @return The zVehicleUpdates.
      */
     @java.lang.Override
     public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates getZVehicleUpdates() {
-      return instance.getZVehicleUpdates();
+      if (zVehicleUpdatesBuilder_ == null) {
+        if (interactionTypeCase_ == 6) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
+      } else {
+        if (interactionTypeCase_ == 6) {
+          return zVehicleUpdatesBuilder_.getMessage();
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
+      }
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
      */
     public Builder setZVehicleUpdates(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates value) {
-      copyOnWrite();
-      instance.setZVehicleUpdates(value);
+      if (zVehicleUpdatesBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        interactionType_ = value;
+        onChanged();
+      } else {
+        zVehicleUpdatesBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 6;
       return this;
     }
     /**
@@ -3992,47 +6478,140 @@ public  final class ZInteract extends
      */
     public Builder setZVehicleUpdates(
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder builderForValue) {
-      copyOnWrite();
-      instance.setZVehicleUpdates(builderForValue.build());
+      if (zVehicleUpdatesBuilder_ == null) {
+        interactionType_ = builderForValue.build();
+        onChanged();
+      } else {
+        zVehicleUpdatesBuilder_.setMessage(builderForValue.build());
+      }
+      interactionTypeCase_ = 6;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
      */
     public Builder mergeZVehicleUpdates(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates value) {
-      copyOnWrite();
-      instance.mergeZVehicleUpdates(value);
+      if (zVehicleUpdatesBuilder_ == null) {
+        if (interactionTypeCase_ == 6 &&
+            interactionType_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance()) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          interactionType_ = value;
+        }
+        onChanged();
+      } else {
+        if (interactionTypeCase_ == 6) {
+          zVehicleUpdatesBuilder_.mergeFrom(value);
+        }
+        zVehicleUpdatesBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 6;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
      */
     public Builder clearZVehicleUpdates() {
-      copyOnWrite();
-      instance.clearZVehicleUpdates();
+      if (zVehicleUpdatesBuilder_ == null) {
+        if (interactionTypeCase_ == 6) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+          onChanged();
+        }
+      } else {
+        if (interactionTypeCase_ == 6) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+        }
+        zVehicleUpdatesBuilder_.clear();
+      }
       return this;
     }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+     */
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder getZVehicleUpdatesBuilder() {
+      return getZVehicleUpdatesFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+     */
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder getZVehicleUpdatesOrBuilder() {
+      if ((interactionTypeCase_ == 6) && (zVehicleUpdatesBuilder_ != null)) {
+        return zVehicleUpdatesBuilder_.getMessageOrBuilder();
+      } else {
+        if (interactionTypeCase_ == 6) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder> 
+        getZVehicleUpdatesFieldBuilder() {
+      if (zVehicleUpdatesBuilder_ == null) {
+        if (!(interactionTypeCase_ == 6)) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.getDefaultInstance();
+        }
+        zVehicleUpdatesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder>(
+                (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates) interactionType_,
+                getParentForChildren(),
+                isClean());
+        interactionType_ = null;
+      }
+      interactionTypeCase_ = 6;
+      onChanged();;
+      return zVehicleUpdatesBuilder_;
+    }
 
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder> zVehicleRegistrationBuilder_;
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+     * @return Whether the zVehicleRegistration field is set.
      */
     @java.lang.Override
     public boolean hasZVehicleRegistration() {
-      return instance.hasZVehicleRegistration();
+      return interactionTypeCase_ == 7;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+     * @return The zVehicleRegistration.
      */
     @java.lang.Override
     public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration getZVehicleRegistration() {
-      return instance.getZVehicleRegistration();
+      if (zVehicleRegistrationBuilder_ == null) {
+        if (interactionTypeCase_ == 7) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
+      } else {
+        if (interactionTypeCase_ == 7) {
+          return zVehicleRegistrationBuilder_.getMessage();
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
+      }
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
      */
     public Builder setZVehicleRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration value) {
-      copyOnWrite();
-      instance.setZVehicleRegistration(value);
+      if (zVehicleRegistrationBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        interactionType_ = value;
+        onChanged();
+      } else {
+        zVehicleRegistrationBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 7;
       return this;
     }
     /**
@@ -4040,47 +6619,140 @@ public  final class ZInteract extends
      */
     public Builder setZVehicleRegistration(
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder builderForValue) {
-      copyOnWrite();
-      instance.setZVehicleRegistration(builderForValue.build());
+      if (zVehicleRegistrationBuilder_ == null) {
+        interactionType_ = builderForValue.build();
+        onChanged();
+      } else {
+        zVehicleRegistrationBuilder_.setMessage(builderForValue.build());
+      }
+      interactionTypeCase_ = 7;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
      */
     public Builder mergeZVehicleRegistration(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration value) {
-      copyOnWrite();
-      instance.mergeZVehicleRegistration(value);
+      if (zVehicleRegistrationBuilder_ == null) {
+        if (interactionTypeCase_ == 7 &&
+            interactionType_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance()) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          interactionType_ = value;
+        }
+        onChanged();
+      } else {
+        if (interactionTypeCase_ == 7) {
+          zVehicleRegistrationBuilder_.mergeFrom(value);
+        }
+        zVehicleRegistrationBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 7;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
      */
     public Builder clearZVehicleRegistration() {
-      copyOnWrite();
-      instance.clearZVehicleRegistration();
+      if (zVehicleRegistrationBuilder_ == null) {
+        if (interactionTypeCase_ == 7) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+          onChanged();
+        }
+      } else {
+        if (interactionTypeCase_ == 7) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+        }
+        zVehicleRegistrationBuilder_.clear();
+      }
       return this;
     }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+     */
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder getZVehicleRegistrationBuilder() {
+      return getZVehicleRegistrationFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+     */
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder getZVehicleRegistrationOrBuilder() {
+      if ((interactionTypeCase_ == 7) && (zVehicleRegistrationBuilder_ != null)) {
+        return zVehicleRegistrationBuilder_.getMessageOrBuilder();
+      } else {
+        if (interactionTypeCase_ == 7) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder> 
+        getZVehicleRegistrationFieldBuilder() {
+      if (zVehicleRegistrationBuilder_ == null) {
+        if (!(interactionTypeCase_ == 7)) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.getDefaultInstance();
+        }
+        zVehicleRegistrationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder>(
+                (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration) interactionType_,
+                getParentForChildren(),
+                isClean());
+        interactionType_ = null;
+      }
+      interactionTypeCase_ = 7;
+      onChanged();;
+      return zVehicleRegistrationBuilder_;
+    }
 
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder> zV2XMessageReceptionBuilder_;
     /**
      * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+     * @return Whether the zV2xMessageReception field is set.
      */
     @java.lang.Override
     public boolean hasZV2XMessageReception() {
-      return instance.hasZV2XMessageReception();
+      return interactionTypeCase_ == 8;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+     * @return The zV2xMessageReception.
      */
     @java.lang.Override
     public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception getZV2XMessageReception() {
-      return instance.getZV2XMessageReception();
+      if (zV2XMessageReceptionBuilder_ == null) {
+        if (interactionTypeCase_ == 8) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
+      } else {
+        if (interactionTypeCase_ == 8) {
+          return zV2XMessageReceptionBuilder_.getMessage();
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
+      }
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
      */
     public Builder setZV2XMessageReception(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception value) {
-      copyOnWrite();
-      instance.setZV2XMessageReception(value);
+      if (zV2XMessageReceptionBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        interactionType_ = value;
+        onChanged();
+      } else {
+        zV2XMessageReceptionBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 8;
       return this;
     }
     /**
@@ -4088,108 +6760,147 @@ public  final class ZInteract extends
      */
     public Builder setZV2XMessageReception(
         org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder builderForValue) {
-      copyOnWrite();
-      instance.setZV2XMessageReception(builderForValue.build());
+      if (zV2XMessageReceptionBuilder_ == null) {
+        interactionType_ = builderForValue.build();
+        onChanged();
+      } else {
+        zV2XMessageReceptionBuilder_.setMessage(builderForValue.build());
+      }
+      interactionTypeCase_ = 8;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
      */
     public Builder mergeZV2XMessageReception(org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception value) {
-      copyOnWrite();
-      instance.mergeZV2XMessageReception(value);
+      if (zV2XMessageReceptionBuilder_ == null) {
+        if (interactionTypeCase_ == 8 &&
+            interactionType_ != org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance()) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.newBuilder((org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          interactionType_ = value;
+        }
+        onChanged();
+      } else {
+        if (interactionTypeCase_ == 8) {
+          zV2XMessageReceptionBuilder_.mergeFrom(value);
+        }
+        zV2XMessageReceptionBuilder_.setMessage(value);
+      }
+      interactionTypeCase_ = 8;
       return this;
     }
     /**
      * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
      */
     public Builder clearZV2XMessageReception() {
-      copyOnWrite();
-      instance.clearZV2XMessageReception();
+      if (zV2XMessageReceptionBuilder_ == null) {
+        if (interactionTypeCase_ == 8) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+          onChanged();
+        }
+      } else {
+        if (interactionTypeCase_ == 8) {
+          interactionTypeCase_ = 0;
+          interactionType_ = null;
+        }
+        zV2XMessageReceptionBuilder_.clear();
+      }
       return this;
     }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+     */
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder getZV2XMessageReceptionBuilder() {
+      return getZV2XMessageReceptionFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+     */
+    @java.lang.Override
+    public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder getZV2XMessageReceptionOrBuilder() {
+      if ((interactionTypeCase_ == 8) && (zV2XMessageReceptionBuilder_ != null)) {
+        return zV2XMessageReceptionBuilder_.getMessageOrBuilder();
+      } else {
+        if (interactionTypeCase_ == 8) {
+          return (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_;
+        }
+        return org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder> 
+        getZV2XMessageReceptionFieldBuilder() {
+      if (zV2XMessageReceptionBuilder_ == null) {
+        if (!(interactionTypeCase_ == 8)) {
+          interactionType_ = org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.getDefaultInstance();
+        }
+        zV2XMessageReceptionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.Builder, org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder>(
+                (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception) interactionType_,
+                getParentForChildren(),
+                isClean());
+        interactionType_ = null;
+      }
+      interactionTypeCase_ = 8;
+      onChanged();;
+      return zV2XMessageReceptionBuilder_;
+    }
+    @java.lang.Override
+    public final Builder setUnknownFields(
+        final com.google.protobuf.UnknownFieldSet unknownFields) {
+      return super.setUnknownFields(unknownFields);
+    }
+
+    @java.lang.Override
+    public final Builder mergeUnknownFields(
+        final com.google.protobuf.UnknownFieldSet unknownFields) {
+      return super.mergeUnknownFields(unknownFields);
+    }
+
 
     // @@protoc_insertion_point(builder_scope:ZInteractSpace.ZInteract)
   }
-  @java.lang.Override
-  @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-  protected final java.lang.Object dynamicMethod(
-      com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-      java.lang.Object arg0, java.lang.Object arg1) {
-    switch (method) {
-      case NEW_MUTABLE_INSTANCE: {
-        return new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract();
-      }
-      case NEW_BUILDER: {
-        return new Builder();
-      }
-      case BUILD_MESSAGE_INFO: {
-          java.lang.Object[] objects = new java.lang.Object[] {
-            "interaction_",
-            "interactionCase_",
-            "time_",
-            "id_",
-            "senderId_",
-            "typeId_",
-            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration.class,
-            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates.class,
-            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration.class,
-            org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception.class,
-          };
-          java.lang.String info =
-              "\u0000\b\u0001\u0000\u0001\b\b\u0000\u0000\u0000\u0001\u0002\u0002\u0002\u0003\u0208" +
-              "\u0004\u0208\u0005<\u0000\u0006<\u0000\u0007<\u0000\b<\u0000";
-          return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-      }
-      // fall through
-      case GET_DEFAULT_INSTANCE: {
-        return DEFAULT_INSTANCE;
-      }
-      case GET_PARSER: {
-        com.google.protobuf.Parser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract> parser = PARSER;
-        if (parser == null) {
-          synchronized (org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.class) {
-            parser = PARSER;
-            if (parser == null) {
-              parser =
-                  new DefaultInstanceBasedParser<org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract>(
-                      DEFAULT_INSTANCE);
-              PARSER = parser;
-            }
-          }
-        }
-        return parser;
-    }
-    case GET_MEMOIZED_IS_INITIALIZED: {
-      return (byte) 1;
-    }
-    case SET_MEMOIZED_IS_INITIALIZED: {
-      return null;
-    }
-    }
-    throw new UnsupportedOperationException();
-  }
-
 
   // @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteract)
   private static final org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract DEFAULT_INSTANCE;
   static {
-    ZInteract defaultInstance = new ZInteract();
-    // New instances are implicitly immutable so no need to make
-    // immutable.
-    DEFAULT_INSTANCE = defaultInstance;
-    com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-      ZInteract.class, defaultInstance);
+    DEFAULT_INSTANCE = new org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract();
   }
 
   public static org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static volatile com.google.protobuf.Parser<ZInteract> PARSER;
+  private static final com.google.protobuf.Parser<ZInteract>
+      PARSER = new com.google.protobuf.AbstractParser<ZInteract>() {
+    @java.lang.Override
+    public ZInteract parsePartialFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return new ZInteract(input, extensionRegistry);
+    }
+  };
 
   public static com.google.protobuf.Parser<ZInteract> parser() {
-    return DEFAULT_INSTANCE.getParserForType();
+    return PARSER;
   }
+
+  @java.lang.Override
+  public com.google.protobuf.Parser<ZInteract> getParserForType() {
+    return PARSER;
+  }
+
+  @java.lang.Override
+  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract getDefaultInstanceForType() {
+    return DEFAULT_INSTANCE;
+  }
+
 }
 

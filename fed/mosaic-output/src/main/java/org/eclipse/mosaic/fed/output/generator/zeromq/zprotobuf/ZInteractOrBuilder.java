@@ -5,7 +5,7 @@ package org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf;
 
 public interface ZInteractOrBuilder extends
     // @@protoc_insertion_point(interface_extends:ZInteractSpace.ZInteract)
-    com.google.protobuf.MessageLiteOrBuilder {
+    com.google.protobuf.MessageOrBuilder {
 
   /**
    * <code>int64 time = 1;</code>
@@ -53,6 +53,10 @@ public interface ZInteractOrBuilder extends
    * @return The zRsuRegistration.
    */
   org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistration getZRsuRegistration();
+  /**
+   * <code>.ZInteractSpace.ZInteract.ZRsuRegistration z_rsu_registration = 5;</code>
+   */
+  org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZRsuRegistrationOrBuilder getZRsuRegistrationOrBuilder();
 
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
@@ -64,6 +68,10 @@ public interface ZInteractOrBuilder extends
    * @return The zVehicleUpdates.
    */
   org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdates getZVehicleUpdates();
+  /**
+   * <code>.ZInteractSpace.ZInteract.ZVehicleUpdates z_vehicle_updates = 6;</code>
+   */
+  org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleUpdatesOrBuilder getZVehicleUpdatesOrBuilder();
 
   /**
    * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
@@ -75,6 +83,10 @@ public interface ZInteractOrBuilder extends
    * @return The zVehicleRegistration.
    */
   org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistration getZVehicleRegistration();
+  /**
+   * <code>.ZInteractSpace.ZInteract.ZVehicleRegistration z_vehicle_registration = 7;</code>
+   */
+  org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZVehicleRegistrationOrBuilder getZVehicleRegistrationOrBuilder();
 
   /**
    * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
@@ -86,6 +98,10 @@ public interface ZInteractOrBuilder extends
    * @return The zV2xMessageReception.
    */
   org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReception getZV2XMessageReception();
+  /**
+   * <code>.ZInteractSpace.ZInteract.ZV2xMessageReception z_v2x_message_reception = 8;</code>
+   */
+  org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.ZV2xMessageReceptionOrBuilder getZV2XMessageReceptionOrBuilder();
 
-  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.InteractionCase getInteractionCase();
+  public org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract.InteractionTypeCase getInteractionTypeCase();
 }
