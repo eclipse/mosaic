@@ -15,6 +15,21 @@ public final class ZInteractProtos {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ZInteractSpace_ZInteractMinimal_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_ZInteractSpace_ZInteractMinimal_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ZInteractSpace_ZVehicleDataMinimal_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_ZInteractSpace_ZVehicleDataMinimal_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ZInteractSpace_ZVehicleUpdatesMinimal_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_ZInteractSpace_ZVehicleUpdatesMinimal_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_ZInteractSpace_ZInteract_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -54,6 +69,15 @@ public final class ZInteractProtos {
   static {
     java.lang.String[] descriptorData = {
       "\n\025zeromq_interact.proto\022\016ZInteractSpace\"" +
+      "\221\001\n\020ZInteractMinimal\022\014\n\004time\030\001 \001(\003\022\n\n\002id" +
+      "\030\002 \001(\003\022\021\n\tsender_id\030\003 \001(\t\022\017\n\007type_id\030\004 \001" +
+      "(\t\022?\n\017vehicle_updates\030\005 \001(\0132&.ZInteractS" +
+      "pace.ZVehicleUpdatesMinimal\"\201\001\n\023ZVehicle" +
+      "DataMinimal\022\014\n\004name\030\001 \001(\t\022\020\n\010position\030\002 " +
+      "\003(\001\022\017\n\007road_id\030\003 \001(\t\022\020\n\010route_id\030\004 \001(\t\022\r" +
+      "\n\005speed\030\005 \001(\001\022\030\n\020longitudinal_acc\030\006 \001(\001\"" +
+      "N\n\026ZVehicleUpdatesMinimal\0224\n\007updated\030\001 \003" +
+      "(\0132#.ZInteractSpace.ZVehicleDataMinimal\"" +
       "\276\007\n\tZInteract\022\014\n\004time\030\001 \001(\003\022\n\n\002id\030\002 \001(\003\022" +
       "\021\n\tsender_id\030\003 \001(\t\022\017\n\007type_id\030\004 \001(\t\022H\n\022z" +
       "_rsu_registration\030\005 \001(\0132*.ZInteractSpace" +
@@ -86,8 +110,26 @@ public final class ZInteractProtos {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_ZInteractSpace_ZInteract_descriptor =
+    internal_static_ZInteractSpace_ZInteractMinimal_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_ZInteractSpace_ZInteractMinimal_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_ZInteractSpace_ZInteractMinimal_descriptor,
+        new java.lang.String[] { "Time", "Id", "SenderId", "TypeId", "VehicleUpdates", });
+    internal_static_ZInteractSpace_ZVehicleDataMinimal_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_ZInteractSpace_ZVehicleDataMinimal_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_ZInteractSpace_ZVehicleDataMinimal_descriptor,
+        new java.lang.String[] { "Name", "Position", "RoadId", "RouteId", "Speed", "LongitudinalAcc", });
+    internal_static_ZInteractSpace_ZVehicleUpdatesMinimal_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_ZInteractSpace_ZVehicleUpdatesMinimal_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_ZInteractSpace_ZVehicleUpdatesMinimal_descriptor,
+        new java.lang.String[] { "Updated", });
+    internal_static_ZInteractSpace_ZInteract_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_ZInteractSpace_ZInteract_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ZInteractSpace_ZInteract_descriptor,

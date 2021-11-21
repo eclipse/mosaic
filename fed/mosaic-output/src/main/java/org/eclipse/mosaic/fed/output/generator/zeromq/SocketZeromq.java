@@ -41,6 +41,7 @@ import java.lang.Integer;
 import com.google.protobuf.Message;
 import com.google.protobuf.MessageLite;
 
+
 public class SocketZeromq extends AbstractOutputGenerator {
 
     // private final SocketZeromqServer // socketZeromqServer;
@@ -59,17 +60,17 @@ public class SocketZeromq extends AbstractOutputGenerator {
         publisher.send(message.toByteArray(), 0);
     }
 
-    private MessageLite returnMessage(ZUtility utility){
+    private MessageLite returnMessage(ZUtilityMini utility){
         return utility.createZMessageLite();
     }
 
-    private byte[] returnPubTopicByteArray(ZUtility utility){
+    private byte[] returnPubTopicByteArray(ZUtilityMini utility){
         return utility.createPubTopicByteArray();
     }
 
     @Handle
     public void messageInteraction(VehicleUpdates interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -78,7 +79,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -87,7 +88,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(V2xMessageReception interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -96,7 +97,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(VehicleRegistration interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -105,7 +106,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(RsuRegistration interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -114,7 +115,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -124,7 +125,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -133,7 +134,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -142,7 +143,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
@@ -151,7 +152,7 @@ public class SocketZeromq extends AbstractOutputGenerator {
 
     @Handle
     public void messageInteraction(TmcRegistration interaction) throws Exception {
-        ZUtility utility = new ZUtility(interaction);
+        ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
         MessageLite message = returnMessage(utility);
         String topic = utility.createPubTopic();
