@@ -253,10 +253,10 @@ org.leadpony.justify (1.1.0)
  * Source: https://github.com/leadpony/justify
 
 
-Protocol Buffers [Core] (3.8.0)
+Protocol Buffers [Core] (3.18.0)
 
  * License: 3-Clause BSD License
- * Maven artifact: `com.google.protobuf:protobuf-java:3.8.0`
+ * Maven artifact: `com.google.protobuf:protobuf-java:3.18.0`
  * Project: https://developers.google.com/protocol-buffers/protobuf-java/
  * Source: https://github.com/protocolbuffers/protobuf/protobuf-java
 
