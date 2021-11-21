@@ -17,7 +17,7 @@
 package org.eclipse.mosaic.fed.output.generator.zeromq;
 
 import org.eclipse.mosaic.fed.output.ambassador.Handle;
-
+import org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf.ZInteract;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
