@@ -4,6 +4,11 @@
     "description": "Schema describing the JSON file structure for the zeromq configuration.",
     "type": "object",
     "properties": {
+        "port": {
+            "description": "Port to which the broker binds the socket",
+            "type": "string",
+            "default": 5555
+        },
         "internalServicePrefix": { 
             "description": "Internal Service Prefix for Majordomo Message Interface",
             "type": "string",
