@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
+
 package org.eclipse.mosaic.fed.zeromq.ambassador;
 
 import org.eclipse.mosaic.interactions.communication.AdHocCommunicationConfiguration;
@@ -28,13 +43,23 @@ import org.eclipse.mosaic.lib.zeromq.majordomo.MDP;
 import java.util.Arrays;
 
 
-public class ZeromqAmbassador extends AbstractFederateAmbassador {
+public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runnable {
+
+    MajordomoBroker mdpBroker = new MajordomoBroker(true);
+    String brokerPort = "5555";
+    
 
     protected ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
-        //TODO Auto-generated constructor stub
     }
 
+    /**
+     * Runs Majordomo Broker in  Thread
+     */
+    @Override
+    public void run() {
+        mdpBroker.mediate();
+    }
 
     @Override
     public void initialize(final long startTime, final long endTime) throws InternalFederateException {
@@ -47,9 +72,14 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
         try {
             CZeromq configuration = new ObjectInstantiation<>(CZeromq.class).readFile(ambassadorParameter.configuration);
+            brokerPort = configuration.getPort();
         } catch (InstantiationException e) {
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
+
+        
+        String brokerAddress = "tcp://localhost:" + brokerPort;
+        MajordomoWorker mdpWorker = new MajordomoWorker(brokerAddress, "echo", true);
 
         log.info("Initialized Zeromq");
     }
@@ -61,8 +91,6 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
                 this.process((RsuRegistration) interaction);
             }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
-            } else if (interaction.getTypeId().equals(V2xMessageTransmission.TYPE_ID)) {
-                this.process((V2xMessageTransmission) interaction);
             } else {
                 log.warn("Received unknown interaction={} @time={}", interaction.getTypeId(), TIME.format(interaction.getTime()));
             }
@@ -74,7 +102,6 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
     private void process(RsuRegistration interaction) {
         final RsuMapping applicationRsu = interaction.getMapping();
         if (applicationRsu.hasApplication()) {
-            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationRsu.getName(), applicationRsu.getPosition().toCartesian());
             log.info("Added RSU id={} position={} @time={}", applicationRsu.getName(), applicationRsu.getPosition(), TIME.format(interaction.getTime()));
         }
     }
@@ -82,7 +109,7 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
     private void process(VehicleUpdates interaction) {
         for (VehicleData added : interaction.getAdded()) {
-            addOrUpdateVehicle(added);
+            
         }
         for (VehicleData updated : interaction.getUpdated()) {
             if (addOrUpdateVehicle(updated) && log.isTraceEnabled()) {
@@ -94,6 +121,11 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
             removeVehicle(removedName);
             log.info("Removed Vehicle id={} @time={}", removedName, TIME.format(interaction.getTime()));
         }
+    }
+
+    @Override
+    public void finishSimulation() throws InternalFederateException {
+        log.info("Finished simulation");
     }
 
     @Override
