@@ -35,19 +35,28 @@ import org.eclipse.mosaic.lib.objects.mapping.TrafficLightMapping;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 
 import org.eclipse.mosaic.fed.zeromq.config.CZeromq;
+
+import org.zeromq.ZMsg;
 import org.eclipse.mosaic.lib.zeromq.majordomo.MajordomoBroker;
 import org.eclipse.mosaic.lib.zeromq.majordomo.MajordomoWorker;
 import org.eclipse.mosaic.lib.zeromq.majordomo.MajordomoClient;
 import org.eclipse.mosaic.lib.zeromq.majordomo.MDP;
 
+import com.google.flatbuffers.FlatBufferBuilder;
+
+import com.google.gson.Gson;
 import java.util.Arrays;
 
 
 public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runnable {
 
-    MajordomoBroker mdpBroker = new MajordomoBroker(true);
+
+
     String brokerPort = "5555";
-    
+    FlatBufferBuilder fbb = new FlatBufferBuilder();
+    MajordomoBroker mdpBroker = new MajordomoBroker(true);
+    MajordomoWorker mdpWorker;
+
 
     protected ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
@@ -76,10 +85,9 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
         } catch (InstantiationException e) {
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
-
         
         String brokerAddress = "tcp://localhost:" + brokerPort;
-        MajordomoWorker mdpWorker = new MajordomoWorker(brokerAddress, "echo", true);
+        mdpWorker = new MajordomoWorker(brokerAddress, "vehicle_updates", true);
 
         log.info("Initialized Zeromq");
     }
@@ -106,21 +114,16 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
         }
     }
 
-
     private void process(VehicleUpdates interaction) {
-        for (VehicleData added : interaction.getAdded()) {
-            
-        }
-        for (VehicleData updated : interaction.getUpdated()) {
-            if (addOrUpdateVehicle(updated) && log.isTraceEnabled()) {
-                log.trace("Moved Vehicle id={} to position={} @time={}",
-                        updated.getName(), updated.getPosition(), TIME.format(interaction.getTime()));
+            Gson gson = new Gson();
+            String json = gson.toJson(interaction);
+            ZMsg reply = null;
+            while (!Thread.currentThread().isInterrupted()) {
+                ZMsg request = mdpWorker.receive(reply);
+                if (request == null)
+                    break; //Interrupted
+                reply = request; //  Echo is complex :-)
             }
-        }
-        for (final String removedName : interaction.getRemovedNames()) {
-            removeVehicle(removedName);
-            log.info("Removed Vehicle id={} @time={}", removedName, TIME.format(interaction.getTime()));
-        }
     }
 
     @Override
