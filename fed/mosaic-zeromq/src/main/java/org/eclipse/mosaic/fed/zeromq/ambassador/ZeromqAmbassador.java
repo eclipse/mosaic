@@ -70,6 +70,30 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
             throw new InternalFederateException(e);
         }
     }
+
+    private void process(RsuRegistration interaction) {
+        final RsuMapping applicationRsu = interaction.getMapping();
+        if (applicationRsu.hasApplication()) {
+            SimulationEntities.INSTANCE.createOrUpdateOfflineNode(applicationRsu.getName(), applicationRsu.getPosition().toCartesian());
+            log.info("Added RSU id={} position={} @time={}", applicationRsu.getName(), applicationRsu.getPosition(), TIME.format(interaction.getTime()));
+        }
+    }
+
+
+    private void process(VehicleUpdates interaction) {
+        for (VehicleData added : interaction.getAdded()) {
+            addOrUpdateVehicle(added);
+        }
+        for (VehicleData updated : interaction.getUpdated()) {
+            if (addOrUpdateVehicle(updated) && log.isTraceEnabled()) {
+                log.trace("Moved Vehicle id={} to position={} @time={}",
+                        updated.getName(), updated.getPosition(), TIME.format(interaction.getTime()));
+            }
+        }
+        for (final String removedName : interaction.getRemovedNames()) {
+            removeVehicle(removedName);
+            log.info("Removed Vehicle id={} @time={}", removedName, TIME.format(interaction.getTime()));
+        }
     }
 
     @Override
