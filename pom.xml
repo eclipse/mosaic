@@ -59,6 +59,7 @@
         <module>lib/mosaic-objects</module>
         <module>lib/mosaic-routing</module>
         <module>lib/mosaic-utils</module>
+        <module>lib/mosaic-zeromq-rfc</module>
 
         <module>fed/mosaic-application</module>
         <module>fed/mosaic-environment</module>
@@ -69,6 +70,7 @@
         <module>fed/mosaic-output</module>
         <module>fed/mosaic-sns</module>
         <module>fed/mosaic-sumo</module>
+        <module>fed/mosaic-zeromq</module>
 
         <module>test/mosaic-integration-tests</module>
 
@@ -478,7 +480,12 @@
                             <exclude>**/ClientServerChannelProtos.proto</exclude>
                             <exclude>**/ZInteract.java</exclude>
                             <exclude>**/ZInteract.proto</exclude>
-                            <exclude>**/ZInteractOrBuilder.java</exclude>
+                            <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                            <exclude>**/ZVehicleDataMinimal.java</exclude>
+                            <exclude>**/ZInteractMinimal.java</exclude>
+                            <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                            <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                            <exclude>**/ZVehicleUpdatesMinimalOrBuilder.java</exclude>
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -784,6 +791,19 @@
                                         <exclude>**/ZInteract.java</exclude>
                                         <exclude>**/ZInteract.proto</exclude>
                                         <exclude>**/ZInteractOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.proto</exclude>
+                                        <exclude>**/ZInteract.java</exclude>
+                                        <exclude>**/ZInteract.proto</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimal.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimalOrBuilder.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
@@ -815,11 +835,23 @@
                                 <configuration>
                                     <excludes>
                                         <exclude>**/*Protos.java</exclude>
-                                        <exclude>**/protos/**</exclude>
                                         <exclude>**/mosaic-starter/bin/**</exclude>
                                         <exclude>**/ZInteract.java</exclude>
                                         <exclude>**/ZInteract.proto</exclude>
                                         <exclude>**/ZInteractOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.proto</exclude>
+                                        <exclude>**/ZInteract.java</exclude>
+                                        <exclude>**/ZInteract.proto</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimal.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimalOrBuilder.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>

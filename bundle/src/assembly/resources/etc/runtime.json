@@ -223,6 +223,31 @@
                 "VehicleTypesInitialization"
             ],
             "javaClasspathEntries": []
+        },
+        {
+            "id": "zeromq",
+            "classname": "org.eclipse.mosaic.fed.zeromq.ambassador.ZeromqAmbassador",
+            "configuration": "zeromq_config.json",
+            "priority": 50,
+            "host": "local",
+            "port": 0,
+            "deploy": false,
+            "start": false,
+            "subscriptions": [
+                "ChargingStationRegistration",
+                "RsuRegistration",
+                "TrafficLightRegistration",
+                "TrafficSignRegistration",
+                "VehicleRegistration",
+                "VehicleUpdates",
+                "InductionLoopDetectorSubscription",
+                "LaneAreaDetectorSubscription",
+                "TrafficLightSubscription",
+                "V2xMessageRemoval",
+                "V2xMessageReception",
+                "V2xMessageTransmission"
+            ],
+            "javaClasspathEntries": []
         }
     ]
 }
