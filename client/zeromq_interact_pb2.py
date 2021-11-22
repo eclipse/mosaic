@@ -19,10 +19,169 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'\n8org.eclipse.mosaic.fed.output.generator.zeromq.zprotobufB\017ZInteractProtosP\001',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15zeromq_interact.proto\x12\x0eZInteractSpace\"\xbe\x07\n\tZInteract\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\n\n\x02id\x18\x02 \x01(\x03\x12\x11\n\tsender_id\x18\x03 \x01(\t\x12\x0f\n\x07type_id\x18\x04 \x01(\t\x12H\n\x12z_rsu_registration\x18\x05 \x01(\x0b\x32*.ZInteractSpace.ZInteract.ZRsuRegistrationH\x00\x12\x46\n\x11z_vehicle_updates\x18\x06 \x01(\x0b\x32).ZInteractSpace.ZInteract.ZVehicleUpdatesH\x00\x12P\n\x16z_vehicle_registration\x18\x07 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZVehicleRegistrationH\x00\x12Q\n\x17z_v2x_message_reception\x18\x08 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZV2xMessageReceptionH\x00\x1a\x32\n\x10ZRsuRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08position\x18\x02 \x03(\x01\x1a\x88\x01\n\x0cZVehicleData\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08position\x18\x03 \x03(\x01\x12\x0f\n\x07road_id\x18\x04 \x01(\t\x12\x10\n\x08route_id\x18\x05 \x01(\t\x12\r\n\x05speed\x18\x06 \x01(\x01\x12\x18\n\x10longitudinal_acc\x18\x07 \x01(\x01\x1a\x8f\x01\n\x0fZVehicleUpdates\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x35\n\x05\x61\x64\x64\x65\x64\x18\x02 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x12\x37\n\x07updated\x18\x03 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x1aI\n\x14ZVehicleRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05group\x18\x02 \x01(\t\x12\x14\n\x0c\x61pplications\x18\x03 \x03(\t\x1a\x8b\x01\n\x14ZV2xMessageReception\x12\x15\n\rreceiver_name\x18\x01 \x01(\t\x12\x12\n\nmessage_id\x18\x02 \x01(\x03\x12\x11\n\tsend_time\x18\x03 \x01(\x03\x12\x14\n\x0creceive_time\x18\x04 \x01(\x03\x12\x1f\n\x17receive_signal_strength\x18\x05 \x01(\x01\x42\x12\n\x10interaction_typeBM\n8org.eclipse.mosaic.fed.output.generator.zeromq.zprotobufB\x0fZInteractProtosP\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15zeromq_interact.proto\x12\x0eZInteractSpace\"\x91\x01\n\x10ZInteractMinimal\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\n\n\x02id\x18\x02 \x01(\x03\x12\x11\n\tsender_id\x18\x03 \x01(\t\x12\x0f\n\x07type_id\x18\x04 \x01(\t\x12?\n\x0fvehicle_updates\x18\x05 \x01(\x0b\x32&.ZInteractSpace.ZVehicleUpdatesMinimal\"\x81\x01\n\x13ZVehicleDataMinimal\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08position\x18\x02 \x03(\x01\x12\x0f\n\x07road_id\x18\x03 \x01(\t\x12\x10\n\x08route_id\x18\x04 \x01(\t\x12\r\n\x05speed\x18\x05 \x01(\x01\x12\x18\n\x10longitudinal_acc\x18\x06 \x01(\x01\"N\n\x16ZVehicleUpdatesMinimal\x12\x34\n\x07updated\x18\x01 \x03(\x0b\x32#.ZInteractSpace.ZVehicleDataMinimal\"\xbe\x07\n\tZInteract\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\n\n\x02id\x18\x02 \x01(\x03\x12\x11\n\tsender_id\x18\x03 \x01(\t\x12\x0f\n\x07type_id\x18\x04 \x01(\t\x12H\n\x12z_rsu_registration\x18\x05 \x01(\x0b\x32*.ZInteractSpace.ZInteract.ZRsuRegistrationH\x00\x12\x46\n\x11z_vehicle_updates\x18\x06 \x01(\x0b\x32).ZInteractSpace.ZInteract.ZVehicleUpdatesH\x00\x12P\n\x16z_vehicle_registration\x18\x07 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZVehicleRegistrationH\x00\x12Q\n\x17z_v2x_message_reception\x18\x08 \x01(\x0b\x32..ZInteractSpace.ZInteract.ZV2xMessageReceptionH\x00\x1a\x32\n\x10ZRsuRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08position\x18\x02 \x03(\x01\x1a\x88\x01\n\x0cZVehicleData\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08position\x18\x03 \x03(\x01\x12\x0f\n\x07road_id\x18\x04 \x01(\t\x12\x10\n\x08route_id\x18\x05 \x01(\t\x12\r\n\x05speed\x18\x06 \x01(\x01\x12\x18\n\x10longitudinal_acc\x18\x07 \x01(\x01\x1a\x8f\x01\n\x0fZVehicleUpdates\x12\x0c\n\x04time\x18\x01 \x01(\x03\x12\x35\n\x05\x61\x64\x64\x65\x64\x18\x02 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x12\x37\n\x07updated\x18\x03 \x03(\x0b\x32&.ZInteractSpace.ZInteract.ZVehicleData\x1aI\n\x14ZVehicleRegistration\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05group\x18\x02 \x01(\t\x12\x14\n\x0c\x61pplications\x18\x03 \x03(\t\x1a\x8b\x01\n\x14ZV2xMessageReception\x12\x15\n\rreceiver_name\x18\x01 \x01(\t\x12\x12\n\nmessage_id\x18\x02 \x01(\x03\x12\x11\n\tsend_time\x18\x03 \x01(\x03\x12\x14\n\x0creceive_time\x18\x04 \x01(\x03\x12\x1f\n\x17receive_signal_strength\x18\x05 \x01(\x01\x42\x12\n\x10interaction_typeBM\n8org.eclipse.mosaic.fed.output.generator.zeromq.zprotobufB\x0fZInteractProtosP\x01\x62\x06proto3'
 )
 
 
+
+
+_ZINTERACTMINIMAL = _descriptor.Descriptor(
+  name='ZInteractMinimal',
+  full_name='ZInteractSpace.ZInteractMinimal',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='time', full_name='ZInteractSpace.ZInteractMinimal.time', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='ZInteractSpace.ZInteractMinimal.id', index=1,
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='sender_id', full_name='ZInteractSpace.ZInteractMinimal.sender_id', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='type_id', full_name='ZInteractSpace.ZInteractMinimal.type_id', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='vehicle_updates', full_name='ZInteractSpace.ZInteractMinimal.vehicle_updates', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=42,
+  serialized_end=187,
+)
+
+
+_ZVEHICLEDATAMINIMAL = _descriptor.Descriptor(
+  name='ZVehicleDataMinimal',
+  full_name='ZInteractSpace.ZVehicleDataMinimal',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='ZInteractSpace.ZVehicleDataMinimal.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='position', full_name='ZInteractSpace.ZVehicleDataMinimal.position', index=1,
+      number=2, type=1, cpp_type=5, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='road_id', full_name='ZInteractSpace.ZVehicleDataMinimal.road_id', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='route_id', full_name='ZInteractSpace.ZVehicleDataMinimal.route_id', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='speed', full_name='ZInteractSpace.ZVehicleDataMinimal.speed', index=4,
+      number=5, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='longitudinal_acc', full_name='ZInteractSpace.ZVehicleDataMinimal.longitudinal_acc', index=5,
+      number=6, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=190,
+  serialized_end=319,
+)
+
+
+_ZVEHICLEUPDATESMINIMAL = _descriptor.Descriptor(
+  name='ZVehicleUpdatesMinimal',
+  full_name='ZInteractSpace.ZVehicleUpdatesMinimal',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='updated', full_name='ZInteractSpace.ZVehicleUpdatesMinimal.updated', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=321,
+  serialized_end=399,
+)
 
 
 _ZINTERACT_ZRSUREGISTRATION = _descriptor.Descriptor(
@@ -59,8 +218,8 @@ _ZINTERACT_ZRSUREGISTRATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=478,
+  serialized_start=788,
+  serialized_end=838,
 )
 
 _ZINTERACT_ZVEHICLEDATA = _descriptor.Descriptor(
@@ -132,8 +291,8 @@ _ZINTERACT_ZVEHICLEDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=481,
-  serialized_end=617,
+  serialized_start=841,
+  serialized_end=977,
 )
 
 _ZINTERACT_ZVEHICLEUPDATES = _descriptor.Descriptor(
@@ -177,8 +336,8 @@ _ZINTERACT_ZVEHICLEUPDATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=620,
-  serialized_end=763,
+  serialized_start=980,
+  serialized_end=1123,
 )
 
 _ZINTERACT_ZVEHICLEREGISTRATION = _descriptor.Descriptor(
@@ -222,8 +381,8 @@ _ZINTERACT_ZVEHICLEREGISTRATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=765,
-  serialized_end=838,
+  serialized_start=1125,
+  serialized_end=1198,
 )
 
 _ZINTERACT_ZV2XMESSAGERECEPTION = _descriptor.Descriptor(
@@ -281,8 +440,8 @@ _ZINTERACT_ZV2XMESSAGERECEPTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=841,
-  serialized_end=980,
+  serialized_start=1201,
+  serialized_end=1340,
 )
 
 _ZINTERACT = _descriptor.Descriptor(
@@ -366,10 +525,12 @@ _ZINTERACT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=42,
-  serialized_end=1000,
+  serialized_start=402,
+  serialized_end=1360,
 )
 
+_ZINTERACTMINIMAL.fields_by_name['vehicle_updates'].message_type = _ZVEHICLEUPDATESMINIMAL
+_ZVEHICLEUPDATESMINIMAL.fields_by_name['updated'].message_type = _ZVEHICLEDATAMINIMAL
 _ZINTERACT_ZRSUREGISTRATION.containing_type = _ZINTERACT
 _ZINTERACT_ZVEHICLEDATA.containing_type = _ZINTERACT
 _ZINTERACT_ZVEHICLEUPDATES.fields_by_name['added'].message_type = _ZINTERACT_ZVEHICLEDATA
@@ -393,8 +554,32 @@ _ZINTERACT.fields_by_name['z_vehicle_registration'].containing_oneof = _ZINTERAC
 _ZINTERACT.oneofs_by_name['interaction_type'].fields.append(
   _ZINTERACT.fields_by_name['z_v2x_message_reception'])
 _ZINTERACT.fields_by_name['z_v2x_message_reception'].containing_oneof = _ZINTERACT.oneofs_by_name['interaction_type']
+DESCRIPTOR.message_types_by_name['ZInteractMinimal'] = _ZINTERACTMINIMAL
+DESCRIPTOR.message_types_by_name['ZVehicleDataMinimal'] = _ZVEHICLEDATAMINIMAL
+DESCRIPTOR.message_types_by_name['ZVehicleUpdatesMinimal'] = _ZVEHICLEUPDATESMINIMAL
 DESCRIPTOR.message_types_by_name['ZInteract'] = _ZINTERACT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+ZInteractMinimal = _reflection.GeneratedProtocolMessageType('ZInteractMinimal', (_message.Message,), {
+  'DESCRIPTOR' : _ZINTERACTMINIMAL,
+  '__module__' : 'zeromq_interact_pb2'
+  # @@protoc_insertion_point(class_scope:ZInteractSpace.ZInteractMinimal)
+  })
+_sym_db.RegisterMessage(ZInteractMinimal)
+
+ZVehicleDataMinimal = _reflection.GeneratedProtocolMessageType('ZVehicleDataMinimal', (_message.Message,), {
+  'DESCRIPTOR' : _ZVEHICLEDATAMINIMAL,
+  '__module__' : 'zeromq_interact_pb2'
+  # @@protoc_insertion_point(class_scope:ZInteractSpace.ZVehicleDataMinimal)
+  })
+_sym_db.RegisterMessage(ZVehicleDataMinimal)
+
+ZVehicleUpdatesMinimal = _reflection.GeneratedProtocolMessageType('ZVehicleUpdatesMinimal', (_message.Message,), {
+  'DESCRIPTOR' : _ZVEHICLEUPDATESMINIMAL,
+  '__module__' : 'zeromq_interact_pb2'
+  # @@protoc_insertion_point(class_scope:ZInteractSpace.ZVehicleUpdatesMinimal)
+  })
+_sym_db.RegisterMessage(ZVehicleUpdatesMinimal)
 
 ZInteract = _reflection.GeneratedProtocolMessageType('ZInteract', (_message.Message,), {
 

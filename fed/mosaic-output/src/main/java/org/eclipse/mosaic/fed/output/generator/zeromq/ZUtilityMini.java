@@ -45,6 +45,8 @@ public class ZUtilityMini {
     ZInteractMinimal.Builder generic = ZInteractMinimal.newBuilder();
 
     public ZUtilityMini(Interaction interaction){
+
+        generic.clear();
         
         generic.setTime(interaction.getTime());
         generic.setId(interaction.getId());

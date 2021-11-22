@@ -39,7 +39,7 @@ import org.zeromq.ZContext;
 import java.lang.Integer;
 
 import com.google.protobuf.Message;
-import com.google.protobuf.MessageLite;
+import com.google.protobuf.Message;
 
 
 public class SocketZeromq extends AbstractOutputGenerator {
@@ -52,15 +52,15 @@ public class SocketZeromq extends AbstractOutputGenerator {
         String address = "tcp://127.0.0.1:" + port.toString();
         publisher.connect(address);
         publisher.setSndHWM(100000);
-        System.out.println("Testestst");
+        System.out.println("Publisher connected!");
     }
 
-    private void zmqPublish(Socket publisher, MessageLite message, String topic){
+    private void zmqPublish(Socket publisher, Message message, String topic){
         publisher.send(topic, ZMQ.SNDMORE);
         publisher.send(message.toByteArray(), 0);
     }
 
-    private MessageLite returnMessage(ZUtilityMini utility){
+    private Message returnMessage(ZUtilityMini utility){
         return utility.createZMessageLite();
     }
 
@@ -72,91 +72,8 @@ public class SocketZeromq extends AbstractOutputGenerator {
     public void messageInteraction(VehicleUpdates interaction) throws Exception {
         ZUtilityMini utility = new ZUtilityMini(interaction);
         utility.process(interaction);
-        MessageLite message = returnMessage(utility);
+        Message message = returnMessage(utility);
         String topic = utility.createPubTopic();
         zmqPublish(publisher, message, topic);
     }
-
-    @Handle
-    public void messageInteraction(V2xMessageTransmission interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(V2xMessageReception interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(VehicleRegistration interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(RsuRegistration interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(TrafficLightRegistration interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-
-    @Handle
-    public void messageInteraction(ChargingStationRegistration interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(ChargingStationUpdate interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(TrafficDetectorUpdates interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
-    @Handle
-    public void messageInteraction(TmcRegistration interaction) throws Exception {
-        ZUtilityMini utility = new ZUtilityMini(interaction);
-        utility.process(interaction);
-        MessageLite message = returnMessage(utility);
-        String topic = utility.createPubTopic();
-        zmqPublish(publisher, message, topic);
-    }
-
 }

@@ -4,6 +4,34 @@ package ZInteractSpace;
 option java_multiple_files = true;
 option java_package = "org.eclipse.mosaic.fed.output.generator.zeromq.zprotobuf";
 option java_outer_classname = "ZInteractProtos";
+// option optimize_for = LITE_RUNTIME;
+
+
+
+message ZInteractMinimal {
+   int64 time = 1;
+   int64 id = 2;
+   string sender_id = 3;
+   string type_id = 4;
+   ZVehicleUpdatesMinimal vehicle_updates = 5;
+}
+
+message ZVehicleDataMinimal {
+      string name = 1;
+      repeated double position = 2;
+      // IRoadPosition start
+      //IRoadPosition IConnnection start
+      string road_id = 3;
+      // IRoadPosition IConnnection end
+      // IRoadPosition end
+      string route_id = 4;
+      double speed = 5;
+      double longitudinal_acc = 6;
+   }
+
+message ZVehicleUpdatesMinimal {
+   repeated ZVehicleDataMinimal updated = 1;
+}
 
 
 
