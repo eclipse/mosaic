@@ -51,7 +51,25 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
 
-        log.info("Initialized SNS");
+        log.info("Initialized Zeromq");
+    }
+
+    @Override
+    protected void processInteraction(Interaction interaction) throws InternalFederateException {
+        try {
+            if (interaction.getTypeId().startsWith(RsuRegistration.TYPE_ID)) {
+                this.process((RsuRegistration) interaction);
+            }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+                this.process((VehicleUpdates) interaction);
+            } else if (interaction.getTypeId().equals(V2xMessageTransmission.TYPE_ID)) {
+                this.process((V2xMessageTransmission) interaction);
+            } else {
+                log.warn("Received unknown interaction={} @time={}", interaction.getTypeId(), TIME.format(interaction.getTime()));
+            }
+        } catch (Exception e) {
+            throw new InternalFederateException(e);
+        }
+    }
     }
 
     @Override
