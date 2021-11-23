@@ -14,8 +14,8 @@ from binascii import hexlify
 import zmq
 
 # local
-import MDP
-from zhelpers import dump
+from .zhelpers import dump
+from . import MDP
 
 
 class Service(object):
@@ -341,7 +341,7 @@ class MajorDomoClient(object):
         self.client.linger = 0
         self.client.connect(self.broker)
         self.poller.register(self.client, zmq.POLLIN)
-        if self.verbose:
+        if True:
             logging.info("I: connecting to broker at %s...", self.broker)
 
     def send(self, service, request):
@@ -376,11 +376,11 @@ class MajorDomoClient(object):
             # Don't try to handle errors, just assert noisily
             assert len(msg) >= 4
 
-            # empty = msg.pop(0)
+            _ = msg.pop(0)
             header = msg.pop(0)
             assert MDP.C_CLIENT == header
 
-            # service = msg.pop(0)
+            _ = msg.pop(0)  # Pop service frame
             return msg
         else:
             logging.warn("W: permanent error, abandoning request")

@@ -12,7 +12,8 @@ W_REPLY = b"\003"
 W_HEARTBEAT = b"\004"
 W_DISCONNECT = b"\005"
 
-commands = [None, b"READY", b"REQUEST", b"REPLY", b"HEARTBEAT", b"DISCONNECT"]
+commands = [None, b"READY",
+            b"REQUEST", b"REPLY", b"HEARTBEAT", b"DISCONNECT"]
 
 
 # Note, Python3 type "bytes" are essentially what Python2 "str" were,
