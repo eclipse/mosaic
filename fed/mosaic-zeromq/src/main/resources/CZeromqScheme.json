@@ -6,7 +6,7 @@
     "properties": {
         "port": {
             "description": "Port to which the broker binds the socket",
-            "type": "string",
+            "type": "integer",
             "default": 5555
         },
         "internalServicePrefix": { 

@@ -20,14 +20,13 @@ package org.eclipse.mosaic.fed.zeromq.config;
  */
 public class CZeromq {
 
-    // We'd normally pull these from config data
-    public String port;    
+    public int port;    
     public String internalServicePrefix;
     public int hearbeatLiveness;
     public int heartbeatInterval;
     public int heartbeatExpiry;
     
-    public String getPort(){
+    public int getPort(){
         return port;
     }
 }
