@@ -69,6 +69,8 @@ credentials.cached
 .vscode/settings.json
 
 .bak/
-.DS_STORE
+/__pycache__/**
 client/__pycache__
+client/majordomo/__pycache__
+.DS_STORE
 
