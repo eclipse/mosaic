@@ -2,7 +2,7 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="http://www.dcaiti.tu-berlin.de/research/simulation/download/get/scenarios/scenarioname/visualizer/visualizer_config.xsd">
 
-    <output id="websocket" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
+    <output id="websocket" enabled="false" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
         <synchronized>true</synchronized>
         <port>46587</port>
         <subscriptions>
@@ -14,7 +14,7 @@
         </subscriptions>
     </output>
 
-    <output id="zeromq" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.zeromq.SocketZeromqLoader">
+    <output id="zeromq" enabled="false" loader="org.eclipse.mosaic.fed.output.generator.zeromq.SocketZeromqLoader">
         <synchronized>true</synchronized>
         <port>5321</port>
         <subscriptions>
