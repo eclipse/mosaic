@@ -232,7 +232,7 @@
             "host": "local",
             "port": 0,
             "deploy": false,
-            "start": false,
+            "start": true,
             "subscriptions": [
                 "ChargingStationRegistration",
                 "RsuRegistration",

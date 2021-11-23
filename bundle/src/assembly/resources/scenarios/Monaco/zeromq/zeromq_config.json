@@ -1,0 +1,6 @@
+{
+    "port": 5555,
+    "internalServicePrefix": "mmi.",
+    "heartbeatLiveness": 3, 
+    "heartbeatInterval": 2500
+}
