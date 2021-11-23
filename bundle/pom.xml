@@ -125,6 +125,11 @@
             <version>${mosaic.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-zeromq</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.zeromq</groupId>
             <artifactId>jeromq</artifactId>
             <version>${version.zeromq}</version>
