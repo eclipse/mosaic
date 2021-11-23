@@ -42,28 +42,23 @@ import org.eclipse.mosaic.lib.zeromq.majordomo.MajordomoWorker;
 import org.eclipse.mosaic.lib.zeromq.majordomo.MajordomoClient;
 import org.eclipse.mosaic.lib.zeromq.majordomo.MDP;
 
-import com.google.flatbuffers.FlatBufferBuilder;
-
 import com.google.gson.Gson;
 import java.util.Arrays;
 
 
 public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runnable {
 
+    public int brokerPort;
+    public MajordomoBroker mdpBroker = new MajordomoBroker(true);
+    public MajordomoWorker mdpWorker;
 
 
-    String brokerPort = "5555";
-    FlatBufferBuilder fbb = new FlatBufferBuilder();
-    MajordomoBroker mdpBroker = new MajordomoBroker(true);
-    MajordomoWorker mdpWorker;
-
-
-    protected ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
+    public ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
     }
 
     /**
-     * Runs Majordomo Broker in  Thread
+     * Runs Majordomo Broker in different Thread
      */
     @Override
     public void run() {
@@ -86,8 +81,8 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
         
-        String brokerAddress = "tcp://localhost:" + brokerPort;
-        mdpWorker = new MajordomoWorker(brokerAddress, "vehicle_updates", true);
+        String brokerAddress = "tcp://localhost:" + String.valueOf(brokerPort);
+        mdpWorker = new MajordomoWorker(brokerAddress, "vehicle", true);
 
         log.info("Initialized Zeromq");
     }
