@@ -5,7 +5,7 @@
     "type": "object",
     "properties": {
         "port": {
-            "description": "Port to which the broker binds the socket",
+            "description": "Broker's port for client and workers",
             "type": "integer",
             "default": 5555
         },

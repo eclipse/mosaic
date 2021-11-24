@@ -13,7 +13,13 @@ RUN pip3 install pyzmq numpy scipy matplotlib jupyter pandas flake8 protobuf==3.
 RUN useradd -ms /bin/bash mosaic
 COPY protobuf/protoc/bin /usr/local/bin
 COPY protobuf/protoc/include /usr/local/bin
+COPY majordomo/md_broker.py /usr/bin
+COPY majordomo/pymdp/ /usr/bin/pymdp
+COPY start_mdp_services.sh /usr/bin
+
+EXPOSE 5555
+
 USER mosaic
 WORKDIR /home/mosaic
 
-CMD /bin/bash
+CMD start_mdp_services.sh
