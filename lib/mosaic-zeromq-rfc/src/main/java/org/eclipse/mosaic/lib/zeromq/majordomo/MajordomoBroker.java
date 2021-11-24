@@ -95,7 +95,7 @@ public class MajordomoBroker
     {
         MajordomoBroker broker = new MajordomoBroker(args.length > 0 && "-v".equals(args[0]));
         // Can be called multiple times with different endpoints
-        broker.bind("tcp://*:5555");
+        broker.bind("tcp://127.0.0.1:5555");
         broker.mediate();
     }
 
