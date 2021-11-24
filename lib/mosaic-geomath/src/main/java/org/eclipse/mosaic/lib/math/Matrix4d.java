@@ -15,64 +15,48 @@
 
 package org.eclipse.mosaic.lib.math;
 
-public class Matrix4d {
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.Locale;
 
-    private static final Matrix4d tmpMatA = new Matrix4d();
-    private static final Matrix4d tmpMatB = new Matrix4d();
+public class Matrix4d implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    private static final DecimalFormat FORMAT = new DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+
+    /**
+     * Array holding value of the matrix. Values are stored row-wise, that is, the first 4 values
+     * represent the first row, the second 4 values the second row, and so on.<br>
+     * Do NOT use this array directly, unless it is from crucial importance (e.g. during physics simulation)
+     */
     public final double[] m = new double[16];
 
+    /**
+     * Creates a new 4x4 matrix, with all values being zero.
+     */
     public Matrix4d() {
         setZero();
     }
 
-    public void getGlTransform(float[] glTransform) {
-        for (int i = 0; i < 16; i++) {
-            glTransform[i] = (float) m[i];
-        }
+    /**
+     * Creates a new 4x4 matrix, with the values being copied from the given matrix.
+     */
+    public Matrix4d(Matrix4d copyFrom) {
+        set(copyFrom);
     }
 
-    public void dump() {
-        for (int m = 0; m < 4; m++) {
-            for (int n = 0; n < 4; n++) {
-                System.out.printf("%8.3f ", this.m[n * 4 + m]);
-            }
-            System.out.println();
-        }
+    /**
+     * Creates a new identity matrix in 4x4 format.
+     */
+    public static Matrix4d identityMatrix() {
+        return new Matrix4d().setIdentity();
     }
 
-    public Matrix4d translate(Vector3d t) {
-        return translate(t.x, t.y, t.z);
-    }
-
-    public Matrix4d translate(double x, double y, double z) {
-        for (int i = 0; i < 4; i++) {
-            m[12 + i] += m[i] * x + m[4 + i] * y + m[8 + i] * z;
-        }
-        return this;
-    }
-
-    public Matrix4d rotate(double angleDeg, Vector3d axis) {
-        return rotate(angleDeg, axis.x, axis.y, axis.z);
-    }
-
-    public Matrix4d scale(double sx, double sy, double sz) {
-        for (int i = 0; i < 4; i++) {
-            m[i] *= sx;
-            m[4 + i] *= sy;
-            m[8 + i] *= sz;
-        }
-        return this;
-    }
-
-    public Matrix4d rotate(double angleDeg, double axX, double axY, double axZ) {
-        synchronized (tmpMatA) {
-            tmpMatA.setRotate(angleDeg, axX, axY, axZ);
-            set(multiply(tmpMatA, tmpMatB));
-        }
-        return this;
-    }
-
+    /**
+     * Sets all values to match identity matrix.
+     */
     public Matrix4d setIdentity() {
         for (int i = 0; i < 16; i++) {
             m[i] = i % 5 == 0 ? 1 : 0;
@@ -80,6 +64,9 @@ public class Matrix4d {
         return this;
     }
 
+    /**
+     * Sets all values to zero.
+     */
     public Matrix4d setZero() {
         for (int i = 0; i < 16; i++) {
             m[i] = 0;
@@ -87,20 +74,49 @@ public class Matrix4d {
         return this;
     }
 
+    /**
+     * Copies the values from the given matrix to this matrix.
+     */
     public Matrix4d set(Matrix4d mat) {
-        for (int i = 0; i < 16; i++) {
-            m[i] = mat.m[i];
-        }
+        System.arraycopy(mat.m, 0, m, 0, 16);
         return this;
     }
 
+    /**
+     * Get a specific value from the matrix by row and column index
+     */
+    public double get(int row, int col) {
+        return m[row * 4 + col];
+    }
+
+    /**
+     * Sets a specific value in the matrix by row and column index
+     */
+    public Matrix4d set(int row, int col, double value) {
+        m[row * 4 + col] = value;
+        return this;
+    }
+
+    /**
+     * Adds a matrix to this matrix.
+     */
     public Matrix4d add(Matrix4d mat) {
-        for (int i = 0; i < 16; i++) {
-            m[i] += mat.m[i];
-        }
-        return this;
+        return add(mat, this);
     }
 
+    /**
+     * Adds a matrix to this matrix and writes the result into the result matrix.
+     */
+    public Matrix4d add(Matrix4d mat, Matrix4d result) {
+        for (int i = 0; i < 16; i++) {
+            result.m[i] += mat.m[i];
+        }
+        return result;
+    }
+
+    /**
+     * Multiplies this matrix with another matrix and writes the result into the result matrix.
+     */
     public Matrix4d multiply(Matrix4d mat, Matrix4d result) {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -114,20 +130,24 @@ public class Matrix4d {
         return result;
     }
 
-    public Vector3d transform(Vector3d vec3, double w) {
-        double x = vec3.x * m[0] + vec3.y * m[4] + vec3.z * m[8] + w * m[12];
-        double y = vec3.x * m[1] + vec3.y * m[5] + vec3.z * m[9] + w * m[13];
-        double z = vec3.x * m[2] + vec3.y * m[6] + vec3.z * m[10] + w * m[14];
-        return vec3.set(x, y, z);
+    /**
+     * Transposes this matrix.
+     */
+    public Matrix4d transpose() {
+        return transpose(this);
     }
 
-    public Matrix4d transpose() {
+    /**
+     * Writes a transposed version of this matrix into the result matrix.
+     */
+    public Matrix4d transpose(Matrix4d result) {
+        result.set(this);
         for (int m = 0; m < 4; m++) {
             for (int n = m + 1; n < 4; n++) {
-                swap(m * 4 + n, n * 4 + m);
+                result.swap(m * 4 + n, n * 4 + m);
             }
         }
-        return this;
+        return result;
     }
 
     private void swap(int i, int j) {
@@ -136,87 +156,21 @@ public class Matrix4d {
         m[j] = d;
     }
 
-    public double get(int row, int col) {
-        return m[row * 4 + col];
-    }
-
-    public void set(int row, int col, double value) {
-        m[row * 4 + col] = value;
-    }
-
-    public Matrix4d setRotate(double angleDeg, double axX, double axY, double axZ) {
-        double a = Math.toRadians(angleDeg);
-        double x = axX;
-        double y = axY;
-        double z = axZ;
-        m[3] = 0.0;
-        m[7] = 0.0;
-        m[11] = 0.0;
-        m[12] = 0.0;
-        m[13] = 0.0;
-        m[14] = 0.0;
-        m[15] = 1.0;
-        double s = Math.sin(a);
-        double c = Math.cos(a);
-        if (1.0f == x && 0.0f == y && 0.0f == z) {
-            m[5] = c;
-            m[10] = c;
-            m[6] = s;
-            m[9] = -s;
-            m[1] = 0f;
-            m[2] = 0f;
-            m[4] = 0f;
-            m[8] = 0f;
-            m[0] = 1f;
-        } else if (0.0f == x && 1.0f == y && 0.0f == z) {
-            m[0] = c;
-            m[10] = c;
-            m[8] = s;
-            m[2] = -s;
-            m[1] = 0f;
-            m[4] = 0f;
-            m[6] = 0f;
-            m[9] = 0f;
-            m[5] = 1f;
-        } else if (0.0f == x && 0.0f == y && 1.0f == z) {
-            m[0] = c;
-            m[5] = c;
-            m[1] = s;
-            m[4] = -s;
-            m[2] = 0f;
-            m[6] = 0f;
-            m[8] = 0f;
-            m[9] = 0f;
-            m[10] = 1f;
-        } else {
-            double len = Math.sqrt(x * x + y * y + z * z);
-            if (!MathUtils.isFuzzyEqual(len, 1f)) {
-                double recipLen = 1.0 / len;
-                x *= recipLen;
-                y *= recipLen;
-                z *= recipLen;
-            }
-            double nc = 1.0f - c;
-            double xy = x * y;
-            double yz = y * z;
-            double zx = z * x;
-            double xs = x * s;
-            double ys = y * s;
-            double zs = z * s;
-            m[0] = x * x * nc + c;
-            m[4] = xy * nc - zs;
-            m[8] = zx * nc + ys;
-            m[1] = xy * nc + zs;
-            m[5] = y * y * nc + c;
-            m[9] = yz * nc - xs;
-            m[2] = zx * nc - ys;
-            m[6] = yz * nc + xs;
-            m[10] = z * z * nc + c;
-        }
-        return this;
-    }
-
+    /**
+     * Inverts this matrix.
+     *
+     * @return <code>true</code>, if the inverse could be created.
+     */
     public boolean invert() {
+        return inverse(this);
+    }
+
+    /**
+     * Writes a inverted version of this matrix into the result matrix.
+     *
+     * @return <code>true</code>, if the inverse could be created.
+     */
+    public boolean inverse(Matrix4d result) {
         // Invert a 4 x 4 matrix using Cramer's Rule
 
         // transpose matrix
@@ -312,26 +266,76 @@ public class Matrix4d {
 
         // calculate matrix inverse
         final double invdet = 1.0f / det;
-        m[0] = dst0 * invdet;
-        m[1] = dst1 * invdet;
-        m[2] = dst2 * invdet;
-        m[3] = dst3 * invdet;
+        result.m[0] = dst0 * invdet;
+        result.m[1] = dst1 * invdet;
+        result.m[2] = dst2 * invdet;
+        result.m[3] = dst3 * invdet;
 
-        m[4] = dst4 * invdet;
-        m[5] = dst5 * invdet;
-        m[6] = dst6 * invdet;
-        m[7] = dst7 * invdet;
+        result.m[4] = dst4 * invdet;
+        result.m[5] = dst5 * invdet;
+        result.m[6] = dst6 * invdet;
+        result.m[7] = dst7 * invdet;
 
-        m[8] = dst8 * invdet;
-        m[9] = dst9 * invdet;
-        m[10] = dst10 * invdet;
-        m[11] = dst11 * invdet;
+        result.m[8] = dst8 * invdet;
+        result.m[9] = dst9 * invdet;
+        result.m[10] = dst10 * invdet;
+        result.m[11] = dst11 * invdet;
 
-        m[12] = dst12 * invdet;
-        m[13] = dst13 * invdet;
-        m[14] = dst14 * invdet;
-        m[15] = dst15 * invdet;
+        result.m[12] = dst12 * invdet;
+        result.m[13] = dst13 * invdet;
+        result.m[14] = dst14 * invdet;
+        result.m[15] = dst15 * invdet;
 
         return true;
     }
+
+    /**
+     * Creates copy of this matrix.
+     */
+    public Matrix4d copy() {
+        return new Matrix4d(this);
+    }
+
+    public boolean isFuzzyEqual(Matrix4d other) {
+        for (int i = 0; i < m.length; i++) {
+            if (!MathUtils.isFuzzyEqual(m[i], other.m[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Matrix4d other = (Matrix4d) o;
+        return Arrays.equals(m, other.m);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(m);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder out = new StringBuilder(this.getClass().getSimpleName()).append("([");
+        for (int r = 0; r < 4; r++) {
+            out.append("[");
+            for (int c = 0; c < 4; c++) {
+                out.append(FORMAT.format(get(r, c)));
+                if (c < 3) {
+                    out.append(", ");
+                }
+            }
+            out.append("]");
+            if (r < 3) {
+                out.append(", ");
+            }
+        }
+        return out.append("])").toString();
+    }
+
 }
