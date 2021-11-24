@@ -1,10 +1,12 @@
-from majordomo.mdp_api import MajorDomoClient
+#!/usr/bin/python3
+
+from pymdp.mdp_api import MajorDomoClient
 
 
 class MdpClient(object):
     def __init__(self, port: int, verbose: bool = False) -> None:
         super().__init__()
-        broker_address = "tcp://localhost:" + str(port)
+        broker_address = "tcp://127.0.0.1:" + str(port)
         client = MajorDomoClient(broker_address, verbose)
         self.client = client
 
@@ -23,8 +25,9 @@ def main():
 
     mdp = MdpClient(port=5555, verbose=False)
     mdp.request_service(service_veh, 5)
-    reply = mdp.receive_reply()
-    print(reply)
+    while True:
+        reply = mdp.receive_reply()
+        print(reply)
 
 
 if __name__ == '__main__':

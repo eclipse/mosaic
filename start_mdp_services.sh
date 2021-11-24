@@ -1,5 +1,5 @@
 #!/bin/sh
 
-md_broker.py &
+mdbroker.py &
 
 /bin/bash

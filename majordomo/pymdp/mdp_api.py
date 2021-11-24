@@ -55,8 +55,6 @@ class MajorDomoBroker(object):
     HEARTBEAT_INTERVAL = 2500  # msecs
     HEARTBEAT_EXPIRY = HEARTBEAT_INTERVAL * HEARTBEAT_LIVENESS
 
-    # ---------------------------------------------------------------------
-
     ctx = None  # Our context
     socket = None  # Socket for clients & workers
     poller = None  # our Poller
@@ -67,8 +65,6 @@ class MajorDomoBroker(object):
     waiting = None  # idle workers
 
     verbose = False  # Print activity to stdout
-
-    # ---------------------------------------------------------------------
 
     def __init__(self, verbose=False):
         """Initialize broker state."""
@@ -85,7 +81,6 @@ class MajorDomoBroker(object):
         logging.basicConfig(format="%(asctime)s %(message)s",
                             datefmt="%Y-%m-%d %H:%M:%S",
                             level=logging.INFO)
-    # ---------------------------------------------------------------------
 
     def mediate(self):
         """Main broker work happens here"""
@@ -160,7 +155,7 @@ class MajorDomoBroker(object):
                 # Remove & save client return envelope and insert the
                 # protocol header and service name, then rewrap envelope.
                 client = msg.pop(0)
-                _ = msg.pop(0)  # ?
+                empty = msg.pop(0)  # ?
                 msg = [client, b'', MDP.C_CLIENT, worker.service.name] + msg
                 self.socket.send_multipart(msg)
                 self.worker_waiting(worker)
@@ -228,9 +223,8 @@ class MajorDomoBroker(object):
             returncode = b"200" if name in self.services else b"404"
         msg[-1] = returncode
 
-        """
-        insert the protocol header and service
-        name after the routing envelope ([client, ''])"""
+        # insert the protocol header and service name
+        # after the routing envelope ([client, ''])
         msg = msg[:2] + [MDP.C_CLIENT, service] + msg[2:]
         self.socket.send_multipart(msg)
 

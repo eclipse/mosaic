@@ -46,11 +46,12 @@ import com.google.gson.Gson;
 import java.util.Arrays;
 
 
-public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runnable {
+public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
     public int brokerPort;
-    public MajordomoBroker mdpBroker = new MajordomoBroker(true);
+    public String brokerAddress;
     public MajordomoWorker mdpWorker;
+    public MajordomoWorker mdpWorker_rsu;
 
 
     public ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
@@ -60,10 +61,17 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
     /**
      * Runs Majordomo Broker in different Thread
      */
+
+     /**
+      * 
     @Override
     public void run() {
+        MajordomoBroker mdpBroker = new MajordomoBroker(true);
+        mdpBroker.bind(this.brokerAddress);
         mdpBroker.mediate();
     }
+      */
+
 
     @Override
     public void initialize(final long startTime, final long endTime) throws InternalFederateException {
@@ -81,10 +89,11 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
         
-        String brokerAddress = "tcp://localhost:" + String.valueOf(brokerPort);
-        mdpWorker = new MajordomoWorker(brokerAddress, "vehicle", true);
+        this.brokerAddress = "tcp://127.0.0.1:" + String.valueOf(brokerPort);
+        mdpWorker = new MajordomoWorker(this.brokerAddress, "vehicle", false);
+        mdpWorker_rsu = new MajordomoWorker(this.brokerAddress, "rsu", false);
 
-        log.info("Initialized Zeromq");
+        log.info("Initialized MajordomoWorker");
     }
 
     @Override
@@ -95,7 +104,6 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
             }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
             } else {
-                log.warn("Received unknown interaction={} @time={}", interaction.getTypeId(), TIME.format(interaction.getTime()));
             }
         } catch (Exception e) {
             throw new InternalFederateException(e);
@@ -110,15 +118,19 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
     }
 
     private void process(VehicleUpdates interaction) {
-            Gson gson = new Gson();
-            String json = gson.toJson(interaction);
-            ZMsg reply = null;
-            while (!Thread.currentThread().isInterrupted()) {
-                ZMsg request = mdpWorker.receive(reply);
-                if (request == null)
-                    break; //Interrupted
-                reply = request; //  Echo is complex :-)
-            }
+            String json = this.createInteractionGsonStr(interaction);
+            ZMsg reply = new ZMsg();
+            reply.add(json);
+            ZMsg request = mdpWorker.receive(reply);
+            if (request == null)
+                log.info("Received request={}", request);
+                
+    }
+
+    private String createInteractionGsonStr(VehicleUpdates interaction){
+        Gson gson = new Gson();
+        String json = gson.toJson(interaction);
+        return json;
     }
 
     @Override
@@ -128,13 +140,11 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador implements Runn
 
     @Override
     public boolean isTimeConstrained() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean isTimeRegulating() {
-        // TODO Auto-generated method stub
         return false;
     }
     
