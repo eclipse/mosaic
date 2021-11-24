@@ -234,18 +234,8 @@
             "deploy": false,
             "start": true,
             "subscriptions": [
-                "ChargingStationRegistration",
                 "RsuRegistration",
-                "TrafficLightRegistration",
-                "TrafficSignRegistration",
-                "VehicleRegistration",
-                "VehicleUpdates",
-                "InductionLoopDetectorSubscription",
-                "LaneAreaDetectorSubscription",
-                "TrafficLightSubscription",
-                "V2xMessageRemoval",
-                "V2xMessageReception",
-                "V2xMessageTransmission"
+                "VehicleUpdates"
             ],
             "javaClasspathEntries": []
         }
