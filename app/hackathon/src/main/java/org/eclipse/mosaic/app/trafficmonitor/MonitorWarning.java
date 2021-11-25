@@ -26,12 +26,25 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.DenmContent;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
 
+
+import org.zeromq.ZPoller;
+import org.zeromq.ZContext;
+import org.zeromq.ZMQ.Poller;
+import org.zeromq.ZMQ.Socket;
+import org.zeromq.SocketType;
+
+
 /**
  * This class acts as an omniscient application for a server that warns vehicles
  * about certain hazards on the road. The hazard is hard-coded for tutorial purposes,
  * in more realistic scenarios the location would've been updated dynamically.
  */
-public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingSystem> {
+public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSystem> {
+
+    ZContext ctx = new ZContext();
+    private final Socket puller = ctx.createSocket(SocketType.PULL);
+    ZPoller poller = new ZPoller(ctx);
+    Poller items;
 
     /**
      * Send hazard location at this interval, in seconds.
@@ -46,7 +59,7 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
     /**
      * Road ID where hazard is located.
      */
-    private final static String HAZARD_ROAD = "311964536_1313885442_2879911873";
+    private final static String HAZARD_ROAD = "";
 
     private final static SensorType SENSOR_TYPE = SensorType.ICE;
     private final static float SPEED = 25 / 3.6f;
@@ -62,6 +75,10 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
         getLog().infoSimTime(this, "Initialize WeatherServer application");
         getOs().getCellModule().enable();
         getLog().infoSimTime(this, "Activated Cell Module");
+
+        String proxyBackendAddr = "tcp://127.0.0.1:" + String.valueOf(1111);
+        puller.connect(proxyBackendAddr);
+
         sample();
     }
 
@@ -75,6 +92,18 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
     @Override
     public void processEvent(Event event) throws Exception {
         sample();
+    }
+
+    protected void incomingWarning(){
+            
+        items = ctx.createPoller(1);
+        items.register(puller, Poller.POLLIN);
+        items.poll(0);
+        if (items.pollin(0)) {
+            byte[] message = puller.recv(0);
+        }else{
+            
+        }
     }
 
     /**
