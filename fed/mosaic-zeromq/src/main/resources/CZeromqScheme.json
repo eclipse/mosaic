@@ -4,10 +4,25 @@
     "description": "Schema describing the JSON file structure for the zeromq configuration.",
     "type": "object",
     "properties": {
-        "port": {
-            "description": "Broker's port for client and workers",
+        "backendProxy": {
+            "description": "From MOSAIC with PUB socket",
             "type": "integer",
             "default": 5555
+        },
+        "proxyFrontend": {
+            "description": "To Python with SUB socket",
+            "type": "integer",
+            "default": 6666
+        },
+        "frontendProxy": {
+            "description": "From Python with PUSH socket",
+            "type": "integer",
+            "default": 1111
+        },
+        "proxyBackend": {
+            "description": "To MOSAIC with PULL socket",
+            "type": "integer",
+            "default": 2222
         },
         "internalServicePrefix": { 
             "description": "Internal Service Prefix for Majordomo Message Interface",
