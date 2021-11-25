@@ -110,7 +110,7 @@ public class Matrix3d implements Serializable {
      */
     public Matrix3d add(Matrix3d mat, Matrix3d result) {
         for (int i = 0; i < 16; i++) {
-            result.m[i] += mat.m[i];
+            result.m[i] = m[i] + mat.m[i];
         }
         return result;
     }

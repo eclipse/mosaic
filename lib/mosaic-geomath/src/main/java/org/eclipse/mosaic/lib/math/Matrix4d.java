@@ -109,7 +109,7 @@ public class Matrix4d implements Serializable {
      */
     public Matrix4d add(Matrix4d mat, Matrix4d result) {
         for (int i = 0; i < 16; i++) {
-            result.m[i] += mat.m[i];
+            result.m[i] = m[i] + mat.m[i];
         }
         return result;
     }
