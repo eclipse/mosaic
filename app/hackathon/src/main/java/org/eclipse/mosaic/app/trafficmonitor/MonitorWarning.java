@@ -25,14 +25,20 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.DenmContent;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.database.road.Node;
+import org.eclipse.mosaic.lib.database.road.Connection;
+import java.util.stream.Collectors;
+import java.util.Collection;
 
 
-import org.zeromq.ZPoller;
 import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.SocketType;
 
+import java.util.ArrayList;
 
 /**
  * This class acts as an omniscient application for a server that warns vehicles
@@ -109,26 +115,35 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
     }
 
     private void sample() {
-        final Denm denm = constructDenm(); // Construct exemplary DENM
 
-        getOs().getCellModule().sendV2xMessage(denm);
-        getLog().infoSimTime(this, "Sent DENM");
-        // Line up new event for periodic sending
-        getOs().getEventManager().addEvent(
-                getOs().getSimulationTime() + INTERVAL, this
-        );
+        boolean retWarning = incomingWarning();
+        if (retWarning) {
+            boolean retValid = checkWarningValidity(warningMessage);
+
+            if (retValid) {
+                byte[] success = "1".getBytes();
+                pusher.send(success, ZMQ.SNDMORE);
+                pusher.send(warningMessage, 0);
+                String warningRoadId = new String(warningMessage);
+                final Denm denm = constructDenm(warningRoadId);
+                getOs().getCellModule().sendV2xMessage(denm);
+                getLog().infoSimTime(this, "Sent DENM");
+                // Line up new event for periodic sending
+                getOs().getEventManager().addEvent(
+                        getOs().getSimulationTime() + INTERVAL, this);
+            }
+            else{
+                byte[] fail = "0".getBytes();
+                pusher.send(fail, ZMQ.SNDMORE);
+                pusher.send("Invalid Connection ID", 0);
+            }
+            } else {
+                getLog().debug("No MonitorWarning Message Detected");
+            }
     }
 
-    /**
-     * Constructs a staged DEN message for tutorial purposes that matches exactly the requirements of
-     * the Barnim tutorial scenario.
-     * <p>
-     * This is not meant to be used for real scenarios and is for the purpose of the tutorial only.
-     *
-     * @return The constructed DENM
-     */
-    private Denm constructDenm() {
-        final GeoCircle geoCircle = new GeoCircle(HAZARD_LOCATION, 3000.0D);
+    private Denm constructDenm(String road_id) {
+        final GeoCircle geoCircle = new GeoCircle(getOs().getPosition(), 5000.0D);
         final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
 
         final int strength = getOs().getStateOfEnvironmentSensor(SENSOR_TYPE);
@@ -137,12 +152,12 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
                 new DenmContent(
                         getOs().getSimulationTime(),
                         getOs().getInitialPosition(),
-                        HAZARD_ROAD,
+                        road_id,
                         SENSOR_TYPE,
                         strength,
                         SPEED,
                         0.0f,
-                        HAZARD_LOCATION,
+                        null,
                         null,
                         null
                 )
