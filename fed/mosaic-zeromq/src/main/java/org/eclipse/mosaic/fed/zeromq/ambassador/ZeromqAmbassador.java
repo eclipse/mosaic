@@ -48,11 +48,13 @@ import java.util.Arrays;
 
 public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
-    public int brokerPort;
-    public String brokerAddress;
-    public MajordomoWorker mdpWorker;
-    public MajordomoWorker mdpWorker_rsu;
-
+    ZContext ctx = new ZContext();
+    private final Socket publisher = ctx.createSocket(SocketType.PUB);
+    private final Socket puller = ctx.createSocket(SocketType.PULL);;
+    int backendProxyPort;
+    int proxyBackendPort;
+    ZPoller poller = new ZPoller(ctx);
+    Poller items;
 
     public ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
@@ -84,14 +86,20 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
         try {
             CZeromq configuration = new ObjectInstantiation<>(CZeromq.class).readFile(ambassadorParameter.configuration);
-            brokerPort = configuration.getPort();
+            backendProxyPort = configuration.getBackendProxy();
+            proxyBackendPort = configuration.getProxyBackend();
+
         } catch (InstantiationException e) {
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
         
-        this.brokerAddress = "tcp://127.0.0.1:" + String.valueOf(brokerPort);
-        mdpWorker = new MajordomoWorker(this.brokerAddress, "vehicle", false);
-        mdpWorker_rsu = new MajordomoWorker(this.brokerAddress, "rsu", false);
+        String backendProxyAddr = "tcp://127.0.0.1:" + String.valueOf(5555);
+        String proxyBackendAddr = "tcp://127.0.0.1:" + String.valueOf(proxyBackendPort);
+        publisher.connect(backendProxyAddr);
+        puller.connect(proxyBackendAddr);
+
+        log.info("Initialized Zeromq Sockets!");
+    }
 
         log.info("Initialized MajordomoWorker");
     }
@@ -118,13 +126,10 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
     }
 
     private void process(VehicleUpdates interaction) {
-            String json = this.createInteractionGsonStr(interaction);
-            ZMsg reply = new ZMsg();
-            reply.add(json);
-            ZMsg request = mdpWorker.receive(reply);
-            if (request == null)
-                log.info("Received request={}", request);
-                
+            String json = this.createFVDGson(interaction);
+            publisher.send(json);
+    }
+
     }
 
     private String createInteractionGsonStr(VehicleUpdates interaction){
