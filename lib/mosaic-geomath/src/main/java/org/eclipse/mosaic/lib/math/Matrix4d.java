@@ -27,11 +27,10 @@ public class Matrix4d implements Serializable {
     private static final DecimalFormat FORMAT = new DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
     /**
-     * Array holding value of the matrix. Values are stored row-wise, that is, the first 4 values
-     * represent the first row, the second 4 values the second row, and so on.<br>
-     * Do NOT use this array directly, unless it is from crucial importance (e.g. during physics simulation)
+     * Array holding value of the matrix. Values are stored column-wise, that is, the first 4 values
+     * represent the first column, the second 4 values the second column, and so on.<br>
      */
-    public final double[] m = new double[16];
+    protected final double[] m = new double[16];
 
     /**
      * Creates a new 4x4 matrix, with all values being zero.
@@ -83,17 +82,78 @@ public class Matrix4d implements Serializable {
     }
 
     /**
+     * Sets the values of the matrix by the given double array. The alignment
+     * parameter defines how the values in the given array are arranged
+     * (either column or row-wise).
+     */
+    public Matrix4d set(double[] values, MatrixAlignment alignment) {
+        System.arraycopy(values, 0, this.m, 0, 16);
+        if (alignment == MatrixAlignment.ROWS) {
+            transpose();
+        }
+        return this;
+    }
+
+    /**
+     * Sets the values of the matrix by the given float array. The alignment
+     * parameter defines how the values in the given array are arranged
+     * (either column or row-wise).
+     */
+    public Matrix4d set(float[] values, MatrixAlignment alignment) {
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                m[c * 4 + r] = alignment == MatrixAlignment.COLUMNS
+                        ? values[c * 4 + r]
+                        : values[r * 4 + c];
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Returns the values of the matrix and writes it into the the given double array.
+     * The alignment parameter defines how the values in the given array will be arranged
+     * (either column or row-wise).
+     */
+    public double[] getAsDoubleArray(double[] result, MatrixAlignment alignment) {
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                result[c * 4 + r] = alignment == MatrixAlignment.COLUMNS
+                        ? m[c * 4 + r]
+                        : m[r * 4 + c];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the values of the matrix and writes it into the the given float array.
+     * The alignment parameter defines how the values in the given array will be arranged
+     * (either column or row-wise).
+     */
+    public float[] getAsFloatArray(float[] result, MatrixAlignment alignment) {
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                result[c * 4 + r] = alignment == MatrixAlignment.COLUMNS
+                        ? (float) m[c * 4 + r]
+                        : (float) m[r * 4 + c];
+            }
+        }
+        return result;
+    }
+
+    /**
      * Get a specific value from the matrix by row and column index
      */
     public double get(int row, int col) {
-        return m[row * 4 + col];
+        return m[col * 4 + row];
     }
 
     /**
      * Sets a specific value in the matrix by row and column index
      */
     public Matrix4d set(int row, int col, double value) {
-        m[row * 4 + col] = value;
+        m[col * 4 + row] = value;
         return this;
     }
 
@@ -110,6 +170,23 @@ public class Matrix4d implements Serializable {
     public Matrix4d add(Matrix4d mat, Matrix4d result) {
         for (int i = 0; i < 16; i++) {
             result.m[i] = m[i] + mat.m[i];
+        }
+        return result;
+    }
+
+    /**
+     * Subtracts a matrix from this matrix.
+     */
+    public Matrix4d subtract(Matrix4d mat) {
+        return subtract(mat, this);
+    }
+
+    /**
+     * Subtracts a matrix from this matrix and writes the result into the result matrix.
+     */
+    public Matrix4d subtract(Matrix4d mat, Matrix4d result) {
+        for (int i = 0; i < 16; i++) {
+            result.m[i] = m[i] - mat.m[i];
         }
         return result;
     }

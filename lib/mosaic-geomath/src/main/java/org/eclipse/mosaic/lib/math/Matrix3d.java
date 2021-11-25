@@ -29,9 +29,8 @@ public class Matrix3d implements Serializable {
     /**
      * Array holding value of the matrix. Values are stored column-wise, that is, the first 3 values
      * represent the first column, the second 3 values the second column, and so on.<br>
-     * Do NOT use this array directly, unless it is from crucial importance (e.g. during physics simulation)
      */
-    public final double[] m = new double[9];
+    protected final double[] m = new double[9];
 
     /**
      * Creates a new 3x3 matrix, with all values being zero.
@@ -78,8 +77,69 @@ public class Matrix3d implements Serializable {
      * Copies the values from the given matrix to this matrix.
      */
     public Matrix3d set(Matrix3d m) {
-        System.arraycopy(m.m, 0, this.m, 0, 9);
+        set(m.m, MatrixAlignment.COLUMNS);
         return this;
+    }
+
+    /**
+     * Sets the values of the matrix by the given double array. The alignment
+     * parameter defines how the values in the given array are arranged
+     * (either column or row-wise).
+     */
+    public Matrix3d set(double[] values, MatrixAlignment alignment) {
+        System.arraycopy(values, 0, this.m, 0, 9);
+        if (alignment == MatrixAlignment.ROWS) {
+            transpose();
+        }
+        return this;
+    }
+
+    /**
+     * Sets the values of the matrix by the given float array. The alignment
+     * parameter defines how the values in the given array are arranged
+     * (either column or row-wise).
+     */
+    public Matrix3d set(float[] values, MatrixAlignment alignment) {
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                m[c * 3 + r] = alignment == MatrixAlignment.COLUMNS
+                        ? values[c * 3 + r]
+                        : values[r * 3 + c];
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Returns the values of the matrix and writes it into the the given double array.
+     * The alignment parameter defines how the values in the given array will be arranged
+     * (either column or row-wise).
+     */
+    public double[] getAsDoubleArray(double[] result, MatrixAlignment alignment) {
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                result[c * 3 + r] = alignment == MatrixAlignment.COLUMNS
+                        ? m[c * 3 + r]
+                        : m[r * 3 + c];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the values of the matrix and writes it into the the given float array.
+     * The alignment parameter defines how the values in the given array will be arranged
+     * (either column or row-wise).
+     */
+    public float[] getAsFloatArray(float[] result, MatrixAlignment alignment) {
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                result[c * 3 + r] = alignment == MatrixAlignment.COLUMNS
+                        ? (float) m[c * 3 + r]
+                        : (float) m[r * 3 + c];
+            }
+        }
+        return result;
     }
 
     /**
@@ -97,7 +157,6 @@ public class Matrix3d implements Serializable {
         return this;
     }
 
-
     /**
      * Adds a matrix to this matrix.
      */
@@ -111,6 +170,23 @@ public class Matrix3d implements Serializable {
     public Matrix3d add(Matrix3d mat, Matrix3d result) {
         for (int i = 0; i < 16; i++) {
             result.m[i] = m[i] + mat.m[i];
+        }
+        return result;
+    }
+
+    /**
+     * Subtracts a matrix from this matrix.
+     */
+    public Matrix3d subtract(Matrix3d mat) {
+        return subtract(mat, this);
+    }
+
+    /**
+     * Subtracts a matrix from this matrix and writes the result into the result matrix.
+     */
+    public Matrix3d subtract(Matrix3d mat, Matrix3d result) {
+        for (int i = 0; i < 9; i++) {
+            result.m[i] = m[i] - mat.m[i];
         }
         return result;
     }

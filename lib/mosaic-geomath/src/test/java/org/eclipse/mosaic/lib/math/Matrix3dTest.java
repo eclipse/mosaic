@@ -15,12 +15,12 @@
 
 package org.eclipse.mosaic.lib.math;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import org.eclipse.mosaic.lib.spatial.TransformationMatrix;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,19 +64,40 @@ public class Matrix3dTest {
     }
 
     @Test
-    public void transposeRotationMatrix() {
-        final TransformationMatrix m = new TransformationMatrix();
-        m.rotate(37, new Vector3d(0,1,0));
+    public void getAsArray() {
+        final Matrix3d m = new Matrix3d();
+        set(m, "[1, 2, 3], [8, 6, 7], [-9, -4, 5]");
 
+        float[] resultf = m.getAsFloatArray(new float[9], MatrixAlignment.ROWS);
+        assertTrue(Arrays.equals(new float[] {1f, 2f, 3f, 8f, 6f, 7f, -9f, -4f, 5f}, resultf));
 
-        Matrix3d rotation = m.getRotation();
-        System.out.println(rotation);
-        Matrix3d inverse = new Matrix3d();
-        rotation.inverse(inverse);
-        Matrix3d transposed = new Matrix3d();
-        rotation.transpose(transposed);
+        resultf = m.getAsFloatArray(new float[9], MatrixAlignment.COLUMNS);
+        assertTrue(Arrays.equals(new float[] {1f, 8f, -9f, 2f, 6f, -4f, 3f, 7f, 5f}, resultf));
 
-        assertEquals(inverse, transposed);
+        double[] resultd = m.getAsDoubleArray(new double[9], MatrixAlignment.ROWS);
+        assertTrue(Arrays.equals(new double[] {1d, 2d, 3d, 8d, 6d, 7d, -9d, -4d, 5d}, resultd));
+
+        resultd = m.getAsDoubleArray(new double[9], MatrixAlignment.COLUMNS);
+        assertTrue(Arrays.equals(new double[] {1d, 8d, -9d, 2d, 6d, -4d, 3d, 7d, 5d}, resultd));
+    }
+
+    @Test
+    public void setArray() {
+        final Matrix3d expected = new Matrix3d();
+        set(expected, "[1, 2, 3], [8, 6, 7], [-9, -4, 5]");
+
+        Matrix3d m = new Matrix3d();
+        m.set(new float[] {1f, 2f, 3f, 8f, 6f, 7f, -9f, -4f, 5f}, MatrixAlignment.ROWS);
+        assertEquals(expected, m);
+
+        m.set(new double[] {1d, 2d, 3d, 8d, 6d, 7d, -9d, -4d, 5d}, MatrixAlignment.ROWS);
+        assertEquals(expected, m);
+
+        m.set(new float[] {1f, 8f, -9f, 2f, 6f, -4f, 3f, 7f, 5f}, MatrixAlignment.COLUMNS);
+        assertEquals(expected, m);
+
+        m.set(new double[] {1d, 8d, -9d, 2d, 6d, -4d, 3d, 7d, 5d}, MatrixAlignment.COLUMNS);
+        assertEquals(expected, m);
     }
 
     private void set(Matrix3d m, String matrix) {

@@ -15,6 +15,12 @@
 
 package org.eclipse.mosaic.lib.spatial;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
+import static org.junit.Assert.fail;
+
+import org.eclipse.mosaic.lib.math.Matrix3d;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.junit.Assert;
@@ -36,6 +42,34 @@ public class TransformationMatrixTest {
         Assert.assertEquals(1.0, transformation.get(0, 3), 0.00001);
         Assert.assertEquals(2.0, transformation.get(1, 3), 0.00001);
         Assert.assertEquals(3.0, transformation.get(2, 3), 0.00001);
+    }
+
+    @Test
+    public void rotate() {
+        final RotationMatrix expected = new RotationMatrix()
+                .rotate(37, new Vector3d(1,0,0));
+
+        final TransformationMatrix transformationMatrix = new TransformationMatrix();
+        transformationMatrix
+                .rotate(45, new Vector3d(1,0,0))
+                .rotate(90, new Vector3d(0,1,0))
+                .rotate(270, new Vector3d(0,1,0))
+                .rotate(-8, new Vector3d(1,0,0));
+
+
+        final RotationMatrix actual = transformationMatrix.getRotation();
+        assertEquals(expected, actual);
+        Assert.assertEquals(1, actual.get(0, 0), 0.0001);
+        Assert.assertEquals(sin(toRadians(37)), actual.get(2, 1), 0.0001);
+        Assert.assertEquals(-sin(toRadians(37)), actual.get(1, 2), 0.0001);
+        Assert.assertEquals(cos(toRadians(37)), actual.get(1, 1), 0.0001);
+        Assert.assertEquals(cos(toRadians(37)), actual.get(2, 2), 0.0001);
+    }
+
+    private static void assertEquals(Matrix3d expected, Matrix3d actual) {
+        if(!expected.isFuzzyEqual(actual)) {
+            fail(String.format("Matrix not fuzzy equal.%nExpected: %s%nActual: %s", expected, actual));
+        }
     }
 
 }
