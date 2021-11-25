@@ -59,6 +59,7 @@
         <module>lib/mosaic-objects</module>
         <module>lib/mosaic-routing</module>
         <module>lib/mosaic-utils</module>
+        <module>lib/mosaic-zeromq-rfc</module>
 
         <module>fed/mosaic-application</module>
         <module>fed/mosaic-environment</module>
@@ -69,6 +70,7 @@
         <module>fed/mosaic-output</module>
         <module>fed/mosaic-sns</module>
         <module>fed/mosaic-sumo</module>
+        <module>fed/mosaic-zeromq</module>
 
         <module>test/mosaic-integration-tests</module>
 
@@ -108,7 +110,7 @@
         <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
         <version.logback>1.2.3</version.logback><!-- 1.2.3 is approved in CQ16622 -->
         <version.mockito>2.23.0</version.mockito><!-- 2.23.0 is approved in CQ17976 -->
-        <version.protobuf>3.8.0</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
+        <version.protobuf>3.18.0</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
         <version.slf4j>1.7.30</version.slf4j><!-- 1.7.30 is approved in CQ21339 -->
         <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
@@ -341,6 +343,11 @@
                 <artifactId>Java-WebSocket</artifactId>
                 <version>${version.java-websocket}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.flatbuffers</groupId>
+                <artifactId>flatbuffers-java</artifactId>
+                <version>2.0.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -478,7 +485,12 @@
                             <exclude>**/ClientServerChannelProtos.proto</exclude>
                             <exclude>**/ZInteract.java</exclude>
                             <exclude>**/ZInteract.proto</exclude>
-                            <exclude>**/ZInteractOrBuilder.java</exclude>
+                            <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                            <exclude>**/ZVehicleDataMinimal.java</exclude>
+                            <exclude>**/ZInteractMinimal.java</exclude>
+                            <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                            <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                            <exclude>**/ZVehicleUpdatesMinimalOrBuilder.java</exclude>
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -784,6 +796,19 @@
                                         <exclude>**/ZInteract.java</exclude>
                                         <exclude>**/ZInteract.proto</exclude>
                                         <exclude>**/ZInteractOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.proto</exclude>
+                                        <exclude>**/ZInteract.java</exclude>
+                                        <exclude>**/ZInteract.proto</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimal.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimalOrBuilder.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
@@ -815,11 +840,23 @@
                                 <configuration>
                                     <excludes>
                                         <exclude>**/*Protos.java</exclude>
-                                        <exclude>**/protos/**</exclude>
                                         <exclude>**/mosaic-starter/bin/**</exclude>
                                         <exclude>**/ZInteract.java</exclude>
                                         <exclude>**/ZInteract.proto</exclude>
                                         <exclude>**/ZInteractOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.java</exclude>
+                                        <exclude>**/ClientServerChannelProtos.proto</exclude>
+                                        <exclude>**/ZInteract.java</exclude>
+                                        <exclude>**/ZInteract.proto</exclude>
+                                        <exclude>**/ZVehicleDataMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleDataMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimal.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimal.java</exclude>
+                                        <exclude>**/ZInteractMinimalOrBuilder.java</exclude>
+                                        <exclude>**/ZVehicleUpdatesMinimalOrBuilder.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>

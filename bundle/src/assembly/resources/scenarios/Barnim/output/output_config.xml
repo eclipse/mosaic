@@ -200,19 +200,5 @@
         </subscriptions>
     </output>
 
-    <output id="zeromq" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.zeromq.SocketZeromqLoader">
-        <synchronized>true</synchronized>
-        <port>5321</port>
-        <subscriptions>
-            <subscription id="VehicleUpdates" enabled="true"/>
-            <subscription id="V2xMessageReception" enabled="true"/>
-            <subscription id="V2xMessageTransmission" enabled="true"/>
-            <subscription id="VehicleRegistration" enabled="true"/>
-            <subscription id="RsuRegistration" enabled="true"/>
-            <subscription id="TrafficDetectorUpdates" enabled="true"/>
-            <subscription id="TmcRegistration" enabled="true"/>
-        </subscriptions>
-    </output>
-
 </configuration>
 

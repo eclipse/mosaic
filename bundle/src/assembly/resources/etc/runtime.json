@@ -223,6 +223,21 @@
                 "VehicleTypesInitialization"
             ],
             "javaClasspathEntries": []
+        },
+        {
+            "id": "zeromq",
+            "classname": "org.eclipse.mosaic.fed.zeromq.ambassador.ZeromqAmbassador",
+            "configuration": "zeromq_config.json",
+            "priority": 50,
+            "host": "local",
+            "port": 0,
+            "deploy": false,
+            "start": true,
+            "subscriptions": [
+                "RsuRegistration",
+                "VehicleUpdates"
+            ],
+            "javaClasspathEntries": []
         }
     ]
 }

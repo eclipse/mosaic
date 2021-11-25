@@ -10,28 +10,24 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.eclipse.mosaic.app</groupId>
-    <artifactId>trafficmonitor</artifactId>
-    <packaging>jar</packaging>
-
-    <name>Traffic Monitor for Monaco Scenario</name>
-    <description>Traffic Monitoring and Advisory System apps.</description>
-
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
+    <artifactId>mosaic-zeromq-rfc</artifactId>
+    <name>Eclipse MOSAIC Zeromq RFC</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse.mosaic</groupId>
-            <artifactId>mosaic-application</artifactId>
-            <version>${mosaic.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.zeromq</groupId>
             <artifactId>jeromq</artifactId>
             <version>${version.zeromq}</version>
-        </dependency>
+        </dependency>       
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

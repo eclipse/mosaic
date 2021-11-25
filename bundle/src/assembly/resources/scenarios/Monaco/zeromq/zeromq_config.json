@@ -1,0 +1,7 @@
+{
+    "backendProxy": 5555,
+    "proxyBackend": 2222,
+    "internalServicePrefix": "mmi.",
+    "heartbeatLiveness": 3, 
+    "heartbeatInterval": 2500
+}

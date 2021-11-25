@@ -69,7 +69,8 @@ credentials.cached
 .vscode/settings.json
 
 .bak/
-.DS_STORE
-lib/mosaic-zeromq/
+/__pycache__/**
 client/__pycache__
-
+client/majordomo/__pycache__
+.DS_STORE
+**.pyc
