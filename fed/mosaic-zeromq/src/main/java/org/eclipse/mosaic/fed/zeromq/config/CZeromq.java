@@ -20,13 +20,17 @@ package org.eclipse.mosaic.fed.zeromq.config;
  */
 public class CZeromq {
 
-    public int port;    
+    public int backendProxy;
+    public int proxyBackend;
     public String internalServicePrefix;
     public int hearbeatLiveness;
     public int heartbeatInterval;
     public int heartbeatExpiry;
     
-    public int getPort(){
-        return port;
+    public int getBackendProxy(){
+        return backendProxy;
+    }    
+    public int getProxyBackend(){
+        return proxyBackend;
     }
 }
