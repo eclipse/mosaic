@@ -43,33 +43,19 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
 
     ZContext ctx = new ZContext();
     private final Socket puller = ctx.createSocket(SocketType.PULL);
-    ZPoller poller = new ZPoller(ctx);
-    Poller items;
+    private final Socket pusher = ctx.createSocket(SocketType.PUSH);
+    private byte[] warningMessage;
+    Poller items = ctx.createPoller(1);
 
-    /**
-     * Send hazard location at this interval, in seconds.
-     */
+    private Database database = Database.loadFromFile("scenarios/Monaco/application/Monaco.db");
+    private ArrayList<Connection> connectionList = database.getConnections().stream().collect(Collectors.toCollection(ArrayList::new));
+    private ArrayList<String> connectionStrings = new ArrayList<String>();
+
     private final static long INTERVAL = 1 * TIME.SECOND;
-
-    /**
-     * Location of the hazard which causes the route change.
-     */
-    private final static GeoPoint HAZARD_LOCATION = GeoPoint.latLon(52.633047, 13.565314);
-
-    /**
-     * Road ID where hazard is located.
-     */
-    private final static String HAZARD_ROAD = "";
 
     private final static SensorType SENSOR_TYPE = SensorType.ICE;
     private final static float SPEED = 25 / 3.6f;
 
-
-    /**
-     * This method is called by VSimRTI when the vehicle that has been equipped with this application
-     * enters the simulation.
-     * It is the first method called of this class during a simulation.
-     */
     @Override
     public void onStartup() {
         getLog().infoSimTime(this, "Initialize WeatherServer application");
@@ -77,7 +63,16 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
         getLog().infoSimTime(this, "Activated Cell Module");
 
         String proxyBackendAddr = "tcp://127.0.0.1:" + String.valueOf(1111);
+        String backendProxyAddr = "tcp://127.0.0.1:" + String.valueOf(2222);
+
         puller.connect(proxyBackendAddr);
+        pusher.connect(backendProxyAddr);
+        items.register(puller, Poller.POLLIN);
+
+
+        for (Connection conn : connectionList){
+            connectionStrings.add(conn.getId());
+        }
 
         sample();
     }
@@ -94,26 +89,25 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
         sample();
     }
 
-    protected void incomingWarning(){
-            
-        items = ctx.createPoller(1);
-        items.register(puller, Poller.POLLIN);
+    private boolean incomingWarning(){
         items.poll(0);
         if (items.pollin(0)) {
-            byte[] message = puller.recv(0);
+            warningMessage = puller.recv(0);
+            return true;
         }else{
-            
+            return false;
         }
     }
 
-    /**
-     * Method to let the WeatherServer send a DEN message periodically.
-     * <p>
-     * This method sends a DEN message and generates a new event during each call.
-     * When said event is triggered, processEvent() is called, which in turn calls sample().
-     * This way, sample() is called periodically at a given interval (given by the generated event time)
-     * and thus the DENM is sent periodically at this interval.
-     */
+    private boolean checkWarningValidity(byte[] warningMsg){
+        String candidateWarning = new String(warningMsg);
+        if (connectionStrings.contains(candidateWarning)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private void sample() {
         final Denm denm = constructDenm(); // Construct exemplary DENM
 
