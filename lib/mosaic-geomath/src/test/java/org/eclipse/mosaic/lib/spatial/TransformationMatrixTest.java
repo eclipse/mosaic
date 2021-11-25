@@ -1,6 +1,22 @@
-package org.eclipse.mosaic.lib.math;
+/*
+ * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
 
-import org.eclipse.mosaic.lib.spatial.TransformationMatrix;
+package org.eclipse.mosaic.lib.spatial;
+
+import org.eclipse.mosaic.lib.math.Vector3d;
+
 import org.junit.Assert;
 import org.junit.Test;
 
