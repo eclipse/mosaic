@@ -41,17 +41,21 @@ public class TrafficLightStateDecoder {
      */
     public static TrafficLightState createStateFromCharacter(Character stateChar) {
         switch (stateChar) {
-            case 'G':
-            case 'g':
+            case 'g': // green, but yield for foe streams with `G`
+            case 'G': // green, no yield for others
                 return new TrafficLightState(false, true, false);
-            case 'r':
+            case 'r': // red
+            case 'R': // red
+            case 's': // green right-turn arrow on red light
                 return new TrafficLightState(true, false, false);
-            case 'y':
-            case 'Y':
+            case 'y': // yellow
+            case 'Y': // yellow
                 return new TrafficLightState(false, false, true);
-            case 'u':
+            case 'u': // red + yellow
+            case 'U': // red + yellow
                 return new TrafficLightState(true, false, true);
-            case 'O': //off - no signal
+            case 'o': // off - yellow blinking indicates yield
+            case 'O': // off - no signal
                 return new TrafficLightState(false, false, false);
             default:
                 throw new IllegalArgumentException("Could not create a TrafficLightState from a phase definitions character " + stateChar);
