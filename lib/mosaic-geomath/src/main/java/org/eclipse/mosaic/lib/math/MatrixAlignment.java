@@ -18,14 +18,12 @@ package org.eclipse.mosaic.lib.math;
 public enum MatrixAlignment {
 
     /**
-     * Values are stored in a way, that subsequent values belong
-     * to the same row. That is, in a 3x3 matrix, the first 3 values
+     * Values are stored row-major order. That is, in a 3x3 matrix, the first 3 values
      * belong to the first row, the second 3 values to the second row, and so on.
      */
     ROWS,
     /**
-     * Values are stored in a way, that subsequent values
-     * to the same column. That is, in a 3x3 matrix, the first 3 values
+     * Values are stored in column-major order. That is, in a 3x3 matrix, the first 3 values
      * belong to the first column, the second 3 values to the second column, and so on.
      */
     COLUMNS

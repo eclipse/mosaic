@@ -27,8 +27,9 @@ public class Matrix4d implements Serializable {
     private static final DecimalFormat FORMAT = new DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
     /**
-     * Array holding value of the matrix. Values are stored column-wise, that is, the first 4 values
-     * represent the first column, the second 4 values the second column, and so on.<br>
+     * Array holding value of the matrix. Values are stored in column-major order.
+     *
+     * @see MatrixAlignment#COLUMNS
      */
     protected final double[] m = new double[16];
 
