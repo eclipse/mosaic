@@ -50,7 +50,7 @@ import java.util.Map;
 public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
 
     int backendProxyPort;
-    String backendProxyAddr;
+    String bindAddr;
 
     private String internalServicePrefix;
     private int heartbeatLiveness;
@@ -66,10 +66,150 @@ public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
     private Deque<Worker>        waiting;    // idle workers
 
     private boolean   verbose = false;                    // Print activity to stdout
-    private Formatter log     = new Formatter(System.out);
+    private Formatter logBroker = new Formatter(System.out);
+
 
     public ZmqBrokerAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
+        this.services = new HashMap<String, Service>();
+        this.workers = new HashMap<String, Worker>();
+        this.waiting = new ArrayDeque<Worker>();
+        this.heartbeatAt = System.currentTimeMillis() + heartbeatInterval;
+        this.ctx = new ZContext();
+        this.socket = ctx.createSocket(SocketType.ROUTER);
+    }
+
+    /**
+     * Disconnect all workers, destroy context.
+     */
+    private void destroy()
+    {
+        Worker[] deleteList = workers.values().toArray(new Worker[0]);
+        for (Worker worker : deleteList) {
+            deleteWorker(worker, true);
+        }
+        ctx.destroy();
+    }
+
+    /**
+     * Process a request coming from a client.
+     */
+    private void processClient(ZFrame sender, ZMsg msg)
+    {
+        assert (msg.size() >= 2); // Service name + body
+        ZFrame serviceFrame = msg.pop();
+        // Set reply return address to client sender
+        msg.wrap(sender.duplicate());
+        if (serviceFrame.toString().startsWith(internalServicePrefix))
+            serviceInternal(serviceFrame, msg);
+        else dispatch(requireService(serviceFrame), msg);
+        serviceFrame.destroy();
+    }
+
+        /**
+     * Process message sent to us by a worker.
+     */
+    private void processWorker(ZFrame sender, ZMsg msg)
+    {
+        assert (msg.size() >= 1); // At least, command
+
+        ZFrame command = msg.pop();
+
+        boolean workerReady = workers.containsKey(sender.strhex());
+
+        Worker worker = requireWorker(sender);
+
+        if (MDP.W_READY.frameEquals(command)) {
+            // Not first command in session || Reserved service name
+            if (workerReady || sender.toString().startsWith(internalServicePrefix))
+                deleteWorker(worker, true);
+            else {
+                // Attach worker to service and mark as idle
+                ZFrame serviceFrame = msg.pop();
+                worker.service = requireService(serviceFrame);
+                workerWaiting(worker);
+                serviceFrame.destroy();
+            }
+        }
+        else if (MDP.W_REPLY.frameEquals(command)) {
+            if (workerReady) {
+                // Remove & save client return envelope and insert the
+                // protocol header and service name, then rewrap envelope.
+                ZFrame client = msg.unwrap();
+                msg.addFirst(worker.service.name);
+                msg.addFirst(MDP.C_CLIENT.newFrame());
+                msg.wrap(client);
+                msg.send(socket);
+                workerWaiting(worker);
+            }
+            else {
+                deleteWorker(worker, true);
+            }
+        }
+        else if (MDP.W_HEARTBEAT.frameEquals(command)) {
+            if (workerReady) {
+                worker.expiry = System.currentTimeMillis() + heartbeatExpiry;
+            }
+            else {
+                deleteWorker(worker, true);
+            }
+        }
+        else if (MDP.W_DISCONNECT.frameEquals(command))
+            deleteWorker(worker, false);
+        else {
+            logBroker.format("E: invalid message:\n");
+            msg.dump(logBroker.out());
+        }
+        msg.destroy();
+    }
+
+    /**
+     * Deletes worker from all data structures, and destroys worker.
+     */
+    private void deleteWorker(Worker worker, boolean disconnect)
+    {
+        assert (worker != null);
+        if (disconnect) {
+            sendToWorker(worker, MDP.W_DISCONNECT, null, null);
+        }
+        if (worker.service != null)
+            worker.service.waiting.remove(worker);
+        workers.remove(worker);
+        worker.address.destroy();
+    }
+
+    /**
+     * Finds the worker (creates if necessary).
+     */
+    private Worker requireWorker(ZFrame address)
+    {
+        assert (address != null);
+        String identity = address.strhex();
+        Worker worker = workers.get(identity);
+        if (worker == null) {
+            worker = new Worker(identity, address.duplicate());
+            workers.put(identity, worker);
+            if (verbose)
+                logBroker.format("I: registering new worker: %s\n", identity);
+        }
+        return worker;
+    }
+
+    /**
+     * Locates the service (creates if necessary).
+     */
+    private Service requireService(ZFrame serviceFrame)
+    {
+        assert (serviceFrame != null);
+        String name = serviceFrame.toString();
+        Service service = services.get(name);
+        if (service == null) {
+            service = new Service(name);
+            services.put(name, service);
+        }
+        return service;
+    }
+
     }
 
 
