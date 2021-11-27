@@ -29,6 +29,7 @@ import org.eclipse.mosaic.fed.zeromq.config.CZeromq;
 import org.zeromq.SocketType;
 import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZContext;
+import org.zeromq.ZMsg;
 
 import com.google.gson.Gson;
 
@@ -42,6 +43,7 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
     ZContext ctx = new ZContext();
     private final Socket publisher = ctx.createSocket(SocketType.PUB);
     int backendProxyPort;
+    String backendProxyAddr;
 
     public ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
