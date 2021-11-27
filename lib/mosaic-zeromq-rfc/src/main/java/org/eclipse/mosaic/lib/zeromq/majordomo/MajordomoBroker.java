@@ -77,13 +77,13 @@ public class MajordomoBroker implements Runnable {
     private ZContext   ctx;    // Our context
     private ZMQ.Socket socket; // Socket for clients & workers
 
-    private long                 heartbeatAt;// When to send HEARTBEAT
+    private long heartbeatAt;// When to send HEARTBEAT
     private Map<String, Service> services;   // known services
-    private Map<String, Worker>  workers;    // known workers
-    private Deque<Worker>        waiting;    // idle workers
+    private Map<String, Worker> workers;    // known workers
+    private Deque<Worker> waiting;    // idle workers
 
-    private boolean   verbose = false;                    // Print activity to stdout
-    private Formatter log     = new Formatter(System.out);
+    private boolean verbose = false;                    // Print activity to stdout
+    private Formatter log = new Formatter(System.out);
     private String bindAddr;
 
     // ---------------------------------------------------------------------
@@ -407,7 +407,7 @@ public class MajordomoBroker implements Runnable {
 
     @Override
     public void run() {
-        MajordomoBroker broker = new MajordomoBroker(verbose, bindAddr);
+        MajordomoBroker broker = new MajordomoBroker(this.verbose, this.bindAddr);
         broker.bind();
         broker.mediate();
     }
