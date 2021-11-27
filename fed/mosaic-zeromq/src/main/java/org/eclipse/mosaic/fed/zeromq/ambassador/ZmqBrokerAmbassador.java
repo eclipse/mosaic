@@ -341,6 +341,50 @@ public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
         log.info("Initialized Zeromq Sockets!");
     }
 
+    public void mediateForInteraction()
+    {
+        while (!Thread.currentThread().isInterrupted()) {
+            ZMQ.Poller items = ctx.createPoller(1);
+            items.register(socket, ZMQ.Poller.POLLIN);
+            if (items.poll(heartbeatInterval) == -1)
+                break; // Interrupted
+            if (items.pollin(0)) {
+                ZMsg msg = ZMsg.recvMsg(socket);
+                if (msg == null)
+                    break; // Interrupted
+
+                if (verbose) {
+                    logBroker.format("I: received message:\n");
+                    msg.dump(logBroker.out());
+                }
+
+                ZFrame sender = msg.pop();
+                ZFrame empty = msg.pop();
+                ZFrame header = msg.pop();
+
+                if (MDP.C_CLIENT.frameEquals(header)) {
+                    processClient(sender, msg);
+                }
+                else if (MDP.W_WORKER.frameEquals(header))
+                    processWorker(sender, msg);
+                else {
+                    logBroker.format("E: invalid message:\n");
+                    msg.dump(logBroker.out());
+                    msg.destroy();
+                }
+
+                sender.destroy();
+                empty.destroy();
+                header.destroy();
+
+            }
+            items.close();
+            purgeWorkers();
+            sendHeartbeats();
+        }
+        destroy(); // interrupted
+    }
+
 
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
