@@ -210,6 +210,106 @@ public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
         return service;
     }
 
+
+    /**
+     * Handle internal service according to 8/MMI specification
+     */
+    private void serviceInternal(ZFrame serviceFrame, ZMsg msg)
+    {
+        String returnCode = "501";
+        if ("mmi.service".equals(serviceFrame.toString())) {
+            String name = msg.peekLast().toString();
+            returnCode = services.containsKey(name) ? "200" : "400";
+        }
+        msg.peekLast().reset(returnCode.getBytes(ZMQ.CHARSET));
+        // Remove & save client return envelope and insert the
+        // protocol header and service name, then rewrap envelope.
+        ZFrame client = msg.unwrap();
+        msg.addFirst(serviceFrame.duplicate());
+        msg.addFirst(MDP.C_CLIENT.newFrame());
+        msg.wrap(client);
+        msg.send(socket);
+    }
+
+    /**
+     * Send heartbeats to idle workers if it's time
+     */
+    public synchronized void sendHeartbeats()
+    {
+        // Send heartbeats to idle workers if it's time
+        if (System.currentTimeMillis() >= heartbeatAt) {
+            for (Worker worker : waiting) {
+                sendToWorker(worker, MDP.W_HEARTBEAT, null, null);
+            }
+            heartbeatAt = System.currentTimeMillis() + heartbeatInterval;
+        }
+    }
+
+    /**
+     * Look for &amp; kill expired workers. Workers are oldest to most recent, so we
+     * stop at the first alive worker.
+     */
+    public synchronized void purgeWorkers()
+    {
+        for (Worker w = waiting.peekFirst(); w != null
+                && w.expiry < System.currentTimeMillis(); w = waiting.peekFirst()) {
+            logBroker.format("I: deleting expired worker: %s\n", w.identity);
+            deleteWorker(waiting.pollFirst(), false);
+        }
+    }
+
+        /**
+     * This worker is now waiting for work.
+     */
+    public synchronized void workerWaiting(Worker worker)
+    {
+        // Queue to broker and service waiting lists
+        waiting.addLast(worker);
+        worker.service.waiting.addLast(worker);
+        worker.expiry = System.currentTimeMillis() + heartbeatExpiry;
+        dispatch(worker.service, null);
+    }
+
+    /**
+     * Dispatch requests to waiting workers as possible
+     */
+    private void dispatch(Service service, ZMsg msg)
+    {
+        assert (service != null);
+        if (msg != null)// Queue message if any
+            service.requests.offerLast(msg);
+        purgeWorkers();
+        while (!service.waiting.isEmpty() && !service.requests.isEmpty()) {
+            msg = service.requests.pop();
+            Worker worker = service.waiting.pop();
+            waiting.remove(worker);
+            sendToWorker(worker, MDP.W_REQUEST, null, msg);
+            msg.destroy();
+        }
+    }
+
+    /**
+     * Send message to worker. If message is provided, sends that message. Does
+     * not destroy the message, this is the caller's job.
+     */
+    public void sendToWorker(Worker worker, MDP command, String option, ZMsg msgp)
+    {
+
+        ZMsg msg = msgp == null ? new ZMsg() : msgp.duplicate();
+
+        // Stack protocol envelope to start of message
+        if (option != null)
+            msg.addFirst(new ZFrame(option));
+        msg.addFirst(command.newFrame());
+        msg.addFirst(MDP.W_WORKER.newFrame());
+
+        // Stack routing envelope to start of message
+        msg.wrap(worker.address.duplicate());
+        if (verbose) {
+            logBroker.format("I: sending %s to worker\n", command);
+            msg.dump(logBroker.out());
+        }
+        msg.send(socket);
     }
 
 
