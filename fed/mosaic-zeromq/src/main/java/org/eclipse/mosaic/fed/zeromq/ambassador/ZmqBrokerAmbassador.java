@@ -399,7 +399,7 @@ public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
         return false;
     }
 
-    private static class Service
+    private class Service
     {
         public final String name;     // Service name
         Deque<ZMsg>         requests; // List of client requests
@@ -416,7 +416,7 @@ public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
     /**
      * This defines one worker, idle or active.
      */
-    private static class Worker
+    private class Worker
     {
         String  identity;// Identity of worker
         ZFrame  address; // Address frame to route to
@@ -427,8 +427,16 @@ public class ZmqBrokerAmbassador extends AbstractFederateAmbassador {
         {
             this.address = address;
             this.identity = identity;
-            this.expiry = System.currentTimeMillis() + HEARTBEAT_INTERVAL * HEARTBEAT_LIVENESS;
+            this.expiry = System.currentTimeMillis() + heartbeatLiveness * heartbeatInterval;
         }
+    }
+
+    public int getHeartbeatLiveness() {
+        return heartbeatLiveness;
+    }
+
+    public int getHeartbeatInterval() {
+        return heartbeatInterval;
     }
     
 }
