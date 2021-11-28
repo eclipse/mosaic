@@ -17,7 +17,7 @@ package org.eclipse.mosaic.fed.zeromq.workers;
 
 
 import org.eclipse.mosaic.lib.zeromq.majordomo.MDP;
-import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
+import org.eclipse.mosaic.rti.TIME;
 import java.util.Formatter;
 
 import org.zeromq.ZMsg;
@@ -31,7 +31,7 @@ import org.zeromq.SocketType;
 * Majordomo Protocol Client API, Java version Implements the MDP/Worker spec at
 * http://rfc.zeromq.org/spec:7.
 */
-public abstract class AbstractMajordomoWorker implements Runnable
+public class NoblockMajordomoWorker 
 {
 
     private String inprocAddr;
@@ -62,13 +62,14 @@ public abstract class AbstractMajordomoWorker implements Runnable
     // Return interrupt ZMsg
     private ZMsg interrupt;
 
-    public AbstractMajordomoWorker(String broker, String service, boolean verbose)
+    public NoblockMajordomoWorker(String broker, String service, boolean verbose)
     {
         assert (broker != null);
         assert (service != null);
         this.broker = broker;
         this.service = service;
         this.verbose = verbose;
+        inprocAddr = "inproc://" + service;
         ctx = new ZContext();
         reconnectToBroker();
     }
@@ -128,9 +129,7 @@ public abstract class AbstractMajordomoWorker implements Runnable
     /**
      * Send reply, if any, to broker and wait for next request.
      */
-    public ZMsg receive(ZMsg reply)
-    {
-
+    public ZMsg receive(ZMsg reply) {
         // Format and send the reply if we were provided one
         assert (reply != null || !expectReply);
 
@@ -144,17 +143,14 @@ public abstract class AbstractMajordomoWorker implements Runnable
         return null;
     }
 
-    public ZMsg checkHealthSigns(ZMsg reply){
+    public ZMsg checkHealthSigns() {
         // Poll socket for a reply, with timeout
         ZMQ.Poller items = ctx.createPoller(1);
         items.register(worker, ZMQ.Poller.POLLIN);
-        if (items.poll(timeout) == -1)
-            return interrupt; // Interrupted
-
         if (items.pollin(0)) {
             ZMsg msg = ZMsg.recvMsg(worker);
             if (msg == null)
-                return interrupt; // Interrupted
+                return null; // Interrupted
             if (verbose) {
                 log.format("I: received message from broker: \n");
                 msg.dump(log.out());
@@ -199,12 +195,9 @@ public abstract class AbstractMajordomoWorker implements Runnable
                 Thread.sleep(reconnect);
             }
             catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Restore the
-                                                    // interrupted status
-                return interrupt;
+                return null;
             }
             reconnectToBroker();
-
         }
         // Send HEARTBEAT if it's time
         if (System.currentTimeMillis() > heartbeatAt) {
@@ -212,6 +205,7 @@ public abstract class AbstractMajordomoWorker implements Runnable
             heartbeatAt = System.currentTimeMillis() + heartbeat;
         }
         items.close();
+        return null;
     }
 
     public void destroy()
@@ -247,11 +241,5 @@ public abstract class AbstractMajordomoWorker implements Runnable
         if (inprocItems.pollin(0)){
 
         }
-    }
-
-    @Override
-    public void run() {
-        // TODO Auto-generated method stub
-        
     }
 }
