@@ -28,6 +28,7 @@ public class AsyncClient {
     private Poller poller;
     private String frontendAddr;
     private Formatter log = new Formatter(System.out);
+    private ZMsg request;
 
     public AsyncClient(String frontendAddr, String identity) {
         Socket client = ctx.createSocket(SocketType.DEALER);
@@ -35,19 +36,16 @@ public class AsyncClient {
         client.connect(frontendAddr);
         Poller poller = ctx.createPoller(1);
         poller.register(client, Poller.POLLIN);
-
-        this.frontendAddr = frontendAddr;
-        this.identity = identity;
     }
 
     public ZMsg recv(ZMsg reply){
         //  The DEALER socket gives us the address envelope and message
         poller.poll(1);
         if (poller.pollin(0)) {
-            ZMsg request = ZMsg.recvMsg(client);
+            request = ZMsg.recvMsg(client);
         } 
         reply.send(client);
-        return msg;
+        return request;
     }
 
     public void destroy(){

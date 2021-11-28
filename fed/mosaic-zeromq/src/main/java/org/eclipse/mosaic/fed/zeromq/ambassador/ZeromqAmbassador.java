@@ -19,18 +19,17 @@ import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.rti.api.AbstractFederateAmbassador;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
+
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-
 import org.eclipse.mosaic.fed.zeromq.config.CZeromq;
+import org.eclipse.mosaic.fed.zeromq.device.AmbassadorBroker;
+import org.eclipse.mosaic.fed.zeromq.device.AmbassadorWorker;
 
-import org.zeromq.SocketType;
-import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZContext;
 import org.zeromq.ZMsg;
-
 import com.google.gson.Gson;
 
 import java.util.Arrays;
@@ -40,15 +39,15 @@ import java.util.HashMap;
 
 public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
-    ZContext ctx = new ZContext();
-    private final Socket publisher = ctx.createSocket(SocketType.PUB);
-    int backendProxyPort;
-    String backendProxyAddr;
+    private ZContext ctx = new ZContext();
+    private Thread brokerThread;
+    private AmbassadorWorker worker;
+    private AmbassadorBroker broker;
+    private String backend, frontend;
 
     public ZeromqAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
     }
-
 
     @Override
     public void initialize(final long startTime, final long endTime) throws InternalFederateException {
@@ -61,16 +60,24 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
         try {
             CZeromq configuration = new ObjectInstantiation<>(CZeromq.class).readFile(ambassadorParameter.configuration);
-            backendProxyPort = configuration.getBackendProxy();
-
+            backend = configuration.getBackend();
+            frontend = configuration.getFrontend();
+            broker = new AmbassadorBroker(frontend, backend);
+            brokerThread = new Thread(broker);
+            brokerThread.start();
+            this.log.info("AmbassadorBroker started in Thread {}!, cooldown for 1sec!", brokerThread);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                this.log.info("AmbassadorBroker cooldown phase finalized!");
+            }
         } catch (InstantiationException e) {
             log.error("Could not read configuration. Reason: {}", e.getMessage());
         }
-        
-        String backendProxyAddr = "tcp://127.0.0.1:" + String.valueOf(backendProxyPort);
-        publisher.connect(backendProxyAddr);
 
-        log.info("Initialized Zeromq Sockets!");
+        worker = new AmbassadorWorker(backend, "req.interaction");
+        this.log.info("AmbassadorWorker {} started!, cooldown for 1sec!", worker);
+
     }
 
 
@@ -87,8 +94,9 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
     }
 
     private void process(VehicleUpdates interaction) {
-            String json = this.createFVDGson(interaction);
-            publisher.send(json);
+        String json = createFVDGson(interaction);
+        ZMsg reply = worker.recvAndSend(json);
+        log.info("Reply = {}", reply);
     }
 
     private List<Double> geoPointConvert(GeoPoint pos){
@@ -116,6 +124,8 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
     @Override
     public void finishSimulation() throws InternalFederateException {
+        worker.destroy();
+        brokerThread.interrupt();
         log.info("Finished simulation");
     }
 
@@ -127,6 +137,5 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
     @Override
     public boolean isTimeRegulating() {
         return false;
-    }
-    
+    }    
 }

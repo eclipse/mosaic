@@ -4,6 +4,16 @@
     "description": "Schema describing the JSON file structure for the zeromq configuration.",
     "type": "object",
     "properties": {
+        "backend": {
+            "description": "Frontend socket talks to clients over TCP",
+            "type": "string",
+            "default": "tcp://127.0.0.1:5555"
+        },
+        "frontend": {
+            "description": "Backend socket talks to workers over TCP",
+            "type": "string",
+            "default": "tcp://127.0.0.1:5566"
+        },
         "ambassadorBroker": {
             "description": "Broker, implements an intermediary between clients and workers.",
             "$ref": "#/definitions/ambassadorBroker"
@@ -32,17 +42,7 @@
             "description": "Broker created during ZeromqAmbassador initialization, implements an intermediary between clients and workers.",
             "type": "object",
             "properties": {
-                "backend": {
-                    "description": "Frontend socket talks to clients over TCP",
-                    "type": "string",
-                    "default": "tcp://127.0.0.1:5555"
-                },
-                "frontend": {
-                    "description": "Backend socket talks to workers over TCP",
-                    "type": "string",
-                    "default": "tcp://127.0.0.1:5566"
-                },
-                "thread": {
+                "threadObject": {
                     "description": "Returns a thread object if true",
                     "type": "boolean",
                     "default": true

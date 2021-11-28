@@ -1,8 +1,8 @@
-{
+{       
+    "backend": "tcp://127.0.0.1:5555",
+    "frontend": "tcp://127.0.0.1:5566",
     "ambassadorBroker":{
-        "backend": "tcp://127.0.0.1:5555",
-        "frontend": "tcp://127.0.0.1:5566",
-        "thread": true
+        "threadObject": true
     },
     "ambassadorWorker": {
         "contract": "req."

@@ -32,35 +32,52 @@ public class AsyncWorker {
     private ZFrame content;
     private ZFrame recordedContent;
 
-    public AsyncWorker(String backendAddr, String identity) {
+    public AsyncWorker(String backendAddr, String contract) {
         Socket worker = ctx.createSocket(SocketType.DEALER);
-        worker.setIdentity(identity.getBytes(ZMQ.CHARSET));
+        worker.setIdentity(contract.getBytes(ZMQ.CHARSET));
         worker.connect(backendAddr);
         this.backendAddr = backendAddr;
+
+        this.worker = worker;
     }
 
-    public void recv(byte[] data){
+    public ZMsg recvAndSend(String data){
         //  The DEALER socket gives us the address envelope and message
-        ZMsg msg = ZMsg.recvMsg(worker);
+        ZMsg msg = ZMsg.recvMsg(worker, ZMQ.DONTWAIT);
+        
+        if (msg == null)
+            return null;
+
         identity = msg.pop();
         content = msg.pop();
         msg.clear();
 
         // Reply using the identity of the client
         String contract = identity.getString(ZMQ.CHARSET);
+        ZFrame reply = new ZFrame(data);
         if (contract.startsWith("req.")){
             // Content is ignored, ZFrame request needs to be filled with data
-            ZFrame request = new ZFrame(data);
-            identity.sendAndDestroy(worker, ZFrame.MORE);
-            request.sendAndDestroy(worker, 0);
+            identity.send(worker, ZFrame.MORE);
+            reply.send(worker, 0);
+            return createMsg(identity, reply);
         } else if (contract.startsWith("service.")){
             // Content will have some data
-            identity.sendAndDestroy(worker, ZFrame.MORE);
-            // Record content to get it later
-            recordedContent = content;
-            ZFrame serviceContent = new ZFrame("1".getBytes());
-            serviceContent.sendAndDestroy(worker, 0);
+            identity.send(worker, ZFrame.MORE);
+            reply = new ZFrame("1".getBytes());
+            reply.send(worker, 0);
+            return createMsg(new ZFrame(data));
+        } else{
+            return null;
         }
+    }
+
+    private ZMsg createMsg(ZFrame... frames){
+        ZMsg msg = new ZMsg();
+        for (ZFrame frame : frames){
+            msg.add(frame);
+            frame.destroy();
+        }
+        return msg;
     }
 
     public void destroy(){
@@ -68,7 +85,6 @@ public class AsyncWorker {
         worker.close();
         ctx.close();
     }
-
     public ZFrame getIdentity() {
         return identity;
     }

@@ -26,23 +26,17 @@ public class AsyncBroker implements Runnable {
 
     public AsyncBroker(String frontendAddr, String backendAddr){
         //  Frontend socket talks to clients over TCP
-        Socket frontend = ctx.createSocket(SocketType.ROUTER);
+        this.frontend = ctx.createSocket(SocketType.ROUTER);
         frontend.bind(frontendAddr);
 
         //  Backend socket talks to workers over TCP
-        Socket backend = ctx.createSocket(SocketType.DEALER);
+        this.backend = ctx.createSocket(SocketType.DEALER);
         backend.bind(backendAddr);
-
-        //  Connect backend to frontend via a proxy
-        ZMQ.proxy(frontend, backend, null);
     }
     
     @Override
     public void run()
     {
-        try (ZContext ctx = new ZContext()) {
-            //  Connect backend to frontend via a proxy
-            ZMQ.proxy(frontend, backend, null);
-        }
+        ZMQ.proxy(this.frontend, this.backend, null);
     }
 }
