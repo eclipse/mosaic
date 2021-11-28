@@ -18,9 +18,7 @@ package org.eclipse.mosaic.lib.zeromq.bidirectional;
 import java.util.Random;
 
 import org.zeromq.*;
-import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
-import org.zeromq.proto.ZNeedle;
 
 
 public class AsyncWorker {
