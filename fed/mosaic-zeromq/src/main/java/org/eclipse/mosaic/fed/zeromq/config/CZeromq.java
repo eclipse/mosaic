@@ -26,7 +26,13 @@ public class CZeromq {
     private String backend;
     private String frontend;
     private AmbassadorBroker ambassadorBroker;
-    private AmbassadorWorker ambassadorWorker;
+
+    public CZeromq(String backend, String frontend, AmbassadorBroker ambassadorBroker,
+            AmbassadorWorker ambassadorWorker) {
+        this.backend = backend;
+        this.frontend = frontend;
+        this.ambassadorBroker = new AmbassadorBroker(frontend, backend);
+    }
 
     public String getBackend() {
         return backend;
@@ -34,7 +40,10 @@ public class CZeromq {
     public String getFrontend() {
         return frontend;
     }
-    public AmbassadorWorker getAmbassadorWorker() {
-        return ambassadorWorker;
+    public AmbassadorBroker getAmbassadorBroker() {
+        return ambassadorBroker;
+    }
+    public Thread getAmbassadorBrokerThread(){
+        return new Thread(ambassadorBroker);
     }
 }
