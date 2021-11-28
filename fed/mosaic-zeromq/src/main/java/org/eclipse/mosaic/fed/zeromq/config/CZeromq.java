@@ -15,22 +15,26 @@
 
 package org.eclipse.mosaic.fed.zeromq.config;
 
+import org.eclipse.mosaic.fed.zeromq.device.AmbassadorWorker;
+import org.eclipse.mosaic.fed.zeromq.device.AmbassadorBroker;
+
 /**
  * Zeromq configuration.
  */
 public class CZeromq {
 
-    public int backendProxy;
-    public int proxyBackend;
-    public String internalServicePrefix;
-    public int hearbeatLiveness;
-    public int heartbeatInterval;
-    public int heartbeatExpiry;
-    
-    public int getBackendProxy(){
-        return backendProxy;
-    }    
-    public int getProxyBackend(){
-        return proxyBackend;
+    private String backend;
+    private String frontend;
+    private AmbassadorBroker ambassadorBroker;
+    private AmbassadorWorker ambassadorWorker;
+
+    public String getBackend() {
+        return backend;
+    }
+    public String getFrontend() {
+        return frontend;
+    }
+    public AmbassadorWorker getAmbassadorWorker() {
+        return ambassadorWorker;
     }
 }
