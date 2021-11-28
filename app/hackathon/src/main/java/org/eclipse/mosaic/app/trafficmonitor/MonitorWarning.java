@@ -17,6 +17,7 @@ package org.eclipse.mosaic.app.trafficmonitor;
 
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
+import org.eclipse.mosaic.fed.zeromq.device.AmbassadorWorker;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -32,11 +33,8 @@ import java.util.stream.Collectors;
 import java.util.Collection;
 
 
-import org.zeromq.ZContext;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQ.Poller;
-import org.zeromq.ZMQ.Socket;
-import org.zeromq.SocketType;
+import org.zeromq.ZMsg;
+import org.zeromq.ZFrame;
 
 import java.util.ArrayList;
 
@@ -47,11 +45,9 @@ import java.util.ArrayList;
  */
 public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSystem> {
 
-    ZContext ctx = new ZContext();
-    private final Socket puller = ctx.createSocket(SocketType.PULL);
-    private final Socket pusher = ctx.createSocket(SocketType.PUSH);
-    private byte[] warningMessage;
-    Poller items = ctx.createPoller(1);
+    AmbassadorWorker warning;
+    private boolean validFlag = false;
+    ZMsg reply;
 
     private Database database = Database.loadFromFile("scenarios/Monaco/application/Monaco.db");
     private ArrayList<Connection> connectionList = database.getConnections().stream().collect(Collectors.toCollection(ArrayList::new));
@@ -59,8 +55,9 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
 
     private final static long INTERVAL = 1 * TIME.SECOND;
 
+    private String avoidRoadId = "";
+
     private final static SensorType SENSOR_TYPE = SensorType.ICE;
-    private final static float SPEED = 25 / 3.6f;
 
     @Override
     public void onStartup() {
@@ -68,19 +65,12 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
         getOs().getCellModule().enable();
         getLog().infoSimTime(this, "Activated Cell Module");
 
-        String proxyBackendAddr = "tcp://127.0.0.1:" + String.valueOf(1111);
-        String backendProxyAddr = "tcp://127.0.0.1:" + String.valueOf(2222);
-
-        puller.connect(proxyBackendAddr);
-        pusher.connect(backendProxyAddr);
-        items.register(puller, Poller.POLLIN);
-
-
         for (Connection conn : connectionList){
             connectionStrings.add(conn.getId());
         }
 
-        sample();
+        warning = new AmbassadorWorker("tcp://127.0.0.1:5555", "service.warning");
+        sample(false);
     }
 
     /**
@@ -92,61 +82,48 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
      */
     @Override
     public void processEvent(Event event) throws Exception {
-        sample();
+        reply = warning.recvOnce();
+        boolean valid = checkWarningValidity(reply);
+        reply.destroy();
+        sample(valid);
     }
 
-    private boolean incomingWarning(){
-        items.poll(0);
-        if (items.pollin(0)) {
-            warningMessage = puller.recv(0);
-            return true;
-        }else{
-            return false;
-        }
-    }
+    private boolean checkWarningValidity(ZMsg receivedMsg){
+        ZFrame ident = receivedMsg.pop();
+        ZFrame warningMsg = receivedMsg.pop();
+        receivedMsg.destroy();
 
-    private boolean checkWarningValidity(byte[] warningMsg){
-        String candidateWarning = new String(warningMsg);
-        if (connectionStrings.contains(candidateWarning)){
+        if (connectionStrings.contains(warningMsg.toString())){
+            warning.sendOnce(ident, String.valueOf(true));
+            ident.destroy();
+            warningMsg.destroy();
+            this.avoidRoadId = warningMsg.toString();
             return true;
         } else {
+            warning.sendOnce(ident, String.valueOf(false));
+            ident.destroy();
+            warningMsg.destroy();
             return false;
         }
     }
 
-    private void sample() {
-
-        boolean retWarning = incomingWarning();
-        if (retWarning) {
-            boolean retValid = checkWarningValidity(warningMessage);
-
-            if (retValid) {
-                byte[] success = "1".getBytes();
-                pusher.send(success, ZMQ.SNDMORE);
-                pusher.send(warningMessage, 0);
-                String warningRoadId = new String(warningMessage);
-                final Denm denm = constructDenm(warningRoadId);
-                getOs().getCellModule().sendV2xMessage(denm);
-                getLog().infoSimTime(this, "Sent DENM");
-                // Line up new event for periodic sending
-                getOs().getEventManager().addEvent(
-                        getOs().getSimulationTime() + INTERVAL, this);
-            }
-            else{
-                byte[] fail = "0".getBytes();
-                pusher.send(fail, ZMQ.SNDMORE);
-                pusher.send("Invalid Connection ID", 0);
-            }
-            } else {
-                getLog().debug("No MonitorWarning Message Detected");
-            }
+    private void sample(boolean valid) {
+        getOs().getEventManager().addEvent(getOs().getSimulationTime() + INTERVAL, this);
+        if (valid) {
+            final Denm denm = constructDenm(this.avoidRoadId);
+            getOs().getCellModule().sendV2xMessage(denm);
+        }
     }
 
+    /**
+     * This RSU utilizes the road id from Client to geobroadbast a message to all the vehicles
+     * 
+     * @param road_id
+     * @return  
+     */
     private Denm constructDenm(String road_id) {
         final GeoCircle geoCircle = new GeoCircle(getOs().getPosition(), 5000.0D);
         final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
-
-        final int strength = getOs().getStateOfEnvironmentSensor(SENSOR_TYPE);
 
         return new Denm(routing,
                 new DenmContent(
@@ -154,8 +131,8 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
                         getOs().getInitialPosition(),
                         road_id,
                         SENSOR_TYPE,
-                        strength,
-                        SPEED,
+                        1,
+                        100.0f,
                         0.0f,
                         null,
                         null,
