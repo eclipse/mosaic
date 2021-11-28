@@ -1,32 +1,25 @@
 import zmq
 
-
 class ZMessaging():
 
-    def __init__(self,
-                 subscriber_port: int = 6666,
-                 dealer_port: int = 2222):
+    def __init__(self, frontend: str = "tcp://127.0.0.1:5566"):
         ctx = zmq.Context()
 
         # Create sockets for subscriber and pipeline
-        subscriber = ctx.socket(zmq.SUB)
-        dealer = ctx.socket(zmq.DEALER)
+        client = ctx.socket(zmq.DEALER)
+        warning = ctx.socket(zmq.DEALER)
+        client.setsockopt(zmq.IDENTITY, b"req.interaction")
+        warning.setsockopt(zmq.IDENTITY, b"service.warning")
 
-        subsc_addr = "tcp://127.0.0.1:" + str(subscriber_port)
-        push_addr = "tcp://127.0.0.1:" + str(dealer_port)
-
-
-        subscriber.connect(subsc_addr)
-        publisher.connect(pub_addr)
-        pusher.connect(push_addr)
-        puller.connect(pull_addr)
-
+        client.connect(frontend)
+        warning.connect(frontend)
         poller = zmq.Poller()
-        poller.register(pull_addr, zmq.POLLIN)
 
-        self.subscriber = subscriber
-        self.publisher = publisher
-        self.puller = puller
+        poller.register(client, zmq.POLLIN)
+        poller.register(warning, zmq.POLLIN)
+
+        self.client = client
+        self.warning = warning
         self.poller = poller
 
     def request_data(self):
