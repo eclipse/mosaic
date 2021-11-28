@@ -28,8 +28,6 @@ import org.eclipse.mosaic.fed.zeromq.config.CZeromq;
 import org.eclipse.mosaic.fed.zeromq.device.AmbassadorBroker;
 import org.eclipse.mosaic.fed.zeromq.device.AmbassadorWorker;
 
-import org.zeromq.ZContext;
-import org.zeromq.ZMsg;
 import com.google.gson.Gson;
 
 import java.util.Arrays;
@@ -39,7 +37,6 @@ import java.util.HashMap;
 
 public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
-    private ZContext ctx = new ZContext();
     private Thread brokerThread;
     private AmbassadorWorker worker;
     private AmbassadorBroker broker;
@@ -77,10 +74,7 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
         worker = new AmbassadorWorker(backend, "req.interaction");
         this.log.info("AmbassadorWorker {} started!, cooldown for 1sec!", worker);
-
     }
-
-
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
         try {
@@ -95,8 +89,7 @@ public class ZeromqAmbassador extends AbstractFederateAmbassador {
 
     private void process(VehicleUpdates interaction) {
         String json = createFVDGson(interaction);
-        ZMsg reply = worker.recvAndSend(json);
-        log.info("Reply = {}", reply);
+        worker.recvAndSend(json);
     }
 
     private List<Double> geoPointConvert(GeoPoint pos){
