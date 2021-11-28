@@ -22,21 +22,20 @@ class ZMessaging():
         self.warning = warning
         self.poller = poller
 
-    def request_data(self):
-        msg = self.subscriber.recv_json()
-        return msg
-
-    def send_warning(self, road_id: str):
-        # ping
-        self.publisher.send_string("warning", zmq.SNDMORE)
-        self.publisher.send_string(road_id, 0)
-        self.send_flag = True
-
-    def ret_warning(self):
-        # pong
-        socks = dict(self.poller.poll(1000))
-        if self.puller in socks:
-            msg = self.puller.recv_multipart()
+    def receive_data(self, timeout: int = 100):
+        self.client.send_string("")
+        sockets = dict(self.poller.poll(timeout))
+        if self.client in sockets:
+            msg = self.client.recv_json()
             return msg
         else:
-            return False
+            return None
+
+    def send_warning(self, road_id: str, timeout: int = 100):
+        self.warning.send_string(road_id)
+        sockets = dict(self.poller.poll(timeout))
+        if self.warning in sockets:
+            ret = self.warning.recv_json()
+            return ret
+        else:
+            return None
