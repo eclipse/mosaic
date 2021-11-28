@@ -72,17 +72,17 @@ public class AsyncWorker {
         // Reply using the identity of the client
         String contract = identity.getString(ZMQ.CHARSET);
         ZFrame reply = new ZFrame(data);
-        if (contract.startsWith("req.")){
+        if (contract.equals("req.interaction")){
             // Content is ignored, ZFrame request needs to be filled with data
             identity.send(worker, ZFrame.MORE);
             reply.send(worker, 0);
             return createMsg(identity, reply);
-        } else if (contract.startsWith("service.")){
+        } else if (contract.equals("service.warning")){
             // Content will have some data
             identity.send(worker, ZFrame.MORE);
             reply = new ZFrame("1".getBytes());
             reply.send(worker, 0);
-            return createMsg(new ZFrame(data));
+            return createMsg(content);
         } else{
             return null;
         }
