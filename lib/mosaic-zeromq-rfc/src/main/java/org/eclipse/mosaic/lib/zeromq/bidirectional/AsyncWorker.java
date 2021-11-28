@@ -41,6 +41,23 @@ public class AsyncWorker {
         this.worker = worker;
     }
 
+    public ZMsg recvOnce(){
+        ZMsg msg = ZMsg.recvMsg(worker, ZMQ.DONTWAIT);
+        if (msg == null)
+            return null;
+        return msg;
+    }
+
+    public ZMsg sendOnce(ZFrame sendToIdentity, String data){
+        
+        ZFrame reply = new ZFrame(data);
+
+        sendToIdentity.send(worker, ZFrame.MORE);
+        reply.send(worker, 0);
+
+        return createMsg(identity, reply);
+    }
+
     public ZMsg recvAndSend(String data){
         //  The DEALER socket gives us the address envelope and message
         ZMsg msg = ZMsg.recvMsg(worker, ZMQ.DONTWAIT);
