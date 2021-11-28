@@ -32,6 +32,11 @@
             <artifactId>jeromq</artifactId>
             <version>${version.zeromq}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-zeromq</artifactId>
+            <version>${mosaic.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
