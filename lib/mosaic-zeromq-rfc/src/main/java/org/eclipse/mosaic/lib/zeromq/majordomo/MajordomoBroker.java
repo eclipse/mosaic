@@ -27,13 +27,12 @@ import org.zeromq.*;
 *  Majordomo Protocol broker
 *  A minimal implementation of http://rfc.zeromq.org/spec:7 and spec:8
 */
-public class MajordomoBroker
-{
+public class MajordomoBroker implements Runnable {
 
     // We'd normally pull these from config data
     private static final String INTERNAL_SERVICE_PREFIX = "mmi.";
     private static final int    HEARTBEAT_LIVENESS      = 3;                                      // 3-5 is reasonable
-    private static final int    HEARTBEAT_INTERVAL      = 2500;                                   // msecs
+    private static final int    HEARTBEAT_INTERVAL      = 10000;                                   // msecs
     private static final int    HEARTBEAT_EXPIRY        = HEARTBEAT_INTERVAL * HEARTBEAT_LIVENESS;
 
     // ---------------------------------------------------------------------
@@ -78,19 +77,19 @@ public class MajordomoBroker
     private ZContext   ctx;    // Our context
     private ZMQ.Socket socket; // Socket for clients & workers
 
-    private long                 heartbeatAt;// When to send HEARTBEAT
+    private long heartbeatAt;// When to send HEARTBEAT
     private Map<String, Service> services;   // known services
-    private Map<String, Worker>  workers;    // known workers
-    private Deque<Worker>        waiting;    // idle workers
+    private Map<String, Worker> workers;    // known workers
+    private Deque<Worker> waiting;    // idle workers
 
-    private boolean   verbose = false;                    // Print activity to stdout
-    private Formatter log     = new Formatter(System.out);
+    private boolean verbose = false;                    // Print activity to stdout
+    private Formatter log = new Formatter(System.out);
+    private String bindAddr;
 
     // ---------------------------------------------------------------------
 
     /**
      * Main method - create and start new broker.
-     */
     public static void main(String[] args)
     {
         MajordomoBroker broker = new MajordomoBroker(args.length > 0 && "-v".equals(args[0]));
@@ -98,11 +97,12 @@ public class MajordomoBroker
         broker.bind("tcp://127.0.0.1:5555");
         broker.mediate();
     }
+     */
 
     /**
      * Initialize broker state.
      */
-    public MajordomoBroker(boolean verbose)
+    public MajordomoBroker(boolean verbose, String bindAddr)
     {
         this.verbose = verbose;
         this.services = new HashMap<String, Service>();
@@ -111,6 +111,7 @@ public class MajordomoBroker
         this.heartbeatAt = System.currentTimeMillis() + HEARTBEAT_INTERVAL;
         this.ctx = new ZContext();
         this.socket = ctx.createSocket(SocketType.ROUTER);
+        this.bindAddr = bindAddr;
     }
 
     // ---------------------------------------------------------------------
@@ -297,10 +298,10 @@ public class MajordomoBroker
      * Bind broker to endpoint, can call this multiple times. We use a single
      * socket for both clients and workers.
      */
-    private void bind(String endpoint)
+    private void bind()
     {
-        socket.bind(endpoint);
-        log.format("I: MDP broker/0.1.1 is active at %s\n", endpoint);
+        socket.bind(this.bindAddr);
+        log.format("I: MDP broker/0.1.1 is active at %s\n", this.bindAddr);
     }
 
     /**
@@ -402,5 +403,12 @@ public class MajordomoBroker
             msg.dump(log.out());
         }
         msg.send(socket);
+    }
+
+    @Override
+    public void run() {
+        MajordomoBroker broker = new MajordomoBroker(this.verbose, this.bindAddr);
+        broker.bind();
+        broker.mediate();
     }
 }

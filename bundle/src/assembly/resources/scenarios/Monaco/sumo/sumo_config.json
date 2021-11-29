@@ -1,4 +1,4 @@
 {
     "sumoConfigurationFile": "Monaco.sumocfg",
-    "updateInterval": 100
+    "updateInterval": 1000
 }

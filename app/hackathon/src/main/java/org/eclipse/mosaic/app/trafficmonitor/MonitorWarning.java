@@ -17,6 +17,7 @@ package org.eclipse.mosaic.app.trafficmonitor;
 
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
+import org.eclipse.mosaic.fed.zeromq.device.AmbassadorWorker;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -25,14 +26,17 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.DenmContent;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.database.road.Node;
+import org.eclipse.mosaic.lib.database.road.Connection;
+import java.util.stream.Collectors;
+import java.util.Collection;
 
 
-import org.zeromq.ZPoller;
-import org.zeromq.ZContext;
-import org.zeromq.ZMQ.Poller;
-import org.zeromq.ZMQ.Socket;
-import org.zeromq.SocketType;
+import org.zeromq.ZMsg;
+import org.zeromq.ZFrame;
 
+import java.util.ArrayList;
 
 /**
  * This class acts as an omniscient application for a server that warns vehicles
@@ -41,44 +45,33 @@ import org.zeromq.SocketType;
  */
 public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSystem> {
 
-    ZContext ctx = new ZContext();
-    private final Socket puller = ctx.createSocket(SocketType.PULL);
-    ZPoller poller = new ZPoller(ctx);
-    Poller items;
+    AmbassadorWorker warning, warningSuccess;
+    ZFrame ident;
+    ZFrame warningMsg;
+    ZMsg reply;
 
-    /**
-     * Send hazard location at this interval, in seconds.
-     */
-    private final static long INTERVAL = 1 * TIME.SECOND;
+    private Database database = Database.loadFromFile("scenarios/Monaco/application/Monaco.db");
+    private ArrayList<Connection> connectionList = database.getConnections().stream().collect(Collectors.toCollection(ArrayList::new));
+    private ArrayList<String> connectionStrings = new ArrayList<String>();
 
-    /**
-     * Location of the hazard which causes the route change.
-     */
-    private final static GeoPoint HAZARD_LOCATION = GeoPoint.latLon(52.633047, 13.565314);
+    private final static long INTERVAL = 500 * TIME.MILLI_SECOND;
 
-    /**
-     * Road ID where hazard is located.
-     */
-    private final static String HAZARD_ROAD = "";
+    private String avoidRoadId = "";
 
     private final static SensorType SENSOR_TYPE = SensorType.ICE;
-    private final static float SPEED = 25 / 3.6f;
 
-
-    /**
-     * This method is called by VSimRTI when the vehicle that has been equipped with this application
-     * enters the simulation.
-     * It is the first method called of this class during a simulation.
-     */
     @Override
     public void onStartup() {
         getLog().infoSimTime(this, "Initialize WeatherServer application");
         getOs().getCellModule().enable();
         getLog().infoSimTime(this, "Activated Cell Module");
 
-        String proxyBackendAddr = "tcp://127.0.0.1:" + String.valueOf(1111);
-        puller.connect(proxyBackendAddr);
+        for (Connection conn : connectionList){
+            connectionStrings.add(conn.getId());
+        }
 
+        warning = new AmbassadorWorker("tcp://127.0.0.1:5555", "service.warning");
+        warningSuccess = new AmbassadorWorker("tcp://127.0.0.1:5555", "service.success");
         sample();
     }
 
@@ -94,61 +87,55 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
         sample();
     }
 
-    protected void incomingWarning(){
-            
-        items = ctx.createPoller(1);
-        items.register(puller, Poller.POLLIN);
-        items.poll(0);
-        if (items.pollin(0)) {
-            byte[] message = puller.recv(0);
-        }else{
-            
+    private boolean checkWarningValidity(ZMsg receivedMsg){
+        if (receivedMsg == null)
+            return false;
+        ident = receivedMsg.pop();
+        warningMsg = receivedMsg.pop();
+        receivedMsg.destroy();
+
+        if (connectionStrings.contains(warningMsg.toString())){
+            warning.sendOnce(ident, String.valueOf(true));
+            this.avoidRoadId = warningMsg.toString();
+            return true;
+        } else {
+            warning.sendOnce(ident, String.valueOf(false));
+            return false;
+        }
+    }
+
+    private void sample() {
+        getOs().getEventManager().addEvent(getOs().getSimulationTime() + INTERVAL, this);
+        reply = warning.recvOnce();
+        boolean valid = checkWarningValidity(reply);
+        if (reply instanceof ZMsg)
+            reply.clear();
+        if (valid) {
+            final Denm denm = constructDenm(this.avoidRoadId);
+            getOs().getCellModule().sendV2xMessage(denm);
         }
     }
 
     /**
-     * Method to let the WeatherServer send a DEN message periodically.
-     * <p>
-     * This method sends a DEN message and generates a new event during each call.
-     * When said event is triggered, processEvent() is called, which in turn calls sample().
-     * This way, sample() is called periodically at a given interval (given by the generated event time)
-     * and thus the DENM is sent periodically at this interval.
+     * This RSU utilizes the road id from Client to geobroadbast a message to all the vehicles
+     * 
+     * @param road_id
+     * @return  
      */
-    private void sample() {
-        final Denm denm = constructDenm(); // Construct exemplary DENM
-
-        getOs().getCellModule().sendV2xMessage(denm);
-        getLog().infoSimTime(this, "Sent DENM");
-        // Line up new event for periodic sending
-        getOs().getEventManager().addEvent(
-                getOs().getSimulationTime() + INTERVAL, this
-        );
-    }
-
-    /**
-     * Constructs a staged DEN message for tutorial purposes that matches exactly the requirements of
-     * the Barnim tutorial scenario.
-     * <p>
-     * This is not meant to be used for real scenarios and is for the purpose of the tutorial only.
-     *
-     * @return The constructed DENM
-     */
-    private Denm constructDenm() {
-        final GeoCircle geoCircle = new GeoCircle(HAZARD_LOCATION, 3000.0D);
+    private Denm constructDenm(String road_id) {
+        final GeoCircle geoCircle = new GeoCircle(getOs().getPosition(), 5000.0D);
         final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
-
-        final int strength = getOs().getStateOfEnvironmentSensor(SENSOR_TYPE);
 
         return new Denm(routing,
                 new DenmContent(
                         getOs().getSimulationTime(),
                         getOs().getInitialPosition(),
-                        HAZARD_ROAD,
+                        road_id,
                         SENSOR_TYPE,
-                        strength,
-                        SPEED,
+                        1,
+                        100.0f,
                         0.0f,
-                        HAZARD_LOCATION,
+                        null,
                         null,
                         null
                 )
