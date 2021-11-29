@@ -94,9 +94,9 @@ public class TransformationMatrix extends Matrix4d {
      * result is written into the result vector.
      */
     public Vector3d getTranslation(Vector3d result) {
-        result.x = get(0,3);
-        result.y = get(1,3);
-        result.z = get(2,3);
+        result.x = get(0, 3);
+        result.y = get(1, 3);
+        result.z = get(2, 3);
         return result;
     }
 
