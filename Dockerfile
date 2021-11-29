@@ -12,15 +12,10 @@ RUN pip3 install pyzmq numpy scipy matplotlib jupyter pandas flake8 protobuf==3.
 RUN apt install libzmq3-dev -y && apt install libczmq-dev -y
 
 RUN useradd -ms /bin/bash mosaic
-COPY protobuf/protoc/bin /usr/local/bin
-COPY protobuf/protoc/include /usr/local/bin
-COPY majordomo/mdbroker.py /usr/bin
-COPY majordomo/pymdp/ /usr/bin/pymdp
-COPY start_mdp_services.sh /usr/bin
 
-EXPOSE 5555
+EXPOSE 5544
 
 USER mosaic
 WORKDIR /home/mosaic
 
-CMD start_mdp_services.sh
+CMD /bin/bash
