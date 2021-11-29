@@ -1,0 +1,103 @@
+{
+  "prototypes": [
+    {
+      "name": "Car",
+      "length": 4.0,
+      "minGap": 2.5,
+      "maxSpeed": 70.0,
+      "vehicleClass": "Car",
+      "accel": 2.6,
+      "decel": 4.5,
+      "sigma": 0.5,
+      "tau": 1.0,
+      "speedFactor": 1.0,
+      "deviations": {
+        "length": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "minGap": 0.0,
+        "maxSpeed": 0.0,
+        "speedFactor": 0.1,
+        "accel": 0.0,
+        "decel": 0.0,
+        "tau": 0.0
+      }
+    }
+  ],
+  "rsus": [
+    {
+        "position": {
+            "latitude": 43.7386195,
+            "longitude": 7.4236055
+        },
+        "name": "MonitorWarning",
+        "applications": [ "org.eclipse.mosaic.app.trafficmonitor.MonitorWarning" ]
+    }
+  ],
+  "vehicles": [
+    {
+      "startingTime": 5.0,
+      "maxTime": 700.0,
+      "targetFlow": 1800.0,
+      "spawningMode": "CONSTANT",
+      "maxNumberVehicles": 500,
+      "laneSelectionMode": "BEST",
+      "departSpeed": 0.0,
+      "departSpeedMode": "MAXIMUM",
+      "deterministic": false,
+      "types": [
+          {
+            "applications": ["org.eclipse.mosaic.app.trafficmonitor.NightDrive"],
+            "name": "Car",
+            "weight": 1.0
+          }
+        ],
+        "origin": {
+          "center": {
+            "latitude": 43.7476953,
+            "longitude": 7.4307478
+        },
+          "radius": 300
+        },
+        "destination": {
+          "center": {
+            "latitude": 43.7386172,
+            "longitude": 7.4192286
+        },
+          "radius": 350
+        }
+      },
+      {
+        "startingTime": 5.0,
+        "maxTime": 700.0,
+        "targetFlow": 1800.0,
+        "spawningMode": "CONSTANT",
+        "maxNumberVehicles": 500,
+        "laneSelectionMode": "BEST",
+        "departSpeed": 0.0,
+        "departSpeedMode": "MAXIMUM",
+        "deterministic": false,
+        "types": [
+            {
+              "applications": ["org.eclipse.mosaic.app.trafficmonitor.NightDrive"],
+              "name": "Car",
+              "weight": 1.0
+            }
+          ],
+          "origin": {
+            "center": {
+              "latitude": 43.7290311,	
+              "longitude": 7.4101838
+          },
+            "radius": 300
+          },
+          "destination": {
+            "center": {
+              "latitude": 43.7386172,
+              "longitude": 7.4192286
+          },
+            "radius": 350
+          }
+        }
+    ]
+}

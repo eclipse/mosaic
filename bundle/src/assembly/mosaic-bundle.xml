@@ -90,7 +90,7 @@
             </includes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>scenarios/Monaco/application</outputDirectory>
+            <outputDirectory>scenarios/MonacoV2/application</outputDirectory>
             <includes>
                 <include>org.eclipse.mosaic.app:trafficmonitor</include>
             </includes>

@@ -1,0 +1,43 @@
+{
+  "defaultDownlinkCapacity": 100000000000,
+  "defaultUplinkCapacity": 100000000000,
+  "globalNetwork": {
+    "id": "globalNetwork",
+    "uplink": {
+      "delay": {
+        "type": "ConstantDelay",
+        "delay": 100
+      },
+      "transmission": {
+        "lossProbability": 0.0,
+        "maxRetries": 2
+      },
+      "capacity": 28000000
+    },
+    "downlink": {
+      "unicast": {
+        "delay": {
+          "type": "ConstantDelay",
+          "delay": 100
+        },
+        "transmission": {
+          "lossProbability": 0.0,
+          "maxRetries": 2
+        }
+      },
+      "multicast": {
+        "delay": {
+          "type": "ConstantDelay",
+          "delay": 100
+        },
+        "transmission": {
+          "lossProbability": 0.0,
+          "maxRetries": 0
+        },
+        "usableCapacity": 0.6
+      },
+      "capacity": 42200000
+    }
+  },
+  "servers": []
+}

@@ -1,0 +1,10 @@
+{       
+    "backend": "tcp://127.0.0.1:5555",
+    "frontend": "tcp://127.0.0.1:5566",
+    "ambassadorBroker":{
+        "threadObject": true
+    },
+    "ambassadorWorker": {
+        "contract": "req."
+    }
+}
