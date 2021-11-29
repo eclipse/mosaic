@@ -27,11 +27,11 @@ public class AsyncBroker implements Runnable {
     public AsyncBroker(String frontendAddr, String backendAddr){
         //  Frontend socket talks to clients over TCP
         this.frontend = ctx.createSocket(SocketType.ROUTER);
-        frontend.bind(frontendAddr);
+        this.frontend.bind(frontendAddr);
 
         //  Backend socket talks to workers over TCP
-        this.backend = ctx.createSocket(SocketType.DEALER);
-        backend.bind(backendAddr);
+        this.backend = ctx.createSocket(SocketType.ROUTER);
+        this.backend.bind(backendAddr);
     }
     
     @Override
