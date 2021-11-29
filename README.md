@@ -28,16 +28,18 @@ docker build . -t mosaic-docker
 #### MacOS/Linux
 
 ```bash
-docker run -v $(pwd):/home/mosaic/mosaic -p 8443:8443 -p 5321:5321 --rm -it mosaic-docker
+docker run -v $(pwd):/home/mosaic/mosaic --rm -it mosaic-docker
 ```
 #### Windows
 
 ```bash
-docker run -v %cd%:/home/mosaic/mosaic -p 8443:8443 -p 5321:5321 --rm -it mosaic-docker
+docker run -v %cd%:/home/mosaic/mosaic --rm -it mosaic-docker
 ```
 
 ### Compile inside the container
 ```bash
 cd mosaic
 mvn clean install
+
+mvn clean install -DskipTests
 ```
