@@ -384,7 +384,13 @@ public class SimulationFacade {
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
                             .copyFrom(lastVehicleData)
                             .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
-                            .stopped(vehicleStopMode).create();
+                            .stopped(vehicleStopMode)
+                            .route(veh.routeId)
+                            .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, lastVehicleData))
+                            .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
+                            .consumptions(calculateConsumptions(veh, lastVehicleData))
+                            .emissions(calculateEmissions(veh, lastVehicleData))
+                            .create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
                      * Therefore we just continue however, if it has already been in the simulation (remove(id) returns true),
