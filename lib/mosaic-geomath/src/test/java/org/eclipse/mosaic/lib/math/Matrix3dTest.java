@@ -68,16 +68,16 @@ public class Matrix3dTest {
         final Matrix3d m = new Matrix3d();
         set(m, "[1, 2, 3], [8, 6, 7], [-9, -4, 5]");
 
-        float[] resultf = m.getAsFloatArray(new float[9], MatrixAlignment.ROWS);
+        float[] resultf = m.getAsFloatArray(new float[9], MatrixElementOrder.ROW_MAJOR);
         assertTrue(Arrays.equals(new float[] {1f, 2f, 3f, 8f, 6f, 7f, -9f, -4f, 5f}, resultf));
 
-        resultf = m.getAsFloatArray(new float[9], MatrixAlignment.COLUMNS);
+        resultf = m.getAsFloatArray(new float[9], MatrixElementOrder.COLUMN_MAJOR);
         assertTrue(Arrays.equals(new float[] {1f, 8f, -9f, 2f, 6f, -4f, 3f, 7f, 5f}, resultf));
 
-        double[] resultd = m.getAsDoubleArray(new double[9], MatrixAlignment.ROWS);
+        double[] resultd = m.getAsDoubleArray(new double[9], MatrixElementOrder.ROW_MAJOR);
         assertTrue(Arrays.equals(new double[] {1d, 2d, 3d, 8d, 6d, 7d, -9d, -4d, 5d}, resultd));
 
-        resultd = m.getAsDoubleArray(new double[9], MatrixAlignment.COLUMNS);
+        resultd = m.getAsDoubleArray(new double[9], MatrixElementOrder.COLUMN_MAJOR);
         assertTrue(Arrays.equals(new double[] {1d, 8d, -9d, 2d, 6d, -4d, 3d, 7d, 5d}, resultd));
     }
 
@@ -87,16 +87,16 @@ public class Matrix3dTest {
         set(expected, "[1, 2, 3], [8, 6, 7], [-9, -4, 5]");
 
         Matrix3d m = new Matrix3d();
-        m.set(new float[] {1f, 2f, 3f, 8f, 6f, 7f, -9f, -4f, 5f}, MatrixAlignment.ROWS);
+        m.set(new float[] {1f, 2f, 3f, 8f, 6f, 7f, -9f, -4f, 5f}, MatrixElementOrder.ROW_MAJOR);
         assertEquals(expected, m);
 
-        m.set(new double[] {1d, 2d, 3d, 8d, 6d, 7d, -9d, -4d, 5d}, MatrixAlignment.ROWS);
+        m.set(new double[] {1d, 2d, 3d, 8d, 6d, 7d, -9d, -4d, 5d}, MatrixElementOrder.ROW_MAJOR);
         assertEquals(expected, m);
 
-        m.set(new float[] {1f, 8f, -9f, 2f, 6f, -4f, 3f, 7f, 5f}, MatrixAlignment.COLUMNS);
+        m.set(new float[] {1f, 8f, -9f, 2f, 6f, -4f, 3f, 7f, 5f}, MatrixElementOrder.COLUMN_MAJOR);
         assertEquals(expected, m);
 
-        m.set(new double[] {1d, 8d, -9d, 2d, 6d, -4d, 3d, 7d, 5d}, MatrixAlignment.COLUMNS);
+        m.set(new double[] {1d, 8d, -9d, 2d, 6d, -4d, 3d, 7d, 5d}, MatrixElementOrder.COLUMN_MAJOR);
         assertEquals(expected, m);
     }
 

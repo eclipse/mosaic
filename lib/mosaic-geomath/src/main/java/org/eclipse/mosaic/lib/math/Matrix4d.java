@@ -29,7 +29,7 @@ public class Matrix4d implements Serializable {
     /**
      * Array holding value of the matrix. Values are stored in column-major order.
      *
-     * @see MatrixAlignment#COLUMNS
+     * @see MatrixElementOrder#COLUMN_MAJOR
      */
     protected final double[] m = new double[16];
 
@@ -83,27 +83,27 @@ public class Matrix4d implements Serializable {
     }
 
     /**
-     * Sets the values of the matrix by the given double array. The alignment
+     * Sets the values of the matrix by the given double array. The order
      * parameter defines how the values in the given array are arranged
      * (either column or row-wise).
      */
-    public Matrix4d set(double[] values, MatrixAlignment alignment) {
+    public Matrix4d set(double[] values, MatrixElementOrder inputOrder) {
         System.arraycopy(values, 0, this.m, 0, 16);
-        if (alignment == MatrixAlignment.ROWS) {
+        if (inputOrder == MatrixElementOrder.ROW_MAJOR) {
             transpose();
         }
         return this;
     }
 
     /**
-     * Sets the values of the matrix by the given float array. The alignment
+     * Sets the values of the matrix by the given float array. The order
      * parameter defines how the values in the given array are arranged
      * (either column or row-wise).
      */
-    public Matrix4d set(float[] values, MatrixAlignment alignment) {
+    public Matrix4d set(float[] values, MatrixElementOrder inputOrder) {
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                m[c * 4 + r] = alignment == MatrixAlignment.COLUMNS
+                m[c * 4 + r] = inputOrder == MatrixElementOrder.COLUMN_MAJOR
                         ? values[c * 4 + r]
                         : values[r * 4 + c];
             }
@@ -113,13 +113,13 @@ public class Matrix4d implements Serializable {
 
     /**
      * Returns the values of the matrix and writes it into the the given double array.
-     * The alignment parameter defines how the values in the given array will be arranged
+     * The order parameter defines how the values in the given array will be arranged
      * (either column or row-wise).
      */
-    public double[] getAsDoubleArray(double[] result, MatrixAlignment alignment) {
+    public double[] getAsDoubleArray(double[] result, MatrixElementOrder outputOrder) {
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                result[c * 4 + r] = alignment == MatrixAlignment.COLUMNS
+                result[c * 4 + r] = outputOrder == MatrixElementOrder.COLUMN_MAJOR
                         ? m[c * 4 + r]
                         : m[r * 4 + c];
             }
@@ -129,13 +129,13 @@ public class Matrix4d implements Serializable {
 
     /**
      * Returns the values of the matrix and writes it into the the given float array.
-     * The alignment parameter defines how the values in the given array will be arranged
+     * The order parameter defines how the values in the given array will be arranged
      * (either column or row-wise).
      */
-    public float[] getAsFloatArray(float[] result, MatrixAlignment alignment) {
+    public float[] getAsFloatArray(float[] result, MatrixElementOrder outputOrder) {
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                result[c * 4 + r] = alignment == MatrixAlignment.COLUMNS
+                result[c * 4 + r] = outputOrder == MatrixElementOrder.COLUMN_MAJOR
                         ? (float) m[c * 4 + r]
                         : (float) m[r * 4 + c];
             }
