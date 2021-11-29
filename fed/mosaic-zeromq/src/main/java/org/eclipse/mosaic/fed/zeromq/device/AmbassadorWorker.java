@@ -19,7 +19,7 @@ import org.eclipse.mosaic.lib.zeromq.bidirectional.AsyncWorker;
 
 public class AmbassadorWorker extends AsyncWorker {
 
-    public AmbassadorWorker(String backendAddr, String identity) {
-        super(backendAddr, identity);
+    public AmbassadorWorker(String backendAddr, String contract) {
+        super(backendAddr, contract);
     }
 }

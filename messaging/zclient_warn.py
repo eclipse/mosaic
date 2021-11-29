@@ -3,7 +3,7 @@ from zmessaging import ZMessaging
 
 def main():
     client = ZMessaging()
-    msg = client.receive_data(1000)
+    msg = client.send_warning("test2", 5000)
     print(msg)
 
 

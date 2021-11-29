@@ -45,15 +45,16 @@ import java.util.ArrayList;
  */
 public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSystem> {
 
-    AmbassadorWorker warning;
-    private boolean validFlag = false;
+    AmbassadorWorker warning, warningSuccess;
+    ZFrame ident;
+    ZFrame warningMsg;
     ZMsg reply;
 
     private Database database = Database.loadFromFile("scenarios/Monaco/application/Monaco.db");
     private ArrayList<Connection> connectionList = database.getConnections().stream().collect(Collectors.toCollection(ArrayList::new));
     private ArrayList<String> connectionStrings = new ArrayList<String>();
 
-    private final static long INTERVAL = 1 * TIME.SECOND;
+    private final static long INTERVAL = 500 * TIME.MILLI_SECOND;
 
     private String avoidRoadId = "";
 
@@ -70,7 +71,8 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
         }
 
         warning = new AmbassadorWorker("tcp://127.0.0.1:5555", "service.warning");
-        sample(false);
+        warningSuccess = new AmbassadorWorker("tcp://127.0.0.1:5555", "service.success");
+        sample();
     }
 
     /**
@@ -82,33 +84,32 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
      */
     @Override
     public void processEvent(Event event) throws Exception {
-        reply = warning.recvOnce();
-        boolean valid = checkWarningValidity(reply);
-        reply.destroy();
-        sample(valid);
+        sample();
     }
 
     private boolean checkWarningValidity(ZMsg receivedMsg){
-        ZFrame ident = receivedMsg.pop();
-        ZFrame warningMsg = receivedMsg.pop();
+        if (receivedMsg == null)
+            return false;
+        ident = receivedMsg.pop();
+        warningMsg = receivedMsg.pop();
         receivedMsg.destroy();
 
         if (connectionStrings.contains(warningMsg.toString())){
             warning.sendOnce(ident, String.valueOf(true));
-            ident.destroy();
-            warningMsg.destroy();
             this.avoidRoadId = warningMsg.toString();
             return true;
         } else {
             warning.sendOnce(ident, String.valueOf(false));
-            ident.destroy();
-            warningMsg.destroy();
             return false;
         }
     }
 
-    private void sample(boolean valid) {
+    private void sample() {
         getOs().getEventManager().addEvent(getOs().getSimulationTime() + INTERVAL, this);
+        reply = warning.recvOnce();
+        boolean valid = checkWarningValidity(reply);
+        if (reply instanceof ZMsg)
+            reply.clear();
         if (valid) {
             final Denm denm = constructDenm(this.avoidRoadId);
             getOs().getCellModule().sendV2xMessage(denm);

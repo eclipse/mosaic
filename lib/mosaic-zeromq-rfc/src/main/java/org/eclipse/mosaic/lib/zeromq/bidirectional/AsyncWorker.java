@@ -53,7 +53,7 @@ public class AsyncWorker {
         sendToIdentity.send(worker, ZFrame.MORE);
         reply.send(worker, 0);
 
-        return createMsg(identity, reply);
+        return createMsg(sendToIdentity, reply);
     }
 
     public ZMsg recvAndSend(String data){
@@ -63,27 +63,15 @@ public class AsyncWorker {
         if (msg == null)
             return null;
 
-        identity = msg.pop();
-        content = msg.pop();
-        msg.clear();
+        ZFrame identity = msg.pop();
+        ZFrame content = msg.pop();
+        msg.destroy();
 
-        // Reply using the identity of the client
-        String contract = identity.getString(ZMQ.CHARSET);
-        ZFrame reply = new ZFrame(data);
-        if (contract.equals("req.interaction")){
-            // Content is ignored, ZFrame request needs to be filled with data
-            identity.send(worker, ZFrame.MORE);
-            reply.send(worker, 0);
-            return createMsg(identity, reply);
-        } else if (contract.equals("service.warning")){
-            // Content will have some data
-            identity.send(worker, ZFrame.MORE);
-            reply = new ZFrame("1".getBytes());
-            reply.send(worker, 0);
-            return createMsg(content);
-        } else{
-            return null;
-        }
+        // Content is ignored, ZFrame request needs to be filled with data
+        identity.send(worker, ZFrame.MORE);
+        content.reset(data);
+        content.send(worker, 0);
+        return createMsg(identity, content);
     }
 
     private ZMsg createMsg(ZFrame... frames){
@@ -99,20 +87,5 @@ public class AsyncWorker {
         worker.disconnect(backendAddr);
         worker.close();
         ctx.close();
-    }
-    public ZFrame getIdentity() {
-        return identity;
-    }
-    public String getContract(){
-        return identity.getString(ZMQ.CHARSET);
-    }
-    public ZFrame getRecordedContentFrame(){
-        return recordedContent;
-    }
-    public byte[] getRecordedContentToBytes() {
-        return recordedContent.getData();
-    }
-    public String getRecordedContentToString(){
-        return recordedContent.toString();
     }
 }
