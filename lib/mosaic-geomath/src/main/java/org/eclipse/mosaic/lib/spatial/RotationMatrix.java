@@ -17,7 +17,7 @@ package org.eclipse.mosaic.lib.spatial;
 
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Matrix3d;
-import org.eclipse.mosaic.lib.math.MatrixAlignment;
+import org.eclipse.mosaic.lib.math.MatrixElementOrder;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 public class RotationMatrix extends Matrix3d {
@@ -143,13 +143,13 @@ public class RotationMatrix extends Matrix3d {
     }
 
     @Override
-    public RotationMatrix set(double[] values, MatrixAlignment alignment) {
-        return (RotationMatrix) super.set(values, alignment);
+    public RotationMatrix set(double[] values, MatrixElementOrder inputOrder) {
+        return (RotationMatrix) super.set(values, inputOrder);
     }
 
     @Override
-    public RotationMatrix set(float[] values, MatrixAlignment alignment) {
-        return (RotationMatrix) super.set(values, alignment);
+    public RotationMatrix set(float[] values, MatrixElementOrder inputOrder) {
+        return (RotationMatrix) super.set(values, inputOrder);
     }
 
     @Override

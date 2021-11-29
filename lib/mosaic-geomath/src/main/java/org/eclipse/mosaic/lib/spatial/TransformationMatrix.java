@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.lib.spatial;
 
 import org.eclipse.mosaic.lib.math.Matrix4d;
-import org.eclipse.mosaic.lib.math.MatrixAlignment;
+import org.eclipse.mosaic.lib.math.MatrixElementOrder;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 /**
@@ -185,13 +185,13 @@ public class TransformationMatrix extends Matrix4d {
     }
 
     @Override
-    public TransformationMatrix set(float[] values, MatrixAlignment alignment) {
-        return (TransformationMatrix) super.set(values, alignment);
+    public TransformationMatrix set(float[] values, MatrixElementOrder inputOrder) {
+        return (TransformationMatrix) super.set(values, inputOrder);
     }
 
     @Override
-    public TransformationMatrix set(double[] values, MatrixAlignment alignment) {
-        return (TransformationMatrix) super.set(values, alignment);
+    public TransformationMatrix set(double[] values, MatrixElementOrder inputOrder) {
+        return (TransformationMatrix) super.set(values, inputOrder);
     }
 
     @Override

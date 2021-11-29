@@ -15,16 +15,17 @@
 
 package org.eclipse.mosaic.lib.math;
 
-public enum MatrixAlignment {
+public enum MatrixElementOrder {
 
     /**
      * Values are stored row-major order. That is, in a 3x3 matrix, the first 3 values
      * belong to the first row, the second 3 values to the second row, and so on.
      */
-    ROWS,
+    ROW_MAJOR,
+
     /**
      * Values are stored in column-major order. That is, in a 3x3 matrix, the first 3 values
      * belong to the first column, the second 3 values to the second column, and so on.
      */
-    COLUMNS
+    COLUMN_MAJOR
 }
