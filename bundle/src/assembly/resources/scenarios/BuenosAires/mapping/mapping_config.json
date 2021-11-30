@@ -38,7 +38,7 @@
     {
       "startingTime": 5.0,
       "maxTime": 62208000.0,
-      "targetFlow": 1800,
+      "targetFlow": 3600,
       "spawningMode": "POISSON",
       "maxNumberVehicles": 3000,
       "laneSelectionMode": "FREE",
@@ -56,14 +56,14 @@
             "latitude": -34.6065,
             "longitude": -58.43573
         },
-          "radius": 1170
+          "radius": 3300
         },
         "destination": {
           "center": {
             "latitude": -34.6065,
             "longitude": -58.43573
         },
-          "radius": 300
+          "radius": 1500
         }
       }
   ]

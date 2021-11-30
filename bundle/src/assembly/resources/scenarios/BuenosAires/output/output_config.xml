@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="http://www.dcaiti.tu-berlin.de/research/simulation/download/get/scenarios/scenarioname/visualizer/visualizer_config.xsd">
-    <output id="fileoutput" enabled="true" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
+    <output id="fileoutput" enabled="false" update="5" loader="org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader">
         <filename>visualizer.csv</filename>
         <directory>.</directory>
         <separator>;</separator>

@@ -28,7 +28,7 @@
         "cell": true,
         "ns3": false,
         "omnetpp": false,
-        "output": false,
+        "output": true,
         "sns": false,
         "sumo": true,
         "phabmacs": false,
