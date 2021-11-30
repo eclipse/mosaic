@@ -50,7 +50,7 @@ public class MonitorWarning extends AbstractApplication<RoadSideUnitOperatingSys
     ZFrame warningMsg;
     ZMsg reply;
 
-    private Database database = Database.loadFromFile("scenarios/MonacoV2/application/MonacoV2.db");
+    private Database database = Database.loadFromFile("scenarios/BuenosAires/application/BuenosAires.db");
     private ArrayList<Connection> connectionList = database.getConnections().stream().collect(Collectors.toCollection(ArrayList::new));
     private ArrayList<String> connectionStrings = new ArrayList<String>();
 
