@@ -22,13 +22,17 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Re
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
+import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.zeromq.interactions.FlowBreakdownInteraction;
+import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
@@ -52,7 +56,7 @@ import javax.annotation.Nullable;
  * based on changing weather conditions.
  */
 @SuppressWarnings("unused")
-public class DriverApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication {
+public class DriverApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication, CommunicationApplication, MosaicApplication {
 
     /**
      * Flag that is set if the route has already been changed.
@@ -195,6 +199,30 @@ public class DriverApp extends AbstractApplication<VehicleOperatingSystem> imple
 
     @Override
     public void processEvent(Event event) throws Exception {
+
+    }
+
+    @Override
+    public void onSumoTraciResponded(SumoTraciResult sumoTraciResult) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onInteractionReceived(ApplicationInteraction applicationInteraction) {
+        if (applicationInteraction.getTypeId().startsWith(FlowBreakdownInteraction.TYPE_ID)) {
+            
+            
+            getLog().infoSimTime(this, "FlowBreakdownInteraction received!");
+            FlowBreakdown((FlowBreakdownInteraction) applicationInteraction);
+        }
+        
+    }
+
+    private void FlowBreakdown(FlowBreakdownInteraction breakdownInteraction){
+        if (getOs().getRoadPosition().getConnectionId().equals(breakdownInteraction.getBreakdownRoadId()))
+            getOs().changeSpeedWithForcedAcceleration(breakdownInteraction.getResultedSpeed(), -10);
+            getLog().infoSimTime(this, "Vehicle slowed down due to traffic flowbreakdown at road: {}", getOs().getRoadPosition().getConnectionId());
 
     }
 
