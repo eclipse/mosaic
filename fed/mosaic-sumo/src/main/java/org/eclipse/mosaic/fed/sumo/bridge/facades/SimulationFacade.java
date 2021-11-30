@@ -388,8 +388,6 @@ public class SimulationFacade {
                             .route(veh.routeId)
                             .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, lastVehicleData))
                             .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
-                            .consumptions(calculateConsumptions(veh, lastVehicleData))
-                            .emissions(calculateEmissions(veh, lastVehicleData))
                             .create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
