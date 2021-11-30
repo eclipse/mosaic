@@ -1,0 +1,5 @@
+{
+    "sumoConfigurationFile": "BuenosAires.sumocfg",
+    "updateInterval": 100,
+    "exitOnInsertionError": true
+}
