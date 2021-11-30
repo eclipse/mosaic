@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.lib.zeromq.bidirectional;
 
 import org.zeromq.*;
-import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 
 public class AsyncBroker implements Runnable {

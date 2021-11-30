@@ -1,4 +1,5 @@
 {
     "sumoConfigurationFile": "MonacoV2.sumocfg",
-    "updateInterval": 1000
+    "updateInterval": 100,
+    "exitOnInsertionError": false
 }

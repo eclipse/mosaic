@@ -37,67 +37,34 @@
   "vehicles": [
     {
       "startingTime": 5.0,
-      "maxTime": 700.0,
-      "targetFlow": 1800.0,
+      "maxTime": 864000.0,
+      "targetFlow": 50,
       "spawningMode": "CONSTANT",
-      "maxNumberVehicles": 500,
-      "laneSelectionMode": "BEST",
-      "departSpeed": 0.0,
+      "maxNumberVehicles": 3000,
+      "laneSelectionMode": "FREE",
       "departSpeedMode": "MAXIMUM",
-      "deterministic": false,
+      "deterministic": true,
       "types": [
           {
-            "applications": ["org.eclipse.mosaic.app.trafficmonitor.NightDrive"],
             "name": "Car",
-            "weight": 1.0
+            "weight": 1.0,
+            "applications": ["org.eclipse.mosaic.app.trafficmonitor.DriverApp"]
           }
         ],
         "origin": {
           "center": {
-            "latitude": 43.7476953,
-            "longitude": 7.4307478
+            "latitude": 43.7386172,
+            "longitude": 7.4192286
         },
-          "radius": 300
+          "radius": 1170
         },
         "destination": {
           "center": {
             "latitude": 43.7386172,
             "longitude": 7.4192286
         },
-          "radius": 350
+          "radius": 300
         }
-      },
-      {
-        "startingTime": 5.0,
-        "maxTime": 700.0,
-        "targetFlow": 1800.0,
-        "spawningMode": "CONSTANT",
-        "maxNumberVehicles": 500,
-        "laneSelectionMode": "BEST",
-        "departSpeed": 0.0,
-        "departSpeedMode": "MAXIMUM",
-        "deterministic": false,
-        "types": [
-            {
-              "applications": ["org.eclipse.mosaic.app.trafficmonitor.NightDrive"],
-              "name": "Car",
-              "weight": 1.0
-            }
-          ],
-          "origin": {
-            "center": {
-              "latitude": 43.7290311,	
-              "longitude": 7.4101838
-          },
-            "radius": 300
-          },
-          "destination": {
-            "center": {
-              "latitude": 43.7386172,
-              "longitude": 7.4192286
-          },
-            "radius": 350
-          }
-        }
-    ]
+      }
+  ]
 }

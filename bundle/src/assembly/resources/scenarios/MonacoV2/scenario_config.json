@@ -1,7 +1,7 @@
 {
     "simulation": {
         "id": "MonacoV2",
-        "duration": "24h",
+        "duration": "240h",
         "projection": {
             "centerCoordinates": {
                 "latitude": 43.7402134,
