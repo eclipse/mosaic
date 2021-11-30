@@ -654,10 +654,7 @@ public class SimulationFacade {
      * @return The vehicle consumption.
      */
     private VehicleConsumptions calculateConsumptions(VehicleSubscriptionResult veh, VehicleData lastVehicleData) {
-        final Consumptions currentConsumptions = new Consumptions(
-                fixConsumptionValue(veh.fuel),
-                fixConsumptionValue(veh.electricity)
-        );
+        final Consumptions currentConsumptions = new Consumptions(fixConsumptionValue(veh.fuel));
         if (lastVehicleData != null && lastVehicleData.getVehicleConsumptions() != null) {
             return new VehicleConsumptions(
                     currentConsumptions,

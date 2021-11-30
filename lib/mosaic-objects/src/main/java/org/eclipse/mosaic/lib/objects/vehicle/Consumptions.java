@@ -15,8 +15,11 @@
 
 package org.eclipse.mosaic.lib.objects.vehicle;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
@@ -34,14 +37,8 @@ public class Consumptions implements Serializable {
      */
     private final double fuel;
 
-    /**
-     * Electrical power consumption in Wh.
-     */
-    private final double electricalPower;
-
-    public Consumptions(double fuel, double electricalPower) {
+    public Consumptions(double fuel) {
         this.fuel = fuel;
-        this.electricalPower = electricalPower;
     }
 
     /**
@@ -52,30 +49,19 @@ public class Consumptions implements Serializable {
     }
 
     /**
-     * Returns the electrical power in Watt.
-     */
-    public double getElectricalPower() {
-        return electricalPower;
-    }
-
-    /**
      * Return a new Consumptions object containing the total consumption.
      *
      * @param consumptions the previous total consumptions
      * @return a new Consumptions object containing the total consumption
      */
     public Consumptions addConsumptions(Consumptions consumptions) {
-        return new Consumptions(
-                this.getFuel() + consumptions.getFuel(),
-                this.getElectricalPower() + consumptions.getElectricalPower()
-        );
+        return new Consumptions(this.getFuel() + consumptions.getFuel());
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(5, 17)
                 .append(this.fuel)
-                .append(this.electricalPower)
                 .toHashCode();
     }
 
@@ -94,13 +80,14 @@ public class Consumptions implements Serializable {
         Consumptions other = (Consumptions) obj;
         return new EqualsBuilder()
                 .append(this.fuel, other.fuel)
-                .append(this.electricalPower, other.electricalPower)
                 .isEquals();
     }
 
     @Override
     public String toString() {
-        return "Consumptions{" + "fuel=" + this.fuel + ", electricalPower=" + this.electricalPower + '}';
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .append("fuel", fuel)
+                .toString();
     }
 
 }
