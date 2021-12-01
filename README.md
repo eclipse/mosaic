@@ -1,4 +1,5 @@
-<a href="https://eclipse.org/mosaic"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg"></p></a>
+<a href="https://eclipse.org/mosaic#gh-light-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg"></p></a>
+<a href="https://eclipse.org/mosaic#gh-dark-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-negativ.svg"></p></a>
 
 # Eclipse MOSAIC Essentials - <br> The Simulation Suite for Connected and Automated Mobility
 
@@ -56,7 +57,7 @@ For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
 * **Java 8 or 11** - We recommend using the [Adoptium OpenJDK](https://adoptium.net/?variant=openjdk8).
-* **SUMO 1.10.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **SUMO 1.11.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 
