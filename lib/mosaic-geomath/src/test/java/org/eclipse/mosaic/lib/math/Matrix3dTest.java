@@ -27,6 +27,64 @@ import java.util.regex.Pattern;
 public class Matrix3dTest {
 
     @Test
+    public void addMatrix() {
+        final Matrix3d a = new Matrix3d();
+        set(a, "[5, -3, 11], [5, 6, 22], [8, 19, 0]");
+
+        final Matrix3d b = new Matrix3d();
+        set(b, "[12, 3, -4], [5, 16, 9], [8, -3, 4]");
+
+        final Matrix3d expected = new Matrix3d();
+        set(expected, "[17, 0, 7], [10, 22, 31], [16, 16, 4]");
+
+        Matrix3d actual = a.add(b, new Matrix3d());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void subtractMatrix() {
+        final Matrix3d a = new Matrix3d();
+        set(a, "[5, -3, 11], [5, 6, 22], [8, 19, 0]");
+
+        final Matrix3d b = new Matrix3d();
+        set(b, "[12, 3, -4], [5, 16, 9], [8, -3, 4]");
+
+        final Matrix3d expected = new Matrix3d();
+        set(expected, "[-7, -6, 15], [0, -10, 13], [0, 22, -4]");
+
+        Matrix3d actual = a.subtract(b, new Matrix3d());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void multiplyMatrix() {
+        final Matrix3d a = new Matrix3d();
+        set(a, "[5, -3, 11], [5, 6, 22], [8, 19, 0]");
+
+        final Matrix3d b = new Matrix3d();
+        set(b, "[12, 3, -4], [5, 16, 9], [8, -3, 4]");
+
+        final Matrix3d expected = new Matrix3d();
+        set(expected, "[133, -66, -3], [266, 45, 122], [191, 328, 139]");
+
+        Matrix3d actual = a.multiply(b, new Matrix3d());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void multiplyVector() {
+        final Matrix3d a = new Matrix3d();
+        set(a, "[2, 5, 7], [8, 9, 10], [1, 2, 3]");
+
+        final Vector3d v = new Vector3d(2,4,5);
+
+        final Vector3d expected = new Vector3d(59, 102, 25);
+
+        Vector3d actual = a.multiply(v, new Vector3d());
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void transpose() {
         final Matrix3d mExpected = new Matrix3d().setIdentity();
         set(mExpected, "[1, 2, 3], [8, 6, 7], [-9, -4, 5]");
@@ -114,6 +172,12 @@ public class Matrix3dTest {
     private static void assertEquals(Matrix3d expected, Matrix3d actual) {
         if(!expected.isFuzzyEqual(actual)) {
             fail(String.format("Matrix not fuzzy equal.%nExpected: %s%nActual: %s", expected, actual));
+        }
+    }
+
+    private static void assertEquals(Vector3d expected, Vector3d actual) {
+        if(!expected.isFuzzyEqual(actual)) {
+            fail(String.format("Vector3d not fuzzy equal.%nExpected: %s%nActual: %s", expected, actual));
         }
     }
 
