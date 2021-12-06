@@ -169,7 +169,7 @@ public class Matrix3d implements Serializable {
      * Adds a matrix to this matrix and writes the result into the result matrix.
      */
     public Matrix3d add(Matrix3d mat, Matrix3d result) {
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 9; i++) {
             result.m[i] = m[i] + mat.m[i];
         }
         return result;
@@ -212,9 +212,9 @@ public class Matrix3d implements Serializable {
      * Multiplies this matrix with a 3-dimensional vector.
      */
     public Vector3d multiply(Vector3d v) {
-        double x = v.x * m[0] + v.y * m[1] + v.z * m[2];
-        double y = v.x * m[3] + v.y * m[4] + v.z * m[5];
-        double z = v.x * m[6] + v.y * m[7] + v.z * m[8];
+        double x = v.x * m[0] + v.y * m[3] + v.z * m[6];
+        double y = v.x * m[1] + v.y * m[4] + v.z * m[7];
+        double z = v.x * m[2] + v.y * m[5] + v.z * m[8];
         v.set(x, y, z);
         return v;
     }
@@ -223,9 +223,9 @@ public class Matrix3d implements Serializable {
      * Multiplies this matrix with a 3-dimensional vector and writes the result into the given vector.
      */
     public Vector3d multiply(Vector3d v, Vector3d result) {
-        result.x = v.x * m[0] + v.y * m[1] + v.z * m[2];
-        result.y = v.x * m[3] + v.y * m[4] + v.z * m[5];
-        result.z = v.x * m[6] + v.y * m[7] + v.z * m[8];
+        result.x = v.x * m[0] + v.y * m[3] + v.z * m[6];
+        result.y = v.x * m[1] + v.y * m[4] + v.z * m[7];
+        result.z = v.x * m[2] + v.y * m[5] + v.z * m[8];
         return result;
     }
 
