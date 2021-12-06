@@ -382,12 +382,20 @@ public class SimulationFacade {
                         log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
-                            .copyFrom(lastVehicleData)
                             .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
-                            .stopped(vehicleStopMode)
-                            .route(veh.routeId)
+                            .road(lastVehicleData.getRoadPosition())
                             .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, lastVehicleData))
                             .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
+                            .route(veh.routeId)
+                            .stopped(vehicleStopMode)
+                            .consumptions(new VehicleConsumptions(
+                                    new Consumptions(0d), lastVehicleData.getVehicleConsumptions().getAllConsumptions())
+                            )
+                            .emissions(new VehicleEmissions(
+                                    new Emissions(0d,0d,0d,0d,0d), lastVehicleData.getVehicleEmissions().getAllEmissions())
+                            )
+                            .sensors(createSensorData(veh.id, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
+                            .laneArea(vehicleSegmentInfo.get(veh.id))
                             .create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
