@@ -392,7 +392,7 @@ public class SimulationFacade {
                                     new Consumptions(0d), lastVehicleData.getVehicleConsumptions().getAllConsumptions())
                             )
                             .emissions(new VehicleEmissions(
-                                    new Emissions(0d,0d,0d,0d,0d), lastVehicleData.getVehicleEmissions().getAllEmissions())
+                                    new Emissions(0d, 0d, 0d, 0d, 0d), lastVehicleData.getVehicleEmissions().getAllEmissions())
                             )
                             .sensors(createSensorData(veh.id, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
                             .laneArea(vehicleSegmentInfo.get(veh.id))
@@ -577,7 +577,7 @@ public class SimulationFacade {
     /**
      * Creates an immutable object holding front and rear distance sensor data based on leading vehicle information.
      *
-     * @param vehicleId         The id of the vehicle the VehicleSensors object should be created for
+     * @param vehicleId        The id of the vehicle the VehicleSensors object should be created for
      * @param leadingVehicle   Information of the leading vehicle.
      * @param minGap           The minimum gap of the current vehicle.
      * @param followerDistance The distance to the follower of the current vehicle
