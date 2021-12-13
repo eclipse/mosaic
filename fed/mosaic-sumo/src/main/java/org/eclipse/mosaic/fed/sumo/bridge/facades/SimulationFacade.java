@@ -382,9 +382,21 @@ public class SimulationFacade {
                         log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
                     }
                     vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
-                            .copyFrom(lastVehicleData)
                             .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
-                            .stopped(vehicleStopMode).create();
+                            .road(lastVehicleData.getRoadPosition())
+                            .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, lastVehicleData))
+                            .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
+                            .route(veh.routeId)
+                            .stopped(vehicleStopMode)
+                            .consumptions(new VehicleConsumptions(
+                                    new Consumptions(0d), lastVehicleData.getVehicleConsumptions().getAllConsumptions())
+                            )
+                            .emissions(new VehicleEmissions(
+                                    new Emissions(0d, 0d, 0d, 0d, 0d), lastVehicleData.getVehicleEmissions().getAllEmissions())
+                            )
+                            .sensors(createSensorData(veh.id, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
+                            .laneArea(vehicleSegmentInfo.get(veh.id))
+                            .create();
                 } else if (veh.position == null || !veh.position.isValid()) {
                     /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
                      * Therefore we just continue however, if it has already been in the simulation (remove(id) returns true),
@@ -565,7 +577,7 @@ public class SimulationFacade {
     /**
      * Creates an immutable object holding front and rear distance sensor data based on leading vehicle information.
      *
-     * @param vehicleId         The id of the vehicle the VehicleSensors object should be created for
+     * @param vehicleId        The id of the vehicle the VehicleSensors object should be created for
      * @param leadingVehicle   Information of the leading vehicle.
      * @param minGap           The minimum gap of the current vehicle.
      * @param followerDistance The distance to the follower of the current vehicle
@@ -648,10 +660,7 @@ public class SimulationFacade {
      * @return The vehicle consumption.
      */
     private VehicleConsumptions calculateConsumptions(VehicleSubscriptionResult veh, VehicleData lastVehicleData) {
-        final Consumptions currentConsumptions = new Consumptions(
-                fixConsumptionValue(veh.fuel),
-                fixConsumptionValue(veh.electricity)
-        );
+        final Consumptions currentConsumptions = new Consumptions(fixConsumptionValue(veh.fuel));
         if (lastVehicleData != null && lastVehicleData.getVehicleConsumptions() != null) {
             return new VehicleConsumptions(
                     currentConsumptions,

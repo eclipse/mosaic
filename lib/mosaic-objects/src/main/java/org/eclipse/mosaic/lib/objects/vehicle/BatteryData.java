@@ -61,6 +61,16 @@ public class BatteryData implements Serializable {
     private final boolean charging;
 
     /**
+     * The energy consumption of the vehicle in this simulation step. [Ws]
+     */
+    private final double currentConsumption;
+
+    /**
+     * The cumulative energy consumption of the vehicle. [Ws]
+     */
+    private final double allConsumption;
+
+    /**
      * Creates a new {@link BatteryData} for an added vehicle.
      *
      * @param time    timestamp of the data
@@ -72,23 +82,30 @@ public class BatteryData implements Serializable {
         this.stateOfCharge = -1.0;
         this.capacity = -1.0;
         this.charging = false;
+        this.currentConsumption = -1.0;
+        this.allConsumption = -1.0;
     }
 
     /**
      * Creates a new {@link BatteryData} for an added vehicle.
      *
-     * @param time          timestamp of the data
-     * @param ownerId       id of the vehicle that the data belongs to
-     * @param stateOfCharge state of charge of the battery [0,1]
-     * @param capacity      current capacity of the battery
-     * @param charging      flag indicating whether battery is charging
+     * @param time               timestamp of the data
+     * @param ownerId            id of the vehicle that the data belongs to
+     * @param stateOfCharge      state of charge of the battery [0,1]
+     * @param capacity           current capacity of the battery
+     * @param charging           flag indicating whether battery is charging
+     * @param currentConsumption the current energy consumption of the vehicle
+     * @param allConsumption     the cumulative energy consumption of the vehicle
      */
-    private BatteryData(long time, String ownerId, double stateOfCharge, double capacity, boolean charging) {
+    private BatteryData(long time, String ownerId, double stateOfCharge, double capacity,
+                        boolean charging, double currentConsumption, double allConsumption) {
         this.ownerId = ownerId;
         this.time = time;
         this.stateOfCharge = stateOfCharge;
         this.capacity = capacity;
         this.charging = charging;
+        this.currentConsumption = currentConsumption;
+        this.allConsumption = allConsumption;
     }
 
     public String getOwnerId() {
@@ -136,12 +153,22 @@ public class BatteryData implements Serializable {
         return charging;
     }
 
+    public double getCurrentConsumption() {
+        return currentConsumption;
+    }
+
+    public double getAllConsumption() {
+        return allConsumption;
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 53)
                 .append(stateOfCharge)
                 .append(capacity)
                 .append(charging)
+                .append(currentConsumption)
+                .append(allConsumption)
                 .toHashCode();
     }
 
@@ -162,6 +189,8 @@ public class BatteryData implements Serializable {
                 .append(this.stateOfCharge, other.stateOfCharge)
                 .append(this.capacity, other.capacity)
                 .append(this.charging, other.charging)
+                .append(this.currentConsumption, other.currentConsumption)
+                .append(this.allConsumption, other.allConsumption)
                 .isEquals();
     }
 
@@ -172,6 +201,8 @@ public class BatteryData implements Serializable {
                 .append("stateOfCharge", stateOfCharge)
                 .append("capacity", capacity)
                 .append("charging", charging)
+                .append("currentConsumption", currentConsumption)
+                .append("allConsumption", allConsumption)
                 .build();
     }
 
@@ -181,6 +212,8 @@ public class BatteryData implements Serializable {
         private double stateOfCharge;
         private double capacity;
         private boolean charging;
+        private double currentConsumption;
+        private double allConsumption;
 
         public Builder(long time, String ownerId) {
             this.time = time;
@@ -198,6 +231,12 @@ public class BatteryData implements Serializable {
             return this;
         }
 
+        public Builder consumption(double currentConsumption, double allConsumption) {
+            this.currentConsumption = currentConsumption;
+            this.allConsumption = allConsumption;
+            return this;
+        }
+
         /**
          * Copies relevant data from a given {@link BatteryData} object.
          *
@@ -208,12 +247,13 @@ public class BatteryData implements Serializable {
             stateOfCharge = batteryData.stateOfCharge;
             capacity = batteryData.capacity;
             charging = batteryData.charging;
+            currentConsumption = batteryData.currentConsumption;
+            allConsumption = batteryData.allConsumption;
             return this;
         }
 
         public BatteryData build() {
-            return new BatteryData(time, ownerId, stateOfCharge, capacity, charging);
-
+            return new BatteryData(time, ownerId, stateOfCharge, capacity, charging, currentConsumption, allConsumption);
         }
     }
 }

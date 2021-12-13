@@ -72,6 +72,7 @@
                     <entry>"VEHICLE_REGISTRATION"</entry>
                     <entry>Time</entry>
                     <entry>Mapping.Name</entry>
+                    <entry>Mapping.Applications</entry>
                     <entry>Mapping.VehicleType.VehicleClass</entry>
                     <entry>Mapping.VehicleType.Color</entry>
                     <entry>Mapping.Group</entry>
