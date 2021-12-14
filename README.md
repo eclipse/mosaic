@@ -25,11 +25,14 @@ which is directly coupled with the RTI. Currently, the following simulators are 
   * MOSAIC Output Generator (evaluation and visualization)
 
 The project is a Maven based multi-module project and has its child modules organized in three main categories:
-  * MOSAIC RTI: modules providing the runtime infrastructure API and implementation
-  * MOSAIC Libraries: mathematics, spatial, routing, utilities, communication models, and data exchange
-  * MOSAIC Ambassadors: simulators and couplings which integrate simulation models to Eclipse MOSAIC
+  * `rti` - MOSAIC RTI: modules providing the runtime infrastructure API and implementation
+  * `lib` - MOSAIC Libraries: mathematics, spatial, routing, utilities, communication models, and data exchange
+  * `fed` - MOSAIC Ambassadors/Federates: simulators and couplings which integrate simulation models to Eclipse MOSAIC
 
-> View our website ([https://eclipse.org/mosaic](https://eclipse.org/mosaic)) for further documentation and tutorials.
+## Documentation
+
+View our website at **[eclipse.org/mosaic](https://eclipse.org/mosaic)** for detailled documentation and many tutorials to get startet with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
+
 ## The Essential edition of Eclipse MOSAIC
 
 This repository contains the *Essential* edition of Eclipse MOSAIC, that is, the runtime infrastructure, 
