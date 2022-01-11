@@ -336,4 +336,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     public IRoadPosition getRoadPosition() {
         return Objects.requireNonNull(navigationModule.getVehicleData()).getRoadPosition();
     }
+
+    @Override
+    public double getHeading() {
+        return getVehicleData().getHeading();
+    }
 }
