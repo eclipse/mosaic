@@ -65,7 +65,7 @@ public class SimulationGetTrafficLightIds
      */
     public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {
         return super.executeAndReturn(bridge).orElseThrow(
-                () -> new CommandException("Couldn't get TrafficLight-Id's.", new Status((byte) Status.STATUS_ERR, ""))
+                () -> new CommandException("Could not read list of TrafficLight Ids.")
         );
     }
 

@@ -56,7 +56,7 @@ public class SimulationGetVersion
      */
     public CurrentVersion execute(Bridge bridge) throws CommandException, InternalFederateException {
         return executeAndReturn(bridge).orElseThrow(
-                () -> new CommandException("Couldn't get Traci API Version", new Status((byte) Status.STATUS_ERR, ""))
+                () -> new CommandException("Could not read Traci API Version")
         );
     }
 

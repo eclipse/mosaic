@@ -47,6 +47,12 @@ public class CommandRetrieveTrafficLightValue {
      */
     public final static int VAR_CONTROLLED_LINKS = 0x27;
 
+
+    /**
+     * The links controlled by the traffic light.
+     */
+    public final static int VAR_CONTROLLED_JUNCTIONS = 0x27;
+
     /**
      * The index of the current phase in the current program.
      */

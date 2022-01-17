@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
@@ -19,13 +20,16 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 
 import org.eclipse.sumo.libsumo.TrafficLight;
 
-public class TrafficLightGetCurrentProgram implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetCurrentProgram {
+import java.util.List;
 
-    public String execute(Bridge bridge, String tlId) throws CommandException {
+public class TrafficLightGetControlledJunctions implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledJunctions {
+
+    public List<String> execute(Bridge bridge, String tlId) throws CommandException {
         try {
-            return TrafficLight.getProgram(tlId);
+            return TrafficLight.getControlledJunctions(tlId);
         } catch(IllegalArgumentException e) {
-            throw new CommandException("Could not read program id for Traffic Light: " + tlId);
+            throw new CommandException("Could not read list of controlled junctions for Traffic Light: " + tlId);
         }
     }
+
 }
