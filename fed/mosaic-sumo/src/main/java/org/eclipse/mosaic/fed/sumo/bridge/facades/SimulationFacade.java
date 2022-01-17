@@ -369,16 +369,20 @@ public class SimulationFacade {
      */
     public TraciSimulationStepResult simulateUntil(long time) throws InternalFederateException {
         try {
+            // PRE-SIM STEPS
             updateBestLanesIfNecessary();
 
+            // SIMULATE STEP
             final List<AbstractSubscriptionResult> subscriptions = simulateStep.execute(bridge, time);
+
+            // POST-PROCESSING
+            sumoVehicles.values().forEach(v -> v.lastVehicleData = v.currentVehicleData);
 
             final Map<String, Double> followerDistances = calcFollowerDistancesBasedOnLeadingVehicles(subscriptions);
             final Map<String, String> vehicleSegmentInfo = calculateVehicleSegmentInfo(subscriptions);
 
             final List<VehicleData> addedVehicles = new LinkedList<>();
             final List<VehicleData> updatedVehicles = new LinkedList<>();
-            final List<String> removedVehicles = new LinkedList<>();
 
             final List<InductionLoopInfo> updatedInductionLoops = new ArrayList<>();
             final List<LaneAreaDetectorInfo> updatedLaneAreas = new ArrayList<>();
@@ -415,14 +419,7 @@ public class SimulationFacade {
                 }
             }
 
-            for (Iterator<SumoVehicleState> vehicleIt = sumoVehicles.values().iterator(); vehicleIt.hasNext(); ) {
-                SumoVehicleState vehicle = vehicleIt.next();
-                if (vehicle.isRemoved()) {
-                    removedVehicles.add(vehicle.id);
-                    vehicleIt.remove();
-                    log.info("Removed vehicle \"{}\" at simulation time {}ns", vehicle.id, time);
-                }
-            }
+            final List<String> removedVehicles = findRemovedVehicles(time);
 
             final VehicleUpdates vehicleUpdates = new VehicleUpdates(time, addedVehicles, updatedVehicles, removedVehicles);
             final TrafficDetectorUpdates trafficDetectorUpdates = new TrafficDetectorUpdates(time, updatedLaneAreas, updatedInductionLoops);
@@ -441,8 +438,6 @@ public class SimulationFacade {
     ) {
 
         final SumoVehicleState sumoVehicle = getVehicleState(veh.id);
-        sumoVehicle.lastVehicleData = sumoVehicle.currentVehicleData;
-
         final VehicleStopMode vehicleStopMode = decodeStopMode(veh.stoppedStateEncoded);
         final boolean isParking = vehicleStopMode == VehicleStopMode.PARK_ON_ROADSIDE || vehicleStopMode == VehicleStopMode.PARK_IN_PARKING_AREA;
         final boolean hasInvalidPosition = veh.position == null || !veh.position.isValid();
@@ -502,6 +497,19 @@ public class SimulationFacade {
         return sumoVehicle;
     }
 
+    private List<String> findRemovedVehicles(long time) {
+        final List<String> removedVehicles = new LinkedList<>();
+        for (Iterator<SumoVehicleState> vehicleIt = sumoVehicles.values().iterator(); vehicleIt.hasNext(); ) {
+            SumoVehicleState vehicle = vehicleIt.next();
+            if (vehicle.isRemoved()) {
+                removedVehicles.add(vehicle.id);
+                vehicleIt.remove();
+                log.info("Removed vehicle \"{}\" at simulation time {}ns", vehicle.id, time);
+            }
+        }
+        return removedVehicles;
+    }
+
     private InductionLoopInfo processInductionLoopSubscriptionResult(long time, InductionLoopSubscriptionResult inductionLoop) {
         int count = (int) inductionLoop.vehiclesOnInductionLoop.stream().filter((s) -> s.leaveTime >= 0).count();
         return new InductionLoopInfo.Builder(time, inductionLoop.id)
@@ -540,7 +548,9 @@ public class SimulationFacade {
         if (updateBestLanesBeforeNextSimulationStep) {
             VehicleSetUpdateBestLanes updateBestLanes = bridge.getCommandRegister().getOrCreate(VehicleSetUpdateBestLanes.class);
             for (SumoVehicleState vehicle : sumoVehicles.values()) {
-                updateBestLanes.execute(bridge, vehicle.id);
+                if (vehicle.currentVehicleData != null) {
+                    updateBestLanes.execute(bridge, vehicle.id);
+                }
             }
             updateBestLanesBeforeNextSimulationStep = false;
         }
