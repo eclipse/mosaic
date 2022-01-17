@@ -64,17 +64,16 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class SimulationFacade {
 
@@ -82,12 +81,6 @@ public class SimulationFacade {
 
     private final Bridge bridge;
     private final CSumo sumoConfiguration;
-
-    private final Set<String> knownVehicles = new HashSet<>();
-    private final Map<String, VehicleData> lastVehicleData = new HashMap<>();
-    private final Map<String, Double> vehiclesWithFrontSensor = new HashMap<>();
-    private final Map<String, Double> vehiclesWithBackSensor = new HashMap<>();
-    private final Map<String, InductionLoop> inductionLoops = new HashMap<>();
 
     private final SimulationSimulateStep simulateStep;
     private final SimulationGetDepartedVehicleIds getDepartedVehicleIds;
@@ -106,6 +99,35 @@ public class SimulationFacade {
 
     private final LaneGetLength laneGetLength;
 
+    private final Map<String, InductionLoop> inductionLoops = new HashMap<>();
+    private final Map<String, SumoVehicleState> sumoVehicles = new HashMap<>();
+
+
+    private static class SumoVehicleState {
+        private final String id;
+        private VehicleData currentVehicleData = null;
+        private VehicleData lastVehicleData = null;
+        private Double frontSensorDistance = null;
+        private Double rearSensorDistance = null;
+
+        private SumoVehicleState(String id) {
+            this.id = id;
+        }
+
+        private boolean isAdded() {
+            return lastVehicleData == null && currentVehicleData != null;
+        }
+
+        private boolean isUpdated() {
+            return lastVehicleData != currentVehicleData && currentVehicleData != null;
+        }
+
+        private boolean isRemoved() {
+            return lastVehicleData != null && currentVehicleData == lastVehicleData;
+        }
+    }
+
+
     /**
      * Whenever lane assignments are changed, the vehicles need to recalculate
      * their "best lanes" for strategic lane-change decisions. If this variable
@@ -113,6 +135,7 @@ public class SimulationFacade {
      * before the next simulation step.
      */
     private boolean updateBestLanesBeforeNextSimulationStep = false;
+    private boolean noRearSensorConfigured = true;
 
     /**
      * Creates a new {@link SimulationFacade} object.
@@ -323,19 +346,16 @@ public class SimulationFacade {
      * Enables the calculation of distance sensor values for the given vehicle.
      */
     public void configureDistanceSensors(String vehicleId, double maximumLookahead, boolean front, boolean rear) {
+        SumoVehicleState vehicleState = getVehicleState(vehicleId);
         if (front) {
-            if (maximumLookahead > 0) {
-                vehiclesWithFrontSensor.put(vehicleId, maximumLookahead);
-            } else {
-                vehiclesWithFrontSensor.remove(vehicleId);
-            }
+            vehicleState.frontSensorDistance = maximumLookahead > 0 ? maximumLookahead : null;
         }
         if (rear) {
-            if (maximumLookahead > 0) {
-                vehiclesWithBackSensor.put(vehicleId, maximumLookahead);
-            } else {
-                vehiclesWithBackSensor.remove(vehicleId);
-            }
+            vehicleState.rearSensorDistance = maximumLookahead > 0 ? maximumLookahead : null;
+        }
+        this.noRearSensorConfigured = true;
+        for (SumoVehicleState aState : sumoVehicles.values()) {
+            noRearSensorConfigured &= aState.rearSensorDistance == null;
         }
     }
 
@@ -349,10 +369,6 @@ public class SimulationFacade {
      */
     public TraciSimulationStepResult simulateUntil(long time) throws InternalFederateException {
         try {
-            final Map<String, VehicleData> addedVehicles = new HashMap<>();
-            final Map<String, VehicleData> updatedVehicles = new HashMap<>();
-            final Set<String> removedVehicles = new HashSet<>(this.knownVehicles);
-
             updateBestLanesIfNecessary();
 
             final List<AbstractSubscriptionResult> subscriptions = simulateStep.execute(bridge, time);
@@ -360,130 +376,55 @@ public class SimulationFacade {
             final Map<String, Double> followerDistances = calcFollowerDistancesBasedOnLeadingVehicles(subscriptions);
             final Map<String, String> vehicleSegmentInfo = calculateVehicleSegmentInfo(subscriptions);
 
-            VehicleSubscriptionResult veh;
-            VehicleData lastVehicleData;
-            VehicleData vehicleData;
-            for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
-                if (subscriptionResult instanceof VehicleSubscriptionResult) {
-                    veh = (VehicleSubscriptionResult) subscriptionResult;
-                } else {
-                    continue;
-                }
-
-                lastVehicleData = this.lastVehicleData.get(veh.id);
-
-                VehicleStopMode vehicleStopMode = getStopMode(veh.stoppedStateEncoded);
-                if (vehicleStopMode == VehicleStopMode.PARK_ON_ROADSIDE || vehicleStopMode == VehicleStopMode.PARK_IN_PARKING_AREA) {
-                    if (lastVehicleData == null) {
-                        log.warn("Skip vehicle {} which is inserted into simulation in PARKED state.", veh.id);
-                        continue;
-                    }
-                    if (!lastVehicleData.isStopped()) {
-                        log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
-                    }
-                    vehicleData = new VehicleData.Builder(time, lastVehicleData.getName())
-                            .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
-                            .road(lastVehicleData.getRoadPosition())
-                            .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, lastVehicleData))
-                            .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
-                            .route(veh.routeId)
-                            .stopped(vehicleStopMode)
-                            .consumptions(new VehicleConsumptions(
-                                    new Consumptions(0d), lastVehicleData.getVehicleConsumptions().getAllConsumptions())
-                            )
-                            .emissions(new VehicleEmissions(
-                                    new Emissions(0d, 0d, 0d, 0d, 0d), lastVehicleData.getVehicleEmissions().getAllEmissions())
-                            )
-                            .sensors(createSensorData(veh.id, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
-                            .laneArea(vehicleSegmentInfo.get(veh.id))
-                            .create();
-                } else if (veh.position == null || !veh.position.isValid()) {
-                    /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
-                     * Therefore we just continue however, if it has already been in the simulation (remove(id) returns true),
-                     * then there seems to be an error with the vehicle and it is marked as removed. */
-                    if (removedVehicles.remove(veh.id)) {
-                        log.warn("vehicle {} has not properly arrived at its destination and will be removed", veh.id);
-                    }
-                    continue;
-                } else {
-                    vehicleData = new VehicleData.Builder(time, veh.id)
-                            .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
-                            .road(getRoadPosition(lastVehicleData, veh))
-                            .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, lastVehicleData))
-                            .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
-                            .route(veh.routeId)
-                            .signals(decodeVehicleSignals(veh.signalsEncoded))
-                            .stopped(vehicleStopMode)
-                            .consumptions(calculateConsumptions(veh, lastVehicleData))
-                            .emissions(calculateEmissions(veh, lastVehicleData))
-                            .sensors(createSensorData(veh.id, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
-                            .laneArea(vehicleSegmentInfo.get(veh.id))
-                            .create();
-                }
-
-                this.lastVehicleData.put(vehicleData.getName(), vehicleData);
-
-                updateVehicleLists(addedVehicles, updatedVehicles, removedVehicles, vehicleData);
-            }
-
-            for (String removeVehicleName : removedVehicles) {
-                this.lastVehicleData.remove(removeVehicleName);
-                knownVehicles.remove(removeVehicleName);
-                log.info("Removed vehicle \"{}\" at simulation time {}ns", removeVehicleName, time);
-            }
+            final List<VehicleData> addedVehicles = new LinkedList<>();
+            final List<VehicleData> updatedVehicles = new LinkedList<>();
+            final List<String> removedVehicles = new LinkedList<>();
 
             final List<InductionLoopInfo> updatedInductionLoops = new ArrayList<>();
             final List<LaneAreaDetectorInfo> updatedLaneAreas = new ArrayList<>();
             final Map<String, TrafficLightGroupInfo> trafficLightGroupInfos = new HashMap<>();
 
-            InductionLoopSubscriptionResult inductionLoop;
-            LaneAreaSubscriptionResult laneArea;
-            InductionLoopInfo inductionLoopInfo;
-            LaneAreaDetectorInfo laneAreaDetectorInfo;
-            TrafficLightSubscriptionResult trafficLightSubscriptionResult;
-
             for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
-                if (subscriptionResult instanceof InductionLoopSubscriptionResult) {
-                    inductionLoop = (InductionLoopSubscriptionResult) subscriptionResult;
-                    int count = (int) inductionLoop.vehiclesOnInductionLoop.stream().filter((s) -> s.leaveTime >= 0).count();
-                    inductionLoopInfo = new InductionLoopInfo.Builder(time, inductionLoop.id)
-                            .vehicleData(inductionLoop.meanSpeed, inductionLoop.meanVehicleLength)
-                            .traffic(count, calculateFlow(time, inductionLoop.id, count))
-                            .create();
+                if (subscriptionResult instanceof VehicleSubscriptionResult) {
+                    final SumoVehicleState sumoVehicle = processVehicleSubscriptionResult(
+                            time, (VehicleSubscriptionResult) subscriptionResult, followerDistances, vehicleSegmentInfo
+                    );
+                    if (sumoVehicle == null) {
+                        continue;
+                    }
+                    if (sumoVehicle.isAdded()) {
+                        addedVehicles.add(sumoVehicle.currentVehicleData);
+                    } else if (sumoVehicle.isUpdated()) {
+                        updatedVehicles.add(sumoVehicle.currentVehicleData);
+                    }
+                } else if (subscriptionResult instanceof InductionLoopSubscriptionResult) {
+                    final InductionLoopInfo inductionLoopInfo = processInductionLoopSubscriptionResult(
+                            time, (InductionLoopSubscriptionResult) subscriptionResult
+                    );
                     updatedInductionLoops.add(inductionLoopInfo);
                 } else if (subscriptionResult instanceof LaneAreaSubscriptionResult) {
-                    laneArea = (LaneAreaSubscriptionResult) subscriptionResult;
-                    double meanSpeed = calculateMeanSpeedOfLaneAreaDetector(laneArea.vehicles);
-                    laneAreaDetectorInfo = new LaneAreaDetectorInfo.Builder(time, laneArea.id)
-                            .vehicleData(laneArea.vehicleCount, meanSpeed)
-                            .density((laneArea.vehicleCount * 1000d) / laneArea.length)
-                            .haltingVehicles(laneArea.haltingVehicles)
-                            .length(laneArea.length)
-                            .create();
+                    final LaneAreaDetectorInfo laneAreaDetectorInfo = processLaneAreaSubscriptionResult(
+                            time, (LaneAreaSubscriptionResult) subscriptionResult
+                    );
                     updatedLaneAreas.add(laneAreaDetectorInfo);
                 } else if (subscriptionResult instanceof TrafficLightSubscriptionResult) {
-                    trafficLightSubscriptionResult = (TrafficLightSubscriptionResult) subscriptionResult;
-
-                    String trafficLightGroupId = trafficLightSubscriptionResult.id;
-                    String currentProgram = trafficLightSubscriptionResult.currentProgramId;
-                    int currentPhaseIndex = trafficLightSubscriptionResult.currentPhaseIndex;
-                    long assumedTimeOfNextSwitch = trafficLightSubscriptionResult.assumedNextPhaseSwitchTime;
-                    List<TrafficLightState> trafficLightState = TrafficLightStateDecoder.createStateListFromEncodedString(
-                            trafficLightSubscriptionResult.currentStateEncoded
+                    final TrafficLightGroupInfo trafficLightGroupInfo = processTrafficLightSubscriptionResult(
+                            (TrafficLightSubscriptionResult) subscriptionResult
                     );
-
-                    TrafficLightGroupInfo trafficLightGroupInfo = new TrafficLightGroupInfo(
-                            trafficLightGroupId, currentProgram, currentPhaseIndex, assumedTimeOfNextSwitch, trafficLightState
-                    );
-                    trafficLightGroupInfos.put(trafficLightGroupId, trafficLightGroupInfo);
+                    trafficLightGroupInfos.put(trafficLightGroupInfo.getGroupId(), trafficLightGroupInfo);
                 }
             }
 
-            final VehicleUpdates vehicleUpdates = new VehicleUpdates(time,
-                    new ArrayList<>(addedVehicles.values()),
-                    new ArrayList<>(updatedVehicles.values()),
-                    new ArrayList<>(removedVehicles)
-            );
+            for (Iterator<SumoVehicleState> vehicleIt = sumoVehicles.values().iterator(); vehicleIt.hasNext(); ) {
+                SumoVehicleState vehicle = vehicleIt.next();
+                if (vehicle.isRemoved()) {
+                    removedVehicles.add(vehicle.id);
+                    vehicleIt.remove();
+                    log.info("Removed vehicle \"{}\" at simulation time {}ns", vehicle.id, time);
+                }
+            }
+
+            final VehicleUpdates vehicleUpdates = new VehicleUpdates(time, addedVehicles, updatedVehicles, removedVehicles);
             final TrafficDetectorUpdates trafficDetectorUpdates = new TrafficDetectorUpdates(time, updatedLaneAreas, updatedInductionLoops);
             final TrafficLightUpdates trafficLightUpdates = new TrafficLightUpdates(time, trafficLightGroupInfos);
 
@@ -491,6 +432,82 @@ public class SimulationFacade {
         } catch (CommandException e) {
             throw new InternalFederateException("Could not properly simulate step and read subscriptions", e);
         }
+    }
+
+    private SumoVehicleState processVehicleSubscriptionResult(final long time,
+                                                              final VehicleSubscriptionResult veh,
+                                                              final Map<String, Double> followerDistances,
+                                                              final Map<String, String> vehicleSegmentInfo
+    ) {
+
+        final SumoVehicleState sumoVehicle = getVehicleState(veh.id);
+        sumoVehicle.lastVehicleData = sumoVehicle.currentVehicleData;
+
+        final VehicleStopMode vehicleStopMode = decodeStopMode(veh.stoppedStateEncoded);
+        final boolean isParking = vehicleStopMode == VehicleStopMode.PARK_ON_ROADSIDE || vehicleStopMode == VehicleStopMode.PARK_IN_PARKING_AREA;
+        final boolean hasInvalidPosition = veh.position == null || !veh.position.isValid();
+        final boolean isNewVehicle = sumoVehicle.lastVehicleData == null;
+
+        if (hasInvalidPosition && isNewVehicle) {
+            /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
+             * We ignore this vehicle until it's added to the simulation. */
+            log.debug("Skip vehicle {} which is loaded but not yet simulated.", veh.id);
+            return null;
+        }
+
+        if (hasInvalidPosition) {
+            /* If the vehicle, however,  has already been in the simulation (lastVehicleData was valid),
+             * then there seems to be an error and the vehicle state will not be updated, resulting in a removal of the vehicle. */
+            log.warn("vehicle {} has no valid position and will be removed.", veh.id);
+            return sumoVehicle;
+        }
+
+        if (isParking && isNewVehicle) {
+            log.warn("Skip vehicle {} which is inserted into simulation in PARKED state.", veh.id);
+            return null;
+        }
+
+        final VehicleData.Builder vehicleDataBuilder = new VehicleData.Builder(time, veh.id)
+                .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
+                .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, sumoVehicle.lastVehicleData))
+                .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
+                .route(veh.routeId)
+                .signals(decodeVehicleSignals(veh.signalsEncoded))
+                .stopped(vehicleStopMode)
+                .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
+                .laneArea(vehicleSegmentInfo.get(veh.id));
+
+
+        if (isParking) {
+            if (!sumoVehicle.lastVehicleData.isStopped()) {
+                log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
+            }
+            vehicleDataBuilder
+                    // use the last known road position, otherwise we can not retrieve a valid one
+                    .road(sumoVehicle.lastVehicleData.getRoadPosition())
+                    // for parking vehicles, there are no consumptions and emissions to measure
+                    .consumptions(new VehicleConsumptions(
+                            new Consumptions(0d), sumoVehicle.lastVehicleData.getVehicleConsumptions().getAllConsumptions())
+                    ).emissions(new VehicleEmissions(
+                            new Emissions(0d, 0d, 0d, 0d, 0d), sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions())
+                    );
+        } else {
+            vehicleDataBuilder
+                    .road(getRoadPosition(veh, sumoVehicle.lastVehicleData))
+                    .consumptions(calculateConsumptions(veh, sumoVehicle.lastVehicleData))
+                    .emissions(calculateEmissions(veh, sumoVehicle.lastVehicleData));
+        }
+
+        sumoVehicle.currentVehicleData = vehicleDataBuilder.create();
+        return sumoVehicle;
+    }
+
+    private InductionLoopInfo processInductionLoopSubscriptionResult(long time, InductionLoopSubscriptionResult inductionLoop) {
+        int count = (int) inductionLoop.vehiclesOnInductionLoop.stream().filter((s) -> s.leaveTime >= 0).count();
+        return new InductionLoopInfo.Builder(time, inductionLoop.id)
+                .vehicleData(inductionLoop.meanSpeed, inductionLoop.meanVehicleLength)
+                .traffic(count, calculateFlow(time, inductionLoop.id, count))
+                .create();
     }
 
     /**
@@ -522,11 +539,21 @@ public class SimulationFacade {
     private void updateBestLanesIfNecessary() throws CommandException, InternalFederateException {
         if (updateBestLanesBeforeNextSimulationStep) {
             VehicleSetUpdateBestLanes updateBestLanes = bridge.getCommandRegister().getOrCreate(VehicleSetUpdateBestLanes.class);
-            for (VehicleData vehicle : lastVehicleData.values()) {
-                updateBestLanes.execute(bridge, vehicle.getName());
+            for (SumoVehicleState vehicle : sumoVehicles.values()) {
+                updateBestLanes.execute(bridge, vehicle.id);
             }
             updateBestLanesBeforeNextSimulationStep = false;
         }
+    }
+
+    private LaneAreaDetectorInfo processLaneAreaSubscriptionResult(long time, LaneAreaSubscriptionResult laneArea) {
+        double meanSpeed = calculateMeanSpeedOfLaneAreaDetector(laneArea.vehicles);
+        return new LaneAreaDetectorInfo.Builder(time, laneArea.id)
+                .vehicleData(laneArea.vehicleCount, meanSpeed)
+                .density((laneArea.vehicleCount * 1000d) / laneArea.length)
+                .haltingVehicles(laneArea.haltingVehicles)
+                .length(laneArea.length)
+                .create();
     }
 
     /**
@@ -542,51 +569,40 @@ public class SimulationFacade {
         double sum = 0;
         int count = 0;
         for (String vehicleId : vehicleIds) {
-            VehicleData vehInfo = lastVehicleData.get(vehicleId);
+            VehicleData vehInfo = getLastKnownVehicleData(vehicleId);
             sum += vehInfo != null ? vehInfo.getSpeed() : 0;
             count += vehInfo != null ? 1 : 0;
         }
         return sum / count;
     }
 
-    /**
-     * Updates the vehicle Ids running in the simulation.
-     *
-     * @param added        The added vehicle.
-     * @param updated      The updated vehicle.
-     * @param removedNames The removed vehicles.
-     * @param info         Vehicle data.
-     */
-    private void updateVehicleLists(Map<String, VehicleData> added, Map<String, VehicleData> updated,
-                                    Collection<String> removedNames, VehicleData info) {
-        String name = info.getName();
-
-        if (knownVehicles.contains(name)) {
-            // updated vehicle
-            updated.put(name, info);
-        } else {
-            // new vehicle
-            knownVehicles.add(name);
-            added.put(name, info);
-        }
-
-        // remove not removed values
-        removedNames.remove(name);
+    private TrafficLightGroupInfo processTrafficLightSubscriptionResult(TrafficLightSubscriptionResult trafficLightSubscriptionResult) {
+        final String trafficLightGroupId = trafficLightSubscriptionResult.id;
+        final String currentProgram = trafficLightSubscriptionResult.currentProgramId;
+        final int currentPhaseIndex = trafficLightSubscriptionResult.currentPhaseIndex;
+        final long assumedTimeOfNextSwitch = trafficLightSubscriptionResult.assumedNextPhaseSwitchTime;
+        final List<TrafficLightState> trafficLightState = TrafficLightStateDecoder.createStateListFromEncodedString(
+                trafficLightSubscriptionResult.currentStateEncoded
+        );
+        return new TrafficLightGroupInfo(
+                trafficLightGroupId, currentProgram, currentPhaseIndex, assumedTimeOfNextSwitch, trafficLightState
+        );
     }
+
 
     /**
      * Creates an immutable object holding front and rear distance sensor data based on leading vehicle information.
      *
-     * @param vehicleId        The id of the vehicle the VehicleSensors object should be created for
+     * @param vehicleState     The state of the vehicle the VehicleSensors object should be created for
      * @param leadingVehicle   Information of the leading vehicle.
      * @param minGap           The minimum gap of the current vehicle.
      * @param followerDistance The distance to the follower of the current vehicle
      * @return an immutable sensor data object
      */
-    private VehicleSensors createSensorData(String vehicleId, LeadingVehicle leadingVehicle, double minGap, Double followerDistance) {
+    private VehicleSensors createSensorData(SumoVehicleState vehicleState, LeadingVehicle leadingVehicle, double minGap, Double followerDistance) {
 
-        boolean hasFrontSensorActivated = vehiclesWithFrontSensor.containsKey(vehicleId);
-        boolean hasBackSensorActivated = vehiclesWithBackSensor.containsKey(vehicleId);
+        boolean hasFrontSensorActivated = vehicleState.frontSensorDistance != null;
+        boolean hasBackSensorActivated = vehicleState.rearSensorDistance != null;
 
         double frontDistance = hasFrontSensorActivated ? Double.POSITIVE_INFINITY : -1;
         double leaderSpeed = hasFrontSensorActivated ? Double.POSITIVE_INFINITY : -1;
@@ -632,24 +648,30 @@ public class SimulationFacade {
      * @return The distance to the follower for each vehicle.
      */
     private Map<String, Double> calcFollowerDistancesBasedOnLeadingVehicles(List<AbstractSubscriptionResult> subscriptions) {
-        if (vehiclesWithBackSensor.isEmpty()) {
+        if (noRearSensorConfigured) {
             return new HashMap<>();
         }
 
-        final Map<String, Double> rearDistances = new HashMap<>();
+        final Map<String, Double> followerDistances = new HashMap<>();
         for (AbstractSubscriptionResult veh : subscriptions) {
             if (!(veh instanceof VehicleSubscriptionResult)) {
                 continue;
             }
             LeadingVehicle leader = ((VehicleSubscriptionResult) veh).leadingVehicle;
             if (leader != LeadingVehicle.NO_LEADER) {
-                double distance = (leader.getLeadingVehicleDistance() <= vehiclesWithBackSensor.get(leader.getLeadingVehicleId()))
+                Double rearDistanceRange = getVehicleState(leader.getLeadingVehicleId()).rearSensorDistance;
+                double distance = leader.getLeadingVehicleDistance() <= ObjectUtils.defaultIfNull(rearDistanceRange, 0d)
                         ? leader.getLeadingVehicleDistance() + ((VehicleSubscriptionResult) veh).minGap
                         : Double.POSITIVE_INFINITY;
-                rearDistances.put(leader.getLeadingVehicleId(), distance);
+
+                followerDistances.put(leader.getLeadingVehicleId(), distance);
             }
         }
-        return rearDistances;
+        return followerDistances;
+    }
+
+    private SumoVehicleState getVehicleState(String id) {
+        return sumoVehicles.computeIfAbsent(id, SumoVehicleState::new);
     }
 
     /**
@@ -700,11 +722,11 @@ public class SimulationFacade {
     /**
      * Getter for the {@link IRoadPosition}.
      *
-     * @param lastVehicleData Last information of the vehicle.
      * @param veh             The result of subscribed vehicle.
+     * @param lastVehicleData Last information of the vehicle.
      * @return The position in the form of IRoadPosition.
      */
-    private IRoadPosition getRoadPosition(VehicleData lastVehicleData, VehicleSubscriptionResult veh) {
+    private IRoadPosition getRoadPosition(VehicleSubscriptionResult veh, VehicleData lastVehicleData) {
         if (veh.edgeId == null) {
             return null;
         }
@@ -756,7 +778,7 @@ public class SimulationFacade {
      * @param stoppedStateEncoded Encoded number indicating the stop mode.
      * @return The stop mode.
      */
-    private VehicleStopMode getStopMode(int stoppedStateEncoded) {
+    private VehicleStopMode decodeStopMode(int stoppedStateEncoded) {
         if ((stoppedStateEncoded & 0b10000000) > 0) {
             return VehicleStopMode.PARK_IN_PARKING_AREA;
         }
@@ -808,13 +830,8 @@ public class SimulationFacade {
      * @return The latest known vehicle data.
      */
     public VehicleData getLastKnownVehicleData(String vehicleId) {
-        return lastVehicleData.get(vehicleId);
-    }
-
-    public Map<String, String> getLastKnownLaneAreaIds() {
-        return lastVehicleData.values().stream()
-                .filter(veh -> veh.getLaneAreaId() != null)
-                .collect(Collectors.toMap(VehicleData::getName, VehicleData::getLaneAreaId));
+        SumoVehicleState vehicle = sumoVehicles.get(vehicleId);
+        return vehicle != null ? vehicle.currentVehicleData : null;
     }
 
     /**
