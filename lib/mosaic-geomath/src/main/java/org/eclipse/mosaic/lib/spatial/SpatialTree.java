@@ -46,8 +46,8 @@ public abstract class SpatialTree<T> {
         }
 
         public boolean contains(T e) {
-            boolean inBounds = bounds.contains(itemAdapter.getMinX(e), itemAdapter.getMinY(e), itemAdapter.getMinZ(e)) &&
-                    bounds.contains(itemAdapter.getMaxX(e), itemAdapter.getMaxY(e), itemAdapter.getMaxZ(e));
+            boolean inBounds = bounds.contains(itemAdapter.getMinX(e), itemAdapter.getMinY(e), itemAdapter.getMinZ(e))
+                    && bounds.contains(itemAdapter.getMaxX(e), itemAdapter.getMaxY(e), itemAdapter.getMaxZ(e));
             if (!inBounds) {
                 return false;
             }
