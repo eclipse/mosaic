@@ -13,7 +13,6 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import static org.junit.Assert.assertEquals;

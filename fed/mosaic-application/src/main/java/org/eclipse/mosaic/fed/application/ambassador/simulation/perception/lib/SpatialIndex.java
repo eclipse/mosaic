@@ -13,7 +13,6 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.lib;
 
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;

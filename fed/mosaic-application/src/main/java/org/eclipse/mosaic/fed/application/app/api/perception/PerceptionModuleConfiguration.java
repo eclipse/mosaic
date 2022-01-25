@@ -13,7 +13,6 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-
 package org.eclipse.mosaic.fed.application.app.api.perception;
 
 public interface PerceptionModuleConfiguration {
