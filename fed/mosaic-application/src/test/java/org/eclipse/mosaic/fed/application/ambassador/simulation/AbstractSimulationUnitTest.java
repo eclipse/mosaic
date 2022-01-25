@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
@@ -48,8 +49,8 @@ public class AbstractSimulationUnitTest {
     public IpResolverRule ipRes = new IpResolverRule();
 
     @Rule
-    public SimulationKernelRule simKernel =
-            new SimulationKernelRule(Mockito.mock(EventManager.class), null, Mockito.mock(CentralNavigationComponent.class));
+    public SimulationKernelRule simKernel = new SimulationKernelRule(Mockito.mock(EventManager.class), null,
+            Mockito.mock(CentralNavigationComponent.class), Mockito.mock(CentralPerceptionComponent.class));
 
     @Before
     public void before() {

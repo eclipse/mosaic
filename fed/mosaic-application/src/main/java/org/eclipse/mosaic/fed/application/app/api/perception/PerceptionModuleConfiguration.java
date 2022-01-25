@@ -13,20 +13,10 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
+package org.eclipse.mosaic.fed.application.app.api.perception;
 
-public class CameraPerceptionModuleConfiguration implements PerceptionModuleConfiguration {
+public interface PerceptionModuleConfiguration {
 
-    /**
-     * Viewing angle of perception module. [rad]
-     */
-    double viewingAngle;
-
-    /**
-     * Viewing Range of the perception module. [m]
-     */
-    double viewingRange;
-
+    // marker interface
 }

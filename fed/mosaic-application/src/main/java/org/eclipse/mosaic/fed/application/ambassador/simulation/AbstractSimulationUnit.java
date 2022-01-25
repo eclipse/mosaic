@@ -22,7 +22,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ad
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassNameParser;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassSubsetIterator;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLoggerImpl;
@@ -30,7 +29,6 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
 import org.eclipse.mosaic.interactions.application.ItefLogging;
 import org.eclipse.mosaic.interactions.application.SumoTraciRequest;
@@ -103,7 +101,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     private final AdHocModule adhocModule;
 
-    private final PerceptionModule perceptionModule;
 
     /**
      * The {@link AbstractSimulationUnit}s cell module.
@@ -131,7 +128,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         AtomicInteger messageSequenceNumberGenerator = new AtomicInteger();
         this.adhocModule = new AdHocModule(this, messageSequenceNumberGenerator, getOsLog());
         this.cellModule = new CellModule(this, messageSequenceNumberGenerator, getOsLog());
-        this.perceptionModule = new CameraPerceptionModule(this, getOsLog());
         this.initialPosition = initialPosition;
     }
 
@@ -494,10 +490,5 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     public boolean canProcessEvent() {
         return true;
-    }
-
-    @Override
-    public final PerceptionModule getPerceptionModule() {
-        return this.perceptionModule;
     }
 }

@@ -15,8 +15,14 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-public interface PerceptionModuleOwner {
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
-    double getHeading();
+public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfiguration> {
+
+    VehicleData getVehicleData();
+
+    PerceptionModule<ConfigT> getPerceptionModule();
 
 }

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.StartApplications;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestApplicationWithSpy;
 import org.eclipse.mosaic.fed.application.app.TestChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
@@ -106,7 +107,8 @@ public class ApplicationAmbassadorTest {
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     @Rule
-    public SimulationKernelRule simulationKernel = new SimulationKernelRule(null, null, mock(CentralNavigationComponent.class));
+    public SimulationKernelRule simulationKernel = new SimulationKernelRule(null, null,
+            mock(CentralNavigationComponent.class), mock(CentralPerceptionComponent.class));
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();

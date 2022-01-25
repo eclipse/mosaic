@@ -281,9 +281,4 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
             trafficLight.setCurrentState(state);
         }
     }
-
-    @Override
-    public double getHeading() {
-        throw new UnsupportedOperationException("no heading");
-    }
 }

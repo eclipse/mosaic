@@ -21,6 +21,7 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
@@ -43,6 +44,8 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -53,6 +56,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
     @Nonnull
     private final NavigationModule navigationModule;
+
+    @NonNull
+    private final CameraPerceptionModule perceptionModule;
 
     @Nonnull
     private VehicleParameters vehicleParameters;
@@ -70,6 +76,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         vehicleParameters = new VehicleParameters(vehicleType);
         navigationModule = new NavigationModule(this);
         navigationModule.setCurrentPosition(initialPosition);
+        perceptionModule = new CameraPerceptionModule(this, getOsLog());
     }
 
     @Override
@@ -337,8 +344,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         return Objects.requireNonNull(navigationModule.getVehicleData()).getRoadPosition();
     }
 
+    @Nonnull
     @Override
-    public double getHeading() {
-        return getVehicleData().getHeading();
+    public CameraPerceptionModule getPerceptionModule() {
+        return perceptionModule;
     }
 }

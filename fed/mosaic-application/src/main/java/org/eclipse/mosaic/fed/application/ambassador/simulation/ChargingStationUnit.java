@@ -49,11 +49,6 @@ public class ChargingStationUnit extends AbstractSimulationUnit implements Charg
     }
 
     @Override
-    public double getHeading() {
-        throw new UnsupportedOperationException("no heading");
-    }
-
-    @Override
     public GeoPoint getPosition() {
         return getInitialPosition();
     }

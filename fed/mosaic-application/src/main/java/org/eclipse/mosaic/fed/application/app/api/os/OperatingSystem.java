@@ -15,8 +15,6 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CommunicationModuleOwner;
@@ -33,7 +31,7 @@ import java.util.List;
  * This interface describes all necessary functionality for units to be
  * simulated.
  */
-public interface OperatingSystem extends CommunicationModuleOwner, PerceptionModuleOwner {
+public interface OperatingSystem extends CommunicationModuleOwner {
 
     /**
      * Returns the path to the application simulator configuration directory.
@@ -131,8 +129,6 @@ public interface OperatingSystem extends CommunicationModuleOwner, PerceptionMod
      * @return the {@link AdHocModule} of this unit.
      */
     AdHocModule getAdHocModule();
-
-    PerceptionModule getPerceptionModule();
 
     /**
      * Get the list of all applications running on this simulation unit.

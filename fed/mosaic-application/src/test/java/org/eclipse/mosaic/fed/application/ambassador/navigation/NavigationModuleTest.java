@@ -80,7 +80,7 @@ public class NavigationModuleTest {
 
     @InjectMocks
     @Rule
-    public SimulationKernelRule kernelRule = new SimulationKernelRule(eventMngMock, null, cncMock);
+    public SimulationKernelRule kernelRule = new SimulationKernelRule(eventMngMock, null, cncMock, null);
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();

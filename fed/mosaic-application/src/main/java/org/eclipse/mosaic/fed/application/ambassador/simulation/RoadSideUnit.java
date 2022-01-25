@@ -91,9 +91,4 @@ public class RoadSideUnit extends AbstractSimulationUnit implements RoadSideUnit
         }
         return camBuilder;
     }
-
-    @Override
-    public double getHeading() {
-        throw new UnsupportedOperationException("no heading");
-    }
 }

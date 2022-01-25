@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,15 +13,13 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.app.api.perception;
+package org.eclipse.mosaic.lib.spatial;
 
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+/**
+ * {@link Grid} represents a possible DataStructure to store vehicles based on a map
+ * efficiently.
+ * TODO: needs to be validated, possibly re-implemented
+ */
+public class Grid<T> {
 
-import java.util.List;
-
-public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration> {
-
-    void enable(ConfigT configuration);
-
-    List<VehicleData> getPerceivedVehicles();
 }

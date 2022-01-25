@@ -95,9 +95,4 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
         getOsLog().error("Unknown event resource: {}", event);
         throw new RuntimeException(ErrorRegister.SERVER_UnknownEvent.toString());
     }
-
-    @Override
-    public double getHeading() {
-        throw new UnsupportedOperationException("no heading");
-    }
 }

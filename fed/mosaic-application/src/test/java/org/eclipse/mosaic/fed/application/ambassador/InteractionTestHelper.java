@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * Helper class, which provides predefined Unit#Registration.
  */
-class InteractionTestHelper {
+public class InteractionTestHelper {
 
     /**
      * Creates a {@link ChargingStationRegistration}-interaction with the given parameters.
@@ -132,7 +132,7 @@ class InteractionTestHelper {
      * @param testClass          application class
      * @return the {@link VehicleRegistration}-interaction
      */
-    static VehicleRegistration createVehicleRegistrationInteraction(
+    public static VehicleRegistration createVehicleRegistrationInteraction(
             String id,
             long startTimeInSeconds,
             Class<? extends TestApplicationWithSpy<?>> testClass

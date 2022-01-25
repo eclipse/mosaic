@@ -13,20 +13,23 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
+
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 
-public class CameraPerceptionModuleConfiguration implements PerceptionModuleConfiguration {
+import org.slf4j.Logger;
 
-    /**
-     * Viewing angle of perception module. [rad]
-     */
-    double viewingAngle;
+public abstract class AbstractPerceptionModule<ConfigT extends PerceptionModuleConfiguration> implements PerceptionModule<ConfigT> {
 
-    /**
-     * Viewing Range of the perception module. [m]
-     */
-    double viewingRange;
+    protected final PerceptionModuleOwner<ConfigT> owner;
 
+    protected final Logger log;
+
+
+    protected AbstractPerceptionModule(PerceptionModuleOwner<ConfigT> owner, Logger log) {
+        this.owner = owner;
+        this.log = log;
+    }
 }

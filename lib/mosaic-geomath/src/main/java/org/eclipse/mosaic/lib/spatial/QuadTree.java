@@ -13,20 +13,13 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
+package org.eclipse.mosaic.lib.spatial;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
-
-public class CameraPerceptionModuleConfiguration implements PerceptionModuleConfiguration {
-
-    /**
-     * Viewing angle of perception module. [rad]
-     */
-    double viewingAngle;
-
-    /**
-     * Viewing Range of the perception module. [m]
-     */
-    double viewingRange;
+/**
+ * {@link QuadTree} represents a possible DataStructure to store vehicles based on a map
+ * efficiently.
+ * TODO: needs to be properly implemented
+ */
+public class QuadTree<T> {
 
 }

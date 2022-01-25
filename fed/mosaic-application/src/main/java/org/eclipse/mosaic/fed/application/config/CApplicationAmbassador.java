@@ -76,4 +76,23 @@ public class CApplicationAmbassador {
          */
         public String type = null;
     }
+
+    public CPerception perceptionConfiguration = null;
+
+
+
+    public static class CPerception {
+        public enum PerceptionBackend {
+            Grid, QuadTree, Trivial
+        }
+
+        public PerceptionBackend perceptionBackend = PerceptionBackend.Trivial;
+
+        /**
+         * The interval between spatial index updates.
+         * [ns]
+         */
+        @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
+        public long spatialIndexUpdateInterval = TIME.SECOND;
+    }
 }
