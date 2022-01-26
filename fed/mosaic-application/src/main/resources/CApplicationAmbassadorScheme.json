@@ -24,12 +24,16 @@
         "eventSchedulerThreads": {
             "description": "Number of threads used by the MultiThreadedEventScheduler. Using more than 1 thread would result in undetermined behavior. Repeating the simulation could result in different simulation results, if some processed event uses the random number generator.",
             "default": 1,
-            "type": "integer", 
+            "type": "integer",
             "minimum": 1
         },
         "navigationConfiguration": {
             "description": "Configuration options for the route calculation.",
             "$ref": "#/definitions/routingByType"
+        },
+        "perceptionConfiguration": {
+            "description": "Configuration options for perception backend",
+            "$ref": "#/definitions/perceptionConfiguration"
         }
     },
     "definitions": {
@@ -45,6 +49,27 @@
                 "source": {
                     "description": "The source for the route calculation, e.g. the path to the database containing the road network.",
                     "type": "string"
+                }
+            }
+        },
+        "perceptionConfiguration": {
+            "title": "perceptionConfiguration",
+            "description": "Configuration options for perception backend",
+            "type": "object",
+            "properties": {
+                "perceptionBackend": {
+                    "description": "The underlying data structure for the spatial index",
+                    "type": "string",
+                    "enum": [ "Grid", "QuadTree", "Trivial" ],
+                    "default": "Trivial"
+                },
+                "spatialIndexUpdateInterval": {
+                    "description": "The minimal interval between updating of the spatial index. It is recommended to set this to the step size of the traffic simulator. Alternatively this can be defined as a string to include the unit of measurement (e.g. '1 s').",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 100 }
+                    ],
+                    "default": "1s"
                 }
             }
         }

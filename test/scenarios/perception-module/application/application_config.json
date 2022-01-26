@@ -1,0 +1,6 @@
+{
+    "perceptionConfiguration": {
+        "perceptionBackend": "Trivial",
+        "spacialIndexUpdateInterval": "1s"
+    }
+}

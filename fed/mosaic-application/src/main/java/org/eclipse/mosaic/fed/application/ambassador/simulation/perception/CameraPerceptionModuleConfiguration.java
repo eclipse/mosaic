@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleCon
 public class CameraPerceptionModuleConfiguration implements PerceptionModuleConfiguration {
 
     /**
-     * Viewing angle of perception module. [rad]
+     * Viewing angle of perception module. [degree]
      */
     double viewingAngle;
 
@@ -29,4 +29,8 @@ public class CameraPerceptionModuleConfiguration implements PerceptionModuleConf
      */
     double viewingRange;
 
+    public CameraPerceptionModuleConfiguration(double viewingAngle, double viewingRange) {
+        this.viewingAngle = viewingAngle;
+        this.viewingRange = viewingRange;
+    }
 }
