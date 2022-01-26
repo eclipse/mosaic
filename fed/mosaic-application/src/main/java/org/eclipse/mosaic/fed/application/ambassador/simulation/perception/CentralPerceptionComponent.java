@@ -22,11 +22,16 @@ import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@link CentralPerceptionComponent} is responsible for keeping a spatial index of all vehicles,
  * which allows fast querying of nearby vehicles.
  */
 public class CentralPerceptionComponent {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final CApplicationAmbassador.CPerception configuration;
 
@@ -45,6 +50,10 @@ public class CentralPerceptionComponent {
 
     public void initialize() throws InternalFederateException {
         try {
+            if (configuration == null) {
+                log.info("No Perception-Configuration was defined. Calling related API will result in errors.");
+                return;
+            }
             setSpatialIndex();
         } catch (Exception e) {
             throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent");
