@@ -16,10 +16,14 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.lib.PerceptionGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.lib.PerceptionIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.lib.SpatialIndex;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
+import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.geo.CartesianRectangle;
+import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.slf4j.Logger;
@@ -61,9 +65,12 @@ public class CentralPerceptionComponent {
     }
 
     private void setSpatialIndex() {
+        Database db = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
+        CartesianRectangle scenarioBounds = db.getBoundingBox().toCartesian();
         switch (configuration.perceptionBackend) {
             case Grid:
-                // TODO: these probably need additional configuration
+                spatialIndex = new PerceptionGrid(configuration.gridCellWidth, configuration.gridCellHeight, scenarioBounds);
+                break;
             case QuadTree:
             case Trivial:
             default:

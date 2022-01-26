@@ -94,5 +94,15 @@ public class CApplicationAmbassador {
          */
         @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
         public long spatialIndexUpdateInterval = TIME.SECOND;
+
+        /**
+         * If {@link PerceptionBackend#Grid} is used as backend this indicates the width of a single cell. [m]
+         */
+        public double gridCellWidth = 200;
+
+        /**
+         * If {@link PerceptionBackend#Grid} is used as backend this indicates the height of a single cell. [m]
+         */
+        public double gridCellHeight = 200;
     }
 }
