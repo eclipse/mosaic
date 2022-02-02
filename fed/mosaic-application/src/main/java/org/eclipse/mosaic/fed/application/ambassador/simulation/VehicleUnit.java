@@ -46,8 +46,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -59,7 +57,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     @Nonnull
     private final NavigationModule navigationModule;
 
-    @NonNull
+    @Nonnull
     private final CameraPerceptionModule perceptionModule;
 
     @Nonnull
