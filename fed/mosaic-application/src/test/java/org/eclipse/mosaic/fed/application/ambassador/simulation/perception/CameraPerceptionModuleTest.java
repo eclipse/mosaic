@@ -106,9 +106,11 @@ public class CameraPerceptionModuleTest {
 
     private void setupSpatialIndex(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
+        int i = 1;
         for (CartesianPoint position : positions) {
             VehicleData vehicleDataMock = mock(VehicleData.class);
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
+            when(vehicleDataMock.getName()).thenReturn("veh_" + i++);
             vehiclesInIndex.add(vehicleDataMock);
         }
         perceptionIndex.updateVehicles(vehiclesInIndex);
