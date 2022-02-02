@@ -22,9 +22,11 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModuleConfiguration;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
@@ -346,7 +348,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
     @Nonnull
     @Override
-    public CameraPerceptionModule getPerceptionModule() {
+    public PerceptionModule<CameraPerceptionModuleConfiguration> getPerceptionModule() {
         return perceptionModule;
     }
 }

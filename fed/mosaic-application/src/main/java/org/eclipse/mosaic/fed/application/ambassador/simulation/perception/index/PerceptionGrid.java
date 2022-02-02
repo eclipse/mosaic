@@ -14,30 +14,40 @@
  */
 
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.lib;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
 
-import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
-import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionRange;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SpatialVehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.spatial.Grid;
 
 import java.util.List;
 
-public class PerceptionGrid extends Grid<VehicleData> implements SpatialIndex {
-
+public class PerceptionGrid extends Grid<VehicleData> implements SpatialVehicleIndex {
 
     public PerceptionGrid(double cellWidth, double cellHeight, CartesianRectangle bounds) {
         super(cellWidth, cellHeight, bounds);
     }
 
     @Override
-    public List<VehicleData> getVehiclesInIndexRange(CartesianPoint position, double heading, double viewingDistance, double viewingAngle) {
+    public List<VehicleObject> getVehiclesInRange(PerceptionRange searchRange) {
         return null;
     }
 
     @Override
-    public void update(VehicleUpdates latestUpdates) {
+    public void removeVehicles(Iterable<String> vehiclesToRemove) {
 
+    }
+
+    @Override
+    public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
+
+    }
+
+    @Override
+    public int getNumberOfVehicles() {
+        return 0;
     }
 }

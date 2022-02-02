@@ -15,13 +15,21 @@
 
 package org.eclipse.mosaic.fed.application.app.api.perception;
 
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 
 import java.util.List;
 
 public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration> {
 
+    /**
+     * Enables and configures this perception module.
+     *
+     * @param configuration the configuration object
+     */
     void enable(ConfigT configuration);
 
-    List<VehicleData> getPerceivedVehicles();
+    /**
+     * @return a list of all {@link VehicleObject}s inside the perception range of this vehicle.
+     */
+    List<VehicleObject> getPerceivedVehicles();
 }

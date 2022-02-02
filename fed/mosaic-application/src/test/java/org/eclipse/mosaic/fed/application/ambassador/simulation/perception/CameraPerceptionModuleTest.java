@@ -16,8 +16,6 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -25,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.lib.PerceptionIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
@@ -58,31 +56,26 @@ public class CameraPerceptionModuleTest {
     @InjectMocks
     public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, null, cpcMock);
 
-    @Mock
-    public PerceptionIndex perceptionIndex;
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
 
-    private CameraPerceptionModule cameraPerceptionModule;
+    public PerceptionIndex perceptionIndex;
 
-    private CameraPerceptionModuleConfiguration configuration = mock(CameraPerceptionModuleConfiguration.class);
+    private CameraPerceptionModule cameraPerceptionModule;
 
     @Before
     public void setup() {
+        perceptionIndex = new PerceptionIndex();
         // setup cpc
         when(cpcMock.getSpatialIndex()).thenReturn(perceptionIndex);
-        // setup config
-        configuration.viewingRange = 200d;
-        configuration.viewingAngle = 108d;
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
         cameraPerceptionModule = spy(new CameraPerceptionModule(egoVehicleUnit, mock(Logger.class)));
-        cameraPerceptionModule.enable(configuration);
+        cameraPerceptionModule.enable(new CameraPerceptionModuleConfiguration(108d, 200d));
 
         // setup ego vehicle
-        when(egoVehicleData.getName()).thenReturn("veh_0");
         when(egoVehicleData.getHeading()).thenReturn(90d);
         when(egoVehicleData.getProjectedPosition()).thenReturn(new MutableCartesianPoint(100, 100, 0));
     }
@@ -113,16 +106,12 @@ public class CameraPerceptionModuleTest {
 
     private void setupSpatialIndex(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
-        int nameSuffix = 0;
         for (CartesianPoint position : positions) {
             VehicleData vehicleDataMock = mock(VehicleData.class);
-            when(vehicleDataMock.getName()).thenReturn("perceived_vehicle_" + nameSuffix);
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
             vehiclesInIndex.add(vehicleDataMock);
-            nameSuffix++;
         }
-        when(cpcMock.getSpatialIndex().getVehiclesInIndexRange(isA(CartesianPoint.class), anyDouble(), anyDouble(), anyDouble()))
-                .thenReturn(vehiclesInIndex);
+        perceptionIndex.updateVehicles(vehiclesInIndex);
     }
 
 
