@@ -77,7 +77,7 @@ public class CApplicationAmbassador {
         public String type = null;
     }
 
-    public CPerception perceptionConfiguration = null;
+    public CPerception perceptionConfiguration = new CPerception();
 
 
 

@@ -113,7 +113,9 @@ public class CentralPerceptionComponent {
     public void updateVehicles(VehicleUpdates vehicleUpdates) {
         latestUpdates = vehicleUpdates;
         // we need to remove arrived vehicles in every simulation step, otherwise we could have dead vehicles in the index
-        spatialIndex.removeVehicles(vehicleUpdates.getRemovedNames());
+        if (spatialIndex.getNumberOfVehicles() > 0) {
+            spatialIndex.removeVehicles(vehicleUpdates.getRemovedNames());
+        }
     }
 
     public void finish() {
