@@ -22,15 +22,14 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.util.PerformanceMonitor;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
-import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
-import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,34 +62,34 @@ public class CentralPerceptionComponent {
     private long nextUpdate = 0;
 
     public CentralPerceptionComponent(CApplicationAmbassador.CPerception perceptionConfiguration) {
-        this.configuration = perceptionConfiguration;
+        this.configuration = Validate.notNull(perceptionConfiguration, "perceptionConfiguration must not be null");
     }
 
     public void initialize() throws InternalFederateException {
         try {
-            if (configuration == null) {
-                log.info("No Perception-Configuration was defined. Calling related API will result in errors.");
-                return;
-            }
             setSpatialIndex();
         } catch (Exception e) {
-            throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent");
+            throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent", e);
         }
     }
 
     private void setSpatialIndex() {
-        Database db = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
-        CartesianRectangle scenarioBounds = db.getBoundingBox().toCartesian();
-        switch (configuration.perceptionBackend) {
-            case Grid:
-                spatialIndex = new PerceptionGrid(configuration.gridCellWidth, configuration.gridCellHeight, scenarioBounds);
-                break;
-            case QuadTree:
-                spatialIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
-                break;
-            case Trivial:
-            default:
-                spatialIndex = new PerceptionIndex();
+        CartesianRectangle scenarioBounds = SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds();
+        if (scenarioBounds.getArea() > 0) {
+            switch (configuration.perceptionBackend) {
+                case Grid:
+                    spatialIndex = new PerceptionGrid(configuration.gridCellWidth, configuration.gridCellHeight, scenarioBounds);
+                    break;
+                case QuadTree:
+                    spatialIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
+                    break;
+                case Trivial:
+                default:
+                    spatialIndex = new PerceptionIndex();
+            }
+        } else {
+            log.warn("The bounding area of the scenario could not be determined. A low performance spatial index will be used for perception.");
+            spatialIndex = new PerceptionIndex();
         }
 
         if (configuration.performanceMeasure) {

@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.lib.routing;
 
+import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
@@ -119,4 +120,11 @@ public interface Routing {
      * @return the connection object identified by the given nodeId.
      */
     IConnection getConnection(String nodeId);
+
+    /**
+     * Returns the cartesian bounds of the scenario.
+     *
+     * @return the bounds of the scenario
+     */
+    CartesianRectangle getScenarioBounds();
 }
