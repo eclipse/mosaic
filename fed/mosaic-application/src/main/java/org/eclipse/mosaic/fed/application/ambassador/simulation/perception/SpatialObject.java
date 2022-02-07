@@ -20,7 +20,7 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 public interface SpatialObject {
 
     /**
-     * Returns the unique identifier of this spatial object
+     * Returns the unique identifier of this spatial object.
      */
     String getId();
 

@@ -22,7 +22,6 @@ import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
 import org.eclipse.mosaic.lib.spatial.QuadTree;
-import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +34,7 @@ import java.util.Map;
 public class PerceptionTree implements SpatialVehicleIndex {
 
     /**
-     * Stores {@link VehicleObject}s for fast removal and position update
+     * Stores {@link VehicleObject}s for fast removal and position update.
      */
     private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
 
@@ -75,8 +74,7 @@ public class PerceptionTree implements SpatialVehicleIndex {
         vehiclesToUpdate.forEach(v -> {
             VehicleObject vehicleObject = indexedVehicles.get(v.getName());
             if (vehicleObject == null) {
-                vehicleObject = new VehicleObject(v.getName())
-                        .setPosition(v.getProjectedPosition());
+                vehicleObject = new VehicleObject(v.getName()).setPosition(v.getProjectedPosition());
                 if (vehicleTree.addItem(vehicleObject)) {
                     indexedVehicles.put(v.getName(), vehicleObject);
                 }
@@ -93,22 +91,5 @@ public class PerceptionTree implements SpatialVehicleIndex {
     @Override
     public int getNumberOfVehicles() {
         return indexedVehicles.size();
-    }
-
-    static class VehicleObjectAdapter implements SpatialItemAdapter<VehicleObject> {
-        @Override
-        public double getMinX(VehicleObject item) {
-            return item.getProjectedPosition().getX();
-        }
-
-        @Override
-        public double getMinY(VehicleObject item) {
-            return item.getProjectedPosition().getZ();
-        }
-
-        @Override
-        public double getMinZ(VehicleObject item) {
-            return -item.getProjectedPosition().getY();
-        }
     }
 }

@@ -67,11 +67,11 @@ public class PerformanceMonitor {
         }
         long average = total / measurements.size();
 
-        log.info(name + " (calls: " + measurements.size() + " " +
-                "total: " + total / TIME.MILLI_SECOND + " ms " +
-                "average: " + (average > 1000 ? (average / TIME.MILLI_SECOND + " ms ") : (average + " ns ")) +
-                "max: " + (max > 1000 ? (max / TIME.MILLI_SECOND + " ms ") : (max + " ns ")) +
-                "min: " + (min > 1000 ? (min / TIME.MILLI_SECOND + " ms ") : (max + " ns ")) + ")");
+        log.info(name + " (calls: " + measurements.size() + " "
+                + "total: " + total / TIME.MILLI_SECOND + " ms "
+                + "average: " + (average > 1000 ? (average / TIME.MILLI_SECOND + " ms ") : (average + " ns "))
+                + "max: " + (max > 1000 ? (max / TIME.MILLI_SECOND + " ms ") : (max + " ns "))
+                + "min: " + (min > 1000 ? (min / TIME.MILLI_SECOND + " ms ") : (max + " ns ")) + ")");
 
     }
 
