@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
+
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
+
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
+
+class VehicleObjectAdapter implements SpatialItemAdapter<VehicleObject> {
+
+    @Override
+    public double getMinX(VehicleObject item) {
+        return item.getProjectedPosition().getX();
+    }
+
+    @Override
+    public double getMinY(VehicleObject item) {
+        return item.getProjectedPosition().getZ();
+    }
+
+    @Override
+    public double getMinZ(VehicleObject item) {
+        return -item.getProjectedPosition().getY();
+    }
+}

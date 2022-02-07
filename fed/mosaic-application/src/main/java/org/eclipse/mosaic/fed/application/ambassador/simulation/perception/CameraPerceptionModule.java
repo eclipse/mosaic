@@ -77,16 +77,15 @@ public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerce
         private final Vector3d leftBoundVector = new Vector3d();
         private final Vector3d rightBoundVector = new Vector3d();
         /**
-         * the axis-aligned bounding box around the sight area
+         * The axis-aligned bounding box around the sight area.
          */
         private final BoundingBox sightAreaBoundingBox = new BoundingBox();
-
         /**
-         * vector object used for temporary calculations, to avoid unnecessary object allocations
+         * Vector object used for temporary calculations, to avoid unnecessary object allocations.
          */
         private final Vector3d tmpVector1 = new Vector3d();
         /**
-         * vector object used for temporary calculations, to avoid unnecessary object allocations
+         * Vector object used for temporary calculations, to avoid unnecessary object allocations.
          */
         private final Vector3d tmpVector2 = new Vector3d();
 
@@ -137,9 +136,9 @@ public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerce
                 double length = sqrt(pow(configuration.getViewingRange(), 2) / (1 - pow(sin(viewingAngleRad / 2), 2)));
                 directionVector.multiply(length);
 
-                // rotate the direction vector the right using new vector
+                // rotate the direction vector to the right
                 leftBoundVector.set(directionVector).rotate(-viewingAngleRad / 2, VectorUtils.UP);
-                // rotate the direction vector to the left re-using direction vector
+                // rotate the direction vector to the left
                 rightBoundVector.set(directionVector).rotate(viewingAngleRad / 2, VectorUtils.UP);
             }
         }
@@ -147,11 +146,7 @@ public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerce
         private void calculateBoundingBox() {
             synchronized (tmpVector1) {
                 sightAreaBoundingBox.clear();
-                sightAreaBoundingBox.add(
-                        origin,
-                        tmpVector1.set(origin).add(leftBoundVector),
-                        tmpVector2.set(origin).add(rightBoundVector)
-                );
+                sightAreaBoundingBox.add(origin, tmpVector1.set(origin).add(leftBoundVector), tmpVector2.set(origin).add(rightBoundVector));
             }
         }
     }
