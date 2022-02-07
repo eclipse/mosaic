@@ -15,16 +15,17 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.spatial.BoundingBox;
 
-public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfiguration> {
+public interface PerceptionRange {
 
-    String getId();
+    /**
+     * Checks, if the other spatial object is within this perception range.
+     */
+    boolean isInRange(SpatialObject other);
 
-    VehicleData getVehicleData();
-
-    PerceptionModule<ConfigT> getPerceptionModule();
-
+    /**
+     * Returns the minimum bounding box around this perception area. This is used for range search queries in the perception index.
+     */
+    BoundingBox getBoundingBox();
 }

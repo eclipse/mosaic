@@ -24,6 +24,7 @@ import org.eclipse.mosaic.lib.database.route.Route;
 import org.eclipse.mosaic.lib.database.spatial.Edge;
 import org.eclipse.mosaic.lib.database.spatial.EdgeFinder;
 import org.eclipse.mosaic.lib.database.spatial.NodeFinder;
+import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoUtils;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
@@ -270,4 +271,8 @@ public class DatabaseRouting implements Routing {
         return scenarioDatabase;
     }
 
+    @Override
+    public CartesianRectangle getScenarioBounds() {
+        return scenarioDatabase.getBoundingBox().toCartesian();
+    }
 }

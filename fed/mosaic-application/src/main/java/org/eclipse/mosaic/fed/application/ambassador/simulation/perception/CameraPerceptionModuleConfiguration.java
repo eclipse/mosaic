@@ -22,15 +22,23 @@ public class CameraPerceptionModuleConfiguration implements PerceptionModuleConf
     /**
      * Viewing angle of perception module. [degree]
      */
-    double viewingAngle;
+    private final double viewingAngle;
 
     /**
      * Viewing Range of the perception module. [m]
      */
-    double viewingRange;
+    private final double viewingRange;
 
     public CameraPerceptionModuleConfiguration(double viewingAngle, double viewingRange) {
         this.viewingAngle = viewingAngle;
         this.viewingRange = viewingRange;
+    }
+
+    public double getViewingAngle() {
+        return viewingAngle;
+    }
+
+    public double getViewingRange() {
+        return viewingRange;
     }
 }

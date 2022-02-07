@@ -14,7 +14,7 @@
  */
 
 
-package org.eclipse.mosaic.test.app.perceptionmodule;
+package org.eclipse.mosaic.app.tutorial.vehicle;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
@@ -23,27 +23,22 @@ import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
-import org.eclipse.mosaic.rti.TIME;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
+public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
 
-    private static final String EVENT_RESOURCE = "PERCEPTION";
-    private static final long queryInterval = 2 * TIME.SECOND;
-
-    private static final double VIEWING_ANGLE = 108d;
-    private static final double VIEWING_RANGE = 25d;
+    private static final double VIEWING_ANGLE = 60d;
+    private static final double VIEWING_RANGE = 200d;
 
     @Override
     public void onStartup() {
-        getLog().infoSimTime(this, "Started {} on {}.", this.getClass().getSimpleName(), getOs().getId());
+        getLog().debugSimTime(this, "Started {} on {}.", this.getClass().getSimpleName(), getOs().getId());
 
         enablePerceptionModule();
-        schedulePerception();
     }
 
     private void enablePerceptionModule() {
@@ -57,31 +52,20 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
 
     }
 
-    @Override
-    public void processEvent(Event event) throws Exception {
-        if (event.getResource() != null && event.getResource() instanceof String) {
-            if (event.getResource().equals(EVENT_RESOURCE)) {
-                perceiveVehicles();
-                schedulePerception();
-            }
-        }
-    }
 
     @Override
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
-
-    }
-
-    private void schedulePerception() {
-        getOs().getEventManager().newEvent(getOs().getSimulationTime() + queryInterval, this)
-                .withResource(EVENT_RESOURCE)
-                .schedule();
+        perceiveVehicles();
     }
 
     private void perceiveVehicles() {
         List<VehicleObject> perceivedVehicles = getOs().getPerceptionModule().getPerceivedVehicles();
-        getLog().infoSimTime(this, "Perceived vehicles: {}",
+        getLog().debugSimTime(this, "Perceived vehicles: {}",
                 perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
     }
 
+    @Override
+    public void processEvent(Event event) throws Exception {
+
+    }
 }

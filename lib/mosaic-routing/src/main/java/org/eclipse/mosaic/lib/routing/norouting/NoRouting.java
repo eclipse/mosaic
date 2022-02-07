@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.routing.norouting;
 
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
@@ -94,5 +96,10 @@ public class NoRouting implements Routing {
     @Override
     public IConnection getConnection(String nodeId) {
         return null;
+    }
+
+    @Override
+    public CartesianRectangle getScenarioBounds() {
+        return new CartesianRectangle(CartesianPoint.ORIGO, CartesianPoint.ORIGO);
     }
 }

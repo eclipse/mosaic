@@ -30,7 +30,7 @@ import org.junit.Test;
 
 public class PerceptionModuleIT {
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().logLevelOverride("DEBUG");
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().watchdog(0);
 
     private static MosaicSimulation.SimulationResult simulationResult;
 

@@ -15,16 +15,17 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 
-public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfiguration> {
+public interface SpatialObject {
 
+    /**
+     * Returns the unique identifier of this spatial object
+     */
     String getId();
 
-    VehicleData getVehicleData();
-
-    PerceptionModule<ConfigT> getPerceptionModule();
-
+    /**
+     * Returns the projected position on the X,Y-plane of this spatial object.
+     */
+    CartesianPoint getProjectedPosition();
 }

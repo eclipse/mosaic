@@ -77,7 +77,7 @@ public class CApplicationAmbassador {
         public String type = null;
     }
 
-    public CPerception perceptionConfiguration = null;
+    public CPerception perceptionConfiguration = new CPerception();
 
 
 
@@ -89,6 +89,12 @@ public class CApplicationAmbassador {
         public PerceptionBackend perceptionBackend = PerceptionBackend.Trivial;
 
         /**
+         * If set to <code>true</code>, a PerceptionPerformance.csv is generated with detailed information about execution calls
+         * of the perception backend.
+         */
+        public boolean performanceMeasure = false;
+
+        /**
          * The interval between spatial index updates.
          * [ns]
          */
@@ -96,13 +102,23 @@ public class CApplicationAmbassador {
         public long spatialIndexUpdateInterval = TIME.SECOND;
 
         /**
-         * If {@link PerceptionBackend#Grid} is used as backend this indicates the width of a single cell. [m]
+         * If {@link PerceptionBackend#Grid} is used as backend, this indicates the width of a single cell. [m]
          */
         public double gridCellWidth = 200;
 
         /**
-         * If {@link PerceptionBackend#Grid} is used as backend this indicates the height of a single cell. [m]
+         * If {@link PerceptionBackend#Grid} is used as backend, this indicates the height of a single cell. [m]
          */
         public double gridCellHeight = 200;
+
+        /**
+         * {@link PerceptionBackend#QuadTree} is used as backend, this indicates the maximum number of vehicles inside a tile before splitting
+         */
+        public int treeSplitSize = 20;
+
+        /**
+         * {@link PerceptionBackend#QuadTree} is used as backend, this indicates the maximum depth of the quad-tree
+         */
+        public int treeMaxDepth = 12;
     }
 }
