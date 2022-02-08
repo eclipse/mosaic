@@ -88,6 +88,11 @@ public class CSumo implements Serializable {
     public boolean subscribeToAllVehicles = true;
 
     /**
+     * Prints out all traci calls.
+     */
+    public boolean debugTraciCalls = false;
+
+    /**
      * A optional list of subscriptions for each vehicle in the simulation. The less subscriptions given,
      * the faster the simulation. Per default (if this list is set to null), all subscriptions are activated.
      * Please note, that some components expect specific information, such as the road position. If those information

@@ -31,12 +31,15 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleAdd;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetRemove;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetUpdateBestLanes;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribeSurroundingVehicle;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscriptionSetFieldOfVision;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.AbstractSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleContextSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.fed.sumo.util.InductionLoop;
@@ -54,6 +57,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.objects.vehicle.Consumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.Emissions;
+import org.eclipse.mosaic.lib.objects.vehicle.SurroundingVehicle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleConsumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleEmissions;
@@ -95,7 +99,10 @@ public class SimulationFacade {
     private final VehicleAdd vehicleAdd;
     private final VehicleSetRemove remove;
 
+
     private final VehicleSubscribe vehicleSubscribe;
+    private final VehicleSubscribeSurroundingVehicle vehicleSubscribeSurrounding;
+    private final VehicleSubscriptionSetFieldOfVision vehicleSubscriptionFilterFieldOfVision;
     private final InductionLoopSubscribe inductionloopSubscribe;
     private final LaneAreaSubscribe laneAreaSubscribe;
     private final TrafficLightSubscribe trafficLightSubscribe;
@@ -140,6 +147,9 @@ public class SimulationFacade {
         this.laneSetMaxSpeed = bridge.getCommandRegister().getOrCreate(LaneSetMaxSpeed.class);
 
         this.laneGetLength = bridge.getCommandRegister().getOrCreate(LaneGetLength.class);
+
+        this.vehicleSubscribeSurrounding = bridge.getCommandRegister().getOrCreate(VehicleSubscribeSurroundingVehicle.class);
+        this.vehicleSubscriptionFilterFieldOfVision = bridge.getCommandRegister().getOrCreate(VehicleSubscriptionSetFieldOfVision.class);
     }
 
     /**
@@ -201,6 +211,26 @@ public class SimulationFacade {
     public void subscribeForVehicle(String vehicleId, long start, long end) throws InternalFederateException {
         try {
             vehicleSubscribe.execute(bridge, vehicleId, start, end);
+        } catch (CommandException e) {
+            throw new InternalFederateException(String.format("Could not subscribe for vehicle %s", vehicleId), e);
+        }
+    }
+
+    /**
+     * Creates a contextual subscription which returns all vehicles surrounding the specified vehicle filtered by a field of vision
+     * (sight distance and opening angle).
+     *
+     * @param vehicleId    the id of the vehicle to subscribe the data of surrounding vehicles
+     * @param start        the time [ns] the subscription should start
+     * @param end          the time [ns] the subscription should end
+     * @param range        the range of the field of vision [m]
+     * @param openingAngle the opening angle of the field of vision [deg]
+     * @throws InternalFederateException if it was not possible to create a context subscription
+     */
+    public void subscribeForVehiclesWithinFieldOfVision(String vehicleId, long start, long end, double range, double openingAngle) throws InternalFederateException {
+        try {
+            vehicleSubscribeSurrounding.execute(bridge, vehicleId, start, end, range);
+            vehicleSubscriptionFilterFieldOfVision.execute(bridge, openingAngle);
         } catch (CommandException e) {
             throw new InternalFederateException(String.format("Could not subscribe for vehicle %s", vehicleId), e);
         }
@@ -443,7 +473,20 @@ public class SimulationFacade {
             TrafficLightSubscriptionResult trafficLightSubscriptionResult;
 
             for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
-                if (subscriptionResult instanceof InductionLoopSubscriptionResult) {
+                if (subscriptionResult instanceof VehicleContextSubscriptionResult) {
+                    VehicleContextSubscriptionResult vehiclesFromContext = (VehicleContextSubscriptionResult) subscriptionResult;
+                    VehicleData last = this.lastVehicleData.get(vehiclesFromContext.id);
+                    if (last != null && vehiclesFromContext.contextSubscriptions.size() > 1) {
+                        for (VehicleSubscriptionResult vehInSight : vehiclesFromContext.contextSubscriptions) {
+                            if (vehiclesFromContext.id.equals(vehInSight.id)) {
+                                continue;
+                            }
+                            last.getInSight().add(
+                                    new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed, vehInSight.heading)
+                            );
+                        }
+                    }
+                } else if (subscriptionResult instanceof InductionLoopSubscriptionResult) {
                     inductionLoop = (InductionLoopSubscriptionResult) subscriptionResult;
                     int count = (int) inductionLoop.vehiclesOnInductionLoop.stream().filter((s) -> s.leaveTime >= 0).count();
                     inductionLoopInfo = new InductionLoopInfo.Builder(time, inductionLoop.id)

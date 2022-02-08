@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class AllSubscriptionsTraciReader extends AbstractTraciResultReader<AbstractSubscriptionResult> {
 
-    private final Map<Integer, AbstractSubscriptionTraciReader<?>> childReader = new HashMap<>();
+    private final Map<Integer, AbstractTraciResultReader<? extends AbstractSubscriptionResult>> childReader = new HashMap<>();
 
     /**
      * Creates a new {@link AllSubscriptionsTraciReader} object.
@@ -37,13 +37,14 @@ public class AllSubscriptionsTraciReader extends AbstractTraciResultReader<Abstr
         childReader.put(CommandVariableSubscriptions.RESPONSE_SUBSCRIBE_INDUCTION_LOOP_VALUES, new InductionLoopSubscriptionTraciReader());
         childReader.put(CommandVariableSubscriptions.RESPONSE_SUBSCRIBE_LANE_AREA_VALUES, new LaneAreaSubscriptionTraciReader());
         childReader.put(CommandVariableSubscriptions.RESPONSE_SUBSCRIBE_TRAFFIC_LIGHT_VALUES, new TrafficLightSubscriptionReader());
+        childReader.put(CommandVariableSubscriptions.RESPONSE_SUBSCRIBE_CONTEXT_VEHICLE_VALUES, new VehicleContextSubscriptionTraciReader());
     }
 
     @Override
     protected AbstractSubscriptionResult readFromStream(DataInputStream in) throws IOException {
         int type = readUnsignedByte(in);
 
-        AbstractSubscriptionTraciReader<?> subscriptionReader = childReader.get(type);
+        AbstractTraciResultReader<? extends AbstractSubscriptionResult> subscriptionReader = childReader.get(type);
         AbstractSubscriptionResult result = subscriptionReader.read(in, totalBytesLeft - numBytesRead);
         this.numBytesRead += subscriptionReader.getNumberOfBytesRead();
         return result;

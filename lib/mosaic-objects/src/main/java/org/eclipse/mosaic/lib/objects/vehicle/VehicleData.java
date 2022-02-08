@@ -32,6 +32,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -126,6 +128,8 @@ public class VehicleData extends UnitData {
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final Object additionalData;
 
+    private final List<SurroundingVehicle> vehiclesInSight = new ArrayList<>();
+
     /**
      * Private constructor, use {@link VehicleData.Builder} instead.
      */
@@ -185,6 +189,10 @@ public class VehicleData extends UnitData {
      */
     public String getRouteId() {
         return routeId;
+    }
+
+    public List<SurroundingVehicle> getInSight() {
+        return vehiclesInSight;
     }
 
     /**
@@ -440,6 +448,7 @@ public class VehicleData extends UnitData {
         private VehicleSensors vehicleSensors;
         private DriveDirection driveDirection = DriveDirection.UNAVAILABLE;
         private Object additionalData;
+        private List<SurroundingVehicle> vehiclesInSight;
 
         /**
          * Init the builder with the current simulation time [ns] and name of the vehicle.
@@ -583,6 +592,7 @@ public class VehicleData extends UnitData {
             this.vehicleSensors = veh.getVehicleSensors();
             this.driveDirection = veh.getDriveDirection();
             this.additionalData = veh.getAdditionalData();
+            this.vehiclesInSight = veh.getInSight();
             return this;
         }
 
@@ -590,7 +600,7 @@ public class VehicleData extends UnitData {
          * Returns the final {@link VehicleData} based on the properties given before.
          */
         public VehicleData create() {
-            return new VehicleData(
+            VehicleData result = new VehicleData(
                     time, name,
                     position, projectedPosition, roadPosition, routeId, speed,
                     heading, slope, longitudinalAcceleration, laneArea, distanceDriven,
@@ -598,6 +608,10 @@ public class VehicleData extends UnitData {
                     vehicleConsumptions, vehicleSignals, vehicleSensors,
                     0d, 0d, driveDirection,
                     additionalData);
+            if (this.vehiclesInSight != null) {
+                result.vehiclesInSight.addAll(this.vehiclesInSight);
+            }
+            return result;
         }
     }
 }

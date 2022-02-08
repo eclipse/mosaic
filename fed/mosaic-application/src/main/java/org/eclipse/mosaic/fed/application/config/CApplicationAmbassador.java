@@ -80,10 +80,10 @@ public class CApplicationAmbassador {
     public CPerception perceptionConfiguration = new CPerception();
 
 
-
     public static class CPerception {
+
         public enum PerceptionBackend {
-            Grid, QuadTree, Trivial
+            Grid, QuadTree, Trivial, SUMO
         }
 
         public PerceptionBackend perceptionBackend = PerceptionBackend.Trivial;

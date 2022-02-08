@@ -27,15 +27,20 @@ import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.apache.commons.io.input.TeeInputStream;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 
 /**
@@ -60,6 +65,8 @@ public class TraciClientBridge implements Bridge {
     private final SimulationTraciRequest simulationTraciRequest;
 
     private SumoVersion currentVersion;
+    private ByteArrayOutputStream outCapture;
+    private ByteArrayOutputStream inCapture;
 
     /**
      * Constructor for {@link TraciClientBridge} uses a default {@link CommandRegister} if none has been given.
@@ -82,8 +89,15 @@ public class TraciClientBridge implements Bridge {
      * @throws IOException Error while reading or writing.
      */
     public TraciClientBridge(@Nonnull final CSumo sumoConfiguration, @Nonnull final Socket sumoServerSocket, @Nonnull CommandRegister commandRegister) throws IOException {
-        this.in = new DataInputStream(new BufferedInputStream(sumoServerSocket.getInputStream()));
-        this.out = new DataOutputStream(sumoServerSocket.getOutputStream());
+        if (sumoConfiguration.debugTraciCalls) {
+            inCapture = new ByteArrayOutputStream();
+            outCapture = new ByteArrayOutputStream();
+            this.in = new DataInputStream(new TeeInputStream(new BufferedInputStream(sumoServerSocket.getInputStream()), inCapture));
+            this.out = new DataOutputStream(new TeeOutputStream(sumoServerSocket.getOutputStream(), outCapture));
+        } else {
+            this.in = new DataInputStream(new BufferedInputStream(sumoServerSocket.getInputStream()));
+            this.out = new DataOutputStream(sumoServerSocket.getOutputStream());
+        }
         this.sumoServerSocket = sumoServerSocket;
         this.commandRegister = commandRegister;
         this.commandRegister.setBridge(this);
@@ -212,6 +226,25 @@ public class TraciClientBridge implements Bridge {
     public void emergencyExit(Throwable e) {
         log.error("Close all TraCI streams due to an error", e);
         closeStreamsAndSockets();
+    }
+
+    @Override
+    public void onCommandCompleted() {
+        if (inCapture == null || outCapture == null) {
+            return;
+        }
+
+        log.info("Command:\t" + toHex(outCapture.toByteArray()));
+        log.info("Response:\t" + toHex(inCapture.toByteArray()));
+        outCapture.reset();
+        inCapture.reset();
+    }
+
+    private String toHex(byte[] array) {
+        return IntStream.range(0, array.length)
+                .map(i -> array[i] & 0xff)
+                .mapToObj(b -> String.format("%02x", b))
+                .collect(Collectors.joining(" "));
     }
 
     private void closeStreamsAndSockets() {

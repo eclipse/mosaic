@@ -28,11 +28,8 @@ public class StatusReader extends AbstractTraciResultReader<Status> {
 
     @Override
     public Status readFromStream(DataInputStream in) throws IOException {
-        readByte(in);
-
         byte resultType = readByte(in);
         String description = readString(in);
-
         return new Status(resultType, description);
     }
 }

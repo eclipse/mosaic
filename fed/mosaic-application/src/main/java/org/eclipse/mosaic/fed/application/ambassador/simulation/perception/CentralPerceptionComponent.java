@@ -83,6 +83,8 @@ public class CentralPerceptionComponent {
                 case QuadTree:
                     spatialIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
                     break;
+                case SUMO:
+                    log.info("Using SUMO to detect surrounding vehicles.");
                 case Trivial:
                 default:
                     spatialIndex = new PerceptionIndex();

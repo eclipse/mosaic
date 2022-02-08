@@ -62,4 +62,8 @@ public class CommandVariableSubscriptions {
      */
     public final static int RESPONSE_SUBSCRIBE_TRAFFIC_LIGHT_VALUES = 0xe2;
 
+    public final static int COMMAND_SUBSCRIBE_CONTEXT_VEHICLE_VALUES = 0x84;
+
+    public final static int RESPONSE_SUBSCRIBE_CONTEXT_VEHICLE_VALUES = 0x94;
+
 }

@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.rti.api.Interaction;
 
 public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfiguration> {
 
@@ -26,5 +27,14 @@ public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfigura
     VehicleData getVehicleData();
 
     PerceptionModule<ConfigT> getPerceptionModule();
+
+    long getSimulationTime();
+
+    /**
+     * Sends the given {@link Interaction} to the runtime infrastructure.
+     *
+     * @param interaction the {@link Interaction} to be send
+     */
+    void sendInteractionToRti(Interaction interaction);
 
 }

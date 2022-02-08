@@ -59,6 +59,8 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     public List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException {
         Simulation.step((double) (time) / TIME.SECOND);
 
+        //TODO read context subscriptions (surrounding vehicles)
+
         List<AbstractSubscriptionResult> results = new ArrayList<>();
         readVehicles(results);
         readInductionLoops(results);
