@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.AbstractSubscriptionResult
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopVehicleData;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult;
-import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadFollowVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
@@ -140,14 +140,23 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
                 result.fuel = Vehicle.getFuelConsumption(sumoVehicleId);
             }
 
-            result.leadingVehicle = LeadingVehicle.NO_LEADER;
+            result.leadingVehicle = LeadFollowVehicle.NONE;
+            result.followerVehicle = LeadFollowVehicle.NONE;
 
             if (fetchLeader) {
                 final StringDoublePair leader = Vehicle.getLeader(sumoVehicleId);
                 if (StringUtils.isNotBlank(leader.getFirst())) {
-                    result.leadingVehicle = new LeadingVehicle(
+                    result.leadingVehicle = new LeadFollowVehicle(
                             Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(leader.getFirst()),
                             leader.getSecond()
+                    );
+                }
+
+                final StringDoublePair follower = Vehicle.getFollower(sumoVehicleId);
+                if (StringUtils.isNotBlank(follower.getFirst())) {
+                    result.followerVehicle = new LeadFollowVehicle(
+                            Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(follower.getFirst()),
+                            follower.getSecond()
                     );
                 }
             }

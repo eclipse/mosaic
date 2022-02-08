@@ -128,7 +128,7 @@ public class VehicleData extends UnitData {
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final Object additionalData;
 
-    private final List<SurroundingVehicle> vehiclesInSight = new ArrayList<>();
+    private final List<SurroundingVehicle> vehiclesInSight = new ArrayList<>(0);
 
     /**
      * Private constructor, use {@link VehicleData.Builder} instead.

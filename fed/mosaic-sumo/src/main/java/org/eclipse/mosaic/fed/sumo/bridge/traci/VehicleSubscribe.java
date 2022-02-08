@@ -25,6 +25,7 @@ import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieve
 import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_EMISSIONS_HC;
 import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_EMISSIONS_NOX;
 import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_EMISSIONS_PMX;
+import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_FOLLOWER;
 import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_LANE_INDEX;
 import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_LANE_POSITION;
 import static org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState.VAR_LATERAL_LANE_POSITION;
@@ -116,7 +117,7 @@ public class VehicleSubscribe
             Collections.addAll(subscriptionCodes, VAR_SIGNAL_STATES);
         }
         if (subscriptionCategories.contains(CSumo.SUBSCRIPTION_LEADER)) {
-            Collections.addAll(subscriptionCodes, VAR_LEADER, VAR_MIN_GAP);
+            Collections.addAll(subscriptionCodes, VAR_LEADER, VAR_FOLLOWER, VAR_MIN_GAP);
         }
         return subscriptionCodes;
     }
