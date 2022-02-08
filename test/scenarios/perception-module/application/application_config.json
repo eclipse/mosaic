@@ -1,6 +1,8 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "Trivial",
+        "perceptionBackend": "Grid",
+        "gridCellWidth": "5m",
+        "gridCellHeight": "5m",
         "spacialIndexUpdateInterval": "1s"
     }
 }

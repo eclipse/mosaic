@@ -93,7 +93,7 @@ public class CentralPerceptionComponent {
             spatialIndex = new PerceptionIndex();
         }
 
-        if (configuration.performanceMeasure) {
+        if (configuration.measurePerformance) {
             spatialIndex = new MonitoringSpatialIndex(spatialIndex, performanceMonitor);
         }
     }
@@ -119,7 +119,7 @@ public class CentralPerceptionComponent {
     }
 
     public void finish() {
-        if (configuration.performanceMeasure) {
+        if (configuration.measurePerformance) {
             performanceMonitor.printSummary();
             String logDirectory = ((LoggerContext) LoggerFactory.getILoggerFactory()).getProperty("logDirectory");
             try (Writer perceptionPerformanceWriter = new OutputStreamWriter(
