@@ -64,8 +64,7 @@ public class LaneGetLength
     public Double execute(Bridge bridge, String edgeId, int laneIndex) throws CommandException, InternalFederateException {
         return super.executeAndReturn(bridge, edgeId + "_" + laneIndex).orElseThrow(
                 () -> new CommandException(
-                        String.format(Locale.ENGLISH, "Couldn't get Length of Edge %s on Lane %d.", edgeId, laneIndex),
-                        new Status((byte) Status.STATUS_ERR, "")
+                        String.format(Locale.ENGLISH, "Couldn't get Length of Edge %s on Lane %d.", edgeId, laneIndex)
                 )
         );
 

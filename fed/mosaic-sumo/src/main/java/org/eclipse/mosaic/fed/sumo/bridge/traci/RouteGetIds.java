@@ -56,7 +56,7 @@ public class RouteGetIds
 
     public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {
         return super.executeAndReturn(bridge).orElseThrow(
-                () -> new CommandException("Couldn't get Route-Id's.", new Status((byte) Status.STATUS_ERR, ""))
+                () -> new CommandException("Could not read list of Route Ids.")
         );
     }
 

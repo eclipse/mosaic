@@ -65,8 +65,7 @@ public class TrafficLightGetControlledLanes
     public List<String> execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
         return super.executeAndReturn(bridge, tlId).orElseThrow(
                 () -> new CommandException(String.format(
-                        Locale.ENGLISH, "Couldn't get controlled Lanes for TrafficLight %s.", tlId),
-                        new Status((byte) Status.STATUS_ERR, "")
+                        Locale.ENGLISH, "Could not read list of controlled Lanes for TrafficLight %s.", tlId)
                 )
         );
     }

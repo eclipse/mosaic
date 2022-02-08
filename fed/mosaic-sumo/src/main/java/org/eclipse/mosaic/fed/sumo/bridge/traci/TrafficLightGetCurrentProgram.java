@@ -62,8 +62,7 @@ public class TrafficLightGetCurrentProgram
     public String execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
         return executeAndReturn(bridge, tlId).orElseThrow(
                 () -> new CommandException(String.format(
-                        Locale.ENGLISH, "Couldn't get current Program for TrafficLight: %s", tlId),
-                        new Status((byte) Status.STATUS_ERR, "")
+                        Locale.ENGLISH, "Could not read current Program for TrafficLight: %s", tlId)
                 )
         );
     }
