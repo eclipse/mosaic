@@ -109,9 +109,11 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         }
 
         // Message was received via cell from the WeatherServer
-        if (msg.getRouting().getSource().getSourceName().equals("rsu_0")) {
+        if (msg.getRouting().getSource().getSourceName().equals("server_0")) {
+            System.out.println("server message: " + msg);
             getLog().infoSimTime(this, "Received message from cell from WeatherServer");
         }
+
         final Denm denm = (Denm) msg;
         getLog().infoSimTime(this, "Processing DEN message");
 

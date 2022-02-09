@@ -34,6 +34,7 @@ import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
+import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.V2xReceiverInformation;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;

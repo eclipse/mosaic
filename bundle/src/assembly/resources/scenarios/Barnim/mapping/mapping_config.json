@@ -25,13 +25,10 @@
             }
         }
     ],
-    "rsus": [
+    "servers": [
         {
-            "position": {
-                "latitude": 52.65027,
-                "longitude": 13.54500
-            },
             "name": "WeatherServer",
+            "group": "WeatherServer",
             "applications": [ "org.eclipse.mosaic.app.tutorial.WeatherServerApp" ]
         }
     ],

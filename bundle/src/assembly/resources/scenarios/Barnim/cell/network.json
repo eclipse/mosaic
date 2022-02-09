@@ -1,4 +1,6 @@
 {
+    "defaultDownlinkCapacity": "10 Gbps",
+    "defaultUplinkCapacity": "10 Gbps",
     "globalNetwork": {
         "uplink": {
             "delay": {
@@ -33,6 +35,33 @@
                 "usableCapacity": 0.6
             },
             "capacity": 42200000
+        }
+    },
+    "servers": {
+        "id": "WeatherServer",
+        "uplink": {
+            "delay": {
+                "type": "ConstantDelay",
+                "delay": "200 ms"
+            },
+            "transmission": {
+                "lossProbability": 0.5,
+                "maxRetries": 2
+            }
+        },
+        "downlink": {
+            "unicast" : {
+                "delay": {
+                    "type": "SimpleRandomDelay",
+                    "steps": 5,
+                    "minDelay": "100 ms",
+                    "maxDelay": "200 ms"
+                },
+                "transmission": {
+                    "lossProbability": 0.1,
+                    "maxRetries": 2
+                }
+            }
         }
     }
 }
