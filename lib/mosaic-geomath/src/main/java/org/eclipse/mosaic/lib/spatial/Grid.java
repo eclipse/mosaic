@@ -115,8 +115,8 @@ public class Grid<T> {
 
         List<T> itemsInBoundingBox = new ArrayList<>();
 
-        for (int col = minCoords.getA(); col < maxCoords.getA(); col++) {
-            for (int row = minCoords.getB(); row < maxCoords.getB(); row++) {
+        for (int col = minCoords.getA(); col <= maxCoords.getA(); col++) {
+            for (int row = minCoords.getB(); row <= maxCoords.getB(); row++) {
                 for (T entry : getGridCellEntries(col, row)) {
                     if (filter == null || filter.test(entry)) {
                         itemsInBoundingBox.add(entry);
