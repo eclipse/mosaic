@@ -40,12 +40,14 @@ import org.eclipse.sumo.libsumo.TrafficLight;
 import org.eclipse.sumo.libsumo.Vehicle;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationSimulateStep {
 
-    final static List<String> VEHICLE_SUBSCRIPTIONS = new ArrayList<>();
+    final static Set<String> VEHICLE_SUBSCRIPTIONS = new HashSet<>();
     final static List<String> INDUCTION_LOOP_SUBSCRIPTIONS = new ArrayList<>();
     final static List<String> LANE_AREA_SUBSCRIPTIONS = new ArrayList<>();
     final static List<String> TRAFFIC_LIGHT_SUBSCRIPTIONS = new ArrayList<>();

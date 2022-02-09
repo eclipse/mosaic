@@ -381,8 +381,8 @@ public class SimulationFacade {
             final Map<String, Double> followerDistances = calcFollowerDistancesBasedOnLeadingVehicles(subscriptions);
             final Map<String, String> vehicleSegmentInfo = calculateVehicleSegmentInfo(subscriptions);
 
-            final List<VehicleData> addedVehicles = new LinkedList<>();
-            final List<VehicleData> updatedVehicles = new LinkedList<>();
+            final List<VehicleData> addedVehicles = new ArrayList<>();
+            final List<VehicleData> updatedVehicles = new ArrayList<>();
 
             final List<InductionLoopInfo> updatedInductionLoops = new ArrayList<>();
             final List<LaneAreaDetectorInfo> updatedLaneAreas = new ArrayList<>();
@@ -471,7 +471,6 @@ public class SimulationFacade {
                 .stopped(vehicleStopMode)
                 .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
                 .laneArea(vehicleSegmentInfo.get(veh.id));
-
 
         if (isParking) {
             if (!sumoVehicle.lastVehicleData.isStopped()) {

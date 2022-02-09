@@ -30,7 +30,7 @@ public class TrafficLightGetControlledLinks implements org.eclipse.mosaic.fed.su
     public List<TrafficLightControlledLink> execute(Bridge bridge, String tlId) throws CommandException {
         try {
             List<TrafficLightControlledLink> controlledLinks = new ArrayList<>();
-            int i=0;
+            int i = 0;
             for (TraCILinkVector links : TrafficLight.getControlledLinks(tlId)) {
                 for (TraCILink link : links) {
                     controlledLinks.add(
@@ -39,7 +39,7 @@ public class TrafficLightGetControlledLinks implements org.eclipse.mosaic.fed.su
                 }
             }
             return controlledLinks;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new CommandException("Could not read list of controlled links for Traffic Light: " + tlId);
         }
     }

@@ -50,8 +50,10 @@ public class CommandRetrieveTrafficLightValue {
 
     /**
      * The links controlled by the traffic light.
+     *
+     * Currently, not implemented in TraCI server of SUMO.
      */
-    public final static int VAR_CONTROLLED_JUNCTIONS = 0x27;
+    public final static int VAR_CONTROLLED_JUNCTIONS = 0x2a;
 
     /**
      * The index of the current phase in the current program.
