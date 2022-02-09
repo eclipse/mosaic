@@ -71,8 +71,8 @@ public class RouteGetEdges
     public List<String> execute(Bridge bridge, String routeId) throws CommandException, InternalFederateException {
         return super.executeAndReturn(bridge, routeId).orElseThrow(
                 () -> new CommandException(
-                        String.format(Locale.ENGLISH, "Couldn't extract Edges of Route %s.", routeId),
-                        new Status((byte) Status.STATUS_ERR, ""))
+                        String.format(Locale.ENGLISH, "Couldn't extract Edges of Route %s.", routeId)
+                )
         );
     }
 

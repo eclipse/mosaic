@@ -31,16 +31,20 @@ import java.util.List;
 public class TrafficLightGetPrograms implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetPrograms {
 
     public List<SumoTrafficLightLogic> execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
-        List<SumoTrafficLightLogic> logics = new ArrayList<>();
-        for (TraCILogic traciLogic : TrafficLight.getAllProgramLogics(tlId)) {
-            List<SumoTrafficLightLogic.Phase> phases = new ArrayList<>();
-            TraCIPhaseVector traciPhases = traciLogic.getPhases();
-            for (TraCIPhase traciPhase : traciPhases) {
-                phases.add(new SumoTrafficLightLogic.Phase((int) (traciPhase.getDuration() * TIME.MILLI_SECOND), traciPhase.getState()));
-            }
+        try {
+            List<SumoTrafficLightLogic> logics = new ArrayList<>();
+            for (TraCILogic traciLogic : TrafficLight.getAllProgramLogics(tlId)) {
+                List<SumoTrafficLightLogic.Phase> phases = new ArrayList<>();
+                TraCIPhaseVector traciPhases = traciLogic.getPhases();
+                for (TraCIPhase traciPhase : traciPhases) {
+                    phases.add(new SumoTrafficLightLogic.Phase((int) (traciPhase.getDuration() * TIME.MILLI_SECOND), traciPhase.getState()));
+                }
 
-            logics.add(new SumoTrafficLightLogic(traciLogic.getProgramID(), phases, traciLogic.getCurrentPhaseIndex()));
+                logics.add(new SumoTrafficLightLogic(traciLogic.getProgramID(), phases, traciLogic.getCurrentPhaseIndex()));
+            }
+            return logics;
+        } catch(IllegalArgumentException e) {
+            throw new CommandException("Could not read list of programs for Traffic Light: " + tlId);
         }
-        return logics;
     }
 }

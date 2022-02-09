@@ -49,18 +49,14 @@ public class SimulationTraciRequest
     public SumoTraciResult execute(Bridge bridge, String messageId, byte[] messageContent)
             throws CommandException, InternalFederateException {
         this.msgId = messageId;
-        try {
-            return super.executeAndReturn(bridge, (Object) messageContent).orElse(
-                    new SumoTraciResult(
-                            messageId,
-                            (byte) Status.STATUS_ERR,
-                            "TraCI return value couldn't be extracted.",
-                            new byte[0]
-                    )
-            );
-        } catch (CommandException e) {
-            throw e;
-        }
+        return super.executeAndReturn(bridge, (Object) messageContent).orElse(
+                new SumoTraciResult(
+                        messageId,
+                        Status.STATUS_ERR,
+                        "TraCI return value couldn't be extracted.",
+                        new byte[0]
+                )
+        );
     }
 
     @Override
