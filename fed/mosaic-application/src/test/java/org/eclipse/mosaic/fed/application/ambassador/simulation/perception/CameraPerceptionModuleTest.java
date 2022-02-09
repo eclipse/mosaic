@@ -21,9 +21,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
@@ -66,6 +68,7 @@ public class CameraPerceptionModuleTest {
 
     @Before
     public void setup() {
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
         perceptionIndex = new PerceptionIndex();
         // setup cpc
         when(cpcMock.getSpatialIndex()).thenReturn(perceptionIndex);

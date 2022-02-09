@@ -32,6 +32,7 @@ import org.eclipse.mosaic.fed.application.app.api.ChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficManagementCenterApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -76,6 +77,7 @@ public class UnitSimulatorTest {
         registeredEvents.clear();
 
         SimulationKernel.SimulationKernel.setClassLoader(ClassLoader.getSystemClassLoader());
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
     }
 
     /**

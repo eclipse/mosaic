@@ -29,8 +29,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
@@ -91,10 +93,12 @@ public class NavigationModuleTest {
 
     @Before
     public void setup() {
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
         VehicleUnit vehicle = new VehicleUnit("veh_0", mock(VehicleType.class), null);
 
         navigationModule = Mockito.spy(new NavigationModule(vehicle));
         navigationModule.setVehicleData(vehicleDataMock);
+
 
         when(vehicleDataMock.getHeading()).thenReturn(45.0d);
         when(vehicleDataMock.getPosition()).thenReturn(GeoPoint.latLon(10, 10));
