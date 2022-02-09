@@ -18,10 +18,11 @@ package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.eclipse.sumo.libsumo.IntVector;
-import org.eclipse.sumo.libsumo.Simulation;
+import org.eclipse.sumo.libsumo.Vehicle;
 
 /**
  * This class represents the SUMO command which allows to subscribe the vehicle to the application.
@@ -31,10 +32,13 @@ public class VehicleSubscribeSurroundingVehicle
         implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribeSurroundingVehicle {
 
     public void execute(Bridge bridge, String vehicleId, long startTime, long endTime, double range) throws CommandException, InternalFederateException {
-        Simulation.subscribeContext(
-                vehicleId, CommandRetrieveVehicleState.COMMAND, range,
+        Vehicle.subscribeContext(
+                Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId),
+                CommandRetrieveVehicleState.COMMAND,
+                range,
                 new IntVector(new int[]{CommandRetrieveVehicleState.VAR_SPEED.var, CommandRetrieveVehicleState.VAR_POSITION_3D.var, CommandRetrieveVehicleState.VAR_ANGLE.var}),
-                startTime, endTime
+                ((double) startTime) / TIME.SECOND,
+                ((double) endTime) / TIME.SECOND
         );
     }
 }

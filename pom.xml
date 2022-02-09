@@ -111,7 +111,7 @@
         <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
-        <version.libsumo>1.12.0-SNAPSHOT</version.libsumo>
+        <version.libsumo>1.13.0-SNAPSHOT</version.libsumo>
     </properties>
 
     <dependencies>

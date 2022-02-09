@@ -22,7 +22,9 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopVehicleData;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadFollowVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleContextSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.util.objects.Position;
@@ -30,6 +32,7 @@ import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.sumo.libsumo.ContextSubscriptionResults;
 import org.eclipse.sumo.libsumo.InductionLoop;
 import org.eclipse.sumo.libsumo.LaneArea;
 import org.eclipse.sumo.libsumo.Simulation;
@@ -38,12 +41,18 @@ import org.eclipse.sumo.libsumo.TraCIPosition;
 import org.eclipse.sumo.libsumo.TraCIVehicleData;
 import org.eclipse.sumo.libsumo.TrafficLight;
 import org.eclipse.sumo.libsumo.Vehicle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationSimulateStep {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimulationSimulateStep.class);
 
     final static List<String> VEHICLE_SUBSCRIPTIONS = new ArrayList<>();
     final static List<String> INDUCTION_LOOP_SUBSCRIPTIONS = new ArrayList<>();
@@ -54,7 +63,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     private final boolean fetchLeader;
     private final boolean fetchSignals;
 
-    public SimulationSimulateStep(Bridge bridge, CSumo sumoConfiguration) {
+    public SimulationSimulateStep(Bridge ignored, CSumo sumoConfiguration) {
         VEHICLE_SUBSCRIPTIONS.clear();
         INDUCTION_LOOP_SUBSCRIPTIONS.clear();
         LANE_AREA_SUBSCRIPTIONS.clear();
@@ -79,10 +88,9 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     public List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException {
         Simulation.step((double) (time) / TIME.SECOND);
 
-        //TODO read context subscriptions (surrounding vehicles)
-
-        List<AbstractSubscriptionResult> results = new ArrayList<>();
+        final List<AbstractSubscriptionResult> results = new ArrayList<>();
         readVehicles(results);
+        readSurroundingVehiclesFromContextSubscriptions(results);
         readInductionLoops(results);
         readLaneAreas(results);
         readTrafficLights(results);
@@ -103,12 +111,10 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             VehicleSubscriptionResult result = new VehicleSubscriptionResult();
             result.id = mosaicVehicleId;
 
-            TraCIPosition traCIPosition = Vehicle.getPosition(sumoVehicleId);
-            if (traCIPosition.getX() < -1000 && traCIPosition.getY() < -1000) {
+            result.position = getPosition(Vehicle.getPosition(sumoVehicleId));
+            if (result.position == null) {
                 continue;
             }
-
-            result.position = new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
 
             result.speed = Vehicle.getSpeed(sumoVehicleId);
             result.distanceDriven = Vehicle.getDistance(sumoVehicleId);
@@ -163,6 +169,61 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
 
             results.add(result);
         }
+    }
+
+    private Position getPosition(TraCIPosition traCIPosition) {
+        if (traCIPosition.getX() < -1000 && traCIPosition.getY() < -1000) {
+            return null;
+        }
+        return new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
+    }
+
+    private void readSurroundingVehiclesFromContextSubscriptions(List<AbstractSubscriptionResult> results) {
+        ContextSubscriptionResults contextResults = Vehicle.getAllContextSubscriptionResults();
+        contextResults.forEach((sumoId, subscriptionResults) -> {
+            final VehicleContextSubscriptionResult result = new VehicleContextSubscriptionResult();
+            result.id = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(sumoId);
+            subscriptionResults.forEach((childSumoId, childSubscriptionResults) -> {
+                if (childSumoId.equals(sumoId)) {
+                    return;
+                }
+                final VehicleSubscriptionResult surroundingVehicle = new VehicleSubscriptionResult();
+                surroundingVehicle.id = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(childSumoId);
+                try {
+                    /* FIXME Work-around (09-02-2022):
+                     * The objects returned here cannot be cast to their actual type (e.g. TraCIDouble or TraCIPosition).
+                     * Therefore we currently just parse their string output.
+                     * See https://github.com/eclipse/sumo/issues/8930
+                     */
+                    surroundingVehicle.position = parsePosition(childSubscriptionResults.get(CommandRetrieveVehicleState.VAR_POSITION_3D.var).getString());
+                    surroundingVehicle.speed = parseDouble(childSubscriptionResults.get(CommandRetrieveVehicleState.VAR_SPEED.var).getString());
+                    surroundingVehicle.heading = parseDouble(childSubscriptionResults.get(CommandRetrieveVehicleState.VAR_ANGLE.var).getString());
+
+                    if (surroundingVehicle.position != null) {
+                        result.contextSubscriptions.add(surroundingVehicle);
+                    }
+                } catch (Throwable e) {
+                    LOG.warn("Cannot read surrounding vehicle.", e);
+                }
+            });
+            if (!result.contextSubscriptions.isEmpty()) {
+                results.add(result);
+            }
+        });
+    }
+
+    private final static Pattern PATTERN_POSITION = Pattern.compile("TraCIPosition\\(([0-9.]+), ?([0-9.]+), ?([0-9.]+)\\)");
+
+    private Position parsePosition(String in) {
+        Matcher matcher = PATTERN_POSITION.matcher(in);
+        if (matcher.find()) {
+            return new Position(CartesianPoint.xyz(parseDouble(matcher.group(1)), parseDouble(matcher.group(2)), parseDouble(matcher.group(3))));
+        }
+        return null;
+    }
+
+    private double parseDouble(String in) {
+        return Double.parseDouble(in);
     }
 
 

@@ -179,7 +179,8 @@
                 "VehicleUpdates",
                 "InductionLoopDetectorSubscription",
                 "LaneAreaDetectorSubscription",
-                "TrafficLightSubscription"
+                "TrafficLightSubscription",
+                "VehicleSightDistanceConfiguration"
             ],
             "javaClasspathEntries": []
         },

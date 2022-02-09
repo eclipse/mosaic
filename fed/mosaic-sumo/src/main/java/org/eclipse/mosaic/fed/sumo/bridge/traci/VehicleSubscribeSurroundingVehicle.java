@@ -35,7 +35,7 @@ public class VehicleSubscribeSurroundingVehicle
 
     @SuppressWarnings("WeakerAccess")
     public VehicleSubscribeSurroundingVehicle() {
-        super(TraciVersion.HIGHEST);
+        super(TraciVersion.API_20);
 
         write()
                 .command(CommandVariableSubscriptions.COMMAND_SUBSCRIBE_CONTEXT_VEHICLE_VALUES)

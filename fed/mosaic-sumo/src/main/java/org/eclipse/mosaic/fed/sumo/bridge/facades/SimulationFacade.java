@@ -141,7 +141,6 @@ public class SimulationFacade {
      * before the next simulation step.
      */
     private boolean updateBestLanesBeforeNextSimulationStep = false;
-    private boolean noRearSensorConfigured = true;
 
     /**
      * Creates a new {@link SimulationFacade} object.
@@ -382,10 +381,6 @@ public class SimulationFacade {
         if (rear) {
             vehicleState.rearSensorDistance = maximumLookahead > 0 ? maximumLookahead : null;
         }
-        this.noRearSensorConfigured = true;
-        for (SumoVehicleState aState : sumoVehicles.values()) {
-            noRearSensorConfigured &= aState.rearSensorDistance == null;
-        }
     }
 
     /**
@@ -547,15 +542,13 @@ public class SimulationFacade {
 
     private void processVehicleContextSubscriptionResult(VehicleContextSubscriptionResult contextSubscriptionResult) {
         SumoVehicleState sumoVehicleState = getVehicleState(contextSubscriptionResult.id);
-        if (contextSubscriptionResult.contextSubscriptions.size() > 1) {
-            for (VehicleSubscriptionResult vehInSight : contextSubscriptionResult.contextSubscriptions) {
-                if (contextSubscriptionResult.id.equals(vehInSight.id)) {
-                    continue;
-                }
-                sumoVehicleState.lastVehicleData.getInSight().add(
-                        new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed, vehInSight.heading)
-                );
+        for (VehicleSubscriptionResult vehInSight : contextSubscriptionResult.contextSubscriptions) {
+            if (contextSubscriptionResult.id.equals(vehInSight.id)) {
+                continue;
             }
+            sumoVehicleState.currentVehicleData.getInSight().add(
+                    new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed, vehInSight.heading)
+            );
         }
     }
 
@@ -680,7 +673,7 @@ public class SimulationFacade {
                 && followerVehicle.getDistance() < vehicleState.rearSensorDistance
         ) {
             // using the own minGap is not 100% correct here, but it would be very expensive to fetch the minGap of the follower
-            rearDistance = followerVehicle.getDistance()  + minGap;
+            rearDistance = followerVehicle.getDistance() + minGap;
         }
         return new VehicleSensors(
                 new DistanceSensor(frontDistance, rearDistance, -1d, -1d),

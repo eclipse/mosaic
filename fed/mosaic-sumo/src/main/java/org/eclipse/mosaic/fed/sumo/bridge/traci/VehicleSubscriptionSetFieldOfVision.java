@@ -17,8 +17,9 @@ package org.eclipse.mosaic.fed.sumo.bridge.traci;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
-import org.eclipse.mosaic.fed.sumo.bridge.TraciVersion;
+import org.eclipse.mosaic.fed.sumo.bridge.SumoVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.Status;
+import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandVariableSubscriptions;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
@@ -31,11 +32,11 @@ public class VehicleSubscriptionSetFieldOfVision
 
     @SuppressWarnings("WeakerAccess")
     public VehicleSubscriptionSetFieldOfVision() {
-        super(TraciVersion.HIGHEST);
+        super(SumoVersion.SUMO_1_4_x);
 
         write()
-                .command(0x7E)
-                .writeByte(0x0a)
+                .command(CommandVariableSubscriptions.COMMAND_ADD_CONTEXT_SUBSCRIPTION_FILTER)
+                .writeByte(CommandVariableSubscriptions.SUBSCRIPTION_FILTER_FIELD_OF_VISION)
                 .writeDoubleParamWithType();
 
         read().skipRemaining();

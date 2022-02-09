@@ -47,7 +47,7 @@ public class VehicleContextSubscriptionTraciReader extends AbstractTraciResultRe
 
         for (int o = 0; o < objectCount; o++) {
             VehicleSubscriptionResult childResult = new VehicleSubscriptionResult();
-            childResult.id = readString(in);
+            childResult.id = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(readString(in));
             for (int v = 0; v < varCount; v++) {
                 int varId = readUnsignedByte(in);
                 int varStatus = readUnsignedByte(in);
