@@ -13,7 +13,6 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-
 package org.eclipse.mosaic.test;
 
 import static org.junit.Assert.assertEquals;
@@ -24,22 +23,17 @@ import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
 
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class PerceptionModuleIT {
+public abstract class AbstractPerceptionModuleIT {
+
     @ClassRule
     public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().watchdog(0);
 
-    private static MosaicSimulation.SimulationResult simulationResult;
+    protected static MosaicSimulation.SimulationResult simulationResult;
 
     private final static String PERCEPTION_VEHICLE_LOG = "apps/veh_0/SimplePerceptionApp.log";
-
-    @BeforeClass
-    public static void runSimulation() {
-        simulationResult = simulationRule.executeTestScenario("perception-module");
-    }
 
     @Test
     public void executionSuccessful() throws Exception {
@@ -51,11 +45,11 @@ public class PerceptionModuleIT {
     public void rightAmountOfVehiclesPerceived() throws Exception {
         // perceived vehicles repeat their route 10 times resulting in 11 perceptions
         assertEquals(11, LogAssert.count(simulationRule,
-                        PERCEPTION_VEHICLE_LOG,
-                        ".*Perceived vehicles: \\[veh_1\\].*"));
+                PERCEPTION_VEHICLE_LOG,
+                ".*Perceived vehicles: \\[veh_1\\].*"));
         assertEquals(11, LogAssert.count(simulationRule,
-                        PERCEPTION_VEHICLE_LOG,
-                        ".*Perceived vehicles: \\[veh_2\\].*"));
+                PERCEPTION_VEHICLE_LOG,
+                ".*Perceived vehicles: \\[veh_2\\].*"));
         assertEquals(11, LogAssert.count(simulationRule,
                 PERCEPTION_VEHICLE_LOG,
                 ".*Perceived vehicles: \\[veh_3\\].*"));
