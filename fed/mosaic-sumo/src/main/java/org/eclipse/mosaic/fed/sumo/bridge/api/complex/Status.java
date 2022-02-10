@@ -21,18 +21,18 @@ package org.eclipse.mosaic.fed.sumo.bridge.api.complex;
  */
 public class Status {
 
-    public static final int STATUS_OK = 0x00;
+    public static final byte STATUS_OK = 0x00;
 
-    public static final int STATUS_ERR = 0xff;
+    public static final byte STATUS_ERR = (byte) 0xff;
     /**
      * result type of the status.
      */
-    private byte resultType;
+    private final byte resultType;
 
     /**
      * description of the status in the case of an error.
      */
-    private String description;
+    private final String description;
 
     /**
      * Constructor using fields.

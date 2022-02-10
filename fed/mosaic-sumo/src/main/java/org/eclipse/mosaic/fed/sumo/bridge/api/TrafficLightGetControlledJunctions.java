@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,15 +22,15 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import java.util.List;
 
 /**
- * This class represents the SUMO command which allows to get the controlled lanes by traffic light apps.
+ * This class represents the SUMO command which allows to get the list of controlled junctions by traffic light apps.
  */
-public interface TrafficLightGetControlledLanes {
+public interface TrafficLightGetControlledJunctions {
     /**
-     * This method executes the command with the given arguments in order to get the controlled lanes in the traffic light simulations.
+     * This method executes the command with the given arguments in order to get the controlled junctions in the traffic light simulations.
      *
      * @param bridge Connection to Traci.
      * @param tlId   Id of the traffic light.
-     * @return List of the traffic light Id's
+     * @return List of the junction Ids
      * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */

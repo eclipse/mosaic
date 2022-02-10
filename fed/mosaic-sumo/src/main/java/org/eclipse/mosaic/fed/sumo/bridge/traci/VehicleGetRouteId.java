@@ -65,8 +65,7 @@ public class VehicleGetRouteId
     public String execute(Bridge bridge, String vehicle) throws CommandException, InternalFederateException {
         return executeAndReturn(bridge, vehicle).orElseThrow(
                 () -> new CommandException(
-                        String.format(Locale.ENGLISH, "Couldn't extract Route-Id of Vehicle: %s.", vehicle),
-                        new Status((byte) Status.STATUS_ERR, "")
+                        String.format(Locale.ENGLISH, "Could not extract Route-Id of Vehicle: %s.", vehicle)
                 )
         );
     }

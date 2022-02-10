@@ -15,6 +15,7 @@
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 
 import org.eclipse.sumo.libsumo.TrafficLight;
 
@@ -22,8 +23,12 @@ import java.util.List;
 
 public class TrafficLightGetControlledLanes implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledLanes {
 
-    public List<String> execute(Bridge bridge, String tlId) {
-        return TrafficLight.getControlledLanes(tlId);
+    public List<String> execute(Bridge bridge, String tlId) throws CommandException {
+        try {
+            return TrafficLight.getControlledLanes(tlId);
+        } catch(IllegalArgumentException e) {
+            throw new CommandException("Could not read list of controlled lanes for Traffic Light: " + tlId);
+        }
     }
 
 }

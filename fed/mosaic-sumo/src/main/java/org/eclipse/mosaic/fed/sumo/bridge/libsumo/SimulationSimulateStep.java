@@ -23,16 +23,19 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.util.objects.Position;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sumo.libsumo.InductionLoop;
 import org.eclipse.sumo.libsumo.LaneArea;
 import org.eclipse.sumo.libsumo.Simulation;
-import org.eclipse.sumo.libsumo.StringVector;
+import org.eclipse.sumo.libsumo.StringDoublePair;
 import org.eclipse.sumo.libsumo.TraCIPosition;
+import org.eclipse.sumo.libsumo.TraCIVehicleData;
 import org.eclipse.sumo.libsumo.TrafficLight;
 import org.eclipse.sumo.libsumo.Vehicle;
 
@@ -45,15 +48,34 @@ import java.util.Set;
 public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationSimulateStep {
 
     final static Set<String> VEHICLE_SUBSCRIPTIONS = new HashSet<>();
-    final static Set<String> INDUCTION_LOOP_SUBSCRIPTIONS = new HashSet<>();
-    final static Set<String> LANE_AREA_SUBSCRIPTIONS = new HashSet<>();
-    final static Set<String> TRAFFIC_LIGHT_SUBSCRIPTIONS = new HashSet<>();
+    final static List<String> INDUCTION_LOOP_SUBSCRIPTIONS = new ArrayList<>();
+    final static List<String> LANE_AREA_SUBSCRIPTIONS = new ArrayList<>();
+    final static List<String> TRAFFIC_LIGHT_SUBSCRIPTIONS = new ArrayList<>();
+
+    private final boolean fetchEmissions;
+    private final boolean fetchLeader;
+    private final boolean fetchSignals;
+
+    public SimulationSimulateStep(Bridge bridge, CSumo sumoConfiguration) {
+        VEHICLE_SUBSCRIPTIONS.clear();
+        INDUCTION_LOOP_SUBSCRIPTIONS.clear();
+        LANE_AREA_SUBSCRIPTIONS.clear();
+        TRAFFIC_LIGHT_SUBSCRIPTIONS.clear();
+
+        fetchEmissions = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_EMISSIONS);
+        fetchSignals = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_SIGNALS);
+        fetchLeader = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER);
+    }
 
     public SimulationSimulateStep() {
         VEHICLE_SUBSCRIPTIONS.clear();
         INDUCTION_LOOP_SUBSCRIPTIONS.clear();
         LANE_AREA_SUBSCRIPTIONS.clear();
         TRAFFIC_LIGHT_SUBSCRIPTIONS.clear();
+
+        fetchEmissions = true;
+        fetchSignals = true;
+        fetchLeader = true;
     }
 
     public List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException {
@@ -66,19 +88,28 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         readTrafficLights(results);
 
         return results;
+
     }
 
     private void readVehicles(List<AbstractSubscriptionResult> results) {
-        String mosaicVehicleId;
-        for (String sumoVehicleId : Vehicle.getIDList()) {
-            mosaicVehicleId = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(sumoVehicleId);
+        for (String arrived : Simulation.getArrivedIDList()) {
+            VEHICLE_SUBSCRIPTIONS.remove(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(arrived));
+        }
 
-            if (!VEHICLE_SUBSCRIPTIONS.contains(mosaicVehicleId)) {
-                continue;
-            }
+        String sumoVehicleId;
+        for (String mosaicVehicleId : VEHICLE_SUBSCRIPTIONS) {
+            sumoVehicleId = Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(mosaicVehicleId);
 
             VehicleSubscriptionResult result = new VehicleSubscriptionResult();
             result.id = mosaicVehicleId;
+
+            TraCIPosition traCIPosition = Vehicle.getPosition(sumoVehicleId);
+            if (traCIPosition.getX() < -1000 && traCIPosition.getY() < -1000) {
+                continue;
+            }
+
+            result.position = new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
+
             result.speed = Vehicle.getSpeed(sumoVehicleId);
             result.distanceDriven = Vehicle.getDistance(sumoVehicleId);
             result.heading = Vehicle.getAngle(sumoVehicleId);
@@ -86,11 +117,12 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.acceleration = Vehicle.getAcceleration(sumoVehicleId);
             result.minGap = Vehicle.getMinGap(sumoVehicleId);
 
-            TraCIPosition traCIPosition = Vehicle.getPosition(sumoVehicleId);
-            result.position = new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
 
             result.stoppedStateEncoded = Vehicle.getStopState(sumoVehicleId);
-            result.signalsEncoded = Vehicle.getSignals(sumoVehicleId);
+
+            if (fetchSignals) {
+                result.signalsEncoded = Vehicle.getSignals(sumoVehicleId);
+            }
 
             result.routeId = Vehicle.getRouteID(sumoVehicleId);
 
@@ -99,43 +131,45 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.lateralLanePosition = Vehicle.getLateralLanePosition(sumoVehicleId);
             result.laneIndex = Vehicle.getLaneIndex(sumoVehicleId);
 
-            result.co2 = Vehicle.getCO2Emission(sumoVehicleId);
-            result.co = Vehicle.getCOEmission(sumoVehicleId);
-            result.hc = Vehicle.getHCEmission(sumoVehicleId);
-            result.pmx = Vehicle.getPMxEmission(sumoVehicleId);
-            result.nox = Vehicle.getNOxEmission(sumoVehicleId);
-            result.fuel = Vehicle.getFuelConsumption(sumoVehicleId);
+            if (fetchEmissions) {
+                result.co2 = Vehicle.getCO2Emission(sumoVehicleId);
+                result.co = Vehicle.getCOEmission(sumoVehicleId);
+                result.hc = Vehicle.getHCEmission(sumoVehicleId);
+                result.pmx = Vehicle.getPMxEmission(sumoVehicleId);
+                result.nox = Vehicle.getNOxEmission(sumoVehicleId);
+                result.fuel = Vehicle.getFuelConsumption(sumoVehicleId);
+            }
 
-            //FIXME use Vehicle.getLeader() to retrieve leader (currently not possible with API)
             result.leadingVehicle = LeadingVehicle.NO_LEADER;
 
-            results.add(result);
-        }
+            if (fetchLeader) {
+                final StringDoublePair leader = Vehicle.getLeader(sumoVehicleId);
+                if (StringUtils.isNotBlank(leader.getFirst())) {
+                    result.leadingVehicle = new LeadingVehicle(
+                            Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(leader.getFirst()),
+                            leader.getSecond()
+                    );
+                }
+            }
 
-        for (String arrived : Simulation.getArrivedIDList()) {
-            VEHICLE_SUBSCRIPTIONS.remove(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(arrived));
+            results.add(result);
         }
     }
 
 
     private void readInductionLoops(List<AbstractSubscriptionResult> results) {
-        StringVector inductionLoopIds = InductionLoop.getIDList();
-
-        for (String inductionLoop : inductionLoopIds) {
-            if (!INDUCTION_LOOP_SUBSCRIPTIONS.contains(inductionLoop)) {
-                continue;
-            }
-
+        for (String inductionLoop : INDUCTION_LOOP_SUBSCRIPTIONS) {
             InductionLoopSubscriptionResult result = new InductionLoopSubscriptionResult();
             result.id = inductionLoop;
             result.meanSpeed = InductionLoop.getLastStepMeanSpeed(inductionLoop);
             result.meanVehicleLength = InductionLoop.getLastStepMeanLength(inductionLoop);
             result.vehiclesOnInductionLoop = new ArrayList<>();
 
-            for (String vehicle: InductionLoop.getLastStepVehicleIDs(inductionLoop)) {
+            for (TraCIVehicleData inductionLoopVeh : InductionLoop.getVehicleData(inductionLoop)) {
                 InductionLoopVehicleData vehicleData = new InductionLoopVehicleData();
-                vehicleData.vehicleId = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle);
-                //TODO add more vehicle data! (use InductionLoop.getVehicleData(inductionLoop), which is not fully implemented yet)
+                vehicleData.vehicleId = Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(inductionLoopVeh.getId());
+                vehicleData.entryTime = (long) (inductionLoopVeh.getEntryTime() * TIME.NANO_SECOND);
+                vehicleData.leaveTime = (long) (inductionLoopVeh.getLeaveTime() * TIME.NANO_SECOND);
                 result.vehiclesOnInductionLoop.add(vehicleData);
             }
             results.add(result);
@@ -143,11 +177,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     }
 
     private void readLaneAreas(List<AbstractSubscriptionResult> results) {
-        for (String laneArea : LaneArea.getIDList()) {
-            if (!LANE_AREA_SUBSCRIPTIONS.contains(laneArea)) {
-                continue;
-            }
-
+        for (String laneArea : LANE_AREA_SUBSCRIPTIONS) {
             LaneAreaSubscriptionResult result = new LaneAreaSubscriptionResult();
             result.id = laneArea;
             result.vehicleCount = LaneArea.getLastStepVehicleNumber(laneArea);
@@ -155,7 +185,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.haltingVehicles = LaneArea.getLastStepHaltingNumber(laneArea);
             result.length = LaneArea.getLength(laneArea);
 
-            for (String vehicle: LaneArea.getLastStepVehicleIDs(laneArea)) {
+            for (String vehicle : LaneArea.getLastStepVehicleIDs(laneArea)) {
                 result.vehicles.add(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(vehicle));
             }
             results.add(result);
@@ -163,11 +193,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
     }
 
     private void readTrafficLights(List<AbstractSubscriptionResult> results) {
-        for (String trafficLight : TrafficLight.getIDList()) {
-            if (!TRAFFIC_LIGHT_SUBSCRIPTIONS.contains(trafficLight)) {
-                continue;
-            }
-
+        for (String trafficLight : TRAFFIC_LIGHT_SUBSCRIPTIONS) {
             TrafficLightSubscriptionResult result = new TrafficLightSubscriptionResult();
             result.id = trafficLight;
             result.currentProgramId = TrafficLight.getProgram(trafficLight);

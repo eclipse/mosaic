@@ -50,8 +50,7 @@ public class TrafficLightGetTimeOfNextSwitch
     public double execute(Bridge bridge, String tlId) throws CommandException, InternalFederateException {
         return executeAndReturn(bridge, tlId).orElseThrow(
                 () -> new CommandException(
-                        String.format(Locale.ENGLISH, "Couldn't get Time of next switch for TrafficLight %s.", tlId),
-                        new Status((byte) Status.STATUS_ERR, "")
+                        String.format(Locale.ENGLISH, "Could not read Time of next switch for TrafficLight %s.", tlId)
                 )
         );
     }

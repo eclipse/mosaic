@@ -21,6 +21,14 @@ public class CommandException extends Exception {
 
     private final Status status;
 
+    public CommandException(String errorMessage) {
+        this(errorMessage, new Status(Status.STATUS_ERR, errorMessage));
+    }
+
+    public CommandException(Status status) {
+        this(status.getDescription(), status);
+    }
+
     public CommandException(String errorMessage, Status status) {
         super(errorMessage);
         this.status = status;

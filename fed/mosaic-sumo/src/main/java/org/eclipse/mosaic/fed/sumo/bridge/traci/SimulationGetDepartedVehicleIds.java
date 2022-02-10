@@ -66,7 +66,7 @@ public class SimulationGetDepartedVehicleIds
      */
     public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {
         return executeAndReturn(bridge).orElseThrow(
-                () -> new CommandException("Couldn't get departed Vehicles.", new Status((byte) Status.STATUS_ERR, ""))
+                () -> new CommandException("Could not read list of departed Vehicles.")
         );
     }
 

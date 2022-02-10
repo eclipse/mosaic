@@ -36,7 +36,6 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange.VehicleSpeedChangeType;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
-import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
@@ -272,11 +271,11 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
 
         VehicleAwarenessData awarenessData = new VehicleAwarenessData(
-                VehicleClass.Car,
+                getInitialVehicleType().getVehicleClass(),
                 vehicleData.getSpeed(),
                 vehicleData.getHeading(),
                 getInitialVehicleType().getLength(),
-                0,
+                getInitialVehicleType().getWidth(),
                 vehicleData.getDriveDirection(),
                 vehicleData.getRoadPosition().getLaneIndex(),
                 longitudinalAcceleration
