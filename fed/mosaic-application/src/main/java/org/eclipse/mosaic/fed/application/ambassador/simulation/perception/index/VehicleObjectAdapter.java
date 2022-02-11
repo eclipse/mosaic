@@ -21,17 +21,32 @@ import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 class VehicleObjectAdapter implements SpatialItemAdapter<VehicleObject> {
 
     @Override
-    public double getMinX(VehicleObject item) {
+    public double getCenterX(VehicleObject item) {
         return item.getProjectedPosition().getX();
     }
 
     @Override
-    public double getMinY(VehicleObject item) {
+    public double getCenterY(VehicleObject item) {
         return item.getProjectedPosition().getZ();
     }
 
     @Override
-    public double getMinZ(VehicleObject item) {
+    public double getCenterZ(VehicleObject item) {
         return -item.getProjectedPosition().getY();
+    }
+
+    @Override
+    public double getMinX(VehicleObject item) {
+        return getCenterX(item);
+    }
+
+    @Override
+    public double getMinY(VehicleObject item) {
+        return getCenterY(item);
+    }
+
+    @Override
+    public double getMinZ(VehicleObject item) {
+        return getCenterZ(item);
     }
 }

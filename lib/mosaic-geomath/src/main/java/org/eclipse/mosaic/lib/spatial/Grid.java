@@ -15,19 +15,14 @@
 
 package org.eclipse.mosaic.lib.spatial;
 
-import org.eclipse.mosaic.lib.misc.Tuple;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * {@link Grid} represents a possible DataStructure to store vehicles based on a map
- * efficiently.
+ * {@link Grid} represents data structure to efficiently store spatial objects on the 2D X,Z plane using a fixed grid of cells.
  */
 public class Grid<T> {
 
@@ -41,11 +36,14 @@ public class Grid<T> {
     private final double minZ;
     private final double maxZ;
 
-    private final List<List<GridCell>> grid;
-    private final Map<T, Tuple<Integer, Integer>> items = new HashMap<>();
+    private final List<List<GridCell<T>>> grid;
+    private final Map<T, CellIndex> items = new HashMap<>();
 
-    public Grid(final SpatialItemAdapter<T> adapter, double cellWidth, double cellHeight, final BoundingBox boundingBox) {
-        this(adapter, cellWidth, cellHeight, boundingBox.min.x, boundingBox.max.x, boundingBox.min.z, boundingBox.max.z);
+    private final CellIndex tmpIndexA = new CellIndex();
+    private final CellIndex tmpIndexB = new CellIndex();
+
+    public Grid(final SpatialItemAdapter<T> adapter, double cellWidth, double cellHeight, final BoundingBox gridBounds) {
+        this(adapter, cellWidth, cellHeight, gridBounds.min.x, gridBounds.max.x, gridBounds.min.z, gridBounds.max.z);
     }
 
     public Grid(final SpatialItemAdapter<T> adapter, double cellWidth, double cellHeight,
@@ -61,12 +59,53 @@ public class Grid<T> {
         colAmount = (int) Math.ceil((maxX - minX) / cellWidth);
         rowAmount = (int) Math.ceil((maxZ - minZ) / cellHeight);
 
-        grid = new ArrayList<>();
+        grid = new ArrayList<>(colAmount);
         for (int col = 0; col < colAmount; col++) {
-            grid.add(new ArrayList<>());
+            grid.add(new ArrayList<>(rowAmount));
             for (int row = 0; row < rowAmount; row++) {
-                grid.get(col).add(new GridCell());
+                grid.get(col).add(new GridCell<>());
             }
+        }
+    }
+
+    /**
+     * Searches all objects within the given bounding area.
+     *
+     * @param area   the rectangle area for range search
+     * @param filter a predicate to exclude certain objects from the result list
+     * @return the list of results
+     */
+    public List<T> getItemsInBoundingArea(BoundingBox area, Predicate<T> filter) {
+        return getItemsInBoundingArea(area, filter, new ArrayList<>());
+    }
+
+    /**
+     * Searches all objects within the given bounding area.
+     *
+     * @param area   the rectangle area for range search
+     * @param filter a predicate to exclude certain objects from the result list
+     * @param result the list of results
+     * @return the list of results
+     */
+    public List<T> getItemsInBoundingArea(BoundingBox area, Predicate<T> filter, List<T> result) {
+        synchronized (tmpIndexA) {
+            CellIndex minIndex = toCellIndex(Math.max(area.min.x, minX), Math.max(area.min.z, minZ), tmpIndexA);
+            CellIndex maxIndex = toCellIndex(Math.min(area.max.x, maxX), Math.min(area.max.z, maxZ), tmpIndexB);
+
+            for (int col = minIndex.col; col <= maxIndex.col; col++) {
+                for (int row = minIndex.row; row <= maxIndex.row; row++) {
+                    final GridCell<T> cell = getGridCell(col, row);
+                    // iterating with classical for-loop is faster than foreach
+                    for (int i = 0; i < cell.size(); i++) {
+                        T item = cell.get(i);
+                        if (area.contains(adapter.getCenterX(item), adapter.getCenterY(item), adapter.getCenterZ(item))
+                                && (filter == null || filter.test(item))) {
+                            result.add(item);
+                        }
+                    }
+                }
+            }
+            return result;
         }
     }
 
@@ -77,73 +116,75 @@ public class Grid<T> {
      * @return true if the item is in the bounding area of the grid, else false
      */
     public boolean addOrUpdateItem(T item) {
-        if (isInBounds(adapter.getMinX(item), adapter.getMinY(item), adapter.getMinZ(item))) {
-            if (items.containsKey(item)) { // update -> remove from old grid cell
-                getGridCellEntries(items.get(item).getA(), items.get(item).getB()).remove(item);
+        synchronized (tmpIndexA) {
+            if (isInBounds(adapter.getCenterX(item), adapter.getCenterZ(item))) {
+                CellIndex oldCellIndex = items.get(item);
+                CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), tmpIndexA);
+                if (newCellIndex.isEqualTo(oldCellIndex)) {
+                    // no index change -> do nothing
+                    return true;
+                }
+                if (oldCellIndex != null) { // update -> update cellIndex and remove from old grid cell
+                    getGridCell(oldCellIndex).remove(item);
+                    oldCellIndex.col = newCellIndex.col;
+                    oldCellIndex.row = newCellIndex.row;
+                } else {
+                    // add -> store new cell index
+                    items.put(item, new CellIndex().set(newCellIndex));
+                }
+                // add + update -> add item to grid cell
+                getGridCell(newCellIndex).add(item);
+                return true;
             }
-            Tuple<Integer, Integer> coords = toGridCoordinate(adapter.getMinX(item), adapter.getMinY(item), adapter.getMinZ(item));
-            getGridCellEntries(coords.getA(), coords.getB()).add(item);
-            items.put(item, coords);
-            return true;
+            return false;
         }
-        return false;
     }
 
     public void removeItem(T item) {
-        Tuple<Integer, Integer> coords = items.remove(item);
-        if (coords != null) {
-            getGridCellEntries(coords.getA(), coords.getB()).remove(item);
+        synchronized (tmpIndexA) {
+            CellIndex cellIndex = items.remove(item);
+            if (cellIndex != null) {
+                getGridCell(cellIndex).remove(item);
+            }
         }
     }
 
-    private Tuple<Integer, Integer> toGridCoordinate(double x, double y, double z) {
+    private CellIndex toCellIndex(double x, double z, CellIndex resultIndex) {
         // also looking at special case where item is directly on the max borders
-        int col = x == maxX ? colAmount - 1 : (int) ((x - minX) / cellWidth);
-        int row = z == maxZ ? rowAmount - 1 : (int) ((z - minZ) / cellHeight);
-        return new Tuple<>(col, row);
+        resultIndex.col = x == maxX ? colAmount - 1 : (int) ((x - minX) / cellWidth);
+        resultIndex.row = z == maxZ ? rowAmount - 1 : (int) ((z - minZ) / cellHeight);
+        return resultIndex;
     }
 
-    private boolean isInBounds(double x, double y, double z) {
+    private boolean isInBounds(double x, double z) {
         return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
     }
 
-    public List<T> getItemsInBoundingArea(BoundingBox boundingBox, Predicate<T> filter) {
-        Tuple<Integer, Integer> minCoords =
-                toGridCoordinate(Math.max(boundingBox.min.x, minX), boundingBox.min.y, Math.max(boundingBox.min.z, minZ));
-        Tuple<Integer, Integer> maxCoords =
-                toGridCoordinate(Math.min(boundingBox.max.x, maxX), boundingBox.max.y, Math.min(boundingBox.max.z, maxZ));
-
-        List<T> itemsInBoundingBox = new ArrayList<>();
-
-        for (int col = minCoords.getA(); col <= maxCoords.getA(); col++) {
-            for (int row = minCoords.getB(); row <= maxCoords.getB(); row++) {
-                for (T entry : getGridCellEntries(col, row)) {
-                    if (filter == null || filter.test(entry)) {
-                        itemsInBoundingBox.add(entry);
-                    }
-                }
-            }
-        }
-        return itemsInBoundingBox;
+    private GridCell<T> getGridCell(CellIndex cellIndex) {
+        return getGridCell(cellIndex.col, cellIndex.row);
     }
 
-    private Set<T> getGridCellEntries(int col, int row) {
-        return grid.get(col).get(row).entries;
+    private GridCell<T> getGridCell(int col, int row) {
+        return grid.get(col).get(row);
     }
 
-    class GridCell {
-        private final Set<T> entries;
+    private static class GridCell<T> extends ArrayList<T> {
+        // marker class for better readability
+        // we use an arrayList since efficiently iterating over all elements is more important than remove/add
+    }
 
-        GridCell() {
-            entries = new HashSet<>();
+    private static class CellIndex {
+        private int row;
+        private int col;
+
+        private CellIndex set(CellIndex copyFrom) {
+            this.row = copyFrom.row;
+            this.col = copyFrom.col;
+            return this;
         }
 
-        boolean add(T item) {
-            return entries.add(item);
-        }
-
-        boolean remove(T item) {
-            return entries.remove(item);
+        public boolean isEqualTo(CellIndex other) {
+            return other != null && this.row == other.row && this.col == other.col;
         }
     }
 }

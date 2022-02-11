@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * Implements a spatial index for 2-dimensional objects based on Quad-Tree implementation. Each leaf can store multiple objects, allowing
+ * Implements a spatial index for 2-dimensional objects (on the X,Z plane) based on Quad-Tree implementation. Each leaf can store multiple objects, allowing
  * them to be moved inside the bounds of its quad tile without removing and adding them to the tree again.
  * <p/>
  * Note: Currently works only for point-based spatial items.
