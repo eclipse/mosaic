@@ -68,6 +68,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,6 +142,7 @@ public class SimulationFacade {
      * before the next simulation step.
      */
     private boolean updateBestLanesBeforeNextSimulationStep = false;
+    private boolean noRearSensorConfigured = true;
 
     /**
      * Creates a new {@link SimulationFacade} object.
@@ -599,33 +601,12 @@ public class SimulationFacade {
     }
 
     private LaneAreaDetectorInfo processLaneAreaSubscriptionResult(long time, LaneAreaSubscriptionResult laneArea) {
-        double meanSpeed = calculateMeanSpeedOfLaneAreaDetector(laneArea.vehicles);
         return new LaneAreaDetectorInfo.Builder(time, laneArea.id)
-                .vehicleData(laneArea.vehicleCount, meanSpeed)
+                .vehicleData(laneArea.vehicleCount, laneArea.meanSpeed)
                 .density((laneArea.vehicleCount * 1000d) / laneArea.length)
                 .haltingVehicles(laneArea.haltingVehicles)
                 .length(laneArea.length)
                 .create();
-    }
-
-    /**
-     * - Workaround -
-     * State July 2018:
-     * Generally TraCI is able to provide meanSpeed of a Lane Area Detector (E2),
-     * but currently TraCI provides false values.
-     *
-     * @param vehicleIds Ids of the vehicles running in the simulation.
-     * @return The mean speed calculated by the lane area detector.
-     */
-    private double calculateMeanSpeedOfLaneAreaDetector(List<String> vehicleIds) {
-        double sum = 0;
-        int count = 0;
-        for (String vehicleId : vehicleIds) {
-            VehicleData vehInfo = getLastKnownVehicleData(vehicleId);
-            sum += vehInfo != null ? vehInfo.getSpeed() : 0;
-            count += vehInfo != null ? 1 : 0;
-        }
-        return sum / count;
     }
 
     private TrafficLightGroupInfo processTrafficLightSubscriptionResult(TrafficLightSubscriptionResult trafficLightSubscriptionResult) {

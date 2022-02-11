@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.application.config;
 
 import org.eclipse.mosaic.lib.routing.config.CRouting;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
+import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 import org.eclipse.mosaic.lib.util.scheduling.MultiThreadedEventScheduler;
 import org.eclipse.mosaic.rti.TIME;
 
@@ -89,10 +90,10 @@ public class CApplicationAmbassador {
         public PerceptionBackend perceptionBackend = PerceptionBackend.Trivial;
 
         /**
-         * If set to <code>true</code>, a PerceptionPerformance.csv is generated with detailed information about execution calls
+         * If set to {@code true}, a PerceptionPerformance.csv is generated with detailed information about execution calls
          * of the perception backend.
          */
-        public boolean performanceMeasure = false;
+        public boolean measurePerformance = false;
 
         /**
          * The interval between spatial index updates.
@@ -104,20 +105,24 @@ public class CApplicationAmbassador {
         /**
          * If {@link PerceptionBackend#Grid} is used as backend, this indicates the width of a single cell. [m]
          */
+        @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
         public double gridCellWidth = 200;
 
         /**
          * If {@link PerceptionBackend#Grid} is used as backend, this indicates the height of a single cell. [m]
          */
+        @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
         public double gridCellHeight = 200;
 
         /**
-         * {@link PerceptionBackend#QuadTree} is used as backend, this indicates the maximum number of vehicles inside a tile before splitting
+         * If {@link PerceptionBackend#QuadTree} is used as backend,
+         * this indicates the maximum number of vehicles inside a tile before splitting.
          */
         public int treeSplitSize = 20;
 
         /**
-         * {@link PerceptionBackend#QuadTree} is used as backend, this indicates the maximum depth of the quad-tree
+         * If {@link PerceptionBackend#QuadTree} is used as backend,
+         * this indicates the maximum depth of the quad-tree.
          */
         public int treeMaxDepth = 12;
     }

@@ -24,9 +24,12 @@ import static org.mockito.Mockito.when;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -62,16 +65,16 @@ public class CameraPerceptionModuleTest {
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
 
-    public PerceptionIndex perceptionIndex;
+    public SpatialVehicleIndex vehicleIndex;
 
     private CameraPerceptionModule cameraPerceptionModule;
 
     @Before
     public void setup() {
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
-        perceptionIndex = new PerceptionIndex();
+        vehicleIndex = new PerceptionIndex();
         // setup cpc
-        when(cpcMock.getSpatialIndex()).thenReturn(perceptionIndex);
+        when(cpcMock.getSpatialIndex()).thenReturn(vehicleIndex);
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
@@ -107,6 +110,62 @@ public class CameraPerceptionModuleTest {
         assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
     }
 
+    @Test
+    public void vehicleCanBePerceived_QuadTree() {
+        useQuadTree();
+        setupSpatialIndex(new MutableCartesianPoint(110, 100, 0));
+        assertEquals(1, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_outOfRange_QuadTree() {
+        useQuadTree();
+        setupSpatialIndex(new MutableCartesianPoint(310, 100, 0));
+        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_toFarLeft_QuadTree() {
+        useQuadTree();
+        setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
+        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_toFarRight_QuadTree() {
+        useQuadTree();
+        setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
+        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_Grid() {
+        useGrid();
+        setupSpatialIndex(new MutableCartesianPoint(110, 100, 0));
+        assertEquals(1, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_outOfRange_Grid() {
+        useGrid();
+        setupSpatialIndex(new MutableCartesianPoint(310, 100, 0));
+        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_toFarLeft_Grid() {
+        useGrid();
+        setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
+        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_toFarRight_Grid() {
+        useGrid();
+        setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
+        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+    }
+
     private void setupSpatialIndex(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
         int i = 1;
@@ -116,8 +175,20 @@ public class CameraPerceptionModuleTest {
             when(vehicleDataMock.getName()).thenReturn("veh_" + i++);
             vehiclesInIndex.add(vehicleDataMock);
         }
-        perceptionIndex.updateVehicles(vehiclesInIndex);
+        vehicleIndex.updateVehicles(vehiclesInIndex);
     }
 
+    private void useQuadTree() {
+        vehicleIndex = new PerceptionTree(new CartesianRectangle(
+                new MutableCartesianPoint(100, 90, 0), new MutableCartesianPoint(310, 115, 0)), 20, 12
+        );
+        when(cpcMock.getSpatialIndex()).thenReturn(vehicleIndex);
+    }
 
+    private void useGrid() {
+        vehicleIndex = new PerceptionGrid(new CartesianRectangle(
+                new MutableCartesianPoint(100, 90, 0), new MutableCartesianPoint(310, 115, 0)), 5, 5
+        );
+        when(cpcMock.getSpatialIndex()).thenReturn(vehicleIndex);
+    }
 }

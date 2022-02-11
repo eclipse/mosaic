@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
@@ -163,6 +164,16 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
                     result.followerVehicle = new LeadFollowVehicle(
                             Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(follower.getFirst()),
                             follower.getSecond()
+                    );
+                }
+            }
+
+            if (fetchLeader) {
+                final StringDoublePair leader = Vehicle.getLeader(sumoVehicleId);
+                if (StringUtils.isNotBlank(leader.getFirst())) {
+                    result.leadingVehicle = new LeadingVehicle(
+                            Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(leader.getFirst()),
+                            leader.getSecond()
                     );
                 }
             }

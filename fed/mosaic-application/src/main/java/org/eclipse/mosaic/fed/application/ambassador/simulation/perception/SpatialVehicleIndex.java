@@ -27,7 +27,7 @@ public interface SpatialVehicleIndex {
 
     /**
      * Queries the {@link SpatialVehicleIndex} and returns all vehicles inside the {@link PerceptionRange}
-e.
+     * e.
      */
     List<VehicleObject> getVehiclesInRange(PerceptionRange searchRange);
 
@@ -35,18 +35,19 @@ e.
      * Remove all vehicles from the {@link SpatialVehicleIndex} by a list of vehicle ids.
      *
      * @param vehiclesToRemove the list of vehicles to remove from the index
-     *
      */
     void removeVehicles(Iterable<String> vehiclesToRemove);
 
     /**
-     * Updates the {@link SpatialVehicleIndex} with a list of {@link VehicleData} objects
+     * Updates the {@link SpatialVehicleIndex} with a list of {@link VehicleData} objects.
      *
      * @param vehiclesToUpdate the list of vehicles to add or update in the index
      */
     void updateVehicles(Iterable<VehicleData> vehiclesToUpdate);
 
     /**
+     * Returns the amount of indexed vehicles.
+     *
      * @return the number of vehicles
      */
     int getNumberOfVehicles();

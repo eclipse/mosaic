@@ -74,11 +74,12 @@ public class CentralPerceptionComponent {
     }
 
     private void setSpatialIndex() {
-        CartesianRectangle scenarioBounds = SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds();
+        CartesianRectangle scenarioBounds =
+                SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds();
         if (scenarioBounds.getArea() > 0) {
             switch (configuration.perceptionBackend) {
                 case Grid:
-                    spatialIndex = new PerceptionGrid(configuration.gridCellWidth, configuration.gridCellHeight, scenarioBounds);
+                    spatialIndex = new PerceptionGrid(scenarioBounds, configuration.gridCellWidth, configuration.gridCellHeight);
                     break;
                 case QuadTree:
                     spatialIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
@@ -94,7 +95,7 @@ public class CentralPerceptionComponent {
             spatialIndex = new PerceptionIndex();
         }
 
-        if (configuration.performanceMeasure) {
+        if (configuration.measurePerformance) {
             spatialIndex = new MonitoringSpatialIndex(spatialIndex, performanceMonitor);
         }
     }
@@ -120,11 +121,11 @@ public class CentralPerceptionComponent {
     }
 
     public void finish() {
-        if (configuration.performanceMeasure) {
+        if (configuration.measurePerformance) {
             performanceMonitor.printSummary();
             String logDirectory = ((LoggerContext) LoggerFactory.getILoggerFactory()).getProperty("logDirectory");
-            try ( Writer perceptionPerformanceWriter = new OutputStreamWriter(
-                    new FileOutputStream(new File(logDirectory, "PerceptionPerformance.csv")), Charsets.UTF_8)){
+            try (Writer perceptionPerformanceWriter = new OutputStreamWriter(
+                    new FileOutputStream(new File(logDirectory, "PerceptionPerformance.csv")), Charsets.UTF_8)) {
                 performanceMonitor.exportDetailedMeasurements(perceptionPerformanceWriter);
             } catch (IOException e) {
                 log.warn("Could not write performance result for perception module.");

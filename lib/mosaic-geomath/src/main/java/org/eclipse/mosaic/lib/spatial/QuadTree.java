@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * Implements a spatial index for 2-dimensional objects based on Quad-Tree implementation. Each leaf can store multiple objects, allowing
- * them to be moved inside the bounds of its quad tile without removing and adding them to the tree again.<br>
- *
+ * Implements a spatial index for 2-dimensional objects (on the X,Z plane) based on Quad-Tree implementation. Each leaf can store multiple objects, allowing
+ * them to be moved inside the bounds of its quad tile without removing and adding them to the tree again.
+ * <p/>
  * Note: Currently works only for point-based spatial items.
  *
  * @param <T> the item type to store inside the tree
@@ -46,7 +46,7 @@ public class QuadTree<T> {
     /**
      * Creates a Quad-Tree for indexing objects of type T covering the given area.
      *
-     * @param adapter the adapter used to determine center coordinates of any object of type T
+     * @param adapter    the adapter used to determine center coordinates of any object of type T
      * @param treeBounds the bound of the area this tree should cover (on the X,Z plane)
      */
     public QuadTree(final SpatialItemAdapter<T> adapter, final BoundingBox treeBounds) {
@@ -58,10 +58,10 @@ public class QuadTree<T> {
      * Creates a Quad-Tree for indexing objects of type T covering the given area.
      *
      * @param adapter the adapter used to determine center coordinates of any object of type T
-     * @param minX the bounds of the area this tree should cover (on the X,Z plane)
-     * @param maxX the bounds of the area this tree should cover (on the X,Z plane)
-     * @param minZ the bounds of the area this tree should cover (on the X,Z plane)
-     * @param maxZ the bounds of the area this tree should cover (on the X,Z plane)
+     * @param minX    the bounds of the area this tree should cover (on the X,Z plane)
+     * @param maxX    the bounds of the area this tree should cover (on the X,Z plane)
+     * @param minZ    the bounds of the area this tree should cover (on the X,Z plane)
+     * @param maxZ    the bounds of the area this tree should cover (on the X,Z plane)
      */
     public QuadTree(final SpatialItemAdapter<T> adapter, double minX, double maxX, double minZ, double maxZ) {
         root = new TreeNode(0, minX, maxX, minZ, maxZ);
@@ -73,7 +73,6 @@ public class QuadTree<T> {
      *
      * @param center the center point for the range search
      * @param radius the radius for range search
-     *
      * @return the list of results
      */
     public List<T> getObjectsInRadius(Vector3d center, double radius) {
@@ -86,7 +85,6 @@ public class QuadTree<T> {
      * @param center the center point for the range search
      * @param radius the radius for range search
      * @param result the list of results
-     *
      * @return the list of results
      */
     public List<T> getObjectsInRadius(Vector3d center, double radius, List<T> result) {
@@ -100,7 +98,6 @@ public class QuadTree<T> {
      * @param radius the radius for range search
      * @param filter a predicate to exclude certain objects from the result list
      * @param result the list of results
-     *
      * @return the list of results
      */
     public List<T> getObjectsInRadius(Vector3d center, double radius, Predicate<T> filter, List<T> result) {
@@ -112,7 +109,6 @@ public class QuadTree<T> {
      * Searches all objects within the given bounding area.
      *
      * @param area the rectangle area for range search
-     *
      * @return the list of results
      */
     public List<T> getObjectsInBoundingArea(BoundingBox area) {
@@ -122,9 +118,8 @@ public class QuadTree<T> {
     /**
      * Searches all objects within the given bounding area.
      *
-     * @param area the rectangle area for range search
+     * @param area   the rectangle area for range search
      * @param result the list of results
-     *
      * @return the list of results
      */
     public List<T> getObjectsInBoundingArea(BoundingBox area, List<T> result) {
@@ -134,10 +129,9 @@ public class QuadTree<T> {
     /**
      * Searches all objects within the given bounding area.
      *
-     * @param area the rectangle area for range search
+     * @param area   the rectangle area for range search
      * @param filter a predicate to exclude certain objects from the result list
      * @param result the list of results
-     *
      * @return the list of results
      */
     public List<T> getObjectsInBoundingArea(BoundingBox area, Predicate<T> filter, List<T> result) {
@@ -147,6 +141,7 @@ public class QuadTree<T> {
 
     /**
      * Search for the nearest object for the given point.
+     *
      * @param center the point to find the nearest object
      * @return the nearest object, or <code>null</code> if not found
      */
@@ -156,6 +151,7 @@ public class QuadTree<T> {
 
     /**
      * Search for the nearest object for the given point.
+     *
      * @param center the point to find the nearest object
      * @param filter a predicate to exclude certain objects from the result list
      * @return the nearest object, or <code>null</code> if not found
@@ -297,7 +293,8 @@ public class QuadTree<T> {
                 return 0;
             }
 
-            double x = 0.0f, z = 0.0f;
+            double x = 0.0f;
+            double z = 0.0f;
 
             double tmp = p.x - minX;
             if (tmp < 0) {
@@ -328,14 +325,14 @@ public class QuadTree<T> {
 
         boolean intersects(BoundingBox area) {
             //TODO check if this method could be shortened
-            return area.contains(minX, 0, minZ) ||
-                    area.contains(minX, 0, maxZ) ||
-                    area.contains(maxX, 0, minZ) ||
-                    area.contains(maxX, 0, maxZ) ||
-                    isInBounds(area.min.x, 0, area.min.z) ||
-                    isInBounds(area.min.x, 0, area.max.z) ||
-                    isInBounds(area.max.x, 0, area.min.z) ||
-                    isInBounds(area.max.x, 0, area.max.z);
+            return area.contains(minX, 0, minZ)
+                    || area.contains(minX, 0, maxZ)
+                    || area.contains(maxX, 0, minZ)
+                    || area.contains(maxX, 0, maxZ)
+                    || isInBounds(area.min.x, 0, area.min.z)
+                    || isInBounds(area.min.x, 0, area.max.z)
+                    || isInBounds(area.max.x, 0, area.min.z)
+                    || isInBounds(area.max.x, 0, area.max.z);
         }
 
         private void addObjectNode(QuadTree<?>.ObjectAndNode item) {
