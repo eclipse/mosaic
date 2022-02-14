@@ -117,7 +117,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
         return new Denm(routing,
                 new DenmContent(
                         getOs().getSimulationTime(),
-                        getOs().getInitialPosition(),
+                        GeoPoint.latLon(52.650270, 13.545000),
                         HAZARD_ROAD,
                         SENSOR_TYPE,
                         strength,
