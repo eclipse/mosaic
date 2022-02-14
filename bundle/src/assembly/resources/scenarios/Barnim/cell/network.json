@@ -35,19 +35,10 @@
             "capacity": 42200000
         }
     },
-    "servers": {
-        "id": "WeatherServer",
-        "uplink": {
-            "delay": {
-                "type": "ConstantDelay",
-                "delay": "200 ms"
-            },
-            "transmission": {
-                "lossProbability": 0.0
-            }
-        },
-        "downlink": {
-            "unicast" : {
+    "servers": [
+        {
+            "id": "WeatherServer",
+            "uplink": {
                 "delay": {
                     "type": "ConstantDelay",
                     "delay": "200 ms"
@@ -55,7 +46,18 @@
                 "transmission": {
                     "lossProbability": 0.0
                 }
+            },
+            "downlink": {
+                "unicast": {
+                    "delay": {
+                        "type": "ConstantDelay",
+                        "delay": "200 ms"
+                    },
+                    "transmission": {
+                        "lossProbability": 0.0
+                    }
+                }
             }
         }
-    }
+    ]
 }

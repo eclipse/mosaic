@@ -125,14 +125,11 @@
                     <entry>Acceleration</entry>
                 </entries>
             </subscription>
-            <subscription id="RsuRegistration">
+            <subscription id="ServerRegistration">
                 <entries>
-                    <entry>"RSU_REGISTRATION"</entry>
+                    <entry>"SERVER_REGISTRATION"</entry>
                     <entry>Time</entry>
                     <entry>Mapping.Name</entry>
-                    <entry>Mapping.Position.Latitude</entry>
-                    <entry>Mapping.Position.Longitude</entry>
-                    <entry>Mapping.Position.Altitude</entry>
                     <entry>Mapping.Group</entry>
                     <entry>Mapping.Applications</entry>
                 </entries>
