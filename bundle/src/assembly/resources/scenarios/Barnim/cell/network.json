@@ -1,6 +1,6 @@
 {
-    "defaultDownlinkCapacity": "10 Gbps",
-    "defaultUplinkCapacity": "10 Gbps",
+    "defaultDownlinkCapacity": "100 Gbps",
+    "defaultUplinkCapacity": "100 Gbps",
     "globalNetwork": {
         "uplink": {
             "delay": {
