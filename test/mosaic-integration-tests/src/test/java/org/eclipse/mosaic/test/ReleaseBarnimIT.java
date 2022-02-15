@@ -74,7 +74,7 @@ public class ReleaseBarnimIT {
         assertEquals(42, LogAssert.count(simulationRule, "output.csv",
                 ".*TRAFFICLIGHT_REGISTRATION;.*"
         ));
-        LogAssert.contains(simulationRule, "output.csv", "SERVER_REGISTRATION;0;server_0;null;\\[.*\\]");
+        LogAssert.contains(simulationRule, "output.csv", "SERVER_REGISTRATION;0;server_0;WeatherServer;\\[.*\\]");
     }
 
 }
