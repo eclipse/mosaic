@@ -43,7 +43,7 @@ public class DenmContent implements ToDataOutput, Serializable {
     private final GeoPoint senderPosition;
 
     /**
-     * 
+     *
      */
     private final String eventRoadId;
 
@@ -79,13 +79,12 @@ public class DenmContent implements ToDataOutput, Serializable {
      */
     private final String extendedContainer;
 
-    public DenmContent(final long time, final GeoPoint senderPosition, final String eventRoadId, final SensorType warningType, final int eventStrength, final float causedSpeed, final float senderDeceleration) {
+    public DenmContent(final long time, GeoPoint senderPosition, final String eventRoadId, final SensorType warningType, final int eventStrength, final float causedSpeed, final float senderDeceleration) {
         this(time, senderPosition, eventRoadId, warningType, eventStrength, causedSpeed, senderDeceleration, null, null, null);
     }
 
     public DenmContent(final long time, final GeoPoint senderPosition, final String eventRoadId, final SensorType warningType, final int eventStrength, final float causedSpeed, final float senderDeceleration, final GeoPoint eventLocation, final GeoPolygon eventArea, final String extendedContainer) {
         this.time = time;
-        this.senderPosition = senderPosition;
         this.eventRoadId = eventRoadId;
         this.warningType = warningType;
         this.eventStrength = eventStrength;
@@ -94,6 +93,12 @@ public class DenmContent implements ToDataOutput, Serializable {
         this.eventLocation = eventLocation;
         this.eventArea = eventArea;
         this.extendedContainer = extendedContainer;
+
+        if (senderPosition != null) {
+            this.senderPosition = senderPosition;
+        } else {
+            this.senderPosition = null;
+        }
     }
 
     public DenmContent(DataInput din) throws IOException {
@@ -184,8 +189,9 @@ public class DenmContent implements ToDataOutput, Serializable {
     @Override
     public void toDataOutput(DataOutput dataOutput) throws IOException {
         dataOutput.writeLong(time);
-        SerializationUtils.encodeGeoPoint(dataOutput, senderPosition);
-
+        if (senderPosition != null) {
+            SerializationUtils.encodeGeoPoint(dataOutput, senderPosition);
+        }
         dataOutput.writeBoolean(eventRoadId != null);
         if (eventRoadId != null) {
             dataOutput.writeUTF(eventRoadId);
@@ -201,7 +207,7 @@ public class DenmContent implements ToDataOutput, Serializable {
         int eventAreaSize = this.eventArea == null ? 0 : this.eventArea.getVertices().size();
         dataOutput.writeInt(eventAreaSize);
         if (eventArea != null) {
-            for (GeoPoint vertice: eventArea.getVertices()) {
+            for (GeoPoint vertice : eventArea.getVertices()) {
                 SerializationUtils.encodeGeoPoint(dataOutput, vertice);
             }
         }
