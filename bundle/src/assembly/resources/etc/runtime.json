@@ -196,6 +196,8 @@
                 "TrafficLightRegistration",
                 "TrafficSignRegistration",
                 "VehicleRegistration",
+                "ServerRegistration",
+                "TmcRegistration",
                 "ItefLogging",
                 "VehicleLaneChange",
                 "LanePropertyChange",
@@ -220,9 +222,7 @@
                 "CellularHandoverUpdates",
                 "VehicleUpdates",
                 "VehicleRoutesInitialization",
-                "VehicleTypesInitialization",
-                "ServerRegistration",
-                "TmcRegistration"
+                "VehicleTypesInitialization"
             ],
             "javaClasspathEntries": []
         }

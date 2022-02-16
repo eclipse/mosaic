@@ -79,12 +79,13 @@ public class DenmContent implements ToDataOutput, Serializable {
      */
     private final String extendedContainer;
 
-    public DenmContent(final long time, GeoPoint senderPosition, final String eventRoadId, final SensorType warningType, final int eventStrength, final float causedSpeed, final float senderDeceleration) {
+    public DenmContent(final long time, final GeoPoint senderPosition, final String eventRoadId, final SensorType warningType, final int eventStrength, final float causedSpeed, final float senderDeceleration) {
         this(time, senderPosition, eventRoadId, warningType, eventStrength, causedSpeed, senderDeceleration, null, null, null);
     }
 
     public DenmContent(final long time, final GeoPoint senderPosition, final String eventRoadId, final SensorType warningType, final int eventStrength, final float causedSpeed, final float senderDeceleration, final GeoPoint eventLocation, final GeoPolygon eventArea, final String extendedContainer) {
         this.time = time;
+        this.senderPosition = senderPosition;
         this.eventRoadId = eventRoadId;
         this.warningType = warningType;
         this.eventStrength = eventStrength;
@@ -93,17 +94,16 @@ public class DenmContent implements ToDataOutput, Serializable {
         this.eventLocation = eventLocation;
         this.eventArea = eventArea;
         this.extendedContainer = extendedContainer;
-
-        if (senderPosition != null) {
-            this.senderPosition = senderPosition;
-        } else {
-            this.senderPosition = null;
-        }
     }
 
     public DenmContent(DataInput din) throws IOException {
         this.time = din.readLong();
-        this.senderPosition = SerializationUtils.decodeGeoPoint(din);
+
+        if (din.readBoolean()) {
+            this.senderPosition = SerializationUtils.decodeGeoPoint(din);
+        } else {
+            this.senderPosition = null;
+        }
 
         if (din.readBoolean()) {
             this.eventRoadId = din.readUTF();
