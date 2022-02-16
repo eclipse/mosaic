@@ -15,23 +15,33 @@
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 
-import com.google.common.collect.Lists;
-import org.eclipse.sumo.libsumo.SWIGTYPE_p_std__vectorT_std__vectorT_libsumo__TraCILink_t_t;
+import org.eclipse.sumo.libsumo.TraCILink;
+import org.eclipse.sumo.libsumo.TraCILinkVector;
 import org.eclipse.sumo.libsumo.TrafficLight;
-import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TrafficLightGetControlledLinks implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledLinks {
 
 
-    public List<TrafficLightControlledLink> execute(Bridge bridge, String tlId) {
-        SWIGTYPE_p_std__vectorT_std__vectorT_libsumo__TraCILink_t_t controlledLinks
-                = TrafficLight.getControlledLinks(tlId);
-        //TODO currently not implemented on libsumo side
-        LoggerFactory.getLogger(this.getClass()).warn("Reading the controlled links of traffic lights is not implemented yet in libsumo.");
-        return Lists.newArrayList();
+    public List<TrafficLightControlledLink> execute(Bridge bridge, String tlId) throws CommandException {
+        try {
+            List<TrafficLightControlledLink> controlledLinks = new ArrayList<>();
+            int i = 0;
+            for (TraCILinkVector links : TrafficLight.getControlledLinks(tlId)) {
+                for (TraCILink link : links) {
+                    controlledLinks.add(
+                            new TrafficLightControlledLink(i++, link.getFromLane(), link.getToLane())
+                    );
+                }
+            }
+            return controlledLinks;
+        } catch (IllegalArgumentException e) {
+            throw new CommandException("Could not read list of controlled links for Traffic Light: " + tlId);
+        }
     }
 
 }

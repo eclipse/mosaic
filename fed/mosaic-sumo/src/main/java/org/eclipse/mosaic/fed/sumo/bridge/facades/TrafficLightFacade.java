@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.sumo.bridge.facades;
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.fed.sumo.bridge.api.JunctionGetPosition;
+import org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledJunctions;
 import org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledLanes;
 import org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetControlledLinks;
 import org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetCurrentPhase;
@@ -39,6 +40,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgramPhase;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +67,7 @@ public class TrafficLightFacade {
     private final TrafficLightGetTimeOfNextSwitch getNextSwitchTime;
     private final TrafficLightGetControlledLanes getControlledLanes;
     private final TrafficLightGetControlledLinks getControlledLinks;
+    private final TrafficLightGetControlledJunctions getControlledJunctions;
     private final JunctionGetPosition getJunctionPosition;
 
     /**
@@ -86,6 +89,7 @@ public class TrafficLightFacade {
         getNextSwitchTime = bridge.getCommandRegister().getOrCreate(TrafficLightGetTimeOfNextSwitch.class);
         getControlledLanes = bridge.getCommandRegister().getOrCreate(TrafficLightGetControlledLanes.class);
         getControlledLinks = bridge.getCommandRegister().getOrCreate(TrafficLightGetControlledLinks.class);
+        getControlledJunctions = bridge.getCommandRegister().getOrCreate(TrafficLightGetControlledJunctions.class);
         getJunctionPosition = bridge.getCommandRegister().getOrCreate(JunctionGetPosition.class);
     }
 
@@ -159,7 +163,10 @@ public class TrafficLightFacade {
      */
     public TrafficLightGroup getTrafficLightGroup(String trafficLightGroupId) throws InternalFederateException {
         try {
-            GeoPoint junctionPosition = getJunctionPosition.execute(bridge, trafficLightGroupId).getGeographicPosition();
+            List<String> controlledJunctions = getControlledJunctions.execute(bridge, trafficLightGroupId);
+            String firstJunctionId = Iterables.getFirst(controlledJunctions, trafficLightGroupId);
+
+            GeoPoint junctionPosition = getJunctionPosition.execute(bridge, firstJunctionId).getGeographicPosition();
 
             final List<SumoTrafficLightLogic> programDefinitions = getProgramDefinitions.execute(bridge, trafficLightGroupId);
             if (programDefinitions.isEmpty()) {

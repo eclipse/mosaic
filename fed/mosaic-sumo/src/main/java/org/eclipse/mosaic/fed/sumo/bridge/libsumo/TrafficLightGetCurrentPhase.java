@@ -15,13 +15,18 @@
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 
 import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetCurrentPhase implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetCurrentPhase {
 
-    public int execute(Bridge bridge, String tlId) {
-        return TrafficLight.getPhase(tlId);
+    public int execute(Bridge bridge, String tlId) throws CommandException {
+        try {
+            return TrafficLight.getPhase(tlId);
+        } catch(IllegalArgumentException e) {
+            throw new CommandException("Could not read phases for Traffic Light: " + tlId);
+        }
     }
 
 }

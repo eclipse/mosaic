@@ -63,8 +63,7 @@ public class JunctionGetPosition
     public Position execute(Bridge bridge, String junctionId) throws CommandException, InternalFederateException {
         return super.executeAndReturn(bridge, junctionId).orElseThrow(
                 () -> new CommandException(
-                        String.format(Locale.ENGLISH, "Couldn't get Position of Junction %s.", junctionId),
-                        new Status((byte) Status.STATUS_ERR, "")
+                        String.format(Locale.ENGLISH, "Couldn't get Position of Junction %s.", junctionId)
                 )
         );
     }

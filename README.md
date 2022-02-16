@@ -31,7 +31,7 @@ The project is a Maven based multi-module project and has its child modules orga
 
 ## Documentation
 
-View our website at **[eclipse.org/mosaic](https://eclipse.org/mosaic)** for detailled documentation and many tutorials to get startet with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
+View our website at **[eclipse.org/mosaic](https://eclipse.org/mosaic)** for detailed documentation and many tutorials to get started with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
 
 ## The Essential edition of Eclipse MOSAIC
 
@@ -42,7 +42,7 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Related repositories
 
-* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.10.0`.
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.12.0`.
 * The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
   We currently support ns-3 version `3.34`. 
 * The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
@@ -50,7 +50,7 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Contact
 
-Any questions regarding Eclipse MOSAIC can be asked, discussed, and found in the [Discussions section](https://github.com/eclipse/mosaic/discussions) here at GitHub.
+Any questions regarding Eclipse MOSAIC can be asked, discussed, and found in the [Discussion section](https://github.com/eclipse/mosaic/discussions) here at GitHub.
 
 For further questions we are available via mosaic@fokus.fraunhofer.de
 
@@ -59,8 +59,8 @@ For further questions we are available via mosaic@fokus.fraunhofer.de
 For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
-* **Java 8 or 11** - We recommend using the [Adoptium OpenJDK](https://adoptium.net/?variant=openjdk8).
-* **SUMO 1.11.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **Java 8 or 11** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk8).
+* **SUMO 1.12.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 

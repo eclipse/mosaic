@@ -15,12 +15,17 @@
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 
 import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetTimeOfNextSwitch implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetTimeOfNextSwitch {
 
-    public double execute(Bridge bridge, String tlId) {
-        return TrafficLight.getNextSwitch(tlId);
+    public double execute(Bridge bridge, String tlId) throws CommandException {
+        try {
+            return TrafficLight.getNextSwitch(tlId);
+        } catch(IllegalArgumentException e) {
+            throw new CommandException("Could not read next switch time for Traffic Light: " + tlId);
+        }
     }
 }
