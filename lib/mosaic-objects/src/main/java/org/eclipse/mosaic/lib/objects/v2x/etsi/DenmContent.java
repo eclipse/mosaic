@@ -98,7 +98,12 @@ public class DenmContent implements ToDataOutput, Serializable {
 
     public DenmContent(DataInput din) throws IOException {
         this.time = din.readLong();
-        this.senderPosition = SerializationUtils.decodeGeoPoint(din);
+
+        if (din.readBoolean()) {
+            this.senderPosition = SerializationUtils.decodeGeoPoint(din);
+        } else {
+            this.senderPosition = null;
+        }
 
         if (din.readBoolean()) {
             this.eventRoadId = din.readUTF();
