@@ -72,7 +72,7 @@ public class ReleaseBarnimLibsumoIT {
     @Test
     public void correctUnitRegistrations() throws Exception {
         assertEquals(1, LogAssert.count(simulationRule, "output.csv",
-                ".*RSU_REGISTRATION;.*"
+                ".*SERVER_REGISTRATION;.*"
         ));
         assertEquals(120, LogAssert.count(simulationRule, "output.csv",
                 ".*VEHICLE_REGISTRATION;.*"
@@ -81,7 +81,7 @@ public class ReleaseBarnimLibsumoIT {
 //        assertEquals(53, LogAssert.count(simulationRule, "output.csv",
 //                ".*TRAFFICLIGHT_REGISTRATION;.*"
 //        ));
-        LogAssert.contains(simulationRule, "output.csv", "RSU_REGISTRATION;0;rsu_0;52.65027;13.545;0.0;null;\\[.*\\]");
+        LogAssert.contains(simulationRule, "output.csv", "SERVER_REGISTRATION;0;server_0;WeatherServer;\\[.*\\]");
     }
 
 }
