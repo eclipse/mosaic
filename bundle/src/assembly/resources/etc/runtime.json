@@ -196,6 +196,8 @@
                 "TrafficLightRegistration",
                 "TrafficSignRegistration",
                 "VehicleRegistration",
+                "ServerRegistration",
+                "TmcRegistration",
                 "ItefLogging",
                 "VehicleLaneChange",
                 "LanePropertyChange",
