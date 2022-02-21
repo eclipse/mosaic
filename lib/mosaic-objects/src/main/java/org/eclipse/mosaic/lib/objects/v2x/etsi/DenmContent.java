@@ -189,7 +189,6 @@ public class DenmContent implements ToDataOutput, Serializable {
     @Override
     public void toDataOutput(DataOutput dataOutput) throws IOException {
         dataOutput.writeLong(time);
-
         dataOutput.writeBoolean(senderPosition != null);
         if (senderPosition != null) {
             SerializationUtils.encodeGeoPoint(dataOutput, senderPosition);
