@@ -80,14 +80,15 @@ public class CApplicationAmbassador {
 
     public CPerception perceptionConfiguration = new CPerception();
 
-
-
     public static class CPerception {
         public enum PerceptionBackend {
             Grid, QuadTree, Trivial
         }
 
-        public PerceptionBackend perceptionBackend = PerceptionBackend.Trivial;
+        /**
+         * The kind of index to use for perception [Grid, QuadTree, Trivial]. Default: QuadTree
+         */
+        public PerceptionBackend perceptionBackend = PerceptionBackend.QuadTree;
 
         /**
          * If set to {@code true}, a PerceptionPerformance.csv is generated with detailed information about execution calls

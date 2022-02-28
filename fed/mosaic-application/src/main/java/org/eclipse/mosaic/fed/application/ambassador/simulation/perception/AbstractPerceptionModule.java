@@ -26,7 +26,6 @@ public abstract class AbstractPerceptionModule<ConfigT extends PerceptionModuleC
 
     protected final Logger log;
 
-
     protected AbstractPerceptionModule(PerceptionModuleOwner<ConfigT> owner, Logger log) {
         this.owner = owner;
         this.log = log;

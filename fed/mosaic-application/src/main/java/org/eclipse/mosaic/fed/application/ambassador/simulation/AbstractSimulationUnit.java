@@ -101,7 +101,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     private final AdHocModule adhocModule;
 
-
     /**
      * The {@link AbstractSimulationUnit}s cell module.
      */

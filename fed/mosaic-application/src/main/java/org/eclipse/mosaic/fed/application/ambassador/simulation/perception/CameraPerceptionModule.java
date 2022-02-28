@@ -31,6 +31,9 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
+/**
+ * A simplified perception module which detects all vehicles within the defined field of view. No occlusion or error model is considered.
+ */
 public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerceptionModuleConfiguration> {
 
     private Camera camera;
@@ -74,8 +77,8 @@ public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerce
         private final CameraPerceptionModuleConfiguration configuration;
 
         private final Vector3d origin = new Vector3d();
-        private final Vector3d leftBoundVector = new Vector3d();
         private final Vector3d rightBoundVector = new Vector3d();
+        private final Vector3d leftBoundVector = new Vector3d();
         /**
          * The axis-aligned bounding box around the sight area.
          */
@@ -117,8 +120,8 @@ public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerce
             tmpVector2.set(0, 0, 0);
             synchronized (tmpVector1) {
                 other.getProjectedPosition().toVector3d(tmpVector1).subtract(origin); // convert position of other to relative point
-                return VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, leftBoundVector) // vehicle is left of right edge
-                        && !VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, rightBoundVector) // vehicle is right of left edge
+                return VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, rightBoundVector) // vehicle is left of right edge
+                        && !VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, leftBoundVector) // vehicle is right of left edge
                         && tmpVector1.magnitude() <= configuration.getViewingRange(); // other vehicle is in range
             }
         }
@@ -137,16 +140,16 @@ public class CameraPerceptionModule extends AbstractPerceptionModule<CameraPerce
                 directionVector.multiply(length);
 
                 // rotate the direction vector to the right
-                leftBoundVector.set(directionVector).rotate(-viewingAngleRad / 2, VectorUtils.UP);
+                rightBoundVector.set(directionVector).rotate(-viewingAngleRad / 2, VectorUtils.UP);
                 // rotate the direction vector to the left
-                rightBoundVector.set(directionVector).rotate(viewingAngleRad / 2, VectorUtils.UP);
+                leftBoundVector.set(directionVector).rotate(viewingAngleRad / 2, VectorUtils.UP);
             }
         }
 
         private void calculateBoundingBox() {
             synchronized (tmpVector1) {
                 sightAreaBoundingBox.clear();
-                sightAreaBoundingBox.add(origin, tmpVector1.set(origin).add(leftBoundVector), tmpVector2.set(origin).add(rightBoundVector));
+                sightAreaBoundingBox.add(origin, tmpVector1.set(origin).add(rightBoundVector), tmpVector2.set(origin).add(leftBoundVector));
             }
         }
     }
