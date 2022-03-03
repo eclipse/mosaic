@@ -21,8 +21,8 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModuleConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
@@ -57,7 +57,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     private final NavigationModule navigationModule;
 
     @Nonnull
-    private final CameraPerceptionModule perceptionModule;
+    private final PerceptionModule<SimplePerceptionConfiguration> perceptionModule;
 
     @Nonnull
     private VehicleParameters vehicleParameters;
@@ -75,7 +75,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         vehicleParameters = new VehicleParameters(vehicleType);
         navigationModule = new NavigationModule(this);
         navigationModule.setCurrentPosition(initialPosition);
-        perceptionModule = new CameraPerceptionModule(this, getOsLog());
+        perceptionModule = new SimplePerceptionModule(this, getOsLog());
     }
 
     @Override
@@ -345,7 +345,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
     @Nonnull
     @Override
-    public PerceptionModule<CameraPerceptionModuleConfiguration> getPerceptionModule() {
+    public PerceptionModule<SimplePerceptionConfiguration> getPerceptionModule() {
         return perceptionModule;
     }
 }

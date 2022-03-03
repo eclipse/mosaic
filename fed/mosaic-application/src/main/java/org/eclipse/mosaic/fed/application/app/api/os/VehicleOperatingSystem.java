@@ -17,7 +17,6 @@ package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation.SensorType;
@@ -34,7 +33,7 @@ import javax.annotation.Nullable;
  * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit}.
  */
 public interface VehicleOperatingSystem
-        extends OperatingSystem, INavigationModuleOwner, PerceptionModuleOwner<CameraPerceptionModuleConfiguration> {
+        extends OperatingSystem, INavigationModuleOwner, PerceptionModuleOwner {
 
     /**
      * Returns the current vehicle data state.
@@ -176,4 +175,5 @@ public interface VehicleOperatingSystem
      * @param sensorTypes The type of the sensors (e.g. LIDAR)
      */
     void activateVehicleSensors(double sensorRange, SensorType... sensorTypes);
+
 }

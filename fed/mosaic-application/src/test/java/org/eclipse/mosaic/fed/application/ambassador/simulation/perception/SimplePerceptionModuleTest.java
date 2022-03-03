@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CameraPerceptionModuleTest {
+public class SimplePerceptionModuleTest {
 
     private final EventManager eventManagerMock = mock(EventManager.class);
     private final CentralPerceptionComponent cpcMock = mock(CentralPerceptionComponent.class);
@@ -65,18 +65,18 @@ public class CameraPerceptionModuleTest {
 
     public SpatialVehicleIndex vehicleIndex;
 
-    private CameraPerceptionModule cameraPerceptionModule;
+    private SimplePerceptionModule simplePerceptionModule;
 
     @Before
     public void setup() {
         vehicleIndex = new PerceptionIndex();
         // setup cpc
-        when(cpcMock.getSpatialIndex()).thenReturn(vehicleIndex);
+        when(cpcMock.getVehicleIndex()).thenReturn(vehicleIndex);
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
-        cameraPerceptionModule = spy(new CameraPerceptionModule(egoVehicleUnit, mock(Logger.class)));
-        cameraPerceptionModule.enable(new CameraPerceptionModuleConfiguration(108d, 200d));
+        simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, mock(Logger.class)));
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(108d, 200d));
 
         // setup ego vehicle
         when(egoVehicleData.getHeading()).thenReturn(90d);
@@ -86,81 +86,81 @@ public class CameraPerceptionModuleTest {
     @Test
     public void vehicleCanBePerceived_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(110, 100, 0));
-        assertEquals(1, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_outOfRange_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(310, 100, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_toFarLeft_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_toFarRight_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCanBePerceived_QuadTree() {
         useQuadTree();
         setupSpatialIndex(new MutableCartesianPoint(110, 100, 0));
-        assertEquals(1, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_outOfRange_QuadTree() {
         useQuadTree();
         setupSpatialIndex(new MutableCartesianPoint(310, 100, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_toFarLeft_QuadTree() {
         useQuadTree();
         setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_toFarRight_QuadTree() {
         useQuadTree();
         setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCanBePerceived_Grid() {
         useGrid();
         setupSpatialIndex(new MutableCartesianPoint(110, 100, 0));
-        assertEquals(1, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_outOfRange_Grid() {
         useGrid();
         setupSpatialIndex(new MutableCartesianPoint(310, 100, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_toFarLeft_Grid() {
         useGrid();
         setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCannotBePerceived_toFarRight_Grid() {
         useGrid();
         setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(0, cameraPerceptionModule.getPerceivedVehicles().size());
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     private void setupSpatialIndex(CartesianPoint... positions) {
@@ -179,13 +179,13 @@ public class CameraPerceptionModuleTest {
         vehicleIndex = new PerceptionTree(new CartesianRectangle(
                 new MutableCartesianPoint(100, 90, 0), new MutableCartesianPoint(310, 115, 0)), 20, 12
         );
-        when(cpcMock.getSpatialIndex()).thenReturn(vehicleIndex);
+        when(cpcMock.getVehicleIndex()).thenReturn(vehicleIndex);
     }
 
     private void useGrid() {
         vehicleIndex = new PerceptionGrid(new CartesianRectangle(
                 new MutableCartesianPoint(100, 90, 0), new MutableCartesianPoint(310, 115, 0)), 5, 5
         );
-        when(cpcMock.getSpatialIndex()).thenReturn(vehicleIndex);
+        when(cpcMock.getVehicleIndex()).thenReturn(vehicleIndex);
     }
 }

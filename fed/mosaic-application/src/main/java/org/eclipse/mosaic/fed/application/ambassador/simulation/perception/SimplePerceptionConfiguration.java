@@ -17,7 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 
-public class CameraPerceptionModuleConfiguration implements PerceptionModuleConfiguration {
+public class SimplePerceptionConfiguration implements PerceptionModuleConfiguration {
 
     /**
      * Viewing angle of perception module. [degree]
@@ -29,7 +29,7 @@ public class CameraPerceptionModuleConfiguration implements PerceptionModuleConf
      */
     private final double viewingRange;
 
-    public CameraPerceptionModuleConfiguration(double viewingAngle, double viewingRange) {
+    public SimplePerceptionConfiguration(double viewingAngle, double viewingRange) {
         this.viewingAngle = viewingAngle;
         this.viewingRange = viewingRange;
     }

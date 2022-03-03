@@ -46,78 +46,99 @@ import java.util.List;
  */
 public class CentralPerceptionComponent {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final static Logger LOG = LoggerFactory.getLogger(CentralPerceptionComponent.class);
 
     private final CApplicationAmbassador.CPerception configuration;
-
     private final PerformanceMonitor performanceMonitor = new PerformanceMonitor();
 
     /**
-     * Representation of the Map, allowing for faster query times.
+     * The spatial index used to store and find vehicles by their positions.
      */
-    private SpatialVehicleIndex spatialIndex;
+    private SpatialVehicleIndex vehicleIndex;
 
-    private VehicleUpdates latestUpdates;
+    /**
+     * The last {@link VehicleUpdates} interaction which is used to update the vehicleIndex
+     */
+    private VehicleUpdates latestVehicleUpdates;
 
-    private long nextUpdate = 0;
+    /**
+     * If set to true, the vehicleIndex will be updated when {@code updateSpatialIndices} is called.
+     */
+    private boolean updateVehicleIndex = false;
 
     public CentralPerceptionComponent(CApplicationAmbassador.CPerception perceptionConfiguration) {
         this.configuration = Validate.notNull(perceptionConfiguration, "perceptionConfiguration must not be null");
     }
 
+    /**
+     * Initializes the spatial index used for perception.
+     */
     public void initialize() throws InternalFederateException {
         try {
-            setSpatialIndex();
+            CartesianRectangle scenarioBounds =
+                    SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds();
+            if (scenarioBounds.getArea() > 0) {
+                switch (configuration.perceptionBackend) {
+                    case Grid:
+                        vehicleIndex = new PerceptionGrid(scenarioBounds, configuration.gridCellWidth, configuration.gridCellHeight);
+                        break;
+                    case QuadTree:
+                        vehicleIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
+                        break;
+                    case Trivial:
+                    default:
+                        vehicleIndex = new PerceptionIndex();
+                }
+            } else {
+                LOG.warn("The bounding area of the scenario could not be determined. A low performance spatial index will be used for perception.");
+                vehicleIndex = new PerceptionIndex();
+            }
+
+            if (configuration.measurePerformance) {
+                vehicleIndex = new MonitoringSpatialIndex(vehicleIndex, performanceMonitor);
+            }
         } catch (Exception e) {
             throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent", e);
         }
     }
 
-    private void setSpatialIndex() {
-        CartesianRectangle scenarioBounds =
-                SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds();
-        if (scenarioBounds.getArea() > 0) {
-            switch (configuration.perceptionBackend) {
-                case Grid:
-                    spatialIndex = new PerceptionGrid(scenarioBounds, configuration.gridCellWidth, configuration.gridCellHeight);
-                    break;
-                case QuadTree:
-                    spatialIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
-                    break;
-                case Trivial:
-                default:
-                    spatialIndex = new PerceptionIndex();
-            }
-        } else {
-            log.warn("The bounding area of the scenario could not be determined. A low performance spatial index will be used for perception.");
-            spatialIndex = new PerceptionIndex();
-        }
-
-        if (configuration.measurePerformance) {
-            spatialIndex = new MonitoringSpatialIndex(spatialIndex, performanceMonitor);
-        }
+    /**
+     * Returns the {@link SpatialVehicleIndex} storing all vehicles.
+     */
+    public SpatialVehicleIndex getVehicleIndex() {
+        return vehicleIndex;
     }
 
-    public SpatialVehicleIndex getSpatialIndex() {
-        return spatialIndex;
-    }
-
+    /**
+     * Updates the spatial indices (currently only vehicles).
+     * If the positions of vehicles have not changed since last call of this method, nothing is done.
+     */
     public void updateSpatialIndices() {
-        if (SimulationKernel.SimulationKernel.getCurrentSimulationTime() > nextUpdate) {
+        if (updateVehicleIndex) {
+            // do not update index until next VehicleUpdates interaction is received
+            updateVehicleIndex = false;
             // using Iterables.concat allows iterating over both lists subsequently without creating a new list
-            spatialIndex.updateVehicles(Iterables.concat(latestUpdates.getAdded(), latestUpdates.getUpdated()));
-            nextUpdate += configuration.spatialIndexUpdateInterval;
+            vehicleIndex.updateVehicles(Iterables.concat(latestVehicleUpdates.getAdded(), latestVehicleUpdates.getUpdated()));
         }
     }
 
+    /**
+     * Store new updates of all Vehicles to be used in the next update of the spatial index.
+     *
+     * @param vehicleUpdates the interaction holding all vehicle updates
+     */
     public void updateVehicles(VehicleUpdates vehicleUpdates) {
-        latestUpdates = vehicleUpdates;
+        latestVehicleUpdates = vehicleUpdates;
+        updateVehicleIndex = true;
         // we need to remove arrived vehicles in every simulation step, otherwise we could have dead vehicles in the index
-        if (spatialIndex.getNumberOfVehicles() > 0) {
-            spatialIndex.removeVehicles(vehicleUpdates.getRemovedNames());
+        if (vehicleIndex.getNumberOfVehicles() > 0) {
+            vehicleIndex.removeVehicles(vehicleUpdates.getRemovedNames());
         }
     }
 
+    /**
+     * Stores measurements done during update and search operations of the spatial index.
+     */
     public void finish() {
         if (configuration.measurePerformance) {
             performanceMonitor.printSummary();
@@ -126,11 +147,14 @@ public class CentralPerceptionComponent {
                     new FileOutputStream(new File(logDirectory, "PerceptionPerformance.csv")), Charsets.UTF_8)) {
                 performanceMonitor.exportDetailedMeasurements(perceptionPerformanceWriter);
             } catch (IOException e) {
-                log.warn("Could not write performance result for perception module.");
+                LOG.warn("Could not write performance result for perception module.");
             }
         }
     }
 
+    /**
+     * Wrapper class to measure atomic calls of update, search and remove of the used spatial index
+     */
     static class MonitoringSpatialIndex implements SpatialVehicleIndex {
 
         private final SpatialVehicleIndex parent;

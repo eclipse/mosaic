@@ -97,13 +97,6 @@ public class CApplicationAmbassador {
         public boolean measurePerformance = false;
 
         /**
-         * The interval between spatial index updates.
-         * [ns]
-         */
-        @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
-        public long spatialIndexUpdateInterval = TIME.SECOND;
-
-        /**
          * If {@link PerceptionBackend#Grid} is used as backend, this indicates the width of a single cell. [m]
          */
         @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
