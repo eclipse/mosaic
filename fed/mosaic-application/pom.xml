@@ -39,6 +39,10 @@
             <artifactId>mosaic-routing</artifactId>
             <version>${mosaic.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
 
 
         <dependency>

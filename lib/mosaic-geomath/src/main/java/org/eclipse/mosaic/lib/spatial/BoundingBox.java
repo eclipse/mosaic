@@ -53,12 +53,24 @@ public class BoundingBox {
             max.set(point);
             isEmpty = false;
         } else {
-            if (point.x < min.x) { min.x = point.x; }
-            if (point.y < min.y) { min.y = point.y; }
-            if (point.z < min.z) { min.z = point.z; }
-            if (point.x > max.x) { max.x = point.x; }
-            if (point.y > max.y) { max.y = point.y; }
-            if (point.z > max.z) { max.z = point.z; }
+            if (point.x < min.x) {
+                min.x = point.x;
+            }
+            if (point.y < min.y) {
+                min.y = point.y;
+            }
+            if (point.z < min.z) {
+                min.z = point.z;
+            }
+            if (point.x > max.x) {
+                max.x = point.x;
+            }
+            if (point.y > max.y) {
+                max.y = point.y;
+            }
+            if (point.z > max.z) {
+                max.z = point.z;
+            }
         }
     }
 
@@ -67,21 +79,28 @@ public class BoundingBox {
         updateSizeAndCenter();
     }
 
+    public void add(Vector3d... points) {
+        for (Vector3d point : points) {
+            addPoint(point);
+        }
+        updateSizeAndCenter();
+    }
+
     public void add(List<? extends Vector3d> points) {
-        for (int i = 0; i < points.size(); i++) {
-            add(points.get(i));
+        for (Vector3d point : points) {
+            addPoint(point);
         }
         updateSizeAndCenter();
     }
 
     public void add(Stream<? extends Vector3d> points) {
-        points.forEach(this::add);
+        points.forEach(this::addPoint);
         updateSizeAndCenter();
     }
 
     public void add(BoundingBox other) {
-        add(other.min);
-        add(other.max);
+        addPoint(other.min);
+        addPoint(other.max);
         updateSizeAndCenter();
     }
 

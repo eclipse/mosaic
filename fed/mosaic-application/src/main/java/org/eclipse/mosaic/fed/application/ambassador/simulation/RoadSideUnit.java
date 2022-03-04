@@ -91,5 +91,4 @@ public class RoadSideUnit extends AbstractSimulationUnit implements RoadSideUnit
         }
         return camBuilder;
     }
-
 }

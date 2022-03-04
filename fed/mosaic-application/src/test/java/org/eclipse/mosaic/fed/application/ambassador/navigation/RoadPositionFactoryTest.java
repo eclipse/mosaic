@@ -41,7 +41,7 @@ public class RoadPositionFactoryTest {
 
     @Rule
     @InjectMocks
-    public SimulationKernelRule kernelRule = new SimulationKernelRule(null, null, cncMock);
+    public SimulationKernelRule kernelRule = new SimulationKernelRule(null, null, cncMock, null);
 
     @Before
     public void setup() {

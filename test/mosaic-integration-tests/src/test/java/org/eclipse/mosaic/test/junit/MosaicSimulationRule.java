@@ -276,6 +276,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "eventManager", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "interactable", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "navigation", null);
+        TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "centralPerceptionComponent", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "classLoader", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "randomNumberGenerator", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configuration", null);

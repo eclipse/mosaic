@@ -1,0 +1,7 @@
+{
+    "perceptionConfiguration": {
+        "perceptionBackend": "QuadTree",
+        "treeSplitSize": 10,
+        "treeMaxDepth": 2
+    }
+}

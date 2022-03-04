@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador;
 
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.ambassador.util.FinishSimulationCallback;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.communication.V2xMessageRemoval;
@@ -89,6 +90,11 @@ public enum SimulationKernel implements FinishSimulationCallback {
      * The central navigation component in the application simulator.
      */
     transient CentralNavigationComponent navigation;
+
+    /**
+     * The central perception component, containing spatial representation of vehicles.
+     */
+    transient CentralPerceptionComponent centralPerceptionComponent;
 
     /**
      * Map containing all the routes with the corresponding edge-id's.
@@ -241,16 +247,25 @@ public enum SimulationKernel implements FinishSimulationCallback {
         this.navigation = cnc;
     }
 
-    /**
-     * Get the reference to the central navigation component.
-     *
-     * @return CentralNavigationComponent
-     */
     public CentralNavigationComponent getCentralNavigationComponent() {
         if (navigation == null) {
             throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_CentralNavigationComponentNotSet.toString());
         }
         return navigation;
+    }
+
+    public void setCentralPerceptionComponent(CentralPerceptionComponent centralPerceptionComponent) {
+        if (this.centralPerceptionComponent != null) {
+            throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_CentralPerceptionComponentAlreadySet.toString());
+        }
+        this.centralPerceptionComponent = centralPerceptionComponent;
+    }
+
+    public CentralPerceptionComponent getCentralPerceptionComponentComponent() {
+        if (centralPerceptionComponent == null) {
+            throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_CentralPerceptionComponentNotSet.toString());
+        }
+        return centralPerceptionComponent;
     }
 
     /**
@@ -353,6 +368,9 @@ public enum SimulationKernel implements FinishSimulationCallback {
 
     @Override
     public void finishSimulation() {
+        if (centralPerceptionComponent != null) {
+            centralPerceptionComponent.finish();
+        }
         for (FinishSimulationCallback cb : finishSimulationCallbacks) {
             cb.finishSimulation();
         }

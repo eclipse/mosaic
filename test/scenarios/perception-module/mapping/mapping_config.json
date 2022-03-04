@@ -1,0 +1,13 @@
+{
+    "prototypes": [
+        {
+            "name": "PerceptionVehicle",
+            "applications": [
+                "org.eclipse.mosaic.test.app.perceptionmodule.SimplePerceptionApp"
+            ]
+        },
+        {
+            "name": "DefaultVehicle"
+        }
+    ]
+}

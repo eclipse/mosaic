@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * (Can be either a {@link AdHocModule} or a {@link CellModule})
  */
 @SuppressWarnings("checkstyle:ClassTypeParameterName")
-public abstract class AbstractCommunicationModule<TConf extends CommunicationModuleConfiguration> implements CommunicationModule<TConf> {
+public abstract class AbstractCommunicationModule<ConfigT extends CommunicationModuleConfiguration> implements CommunicationModule<ConfigT> {
 
     private final AtomicInteger sequenceNumberGenerator;
 

@@ -36,7 +36,7 @@ public class VectorUtils {
     }
 
     /**
-     * Computes an direction vector from the given heading angle (in degrees)
+     * Computes an direction vector from the given heading angle (in degrees).
      *
      * @param headingDeg angle in degrees (0 = north, 90 = east, 180 = south, 270 = west)
      * @param result     Vector3d to store the result in

@@ -24,12 +24,16 @@
         "eventSchedulerThreads": {
             "description": "Number of threads used by the MultiThreadedEventScheduler. Using more than 1 thread would result in undetermined behavior. Repeating the simulation could result in different simulation results, if some processed event uses the random number generator.",
             "default": 1,
-            "type": "integer", 
+            "type": "integer",
             "minimum": 1
         },
         "navigationConfiguration": {
             "description": "Configuration options for the route calculation.",
             "$ref": "#/definitions/routingByType"
+        },
+        "perceptionConfiguration": {
+            "description": "Configuration options for perception backend",
+            "$ref": "#/definitions/perceptionConfiguration"
         }
     },
     "definitions": {
@@ -45,6 +49,55 @@
                 "source": {
                     "description": "The source for the route calculation, e.g. the path to the database containing the road network.",
                     "type": "string"
+                }
+            }
+        },
+        "perceptionConfiguration": {
+            "title": "perceptionConfiguration",
+            "description": "Configuration options for perception backend",
+            "type": "object",
+            "properties": {
+                "perceptionBackend": {
+                    "description": "The underlying data structure for the spatial index",
+                    "type": "string",
+                    "enum": [ "Grid", "QuadTree", "Trivial" ],
+                    "default": "Trivial"
+                },
+                "measurePerformance": {
+                    "description": "If set to true, a PerceptionPerformance.csv is generated with detailed information about execution calls of the perception backend.",
+                    "type": "boolean"
+                },
+                "gridCellWidth": {
+                    "description": "If Grid is used as backend, this indicates the width of a single cell. [m]",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0 }
+                    ],
+                    "default": "200m"
+                },
+                "gridCellHeight": {
+                    "description": "If Grid is used as backend, this indicates the height of a single cell. [m]",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0 }
+                    ],
+                    "default": "200m"
+                },
+                "treeSplitSize": {
+                    "description": "If QuadTree is used as backend, this indicates the maximum number of vehicles inside a tile before splitting.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0 }
+                    ],
+                    "default": 20
+                },
+                "treeMaxDepth": {
+                    "description": "If QuadTree is used as backend, this indicates the maximum depth of the quad-tree.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0 }
+                    ],
+                    "default": 12
                 }
             }
         }

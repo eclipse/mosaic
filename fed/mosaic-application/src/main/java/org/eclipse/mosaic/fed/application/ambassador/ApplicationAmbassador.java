@@ -21,6 +21,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulati
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGroupUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficSignAwareApplication;
@@ -146,6 +147,14 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             SimulationKernel.SimulationKernel.setCentralNavigationComponent(cnc);
         }
 
+        if (SimulationKernel.SimulationKernel.centralPerceptionComponent == null) {
+            // set the central perception component
+            CentralPerceptionComponent centralPerceptionComponent = new CentralPerceptionComponent(
+                    ambassadorConfig.perceptionConfiguration
+            );
+            SimulationKernel.SimulationKernel.setCentralPerceptionComponent(centralPerceptionComponent);
+        }
+
         // add all application jar files
         addJarFiles();
     }
@@ -215,6 +224,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             log.trace("subscribedInteractions: {}", Arrays.toString(this.rti.getSubscribedInteractions().toArray()));
         }
         SimulationKernel.SimulationKernel.getCentralNavigationComponent().initialize(this.rti);
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().initialize();
         SimulationKernel.SimulationKernel.setInteractable(rti);
         SimulationKernel.SimulationKernel.setRandomNumberGenerator(rti.createRandomNumberGenerator());
     }
@@ -604,6 +614,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final VehicleUpdates vehicleUpdates) {
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateVehicles(vehicleUpdates);
         // schedule all added vehicles
         for (VehicleData vehicleData : vehicleUpdates.getAdded()) {
             addVehicleIfNotYetAdded(vehicleUpdates.getTime(), vehicleData.getName());

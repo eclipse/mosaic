@@ -45,6 +45,8 @@ public enum ErrorRegister {
     SIMULATION_KERNEL_ConfigurationPathAlreadySet(0x01000027, "The configuration path was already set."),
     SIMULATION_KERNEL_CentralNavigationComponentNotSet(0x01000028, "The CentralNavigationComponent was not set."),
     SIMULATION_KERNEL_CentralNavigationComponentAlreadySet(0x01000029, "The CentralNavigationComponent was already set."),
+    SIMULATION_KERNEL_CentralPerceptionComponentNotSet(0x01000200, "The CentralPerceptionComponent was not set."),
+    SIMULATION_KERNEL_CentralPerceptionComponentAlreadySet(0x01000201, "The CentralPerceptionComponent was already set."),
     // 0x01000030 to 0x0100003F unit simulator
     UNIT_SIMULATOR_IdAlreadyAssigned(0x01000030, "The id is already assigned."),
     UNIT_SIMULATOR_IdFromUnitIsNotInMap(0x01000031, "The unit with the id couldn't be found."),

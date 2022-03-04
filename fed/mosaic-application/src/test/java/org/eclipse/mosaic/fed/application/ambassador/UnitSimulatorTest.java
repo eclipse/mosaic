@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestApplicationWithSpy;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.Application;
@@ -63,8 +64,8 @@ public class UnitSimulatorTest {
     private EventManager eventManager = event -> registeredEvents.add(event);
 
     @Rule
-    public SimulationKernelRule simulationKernel =
-            new SimulationKernelRule(eventManager, interactable, Mockito.mock(CentralNavigationComponent.class));
+    public SimulationKernelRule simulationKernel = new SimulationKernelRule(eventManager, interactable,
+            Mockito.mock(CentralNavigationComponent.class), Mockito.mock(CentralPerceptionComponent.class));
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();

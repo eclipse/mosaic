@@ -1,0 +1,26 @@
+<!--
+  ~ Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+  ~
+  ~ See the NOTICE file(s) distributed with this work for additional
+  ~ information regarding copyright ownership.
+  ~
+  ~ This program and the accompanying materials are made available under the
+  ~ terms of the Eclipse Public License 2.0 which is available at
+  ~ http://www.eclipse.org/legal/epl-2.0
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  ~
+  ~ Contact: mosaic@fokus.fraunhofer.de
+  -->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="PerceptionVehicle"/>
+    <vType id="DefaultVehicle"/>
+    <route id="0" repeat="10" edges="E0 E1 E2 E3"/>
+    <route id="1" repeat="10" edges="-E3 -E2 -E1 -E0"/>
+    <vehicle id="0" type="PerceptionVehicle" depart="0" route="0">
+        <stop edge="E0" startPos="5" endPos="6" duration="1000"/>
+    </vehicle>
+    <vehicle id="1" type="DefaultVehicle" depart="0" route="1"/>
+    <vehicle id="2" type="DefaultVehicle" depart="5" route="1"/>
+    <vehicle id="3" type="DefaultVehicle" depart="10" route="1"/>
+</routes>

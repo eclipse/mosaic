@@ -78,7 +78,7 @@ public class EtsiApplicationTest {
 
     @Rule
     @InjectMocks
-    public SimulationKernelRule simKernelRule = new SimulationKernelRule(eventManagerMock, null, null);
+    public SimulationKernelRule simKernelRule = new SimulationKernelRule(eventManagerMock, null, null, null);
 
     @Before
     public void setup() throws NoSuchFieldException {
