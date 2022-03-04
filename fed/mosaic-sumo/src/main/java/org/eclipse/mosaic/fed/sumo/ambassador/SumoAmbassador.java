@@ -161,18 +161,17 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (isVehicleAddedViaRti) {
             vehiclesAddedViaRti.add(vehicleMapping.getName());
             notYetAddedVehicles.add(interaction);
-            logMessage = "VehicleRegistration from RTI \"{}\" received at simulation time {} ns";
+            logMessage = "VehicleRegistration from RTI \"{}\" received at simulation time {} ns (subscribe={})";
         } else { // still subscribe to vehicles with apps
-            logMessage = "VehicleRegistration for SUMO vehicle \"{}\" received at simulation time {} ns";
+            logMessage = "VehicleRegistration for SUMO vehicle \"{}\" received at simulation time {} ns (subscribe={})";
         }
-        log.info(logMessage, vehicleId, interaction.getTime());
+
+        boolean subscribeToVehicle = sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication();
+        log.info(logMessage, vehicleId, interaction.getTime(), subscribeToVehicle);
 
         // now prepare vehicles to subscribe to
-        boolean subscribeToVehicle = sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication();
         if (subscribeToVehicle) {
             notYetSubscribedVehicles.add(interaction);
-        } else {
-            log.debug("Won't subscribe to vehicle \"{}\".", vehicleId);
         }
     }
 

@@ -28,7 +28,11 @@ public class JunctionGetPosition implements org.eclipse.mosaic.fed.sumo.bridge.a
     public Position execute(Bridge bridge, String junctionId) throws CommandException {
         try {
             TraCIPosition traCIPosition = Junction.getPosition(junctionId);
-            return new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
+            try {
+                return new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
+            } finally {
+                traCIPosition.delete();
+            }
         } catch(IllegalArgumentException e) {
             throw new CommandException("Could not position of junction with ID: " + junctionId);
         }

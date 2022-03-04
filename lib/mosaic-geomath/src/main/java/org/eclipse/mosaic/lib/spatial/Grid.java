@@ -113,30 +113,33 @@ public class Grid<T> {
      * Adds or updates an item in the grid.
      *
      * @param item the item to be added
-     * @return true if the item is in the bounding area of the grid, else false
+     * @return true if the item has been added to the grid, false if it has already been present in the grid
      */
-    public boolean addOrUpdateItem(T item) {
+    public boolean addItem(T item) {
         synchronized (tmpIndexA) {
-            if (isInBounds(adapter.getCenterX(item), adapter.getCenterZ(item))) {
-                CellIndex oldCellIndex = items.get(item);
-                CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), tmpIndexA);
-                if (newCellIndex.isEqualTo(oldCellIndex)) {
-                    // no index change -> do nothing
-                    return true;
-                }
-                if (oldCellIndex != null) { // update -> update cellIndex and remove from old grid cell
-                    getGridCell(oldCellIndex).remove(item);
-                    oldCellIndex.col = newCellIndex.col;
-                    oldCellIndex.row = newCellIndex.row;
-                } else {
-                    // add -> store new cell index
-                    items.put(item, new CellIndex().set(newCellIndex));
-                }
-                // add + update -> add item to grid cell
-                getGridCell(newCellIndex).add(item);
-                return true;
+            CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), new CellIndex());
+            CellIndex oldCellIndex = items.put(item, newCellIndex);
+            if (oldCellIndex != null) {
+                getGridCell(oldCellIndex).remove(item);
+                return false;
             }
-            return false;
+            getGridCell(newCellIndex).add(item);
+            return true;
+        }
+    }
+
+    public void updateGrid() {
+        synchronized (tmpIndexA) {
+            items.forEach((item, currentIndex) -> {
+                CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), tmpIndexA);
+                if (newCellIndex.isEqualTo(currentIndex)) {
+                    // no index change -> do nothing
+                    return;
+                }
+                getGridCell(currentIndex).remove(item);
+                currentIndex.set(newCellIndex);
+                getGridCell(currentIndex).add(item);
+            });
         }
     }
 
@@ -151,13 +154,9 @@ public class Grid<T> {
 
     private CellIndex toCellIndex(double x, double z, CellIndex resultIndex) {
         // also looking at special case where item is directly on the max borders
-        resultIndex.col = x == maxX ? colAmount - 1 : (int) ((x - minX) / cellWidth);
-        resultIndex.row = z == maxZ ? rowAmount - 1 : (int) ((z - minZ) / cellHeight);
+        resultIndex.col = x < minX ? 0 : x >= maxX ? colAmount - 1 : (int) ((x - minX) / cellWidth);
+        resultIndex.row = z < minZ ? 0 : z >= maxZ ? rowAmount - 1 : (int) ((z - minZ) / cellHeight);
         return resultIndex;
-    }
-
-    private boolean isInBounds(double x, double z) {
-        return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
     }
 
     private GridCell<T> getGridCell(CellIndex cellIndex) {

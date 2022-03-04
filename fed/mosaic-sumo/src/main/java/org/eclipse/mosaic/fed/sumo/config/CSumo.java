@@ -82,7 +82,7 @@ public class CSumo implements Serializable {
 
     /**
      * If set to {@code true} all vehicles will be subscribed (see
-     * {@link org.eclipse.mosaic.fed.sumo.traci.facades.TraciSimulationFacade#subscribeForVehicle(String, long, long)}).
+     * {@link org.eclipse.mosaic.fed.sumo.bridge.facades.SimulationFacade#subscribeForVehicle(String, long, long)}).
      * If set to {@code false} only vehicles with applications mapped to them will be subscribed.
      */
     public boolean subscribeToAllVehicles = true;

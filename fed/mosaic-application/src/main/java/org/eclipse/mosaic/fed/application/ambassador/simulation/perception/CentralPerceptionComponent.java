@@ -19,25 +19,18 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionTree;
-import org.eclipse.mosaic.fed.application.ambassador.util.PerformanceMonitor;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import ch.qos.logback.classic.LoggerContext;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 
 /**
@@ -49,7 +42,6 @@ public class CentralPerceptionComponent {
     private final static Logger LOG = LoggerFactory.getLogger(CentralPerceptionComponent.class);
 
     private final CApplicationAmbassador.CPerception configuration;
-    private final PerformanceMonitor performanceMonitor = new PerformanceMonitor();
 
     /**
      * The spatial index used to store and find vehicles by their positions.
@@ -97,7 +89,7 @@ public class CentralPerceptionComponent {
             }
 
             if (configuration.measurePerformance) {
-                vehicleIndex = new MonitoringSpatialIndex(vehicleIndex, performanceMonitor);
+                vehicleIndex = new MonitoringSpatialIndex(vehicleIndex, PerformanceMonitor.getInstance());
             }
         } catch (Exception e) {
             throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent", e);
@@ -135,22 +127,6 @@ public class CentralPerceptionComponent {
         // we need to remove arrived vehicles in every simulation step, otherwise we could have dead vehicles in the index
         if (vehicleIndex.getNumberOfVehicles() > 0) {
             vehicleIndex.removeVehicles(vehicleUpdates.getRemovedNames());
-        }
-    }
-
-    /**
-     * Stores measurements done during update and search operations of the spatial index.
-     */
-    public void finish() {
-        if (configuration.measurePerformance) {
-            performanceMonitor.printSummary();
-            String logDirectory = ((LoggerContext) LoggerFactory.getILoggerFactory()).getProperty("logDirectory");
-            try (Writer perceptionPerformanceWriter = new OutputStreamWriter(
-                    new FileOutputStream(new File(logDirectory, "PerceptionPerformance.csv")), Charsets.UTF_8)) {
-                performanceMonitor.exportDetailedMeasurements(perceptionPerformanceWriter);
-            } catch (IOException e) {
-                LOG.warn("Could not write performance result for perception module.");
-            }
         }
     }
 

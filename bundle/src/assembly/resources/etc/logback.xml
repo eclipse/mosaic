@@ -110,7 +110,15 @@
                 <charset>UTF-8</charset>
                 <file>${logDirectory}/RuntimeEvents.csv</file>
                 <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                    <pattern>%date %-5level %logger{0} [%thread] - %msg%n</pattern>
+                    <pattern>%msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <appender name="PerformanceLog" class="ch.qos.logback.core.FileAppender">
+                <charset>UTF-8</charset>
+                <file>${logDirectory}/PerformanceMeasurements.csv</file>
+                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                    <pattern>%msg%n</pattern>
                 </encoder>
             </appender>
 
@@ -177,10 +185,6 @@
                 <appender-ref ref="MosaicLog"/>
             </logger>
 
-            <logger name="activities" additivity="false" level="OFF">
-                <appender-ref ref="ActivityLog"/>
-            </logger>
-
             <logger name="Ns3Output" additivity="false" level="INFO">
                 <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
@@ -197,6 +201,14 @@
                 <appender-ref ref="CommunicationDetailsLog"/>
             </logger>
 
+            <logger name="activities" additivity="false" level="OFF">
+                <appender-ref ref="ActivityLog"/>
+            </logger>
+
+            <logger name="performance" additivity="false" level="OFF">
+                <appender-ref ref="PerformanceLog"/>
+            </logger>
+
             <!-- All other stuff, which was not logged by other loggers before goes
                 to stdout and MOSAIC.log -->
             <root level="INFO">
@@ -204,6 +216,12 @@
                 <appender-ref ref="MosaicLog"/>
             </root>
         </then>
+        <!-- If the log directory is not correctly defined (e.g. in test preparation phases), then it should at least log to stdout -->
+        <else>
+            <root level="INFO">
+                <appender-ref ref="STDOUT"/>
+            </root>
+        </else>
     </if>
 
 </configuration>
