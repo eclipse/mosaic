@@ -80,27 +80,21 @@ public class CApplicationAmbassador {
 
     public CPerception perceptionConfiguration = new CPerception();
 
-
     public static class CPerception {
-
         public enum PerceptionBackend {
             Grid, QuadTree, Trivial, SUMO
         }
 
-        public PerceptionBackend perceptionBackend = PerceptionBackend.Trivial;
+        /**
+         * The kind of index to use for perception [Grid, QuadTree, Trivial]. Default: QuadTree
+         */
+        public PerceptionBackend perceptionBackend = PerceptionBackend.QuadTree;
 
         /**
          * If set to {@code true}, a PerceptionPerformance.csv is generated with detailed information about execution calls
          * of the perception backend.
          */
         public boolean measurePerformance = false;
-
-        /**
-         * The interval between spatial index updates.
-         * [ns]
-         */
-        @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
-        public long spatialIndexUpdateInterval = TIME.SECOND;
 
         /**
          * If {@link PerceptionBackend#Grid} is used as backend, this indicates the width of a single cell. [m]

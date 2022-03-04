@@ -16,7 +16,7 @@
 
 package org.eclipse.mosaic.test.app.perceptionmodule;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModuleConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
@@ -47,8 +47,8 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
     }
 
     private void enablePerceptionModule() {
-        CameraPerceptionModuleConfiguration perceptionModuleConfiguration =
-                new CameraPerceptionModuleConfiguration(VIEWING_ANGLE, VIEWING_RANGE);
+        SimplePerceptionConfiguration perceptionModuleConfiguration =
+                new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE);
         getOs().getPerceptionModule().enable(perceptionModuleConfiguration);
     }
 

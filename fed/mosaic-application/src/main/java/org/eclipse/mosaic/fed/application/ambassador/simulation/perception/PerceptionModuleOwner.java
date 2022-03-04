@@ -26,8 +26,6 @@ public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfigura
 
     VehicleData getVehicleData();
 
-    PerceptionModule<ConfigT> getPerceptionModule();
-
     long getSimulationTime();
 
     /**
@@ -36,5 +34,10 @@ public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfigura
      * @param interaction the {@link Interaction} to be send
      */
     void sendInteractionToRti(Interaction interaction);
+
+    /**
+     * Returns the perception module of this unit.
+     */
+    PerceptionModule<SimplePerceptionConfiguration> getPerceptionModule();
 
 }

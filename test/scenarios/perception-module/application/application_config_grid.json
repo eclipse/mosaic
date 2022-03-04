@@ -2,7 +2,6 @@
     "perceptionConfiguration": {
         "perceptionBackend": "Grid",
         "gridCellWidth": "5m",
-        "gridCellHeight": "5m",
-        "spatialIndexUpdateInterval": "1s"
+        "gridCellHeight": "5m"
     }
 }

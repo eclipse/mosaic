@@ -21,15 +21,13 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.AbstractPerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CameraPerceptionModuleConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SumoPerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
@@ -60,7 +58,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     private final NavigationModule navigationModule;
 
     @Nonnull
-    private final AbstractPerceptionModule<CameraPerceptionModuleConfiguration> perceptionModule;
+    private final PerceptionModule<SimplePerceptionConfiguration> perceptionModule;
 
     @Nonnull
     private VehicleParameters vehicleParameters;
@@ -82,7 +80,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
             perceptionModule = new SumoPerceptionModule(this, getOsLog());
         } else {
-            perceptionModule = new CameraPerceptionModule(this, getOsLog());
+            perceptionModule = new SimplePerceptionModule(this, getOsLog());
         }
     }
 
@@ -353,7 +351,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
     @Nonnull
     @Override
-    public PerceptionModule<CameraPerceptionModuleConfiguration> getPerceptionModule() {
+    public PerceptionModule<SimplePerceptionConfiguration> getPerceptionModule() {
         return perceptionModule;
     }
 }
