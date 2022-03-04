@@ -78,7 +78,8 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         navigationModule = new NavigationModule(this);
         navigationModule.setCurrentPosition(initialPosition);
 
-        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
+        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend
+                == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
             perceptionModule = new SumoPerceptionModule(this);
         } else {
             perceptionModule = new SimplePerceptionModule(this, getOsLog());

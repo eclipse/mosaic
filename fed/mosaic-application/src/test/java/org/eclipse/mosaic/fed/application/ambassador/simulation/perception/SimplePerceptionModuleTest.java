@@ -21,11 +21,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionTree;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
@@ -59,7 +61,6 @@ public class SimplePerceptionModuleTest {
     @InjectMocks
     public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, null, cpcMock);
 
-
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
 
@@ -69,6 +70,8 @@ public class SimplePerceptionModuleTest {
 
     @Before
     public void setup() {
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
+
         vehicleIndex = new PerceptionIndex();
         // setup cpc
         when(cpcMock.getVehicleIndex()).thenReturn(vehicleIndex);
