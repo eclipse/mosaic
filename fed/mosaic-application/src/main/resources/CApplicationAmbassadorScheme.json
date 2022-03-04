@@ -67,14 +67,6 @@
                     "description": "If set to true, a PerceptionPerformance.csv is generated with detailed information about execution calls of the perception backend.",
                     "type": "boolean"
                 },
-                "spatialIndexUpdateInterval": {
-                    "description": "The minimal interval between updating of the spatial index. It is recommended to set this to the step size of the traffic simulator. Alternatively this can be defined as a string to include the unit of measurement (e.g. '1 s').",
-                    "anyOf": [
-                        { "type": "string", "maxLength": 15 },
-                        { "type": "number", "minimum": 100 }
-                    ],
-                    "default": "1s"
-                },
                 "gridCellWidth": {
                     "description": "If Grid is used as backend, this indicates the width of a single cell. [m]",
                     "anyOf": [

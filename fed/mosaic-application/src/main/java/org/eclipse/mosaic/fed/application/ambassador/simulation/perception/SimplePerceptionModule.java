@@ -34,7 +34,6 @@ import java.util.List;
 /**
  * A simplified perception module which detects all vehicles within the defined field of view.
  * No occlusion or error model is considered. The field of view is defined with an opening angle of maximum 180 degrees.
- *
  */
 public class SimplePerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
 
@@ -84,6 +83,7 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         private final Vector3d origin = new Vector3d();
         private final Vector3d rightBoundVector = new Vector3d();
         private final Vector3d leftBoundVector = new Vector3d();
+
         /**
          * The axis-aligned bounding box around the sight area.
          */
