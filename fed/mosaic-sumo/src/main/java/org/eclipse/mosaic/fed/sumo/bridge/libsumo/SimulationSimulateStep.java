@@ -168,16 +168,6 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
                 }
             }
 
-            if (fetchLeader) {
-                final StringDoublePair leader = Vehicle.getLeader(sumoVehicleId);
-                if (StringUtils.isNotBlank(leader.getFirst())) {
-                    result.leadingVehicle = new LeadingVehicle(
-                            Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId(leader.getFirst()),
-                            leader.getSecond()
-                    );
-                }
-            }
-
             results.add(result);
         }
     }

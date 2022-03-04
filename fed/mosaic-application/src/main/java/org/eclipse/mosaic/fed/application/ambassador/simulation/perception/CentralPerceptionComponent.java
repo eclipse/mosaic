@@ -86,7 +86,7 @@ public class CentralPerceptionComponent {
                         vehicleIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
                         break;
                     case SUMO:
-                        log.info("Using SUMO to detect surrounding vehicles.");
+                        LOG.info("Using SUMO to detect surrounding vehicles.");
                     case Trivial:
                     default:
                         vehicleIndex = new PerceptionIndex();

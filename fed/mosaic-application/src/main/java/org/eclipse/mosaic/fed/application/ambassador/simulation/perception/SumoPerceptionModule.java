@@ -15,21 +15,22 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSightDistanceConfiguration;
-
-import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SumoPerceptionModule extends AbstractPerceptionModule<CameraPerceptionModuleConfiguration> {
+public class SumoPerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
 
-    public SumoPerceptionModule(PerceptionModuleOwner<CameraPerceptionModuleConfiguration> owner, Logger log) {
-        super(owner, log);
+    private final PerceptionModuleOwner owner;
+
+    public SumoPerceptionModule(PerceptionModuleOwner owner) {
+        this.owner = owner;
     }
 
     @Override
-    public void enable(CameraPerceptionModuleConfiguration configuration) {
+    public void enable(SimplePerceptionConfiguration configuration) {
         this.owner.sendInteractionToRti(new VehicleSightDistanceConfiguration(
                 this.owner.getSimulationTime(),
                 owner.getId(),

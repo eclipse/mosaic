@@ -28,6 +28,7 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
@@ -78,7 +79,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         navigationModule.setCurrentPosition(initialPosition);
 
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
-            perceptionModule = new SumoPerceptionModule(this, getOsLog());
+            perceptionModule = new SumoPerceptionModule(this);
         } else {
             perceptionModule = new SimplePerceptionModule(this, getOsLog());
         }

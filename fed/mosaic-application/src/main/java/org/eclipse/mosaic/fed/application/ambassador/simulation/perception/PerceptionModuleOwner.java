@@ -16,11 +16,10 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.api.Interaction;
 
-public interface PerceptionModuleOwner<ConfigT extends PerceptionModuleConfiguration> {
+public interface PerceptionModuleOwner {
 
     String getId();
 
