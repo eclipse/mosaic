@@ -48,11 +48,13 @@ public class VehicleData extends UnitData {
      * projected position.
      */
     private final CartesianPoint projectedPosition;
+
     /**
      * Contains information about the {@link IRoadPosition} the vehicle is currently driving on.
      */
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final IRoadPosition roadPosition;
+
     /**
      * The ID of the route the vehicle currently follows.
      * Supported Traffic simulator: [SUMO, PHA]
@@ -63,58 +65,71 @@ public class VehicleData extends UnitData {
      * Supported Traffic simulator: [SUMO, PHA]
      */
     private final double speed;
+
     /**
      * Direction/Heading of the vehicle in degrees from north clockwise.
      * Supported Traffic simulator: [SUMO, PHA]
      */
     private final Double heading;
+
     /**
      * The slope at the current vehicle position in degrees.
      */
     private final double slope;
+
     /**
      * This represents the acceleration of a vehicle in [m/s^2].
      */
     private final Double longitudinalAcceleration;
+
     /**
      * ID of the Lane area detector the vehicle is currently on.
      */
     private final String laneAreaId;
+
     /**
      * The distance, the vehicle has already driven. Unit: [m]
      * Supported Traffic simulator: [SUMO]
      */
     private final double distanceDriven;
+
     /**
      * The {@link VehicleStopMode} of the vehicle, if vehicle is not stopped.
      */
     private final VehicleStopMode vehicleStopMode;
+
     /**
      * Contains total emissions and current emission.
      */
     private final VehicleEmissions vehicleEmissions;
+
     /**
      * Contains total energy consumption and current consumption.
      */
     private final VehicleConsumptions vehicleConsumptions;
+
     /**
      * All vehicle specific signals e.g. car flasher, hazard flasher, see in {@link VehicleSignals}
      */
     private final VehicleSignals vehicleSignals;
+
     /**
      * Contains information about the vehicle sensor (Lidar-, Radar- or Distance sensor).
      */
     private final VehicleSensors vehicleSensors;
+
     /**
      * This dimensionless value represents the position of a brake pedal in [0 1].
      * Supported traffic simulator: [PHA]
      */
     private final Double brake;
+
     /**
      * This dimensionless value represents the position of a throttle pedal in [0 1].
      * Supported traffic simulator: [PHA]
      */
     private final Double throttle;
+
     /**
      * The direction currently driven on from the point of view of the vehicle.
      * This means forward/backward/unavailable.
@@ -122,12 +137,17 @@ public class VehicleData extends UnitData {
      * Supported Traffic simulator: [PHA]
      */
     private final DriveDirection driveDirection;
+
     /**
      * Arbitrary additional vehicle data produced by the vehicle or traffic simulator.
      */
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final Object additionalData;
 
+    /**
+     * A list of vehicles in the field of view of this vehicle. This data is filled
+     * by the traffic simulator, if configured properly.
+     */
     private final List<SurroundingVehicle> vehiclesInSight = new ArrayList<>(0);
 
     /**
@@ -189,10 +209,6 @@ public class VehicleData extends UnitData {
      */
     public String getRouteId() {
         return routeId;
-    }
-
-    public List<SurroundingVehicle> getInSight() {
-        return vehiclesInSight;
     }
 
     /**
@@ -311,6 +327,16 @@ public class VehicleData extends UnitData {
         return vehicleSensors;
     }
 
+    /**
+     * Getter for the list of vehicles in the field of view of this vehicle.
+     * Supported Traffic simulators: [SUMO (only with VehicleSightDistanceConfiguration, opt-in)]
+     *
+     * @return the list of vehicles in the field of view of this vehicle.
+     */
+    public List<SurroundingVehicle> getInSight() {
+        return vehiclesInSight;
+    }
+
     public Double getBrake() {
         return brake;
     }
@@ -359,6 +385,7 @@ public class VehicleData extends UnitData {
                 .append(brake)
                 .append(throttle)
                 .append(driveDirection)
+                .append(vehiclesInSight)
                 .append(additionalData)
                 .toHashCode();
     }
@@ -395,6 +422,7 @@ public class VehicleData extends UnitData {
                 .append(this.brake, other.brake)
                 .append(this.throttle, other.throttle)
                 .append(this.driveDirection, other.driveDirection)
+                .append(this.vehiclesInSight, other.vehiclesInSight)
                 .append(this.additionalData, other.additionalData)
                 .isEquals();
     }
@@ -420,6 +448,7 @@ public class VehicleData extends UnitData {
                 .append("brake", this.brake)
                 .append("throttle", this.throttle)
                 .append("driveDirection", this.driveDirection)
+                .append("vehiclesInSight", this.vehiclesInSight)
                 .append("additionalData", this.additionalData)
                 .build();
 

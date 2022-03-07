@@ -45,7 +45,7 @@ public class SumoPerceptionModule implements PerceptionModule<SimplePerceptionCo
                 .map(v -> new VehicleObject(v.getId())
                         .setPosition(v.getProjectedPosition())
                         .setSpeed(v.getSpeed())
-                        .setHeading(v.getAngle())
+                        .setHeading(v.getHeading())
                 ).collect(Collectors.toList());
     }
 
