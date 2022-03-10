@@ -62,6 +62,13 @@ import java.util.Set;
 public class GraphHopperRouting {
 
     /**
+     * If the distance of the query position to the closest node is lower than this
+     * value, than the closest node is used definitely as the source or target of the route.
+     * If the distance is larger, the route may start or end on the connection the query is matched on.
+     */
+    public static final double TARGET_NODE_QUERY_DISTANCE = 1d;
+
+    /**
      * If the requested target point is this X meters away from the last node of
      * the found route, another connection is added on which the target
      * point is matched on.
@@ -95,11 +102,12 @@ public class GraphHopperRouting {
         //we only need a encoder for speed,flag and turn costs for cars
         ghApi.setEncodingManager(EncodingManager.create(
                 new CarFlagEncoder(5, 5, 127),
-                new BikeFlagEncoder(4, 2, 0)
+                new BikeFlagEncoder(4, 2, 127)
         ));
 
         //load graph from database
         ghApi.importOrLoad();
+
         return this;
     }
 
@@ -127,69 +135,100 @@ public class GraphHopperRouting {
         final RoutingPosition source = routingRequest.getSource();
         final RoutingPosition target = routingRequest.getTarget();
 
-        // prepare
-        final List<Path> paths = new ArrayList<>();
-        final List<CandidateRoute> routesList = new ArrayList<>();
+        final QueryResult querySource = createQueryForSource(flagEncoder, source);
+        final QueryResult queryTarget = createQueryForTarget(flagEncoder, target);
 
-        final EdgeFilter fromEdgeFilter = createEdgeFilterForRoutingPosition(source, flagEncoder);
-        final EdgeFilter toEdgeFilter = createEdgeFilterForRoutingPosition(target, flagEncoder);
-
-        QueryResult qrFrom = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
-        qrFrom = fixQueryResultIfSnappedPointIsTowerNode(qrFrom, source, fromEdgeFilter, determinePrefixNode(source));
-        qrFrom = fixQueryResultIfNoClosestEdgeFound(source, qrFrom, flagEncoder);
-
-        QueryResult qrTo = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
-        qrTo = fixQueryResultIfNoClosestEdgeFound(target, qrTo, flagEncoder);
-
-        if (qrFrom.getClosestEdge() == null || qrTo.getClosestEdge() == null) {
+        if (querySource.getClosestEdge() == null || queryTarget.getClosestEdge() == null) {
             log.warn("Could not find a route from {} to {}", routingRequest.getSource(), routingRequest.getTarget());
             return Lists.newArrayList();
         }
 
         final QueryGraph queryGraph = new QueryGraph(ghApi.getGraphHopperStorage());
-        queryGraph.lookup(qrFrom, qrTo);
+        queryGraph.lookup(querySource, queryTarget);
 
-        final TurnWeighting weighting = new TurnWeightingOptional(graphhopperWeighting, (TurnCostExtension) queryGraph.getExtension(), routingRequest.getRoutingParameters().isConsiderTurnCosts());
+        final TurnWeighting weighting = new TurnWeightingOptional(
+                graphhopperWeighting, (TurnCostExtension) queryGraph.getExtension(),
+                routingRequest.getRoutingParameters().isConsiderTurnCosts(),
+                routingRequest.getRoutingParameters().getRestrictionCosts()
+        );
 
         // create algorithm
-        AlternativeRoutesRoutingAlgorithm algo = new DijkstraCamvitChoiceRouting(queryGraph, weighting);
+        final AlternativeRoutesRoutingAlgorithm algo = new DijkstraCamvitChoiceRouting(queryGraph, weighting);
         algo.setRequestAlternatives(routingRequest.getRoutingParameters().getNumAlternativeRoutes());
 
+        final List<Path> paths = new ArrayList<>();
+
         // Calculates all paths and returns the best one
-        paths.add(algo.calcPath(qrFrom.getClosestNode(), qrTo.getClosestNode()));
+        paths.add(algo.calcPath(querySource.getClosestNode(), queryTarget.getClosestNode()));
 
         //add alternative paths to path set
         paths.addAll(algo.getAlternativePaths());
 
         final Set<String> duplicateSet = new HashSet<>();
+        final List<CandidateRoute> result = new ArrayList<>();
 
         // convert paths to routes
-        for (Path path : paths) {
-            final CandidateRoute route = preparePath(path, queryGraph, qrFrom, qrTo, target);
+        for (final Path path : paths) {
+            final CandidateRoute route = preparePath(path, queryGraph, querySource, queryTarget, target);
             if (route != null
                     && !route.getConnectionIds().isEmpty()
                     && checkForDuplicate(route, duplicateSet)
                     && checkRouteOnRequiredSourceConnection(route, source)) {
-                routesList.add(route);
+                result.add(route);
             }
         }
-        return routesList;
+        return result;
+    }
+
+    private QueryResult createQueryForTarget(FlagEncoder flagEncoder, RoutingPosition target) {
+        final EdgeFilter toEdgeFilter = createEdgeFilterForRoutingPosition(target, flagEncoder);
+        QueryResult qrTo = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
+        if (target.getConnectionId() != null) {
+            return fixQueryResultIfNoClosestEdgeFound(target, qrTo, flagEncoder);
+        } else {
+            return fixQueryResultIfSnappedPointIsCloseToTowerNode(qrTo, target);
+        }
+    }
+
+    private QueryResult createQueryForSource(FlagEncoder flagEncoder, RoutingPosition source) {
+        final EdgeFilter fromEdgeFilter = createEdgeFilterForRoutingPosition(source, flagEncoder);
+        QueryResult qrFrom = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
+        if (source.getConnectionId() != null) {
+            qrFrom = fixQueryResultIfSnappedPointIsTowerNode(qrFrom, source, fromEdgeFilter);
+            return fixQueryResultIfNoClosestEdgeFound(source, qrFrom, flagEncoder);
+        } else {
+            return fixQueryResultIfSnappedPointIsCloseToTowerNode(qrFrom, source);
+        }
+    }
+
+    private QueryResult fixQueryResultIfSnappedPointIsCloseToTowerNode(QueryResult qrTo, RoutingPosition target) {
+        if (qrTo.getSnappedPosition() == QueryResult.Position.TOWER || target.getConnectionId() != null) {
+            return qrTo;
+        }
+        Node closestNode = graphMapper.toNode(qrTo.getClosestNode());
+        /* If the query result is snapped to an edge, but the matched node is very close to the query, than we use the actual closest node
+         * as the target of the route.*/
+        if (closestNode != null && target.getPosition().distanceTo(closestNode.getPosition()) < TARGET_NODE_QUERY_DISTANCE) {
+            qrTo.setSnappedPosition(QueryResult.Position.TOWER);
+        }
+        return qrTo;
     }
 
     private QueryResult fixQueryResultIfNoClosestEdgeFound(RoutingPosition source, QueryResult queryResultOriginal, FlagEncoder flagEncoder) {
-        if (queryResultOriginal.getClosestEdge() == null && source.getConnectionId() != null) {
+        if (queryResultOriginal.getClosestEdge() == null) {
             log.warn("Wrong routing request: The from-connection {} does not fit with the given position {}", source.getConnectionId(), source.getPosition());
             queryResultOriginal = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), DefaultEdgeFilter.allEdges(flagEncoder));
         }
         return queryResultOriginal;
     }
 
-    private QueryResult fixQueryResultIfSnappedPointIsTowerNode(QueryResult queryResultOriginal, RoutingPosition routingPosition, EdgeFilter fromEdgeFilter, Node fallbackNode) {
+    private QueryResult fixQueryResultIfSnappedPointIsTowerNode(QueryResult queryResultOriginal, RoutingPosition routingPosition, EdgeFilter fromEdgeFilter) {
         /* If the requested position is outside of the edge it is mapped either on the start or end of the edge (one of the tower nodes).
          * As a result, the resulting route can bypass turn restrictions in very rare cases. To avoid this, we can choose a fallback
          * node to be the requested position instead of the routing position.*/
-        if (queryResultOriginal.getSnappedPosition() == QueryResult.Position.TOWER && routingPosition.getConnectionId() != null) {
-            queryResultOriginal = ghApi.getLocationIndex().findClosest(fallbackNode.getPosition().getLatitude(), fallbackNode.getPosition().getLongitude(),
+        if (queryResultOriginal.getSnappedPosition() == QueryResult.Position.TOWER) {
+            Node alternativeQueryNode = determinePrefixNode(routingPosition);
+            return ghApi.getLocationIndex().findClosest(alternativeQueryNode.getPosition().getLatitude(), alternativeQueryNode.getPosition().getLongitude(),
                     fromEdgeFilter);
         }
         return queryResultOriginal;
@@ -226,7 +265,8 @@ public class GraphHopperRouting {
      */
     private Node determinePrefixNode(final RoutingPosition source) {
         if (source.getConnectionId() != null) {
-            return db.getConnection(source.getConnectionId()).getFrom();
+            List<Node> nodes = db.getConnection(source.getConnectionId()).getNodes();
+            return nodes.get(Math.max(0, nodes.size() - 2));
         }
         return getClosestNode(source.getPosition());
     }
