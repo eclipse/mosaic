@@ -62,7 +62,7 @@ public class GraphHopperRouting {
 
     /**
      * If the distance of the query position to the closest node is lower than this
-     * value, than the closest node is used definitely as the source or target of the route.
+     * value, then the closest node is used definitely as the source or target of the route.
      * If the distance is larger, the route may start or end on the connection the query is matched on.
      */
     public static final double TARGET_NODE_QUERY_DISTANCE = 1d;
@@ -182,22 +182,22 @@ public class GraphHopperRouting {
 
     private QueryResult createQueryForTarget(RoutingPosition target, FlagEncoder flagEncoder) {
         final EdgeFilter toEdgeFilter = createEdgeFilterForRoutingPosition(target, flagEncoder);
-        QueryResult qrTo = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
+        QueryResult queryTarget = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
         if (target.getConnectionId() != null) {
-            return fixQueryResultIfNoClosestEdgeFound(qrTo, target, flagEncoder);
+            return fixQueryResultIfNoClosestEdgeFound(queryTarget, target, flagEncoder);
         } else {
-            return fixQueryResultIfSnappedPointIsCloseToTowerNode(qrTo, target);
+            return fixQueryResultIfSnappedPointIsCloseToTowerNode(queryTarget, target);
         }
     }
 
     private QueryResult createQueryForSource(RoutingPosition source, FlagEncoder flagEncoder) {
         final EdgeFilter fromEdgeFilter = createEdgeFilterForRoutingPosition(source, flagEncoder);
-        QueryResult qrFrom = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
+        QueryResult querySource = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
         if (source.getConnectionId() != null) {
-            qrFrom = fixQueryResultIfSnappedPointIsTowerNode(qrFrom, source, fromEdgeFilter);
-            return fixQueryResultIfNoClosestEdgeFound(qrFrom, source, flagEncoder);
+            querySource = fixQueryResultIfSnappedPointIsTowerNode(querySource, source, fromEdgeFilter);
+            return fixQueryResultIfNoClosestEdgeFound(querySource, source, flagEncoder);
         } else {
-            return fixQueryResultIfSnappedPointIsCloseToTowerNode(qrFrom, source);
+            return fixQueryResultIfSnappedPointIsCloseToTowerNode(querySource, source);
         }
     }
 
