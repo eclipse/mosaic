@@ -71,6 +71,7 @@ public enum ErrorRegister {
     // 0x01000080 to 0x0100008F vehicle
     VEHICLE_UnknownEvent(0x01000080, "Process unknown event."),
     VEHICLE_NoEventResource(0x01000081, "Process event with no resource."),
+    VEHICLE_NotElectric(0x01000082, "A conventional vehicle cannot handle battery data."),
     // 0x01000090 to 0x0100009F traffic management center
     TRAFFIC_MANAGEMENT_CENTER_UnknownEvent(0x01000090, "Process unknown event."),
     TRAFFIC_MANAGEMENT_CENTER_NoEventResource(0x01000091, "Process event with no resource."),
