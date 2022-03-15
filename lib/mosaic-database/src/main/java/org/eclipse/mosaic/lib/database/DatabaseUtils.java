@@ -282,4 +282,26 @@ public class DatabaseUtils {
         }
     }
 
+    /**
+     * Return the node of a connection by the given index. If the index is negative,
+     * the node is chosen starting from the target of the connection. Examples:
+     * 0 returns the first node, -1 returns the last node.
+     * If the given index is outside the possible range of nodes,
+     * it returns the first or last node of the connection.
+     *
+     * @param connection the connection
+     * @param index the index (negative
+     */
+    public static Node getNodeByIndex(final Connection connection, final int index) {
+        final List<Node> nodes = connection.getNodes();
+        if (nodes.isEmpty()) {
+            return null;
+        }
+        if (index < 0) {
+            return nodes.get(Math.max(0, nodes.size() + index));
+        } else {
+            return nodes.get(Math.min(nodes.size() - 1, index));
+        }
+    }
+
 }

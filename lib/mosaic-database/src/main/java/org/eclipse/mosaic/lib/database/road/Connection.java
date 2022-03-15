@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.database.road;
 
+import org.eclipse.mosaic.lib.database.DatabaseUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +41,11 @@ public class Connection {
     private final List<Node> nodes = new ArrayList<>();
     private final Map<String, Connection> outgoing = new HashMap<>();
     private final Map<String, Connection> incoming = new HashMap<>();
+
+    /** Cached first node */
+    private transient Node from;
+    /** Cached last node */
+    private transient Node to;
 
     public Connection(@Nonnull String id, @Nonnull Way way) {
         this(id, way, false);
@@ -86,11 +93,10 @@ public class Connection {
      * @return Null if no from node exist, otherwise the node.
      */
     public Node getFrom() {
-        if (!nodes.isEmpty()) {
-            return nodes.get(0);
+        if (from == null) {
+            from = DatabaseUtils.getNodeByIndex(this, 0);
         }
-
-        return null;
+        return from;
     }
 
     /**
@@ -99,10 +105,10 @@ public class Connection {
      * @return Null if no to node exist, otherwise the node.
      */
     public Node getTo() {
-        if (!nodes.isEmpty()) {
-            return nodes.get(nodes.size() - 1);
+        if (to == null) {
+            to = DatabaseUtils.getNodeByIndex(this, -1);
         }
-        return null;
+        return to;
     }
 
     /**
@@ -202,6 +208,7 @@ public class Connection {
     public void addNode(@Nonnull Node node) {
         Objects.requireNonNull(node);
         nodes.add(node);
+        to = null;
     }
 
     /**
@@ -213,6 +220,7 @@ public class Connection {
     public void addNodes(@Nonnull List<Node> node) {
         Objects.requireNonNull(node);
         nodes.addAll(node);
+        to = null;
     }
 
     /**

@@ -29,6 +29,8 @@ public class RoutingParameters {
 
     private boolean considerTurnCosts = false;
 
+    private double restrictionCosts = Double.POSITIVE_INFINITY;
+
     private VehicleClass vehicleClass = VehicleClass.Car;
 
     public int getNumAlternativeRoutes() {
@@ -74,6 +76,20 @@ public class RoutingParameters {
     public RoutingParameters considerTurnCosts(boolean considerTurnCosts) {
         this.considerTurnCosts = considerTurnCosts;
         return this;
+    }
+
+    /**
+     * Defines the costs to apply for turn restrictions. Use {@code Double#POSITIVE_INFINITY} to forbid all turn restrictions (recommended).
+     *
+     * @param restrictionCosts the value to apply as costs when a turn is restricted
+     */
+    public RoutingParameters costsForTurnRestriction(double restrictionCosts) {
+        this.restrictionCosts = Math.max(0d, restrictionCosts);
+        return this;
+    }
+
+    public double getRestrictionCosts() {
+        return restrictionCosts;
     }
 
     /**
