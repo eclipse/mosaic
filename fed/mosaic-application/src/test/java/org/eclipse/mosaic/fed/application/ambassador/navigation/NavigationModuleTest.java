@@ -73,12 +73,10 @@ public class NavigationModuleTest {
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-
     private final EventManager eventMngMock = mock(EventManager.class);
     private final CentralNavigationComponent cncMock = mock(CentralNavigationComponent.class);
 
     private final VehicleData vehicleDataMock = mock(VehicleData.class);
-
 
     @InjectMocks
     @Rule
@@ -113,7 +111,6 @@ public class NavigationModuleTest {
         routeMap.put("123", new VehicleRoute("123", Collections.singletonList("edgeID"), Collections.singletonList("nodeID"), 0.0));
         when(cncMock.getRouteMap()).thenReturn(routeMap);
         when(cncMock.getTargetPositionOfRoute(ArgumentMatchers.anyString())).thenReturn(GeoPoint.latLon(30, 40));
-
     }
 
     @Test
@@ -142,7 +139,6 @@ public class NavigationModuleTest {
         // ASSERT
         calculateRoutes_routeRequestBuiltCorrectly_helper(params);
         assertEquals(target, findRouteRequest.getTarget().getPosition());
-
     }
 
     private void calculateRoutes_routeRequestBuiltCorrectly_helper(RoutingParameters params) {
@@ -243,7 +239,6 @@ public class NavigationModuleTest {
     private void testRetrieveAllValidExistingRoutesToTargetValidRoute_assert(Collection<CandidateRoute> coll) {
         assertEquals(1, coll.size());
         assertTrue(coll.iterator().next().getConnectionIds().contains("edgeID"));
-
     }
 
     /**

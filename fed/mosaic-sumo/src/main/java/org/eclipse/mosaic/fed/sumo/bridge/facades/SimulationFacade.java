@@ -68,7 +68,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -548,7 +547,7 @@ public class SimulationFacade {
             if (contextSubscriptionResult.id.equals(vehInSight.id)) {
                 continue;
             }
-            sumoVehicleState.currentVehicleData.getInSight().add(
+            sumoVehicleState.currentVehicleData.getVehiclesInSight().add(
                     new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed, vehInSight.heading)
             );
         }

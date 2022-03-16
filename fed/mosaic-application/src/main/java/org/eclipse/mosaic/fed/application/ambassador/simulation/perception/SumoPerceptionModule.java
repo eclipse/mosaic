@@ -41,7 +41,7 @@ public class SumoPerceptionModule implements PerceptionModule<SimplePerceptionCo
 
     @Override
     public List<VehicleObject> getPerceivedVehicles() {
-        return owner.getVehicleData().getInSight().stream()
+        return owner.getVehicleData().getVehiclesInSight().stream()
                 .map(v -> new VehicleObject(v.getId())
                         .setPosition(v.getProjectedPosition())
                         .setSpeed(v.getSpeed())

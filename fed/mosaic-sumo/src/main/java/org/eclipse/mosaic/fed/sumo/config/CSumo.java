@@ -120,7 +120,7 @@ public class CSumo implements Serializable {
     public final static String SUBSCRIPTION_EMISSIONS = "emissions";
 
     /**
-     * Subscription identifier for subscribing for leader information for each vehicle.
+     * Subscription identifier for subscribing for leader and follower information for each vehicle.
      */
     public final static String SUBSCRIPTION_LEADER = "leader";
 

@@ -61,7 +61,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
 
     private final boolean fetchRoadPosition;
     private final boolean fetchEmissions;
-    private final boolean fetchLeader;
+    private final boolean fetchLeaderAndFollower;
     private final boolean fetchSignals;
 
     public SimulationSimulateStep(Bridge ignored, CSumo sumoConfiguration) {
@@ -73,7 +73,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         fetchRoadPosition = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_ROAD_POSITION);
         fetchEmissions = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_EMISSIONS);
         fetchSignals = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_SIGNALS);
-        fetchLeader = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER);
+        fetchLeaderAndFollower = sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_LEADER);
     }
 
     public SimulationSimulateStep() {
@@ -85,7 +85,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         fetchRoadPosition = true;
         fetchEmissions = true;
         fetchSignals = true;
-        fetchLeader = true;
+        fetchLeaderAndFollower = true;
     }
 
     public List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException {
@@ -119,7 +119,7 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
 
             try {
                 result.position = getPosition(Vehicle.getPosition(sumoVehicleId, true));
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 LOG.error("Could not read position from vehicle. Unsubscribe.", e);
                 subscriptionsIt.remove();
             }
@@ -132,7 +132,6 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
             result.heading = Vehicle.getAngle(sumoVehicleId);
             result.slope = Vehicle.getSlope(sumoVehicleId);
             result.acceleration = Vehicle.getAcceleration(sumoVehicleId);
-            result.minGap = Vehicle.getMinGap(sumoVehicleId);
             result.stoppedStateEncoded = Vehicle.getStopState(sumoVehicleId);
             result.routeId = Vehicle.getRouteID(sumoVehicleId);
 
@@ -156,7 +155,8 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
                 result.fuel = Vehicle.getFuelConsumption(sumoVehicleId);
             }
 
-            if (fetchLeader) {
+            if (fetchLeaderAndFollower) {
+                result.minGap = Vehicle.getMinGap(sumoVehicleId);
                 result.leadingVehicle = getLeaderFollower(Vehicle.getLeader(sumoVehicleId));
                 result.followerVehicle = getLeaderFollower(Vehicle.getFollower(sumoVehicleId));
             } else {

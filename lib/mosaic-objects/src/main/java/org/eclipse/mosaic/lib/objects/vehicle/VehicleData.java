@@ -333,7 +333,7 @@ public class VehicleData extends UnitData {
      *
      * @return the list of vehicles in the field of view of this vehicle.
      */
-    public List<SurroundingVehicle> getInSight() {
+    public List<SurroundingVehicle> getVehiclesInSight() {
         return vehiclesInSight;
     }
 
@@ -621,7 +621,7 @@ public class VehicleData extends UnitData {
             this.vehicleSensors = veh.getVehicleSensors();
             this.driveDirection = veh.getDriveDirection();
             this.additionalData = veh.getAdditionalData();
-            this.vehiclesInSight = veh.getInSight();
+            this.vehiclesInSight = veh.getVehiclesInSight();
             return this;
         }
 
