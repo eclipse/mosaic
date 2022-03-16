@@ -25,8 +25,9 @@ import com.graphhopper.storage.TurnCostExtension;
  */
 class TurnWeightingOptional extends TurnWeighting {
 
-    private boolean enableTurnCosts;
-    private TurnCostExtension tcExt;
+    private final boolean enableTurnCosts;
+    private final TurnCostExtension tcExt;
+    private final double restrictedCosts;
 
     /**
      * Creates a {@link TurnWeighting} extension which disables or enables the consideration of turn costs, but always
@@ -36,10 +37,12 @@ class TurnWeightingOptional extends TurnWeighting {
      * @param turnCostExt     the turn cost extension of the graph
      * @param enableTurnCosts if <code>true</code>, turn costs and restrictions are considered,
      *                        if <code>false</code>, only turn restrictions are considered
+     * @param restrictedCosts the costs to apply if a turn is restricted (use Double.POSITIVE_INFINITY to forbid turn)
      */
-    public TurnWeightingOptional(Weighting superWeighting, TurnCostExtension turnCostExt, boolean enableTurnCosts) {
+    public TurnWeightingOptional(Weighting superWeighting, TurnCostExtension turnCostExt, boolean enableTurnCosts, double restrictedCosts) {
         super(superWeighting, turnCostExt);
         this.tcExt = turnCostExt;
+        this.restrictedCosts = restrictedCosts;
         this.enableTurnCosts = enableTurnCosts;
     }
 
@@ -47,7 +50,7 @@ class TurnWeightingOptional extends TurnWeighting {
     public double calcTurnWeight(int edgeFrom, int nodeVia, int edgeTo) {
         long turnFlags = tcExt.getTurnCostFlags(edgeFrom, nodeVia, edgeTo);
         if (getFlagEncoder().isTurnRestricted(turnFlags)) {
-            return Double.POSITIVE_INFINITY;
+            return restrictedCosts;
         }
 
         if (enableTurnCosts) {
