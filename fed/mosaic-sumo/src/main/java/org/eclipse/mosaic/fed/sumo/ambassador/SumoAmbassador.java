@@ -406,9 +406,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private String extractDepartureSpeed(VehicleRegistration interaction) {
-        switch (interaction.getDeparture().getDepartSpeedMode()) {
+        switch (interaction.getDeparture().getDepartureSpeedMode()) {
             case PRECISE:
-                return String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDepartSpeed());
+                return String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDepartureSpeed());
             case RANDOM:
                 return "random";
             case MAXIMUM:

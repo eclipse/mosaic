@@ -92,7 +92,7 @@ public class VehicleFlowGenerator {
      * RANDOM = The {@link CVehicle#departSpeed} will be overridden by a random value
      * MAXIMUM = The {@link CVehicle#departSpeed} will be overridden by the max value
      */
-    private VehicleDeparture.DepartSpeedMode departSpeedMode;
+    private VehicleDeparture.DepartureSpeedMode departureSpeedMode;
     private VehicleDeparture.LaneSelectionMode laneSelectionMode;
     private long start = 0;
     private long end = Long.MAX_VALUE;
@@ -125,12 +125,12 @@ public class VehicleFlowGenerator {
         this.randomNumberGenerator = randomNumberGenerator;
 
         // set simple values
-        this.departureConnectionIndex = vehicleConfiguration.departureConnectionIndex;
+        this.departureConnectionIndex = vehicleConfiguration.departConnectionIndex;
         this.pos = vehicleConfiguration.pos;
         this.route = vehicleConfiguration.route;
         this.group = vehicleConfiguration.group;
         this.departSpeed = vehicleConfiguration.departSpeed;
-        this.departSpeedMode = vehicleConfiguration.departSpeedMode;
+        this.departureSpeedMode = vehicleConfiguration.departSpeedMode;
         this.laneSelectionMode = vehicleConfiguration.laneSelectionMode;
         // If maxNumberVehicles wasn't given in mapping, we assume that it should be an endless flow, so we set it to Integer.MAX_VALUE
         // and handle this case accordingly in the timeAdvance() method
@@ -423,7 +423,7 @@ public class VehicleFlowGenerator {
         VehicleDeparture vehicleDeparture = new VehicleDeparture.Builder(route)
                 .departureLane(laneSelectionMode, lane, pos)
                 .departureConnection(departureConnectionIndex)
-                .departureSpeed(departSpeedMode, departSpeed)
+                .departureSpeed(departureSpeedMode, departSpeed)
                 .create();
 
         Interaction interaction;
