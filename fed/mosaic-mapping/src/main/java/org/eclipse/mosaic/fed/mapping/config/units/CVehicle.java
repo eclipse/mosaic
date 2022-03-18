@@ -165,7 +165,12 @@ public class CVehicle implements Comparable<CVehicle> {
     public boolean deterministic = true;
 
     /**
-     * Position within the route where the vehicle(-s) should be spawned.
+     * The index of the connection of the route where the vehicle will start on.
+     */
+    public int departureConnectionIndex = 0;
+
+    /**
+     * Position within the connection of the route where the vehicle(-s) should be spawned.
      */
     public int pos = 0;
 
@@ -221,6 +226,7 @@ public class CVehicle implements Comparable<CVehicle> {
                 .append(targetFlow, that.targetFlow)
                 .append(departSpeed, that.departSpeed)
                 .append(deterministic, that.deterministic)
+                .append(departureConnectionIndex, that.departureConnectionIndex)
                 .append(pos, that.pos)
                 .append(maxTime, that.maxTime)
                 .append(spawningMode, that.spawningMode)
@@ -252,6 +258,7 @@ public class CVehicle implements Comparable<CVehicle> {
                 .append(types)
                 .append(typeDistribution)
                 .append(deterministic)
+                .append(departureConnectionIndex)
                 .append(pos)
                 .append(route)
                 .append(origin)

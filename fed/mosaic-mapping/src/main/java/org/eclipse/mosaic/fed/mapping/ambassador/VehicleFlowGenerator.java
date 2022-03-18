@@ -74,6 +74,7 @@ public class VehicleFlowGenerator {
     private final LaneIndexSelector laneSelector;
     private final SpawningMode spawningMode;
     private final List<VehicleTypeSpawner> types;
+    private final int departureConnectionIndex;
     private final int pos;
     private final String route;
     private final GeoCircle origin;
@@ -124,6 +125,7 @@ public class VehicleFlowGenerator {
         this.randomNumberGenerator = randomNumberGenerator;
 
         // set simple values
+        this.departureConnectionIndex = vehicleConfiguration.departureConnectionIndex;
         this.pos = vehicleConfiguration.pos;
         this.route = vehicleConfiguration.route;
         this.group = vehicleConfiguration.group;
@@ -420,6 +422,7 @@ public class VehicleFlowGenerator {
 
         VehicleDeparture vehicleDeparture = new VehicleDeparture.Builder(route)
                 .departureLane(laneSelectionMode, lane, pos)
+                .departureConnection(departureConnectionIndex)
                 .departureSpeed(departSpeedMode, departSpeed)
                 .create();
 
@@ -435,8 +438,9 @@ public class VehicleFlowGenerator {
         }
 
         try {
-            LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, pos={}, type={}, departSpeed={}",
-                    framework.getTime(), name, route, laneSelectionMode, lane, pos, type, departSpeed);
+            LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, departureConnectionIndex{}, pos={}, "
+                            + "type={}, departSpeed={}",
+                    framework.getTime(), name, route, laneSelectionMode, lane, departureConnectionIndex, pos, type, departSpeed);
             framework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Couldn't send an {} interaction in VehicleStreamGenerator.timeAdvance()", interaction.getTypeId(), e);
@@ -450,6 +454,7 @@ public class VehicleFlowGenerator {
                 .append("spawningMode", spawningMode)
                 .append("lanes", lanes)
                 .append("types", types)
+                .append("departureConnectionIndex", departureConnectionIndex)
                 .append("pos", pos)
                 .append("departSpeed", departSpeed)
                 .append("route", route)

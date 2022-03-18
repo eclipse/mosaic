@@ -68,7 +68,12 @@ public class VehicleDeparture implements Serializable {
     private final int departureLane;
 
     /**
-     * The departure offset from the beginning of the lane, where the vehicle will be spawned on.
+     * The index of the connection of the route, where the vehicle will start on.
+     */
+    private final int departureConnectionIndex;
+
+    /**
+     * The departure offset from the beginning of the lane on the departure connection, where the vehicle will be spawned on.
      */
     private final double departurePos;
 
@@ -87,11 +92,12 @@ public class VehicleDeparture implements Serializable {
      */
     private final LaneSelectionMode laneSelectionMode;
 
-    private VehicleDeparture(String routeId, int departureLane, double departurePos,
+    private VehicleDeparture(String routeId, int departureLane, int departureConnectionIndex, double departurePos,
                              double departSpeed, DepartSpeedMode departSpeedMode,
                              LaneSelectionMode laneSelectionMode) {
         this.routeId = routeId;
         this.departureLane = departureLane;
+        this.departureConnectionIndex = departureConnectionIndex;
         this.departurePos = departurePos;
         this.departSpeed = departSpeed;
         this.departSpeedMode = departSpeedMode;
@@ -104,6 +110,10 @@ public class VehicleDeparture implements Serializable {
 
     public int getDepartureLane() {
         return departureLane;
+    }
+
+    public int getDepartureConnectionIndex() {
+        return departureConnectionIndex;
     }
 
     public double getDeparturePos() {
@@ -126,6 +136,7 @@ public class VehicleDeparture implements Serializable {
         private final String routeId;
 
         private int departureLane;
+        private int departureConnectionIndex;
         private double departurePos;
         private double departSpeed;
         private DepartSpeedMode departSpeedMode;
@@ -142,6 +153,11 @@ public class VehicleDeparture implements Serializable {
             return this;
         }
 
+        public Builder departureConnection(int departureConnectionIndex) {
+            this.departureConnectionIndex = departureConnectionIndex;
+            return this;
+        }
+
         public Builder departureSpeed(DepartSpeedMode departSpeedMode, double departSpeed) {
             this.departSpeed = departSpeed;
             this.departSpeedMode = departSpeedMode;
@@ -155,7 +171,8 @@ public class VehicleDeparture implements Serializable {
         }
 
         public VehicleDeparture create() {
-            return new VehicleDeparture(routeId, departureLane, departurePos, departSpeed, departSpeedMode, laneSelectionMode);
+            return new VehicleDeparture(routeId, departureLane, departureConnectionIndex, departurePos, departSpeed,
+                    departSpeedMode, laneSelectionMode);
         }
     }
 }
