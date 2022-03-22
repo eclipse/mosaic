@@ -405,7 +405,7 @@ public class CentralNavigationComponent {
                 }
                 return new VehicleDeparture.Builder(route.getId())
                         .departureLane(departure.getLaneSelectionMode(), departure.getDepartureLane(), departure.getDeparturePos())
-                        .departureSpeed(departure.getDepartSpeedMode(), departure.getDepartSpeed())
+                        .departureSpeed(departure.getDepartureSpeedMode(), departure.getDepartureSpeed())
                         .create();
             }
         }

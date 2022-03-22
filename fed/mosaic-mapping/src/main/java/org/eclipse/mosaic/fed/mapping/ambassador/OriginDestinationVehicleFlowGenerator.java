@@ -37,7 +37,7 @@ public class OriginDestinationVehicleFlowGenerator {
      */
     private final List<List<Double>> odValues;
     private final VehicleDeparture.LaneSelectionMode laneSelectionMode;
-    private final VehicleDeparture.DepartSpeedMode departSpeedMode;
+    private final VehicleDeparture.DepartureSpeedMode departureSpeedMode;
     private final double startingTime;
     private final Double maxTime;
 
@@ -54,7 +54,7 @@ public class OriginDestinationVehicleFlowGenerator {
         this.startingTime = matrixMapperConfiguration.startingTime;
         this.maxTime = matrixMapperConfiguration.maxTime;
         this.laneSelectionMode = matrixMapperConfiguration.laneSelectionMode;
-        this.departSpeedMode = matrixMapperConfiguration.departSpeedMode;
+        this.departureSpeedMode = matrixMapperConfiguration.departSpeedMode;
     }
 
     /**
@@ -83,7 +83,7 @@ public class OriginDestinationVehicleFlowGenerator {
                 vehicleConfiguration.startingTime = startingTime;
                 vehicleConfiguration.maxTime = maxTime;
                 vehicleConfiguration.laneSelectionMode = laneSelectionMode;
-                vehicleConfiguration.departSpeedMode = departSpeedMode;
+                vehicleConfiguration.departSpeedMode = departureSpeedMode;
                 // Assuming, if we only have set a flow, that we want to have an unlimited number of vehicles
 
                 framework.addVehicleStream(new VehicleFlowGenerator(vehicleConfiguration, randomNumberGenerator, flowNoise));

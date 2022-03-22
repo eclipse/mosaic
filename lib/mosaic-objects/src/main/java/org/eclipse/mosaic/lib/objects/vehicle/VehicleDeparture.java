@@ -23,7 +23,7 @@ public class VehicleDeparture implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public enum DepartSpeedMode {
+    public enum DepartureSpeedMode {
         /* the vehicle departs with the speed given in the mapping definiton of the spawner */
         PRECISE,
         /* the vehicle departs with a random speed */
@@ -68,33 +68,39 @@ public class VehicleDeparture implements Serializable {
     private final int departureLane;
 
     /**
-     * The departure offset from the beginning of the lane, where the vehicle will be spawned on.
+     * The index of the connection of the route, where the vehicle will start on.
+     */
+    private final int departureConnectionIndex;
+
+    /**
+     * The departure offset from the beginning of the lane on the departure connection, where the vehicle will be spawned on.
      */
     private final double departurePos;
 
     /**
      * The speed with which the vehicle will depart, if present space is free.
      */
-    private final double departSpeed;
+    private final double departureSpeed;
 
     /**
      * The mode with which the departure speed is chosen depending on the current traffic situation.
      */
-    private final DepartSpeedMode departSpeedMode;
+    private final DepartureSpeedMode departureSpeedMode;
 
     /**
      * The mode with which the departure lane is chosen depending on the current traffic situation.
      */
     private final LaneSelectionMode laneSelectionMode;
 
-    private VehicleDeparture(String routeId, int departureLane, double departurePos,
-                             double departSpeed, DepartSpeedMode departSpeedMode,
+    private VehicleDeparture(String routeId, int departureLane, int departureConnectionIndex, double departurePos,
+                             double departureSpeed, DepartureSpeedMode departureSpeedMode,
                              LaneSelectionMode laneSelectionMode) {
         this.routeId = routeId;
         this.departureLane = departureLane;
+        this.departureConnectionIndex = departureConnectionIndex;
         this.departurePos = departurePos;
-        this.departSpeed = departSpeed;
-        this.departSpeedMode = departSpeedMode;
+        this.departureSpeed = departureSpeed;
+        this.departureSpeedMode = departureSpeedMode;
         this.laneSelectionMode = laneSelectionMode;
     }
 
@@ -106,16 +112,20 @@ public class VehicleDeparture implements Serializable {
         return departureLane;
     }
 
+    public int getDepartureConnectionIndex() {
+        return departureConnectionIndex;
+    }
+
     public double getDeparturePos() {
         return departurePos;
     }
 
-    public double getDepartSpeed() {
-        return departSpeed;
+    public double getDepartureSpeed() {
+        return departureSpeed;
     }
 
-    public DepartSpeedMode getDepartSpeedMode() {
-        return departSpeedMode;
+    public DepartureSpeedMode getDepartureSpeedMode() {
+        return departureSpeedMode;
     }
 
     public LaneSelectionMode getLaneSelectionMode() {
@@ -126,9 +136,10 @@ public class VehicleDeparture implements Serializable {
         private final String routeId;
 
         private int departureLane;
+        private int departureConnectionIndex;
         private double departurePos;
-        private double departSpeed;
-        private DepartSpeedMode departSpeedMode;
+        private double departureSpeed;
+        private DepartureSpeedMode departureSpeedMode;
         private LaneSelectionMode laneSelectionMode;
 
         public Builder(String routeId) {
@@ -142,20 +153,26 @@ public class VehicleDeparture implements Serializable {
             return this;
         }
 
-        public Builder departureSpeed(DepartSpeedMode departSpeedMode, double departSpeed) {
-            this.departSpeed = departSpeed;
-            this.departSpeedMode = departSpeedMode;
+        public Builder departureConnection(int departureConnectionIndex) {
+            this.departureConnectionIndex = departureConnectionIndex;
+            return this;
+        }
+
+        public Builder departureSpeed(DepartureSpeedMode departureSpeedMode, double departSpeed) {
+            this.departureSpeed = departSpeed;
+            this.departureSpeedMode = departureSpeedMode;
             return this;
         }
 
         public Builder departureSpeed(double speed) {
-            this.departSpeed = speed;
-            this.departSpeedMode = DepartSpeedMode.PRECISE;
+            this.departureSpeed = speed;
+            this.departureSpeedMode = DepartureSpeedMode.PRECISE;
             return this;
         }
 
         public VehicleDeparture create() {
-            return new VehicleDeparture(routeId, departureLane, departurePos, departSpeed, departSpeedMode, laneSelectionMode);
+            return new VehicleDeparture(routeId, departureLane, departureConnectionIndex, departurePos, departureSpeed,
+                    departureSpeedMode, laneSelectionMode);
         }
     }
 }

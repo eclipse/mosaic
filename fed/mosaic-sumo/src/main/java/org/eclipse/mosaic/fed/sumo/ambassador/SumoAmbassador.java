@@ -304,6 +304,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             String vehicleType = interaction.getMapping().getVehicleType().getName();
             String routeId = interaction.getDeparture().getRouteId();
             String departPos = String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDeparturePos());
+            int departIndex = interaction.getDeparture().getDepartureConnectionIndex();
             String departSpeed = extractDepartureSpeed(interaction);
             String laneId = extractDepartureLane(interaction);
 
@@ -316,6 +317,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                         throw new IllegalArgumentException(
                                 "Unknown route " + routeId + " for vehicle with departure time " + interaction.getTime()
                         );
+                    }
+
+                    if (departIndex > 0) {
+                        routeId = cutAndAddRoute(routeId, departIndex);
                     }
 
                     bridge.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
@@ -335,6 +340,21 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 iterator.remove();
             }
         }
+    }
+
+    private String cutAndAddRoute(String routeId, int departIndex) throws InternalFederateException {
+        String newRouteId = routeId + "_cut" + departIndex;
+        if (routeCache.containsKey(newRouteId)) {
+            return newRouteId;
+        }
+        final VehicleRoute route = routeCache.get(routeId);
+        final List<String> connections = route.getConnectionIds();
+        if (departIndex >= connections.size()) {
+            throw new IllegalArgumentException("The departIndex=" + departIndex + " is too large for route with id=" + routeId);
+        }
+        final VehicleRoute cutRoute = new VehicleRoute(newRouteId, connections.subList(departIndex, connections.size()), route.getNodeIds(), route.getLength());
+        propagateRouteIfAbsent(newRouteId, cutRoute);
+        return newRouteId;
     }
 
     private void subscribeToNotYetSubscribedVehicles(long time) throws InternalFederateException {
@@ -386,9 +406,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     }
 
     private String extractDepartureSpeed(VehicleRegistration interaction) {
-        switch (interaction.getDeparture().getDepartSpeedMode()) {
+        switch (interaction.getDeparture().getDepartureSpeedMode()) {
             case PRECISE:
-                return String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDepartSpeed());
+                return String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDepartureSpeed());
             case RANDOM:
                 return "random";
             case MAXIMUM:

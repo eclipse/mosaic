@@ -18,8 +18,6 @@ package org.eclipse.mosaic.fed.mapping.config.units;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
-import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
-import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -87,7 +85,7 @@ public class COriginDestinationMatrixMapper {
      * MAXIMUM = The {@link CVehicle#departSpeed} will be overridden by the max value
      */
     @JsonAdapter(CVehicle.DepartSpeedModeTypeAdapter.class)
-    public VehicleDeparture.DepartSpeedMode departSpeedMode = VehicleDeparture.DepartSpeedMode.MAXIMUM;
+    public VehicleDeparture.DepartureSpeedMode departSpeedMode = VehicleDeparture.DepartureSpeedMode.MAXIMUM;
 
 
     /**
