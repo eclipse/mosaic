@@ -34,12 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfiguration> {
 
-    /**
-     * The configuration settings for an enabled module
-     * (includes user for each radio, channel and power settings for OMNeT++ and ns3 (or distance settings for SNS)).
-     */
-    private AdHocModuleConfiguration configuration = null;
-
     public AdHocModule(CommunicationModuleOwner owner, Logger log) {
         super(owner, log);
     }
@@ -63,30 +57,29 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
      */
     @Override
     public void enable(AdHocModuleConfiguration configuration) {
+        super.enable(configuration);
 
         if (configuration == null) {
-            logEnableConfigurationNull();
-        } else {
-            this.configuration = configuration;
-
-            AdHocConfiguration.Builder builder = new AdHocConfiguration.Builder(owner.getId());
-
-            for (int i = 0; i < min(2, configuration.getNrOfRadios()); i++) {
-                AdHocModuleConfiguration.AdHocModuleRadioConfiguration radio = configuration.getRadios().get(i);
-                InterfaceConfiguration.Builder interfaceBuilder =
-                        new InterfaceConfiguration.Builder(radio.getChannel0())
-                                .ip(address)
-                                .subnet(subnet)
-                                .radius(radio.getDistance())
-                                .power(radio.getPower());
-                if (radio.getNrOfChannels() > 1) {
-                    interfaceBuilder.secondChannel(radio.getChannel1());
-                }
-                builder.addInterface(interfaceBuilder.create());
-            }
-
-            owner.sendInteractionToRti(new AdHocCommunicationConfiguration(owner.getSimulationTime(), builder.create()));
+            return;
         }
+
+        AdHocConfiguration.Builder builder = new AdHocConfiguration.Builder(owner.getId());
+        for (int i = 0; i < min(2, configuration.getNrOfRadios()); i++) {
+            AdHocModuleConfiguration.AdHocModuleRadioConfiguration radio = configuration.getRadios().get(i);
+            InterfaceConfiguration.Builder interfaceBuilder =
+                    new InterfaceConfiguration.Builder(radio.getChannel0())
+                            .ip(address)
+                            .subnet(subnet)
+                            .radius(radio.getDistance())
+                            .power(radio.getPower());
+            if (radio.getNrOfChannels() > 1) {
+                interfaceBuilder.secondChannel(radio.getChannel1());
+            }
+            builder.addInterface(interfaceBuilder.create());
+        }
+
+        owner.sendInteractionToRti(new AdHocCommunicationConfiguration(owner.getSimulationTime(), builder.create()));
+
     }
 
     /**
@@ -94,7 +87,7 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
      */
     @Override
     public void disable() {
-        configuration = null;
+        super.disable();
         owner.sendInteractionToRti(new AdHocCommunicationConfiguration(
                 owner.getSimulationTime(),
                 new AdHocConfiguration.Builder(owner.getId()).create())

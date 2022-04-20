@@ -15,9 +15,7 @@
 
 package org.eclipse.mosaic.app.tutorial;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
-import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
@@ -26,7 +24,6 @@ import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.DenmContent;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
-import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
 
 /**
@@ -126,7 +123,8 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
                         HAZARD_LOCATION,
                         null,
                         null
-                )
+                ),
+                200
         );
     }
 

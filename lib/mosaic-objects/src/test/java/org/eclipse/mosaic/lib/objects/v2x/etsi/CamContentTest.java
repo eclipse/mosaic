@@ -56,7 +56,7 @@ public class CamContentTest {
         GeoPoint position = GeoPoint.latLon(52.5, 13.3);
         byte[] userTaggedValue = "this is a test".getBytes(StandardCharsets.UTF_8);
 
-        Cam cam = new Cam(mock(MessageRouting.class), new CamContent(4 * TIME.SECOND, awarenessData, "veh_1", position, userTaggedValue));
+        Cam cam = new Cam(mock(MessageRouting.class), new CamContent(4 * TIME.SECOND, awarenessData, "veh_1", position, userTaggedValue), 200);
         EncodedPayload encodedMessage = cam.getPayLoad();
 
         //PRE-ASSERT

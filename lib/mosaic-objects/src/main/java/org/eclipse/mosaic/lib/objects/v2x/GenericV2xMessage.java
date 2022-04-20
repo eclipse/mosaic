@@ -16,28 +16,51 @@
 package org.eclipse.mosaic.lib.objects.v2x;
 
 import org.eclipse.mosaic.lib.objects.ToDataOutput;
+import org.eclipse.mosaic.lib.util.ClassUtils;
 
 import javax.annotation.Nonnull;
 
 /**
- * There is a need to define messages only in applications as the
- * message class might not be known within MOSAIC.
+ * This {@link V2xMessage} implementation can be used for simple message exchange between entities.
  */
 public final class GenericV2xMessage extends V2xMessage {
 
     private static final long serialVersionUID = 1L;
 
-    private final String classSimpleName;
+    private final String messageType;
 
     /**
      * The encoded payload.
      */
     private final EncodedPayload payload;
 
-    public GenericV2xMessage(MessageRouting routing, ToDataOutput contentToEncode, long messageSize) {
+    /**
+     * Creates a {@link GenericV2xMessage} with a specific payload length.
+     */
+    public GenericV2xMessage(MessageRouting routing, long messageSize) {
         super(routing);
-        this.classSimpleName = contentToEncode.getClass().getSimpleName();
-        this.payload = new EncodedPayload(contentToEncode, messageSize);
+        this.messageType = ClassUtils.createShortClassName(getClass());
+        this.payload = new EncodedPayload(messageSize, messageSize);
+    }
+
+    /**
+     * Creates a {@link GenericV2xMessage} with a specific message type name (e.g. to identify different messages for
+     * evaluation purposes), and a specific payload length.
+     */
+    public GenericV2xMessage(MessageRouting routing, String messageName, long messageSize) {
+        super(routing);
+        this.messageType = messageName;
+        this.payload = new EncodedPayload(messageSize, messageSize);
+    }
+
+    /**
+     * Creates a {@link GenericV2xMessage} carrying specific payload. The payload is encoded to a byte-array to determine
+     * payload length.
+     */
+    public GenericV2xMessage(MessageRouting routing, ToDataOutput messagePayload, long minimalMessageSize) {
+        super(routing);
+        this.messageType = messagePayload.getClass().getSimpleName();
+        this.payload = new EncodedPayload(messagePayload, minimalMessageSize);
     }
 
 
@@ -47,16 +70,15 @@ public final class GenericV2xMessage extends V2xMessage {
         return payload;
     }
 
-    @Override
     @Nonnull
-    public String getSimpleClassName() {
-        return classSimpleName;
+    public String getMessageType() {
+        return messageType;
     }
 
     @Override
     public String toString() {
-        return "V2XMessageGeneralized{"
-                + "classSimpleName=" + classSimpleName
+        return "GenericV2xMessage{"
+                + "classSimpleName=" + messageType
                 + ", encodedPayload=" + payload + '}';
     }
 

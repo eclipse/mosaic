@@ -53,7 +53,9 @@ public class DenmContentTest {
         GeoPolygon eventArea = new GeoPolygon(event);
 
         //First test scenario:
-        Denm denm = new Denm(mock(MessageRouting.class), new DenmContent(4 * TIME.SECOND, position, "1_1_2_0", SensorType.POSITION, 4, 5f, 6f, position, eventArea, "test"));
+        Denm denm = new Denm(mock(MessageRouting.class),
+                new DenmContent(4 * TIME.SECOND, position, "1_1_2_0", SensorType.POSITION, 4, 5f, 6f, position, eventArea, "test"),
+                200);
 
         EncodedPayload encodedMessage = denm.getPayLoad();
 
@@ -77,7 +79,9 @@ public class DenmContentTest {
         assertEquals(denm.getExtendedContainer(), decodedDENM.getExtendedContainer());
 
         //Second test scenario:
-        Denm denm2 = new Denm(mock(MessageRouting.class), new DenmContent(4 * TIME.SECOND, position, "1_1_2_0", SensorType.POSITION, 4, 5f, 6f, null, null, null));
+        Denm denm2 = new Denm(mock(MessageRouting.class),
+                new DenmContent(4 * TIME.SECOND, position, "1_1_2_0", SensorType.POSITION, 4, 5f, 6f, null, null, null),
+                200);
 
         EncodedPayload encodedMessage2 = denm2.getPayLoad();
 
