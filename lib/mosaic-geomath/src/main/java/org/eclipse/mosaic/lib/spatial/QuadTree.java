@@ -338,7 +338,7 @@ public class QuadTree<T> {
         private void addObjectNode(QuadTree<?>.ObjectAndNode item) {
             objectsCount++;
 
-            if (childNodes == null) {
+            if (isLeaf()) {
                 objects.add(item);
                 item.node = this;
                 if (objectsCount > SPLIT_SIZE && depth < MAX_DEPTH) {
@@ -383,10 +383,9 @@ public class QuadTree<T> {
         }
 
         private void join() {
-            objects.addAll(childNodes[0].objects);
-            objects.addAll(childNodes[1].objects);
-            objects.addAll(childNodes[2].objects);
-            objects.addAll(childNodes[3].objects);
+            for (int i = 0; i <= 3; i++) {
+                objects.addAll(childNodes[i].objects);
+            }
             childNodes = null;
         }
 

@@ -47,6 +47,13 @@
 
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-geomath</artifactId>
+            <type>test-jar</type>
+            <version>${mosaic.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-objects</artifactId>
             <version>${mosaic.version}</version>
             <type>test-jar</type>
