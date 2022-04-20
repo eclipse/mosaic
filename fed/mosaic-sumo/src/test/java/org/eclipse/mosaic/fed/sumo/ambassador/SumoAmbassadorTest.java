@@ -231,7 +231,7 @@ public class SumoAmbassadorTest {
         // PREPARE
         VehicleDeparture departInfo = mock(VehicleDeparture.class);
         when(departInfo.getRouteId()).thenReturn("0");
-        when(departInfo.getDepartSpeedMode()).thenReturn(VehicleDeparture.DepartSpeedMode.MAXIMUM);
+        when(departInfo.getDepartureSpeedMode()).thenReturn(VehicleDeparture.DepartureSpeedMode.MAXIMUM);
         when(departInfo.getLaneSelectionMode()).thenReturn(VehicleDeparture.LaneSelectionMode.DEFAULT);
 
         // RUN send added vehicle and run first step

@@ -252,8 +252,14 @@
                     "type": "boolean",
                     "default": true
                 },
+                "departConnectionIndex": {
+                    "description": "The index of the connection of the route where the vehicle will start on.",
+                    "type": "number",
+                    "minimum": 0,
+                    "default": 0
+                },
                 "pos": {
-                    "description": "Position within the route where the vehicle(s) should be spawned.",
+                    "description": "Position within the connection of the route where the vehicle(s) should be spawned.",
                     "type": "number",
                     "minimum": 0,
                     "default": 0

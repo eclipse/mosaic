@@ -17,7 +17,7 @@ package org.eclipse.mosaic.fed.mapping.config.units;
 
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.DepartSpeedMode;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.DepartureSpeedMode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.LaneSelectionMode;
 import org.eclipse.mosaic.lib.util.gson.AbstractEnumDefaultValueTypeAdapter;
 import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
@@ -112,7 +112,7 @@ public class CVehicle implements Comparable<CVehicle> {
      * MAXIMUM = The {@link CVehicle#departSpeed} will be overridden by the max value
      */
     @JsonAdapter(DepartSpeedModeTypeAdapter.class)
-    public DepartSpeedMode departSpeedMode = DepartSpeedMode.MAXIMUM;
+    public DepartureSpeedMode departSpeedMode = DepartureSpeedMode.MAXIMUM;
 
     /**
      * List of possible vehicle types to be spawned. In this list you can simply refer to an
@@ -165,7 +165,12 @@ public class CVehicle implements Comparable<CVehicle> {
     public boolean deterministic = true;
 
     /**
-     * Position within the route where the vehicle(-s) should be spawned.
+     * The index of the connection of the route where the vehicle will start on.
+     */
+    public int departConnectionIndex = 0;
+
+    /**
+     * Position within the connection of the route where the vehicle(-s) should be spawned.
      */
     public int pos = 0;
 
@@ -221,6 +226,7 @@ public class CVehicle implements Comparable<CVehicle> {
                 .append(targetFlow, that.targetFlow)
                 .append(departSpeed, that.departSpeed)
                 .append(deterministic, that.deterministic)
+                .append(departConnectionIndex, that.departConnectionIndex)
                 .append(pos, that.pos)
                 .append(maxTime, that.maxTime)
                 .append(spawningMode, that.spawningMode)
@@ -252,6 +258,7 @@ public class CVehicle implements Comparable<CVehicle> {
                 .append(types)
                 .append(typeDistribution)
                 .append(deterministic)
+                .append(departConnectionIndex)
                 .append(pos)
                 .append(route)
                 .append(origin)
@@ -260,9 +267,9 @@ public class CVehicle implements Comparable<CVehicle> {
                 .toHashCode();
     }
 
-    static class DepartSpeedModeTypeAdapter extends AbstractEnumDefaultValueTypeAdapter<DepartSpeedMode> {
+    static class DepartSpeedModeTypeAdapter extends AbstractEnumDefaultValueTypeAdapter<DepartureSpeedMode> {
         public DepartSpeedModeTypeAdapter() {
-            super(DepartSpeedMode.MAXIMUM);
+            super(DepartureSpeedMode.MAXIMUM);
         }
     }
 

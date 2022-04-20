@@ -61,7 +61,7 @@ public class DepartSpeedTest {
         CVehicle vehicle = mapping.vehicles.get(0);
         assertNotEquals(vehicle, null);
         assertEquals(100, vehicle.departSpeed, 0);
-        assertEquals(VehicleDeparture.DepartSpeedMode.PRECISE, vehicle.departSpeedMode);
+        assertEquals(VehicleDeparture.DepartureSpeedMode.PRECISE, vehicle.departSpeedMode);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class DepartSpeedTest {
         CVehicle vehicle = mapping.vehicles.get(1);
         assertNotEquals(vehicle, null);
         assertEquals(200, vehicle.departSpeed, 0);
-        assertEquals(VehicleDeparture.DepartSpeedMode.RANDOM, vehicle.departSpeedMode);
+        assertEquals(VehicleDeparture.DepartureSpeedMode.RANDOM, vehicle.departSpeedMode);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class DepartSpeedTest {
         CVehicle vehicle = mapping.vehicles.get(2);
         assertNotEquals(vehicle, null);
         assertEquals(300, vehicle.departSpeed, 0);
-        assertEquals(VehicleDeparture.DepartSpeedMode.MAXIMUM, vehicle.departSpeedMode);
+        assertEquals(VehicleDeparture.DepartureSpeedMode.MAXIMUM, vehicle.departSpeedMode);
     }
 
     @Test
@@ -85,6 +85,6 @@ public class DepartSpeedTest {
         CVehicle vehicle = mapping.vehicles.get(3);
         assertNotEquals(vehicle, null);
         assertEquals(500, vehicle.departSpeed, 0);
-        assertEquals(VehicleDeparture.DepartSpeedMode.MAXIMUM, vehicle.departSpeedMode);
+        assertEquals(VehicleDeparture.DepartureSpeedMode.MAXIMUM, vehicle.departSpeedMode);
     }
 }

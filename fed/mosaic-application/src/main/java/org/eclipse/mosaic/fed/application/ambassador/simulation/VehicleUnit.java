@@ -42,6 +42,7 @@ import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.cam.VehicleAwarenessData;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
@@ -132,7 +133,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
         if (!handleEventResource(resource, event.getNice())) {
             getOsLog().error("Unknown event resource: {}", event);
-            throw new RuntimeException(ErrorRegister.VEHICLE_NoEventResource.toString());
+            throw new RuntimeException(ErrorRegister.VEHICLE_UnknownEvent.toString());
         }
     }
 
@@ -140,6 +141,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         if (resource instanceof VehicleData) {
             updateVehicleInfo((VehicleData) resource);
             return true;
+        }
+        if (resource instanceof BatteryData) {
+            throw new RuntimeException(ErrorRegister.VEHICLE_NotElectric.toString());
         }
         return false;
     }
