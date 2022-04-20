@@ -1074,23 +1074,27 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
-    private void receiveInteraction(TrafficSignRegistration interaction) throws InternalFederateException {
-        if (interaction.getTrafficSign() instanceof TrafficSignSpeed) {
-            trafficSignManager.addSpeedSign((TrafficSignSpeed) interaction.getTrafficSign());
-        } else if (interaction.getTrafficSign() instanceof TrafficSignLaneAssignment) {
-            trafficSignManager.addLaneAssignmentSign((TrafficSignLaneAssignment) interaction.getTrafficSign());
+    private void receiveInteraction(TrafficSignRegistration trafficSignRegistration) throws InternalFederateException {
+        if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignSpeed) {
+            trafficSignManager.addSpeedSign((TrafficSignSpeed) trafficSignRegistration.getTrafficSign());
+        } else if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignLaneAssignment) {
+            trafficSignManager.addLaneAssignmentSign((TrafficSignLaneAssignment) trafficSignRegistration.getTrafficSign());
         }
     }
 
-    private void receiveInteraction(TrafficSignSpeedLimitChange interaction) throws InternalFederateException {
+    private void receiveInteraction(TrafficSignSpeedLimitChange trafficSignSpeedLimitChange) throws InternalFederateException {
         trafficSignManager.changeVariableSpeedSign(
-                interaction.getTrafficSignId(), interaction.getLane(), interaction.getSpeedLimit()
+                trafficSignSpeedLimitChange.getTrafficSignId(), 
+                trafficSignSpeedLimitChange.getLane(), 
+                trafficSignSpeedLimitChange.getSpeedLimit()
         );
     }
 
-    private void receiveInteraction(TrafficSignLaneAssignmentChange interaction) throws InternalFederateException {
+    private void receiveInteraction(TrafficSignLaneAssignmentChange trafficSignLaneAssignmentChange) throws InternalFederateException {
         trafficSignManager.changeVariableLaneAssignmentSign(
-                interaction.getTrafficSignId(), interaction.getLane(), interaction.getAllowedVehicleClasses()
+                trafficSignLaneAssignmentChange.getTrafficSignId(), 
+                trafficSignLaneAssignmentChange.getLane(), 
+                trafficSignLaneAssignmentChange.getAllowedVehicleClasses()
         );
     }
 
