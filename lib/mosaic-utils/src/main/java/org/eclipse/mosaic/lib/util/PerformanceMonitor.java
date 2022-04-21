@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.util;
+package org.eclipse.mosaic.lib.util;
 
 import org.eclipse.mosaic.rti.TIME;
 
@@ -21,58 +21,63 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class PerformanceMonitor {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final static PerformanceMonitor INSTANCE = new PerformanceMonitor(LoggerFactory.getLogger("performance"));
 
-    private final Map<String, List<Measurement>> storedMeasurements = new HashMap<>();
+    public static PerformanceMonitor getInstance() {
+        return INSTANCE;
+    }
+
+    private final Map<String, MeasurementAggregation> storedMeasurements = new HashMap<>();
+    private final Logger detailsLog;
+
+    public PerformanceMonitor(Logger detailsLog) {
+        this.detailsLog = detailsLog;
+    }
 
     public Measurement start(String name) {
         return new Measurement(name);
     }
 
     private void store(Measurement measurement) {
-        storedMeasurements.computeIfAbsent(measurement.name, l -> new LinkedList<>()).add(measurement);
-    }
+        MeasurementAggregation aggregation = storedMeasurements.computeIfAbsent(measurement.name, k -> new MeasurementAggregation());
+        aggregation.calls++;
+        aggregation.total += measurement.getDuration();
+        aggregation.min = Math.min(aggregation.min, measurement.getDuration());
+        aggregation.max = Math.max(aggregation.max, measurement.getDuration());
+        aggregation.total += measurement.getDuration();
 
-    public void printSummary() {
-        storedMeasurements.forEach(this::printSummary);
-    }
-
-    public void exportDetailedMeasurements(Writer out) throws IOException {
-        for (List<Measurement> measurements : storedMeasurements.values()) {
-            for (Measurement measurement : measurements) {
-                measurement.exportMeasurement(out);
-            }
+        if (detailsLog != null && detailsLog.isInfoEnabled()) {
+            measurement.exportMeasurement(detailsLog);
         }
-        out.flush();
     }
 
-    private void printSummary(String name, List<Measurement> measurements) {
-        long total = 0;
-        long max = 0;
-        long min = Long.MAX_VALUE;
-        for (Measurement m : measurements) {
-            total += m.getDuration();
-            max = Math.max(max, m.getDuration());
-            min = Math.min(min, m.getDuration());
+    public void logSummary(Logger out) {
+        storedMeasurements.forEach((name, m) -> m.logSummary(name, out));
+    }
+
+    private static class MeasurementAggregation {
+        private long calls = 0;
+        private long total = 0;
+        private long min = Long.MAX_VALUE;
+        private long max = 0;
+
+
+        private void logSummary(String name, Logger out) {
+            long average = total / calls;
+            out.info(name + " (calls: " + calls + " "
+                    + "total: " + total / TIME.MILLI_SECOND + " ms "
+                    + "average: " + (average > 1000 ? (average / TIME.MILLI_SECOND + " ms ") : (average + " ns "))
+                    + "max: " + (max > 1000 ? (max / TIME.MILLI_SECOND + " ms ") : (max + " ns "))
+                    + "min: " + (min > 1000 ? (min / TIME.MILLI_SECOND + " ms ") : (max + " ns ")) + ")");
+
         }
-        long average = total / measurements.size();
-
-        log.info(name + " (calls: " + measurements.size() + " "
-                + "total: " + total / TIME.MILLI_SECOND + " ms "
-                + "average: " + (average > 1000 ? (average / TIME.MILLI_SECOND + " ms ") : (average + " ns "))
-                + "max: " + (max > 1000 ? (max / TIME.MILLI_SECOND + " ms ") : (max + " ns "))
-                + "min: " + (min > 1000 ? (min / TIME.MILLI_SECOND + " ms ") : (max + " ns ")) + ")");
-
     }
 
     public class Measurement implements AutoCloseable {
@@ -120,8 +125,8 @@ public class PerformanceMonitor {
             stop();
         }
 
-        public void exportMeasurement(Writer out) throws IOException {
-            out.write(String.format("%s;%d;%s%n", name, getDuration(), StringUtils.join(getProperties(), ";")));
+        public void exportMeasurement(Logger out) {
+            out.info("{};{};{}", name, getDuration(), properties != null ? StringUtils.join(getProperties(), ";") : "");
         }
     }
 

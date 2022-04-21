@@ -175,5 +175,4 @@ public interface VehicleOperatingSystem
      * @param sensorTypes The type of the sensors (e.g. LIDAR)
      */
     void activateVehicleSensors(double sensorRange, SensorType... sensorTypes);
-
 }

@@ -23,6 +23,7 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigatio
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -54,6 +55,7 @@ public class AbstractSimulationUnitTest {
 
     @Before
     public void before() {
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
         SimulationKernel.SimulationKernel.setClassLoader(ClassLoader.getSystemClassLoader());
     }
 

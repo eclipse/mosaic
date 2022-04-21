@@ -60,7 +60,7 @@
                 "perceptionBackend": {
                     "description": "The underlying data structure for the spatial index",
                     "type": "string",
-                    "enum": [ "Grid", "QuadTree", "Trivial" ],
+                    "enum": [ "Grid", "QuadTree", "Trivial", "SUMO" ],
                     "default": "Trivial"
                 },
                 "measurePerformance": {

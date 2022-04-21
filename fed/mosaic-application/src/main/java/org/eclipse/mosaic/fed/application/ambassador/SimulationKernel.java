@@ -368,9 +368,6 @@ public enum SimulationKernel implements FinishSimulationCallback {
 
     @Override
     public void finishSimulation() {
-        if (centralPerceptionComponent != null) {
-            centralPerceptionComponent.finish();
-        }
         for (FinishSimulationCallback cb : finishSimulationCallbacks) {
             cb.finishSimulation();
         }

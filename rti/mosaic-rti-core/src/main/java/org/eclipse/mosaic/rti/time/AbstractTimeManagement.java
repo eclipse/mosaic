@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.rti.time;
 
 import org.eclipse.mosaic.lib.util.EfficientPriorityQueue;
+import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.ExternalWatchDog;
 import org.eclipse.mosaic.rti.MosaicComponentParameters;
 import org.eclipse.mosaic.rti.TIME;
@@ -163,6 +164,7 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
                 fed.finishSimulation();
             }
         } finally {
+            PerformanceMonitor.getInstance().logSummary(logger);
             // always print simulation finished even if federate throws exception on finishing
             printSimulationFinished(durationMs, statusCode);
             federation.getMonitor().onEndSimulation(federation.getFederationManagement(), this, durationMs, statusCode);

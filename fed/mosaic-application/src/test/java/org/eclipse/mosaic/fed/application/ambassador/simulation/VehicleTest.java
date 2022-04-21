@@ -25,6 +25,7 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigatio
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.enums.DriveDirection;
@@ -88,6 +89,7 @@ public class VehicleTest {
             return null;
         }).when(interactable).triggerInteraction(any(Interaction.class));
 
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
         SimulationKernel.SimulationKernel.setClassLoader(ClassLoader.getSystemClassLoader());
     }
 

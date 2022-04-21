@@ -439,8 +439,8 @@ public class VehicleFlowGenerator {
 
         try {
             LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, departureConnectionIndex{}, pos={}, "
-                            + "type={}, departSpeed={}",
-                    framework.getTime(), name, route, laneSelectionMode, lane, departureConnectionIndex, pos, type, departSpeed);
+                            + "type={}, departSpeed={}, apps={}",
+                    framework.getTime(), name, route, laneSelectionMode, lane, departureConnectionIndex, pos, type, departSpeed, type.getAppList());
             framework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Couldn't send an {} interaction in VehicleStreamGenerator.timeAdvance()", interaction.getTypeId(), e);

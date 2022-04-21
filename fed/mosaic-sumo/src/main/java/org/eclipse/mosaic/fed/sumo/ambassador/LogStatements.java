@@ -33,6 +33,8 @@ abstract class LogStatements {
 
     static String VEHICLE_PARAM_CHANGE_REQ = "Receive VehicleParameterChange request";
 
+    static String VEHICLE_SIGHT_DISTANCE_REQ = "Receive VehicleSightDistanceConfiguration request";
+
     static String TRAFFIC_LIGHTS_STATE_CHANGE_REQ = "Receive TrafficLightStateChange request";
 
     static String TRAFFIC_LIGHT_SUBSCRIPTION = "TrafficLightSubscription interaction received";

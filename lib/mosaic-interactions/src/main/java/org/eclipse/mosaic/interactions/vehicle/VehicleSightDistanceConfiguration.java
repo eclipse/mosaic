@@ -43,6 +43,11 @@ public final class VehicleSightDistanceConfiguration extends Interaction {
     private double sightDistance;
 
     /**
+     * The opening angle of the sight area of the vehicle.
+     */
+    private double openingAngle;
+
+    /**
      * Creates an interaction that includes the sender name (vehicle) and its sight distance (in m).
      *
      * @param time          Timestamp of this interaction, unit: [ns]
@@ -50,13 +55,30 @@ public final class VehicleSightDistanceConfiguration extends Interaction {
      * @param sightDistance sight distance of the vehicle, unit: [m]
      */
     public VehicleSightDistanceConfiguration(long time, String vehicleId, double sightDistance) {
+        this(time, vehicleId, sightDistance, 360);
+    }
+
+    /**
+     * Creates an interaction that includes the sender name (vehicle) and its sight distance (in m).
+     *
+     * @param time          Timestamp of this interaction, unit: [ns]
+     * @param vehicleId     vehicle identifier
+     * @param sightDistance sight distance of the vehicle, unit: [m]
+     * @param openingAngle  opening angle of the sight area of the vehicle in degrees, unit: [deg]
+     */
+    public VehicleSightDistanceConfiguration(long time, String vehicleId, double sightDistance, double openingAngle) {
         super(time);
         this.vehicleId = vehicleId;
         this.sightDistance = sightDistance;
+        this.openingAngle = openingAngle;
     }
 
     public double getSightDistance() {
         return sightDistance;
+    }
+
+    public double getOpeningAngle() {
+        return openingAngle;
     }
 
     public String getVehicleId() {
@@ -68,6 +90,7 @@ public final class VehicleSightDistanceConfiguration extends Interaction {
         return new HashCodeBuilder(7, 29)
                 .append(vehicleId)
                 .append(sightDistance)
+                .append(openingAngle)
                 .toHashCode();
     }
 
@@ -87,6 +110,7 @@ public final class VehicleSightDistanceConfiguration extends Interaction {
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.sightDistance, other.sightDistance)
+                .append(this.openingAngle, other.openingAngle)
                 .isEquals();
     }
 
@@ -96,6 +120,7 @@ public final class VehicleSightDistanceConfiguration extends Interaction {
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
                 .append("sightDistance", sightDistance)
+                .append("openingAngle", openingAngle)
                 .toString();
     }
 }

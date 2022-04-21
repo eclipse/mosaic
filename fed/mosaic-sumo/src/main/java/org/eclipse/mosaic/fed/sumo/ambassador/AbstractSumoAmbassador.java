@@ -27,6 +27,7 @@ import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_LANE_
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_PARAM_CHANGE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_RESUME_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_ROUTE_CHANGE_REQ;
+import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SIGHT_DISTANCE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SLOWDOWN_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SPEED_CHANGE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_STOP_REQ;
@@ -63,6 +64,7 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleRouteChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation.SensorType;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSightDistanceConfiguration;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
@@ -491,6 +493,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             receiveInteraction((VehicleSensorActivation) interaction);
         } else if (interaction.getTypeId().equals(VehicleSpeedChange.TYPE_ID)) {
             receiveInteraction((VehicleSpeedChange) interaction);
+        } else if (interaction.getTypeId().equals(VehicleSightDistanceConfiguration.TYPE_ID)) {
+            receiveInteraction((VehicleSightDistanceConfiguration) interaction);
         } else if (interaction.getTypeId().equals(InductionLoopDetectorSubscription.TYPE_ID)) {
             receiveInteraction((InductionLoopDetectorSubscription) interaction);
         } else if (interaction.getTypeId().equals(LaneAreaDetectorSubscription.TYPE_ID)) {
@@ -870,6 +874,23 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
+    private synchronized void receiveInteraction(VehicleSightDistanceConfiguration vehicleSightDistanceConfiguration) throws InternalFederateException {
+        log.info("{} at simulation time {}: vehicleId=\"{}\", range={}, angle={}",
+                VEHICLE_SIGHT_DISTANCE_REQ,
+                TIME.format(vehicleSightDistanceConfiguration.getTime()),
+                vehicleSightDistanceConfiguration.getVehicleId(),
+                vehicleSightDistanceConfiguration.getSightDistance(),
+                vehicleSightDistanceConfiguration.getOpeningAngle()
+        );
+
+        bridge.getSimulationControl().subscribeForVehiclesWithinFieldOfVision(
+                vehicleSightDistanceConfiguration.getVehicleId(),
+                vehicleSightDistanceConfiguration.getTime(), getEndTime(),
+                vehicleSightDistanceConfiguration.getSightDistance(),
+                vehicleSightDistanceConfiguration.getOpeningAngle()
+        );
+    }
+
     /**
      * Extract data from received {@link InductionLoopDetectorSubscription} interaction and forward to SUMO.
      *
@@ -877,13 +898,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @throws InternalFederateException Exception if an error occurred while subscribe to induction loop.
      */
     private synchronized void receiveInteraction(InductionLoopDetectorSubscription inductionLoopDetectorSubscription) throws InternalFederateException {
-
-        if (log.isInfoEnabled()) {
-            log.info(
-                    INDUCTION_LOOP_DETECTOR_SUBSCRIPTION + " Subscribe to InductionLoop with ID={}",
-                    inductionLoopDetectorSubscription.getInductionLoopId()
-            );
-        }
+        log.info(
+                INDUCTION_LOOP_DETECTOR_SUBSCRIPTION + " Subscribe to InductionLoop with ID={}",
+                inductionLoopDetectorSubscription.getInductionLoopId()
+        );
 
         bridge.getSimulationControl().subscribeForInductionLoop(
                 inductionLoopDetectorSubscription.getInductionLoopId(),
@@ -899,13 +917,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @throws InternalFederateException Exception if an error occurred while subscribe to lane area detector.
      */
     private synchronized void receiveInteraction(LaneAreaDetectorSubscription laneAreaDetectorSubscription) throws InternalFederateException {
-
-        if (log.isInfoEnabled()) {
-            log.info(
-                    LANE_AREA_DETECTOR_SUBSCRIPTION + " Subscribe to LaneArea with ID={}",
-                    laneAreaDetectorSubscription.getLaneAreaId()
-            );
-        }
+        log.info(
+                LANE_AREA_DETECTOR_SUBSCRIPTION + " Subscribe to LaneArea with ID={}",
+                laneAreaDetectorSubscription.getLaneAreaId()
+        );
 
         bridge.getSimulationControl().subscribeForLaneArea(
                 laneAreaDetectorSubscription.getLaneAreaId(),
@@ -921,13 +936,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @throws InternalFederateException Exception if an error occurred while subscribe to the traffic light.
      */
     private synchronized void receiveInteraction(TrafficLightSubscription trafficLightSubscription) throws InternalFederateException {
-
-        if (log.isInfoEnabled()) {
-            log.info("{} at simulation time {}: Subscribe to Traffic light group with ID={}",
-                    TRAFFIC_LIGHT_SUBSCRIPTION, TIME.format(trafficLightSubscription.getTime()),
-                    trafficLightSubscription.getTrafficLightGroupId()
-            );
-        }
+        log.info("{} at simulation time {}: Subscribe to Traffic light group with ID={}",
+                TRAFFIC_LIGHT_SUBSCRIPTION, TIME.format(trafficLightSubscription.getTime()),
+                trafficLightSubscription.getTrafficLightGroupId()
+        );
 
         bridge.getSimulationControl().subscribeForTrafficLight(
                 trafficLightSubscription.getTrafficLightGroupId(),
@@ -1062,23 +1074,27 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
-    private void receiveInteraction(TrafficSignRegistration interaction) throws InternalFederateException {
-        if (interaction.getTrafficSign() instanceof TrafficSignSpeed) {
-            trafficSignManager.addSpeedSign((TrafficSignSpeed) interaction.getTrafficSign());
-        } else if (interaction.getTrafficSign() instanceof TrafficSignLaneAssignment) {
-            trafficSignManager.addLaneAssignmentSign((TrafficSignLaneAssignment) interaction.getTrafficSign());
+    private void receiveInteraction(TrafficSignRegistration trafficSignRegistration) throws InternalFederateException {
+        if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignSpeed) {
+            trafficSignManager.addSpeedSign((TrafficSignSpeed) trafficSignRegistration.getTrafficSign());
+        } else if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignLaneAssignment) {
+            trafficSignManager.addLaneAssignmentSign((TrafficSignLaneAssignment) trafficSignRegistration.getTrafficSign());
         }
     }
 
-    private void receiveInteraction(TrafficSignSpeedLimitChange interaction) throws InternalFederateException {
+    private void receiveInteraction(TrafficSignSpeedLimitChange trafficSignSpeedLimitChange) throws InternalFederateException {
         trafficSignManager.changeVariableSpeedSign(
-                interaction.getTrafficSignId(), interaction.getLane(), interaction.getSpeedLimit()
+                trafficSignSpeedLimitChange.getTrafficSignId(), 
+                trafficSignSpeedLimitChange.getLane(), 
+                trafficSignSpeedLimitChange.getSpeedLimit()
         );
     }
 
-    private void receiveInteraction(TrafficSignLaneAssignmentChange interaction) throws InternalFederateException {
+    private void receiveInteraction(TrafficSignLaneAssignmentChange trafficSignLaneAssignmentChange) throws InternalFederateException {
         trafficSignManager.changeVariableLaneAssignmentSign(
-                interaction.getTrafficSignId(), interaction.getLane(), interaction.getAllowedVehicleClasses()
+                trafficSignLaneAssignmentChange.getTrafficSignId(), 
+                trafficSignLaneAssignmentChange.getLane(), 
+                trafficSignLaneAssignmentChange.getAllowedVehicleClasses()
         );
     }
 

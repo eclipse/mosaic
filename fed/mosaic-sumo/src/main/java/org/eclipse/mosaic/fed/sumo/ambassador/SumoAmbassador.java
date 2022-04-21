@@ -151,51 +151,50 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Handles the {@link VehicleRegistration}-registration and adds the vehicle to the current
      * simulation.
      *
-     * @param interaction {@link VehicleRegistration} containing the vehicle definition.
+     * @param vehicleRegistration {@link VehicleRegistration} containing the vehicle definition.
      */
-    private void receiveInteraction(VehicleRegistration interaction) {
-        VehicleMapping vehicleMapping = interaction.getMapping();
+    private void receiveInteraction(VehicleRegistration vehicleRegistration) {
+        VehicleMapping vehicleMapping = vehicleRegistration.getMapping();
         String vehicleId = vehicleMapping.getName();
         String logMessage;
         boolean isVehicleAddedViaRti = !vehiclesAddedViaRouteFile.contains(vehicleMapping.getName());
         if (isVehicleAddedViaRti) {
             vehiclesAddedViaRti.add(vehicleMapping.getName());
-            notYetAddedVehicles.add(interaction);
-            logMessage = "VehicleRegistration from RTI \"{}\" received at simulation time {} ns";
+            notYetAddedVehicles.add(vehicleRegistration);
+            logMessage = "VehicleRegistration from RTI \"{}\" received at simulation time {} ns (subscribe={})";
         } else { // still subscribe to vehicles with apps
-            logMessage = "VehicleRegistration for SUMO vehicle \"{}\" received at simulation time {} ns";
+            logMessage = "VehicleRegistration for SUMO vehicle \"{}\" received at simulation time {} ns (subscribe={})";
         }
-        log.info(logMessage, vehicleId, interaction.getTime());
+
+        boolean subscribeToVehicle = sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication();
+        log.info(logMessage, vehicleId, vehicleRegistration.getTime(), subscribeToVehicle);
 
         // now prepare vehicles to subscribe to
-        boolean subscribeToVehicle = sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication();
         if (subscribeToVehicle) {
-            notYetSubscribedVehicles.add(interaction);
-        } else {
-            log.debug("Won't subscribe to vehicle \"{}\".", vehicleId);
+            notYetSubscribedVehicles.add(vehicleRegistration);
         }
     }
 
     /**
      * This processes a {@link VehicleRouteRegistration} that have been dynamically created.
      *
-     * @param interaction Interaction containing information about an added route.
+     * @param vehicleRouteRegistration Interaction containing information about an added route.
      */
-    private void receiveInteraction(VehicleRouteRegistration interaction) throws InternalFederateException {
-        VehicleRoute newRoute = interaction.getRoute();
+    private void receiveInteraction(VehicleRouteRegistration vehicleRouteRegistration) throws InternalFederateException {
+        VehicleRoute newRoute = vehicleRouteRegistration.getRoute();
         propagateRouteIfAbsent(newRoute.getId(), newRoute);
     }
 
     /**
      * Extract data from the {@link VehicleRoutesInitialization} to SUMO.
      *
-     * @param interaction interaction containing vehicle departures and pre calculated routes for change route requests.
+     * @param vehicleRoutesInitialization interaction containing vehicle departures and pre calculated routes for change route requests.
      * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci(), completeRoutes() or readRouteFromTraci()
      */
-    private void receiveInteraction(VehicleRoutesInitialization interaction) throws InternalFederateException {
-        log.debug("Received VehicleRoutesInitialization: {}", interaction.getTime());
+    private void receiveInteraction(VehicleRoutesInitialization vehicleRoutesInitialization) throws InternalFederateException {
+        log.debug("Received VehicleRoutesInitialization: {}", vehicleRoutesInitialization.getTime());
 
-        cachedVehicleRoutesInitialization = interaction;
+        cachedVehicleRoutesInitialization = vehicleRoutesInitialization;
         if (sumoReadyToStart()) {
             sumoStartupProcedure();
         }
@@ -204,13 +203,13 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     /**
      * Extract data from the {@link VehicleTypesInitialization} and forward to SUMO.
      *
-     * @param interaction interaction containing vehicle types
+     * @param vehicleTypesInitialization interaction containing vehicle types
      * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci() or completeRoutes()
      */
-    private void receiveInteraction(VehicleTypesInitialization interaction) throws InternalFederateException {
+    private void receiveInteraction(VehicleTypesInitialization vehicleTypesInitialization) throws InternalFederateException {
         log.debug("Received VehicleTypesInitialization");
 
-        cachedVehicleTypesInitialization = interaction;
+        cachedVehicleTypesInitialization = vehicleTypesInitialization;
         if (sumoReadyToStart()) {
             sumoStartupProcedure();
         }
@@ -298,24 +297,24 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
     private void addNotYetAddedVehicles(long time) throws InternalFederateException {
         for (Iterator<VehicleRegistration> iterator = notYetAddedVehicles.iterator(); iterator.hasNext(); ) {
-            VehicleRegistration interaction = iterator.next();
+            VehicleRegistration vehicleRegistration = iterator.next();
 
-            String vehicleId = interaction.getMapping().getName();
-            String vehicleType = interaction.getMapping().getVehicleType().getName();
-            String routeId = interaction.getDeparture().getRouteId();
-            String departPos = String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDeparturePos());
-            int departIndex = interaction.getDeparture().getDepartureConnectionIndex();
-            String departSpeed = extractDepartureSpeed(interaction);
-            String laneId = extractDepartureLane(interaction);
+            String vehicleId = vehicleRegistration.getMapping().getName();
+            String vehicleType = vehicleRegistration.getMapping().getVehicleType().getName();
+            String routeId = vehicleRegistration.getDeparture().getRouteId();
+            String departPos = String.format(Locale.ENGLISH, "%.2f", vehicleRegistration.getDeparture().getDeparturePos());
+            int departIndex = vehicleRegistration.getDeparture().getDepartureConnectionIndex();
+            String departSpeed = extractDepartureSpeed(vehicleRegistration);
+            String laneId = extractDepartureLane(vehicleRegistration);
 
             try {
-                if (interaction.getTime() <= time) {
+                if (vehicleRegistration.getTime() <= time) {
                     log.info("Adding new vehicle \"{}\" at simulation time {} ns (type={}, routeId={}, laneId={}, departPos={})",
-                            vehicleId, interaction.getTime(), vehicleType, routeId, laneId, departPos);
+                            vehicleId, vehicleRegistration.getTime(), vehicleType, routeId, laneId, departPos);
 
                     if (!routeCache.containsKey(routeId)) {
                         throw new IllegalArgumentException(
-                                "Unknown route " + routeId + " for vehicle with departure time " + interaction.getTime()
+                                "Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime()
                         );
                     }
 
@@ -327,7 +326,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
                     applyChangesInVehicleTypeForVehicle(
                             vehicleId,
-                            interaction.getMapping().getVehicleType(),
+                            vehicleRegistration.getMapping().getVehicleType(),
                             cachedVehicleTypesInitialization.getTypes().get(vehicleType)
                     );
                     iterator.remove();
@@ -405,10 +404,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         }
     }
 
-    private String extractDepartureSpeed(VehicleRegistration interaction) {
-        switch (interaction.getDeparture().getDepartureSpeedMode()) {
+    private String extractDepartureSpeed(VehicleRegistration vehicleRegistration) {
+        switch (vehicleRegistration.getDeparture().getDepartureSpeedMode()) {
             case PRECISE:
-                return String.format(Locale.ENGLISH, "%.2f", interaction.getDeparture().getDepartureSpeed());
+                return String.format(Locale.ENGLISH, "%.2f", vehicleRegistration.getDeparture().getDepartureSpeed());
             case RANDOM:
                 return "random";
             case MAXIMUM:
@@ -417,8 +416,8 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         }
     }
 
-    private String extractDepartureLane(VehicleRegistration interaction) {
-        switch (interaction.getDeparture().getLaneSelectionMode()) {
+    private String extractDepartureLane(VehicleRegistration vehicleRegistration) {
+        switch (vehicleRegistration.getDeparture().getLaneSelectionMode()) {
             case RANDOM:
                 return "random";
             case FREE:
@@ -430,11 +429,11 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             case FIRST:
                 return "first";
             case HIGHWAY:
-                return isTruckOrTrailer(interaction.getMapping().getVehicleType().getVehicleClass())
+                return isTruckOrTrailer(vehicleRegistration.getMapping().getVehicleType().getVehicleClass())
                         ? "first"
                         : "best";
             default:
-                int extractedLaneId = interaction.getDeparture().getDepartureLane();
+                int extractedLaneId = vehicleRegistration.getDeparture().getDepartureLane();
                 return extractedLaneId >= 0
                         ? Integer.toString(extractedLaneId)
                         : "best";

@@ -31,12 +31,15 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleAdd;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetRemove;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetUpdateBestLanes;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribeSurroundingVehicle;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscriptionSetFieldOfVision;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.AbstractSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.InductionLoopSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LaneAreaSubscriptionResult;
-import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadFollowVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionResult;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleContextSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.fed.sumo.util.InductionLoop;
@@ -54,6 +57,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.objects.vehicle.Consumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.Emissions;
+import org.eclipse.mosaic.lib.objects.vehicle.SurroundingVehicle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleConsumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleEmissions;
@@ -64,7 +68,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +91,10 @@ public class SimulationFacade {
     private final VehicleAdd vehicleAdd;
     private final VehicleSetRemove remove;
 
+
     private final VehicleSubscribe vehicleSubscribe;
+    private final VehicleSubscribeSurroundingVehicle vehicleSubscribeSurrounding;
+    private final VehicleSubscriptionSetFieldOfVision vehicleSubscriptionFilterFieldOfVision;
     private final InductionLoopSubscribe inductionloopSubscribe;
     private final LaneAreaSubscribe laneAreaSubscribe;
     private final TrafficLightSubscribe trafficLightSubscribe;
@@ -163,6 +169,9 @@ public class SimulationFacade {
         this.laneSetMaxSpeed = bridge.getCommandRegister().getOrCreate(LaneSetMaxSpeed.class);
 
         this.laneGetLength = bridge.getCommandRegister().getOrCreate(LaneGetLength.class);
+
+        this.vehicleSubscribeSurrounding = bridge.getCommandRegister().getOrCreate(VehicleSubscribeSurroundingVehicle.class);
+        this.vehicleSubscriptionFilterFieldOfVision = bridge.getCommandRegister().getOrCreate(VehicleSubscriptionSetFieldOfVision.class);
     }
 
     /**
@@ -224,6 +233,26 @@ public class SimulationFacade {
     public void subscribeForVehicle(String vehicleId, long start, long end) throws InternalFederateException {
         try {
             vehicleSubscribe.execute(bridge, vehicleId, start, end);
+        } catch (CommandException e) {
+            throw new InternalFederateException(String.format("Could not subscribe for vehicle %s", vehicleId), e);
+        }
+    }
+
+    /**
+     * Creates a contextual subscription which returns all vehicles surrounding the specified vehicle filtered by a field of vision
+     * (sight distance and opening angle).
+     *
+     * @param vehicleId    the id of the vehicle to subscribe the data of surrounding vehicles
+     * @param start        the time [ns] the subscription should start
+     * @param end          the time [ns] the subscription should end
+     * @param range        the range of the field of vision [m]
+     * @param openingAngle the opening angle of the field of vision [deg]
+     * @throws InternalFederateException if it was not possible to create a context subscription
+     */
+    public void subscribeForVehiclesWithinFieldOfVision(String vehicleId, long start, long end, double range, double openingAngle) throws InternalFederateException {
+        try {
+            vehicleSubscribeSurrounding.execute(bridge, vehicleId, start, end, range);
+            vehicleSubscriptionFilterFieldOfVision.execute(bridge, openingAngle);
         } catch (CommandException e) {
             throw new InternalFederateException(String.format("Could not subscribe for vehicle %s", vehicleId), e);
         }
@@ -353,10 +382,6 @@ public class SimulationFacade {
         if (rear) {
             vehicleState.rearSensorDistance = maximumLookahead > 0 ? maximumLookahead : null;
         }
-        this.noRearSensorConfigured = true;
-        for (SumoVehicleState aState : sumoVehicles.values()) {
-            noRearSensorConfigured &= aState.rearSensorDistance == null;
-        }
     }
 
     /**
@@ -378,11 +403,10 @@ public class SimulationFacade {
             // POST-PROCESSING
             sumoVehicles.values().forEach(v -> v.lastVehicleData = v.currentVehicleData);
 
-            final Map<String, Double> followerDistances = calcFollowerDistancesBasedOnLeadingVehicles(subscriptions);
             final Map<String, String> vehicleSegmentInfo = calculateVehicleSegmentInfo(subscriptions);
 
-            final List<VehicleData> addedVehicles = new ArrayList<>();
-            final List<VehicleData> updatedVehicles = new ArrayList<>();
+            final List<VehicleData> addedVehicles = new LinkedList<>();
+            final List<VehicleData> updatedVehicles = new LinkedList<>();
 
             final List<InductionLoopInfo> updatedInductionLoops = new ArrayList<>();
             final List<LaneAreaDetectorInfo> updatedLaneAreas = new ArrayList<>();
@@ -391,7 +415,7 @@ public class SimulationFacade {
             for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
                 if (subscriptionResult instanceof VehicleSubscriptionResult) {
                     final SumoVehicleState sumoVehicle = processVehicleSubscriptionResult(
-                            time, (VehicleSubscriptionResult) subscriptionResult, followerDistances, vehicleSegmentInfo
+                            time, (VehicleSubscriptionResult) subscriptionResult, vehicleSegmentInfo
                     );
                     if (sumoVehicle == null) {
                         continue;
@@ -419,6 +443,13 @@ public class SimulationFacade {
                 }
             }
 
+            for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
+                if (subscriptionResult instanceof VehicleContextSubscriptionResult) {
+                    // needs to be done in a subsequent loop, as previously created VehicleData is updated here
+                    processVehicleContextSubscriptionResult((VehicleContextSubscriptionResult) subscriptionResult);
+                }
+            }
+
             final List<String> removedVehicles = findRemovedVehicles(time);
 
             final VehicleUpdates vehicleUpdates = new VehicleUpdates(time, addedVehicles, updatedVehicles, removedVehicles);
@@ -433,7 +464,6 @@ public class SimulationFacade {
 
     private SumoVehicleState processVehicleSubscriptionResult(final long time,
                                                               final VehicleSubscriptionResult veh,
-                                                              final Map<String, Double> followerDistances,
                                                               final Map<String, String> vehicleSegmentInfo
     ) {
 
@@ -469,8 +499,9 @@ public class SimulationFacade {
                 .route(veh.routeId)
                 .signals(decodeVehicleSignals(veh.signalsEncoded))
                 .stopped(vehicleStopMode)
-                .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.minGap, followerDistances.get(veh.id)))
+                .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
                 .laneArea(vehicleSegmentInfo.get(veh.id));
+
 
         if (isParking) {
             if (!sumoVehicle.lastVehicleData.isStopped()) {
@@ -507,6 +538,19 @@ public class SimulationFacade {
             }
         }
         return removedVehicles;
+    }
+
+
+    private void processVehicleContextSubscriptionResult(VehicleContextSubscriptionResult contextSubscriptionResult) {
+        SumoVehicleState sumoVehicleState = getVehicleState(contextSubscriptionResult.id);
+        for (VehicleSubscriptionResult vehInSight : contextSubscriptionResult.contextSubscriptions) {
+            if (contextSubscriptionResult.id.equals(vehInSight.id)) {
+                continue;
+            }
+            sumoVehicleState.currentVehicleData.getVehiclesInSight().add(
+                    new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed, vehInSight.heading)
+            );
+        }
     }
 
     private InductionLoopInfo processInductionLoopSubscriptionResult(long time, InductionLoopSubscriptionResult inductionLoop) {
@@ -581,13 +625,15 @@ public class SimulationFacade {
     /**
      * Creates an immutable object holding front and rear distance sensor data based on leading vehicle information.
      *
-     * @param vehicleState     The state of the vehicle the VehicleSensors object should be created for
-     * @param leadingVehicle   Information of the leading vehicle.
-     * @param minGap           The minimum gap of the current vehicle.
-     * @param followerDistance The distance to the follower of the current vehicle
+     * @param vehicleState    The state of the vehicle the VehicleSensors object should be created for
+     * @param leadingVehicle  Information about the leading vehicle.
+     * @param followerVehicle Information about the follower vehicle.
+     * @param minGap          The minimum gap of the current vehicle.
      * @return an immutable sensor data object
      */
-    private VehicleSensors createSensorData(SumoVehicleState vehicleState, LeadingVehicle leadingVehicle, double minGap, Double followerDistance) {
+    private VehicleSensors createSensorData(
+            SumoVehicleState vehicleState, LeadFollowVehicle leadingVehicle, LeadFollowVehicle followerVehicle, double minGap
+    ) {
 
         boolean hasFrontSensorActivated = vehicleState.frontSensorDistance != null;
         boolean hasBackSensorActivated = vehicleState.rearSensorDistance != null;
@@ -596,13 +642,18 @@ public class SimulationFacade {
         double leaderSpeed = hasFrontSensorActivated ? Double.POSITIVE_INFINITY : -1;
         double rearDistance = hasBackSensorActivated ? Double.POSITIVE_INFINITY : -1;
 
-        if (hasFrontSensorActivated && leadingVehicle != LeadingVehicle.NO_LEADER) {
-            frontDistance = leadingVehicle.getLeadingVehicleDistance() + minGap;
-            VehicleData leadingVehicleData = getLastKnownVehicleData(leadingVehicle.getLeadingVehicleId());
+        if (hasFrontSensorActivated
+                && leadingVehicle.getDistance() < vehicleState.frontSensorDistance
+        ) {
+            frontDistance = leadingVehicle.getDistance() + minGap;
+            VehicleData leadingVehicleData = getLastKnownVehicleData(leadingVehicle.getOtherVehicleId());
             leaderSpeed = leadingVehicleData != null ? leadingVehicleData.getSpeed() : -1;
         }
-        if (hasBackSensorActivated && followerDistance != null) {
-            rearDistance = followerDistance;
+        if (hasBackSensorActivated
+                && followerVehicle.getDistance() < vehicleState.rearSensorDistance
+        ) {
+            // using the own minGap is not 100% correct here, but it would be very expensive to fetch the minGap of the follower
+            rearDistance = followerVehicle.getDistance() + minGap;
         }
         return new VehicleSensors(
                 new DistanceSensor(frontDistance, rearDistance, -1d, -1d),
@@ -627,35 +678,6 @@ public class SimulationFacade {
             }
         }
         return vehicleToSegmentMap;
-    }
-
-    /**
-     * Calculates the distance towards the follower vehicle based on leading vehicle information.
-     *
-     * @param subscriptions Subscription data.
-     * @return The distance to the follower for each vehicle.
-     */
-    private Map<String, Double> calcFollowerDistancesBasedOnLeadingVehicles(List<AbstractSubscriptionResult> subscriptions) {
-        if (noRearSensorConfigured) {
-            return new HashMap<>();
-        }
-
-        final Map<String, Double> followerDistances = new HashMap<>();
-        for (AbstractSubscriptionResult veh : subscriptions) {
-            if (!(veh instanceof VehicleSubscriptionResult)) {
-                continue;
-            }
-            LeadingVehicle leader = ((VehicleSubscriptionResult) veh).leadingVehicle;
-            if (leader != LeadingVehicle.NO_LEADER) {
-                Double rearDistanceRange = getVehicleState(leader.getLeadingVehicleId()).rearSensorDistance;
-                double distance = leader.getLeadingVehicleDistance() <= ObjectUtils.defaultIfNull(rearDistanceRange, 0d)
-                        ? leader.getLeadingVehicleDistance() + ((VehicleSubscriptionResult) veh).minGap
-                        : Double.POSITIVE_INFINITY;
-
-                followerDistances.put(leader.getLeadingVehicleId(), distance);
-            }
-        }
-        return followerDistances;
     }
 
     private SumoVehicleState getVehicleState(String id) {

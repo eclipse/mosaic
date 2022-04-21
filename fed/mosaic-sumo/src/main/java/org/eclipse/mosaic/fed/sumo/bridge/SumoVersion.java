@@ -81,7 +81,7 @@ public enum SumoVersion {
         return UNKNOWN;
     }
 
-    private final static Pattern VERSION_PATTERN = Pattern.compile("^SUMO v?([0-9]\\.[0-9])\\..*$");
+    private final static Pattern VERSION_PATTERN = Pattern.compile("^SUMO v?([0-9]\\.[0-9]+)\\..*$");
 
     private static boolean matches(String sumoVersionString, String sumoVersionPattern) {
         final Matcher matcher = VERSION_PATTERN.matcher(sumoVersionString);

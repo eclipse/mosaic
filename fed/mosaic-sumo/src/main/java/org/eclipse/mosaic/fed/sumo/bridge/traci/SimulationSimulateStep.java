@@ -55,9 +55,9 @@ public class SimulationSimulateStep
      * This method executes the command with the given arguments in order to set the simulation step.
      *
      * @param bridge Connection to SUMO.
-     * @param time     Time step.
+     * @param time   Time step.
      * @return List of the results.
-     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     public List<AbstractSubscriptionResult> execute(Bridge bridge, long time) throws CommandException, InternalFederateException {

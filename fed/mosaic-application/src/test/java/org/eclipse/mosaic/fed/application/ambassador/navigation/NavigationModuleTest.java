@@ -29,8 +29,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
@@ -71,12 +73,10 @@ public class NavigationModuleTest {
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-
     private final EventManager eventMngMock = mock(EventManager.class);
     private final CentralNavigationComponent cncMock = mock(CentralNavigationComponent.class);
 
     private final VehicleData vehicleDataMock = mock(VehicleData.class);
-
 
     @InjectMocks
     @Rule
@@ -91,10 +91,12 @@ public class NavigationModuleTest {
 
     @Before
     public void setup() {
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
         VehicleUnit vehicle = new VehicleUnit("veh_0", mock(VehicleType.class), null);
 
         navigationModule = Mockito.spy(new NavigationModule(vehicle));
         navigationModule.setVehicleData(vehicleDataMock);
+
 
         when(vehicleDataMock.getHeading()).thenReturn(45.0d);
         when(vehicleDataMock.getPosition()).thenReturn(GeoPoint.latLon(10, 10));
@@ -109,7 +111,6 @@ public class NavigationModuleTest {
         routeMap.put("123", new VehicleRoute("123", Collections.singletonList("edgeID"), Collections.singletonList("nodeID"), 0.0));
         when(cncMock.getRouteMap()).thenReturn(routeMap);
         when(cncMock.getTargetPositionOfRoute(ArgumentMatchers.anyString())).thenReturn(GeoPoint.latLon(30, 40));
-
     }
 
     @Test
@@ -138,7 +139,6 @@ public class NavigationModuleTest {
         // ASSERT
         calculateRoutes_routeRequestBuiltCorrectly_helper(params);
         assertEquals(target, findRouteRequest.getTarget().getPosition());
-
     }
 
     private void calculateRoutes_routeRequestBuiltCorrectly_helper(RoutingParameters params) {
@@ -239,7 +239,6 @@ public class NavigationModuleTest {
     private void testRetrieveAllValidExistingRoutesToTargetValidRoute_assert(Collection<CandidateRoute> coll) {
         assertEquals(1, coll.size());
         assertTrue(coll.iterator().next().getConnectionIds().contains("edgeID"));
-
     }
 
     /**

@@ -67,15 +67,17 @@ public class PerceptionGrid implements SpatialVehicleIndex {
             VehicleObject vehicleObject = indexedVehicles.get(v.getName());
             if (vehicleObject == null) {
                 vehicleObject = new VehicleObject(v.getName()).setPosition(v.getProjectedPosition());
+                if (vehicleGrid.addItem(vehicleObject)) {
+                    indexedVehicles.put(v.getName(), vehicleObject);
+                }
             }
             vehicleObject
                     .setHeading(v.getHeading())
                     .setSpeed(v.getSpeed())
                     .setPosition(v.getProjectedPosition());
-            if (vehicleGrid.addOrUpdateItem(vehicleObject)) {
-                indexedVehicles.put(v.getName(), vehicleObject);
-            }
+
         });
+        vehicleGrid.updateGrid();
     }
 
     @Override
