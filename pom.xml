@@ -104,7 +104,7 @@
         <version.jsch>0.1.51</version.jsch><!-- 0.1.51 is approved in CQ8378 -->
         <version.junit>4.13</version.junit><!-- 4.13 is approved in CQ21439 -->
         <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
-        <version.logback>1.2.3</version.logback><!-- 1.2.3 is approved in CQ16622 -->
+        <version.logback>1.2.9</version.logback><!-- 1.2.3 is approved in CQ16622 -->
         <version.mockito>2.23.0</version.mockito><!-- 2.23.0 is approved in CQ17976 -->
         <version.protobuf>3.8.0</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
         <version.slf4j>1.7.30</version.slf4j><!-- 1.7.30 is approved in CQ21339 -->
