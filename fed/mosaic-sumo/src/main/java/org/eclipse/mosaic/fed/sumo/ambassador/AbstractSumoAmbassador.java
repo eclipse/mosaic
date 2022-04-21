@@ -27,7 +27,7 @@ import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_LANE_
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_PARAM_CHANGE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_RESUME_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_ROUTE_CHANGE_REQ;
-import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SIGHT_DISTANCE__REQ;
+import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SIGHT_DISTANCE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SLOWDOWN_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_SPEED_CHANGE_REQ;
 import static org.eclipse.mosaic.fed.sumo.ambassador.LogStatements.VEHICLE_STOP_REQ;
@@ -876,7 +876,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
     private synchronized void receiveInteraction(VehicleSightDistanceConfiguration vehicleSightDistanceConfiguration) throws InternalFederateException {
         log.info("{} at simulation time {}: vehicleId=\"{}\", range={}, angle={}",
-                VEHICLE_SIGHT_DISTANCE__REQ,
+                VEHICLE_SIGHT_DISTANCE_REQ,
                 TIME.format(vehicleSightDistanceConfiguration.getTime()),
                 vehicleSightDistanceConfiguration.getVehicleId(),
                 vehicleSightDistanceConfiguration.getSightDistance(),
