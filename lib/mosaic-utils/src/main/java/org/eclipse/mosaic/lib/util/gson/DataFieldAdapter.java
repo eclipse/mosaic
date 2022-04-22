@@ -42,7 +42,7 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
 
     private final static String UNLIMITED = "unlimited";
 
-    private final static Pattern BANDWIDTH_PATTERN = Pattern.compile("^([0-9]+\\.?[0-9]*) ?(|(|k|M|G|T|Ki|Mi|Gi|Ti)(B|b|bit|Bit|byte|Byte)(|ps))$");
+    private final static Pattern BANDWIDTH_PATTERN = Pattern.compile("^([0-9]+\\.?[0-9]*) ?(|(|k|M|G|T|Ki|Mi|Gi|Ti)(B|b|bit|Bit|bits|Bits|byte|Byte|bytes|Bytes)(|ps))$");
     private final static Map<String, Long> MULTIPLIERS = ImmutableMap.<String, Long>builder()
             .put("", DATA.BIT)
             .put("k", DATA.KILOBIT)
@@ -123,7 +123,7 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
         }
 
         long multiplier = Validate.notNull(MULTIPLIERS.get(prefix.toLowerCase()), "Invalid unit " + prefix + unit);
-        if ("byte".equalsIgnoreCase(unit) || "B".equals(unit)) {
+        if ("bytes".equalsIgnoreCase(unit)  || "byte".equalsIgnoreCase(unit) || "B".equals(unit)) {
             return multiplier * DATA.BYTE;
         } else {
             return multiplier;
