@@ -12,12 +12,8 @@
                 { "type": "integer", "minimum": 0 }
             ]
         },
-        "minimalPayloadLength": {
-            "description": "The minimal size which the payload of any ETSI message (CAM, DENM, IVIM) pay should have, given in bytes",
-            "type": "integer"
-        },
         "encodePayloads": {
-            "description": "If set to true, messages (e.g. CAMs, DENMs, or SPATMs) will be encoded into a byte array. If set to false, only their length is stored which may help to improve performance on large-scale scenarios.",
+            "description": "If set to true, messages (e.g. CAMs, DENMs, or SPATMs) will be encoded to a byte array. If set to false, only their length is stored which may help to improve performance on large-scale scenarios.",
             "default": true,
             "type": "boolean"
         },
