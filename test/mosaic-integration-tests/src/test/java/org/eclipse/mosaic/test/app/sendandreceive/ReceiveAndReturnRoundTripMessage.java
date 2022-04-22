@@ -22,10 +22,10 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.lib.objects.v2x.GenericV2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 /**
  * Simple app expecting V2xMessage from server and returning it when received.
@@ -46,7 +46,7 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (receivedV2xMessage.getMessage() instanceof SimpleV2xMessage) {
+        if (receivedV2xMessage.getMessage() instanceof GenericV2xMessage) {
             getLog().infoSimTime(
                     this,
                     "Received round trip message #{} at time {} using protocol {}",
@@ -56,7 +56,7 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
             );
             String roundtripReceiver = receivedV2xMessage.getMessage().getRouting().getSource().getSourceName();
             MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(roundtripReceiver);
-            getOs().getCellModule().sendV2xMessage(new SimpleV2xMessage(routing));
+            getOs().getCellModule().sendV2xMessage(new GenericV2xMessage(routing, 8));
             getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", roundtripReceiver, getOs().getSimulationTime());
         }
     }
