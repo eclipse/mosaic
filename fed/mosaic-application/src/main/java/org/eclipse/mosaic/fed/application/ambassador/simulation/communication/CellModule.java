@@ -36,12 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CellModule extends AbstractCommunicationModule<CellModuleConfiguration> {
 
     /**
-     * The configuration settings for an enabled module
-     * (includes user specific maximum bitrates, CAM over cellular settings).
-     */
-    private CellModuleConfiguration configuration = null;
-
-    /**
      * Default radius for geographic cam dissemination over the cellular network [m].
      */
     private final static long DEFAULT_CAM_GEO_RADIUS = 300;
