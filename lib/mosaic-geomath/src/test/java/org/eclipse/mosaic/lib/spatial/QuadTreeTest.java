@@ -91,7 +91,7 @@ public class QuadTreeTest {
     }
 
     @Test
-    public void queryRange_Success_TestIntersectMethod() { // This test fails with previous implementation of intersect method
+    public void queryRange_Success_TestIntersectMethod() {
         // SETUP
         tree.addItem(new Vector3d(5, 0, 5));
         tree.addItem(new Vector3d(10, 0, 10));
