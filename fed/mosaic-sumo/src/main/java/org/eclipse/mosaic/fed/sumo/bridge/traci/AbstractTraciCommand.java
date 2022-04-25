@@ -105,7 +105,7 @@ public abstract class AbstractTraciCommand<T> {
      * Call this method to execute the command with the given arguments. The order of arguments must match
      * the order of parameter writers which have been defined in the constructor. No result is returned.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     protected void execute(Bridge bridge, Object... arguments) throws CommandException, InternalFederateException {
@@ -122,7 +122,7 @@ public abstract class AbstractTraciCommand<T> {
      * to {@link #constructResult(Status, Object...)}. All objects constructed by this method are added to the list which
      * eventually will be returned by this method.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     protected List<T> executeAndReturnList(Bridge bridge, Object... arguments) throws CommandException, InternalFederateException {
@@ -140,7 +140,7 @@ public abstract class AbstractTraciCommand<T> {
      * readers are called and the resulting objects are passed to {@link #constructResult(Status, Object...)}. The
      * object constructed by this method will be returned by this method.
      *
-     * @throws CommandException     if the status code of the response is ERROR. The connection to SUMO is still available.
+     * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
     protected Optional<T> executeAndReturn(Bridge bridge, Object... arguments) throws CommandException, InternalFederateException {
@@ -238,6 +238,10 @@ public abstract class AbstractTraciCommand<T> {
             COMMAND_LENGTH_READER.read(bridge.getIn(), messageBytesLeft);
             messageBytesLeft -= COMMAND_LENGTH_READER.getNumberOfBytesRead();
 
+            // requested command variable
+            bridge.getIn().readUnsignedByte();
+            messageBytesLeft -= 1;
+
             Status status = STATUS_READER.read(bridge.getIn(), messageBytesLeft);
             messageBytesLeft -= STATUS_READER.getNumberOfBytesRead();
 
@@ -254,6 +258,7 @@ public abstract class AbstractTraciCommand<T> {
                     iterations--;
 
                     int commandLength = COMMAND_LENGTH_READER.read(bridge.getIn(), messageBytesLeft);
+
                     messageBytesLeft -= commandLength;
 
                     int actualBytesRead = COMMAND_LENGTH_READER.getNumberOfBytesRead();
@@ -276,6 +281,7 @@ public abstract class AbstractTraciCommand<T> {
                         bridge.getIn().read(new byte[commandLength - actualBytesRead]);
                     }
                 }
+
             } else {
                 throw new CommandException(String.format("TraCI Command failed: %s", status.getDescription()), status);
             }
@@ -286,6 +292,8 @@ public abstract class AbstractTraciCommand<T> {
             bridge.emergencyExit(t);
             String className = this.getClass().getSimpleName();
             throw new InternalFederateException("Error during reading response from TraCI command " + className + ".", t);
+        } finally {
+            bridge.onCommandCompleted();
         }
     }
 
@@ -510,7 +518,8 @@ public abstract class AbstractTraciCommand<T> {
          * Defines a writer for adding a Byte parameter to the message construction.
          * Additionally the data type identifier is added beforehand.  For this parameter,
          * a arguments needs to be passed to the {@link #execute(Bridge, Object...)} methods.
-         */@SuppressWarnings("UnusedReturnValue")
+         */
+        @SuppressWarnings("UnusedReturnValue")
 
         public final TraciCommandWriterBuilder writeByteParamWithType() {
             writeByte(TraciDatatypes.BYTE);

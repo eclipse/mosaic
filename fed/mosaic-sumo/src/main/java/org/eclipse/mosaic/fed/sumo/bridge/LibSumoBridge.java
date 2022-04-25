@@ -118,4 +118,8 @@ public class LibSumoBridge implements Bridge {
         throw new UnsupportedOperationException("This SUMO bridge implementation does not provide a socket connection.");
     }
 
+    @Override
+    public void onCommandCompleted() {
+        //nop
+    }
 }

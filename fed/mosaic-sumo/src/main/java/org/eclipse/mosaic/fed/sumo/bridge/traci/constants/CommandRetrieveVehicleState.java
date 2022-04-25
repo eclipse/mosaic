@@ -47,6 +47,8 @@ public class CommandRetrieveVehicleState {
 
     public static final SumoVar VAR_LEADER = SumoVar.WithParam.var(0x68, 100d);
 
+    public static final SumoVar VAR_FOLLOWER = SumoVar.WithParam.var(0x78, 100d);
+
     public final static SumoVar VAR_DISTANCE = SumoVar.var(0x84);
 
     public final static SumoVar VAR_SIGNAL_STATES = SumoVar.var(0x5b);

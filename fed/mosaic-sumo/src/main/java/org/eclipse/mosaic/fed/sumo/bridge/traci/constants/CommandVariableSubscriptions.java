@@ -62,4 +62,24 @@ public class CommandVariableSubscriptions {
      */
     public final static int RESPONSE_SUBSCRIBE_TRAFFIC_LIGHT_VALUES = 0xe2;
 
+    /**
+     * Subscribe for vehicle values within a context of another vehicle.
+     */
+    public final static int COMMAND_SUBSCRIBE_CONTEXT_VEHICLE_VALUES = 0x84;
+
+    /**
+     * Response to vehicle context subscriptions.
+     */
+    public final static int RESPONSE_SUBSCRIBE_CONTEXT_VEHICLE_VALUES = 0x94;
+
+    /**
+     * Add a filter to reduce previous set context subscription.
+     */
+    public final static int COMMAND_ADD_CONTEXT_SUBSCRIPTION_FILTER = 0x7e;
+
+    /**
+     * A subscription filter to return vehicles within field of vision
+     */
+    public final static int SUBSCRIPTION_FILTER_FIELD_OF_VISION = 0x0a;
+
 }

@@ -103,4 +103,6 @@ public interface Bridge {
      * Call this method if the connection to SUMO should be closed immediately.
      */
     void emergencyExit(Throwable e);
+
+    void onCommandCompleted();
 }

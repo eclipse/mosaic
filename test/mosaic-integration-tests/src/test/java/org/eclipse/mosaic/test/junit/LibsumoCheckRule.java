@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.test.junit;
 
+import org.eclipse.mosaic.fed.sumo.ambassador.LibSumoAmbassador;
 import org.eclipse.mosaic.rti.config.CLocalHost;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,9 +36,11 @@ public class LibsumoCheckRule implements TestRule {
                 boolean libsumoAvailable = checkForLibsumoAvailable();
                 if (!libsumoAvailable) {
                     throw new AssumptionViolatedException("Library 'Libsumo' is not available. Skipping tests.");
-                } else {
-                    statement.evaluate();
                 }
+                if (!LibSumoAmbassador.correctLibSumoVersion()) {
+                    throw new AssumptionViolatedException("Current SUMO version at " + getSumoExecutable("sumo") + " is not supported with LibSumo.");
+                }
+                statement.evaluate();
             }
         };
     }

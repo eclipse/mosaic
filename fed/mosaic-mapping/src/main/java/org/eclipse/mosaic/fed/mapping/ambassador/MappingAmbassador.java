@@ -31,7 +31,6 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.ArrayList;
@@ -123,40 +122,42 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
      * sends a {@link VehicleRegistration} message with the application list configured
      * in the prototype.
      */
-    private void handleInteraction(ScenarioVehicleRegistration interaction) throws InternalFederateException {
+    private void handleInteraction(ScenarioVehicleRegistration scenarioVehicle) throws InternalFederateException {
         if (framework != null) {
-            final CPrototype CPrototype = framework.getPrototypeByName(interaction.getVehicleTypeId());
-            if (CPrototype == null) {
+            final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleTypeId());
+            if (prototype == null) {
                 log.debug(
                         "There is no such CPrototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
-                        interaction.getVehicleTypeId(),
-                        interaction.getId()
+                        scenarioVehicle.getVehicleTypeId(),
+                        scenarioVehicle.getId()
                 );
                 return;
             }
 
             List<String> applications = new ArrayList<>();
             if (
-                    randomNumberGenerator.nextDouble() < ObjectUtils.defaultIfNull(CPrototype.weight, 1.0)
-                    && CPrototype.applications != null
+                    randomNumberGenerator.nextDouble() < ObjectUtils.defaultIfNull(prototype.weight, 1.0)
+                    && prototype.applications != null
             ) {
-                applications = CPrototype.applications;
+                applications = prototype.applications;
             }
             final VehicleRegistration vehicleRegistration = new VehicleRegistration(
-                    interaction.getTime(),
-                    interaction.getName(),
-                    CPrototype.group,
+                    scenarioVehicle.getTime(),
+                    scenarioVehicle.getName(),
+                    prototype.group,
                     applications,
                     null,
-                    new VehicleTypeSpawner(CPrototype).convertType()
+                    new VehicleTypeSpawner(prototype).convertType()
             );
             try {
+                log.info("Mapping Scenario Vehicle. time={}, name={}, type={}, apps={}",
+                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleTypeId(), applications);
                 rti.triggerInteraction(vehicleRegistration);
             } catch (Exception e) {
                 throw new InternalFederateException(e);
             }
         } else {
-            log.warn("No mapping configuration available. Skipping {}", interaction.getClass().getSimpleName());
+            log.warn("No mapping configuration available. Skipping {}", scenarioVehicle.getClass().getSimpleName());
         }
     }
 

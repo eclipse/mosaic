@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.fed.sumo.bridge.traci.reader;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
-import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadingVehicle;
+import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadFollowVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
 import org.eclipse.mosaic.lib.util.objects.Position;
@@ -94,7 +94,9 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
         } else if (varId == CommandRetrieveVehicleState.VAR_STOP_STATE.var) {
             result.stoppedStateEncoded = (int) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_LEADER.var) {
-            result.leadingVehicle = (LeadingVehicle) varValue;
+            result.leadingVehicle = (LeadFollowVehicle) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_FOLLOWER.var) {
+            result.followerVehicle = (LeadFollowVehicle) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_MIN_GAP.var) {
             result.minGap = (double) varValue;
         } else {
@@ -102,14 +104,14 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
         }
     }
 
-    static class LeadingVehicleReader extends AbstractTraciResultReader<LeadingVehicle> {
+    static class LeadingVehicleReader extends AbstractTraciResultReader<LeadFollowVehicle> {
 
         protected LeadingVehicleReader() {
             super(null);
         }
 
         @Override
-        protected LeadingVehicle readFromStream(DataInputStream in) throws IOException {
+        protected LeadFollowVehicle readFromStream(DataInputStream in) throws IOException {
             readByte(in);
             String leaderId = readString(in);
 
@@ -117,9 +119,9 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
             double leaderDistance = readDouble(in);
 
             if (StringUtils.isEmpty(leaderId) || leaderDistance < 0.0) {
-                return LeadingVehicle.NO_LEADER;
+                return LeadFollowVehicle.NONE;
             }
-            return new LeadingVehicle(leaderId, leaderDistance);
+            return new LeadFollowVehicle(leaderId, leaderDistance);
         }
     }
 }

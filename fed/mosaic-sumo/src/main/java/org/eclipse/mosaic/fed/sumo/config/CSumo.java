@@ -82,10 +82,15 @@ public class CSumo implements Serializable {
 
     /**
      * If set to {@code true} all vehicles will be subscribed (see
-     * {@link org.eclipse.mosaic.fed.sumo.traci.facades.TraciSimulationFacade#subscribeForVehicle(String, long, long)}).
+     * {@link org.eclipse.mosaic.fed.sumo.bridge.facades.SimulationFacade#subscribeForVehicle(String, long, long)}).
      * If set to {@code false} only vehicles with applications mapped to them will be subscribed.
      */
     public boolean subscribeToAllVehicles = true;
+
+    /**
+     * Prints out all traci calls.
+     */
+    public boolean debugTraciCalls = false;
 
     /**
      * A optional list of subscriptions for each vehicle in the simulation. The less subscriptions given,
@@ -115,7 +120,7 @@ public class CSumo implements Serializable {
     public final static String SUBSCRIPTION_EMISSIONS = "emissions";
 
     /**
-     * Subscription identifier for subscribing for leader information for each vehicle.
+     * Subscription identifier for subscribing for leader and follower information for each vehicle.
      */
     public final static String SUBSCRIPTION_LEADER = "leader";
 

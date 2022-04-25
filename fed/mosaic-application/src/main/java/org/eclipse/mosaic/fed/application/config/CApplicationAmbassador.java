@@ -82,7 +82,7 @@ public class CApplicationAmbassador {
 
     public static class CPerception {
         public enum PerceptionBackend {
-            Grid, QuadTree, Trivial
+            Grid, QuadTree, Trivial, SUMO
         }
 
         /**

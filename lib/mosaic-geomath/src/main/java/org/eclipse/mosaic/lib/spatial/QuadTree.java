@@ -324,15 +324,10 @@ public class QuadTree<T> {
         }
 
         boolean intersects(BoundingBox area) {
-            //TODO check if this method could be shortened
-            return area.contains(minX, 0, minZ)
-                    || area.contains(minX, 0, maxZ)
-                    || area.contains(maxX, 0, minZ)
-                    || area.contains(maxX, 0, maxZ)
-                    || isInBounds(area.min.x, 0, area.min.z)
-                    || isInBounds(area.min.x, 0, area.max.z)
-                    || isInBounds(area.max.x, 0, area.min.z)
-                    || isInBounds(area.max.x, 0, area.max.z);
+            return area.min.x <= maxX
+                    && area.max.x >= minX
+                    && area.min.z <= maxZ
+                    && area.max.z >= minZ;
         }
 
         private void addObjectNode(QuadTree<?>.ObjectAndNode item) {

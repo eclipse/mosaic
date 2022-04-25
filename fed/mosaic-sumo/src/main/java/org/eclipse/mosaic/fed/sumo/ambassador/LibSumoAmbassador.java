@@ -20,15 +20,21 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost;
 
+import com.google.common.collect.Iterables;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 
 /**
  * Implementation of the bridge between MOSAIC and SUMO using the native libsumojni binding provided with SUMO.
  */
 public class LibSumoAmbassador extends SumoAmbassador {
+
+    private static final String VALID_LIBSUMO_VERSIONS = "v1_12_0\\+";
 
     public LibSumoAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
@@ -66,6 +72,12 @@ public class LibSumoAmbassador extends SumoAmbassador {
 
         if (new File(libsumoLibrary).exists()) {
             System.load(libsumoLibrary);
+
+            if (!correctLibSumoVersion()) {
+                throw new InternalFederateException(
+                        "The loaded Libsumo library at " + libsumoLibrary + " is not compatible with this ambassador. "
+                                + "Valid versions are: " + VALID_LIBSUMO_VERSIONS);
+            }
         } else {
             try {
                 // if no file found, try to load libsumo it directly from java.library.path
@@ -87,5 +99,15 @@ public class LibSumoAmbassador extends SumoAmbassador {
         }
 
         bridge = new LibSumoBridge(sumoConfig, getProgramArguments(0));
+    }
+
+    public static boolean correctLibSumoVersion() {
+        try {
+            Process p = new ProcessBuilder(getSumoExecutable("sumo"), "--version").start();
+            String sumoOutput = Iterables.getFirst(IOUtils.readLines(p.getInputStream(), Charset.defaultCharset()), null);
+            return sumoOutput != null && sumoOutput.matches(".*(" + VALID_LIBSUMO_VERSIONS + ").*");
+        } catch (IOException e) {
+            return false;
+        }
     }
 }
