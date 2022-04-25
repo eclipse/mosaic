@@ -63,7 +63,7 @@ public class QuadTreeTest {
     @Test
     public void addObject_Failure() {
         assertFalse(tree.addItem(new Vector3d(-10, 0, -10)));
-        assertEquals(1, tree.getSize());
+        assertEquals(0, tree.getSize());
     }
 
     @Test
