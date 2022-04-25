@@ -109,9 +109,9 @@ public class BoundingBox {
     }
 
     public boolean contains(double x, double y, double z) {
-        return x >= min.x && x <= max.x &&
-                y >= min.y && y <= max.y &&
-                z >= min.z && z <= max.z;
+        return x >= min.x && x <= max.x
+                && y >= min.y && y <= max.y
+                && z >= min.z && z <= max.z;
     }
 
     public double distanceToPoint(Vector3d pt) {
