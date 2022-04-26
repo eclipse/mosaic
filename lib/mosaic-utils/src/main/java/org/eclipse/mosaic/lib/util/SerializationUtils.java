@@ -57,6 +57,12 @@ public final class SerializationUtils<T> {
         }
     }
 
+    public T fromBytes(byte[] bytes, ClassLoader classLoader) throws IOException, ClassNotFoundException {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); ObjectInput in = new ObjectInputStreamWithLoader(bis, classLoader)) {
+            return (T) in.readObject();
+        }
+    }
+
     public byte[] toBytes(T t) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(t);
