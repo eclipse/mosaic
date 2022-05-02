@@ -57,8 +57,12 @@ public final class SerializationUtils<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public T fromBytes(byte[] bytes, ClassLoader classLoader) throws IOException, ClassNotFoundException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); ObjectInput in = new ObjectInputStreamWithLoader(bis, classLoader)) {
+        try (
+                ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                ObjectInput in = new ObjectInputStreamWithClassLoader(bis, classLoader)
+        ) {
             return (T) in.readObject();
         }
     }
