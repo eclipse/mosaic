@@ -10,9 +10,9 @@ build and tag the docker image with the latest SUMO version. This image should b
 and available in the PPA.
 
 ```shell script
-docker build . -t eclipsemosaic/mosaic-ci:jdk8-sumo-1.12.0
+docker build . -t eclipsemosaic/mosaic-ci:jdk8-sumo-1.13.0
 docker login
-docker push eclipsemosaic/mosaic-ci:jdk8-sumo-1.12.0
+docker push eclipsemosaic/mosaic-ci:jdk8-sumo-1.13.0
 ```  
 
 Afterwards, the image should be available here: https://hub.docker.com/r/eclipsemosaic/mosaic-ci/tags
