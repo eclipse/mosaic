@@ -29,7 +29,7 @@
                     "weight": 0.3
                 },
                 {
-                    "applications": [ "org.eclipse.mosaic.app.tutorial.cam.CAMSendingApp" ],
+                    "applications": [ "org.eclipse.mosaic.app.tutorial.cam.CamSendingApp" ],
                     "name": "Car",
                     "group": "CAMSenders",
                     "weight": 0.6
