@@ -188,7 +188,7 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
         logger.info("Ended: " + dateFormat.format(new Date(currentTime)));
         logger.info("Duration: {} (RTF: {})",
                 DurationFormatUtils.formatDuration(durationMs, "HH'h' mm'm' ss.SSS's'"),
-                durationMs > 0 ? FORMAT_TWO_DIGIT.format((getEndTime() / TIME.MILLI_SECOND) / durationMs) : 0
+                durationMs > 0 ? FORMAT_TWO_DIGIT.format((time / TIME.MILLI_SECOND) / durationMs) : 0
         );
         logger.info("");
         if (statusCode == STATUS_CODE_SUCCESS) {
