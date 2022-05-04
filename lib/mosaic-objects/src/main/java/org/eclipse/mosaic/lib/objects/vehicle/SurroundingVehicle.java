@@ -21,12 +21,12 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A container class holding basic information about a surrounding or detected vehicle object.
