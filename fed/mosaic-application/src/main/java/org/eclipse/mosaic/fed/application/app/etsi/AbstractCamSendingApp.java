@@ -39,7 +39,7 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
     private Data data;
 
     /**
-     * Constructor using the default configuration filename ("CamSendingApplication")
+     * Constructor using the default configuration filename ("EtsiApplication")
      * and the preconfigured ETSI specific parameter.
      */
     protected AbstractCamSendingApp() {
@@ -81,7 +81,7 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
     protected void activateCommunicationModule() {
         getOperatingSystem().getAdHocModule().enable(
                 new AdHocModuleConfiguration()
-                        .camPayloadLength(getConfiguration().minPayloadLength / DATA.BYTE)
+                        .camMinimalPayloadLength(getConfiguration().minimalPayloadLength / DATA.BYTE)
                         .addRadio().channel(AdHocChannel.CCH).power(50).create()
         );
     }

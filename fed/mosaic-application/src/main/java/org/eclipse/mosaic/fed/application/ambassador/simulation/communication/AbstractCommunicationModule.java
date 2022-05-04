@@ -125,9 +125,9 @@ public abstract class AbstractCommunicationModule<ConfigT extends AbstractCommun
         }
         if (this.configuration != null) {
             log.info("This communication module has already been activated.");
-            if (configuration.camPayloadMinimalLength == null) {
+            if (configuration.camMinimalPayloadLength == null) {
                 // re-use if already set by another application on the same unit
-                configuration.camPayloadMinimalLength = this.configuration.camPayloadMinimalLength;
+                configuration.camMinimalPayloadLength = this.configuration.camMinimalPayloadLength;
             }
         }
         this.configuration = configuration;
@@ -148,7 +148,7 @@ public abstract class AbstractCommunicationModule<ConfigT extends AbstractCommun
         final CamBuilder camBuilder = owner.assembleCamMessage(new CamBuilder());
         final Cam cam = new Cam(routing,
                 camBuilder.create(owner.getSimulationTime(), owner.getId()),
-                ObjectUtils.defaultIfNull(configuration.camPayloadMinimalLength, CAM_DEFAULT_MINIMAL_PAYLOAD_LENGTH)
+                ObjectUtils.defaultIfNull(configuration.camMinimalPayloadLength, CAM_DEFAULT_MINIMAL_PAYLOAD_LENGTH)
         );
 
         if (log.isDebugEnabled()) {

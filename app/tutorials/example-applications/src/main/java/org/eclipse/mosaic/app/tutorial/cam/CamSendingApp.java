@@ -68,6 +68,7 @@ public class CamSendingApp extends AbstractApplication<VehicleOperatingSystem> i
     @Override
     public void onStartup() {
         getOs().getAdHocModule().enable(new AdHocModuleConfiguration()
+                .camMinimalPayloadLength(200L)
                 .addRadio().channel(AdHocChannel.CCH).power(50).create()
         );
         getLog().infoSimTime(this, "Set up");
@@ -106,17 +107,17 @@ public class CamSendingApp extends AbstractApplication<VehicleOperatingSystem> i
         // create a new object
         CamSendingApp.MyComplexTaggedValue exampleContent = new CamSendingApp.MyComplexTaggedValue();
         exampleContent.fooInt = 5;
-        exampleContent.fooString =
-                "Hello from " + (getOs().getVehicleData() != null ? getOs().getVehicleData().getName() : "unknown vehicle");
+        exampleContent.fooString = "Hello from " + (getOs().getVehicleData() != null
+                ? getOs().getVehicleData().getName()
+                : "unknown vehicle"
+        );
 
-        byte[] byteArray;
         try {
-            byteArray = DEFAULT_OBJECT_SERIALIZATION.toBytes(exampleContent);
+            byte[] byteArray = DEFAULT_OBJECT_SERIALIZATION.toBytes(exampleContent);
+            camBuilder.userTaggedValue(byteArray);
         } catch (IOException ex) {
             getLog().error("Error during a serialization.", ex);
-            return;
         }
-        camBuilder.userTaggedValue(byteArray);
     }
 
     @Override

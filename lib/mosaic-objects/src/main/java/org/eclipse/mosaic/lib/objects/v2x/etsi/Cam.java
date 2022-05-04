@@ -53,16 +53,16 @@ public class Cam extends V2xMessage {
      * @param routing    Message to be routed.
      * @param camContent Content of a CAM Message.
      */
-    public Cam(final MessageRouting routing, final CamContent camContent, long minimalCamLength) {
+    public Cam(final MessageRouting routing, final CamContent camContent, long minimalPayloadLength) {
         super(routing);
         Objects.requireNonNull(camContent);
 
         this.camContent = camContent;
 
         if (EtsiPayloadConfiguration.getPayloadConfiguration().encodePayloads) {
-            payLoad = new EncodedPayload(camContent, minimalCamLength);
+            payLoad = new EncodedPayload(camContent, minimalPayloadLength);
         } else {
-            payLoad = new EncodedPayload(0, minimalCamLength);
+            payLoad = new EncodedPayload(0, minimalPayloadLength);
         }
     }
 

@@ -84,8 +84,8 @@ public class CellModuleConfiguration extends AbstractCommunicationModuleConfigur
     }
 
     @Override
-    public CellModuleConfiguration camPayloadLength(long minimalLength) {
-        this.camPayloadMinimalLength = minimalLength;
+    public CellModuleConfiguration camMinimalPayloadLength(long minimalPayloadLength) {
+        this.camMinimalPayloadLength = minimalPayloadLength;
         return this;
     }
 

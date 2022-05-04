@@ -19,13 +19,13 @@ import org.eclipse.mosaic.fed.application.app.api.communication.CommunicationMod
 
 public abstract class AbstractCommunicationModuleConfiguration implements CommunicationModuleConfiguration {
 
-    Long camPayloadMinimalLength = null;
+    Long camMinimalPayloadLength = null;
 
     /**
      * Sets the minimal payload length to assume for CAMs. Unit: Bytes
      *
-     * @param minimalLength number of bytes
+     * @param minimalPayloadLength number of bytes
      */
-    abstract AbstractCommunicationModuleConfiguration camPayloadLength(long minimalLength);
+    abstract AbstractCommunicationModuleConfiguration camMinimalPayloadLength(long minimalPayloadLength);
 
 }

@@ -33,7 +33,7 @@ public class CEtsi {
      * The minimum payload length assumed for CAM messages. Unit: bits
      */
     @JsonAdapter(DataFieldAdapter.Size.class)
-    public long minPayloadLength = 200 * DATA.BYTE;
+    public long minimalPayloadLength = 200 * DATA.BYTE;
 
     /**
      * (random) start offset to simulate non-synchronized timings of different application.

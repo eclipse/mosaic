@@ -82,8 +82,8 @@ public class AdHocModuleConfiguration extends AbstractCommunicationModuleConfigu
     }
 
     @Override
-    public AdHocModuleConfiguration camPayloadLength(long minimalLength) {
-        this.camPayloadMinimalLength = minimalLength;
+    public AdHocModuleConfiguration camMinimalPayloadLength(long minimalPayloadLength) {
+        this.camMinimalPayloadLength = minimalPayloadLength;
         return this;
     }
 
