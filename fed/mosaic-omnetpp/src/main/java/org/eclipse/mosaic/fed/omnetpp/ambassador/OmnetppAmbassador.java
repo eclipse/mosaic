@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.fed.omnetpp.ambassador;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.mosaic.lib.coupling.AbstractNetworkAmbassador;
 import org.eclipse.mosaic.rti.api.FederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.DockerFederateExecutor;
@@ -23,6 +22,8 @@ import org.eclipse.mosaic.rti.api.federatestarter.ExecutableFederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.annotation.Nonnull;
 
@@ -46,7 +47,7 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
         switch (os) {
             case LINUX:
                 String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini");
-                String omnetppConfigFilePath = "omnetpp-federate/src/" + omnetppConfigFileName;
+                String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
                 String inetSourceDirectories = "inet:omnetpp-federate/src";
                 return new ExecutableFederateExecutor(this.descriptor, "omnetpp-federate/omnetpp-federate",
                         "-u", "Cmdenv",

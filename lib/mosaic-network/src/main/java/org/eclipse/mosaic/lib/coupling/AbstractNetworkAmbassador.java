@@ -543,28 +543,30 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         if (!config.isRoutingTypeSupported(dac.getType())) {
             log.warn(
                     "This V2XMessage requires a destination type ({}) currently not supported by this network simulator."
-                            + " Skip this message. Sender={}, Receiver={}, V2XMessage.id={}",
+                            + " Skip this message. Sender={}, Receiver={}, V2XMessage.id={}, time={}",
                     dac.getType().toString(),
                     sac.getSourceName(),
                     dac.getAddress().toString(),
-                    interaction.getMessage().getId()
+                    interaction.getMessage().getId(),
+                    TIME.format(interaction.getTime())
             );
             return;
         }
         if (!config.isAddressTypeSupported(dac.getAddress())) {
             log.warn(
                     "This V2XMessage requires a routing scheme currently not supported by this network simulator."
-                            + " Skip this message. V2XMessage.id={}",
-                    interaction.getMessage().getId()
+                            + " Skip this message. V2XMessage.id={}, time={}",
+                    interaction.getMessage().getId(), TIME.format(interaction.getTime())
             );
             return;
         }
         if (!config.isProtocolSupported(dac.getProtocolType())) {
             log.warn(
                     "This V2XMessage requires a transport protocol ({})"
-                            + " currently not supported by this network simulator. Skip this message. V2XMessage.id={}",
+                            + " currently not supported by this network simulator. Skip this message. V2XMessage.id={}, time={}",
                     dac.getProtocolType().toString(),
-                    interaction.getMessage().getId()
+                    interaction.getMessage().getId(),
+                    TIME.format(interaction.getTime())
             );
             return;
         }
@@ -574,34 +576,38 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     ? simulatedNodes.toExternalId(sac.getSourceName())
                     : null;
 
-            if (sourceId != null) {
-                log.debug(
-                        "sendV2XMessage: id={} from node ID[int={} , ext={}] channel:{} type:{} time={}",
-                        interaction.getMessageId(),
-                        sac.getSourceName(), sourceId, dac.getAdhocChannelId(), dac.getType(), TIME.format(interaction.getTime())
-                ); // Write the message onto the channel and to the federate
-                // Then wait for ack
-                int ack = ambassadorFederateChannel.writeSendMessage(
-                        interaction.getTime(),
-                        sourceId,
-                        interaction.getMessage().getId(),
-                        interaction.getMessage().getPayLoad().getEffectiveLength(),
-                        dac
+            if (sourceId == null) {
+                this.log.warn("Node ID[int={}] is not simulated, ignoring transmission of message ID[{}], time={}",
+                        sac.getSourceName(), interaction.getMessageId(), TIME.format(interaction.getTime())
                 );
-                if (CMD.SUCCESS != ack) {
-                    this.log.error(
-                            "Could not insert V2X message into network: {}",
-                            this.federateAmbassadorChannel.getLastStatusMessage()
-                    );
-                    throw new InternalFederateException(
-                            "Error in " + this.federateName + this.federateAmbassadorChannel.getLastStatusMessage()
-                    );
-                }
-            } else {
-                throw new IllegalValueException("Node not simulated: " + sac.getSourceName());
+                return;
             }
-        } catch (IOException | InternalFederateException | IllegalValueException e) {
-            this.log.error(e.getMessage());
+
+            log.debug(
+                    "sendV2XMessage: id={} from node ID[int={} , ext={}] channel:{} type:{} time={}",
+                    interaction.getMessageId(),
+                    sac.getSourceName(), sourceId, dac.getAdhocChannelId(), dac.getType(), TIME.format(interaction.getTime())
+            );
+            // Write the message onto the channel and to the federate
+            // Then wait for ack
+            int ack = ambassadorFederateChannel.writeSendMessage(
+                    interaction.getTime(),
+                    sourceId,
+                    interaction.getMessage().getId(),
+                    interaction.getMessage().getPayLoad().getEffectiveLength(),
+                    dac
+            );
+            if (CMD.SUCCESS != ack) {
+                this.log.error(
+                        "Could not insert V2X message into network: {}",
+                        this.federateAmbassadorChannel.getLastStatusMessage()
+                );
+                throw new InternalFederateException(
+                        "Error in " + this.federateName + this.federateAmbassadorChannel.getLastStatusMessage()
+                );
+            }
+        } catch (IOException | InternalFederateException e) {
+            this.log.error("{}, time={}", e.getMessage(), TIME.format(interaction.getTime()));
             throw new InternalFederateException("Could not insert V2X message into network.", e);
         }
     }
