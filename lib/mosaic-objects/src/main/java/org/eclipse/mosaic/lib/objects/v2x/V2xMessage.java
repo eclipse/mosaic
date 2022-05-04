@@ -121,7 +121,6 @@ public abstract class V2xMessage implements Serializable, Identifiable {
     /**
      * Returns the simple class name of the implementation. Please prefer this method instead 
      * to get the name from {@link #getSimpleClassName()}.
-     * The method {@link #getSimpleClassName} may return only the {@link GenericV2xMessage}.
      *
      * @return the simple class name of the implementation.
      */

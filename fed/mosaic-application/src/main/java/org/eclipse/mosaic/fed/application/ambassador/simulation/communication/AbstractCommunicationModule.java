@@ -18,7 +18,6 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.app.api.communication.CommunicationModule;
-import org.eclipse.mosaic.fed.application.app.api.communication.CommunicationModuleConfiguration;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
 import org.eclipse.mosaic.lib.objects.addressing.NetworkAddress;
@@ -27,6 +26,7 @@ import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Cam;
 import org.eclipse.mosaic.rti.TIME;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 
 import java.net.Inet4Address;
@@ -37,9 +37,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * (Can be either a {@link AdHocModule} or a {@link CellModule})
  */
 @SuppressWarnings("checkstyle:ClassTypeParameterName")
-public abstract class AbstractCommunicationModule<ConfigT extends CommunicationModuleConfiguration> implements CommunicationModule<ConfigT> {
+public abstract class AbstractCommunicationModule<ConfigT extends AbstractCommunicationModuleConfiguration>
+        implements CommunicationModule<ConfigT> {
+
+    public static final long CAM_DEFAULT_MINIMAL_PAYLOAD_LENGTH = 200L;
 
     private final AtomicInteger sequenceNumberGenerator;
+
+    protected ConfigT configuration;
 
     /**
      * Actual node, which has this communication module.
@@ -104,22 +109,7 @@ public abstract class AbstractCommunicationModule<ConfigT extends CommunicationM
             log.error(e.getMessage());
             throw e;
         }
-        V2xMessageTransmission v2xMessageTransmission;
-//        if (!(msg instanceof V2XMessageGeneralized)) {
-//            // build a V2XMessageGeneralized, to prevent unknown class files in other simulators
-//            V2XMessageGeneralized v2XMessageGeneralized = new V2XMessageGeneralized(msg);
-//            // build and send the v2XMessageGeneralized via rti
-//            svxm = new V2xMessageTransmission(
-//                    SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
-//                    v2XMessageGeneralized
-//            );
-//        } else {
-//            svxm = new V2xMessageTransmission(
-//                    SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
-//                    msg
-//            );
-//        }
-        v2xMessageTransmission = new V2xMessageTransmission(
+        V2xMessageTransmission v2xMessageTransmission = new V2xMessageTransmission(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 msg
         );
@@ -127,11 +117,25 @@ public abstract class AbstractCommunicationModule<ConfigT extends CommunicationM
         owner.triggerOnSendMessage(v2xMessageTransmission);
     }
 
-    /**
-     * Convenience methods for logging.
-     */
-    void logEnableConfigurationNull() {
-        log.warn("Configuration provided to enable CommunicationModule is null");
+    @Override
+    public void enable(ConfigT configuration) {
+        if (configuration == null) {
+            log.warn("Configuration provided to enable CommunicationModule is null");
+            return;
+        }
+        if (this.configuration != null) {
+            log.info("This communication module has already been activated.");
+            if (configuration.camMinimalPayloadLength == null) {
+                // re-use if already set by another application on the same unit
+                configuration.camMinimalPayloadLength = this.configuration.camMinimalPayloadLength;
+            }
+        }
+        this.configuration = configuration;
+    }
+
+    @Override
+    public void disable() {
+        this.configuration = null;
     }
 
     /**
@@ -142,7 +146,10 @@ public abstract class AbstractCommunicationModule<ConfigT extends CommunicationM
      */
     protected Integer sendCam(MessageRouting routing) {
         final CamBuilder camBuilder = owner.assembleCamMessage(new CamBuilder());
-        final Cam cam = new Cam(routing, camBuilder.create(owner.getSimulationTime(), owner.getId()));
+        final Cam cam = new Cam(routing,
+                camBuilder.create(owner.getSimulationTime(), owner.getId()),
+                ObjectUtils.defaultIfNull(configuration.camMinimalPayloadLength, CAM_DEFAULT_MINIMAL_PAYLOAD_LENGTH)
+        );
 
         if (log.isDebugEnabled()) {
             log.debug("Sending CAM from {} with time {}", owner.getId(),

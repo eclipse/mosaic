@@ -42,7 +42,7 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Related repositories
 
-* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.12.0`.
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.13.0`.
 * The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
   We currently support ns-3 version `3.34`. 
 * The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
@@ -60,7 +60,7 @@ For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
 * **Java 8 or 11** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk8).
-* **SUMO 1.12.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **SUMO 1.13.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 

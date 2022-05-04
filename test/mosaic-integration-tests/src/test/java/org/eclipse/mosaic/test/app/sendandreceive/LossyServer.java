@@ -22,8 +22,8 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.lib.objects.v2x.GenericV2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
-import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 /**
  * Empty app so server is handled in cell ambassador.
@@ -38,7 +38,7 @@ public class LossyServer extends AbstractApplication<ServerOperatingSystem> impl
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (receivedV2xMessage.getMessage() instanceof SimpleV2xMessage) {
+        if (receivedV2xMessage.getMessage() instanceof GenericV2xMessage) {
             getLog().infoSimTime(
                     this,
                     "Received message #{} at time {} using protocol {}",

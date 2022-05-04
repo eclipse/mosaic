@@ -23,6 +23,7 @@ import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
+import org.eclipse.mosaic.rti.DATA;
 
 /**
  * Abstract application implementing the ETSI standard.
@@ -38,7 +39,7 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
     private Data data;
 
     /**
-     * Constructor using the default configuration filename ("CamSendingApplication")
+     * Constructor using the default configuration filename ("EtsiApplication")
      * and the preconfigured ETSI specific parameter.
      */
     protected AbstractCamSendingApp() {
@@ -69,7 +70,7 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
      */
     @Override
     public void onStartup() {
-        getLog().infoSimTime(this, "Initialize application");
+        getLog().debugSimTime(this, "Initialize application");
         activateCommunicationModule();
         firstSample();
     }
@@ -79,7 +80,9 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
      */
     protected void activateCommunicationModule() {
         getOperatingSystem().getAdHocModule().enable(
-                new AdHocModuleConfiguration().addRadio().channel(AdHocChannel.CCH).power(50).create()
+                new AdHocModuleConfiguration()
+                        .camMinimalPayloadLength(getConfiguration().minimalPayloadLength / DATA.BYTE)
+                        .addRadio().channel(AdHocChannel.CCH).power(50).create()
         );
     }
 
@@ -139,7 +142,7 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
 
         Data newData = generateEtsiData();
         if (newData == null) {
-            getLog().infoSimTime(this, "Could not check delta. Data are not available yet.");
+            getLog().debugSimTime(this, "Could not check delta. Data is not available yet.");
             return false;
         }
 
@@ -218,7 +221,7 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
 
     @Override
     public void onShutdown() {
-        getLog().infoSimTime(this, "Shutdown application");
+        getLog().debugSimTime(this, "Shutdown application");
     }
 
     @Override

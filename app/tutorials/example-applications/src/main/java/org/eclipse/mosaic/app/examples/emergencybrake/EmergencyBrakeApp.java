@@ -138,7 +138,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
                     getOs().getAdHocModule().createMessageRouting().viaChannel(AdHocChannel.CCH).topoBroadCast();
             Denm denm = new Denm(routing, new DenmContent(getOs().getSimulationTime(), vehicleLongLat, roadId,
                     SensorType.SPEED, 1, curSpeed, curDeceleration * 9.81f, null,
-                    null, null));
+                    null, null), 200);
             getLog().debug("Sender position: " + denm.getSenderPosition());
             getLog().debug("Sender speed at event time: " + denm.getCausedSpeed() + "m/s");
             getLog().debug("Sender deceleration at event time: " + denm.getSenderDeceleration() + "m/s2");

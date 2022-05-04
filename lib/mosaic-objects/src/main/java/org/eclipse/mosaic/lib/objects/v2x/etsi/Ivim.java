@@ -45,21 +45,19 @@ public class Ivim extends V2xMessage {
         return payload;
     }
 
-    public Ivim(final MessageRouting routing, IvimContent ivimContent) {
+    public Ivim(final MessageRouting routing, IvimContent ivimContent, long minimalPayloadLength) {
         super(routing);
         this.ivimContent = ivimContent;
 
-        long minimalLength = EtsiPayloadConfiguration.getPayloadConfiguration().minimalPayloadLength;
-
         if (EtsiPayloadConfiguration.getPayloadConfiguration().encodePayloads) {
-            payload = new EncodedPayload(ivimContent, minimalLength);
+            payload = new EncodedPayload(ivimContent, minimalPayloadLength);
         } else {
-            payload = new EncodedPayload(0, minimalLength);
+            payload = new EncodedPayload(0, minimalPayloadLength);
         }
     }
 
-    public Ivim(final MessageRouting routing, final Ivim ivim) {
-        this(routing, ivim.ivimContent);
+    public Ivim(final MessageRouting routing, final Ivim ivim, long minimalPayloadLength) {
+        this(routing, ivim.ivimContent, minimalPayloadLength);
     }
 
     public List<Segment> getSegments() {

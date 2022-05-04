@@ -222,7 +222,9 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          * and a payload in the form of a DenmContent object. It contains fields such as the current timestamp
          * of the sending node, the geo position of the sending node, warning type and event strength.
          */
-        Denm denm = new Denm(mr, new DenmContent(getOs().getSimulationTime(), vehicleLongLat, roadId, type, strength, SPEED, 0.0f, vehicleLongLat, null, null));
+        Denm denm = new Denm(mr,
+                new DenmContent(getOs().getSimulationTime(), vehicleLongLat, roadId, type, strength, SPEED, 0.0f, vehicleLongLat, null, null),
+                200);
         getLog().infoSimTime(this, "Sending DENM");
 
         /*

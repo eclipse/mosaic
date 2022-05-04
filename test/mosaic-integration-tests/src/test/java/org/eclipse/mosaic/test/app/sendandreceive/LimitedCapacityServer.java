@@ -23,9 +23,9 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.lib.objects.v2x.GenericV2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.DATA;
-import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 /**
  * Server app, that is setup with a very small bandwidth (1 bit up/down).
@@ -45,7 +45,7 @@ public class LimitedCapacityServer extends AbstractApplication<ServerOperatingSy
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (receivedV2xMessage.getMessage() instanceof SimpleV2xMessage) {
+        if (receivedV2xMessage.getMessage() instanceof GenericV2xMessage) {
             getLog().infoSimTime(
                     this,
                     "Received message #{} at time {} using protocol {}",

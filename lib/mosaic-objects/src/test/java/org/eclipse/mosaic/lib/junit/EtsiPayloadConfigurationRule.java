@@ -27,7 +27,7 @@ public class EtsiPayloadConfigurationRule extends ExternalResource {
     @Override
     protected void before() {
         try {
-            EtsiPayloadConfiguration.setPayloadConfiguration(new EtsiPayloadConfiguration(true, 200));
+            EtsiPayloadConfiguration.setPayloadConfiguration(new EtsiPayloadConfiguration(true));
         } catch (JsonSyntaxException e) {
             Assert.fail("Test ambassador invalid");
         }

@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
-import org.eclipse.mosaic.fed.application.app.api.communication.CommunicationModuleConfiguration;
 import org.eclipse.mosaic.lib.enums.DestinationType;
 
 /**
@@ -26,7 +25,7 @@ import org.eclipse.mosaic.lib.enums.DestinationType;
  *     .camConfiguration(new CAMConfiguration(DestinationType.CellGeoUnicast, 300));
  * </pre>
  */
-public class CellModuleConfiguration implements CommunicationModuleConfiguration {
+public class CellModuleConfiguration extends AbstractCommunicationModuleConfiguration {
 
     /**
      * DL/UL bitrates to reflect a data plan from a certain provider.
@@ -81,6 +80,12 @@ public class CellModuleConfiguration implements CommunicationModuleConfiguration
      */
     public CellModuleConfiguration camConfiguration(double geoRadius) {
         this.camConfiguration = new CellCamConfiguration(DestinationType.CELL_GEOCAST, geoRadius);
+        return this;
+    }
+
+    @Override
+    public CellModuleConfiguration camMinimalPayloadLength(long minimalPayloadLength) {
+        this.camMinimalPayloadLength = minimalPayloadLength;
         return this;
     }
 

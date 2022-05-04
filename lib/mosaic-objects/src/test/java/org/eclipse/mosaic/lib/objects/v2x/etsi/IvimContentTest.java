@@ -58,7 +58,7 @@ public class IvimContentTest {
                 .putAdvice(0, advice);
         IvimContent ivimContent = new IvimContent(4 * TIME.SECOND)
                 .addSegment(segment);
-        Ivim ivim = new Ivim(mock(MessageRouting.class), ivimContent);
+        Ivim ivim = new Ivim(mock(MessageRouting.class), ivimContent, 200);
         EncodedPayload encodedMessage = ivim.getPayLoad();
 
         //PRE-ASSERT

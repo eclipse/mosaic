@@ -15,8 +15,10 @@
 
 package org.eclipse.mosaic.fed.application.config;
 
+import org.eclipse.mosaic.lib.util.gson.DataFieldAdapter;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
+import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -26,6 +28,12 @@ import com.google.gson.annotations.JsonAdapter;
  * V1.3.1 (2014-09)
  */
 public class CEtsi {
+
+    /**
+     * The minimum payload length assumed for CAM messages. Unit: bits
+     */
+    @JsonAdapter(DataFieldAdapter.Size.class)
+    public long minimalPayloadLength = 200 * DATA.BYTE;
 
     /**
      * (random) start offset to simulate non-synchronized timings of different application.

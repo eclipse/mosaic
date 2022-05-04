@@ -1,4 +1,5 @@
 {
+    "minimalPayloadLength": "200 Bytes",
     "minInterval": "500ms",
     "maxInterval": "2s"
 }

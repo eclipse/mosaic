@@ -18,11 +18,6 @@ package org.eclipse.mosaic.lib.objects.v2x.etsi;
 public class EtsiPayloadConfiguration {
 
     /**
-     * The minimal length of payload data in [bytes].
-     */
-    public final long minimalPayloadLength;
-
-    /**
      * If set to {@code true}, the payload of CAM, DENM, SPATM, and IVIM messages are
      * encoded into a byte array. This is required if other simulators except ApplicationNT need
      * to read actual data from the message. However, enabling this would  more computation
@@ -30,8 +25,7 @@ public class EtsiPayloadConfiguration {
      */
     public final boolean encodePayloads;
 
-    public EtsiPayloadConfiguration(boolean encodePayloads, long minimalPayloadLength) {
-        this.minimalPayloadLength = minimalPayloadLength;
+    public EtsiPayloadConfiguration(boolean encodePayloads) {
         this.encodePayloads = encodePayloads;
     }
 
@@ -39,7 +33,7 @@ public class EtsiPayloadConfiguration {
 
     public static EtsiPayloadConfiguration getPayloadConfiguration() {
         if (globalConfiguration == null) {
-            setPayloadConfiguration(new EtsiPayloadConfiguration(false, 200));
+            setPayloadConfiguration(new EtsiPayloadConfiguration(false));
         }
         return EtsiPayloadConfiguration.globalConfiguration;
     }
