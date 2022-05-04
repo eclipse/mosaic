@@ -1,4 +1,3 @@
 {
-    "messageCacheTime": "30 s",
-    "minimalPayloadLength": 1500
+    "messageCacheTime": "30 s"
 }

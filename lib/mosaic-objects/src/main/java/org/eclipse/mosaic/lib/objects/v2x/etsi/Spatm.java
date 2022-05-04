@@ -42,22 +42,20 @@ public class Spatm extends V2xMessage {
 
     private SpatmContent spatmContent;
 
-    public Spatm(final MessageRouting routing, final SpatmContent spatmContent) {
+    public Spatm(final MessageRouting routing, final SpatmContent spatmContent, long minimalPayloadLength) {
         super(routing);
 
         this.spatmContent = spatmContent;
 
-        long minimalLength = EtsiPayloadConfiguration.getPayloadConfiguration().minimalPayloadLength;
-
         if (EtsiPayloadConfiguration.getPayloadConfiguration().encodePayloads) {
-            payload = new EncodedPayload(spatmContent, minimalLength);
+            payload = new EncodedPayload(spatmContent, minimalPayloadLength);
         } else {
-            payload = new EncodedPayload(0, minimalLength);
+            payload = new EncodedPayload(0, minimalPayloadLength);
         }
     }
 
-    public Spatm(final MessageRouting routing, final Spatm spatm) {
-        this(routing, new SpatmContent(spatm.spatmContent));
+    public Spatm(final MessageRouting routing, final Spatm spatm, long minimalPayloadLength) {
+        this(routing, new SpatmContent(spatm.spatmContent), minimalPayloadLength);
     }
 
     public long getTime() {

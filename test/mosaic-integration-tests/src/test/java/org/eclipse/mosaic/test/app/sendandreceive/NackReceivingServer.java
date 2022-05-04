@@ -16,19 +16,17 @@
 package org.eclipse.mosaic.test.app.sendandreceive;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModuleConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.lib.objects.v2x.GenericV2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
-import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.test.app.sendandreceive.messages.SimpleV2xMessage;
 
 import javax.annotation.Nonnull;
 
@@ -68,7 +66,7 @@ public class NackReceivingServer extends AbstractApplication<ServerOperatingSyst
     public void processEvent(Event event) {
         if (event instanceof SendSimpleMessage) {
             MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(((SendSimpleMessage) event).receiver);
-            getOs().getCellModule().sendV2xMessage(new SimpleV2xMessage(routing));
+            getOs().getCellModule().sendV2xMessage(new GenericV2xMessage(routing, 8));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }
     }

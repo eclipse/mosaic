@@ -35,6 +35,7 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.util.junit.TestFileRule;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
+import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
 
 import org.junit.Before;
@@ -109,6 +110,7 @@ public class EtsiApplicationTest {
 
     @Test
     public void etsiConfigurationCorrectFromFile() {
+        assertEquals(2 * DATA.KILOBYTE, etsiConfiguration.minimalPayloadLength);
         assertEquals((long) (7.5 * TIME.SECOND), etsiConfiguration.maxInterval.longValue());
         assertEquals(50 * TIME.MILLI_SECOND, etsiConfiguration.minInterval.longValue());
         assertEquals(7 * TIME.SECOND, etsiConfiguration.maxStartOffset);

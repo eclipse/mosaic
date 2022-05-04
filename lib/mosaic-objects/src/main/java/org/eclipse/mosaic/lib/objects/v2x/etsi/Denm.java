@@ -46,22 +46,20 @@ public class Denm extends V2xMessage {
         return payload;
     }
 
-    public Denm(final MessageRouting routing, DenmContent denmContent) {
+    public Denm(final MessageRouting routing, DenmContent denmContent, long minimalPayloadLength) {
         super(routing);
         this.denmContent = denmContent;
 
-        long minimalLength = EtsiPayloadConfiguration.getPayloadConfiguration().minimalPayloadLength;
-
         if (EtsiPayloadConfiguration.getPayloadConfiguration().encodePayloads) {
-            payload = new EncodedPayload(denmContent, minimalLength);
+            payload = new EncodedPayload(denmContent, minimalPayloadLength);
         } else {
-            payload = new EncodedPayload(0, minimalLength);
+            payload = new EncodedPayload(0, minimalPayloadLength);
         }
 
     }
 
-    public Denm(final MessageRouting routing, final Denm denm) {
-        this(routing, denm.denmContent);
+    public Denm(final MessageRouting routing, final Denm denm, long minimalPayloadLength) {
+        this(routing, denm.denmContent, minimalPayloadLength);
     }
 
     /**

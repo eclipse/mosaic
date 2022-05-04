@@ -128,9 +128,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             }
 
             SimulationKernel.SimulationKernel.setConfiguration(ambassadorConfig);
-            EtsiPayloadConfiguration.setPayloadConfiguration(
-                    new EtsiPayloadConfiguration(ambassadorConfig.encodePayloads, ambassadorConfig.minimalPayloadLength)
-            );
+            EtsiPayloadConfiguration.setPayloadConfiguration(new EtsiPayloadConfiguration(ambassadorConfig.encodePayloads));
 
         } catch (InstantiationException e) {
             log.error(ErrorRegister.CONFIGURATION_CouldNotReadFromFile.toString(), e);

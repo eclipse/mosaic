@@ -17,11 +17,11 @@ package org. eclipse.mosaic.fed.output.generator.file.format;
 
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.lib.objects.v2x.GenericV2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.Interaction;
 
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -39,19 +39,27 @@ public class ExtendedMethodSet {
     }
 
     static public Object getType(V2xMessageReception interaction) {
-        return Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId())).getSimpleClassName();
+        V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
+        if (message instanceof GenericV2xMessage) {
+            return ((GenericV2xMessage) message).getMessageType();
+        }
+        return message.getSimpleClassName();
     }
 
     static public Object getType(V2xMessageTransmission interaction) {
-        return Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId())).getSimpleClassName();
+        V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
+        if (message instanceof GenericV2xMessage) {
+            return ((GenericV2xMessage) message).getMessageType();
+        }
+        return message.getSimpleClassName();
     }
 
     static public Object getTimeInSec(Interaction interaction) {
-        return interaction == null ? "" : interaction.getTime() / 1000000000;
+        return interaction == null ? "" : interaction.getTime() / TIME.SECOND;
     }
 
     static public Object getTimeInMs(Interaction interaction) {
-        return interaction == null ? "" : interaction.getTime() / 1000000;
+        return interaction == null ? "" : interaction.getTime() / TIME.MILLI_SECOND;
     }
 
 }

@@ -1,4 +1,5 @@
 {
+    "minimalPayloadLength": "2 kByte",
     "maxStartOffset": 7000000000,
     "minInterval": "50 ms",
     "maxInterval": "7.5s"

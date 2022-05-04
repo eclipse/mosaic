@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
-import org.eclipse.mosaic.fed.application.app.api.communication.CommunicationModuleConfiguration;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ import java.util.List;
  *     .addRadio().power(50).channel(AdHocChannel.CCH).create();
  * </pre>
  */
-public class AdHocModuleConfiguration implements CommunicationModuleConfiguration {
+public class AdHocModuleConfiguration extends AbstractCommunicationModuleConfiguration {
 
     /**
      * List of enabled and configured radios (usual cases operate with 1 (single) or 2 (dual) radios).
@@ -80,6 +79,12 @@ public class AdHocModuleConfiguration implements CommunicationModuleConfiguratio
 
     public int getNrOfRadios() {
         return radios.size();
+    }
+
+    @Override
+    public AdHocModuleConfiguration camMinimalPayloadLength(long minimalPayloadLength) {
+        this.camMinimalPayloadLength = minimalPayloadLength;
+        return this;
     }
 
     /**
