@@ -33,12 +33,10 @@ is obligated to execute the following steps in order to us to be able to accept 
 ## Contribute
 
 Please first discuss the change you wish to make via issue or email with us as the owners of this repository. 
-To share contributions with us,  create a GitHub pull request following the steps below. All your commits 
-have to be *Signed-off* (`-s`) using the email address used for your Eclipse account. 
+To share contributions with us,  create a GitHub pull request following the steps below.
+You must use the same email address in your Git commits which is associated with your Eclipse account.
 More details can be found [here](http://wiki.eclipse.org/Development_Resources/Contributing_via_Git). 
-
-    git commit -s -m "This is a message"  
-
+    
 Make your changes by following those steps:
 
 * Create a fork of this repository on GitHub
@@ -53,7 +51,7 @@ Make your changes by following those steps:
 * Commit your changes into your branch:
     * **Use meaningful commit messages**.
     * Ideally there's only one single commit per contribution. If you have more than one, squash them into a single commit. 
-    * Make sure the `-s` flag is used when committing (see above).
+    * Use the email address from your Eclipse account in the author field.
 * Push your changes to your branch.
 * Create a pull request with a meaningful description of your changes.
   
@@ -141,7 +139,7 @@ Each Java file must include the following license header at the top of each file
  
 ```java
 /*
- * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
