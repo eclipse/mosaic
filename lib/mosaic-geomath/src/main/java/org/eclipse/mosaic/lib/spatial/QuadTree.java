@@ -324,21 +324,16 @@ public class QuadTree<T> {
         }
 
         boolean intersects(BoundingBox area) {
-            //TODO check if this method could be shortened
-            return area.contains(minX, 0, minZ)
-                    || area.contains(minX, 0, maxZ)
-                    || area.contains(maxX, 0, minZ)
-                    || area.contains(maxX, 0, maxZ)
-                    || isInBounds(area.min.x, 0, area.min.z)
-                    || isInBounds(area.min.x, 0, area.max.z)
-                    || isInBounds(area.max.x, 0, area.min.z)
-                    || isInBounds(area.max.x, 0, area.max.z);
+            return area.min.x <= maxX
+                    && area.max.x >= minX
+                    && area.min.z <= maxZ
+                    && area.max.z >= minZ;
         }
 
         private void addObjectNode(QuadTree<?>.ObjectAndNode item) {
             objectsCount++;
 
-            if (childNodes == null) {
+            if (isLeaf()) {
                 objects.add(item);
                 item.node = this;
                 if (objectsCount > SPLIT_SIZE && depth < MAX_DEPTH) {
@@ -383,10 +378,9 @@ public class QuadTree<T> {
         }
 
         private void join() {
-            objects.addAll(childNodes[0].objects);
-            objects.addAll(childNodes[1].objects);
-            objects.addAll(childNodes[2].objects);
-            objects.addAll(childNodes[3].objects);
+            for (int i = 0; i <= 3; i++) {
+                objects.addAll(childNodes[i].objects);
+            }
             childNodes = null;
         }
 

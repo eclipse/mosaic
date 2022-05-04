@@ -57,7 +57,10 @@ public class UserTaggedValueReadingApp extends AbstractApplication<VehicleOperat
 
         if (msg instanceof Cam) {
             try {
-                getLog().infoSimTime(this, "CAM message arrived, userTaggedValue: {}", CamSendingApp.DEFAULT_OBJECT_SERIALIZATION.fromBytes(((Cam) msg).getUserTaggedValue()));
+                getLog().infoSimTime(this, "CAM message arrived, userTaggedValue: {}",
+                        CamSendingApp.DEFAULT_OBJECT_SERIALIZATION
+                                .fromBytes(((Cam) msg).getUserTaggedValue(), this.getClass().getClassLoader())
+                );
             } catch (IOException | ClassNotFoundException e) {
                 getLog().error("An error occurred", e);
             }
