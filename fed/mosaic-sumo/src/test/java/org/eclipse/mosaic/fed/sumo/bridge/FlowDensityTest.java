@@ -91,7 +91,7 @@ public class FlowDensityTest {
                         + (currentFlowIn - currentFlowOut)
                         * (sumoConfig.trafficFlowMeasurementWindowInS / 3600d / areaLengthKm);
 
-                assertEquals(expectedDensity, measuredDensity, 3.0);
+                assertEquals(expectedDensity, measuredDensity, 4.0);
 
                 prevDensity = expectedDensity;
             }
