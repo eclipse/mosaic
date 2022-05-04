@@ -208,6 +208,7 @@
                                     <attach>false</attach>
                                     <finalName>eclipse-mosaic-${project.version}</finalName>
                                     <appendAssemblyId>false</appendAssemblyId>
+                                    <tarLongFileMode>posix</tarLongFileMode>
                                     <descriptors>
                                         <descriptor>src/assembly/mosaic-bundle.xml</descriptor>
                                     </descriptors>
