@@ -46,7 +46,7 @@ arg_integration_testing=false
 arg_make_parallel=""
 
 required_programs=( python3 gcc unzip tar )
-required_libraries=( "libprotobuf-dev (or equal) 3.3.0" "libxml2-dev (or equal)" "libsqlite3-dev (or equal)" )
+required_libraries=( "libprotobuf-dev >= 3.7.0" "libxml2-dev" "libsqlite3-dev" )
 
 ####### configurable parameters ##########
 ns3_version="3.34"
@@ -69,7 +69,7 @@ ns3_scratch="${ns3_simulator_folder}/scratch"
 ns3_source="${ns3_simulator_folder}/src"
 
 ####### semi automatic parameters ########
-ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/tags/21.1.zip"
+ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/tags/22.0.zip"
 ns3_url="https://www.nsnam.org/releases/$ns3_version_affix.tar.bz2"
 
 ###### more automatic parameters #########
@@ -180,7 +180,7 @@ print_info() {
    log "${bold}${cyan}[$(basename "$0")] -- A ns-3 installation script for MOSAIC${restore}"
    log "\nMOSAIC developer team <mosaic@fokus.fraunhofer.de>"
    log "\nThis shell script will download and install the NS3 network simulator version $ns3_version."
-   log "\nPlease make sure you have installed the packages g++ libsqlite3-dev libxml2-dev libprotobuf-dev 3.3.0 ."
+   log "\nPlease make sure you have installed the packages g++ libsqlite3-dev libxml2-dev libprotobuf-dev >= 3.7.0 ."
    log "\nIf there is an error (like a missing package) during the installation, the output may give hints about what went wrong.\n"
    if [ "$arg_quiet" = false ]; then
       read -p "Press any key to continue..." -n1 -s

@@ -1,3 +1,18 @@
+# Changelog Eclipse MOSAIC 22.0 (May 2022)
+
+* [A+] A perception module has been added. Vehicles can now perceive other vehicles in their field of view.
+* [A+] Adjusted tutorial application WeatherServerApp to use server entity.
+* [A+] Improved map matching of start and end points for routing.
+* [A-] Fixed a bug in payload deserialization.
+* [M+] Added Quad-tree and Grid index for fast search of surrounding entities.
+* [M+] Allow configuration of a connection id as departure position of a vehicle.
+* [M-] Refactored and unified matrix implementations in mosaic-utils.
+* [T+] Improved LibSumo coupling interface.
+* [T+] Enhanced interface to SUMO to use context subscriptions in certain situations.
+* [T+] Now supports SUMO 1.13.0
+* [T-] Fixed wrong position problem of parked vehicles.
+* [X+] Introduced new physics engine in PHABMACS based on PhysX (Extended).
+
 # Changelog Eclipse MOSAIC 21.1 (October 2021)
 
 * [A+] Server units are now able to access the central navigation component for routing purposes.

@@ -2,6 +2,7 @@
     <id>Eclipse MOSAIC</id>
     <formats>
         <format>zip</format>
+        <format>tar.gz</format>
     </formats>
     <baseDirectory>.</baseDirectory>
 
@@ -12,6 +13,7 @@
             <includes>
                 <include>**</include>
             </includes>
+            <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
             <directory>src/assembly/resources/etc</directory>
@@ -19,6 +21,15 @@
             <includes>
                 <include>**</include>
             </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/assembly/resources/fed</directory>
+            <outputDirectory>bin/fed</outputDirectory>
+            <filtered>true</filtered>
+            <includes>
+                <include>**/*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
             <directory>src/assembly/resources/fed</directory>

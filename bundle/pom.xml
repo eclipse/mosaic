@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>22.0-SNAPSHOT</version>
+        <version>22.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -208,6 +208,7 @@
                                     <attach>false</attach>
                                     <finalName>eclipse-mosaic-${project.version}</finalName>
                                     <appendAssemblyId>false</appendAssemblyId>
+                                    <tarLongFileMode>posix</tarLongFileMode>
                                     <descriptors>
                                         <descriptor>src/assembly/mosaic-bundle.xml</descriptor>
                                     </descriptors>
