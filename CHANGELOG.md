@@ -11,7 +11,7 @@
 * [T+] Enhanced interface to SUMO to use context subscriptions in certain situations.
 * [T+] Now supports SUMO 1.13.0
 * [T-] Fixed wrong position problem of parked vehicles.
-* [X+] Introduced new physic engine in PHABMACS based on PhysX (Extended).
+* [X+] Introduced new physics engine in PHABMACS based on PhysX (Extended).
 
 # Changelog Eclipse MOSAIC 21.1 (October 2021)
 
