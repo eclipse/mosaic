@@ -31,7 +31,6 @@ import org.eclipse.mosaic.rti.api.ComponentProvider;
 import org.eclipse.mosaic.rti.api.FederateAmbassador;
 import org.eclipse.mosaic.rti.api.FederationManagement;
 import org.eclipse.mosaic.rti.api.InteractionManagement;
-import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.MosaicVersion;
 import org.eclipse.mosaic.rti.api.TimeManagement;
 import org.eclipse.mosaic.rti.api.WatchDog;
@@ -80,7 +79,7 @@ public class MosaicSimulation {
     /**
      * Default interval of the watchdog thread in seconds.
      */
-    private static final int DEFAULT_WATCHDOG_INTERVAL = 20;
+    private static final int DEFAULT_WATCHDOG_INTERVAL = 30;
 
     private static final Path LOG_DIRECTORY = Paths.get("logs");
 
