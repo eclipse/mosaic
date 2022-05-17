@@ -37,5 +37,9 @@ public enum VehicleStopMode {
     /**
      * Parks the vehicle at a parking area. The vehicle has to be close to the parking area.
      */
-    PARK_IN_PARKING_AREA
+    PARK_IN_PARKING_AREA;
+
+    public boolean isParking() {
+        return this == PARK_ON_ROADSIDE || this == PARK_IN_PARKING_AREA;
+    }
 }
