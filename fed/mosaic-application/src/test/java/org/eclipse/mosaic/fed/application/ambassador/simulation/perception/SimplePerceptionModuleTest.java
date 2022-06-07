@@ -79,7 +79,7 @@ public class SimplePerceptionModuleTest {
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
         simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, mock(Logger.class)));
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(108d, 200d));
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(90d, 200d));
 
         // setup ego vehicle
         when(egoVehicleData.getHeading()).thenReturn(90d);
@@ -99,15 +99,48 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
-    public void vehicleCannotBePerceived_toFarLeft_TrivialIndex() {
+    public void vehicleCannotBePerceived_OnLeftBoundVector_TrivialIndex() {
+        setupSpatialIndex(new MutableCartesianPoint(110, 110, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_OnRightBoundVector_TrivialIndex() {
+        setupSpatialIndex(new MutableCartesianPoint(110, 90, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_tooFarLeft_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCannotBePerceived_toFarRight_TrivialIndex() {
+    public void vehicleCannotBePerceived_tooFarRight_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_270viewingAngle_VehicleOnDirectionVector() {
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(110, 100, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_FarLeft_270viewingAngle_TrivialIndex() {
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_FarRight_270viewingAngle_TrivialIndex() {
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
@@ -125,17 +158,47 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
-    public void vehicleCannotBePerceived_toFarLeft_QuadTree() {
+    public void vehicleCannotBePerceived_OnLeftBoundVector_QuadTree() {
+        useQuadTree();
+        setupSpatialIndex(new MutableCartesianPoint(110, 110, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_OnRightBoundVector_QuadTree() {
+        useQuadTree();
+        setupSpatialIndex(new MutableCartesianPoint(110, 90, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_tooFarLeft_QuadTree() {
         useQuadTree();
         setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCannotBePerceived_toFarRight_QuadTree() {
+    public void vehicleCannotBePerceived_tooFarRight_QuadTree() {
         useQuadTree();
         setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_FarLeft_270viewingAngle_QuadTree() {
+        useQuadTree();
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_FarRight_270viewingAngle_QuadTree() {
+        useQuadTree();
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
@@ -153,17 +216,47 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
-    public void vehicleCannotBePerceived_toFarLeft_Grid() {
+    public void vehicleCannotBePerceived_OnLeftBoundVector_Grid() {
+        useGrid();
+        setupSpatialIndex(new MutableCartesianPoint(110, 110, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_OnRightBoundVector_Grid() {
+        useGrid();
+        setupSpatialIndex(new MutableCartesianPoint(110, 90, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCannotBePerceived_tooFarLeft_Grid() {
         useGrid();
         setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCannotBePerceived_toFarRight_Grid() {
+    public void vehicleCannotBePerceived_tooFarRight_Grid() {
         useGrid();
         setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_FarLeft_270viewingAngle_Grid() {
+        useGrid();
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(105, 115, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_FarRight_270viewingAngle_Grid() {
+        useGrid();
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        setupSpatialIndex(new MutableCartesianPoint(105, 90, 0));
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     private void setupSpatialIndex(CartesianPoint... positions) {

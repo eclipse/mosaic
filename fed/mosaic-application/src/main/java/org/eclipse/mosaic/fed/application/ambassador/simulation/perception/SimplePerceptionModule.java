@@ -81,6 +81,7 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         private final SimplePerceptionConfiguration configuration;
 
         private final Vector3d origin = new Vector3d();
+        private final Vector3d directionVector = new Vector3d();
         private final Vector3d rightBoundVector = new Vector3d();
         private final Vector3d leftBoundVector = new Vector3d();
 
@@ -100,7 +101,8 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         private final Vector3d tmpVector2 = new Vector3d();
 
         SimplePerception(String ownerId, SimplePerceptionConfiguration configuration) {
-            Validate.isTrue(configuration.getViewingAngle() < 180, "Only viewing angles less than 180 degrees are supported.");
+            Validate.isTrue(configuration.getViewingAngle() >= 0 && configuration.getViewingAngle() <= 360,
+                    "Only viewing angles from 0 to 360 degrees are supported.");
 
             this.ownerId = ownerId;
             this.configuration = configuration;
@@ -127,10 +129,29 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 other.getProjectedPosition().toVector3d(tmpVector1).subtract(origin);
                 // we use tmpVector2 as origin from the viewpoint of this object
                 tmpVector2.set(0, 0, 0);
-                return VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, rightBoundVector) // vehicle is left of right edge
-                        && !VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, leftBoundVector) // vehicle is right of left edge
-                        && tmpVector1.magnitude() <= configuration.getViewingRange(); // other vehicle is in range
+
+                if (tmpVector1.magnitude() > configuration.getViewingRange()) { // other vehicle is in range
+                    return false;
+                }
+                if (configuration.getViewingAngle() == 360) { // for 360 degree viewing angle field-of-view check is obsolete
+                    return true;
+                } else if (configuration.getViewingAngle() < 180) { // for < 180 degree viewing angle we use left and right vector
+                    return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector);
+                } else { // for >= 180 degree we do two checks: 1st between direction vector and right or 2nd between direction vector and left
+                    return isBetweenVectors(tmpVector1, tmpVector2, directionVector, rightBoundVector)
+                            || isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, directionVector)
+                            || liesOnVector(tmpVector1, directionVector);
+                }
             }
+        }
+
+        private boolean isBetweenVectors(Vector3d pointToEvaluate, Vector3d linePoint, Vector3d leftVector, Vector3d rightVector) {
+            return VectorUtils.isLeftOfLine(pointToEvaluate, linePoint, rightVector) // is left of right edge
+                    && !VectorUtils.isLeftOfLine(pointToEvaluate, linePoint, leftVector); // is right of left vector
+        }
+
+        private boolean liesOnVector(Vector3d pointToEvaluate, Vector3d line) {
+            return MathUtils.isFuzzyEqual((-pointToEvaluate.z * line.x - pointToEvaluate.x * -line.z), 0);
         }
 
         /**
@@ -138,16 +159,13 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
          */
         private void calculateSightBoundingVectors(double heading) {
             synchronized (tmpVector1) {
-                // getting the direction vector of the heading from origin (result is written into tmpVector1)
-                Vector3d directionVector = VectorUtils.getDirectionVectorFromHeading(heading, tmpVector1);
-                double viewingAngleRad = toRadians(configuration.getViewingAngle());
-
-                directionVector.multiply(configuration.getViewingRange());
-
+                // getting the direction vector of the heading from origin (result is written into direction)
+                VectorUtils.getDirectionVectorFromHeading(heading, directionVector);
+                double viewingAngleRadHalf = toRadians(configuration.getViewingAngle()) / 2;
                 // rotate the direction vector to the right
-                rightBoundVector.set(directionVector).rotate(-viewingAngleRad / 2, VectorUtils.UP);
+                rightBoundVector.set(directionVector).rotate(-viewingAngleRadHalf, VectorUtils.UP);
                 // rotate the direction vector to the left
-                leftBoundVector.set(directionVector).rotate(viewingAngleRad / 2, VectorUtils.UP);
+                leftBoundVector.set(directionVector).rotate(viewingAngleRadHalf, VectorUtils.UP);
             }
         }
 
