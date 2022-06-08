@@ -78,6 +78,7 @@ public class DockerFederateExecutor implements FederateExecutor {
                 .name(containerName)
                 .removeBeforeRun()
                 .removeAfterRun()
+                .currentUser()
                 .volumeBinding(new File(workingDir, sharedDirectoryPath), imageVolume);
 
         for (Map.Entry<String, Object> param : parameters.entrySet()) {
