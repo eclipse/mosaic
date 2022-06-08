@@ -70,7 +70,7 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
         this.dockerFederateExecutor = new DockerFederateExecutor(
                 dockerImage,
                 "omnetpp-federate/simulations",
-                "/home/mosaic/bin/fed/omnetpp/omnetpp-federate/configuration"
+                "/home/mosaic/bin/fed/omnetpp/omnetpp-federate/simulations"
         );
         return dockerFederateExecutor;
     }
