@@ -26,14 +26,13 @@ COPY ./*.tgz omnet_installer.sh ./
 RUN \
     ls -all && \
     ./omnet_installer.sh -q -t USER -o "/home/mosaic/bin/fed/omnetpp/omnetpp-5.5.1-src-linux.tgz" -i "/home/mosaic/bin/fed/omnetpp/inet-4.1.1-src.tgz" && \
-    mkdir -p omnetpp-federate/simulations
-
-VOLUME ["/home/mosaic/bin/fed/omnetpp/omnetpp-federate"]
+    mkdir -p omnetpp-federate/simulations && \
+    chmod -R 755 inet omnetpp-5.5.1 && \
+    chmod -R 777 omnetpp-federate
 
 EXPOSE 40001 40002
 
 ENTRYPOINT \
-    cp omnetpp-federate/src/omnetpp.ini omnetpp-federate/simulations/ && \
     omnetpp-federate/omnetpp-federate -u Cmdenv \
     -f omnetpp-federate/simulations/omnetpp.ini \
     -n "inet:omnetpp-federate/src" \
