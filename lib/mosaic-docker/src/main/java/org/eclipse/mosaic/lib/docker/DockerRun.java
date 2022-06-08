@@ -124,7 +124,7 @@ public class DockerRun {
             options.add("--rm");
         }
 
-        if (!user.isEmpty()) {
+        if (user != null && !user.isEmpty()) {
             options.add("--user");
             options.add(user);
         }
