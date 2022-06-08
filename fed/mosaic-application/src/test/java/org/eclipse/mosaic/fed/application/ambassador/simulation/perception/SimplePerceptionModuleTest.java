@@ -32,6 +32,7 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
+import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
@@ -99,15 +100,15 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
-    public void vehicleCannotBePerceived_OnLeftBoundVector_TrivialIndex() {
+    public void vehicleCanBePerceived_OnLeftBoundVector_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(110, 110, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCannotBePerceived_OnRightBoundVector_TrivialIndex() {
+    public void vehicleCanBePerceived_OnRightBoundVector_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(110, 90, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
@@ -266,6 +267,7 @@ public class SimplePerceptionModuleTest {
             VehicleData vehicleDataMock = mock(VehicleData.class);
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
             when(vehicleDataMock.getName()).thenReturn("veh_" + i++);
+            when(vehicleDataMock.getRoadPosition()).thenReturn(mock(IRoadPosition.class));
             vehiclesInIndex.add(vehicleDataMock);
         }
         vehicleIndex.updateVehicles(vehiclesInIndex);

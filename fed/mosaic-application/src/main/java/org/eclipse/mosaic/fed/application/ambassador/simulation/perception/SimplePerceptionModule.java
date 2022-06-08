@@ -36,6 +36,9 @@ import java.util.List;
  * No occlusion or error model is considered. The field of view is defined with an opening angle of maximum 180 degrees.
  */
 public class SimplePerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
+    private static final double DEFAULT_VIEWING_ANGLE = 40;
+    private static final double DEFAULT_VIEWING_RANGE = 200;
+
 
     private final PerceptionModuleOwner owner;
     private final Logger log;
@@ -50,8 +53,9 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
     @Override
     public void enable(SimplePerceptionConfiguration configuration) {
         if (configuration == null) {
-            log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.", 40, 200);
-            configuration = new SimplePerceptionConfiguration(40, 200);
+            log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.",
+                    DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_RANGE);
+            configuration = new SimplePerceptionConfiguration(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE);
         }
         this.perceptionModel = new SimplePerception(this.owner.getId(), configuration);
     }
@@ -136,10 +140,14 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 if (configuration.getViewingAngle() == 360) { // for 360 degree viewing angle field-of-view check is obsolete
                     return true;
                 } else if (configuration.getViewingAngle() < 180) { // for < 180 degree viewing angle we use left and right vector
-                    return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector);
+                    return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector)
+                            || liesOnVector(tmpVector1, leftBoundVector)
+                            || liesOnVector(tmpVector1, rightBoundVector);
                 } else { // for >= 180 degree we do two checks: 1st between direction vector and right or 2nd between direction vector and left
                     return isBetweenVectors(tmpVector1, tmpVector2, directionVector, rightBoundVector)
                             || isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, directionVector)
+                            || liesOnVector(tmpVector1, leftBoundVector)
+                            || liesOnVector(tmpVector1, rightBoundVector)
                             || liesOnVector(tmpVector1, directionVector);
                 }
             }
@@ -162,6 +170,8 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 // getting the direction vector of the heading from origin (result is written into direction)
                 VectorUtils.getDirectionVectorFromHeading(heading, directionVector);
                 double viewingAngleRadHalf = toRadians(configuration.getViewingAngle()) / 2;
+                // scale vector by range for minimum bounding rectangle
+                directionVector.multiply(configuration.getViewingRange());
                 // rotate the direction vector to the right
                 rightBoundVector.set(directionVector).rotate(-viewingAngleRadHalf, VectorUtils.UP);
                 // rotate the direction vector to the left
