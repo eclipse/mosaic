@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.lib.docker;
 
+import com.sun.security.auth.module.UnixSystem;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -89,6 +90,22 @@ public class DockerRun {
     public DockerRun user(String user) {
         this.user = user;
         return this;
+    }
+
+    /**
+     * Sets user to current user/group.
+     */
+    public DockerRun currentUser() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String user = null;
+
+        // Currently, default user is set on Linux, only.
+        if (os.contains("linux")) {
+            UnixSystem system = new UnixSystem();
+            user = String.format("%d:%d", system.getUid(), system.getGid());
+        }
+
+        return this.user(user);
     }
 
     /**
