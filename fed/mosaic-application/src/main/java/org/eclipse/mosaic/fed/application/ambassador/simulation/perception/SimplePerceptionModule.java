@@ -143,7 +143,7 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                     return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector)
                             || liesOnVector(tmpVector1, leftBoundVector)
                             || liesOnVector(tmpVector1, rightBoundVector);
-                } else { // for >= 180 degree we do two checks: 1st between direction vector and right or 2nd between direction vector and left
+                } else { // for >= 180 degree do two checks: 1st between direction vector and right or 2nd between direction vector and left
                     return isBetweenVectors(tmpVector1, tmpVector2, directionVector, rightBoundVector)
                             || isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, directionVector)
                             || liesOnVector(tmpVector1, leftBoundVector)
