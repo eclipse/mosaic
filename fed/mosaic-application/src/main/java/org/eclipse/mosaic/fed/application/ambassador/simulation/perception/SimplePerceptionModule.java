@@ -137,9 +137,9 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 if (tmpVector1.magnitude() > configuration.getViewingRange()) { // other vehicle is in range
                     return false;
                 }
-                if (configuration.getViewingAngle() == 360) { // for 360 degree viewing angle field-of-view check is obsolete
+                if (MathUtils.isFuzzyEqual(configuration.getViewingAngle(), 360d)) { // for 360 degree viewing angle field-of-view check is obsolete
                     return true;
-                } else if (configuration.getViewingAngle() < 180) { // for < 180 degree viewing angle we use left and right vector
+                } else if (configuration.getViewingAngle() < 180d) { // for < 180 degree viewing angle we use left and right vector
                     return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector)
                             || liesOnVector(tmpVector1, leftBoundVector)
                             || liesOnVector(tmpVector1, rightBoundVector);
@@ -158,8 +158,29 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                     && !VectorUtils.isLeftOfLine(pointToEvaluate, linePoint, leftVector); // is right of left vector
         }
 
+        /**
+         * Calculates the magnitude of the cross product of the two vectors
+         * and checks if they point in the same direction (to avoid objects being located exactly in the opposite direction).
+         * If the magnitude is equal to 0 the point will be on the line, however could be anywhere in each direction, so
+         * we additionally check if the directions match.
+         * Note: This method only works, since we know that we work around the origin.
+         *
+         * @param pointToEvaluate point to be evaluated
+         * @param line            check point against this line
+         * @return {@code true} if point lies on line, otherwise {@code false}
+         */
         private boolean liesOnVector(Vector3d pointToEvaluate, Vector3d line) {
-            return MathUtils.isFuzzyEqual((-pointToEvaluate.z * line.x - pointToEvaluate.x * -line.z), 0);
+            // first check if the magnitude of the cross product is equal to 0
+            double magCross = pointToEvaluate.z * line.x - pointToEvaluate.x * line.z;
+            if (!MathUtils.isFuzzyEqual(magCross, 0)) {
+                return false;
+            }
+            // check if point vector is pointing in the right direction
+            if (Math.abs(line.z) >= Math.abs(line.x)) {
+                return line.z > 0 ? pointToEvaluate.z > 0 : pointToEvaluate.z <= 0;
+            } else {
+                return line.x > 0 ? pointToEvaluate.x > 0 : pointToEvaluate.x <= 0;
+            }
         }
 
         /**
