@@ -496,48 +496,42 @@ public class SimulationFacade {
             return null;
         }
 
-        final VehicleData.Builder vehicleDataBuilder = new VehicleData.Builder(time, veh.id)
-                .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
-                .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, sumoVehicle.lastVehicleData))
-                .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
-                .route(veh.routeId)
-                .signals(decodeVehicleSignals(veh.signalsEncoded))
-                .stopped(vehicleStopMode)
-                .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
-                .laneArea(vehicleSegmentInfo.get(veh.id));
+        final VehicleData.Builder vehicleDataBuilder = new VehicleData.Builder(time, veh.id);
 
-        if (isParking) {
-            if (!sumoVehicle.lastVehicleData.isStopped()) {
-                log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
-            }
-            vehicleDataBuilder
-                    // use the last known road position, otherwise we can not retrieve a valid one
-                    .road(sumoVehicle.lastVehicleData.getRoadPosition())
-                    // for parking vehicles, there are no consumptions and emissions to measure
-                    .consumptions(new VehicleConsumptions(
-                            new Consumptions(0d), sumoVehicle.lastVehicleData.getVehicleConsumptions().getAllConsumptions())
-                    ).emissions(
-                            new VehicleEmissions(new Emissions(0d, 0d, 0d, 0d, 0d),
-                                    sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
-        } else if (isWaitingToLeaveParking) {
+        if (isWaitingToLeaveParking) {
             log.debug("Vehicle {} is currently waiting to leave parking area on edge {}.",
                     veh.id, sumoVehicle.lastVehicleData.getRoadPosition().getConnectionId());
             // if the vehicle is waiting to leave a parking area, we assume it's still parked and copy previous vehicle data
-            vehicleDataBuilder
-                    .copyFrom(sumoVehicle.lastVehicleData)
-                    // use the last known road position, otherwise we can not retrieve a valid one
-                    .road(sumoVehicle.lastVehicleData.getRoadPosition())
-                    // for parking vehicles, there are no consumptions and emissions to measure
-                    .consumptions(new VehicleConsumptions(
-                            new Consumptions(0d), sumoVehicle.lastVehicleData.getVehicleConsumptions().getAllConsumptions())
-                    ).emissions(
-                            new VehicleEmissions(new Emissions(0d, 0d, 0d, 0d, 0d),
-                                    sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
+            vehicleDataBuilder.copyFrom(sumoVehicle.lastVehicleData);
         } else {
             vehicleDataBuilder
-                    .road(getRoadPosition(veh, sumoVehicle.lastVehicleData))
-                    .consumptions(calculateConsumptions(veh, sumoVehicle.lastVehicleData))
-                    .emissions(calculateEmissions(veh, sumoVehicle.lastVehicleData));
+                    .position(veh.position.getGeographicPosition(), veh.position.getProjectedPosition())
+                    .movement(veh.speed, veh.acceleration, fixDistanceDriven(veh.distanceDriven, sumoVehicle.lastVehicleData))
+                    .orientation(DriveDirection.UNAVAILABLE, veh.heading, veh.slope)
+                    .route(veh.routeId)
+                    .signals(decodeVehicleSignals(veh.signalsEncoded))
+                    .stopped(vehicleStopMode)
+                    .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
+                    .laneArea(vehicleSegmentInfo.get(veh.id));
+            if (isParking) {
+                if (!sumoVehicle.lastVehicleData.isStopped()) {
+                    log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
+                }
+                vehicleDataBuilder
+                        // use the last known road position, otherwise we can not retrieve a valid one
+                        .road(sumoVehicle.lastVehicleData.getRoadPosition())
+                        // for parking vehicles, there are no consumptions and emissions to measure
+                        .consumptions(new VehicleConsumptions(
+                                new Consumptions(0d), sumoVehicle.lastVehicleData.getVehicleConsumptions().getAllConsumptions())
+                        ).emissions(
+                                new VehicleEmissions(new Emissions(0d, 0d, 0d, 0d, 0d),
+                                        sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
+            } else {
+                vehicleDataBuilder
+                        .road(getRoadPosition(veh, sumoVehicle.lastVehicleData))
+                        .consumptions(calculateConsumptions(veh, sumoVehicle.lastVehicleData))
+                        .emissions(calculateEmissions(veh, sumoVehicle.lastVehicleData));
+            }
         }
 
         sumoVehicle.currentVehicleData = vehicleDataBuilder.create();
