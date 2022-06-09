@@ -78,7 +78,7 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
 
     @Override
     public void write(JsonWriter out, Long param) throws IOException {
-        out.value(ObjectUtils.defaultIfNull(param, 0l)+" ns");
+        out.value(ObjectUtils.defaultIfNull(param, 0l) + " ns");
     }
 
     @Override
