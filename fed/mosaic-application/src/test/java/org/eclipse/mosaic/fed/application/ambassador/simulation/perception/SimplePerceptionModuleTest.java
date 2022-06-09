@@ -105,6 +105,12 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
+    public void vehicleCannotBePerceived_OnLeftBoundVector_OppositeDirection_TrivialIndex() {
+        setupSpatialIndex(new MutableCartesianPoint(90, 90, 0));
+        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
     public void vehicleCanBePerceived_OnRightBoundVector_TrivialIndex() {
         setupSpatialIndex(new MutableCartesianPoint(110, 90, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
