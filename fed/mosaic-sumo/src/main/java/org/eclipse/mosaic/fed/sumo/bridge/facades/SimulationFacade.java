@@ -506,7 +506,7 @@ public class SimulationFacade {
                 .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
                 .laneArea(vehicleSegmentInfo.get(veh.id));
 
-        if (isParking || isWaitingToLeaveParking) {
+        if (isParking) {
             if (!sumoVehicle.lastVehicleData.isStopped()) {
                 log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
             }
@@ -519,20 +519,20 @@ public class SimulationFacade {
                     ).emissions(
                             new VehicleEmissions(new Emissions(0d, 0d, 0d, 0d, 0d),
                                     sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
-            if (isWaitingToLeaveParking) {
-                log.debug("Vehicle {} is currently waiting to leave parking area on edge {}.",
-                        veh.id, sumoVehicle.lastVehicleData.getRoadPosition().getConnectionId());
-                // if the vehicle is waiting to leave a parking area, we assume it's still parked and copy previous vehicle data
-                vehicleDataBuilder
-                        .position(sumoVehicle.lastVehicleData.getPosition(), sumoVehicle.lastVehicleData.getProjectedPosition())
-                        .movement(0.0d, 0.0d, fixDistanceDriven(-1, sumoVehicle.lastVehicleData))
-                        .orientation(DriveDirection.UNAVAILABLE, sumoVehicle.lastVehicleData.getHeading(), sumoVehicle.lastVehicleData.getSlope())
-                        .route(sumoVehicle.lastVehicleData.getRouteId())
-                        .signals(sumoVehicle.lastVehicleData.getVehicleSignals())
-                        .stopped(sumoVehicle.lastVehicleData.getVehicleStopMode())
-                        .sensors(sumoVehicle.lastVehicleData.getVehicleSensors())
-                        .laneArea(sumoVehicle.lastVehicleData.getLaneAreaId());
-            }
+        } else if (isWaitingToLeaveParking) {
+            log.debug("Vehicle {} is currently waiting to leave parking area on edge {}.",
+                    veh.id, sumoVehicle.lastVehicleData.getRoadPosition().getConnectionId());
+            // if the vehicle is waiting to leave a parking area, we assume it's still parked and copy previous vehicle data
+            vehicleDataBuilder
+                    .copyFrom(sumoVehicle.lastVehicleData)
+                    // use the last known road position, otherwise we can not retrieve a valid one
+                    .road(sumoVehicle.lastVehicleData.getRoadPosition())
+                    // for parking vehicles, there are no consumptions and emissions to measure
+                    .consumptions(new VehicleConsumptions(
+                            new Consumptions(0d), sumoVehicle.lastVehicleData.getVehicleConsumptions().getAllConsumptions())
+                    ).emissions(
+                            new VehicleEmissions(new Emissions(0d, 0d, 0d, 0d, 0d),
+                                    sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
         } else {
             vehicleDataBuilder
                     .road(getRoadPosition(veh, sumoVehicle.lastVehicleData))
