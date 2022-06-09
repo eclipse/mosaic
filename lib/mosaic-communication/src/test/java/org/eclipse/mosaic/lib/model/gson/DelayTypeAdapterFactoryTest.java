@@ -104,6 +104,33 @@ public class DelayTypeAdapterFactoryTest {
         assertTrue(fourth instanceof GammaSpeedDelay);
     }
 
+    @Test
+    public void unitIO() throws IOException{
+
+        StringBuilder jsonStringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(getClass().getResourceAsStream("/TestDelay_2.json"), StandardCharsets.UTF_8))
+        ) {
+            reader.lines().forEach(jsonStringBuilder::append);
+        }
+        String delayListJson2 = jsonStringBuilder.toString();
+
+        CDelayList configFromJsonUnitless = new Gson().fromJson(delayListJson2, CDelayList.class);
+        CDelayList configFromJsonUnit = new Gson().fromJson(delayListJson, CDelayList.class);
+
+        //ASSERT
+        Delay first = configFromJsonUnit.delays.get(0);
+        assertTrue(first instanceof ConstantDelay);
+        ConstantDelay cDelayUnit = (ConstantDelay)first;
+
+        Delay second = configFromJsonUnitless.delays.get(0);
+        assertTrue(second instanceof ConstantDelay);
+        ConstantDelay cDelayUnitless = (ConstantDelay)first;
+
+        assertEquals(cDelayUnit.delay, cDelayUnitless.delay);
+
+    }
+
     static class CDelayList {
         List<Delay> delays = new ArrayList<>();
     }
