@@ -52,7 +52,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
     private static final Logger log = LoggerFactory.getLogger(UnitFieldAdapter.class);
 
     private final static Pattern DISTANCE_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(miles|mile|meter|metre|m))$");
-    private final static Pattern SPEED_PATTERN = Pattern.compile("^([0-9]+\\.?[0-9]*) ?(mph|kmh|(?:(|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(miles|mile|meter|metre|m)(?:p|per|\\/)(h|hr|s|sec|second|hour)))$");
+    private final static Pattern SPEED_PATTERN = Pattern.compile("^([0-9]+\\.?[0-9]*) ?(mph|kmh|(?:(|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(meter|metre|m)(?:p|per|\\/)(h|hr|s|sec|second|hour)))$");
 
     private final static Pattern WEIGHT_PATTERN = Pattern.compile("^(-?[0-9]+\\.?[0-9]*) ?((|k|d|c|m|\\u00b5|n|kilo|deci|centi|milli|micro|nano)(g|gram|grams))$");
 
@@ -79,7 +79,28 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
 
     @Override
     public void write(JsonWriter out, Double param) throws IOException {
-        out.value(ObjectUtils.defaultIfNull(param, 0d));
+        String unit = null;
+        if(DISTANCE_PATTERN.equals(this.pattern)){
+            unit = " m";
+        } else if(SPEED_PATTERN.equals(this.pattern)){
+            unit = " m/s";
+        } else if(WEIGHT_PATTERN.equals(this.pattern)){
+            unit = " kg";
+        } else if(VOLTAGE_PATTERN.equals(this.pattern)){
+            unit = " V";
+        } else if(CURRENT_PATTERN.equals(this.pattern)){
+            unit = " A";
+        } else if(CAPACITY_PATTERN.equals(this.pattern)){
+            unit = " Ah";
+        } else {
+            unit = "";
+        }
+
+        if(StringUtils.isBlank(unit)){
+            out.value(ObjectUtils.defaultIfNull(param, 0d));
+        } else{
+            out.value(ObjectUtils.defaultIfNull(param, 0d) + unit);
+        }
     }
 
     @Override

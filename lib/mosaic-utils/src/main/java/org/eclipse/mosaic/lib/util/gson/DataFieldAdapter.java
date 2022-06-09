@@ -54,6 +54,7 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
             .put("gi", DATA.GIBIBIT)
             .put("ti", DATA.TEBIBIT)
             .build();
+    public static final String PS = "ps";
 
     private final String unitSuffix;
     private final boolean failOnError;
@@ -72,7 +73,37 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
         if (param != null && param == Long.MAX_VALUE) {
             out.value(UNLIMITED);
         } else {
-            out.value(ObjectUtils.defaultIfNull(param, 0L));
+            long value = ObjectUtils.defaultIfNull(param, 0L);
+            if(PS.equals(this.unitSuffix)) {
+                String unitPrefix = "";
+                String valueString = Long.toString(value);
+                Pattern pattern = Pattern.compile("0*$");
+                Matcher matcher = pattern.matcher(valueString);
+                if (matcher.find()) {
+                    int nZeroDigitsAtEnd = matcher.group(0).length();
+                    switch (nZeroDigitsAtEnd / 3) {
+                        case 1:
+                            unitPrefix = "k";
+                            value /= 1000L;
+                            break;
+                        case 2:
+                            unitPrefix = "M";
+                            value /= 1000000L;
+                            break;
+                        case 3:
+                            unitPrefix = "G";
+                            value /= 1000000000L;
+                            break;
+                        case 4:
+                        default:
+                            unitPrefix = "T";
+                            value /= 1000000000000L;
+                    }
+                }
+                out.value(value + " " + unitPrefix + "bps");
+            }else{
+                out.value(value);
+            }
         }
     }
 
@@ -136,7 +167,7 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new DataFieldAdapter("ps", true);
+            return (TypeAdapter<T>) new DataFieldAdapter(PS, true);
         }
     }
 
@@ -163,7 +194,7 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new DataFieldAdapter("ps", false);
+            return (TypeAdapter<T>) new DataFieldAdapter(PS, false);
         }
     }
 
