@@ -25,6 +25,7 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
@@ -91,6 +92,9 @@ public class PerceptionModifierTest {
         when(egoVehicleData.getProjectedPosition()).thenReturn(EGO_POSITION);
 
         List<CartesianPoint> randomPoints = getRandomlyDistributedPointsInRange(EGO_POSITION, VIEWING_RANGE, VEHICLE_AMOUNT);
+        for (int i = 0; i < randomPoints.size(); i++) {
+            System.out.println(randomPoints.get(i).getX() + ", " + randomPoints.get(i).getY());
+        }
         setupSpatialIndex(randomPoints.toArray(new CartesianPoint[0]));
     }
 
@@ -98,11 +102,6 @@ public class PerceptionModifierTest {
     public void testOcclusionModifier() {
         SimpleOcclusionModifier occlusionModifier = new SimpleOcclusionModifier(3, 10);
         simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, occlusionModifier));
-
-//        for (int i = 0; i < randomPoints.size(); i++) {
-//            System.out.println("Vehicle" + i + "=(" + randomPoints.get(i).getX() + ", " + randomPoints.get(i).getY() + ")");
-//            System.out.println(randomPoints.get(i).getX() + ", " + randomPoints.get(i).getY());
-//        }
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         for (VehicleObject vehicleObject : perceivedVehicles) {
             CartesianPoint point = vehicleObject.toCartesian();
@@ -121,7 +120,20 @@ public class PerceptionModifierTest {
             CartesianPoint point = vehicleObject.toCartesian();
             System.out.println(point.getX() + ", " + point.getY());
         }
-        assertTrue("The distance error filter should remove vehicles", VEHICLE_AMOUNT >= perceivedVehicles.size());
+        assertTrue("The distance filter should remove vehicles", VEHICLE_AMOUNT >= perceivedVehicles.size());
+    }
+
+    @Test
+    public void testPositionErrorModifier() {
+        PositionErrorModifier positionErrorModifier = new PositionErrorModifier(rng);
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, positionErrorModifier));
+
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        for (VehicleObject vehicleObject : perceivedVehicles) {
+            CartesianPoint point = vehicleObject.toCartesian();
+            System.out.println(point.getX() + ", " + point.getY());
+        }
+        assertTrue("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT == perceivedVehicles.size());
     }
 
 

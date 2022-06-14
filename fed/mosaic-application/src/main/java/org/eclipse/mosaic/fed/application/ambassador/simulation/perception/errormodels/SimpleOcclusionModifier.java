@@ -66,6 +66,7 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
             return vehicleObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
+        // sort by distances
         List<VehicleObject> sortedByDistance = new ArrayList<>(vehicleObjects);
         sortedByDistance.sort(Comparator.comparingDouble(vehicleObject -> vehicleObject.distanceTo(ownerPosition)));
         // fit linear function to (closest distance, min angle) and (furthest distance, max angle)
