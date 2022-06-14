@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceErrorModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
@@ -113,8 +113,15 @@ public class PerceptionModifierTest {
 
     @Test
     public void testDistanceErrorModifier() {
-        DistanceErrorModifier distanceErrorModifier = new DistanceErrorModifier(rng);
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, distanceErrorModifier));
+        DistanceModifier distanceModifier = new DistanceModifier(rng, 0);
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, distanceModifier));
+
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        for (VehicleObject vehicleObject : perceivedVehicles) {
+            CartesianPoint point = vehicleObject.toCartesian();
+            System.out.println(point.getX() + ", " + point.getY());
+        }
+        assertTrue("The distance error filter should remove vehicles", VEHICLE_AMOUNT >= perceivedVehicles.size());
     }
 
 

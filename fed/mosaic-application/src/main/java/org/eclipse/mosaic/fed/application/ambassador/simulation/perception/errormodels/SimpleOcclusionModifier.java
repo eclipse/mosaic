@@ -19,6 +19,8 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.Perce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -52,7 +54,8 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
      * @param maxDetectionAngle the "free" angle that will be required by furthest vehicles [degree]
      */
     public SimpleOcclusionModifier(double minDetectionAngle, double maxDetectionAngle) {
-
+        Validate.isTrue(minDetectionAngle > 0 && maxDetectionAngle >= minDetectionAngle,
+                "Angles have to be larger than 0 and maxDetectionAngle >= minDetectionAngle.");
         this.minDetectionAngle = Math.toRadians(minDetectionAngle);
         this.maxDetectionAngle = Math.toRadians(maxDetectionAngle);
     }
