@@ -144,11 +144,11 @@ public class CentralPerceptionComponent {
         }
 
         @Override
-        public List<VehicleObject> getVehiclesInRange(PerceptionRange searchRange) {
+        public List<VehicleObject> getVehiclesInRange(PerceptionModuleOwner owner, PerceptionModel searchRange) {
             try (PerformanceMonitor.Measurement m = monitor.start("search")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                return parent.getVehiclesInRange(searchRange);
+                return parent.getVehiclesInRange(owner, searchRange);
             }
         }
 

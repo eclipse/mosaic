@@ -1,0 +1,112 @@
+/*
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contact: mosaic@fokus.fraunhofer.de
+ */
+
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
+
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.lib.math.Vector3d;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * This {@link PerceptionModifier} tries to emulate the behaviour of occlusion.
+ * The general approach is to look at the angle of all vehicles that are
+ * perceived closer to the current vehicle.
+ * If any of those previously perceived vehicles has an angle smaller than
+ * defined by {@link #getOcclusionAngle} the current vehicle will not be perceived.
+ * <p>
+ * Additionally, a linear function between {@link #minDetectionAngle} and {@link #maxDetectionAngle}
+ * is fitted, which makes it necessary for further vehicles to have a larger "free" angle.
+ */
+public class SimpleOcclusionModifier implements PerceptionModifier {
+
+    /**
+     * The "free" angle required by the closest vehicle. [rad]
+     */
+    private final double minDetectionAngle;
+
+    /**
+     * The "free" angle required by the furthest vehicle. [rad]
+     */
+    private final double maxDetectionAngle;
+
+    /**
+     * Constructor for the {@link SimpleOcclusionModifier}.
+     *
+     * @param minDetectionAngle the "free" angle that will be required by closest vehicles [degree]
+     * @param maxDetectionAngle the "free" angle that will be required by furthest vehicles [degree]
+     */
+    public SimpleOcclusionModifier(double minDetectionAngle, double maxDetectionAngle) {
+
+        this.minDetectionAngle = Math.toRadians(minDetectionAngle);
+        this.maxDetectionAngle = Math.toRadians(maxDetectionAngle);
+    }
+
+    @Override
+    public List<VehicleObject> apply(PerceptionModuleOwner owner, List<VehicleObject> vehicleObjects) {
+        if (vehicleObjects.size() == 0) {
+            return vehicleObjects;
+        }
+        Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
+        List<VehicleObject> sortedByDistance = new ArrayList<>(vehicleObjects);
+        sortedByDistance.sort(Comparator.comparingDouble(vehicleObject -> vehicleObject.distanceTo(ownerPosition)));
+        // fit linear function to (closest distance, min angle) and (furthest distance, max angle)
+        double closestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(0));
+        double furthestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(sortedByDistance.size() - 1));
+        double m = (maxDetectionAngle - minDetectionAngle) / (furthestPerceivedDistance - closestPerceivedDistance);
+        double n = minDetectionAngle - (closestPerceivedDistance * m);
+
+        List<VehicleObject> nonOccludedVehicles = new ArrayList<>();
+        List<Vector3d> nonOccludedVectors = new ArrayList<>();
+        nonOccludedVehicles.add(sortedByDistance.get(0)); // closest vehicle is always perceived
+        nonOccludedVectors.add(getVectorRelativeTo(ownerPosition, sortedByDistance.get(0)));
+        for (VehicleObject currentVehicleObject : sortedByDistance) { // iterate over all sorted vehicles
+            Vector3d currentRelativeVector = getVectorRelativeTo(ownerPosition, currentVehicleObject);
+            double occlusionAngle = getOcclusionAngle(ownerPosition.distanceTo(currentRelativeVector), m, n);
+            isOccluded:
+            {
+                for (Vector3d otherVector : nonOccludedVectors) { // iterate over all previously selected vectors
+                    if (Math.abs(currentRelativeVector.angle(otherVector)) <= occlusionAngle) {
+                        break isOccluded;
+                    }
+                }
+                nonOccludedVehicles.add(currentVehicleObject);
+                nonOccludedVectors.add(currentRelativeVector);
+            }
+        }
+        vehicleObjects.retainAll(nonOccludedVehicles); // apply changes on initial list
+        return vehicleObjects;
+    }
+
+    private Vector3d getVectorRelativeTo(Vector3d origin, Vector3d relative) {
+        return new Vector3d(origin).subtract(relative);
+    }
+
+    /**
+     * There can't be any other vehicles closer to the current vehicle,
+     * that has an angle smaller than the return value of this function.
+     * The distance value is fitted to a linear function: angle(distance) = m*distance+n
+     *
+     * @param distance the distance of the current vehicle vector
+     * @return the required "free" angle
+     */
+    private double getOcclusionAngle(double distance, double m, double n) {
+        return m * distance + n;
+    }
+
+}

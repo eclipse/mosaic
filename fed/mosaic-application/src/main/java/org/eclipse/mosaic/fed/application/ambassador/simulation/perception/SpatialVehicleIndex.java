@@ -26,10 +26,10 @@ import java.util.List;
 public interface SpatialVehicleIndex {
 
     /**
-     * Queries the {@link SpatialVehicleIndex} and returns all vehicles inside the {@link PerceptionRange}
+     * Queries the {@link SpatialVehicleIndex} and returns all vehicles inside the {@link PerceptionModel}
      * e.
      */
-    List<VehicleObject> getVehiclesInRange(PerceptionRange searchRange);
+    List<VehicleObject> getVehiclesInRange(PerceptionModuleOwner owner, PerceptionModel searchRange);
 
     /**
      * Remove all vehicles from the {@link SpatialVehicleIndex} by a list of vehicle ids.
