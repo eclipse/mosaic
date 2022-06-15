@@ -76,7 +76,9 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
             long value = ObjectUtils.defaultIfNull(param, 0L);
             String unitPrefix = "";
 
-            if (value % DATA.TERABIT == 0) {
+            if (value == 0) {
+                unitPrefix = "";
+            } else if (value % DATA.TERABIT == 0) {
                 unitPrefix = "T";
                 value /= DATA.TERABIT;
             } else if (value % DATA.GIGABIT == 0) {

@@ -50,16 +50,6 @@ public final class DATA {
     public static final long TERABIT = 1000 * GIGABIT;
 
     /**
-     * 1 petabit = 1000 terabits.
-     */
-    public static final long PETABIT = 1000 * TERABIT;
-
-    /**
-     * 1 exabit = 1000 petabits.
-     */
-    public static final long EXABIT = 1000 * PETABIT;
-
-    /**
      * 1 kibibit = 1024 bits.
      */
     public static final long KIBIBIT = 1024 * BIT;
@@ -78,16 +68,6 @@ public final class DATA {
      * 1 tebibit = 1024 gibibits.
      */
     public static final long TEBIBIT = 1024 * GIBIBIT;
-
-    /**
-     * 1 pebibit = 1024 tebibits.
-     */
-    public static final long PEBIBIT = 1024 * TEBIBIT;
-
-    /**
-     * 1 exbibit = 1024 pebibits.
-     */
-    public static final long EXBIBIT = 1024 * PEBIBIT;
 
     /**
      * 1 byte = 8 bits.
@@ -115,11 +95,6 @@ public final class DATA {
     public static final long TERABYTE = 1000 * GIGABYTE;
 
     /**
-     * 1 petabyte = 1000 terabytes.
-     */
-    public static final long PETABYTE = 1000 * TERABYTE;
-
-    /**
      * 1 kibibyte = 1024 bytes.
      */
     public static final long KIBIBYTE = 1024 * BYTE;
@@ -138,9 +113,4 @@ public final class DATA {
      * 1 tebibyte = 1024 gibibytes.
      */
     public static final long TEBIBYTE = 1024 * GIBIBYTE;
-
-    /**
-     * 1 pebibyte = 1024 tebibytes.
-     */
-    public static final long PEBIBYTE = 1024 * TEBIBYTE;
 }
