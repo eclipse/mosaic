@@ -71,36 +71,17 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
 
     private final boolean failOnError;
     private final Pattern pattern;
+    private final String unit;
 
-    private UnitFieldAdapter(boolean failOnError, Pattern pattern) {
+    private UnitFieldAdapter(boolean failOnError, Pattern pattern, String unit) {
         this.failOnError = failOnError;
         this.pattern = pattern;
+        this.unit = ObjectUtils.defaultIfNull(unit, "");
     }
 
     @Override
     public void write(JsonWriter out, Double param) throws IOException {
-        String unit = null;
-        if(DISTANCE_PATTERN.equals(this.pattern)){
-            unit = " m";
-        } else if(SPEED_PATTERN.equals(this.pattern)){
-            unit = " m/s";
-        } else if(WEIGHT_PATTERN.equals(this.pattern)){
-            unit = " kg";
-        } else if(VOLTAGE_PATTERN.equals(this.pattern)){
-            unit = " V";
-        } else if(CURRENT_PATTERN.equals(this.pattern)){
-            unit = " A";
-        } else if(CAPACITY_PATTERN.equals(this.pattern)){
-            unit = " Ah";
-        } else {
-            unit = "";
-        }
-
-        if(StringUtils.isBlank(unit)){
-            out.value(ObjectUtils.defaultIfNull(param, 0d));
-        } else{
-            out.value(ObjectUtils.defaultIfNull(param, 0d) + unit);
-        }
+        out.value(ObjectUtils.defaultIfNull(param, 0d) + " " + unit);
     }
 
     @Override
@@ -164,7 +145,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(true, DISTANCE_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, DISTANCE_PATTERN, "m");
         }
     }
 
@@ -173,7 +154,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(false, DISTANCE_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, DISTANCE_PATTERN, "m");
         }
     }
 
@@ -182,7 +163,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(true, SPEED_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, SPEED_PATTERN, "m/s");
         }
     }
 
@@ -191,7 +172,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(false, SPEED_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, SPEED_PATTERN, "m/s");
         }
     }
 
@@ -199,7 +180,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(true, WEIGHT_PATTERN) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, WEIGHT_PATTERN, "kg") {
                 @Override
                 double determineUnitMultiplier(String prefix, String unit) {
                     double multiplier = 1;
@@ -217,7 +198,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(false, WEIGHT_PATTERN) {
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, WEIGHT_PATTERN, "kg") {
                 @Override
                 double determineUnitMultiplier(String prefix, String unit) {
                     double multiplier = 1;
@@ -234,7 +215,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(true, VOLTAGE_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, VOLTAGE_PATTERN, "V");
         }
     }
 
@@ -242,7 +223,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(false, VOLTAGE_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, VOLTAGE_PATTERN, "V");
         }
     }
 
@@ -250,7 +231,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(true, CURRENT_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, CURRENT_PATTERN, "A");
         }
     }
 
@@ -258,7 +239,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(false, CURRENT_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, CURRENT_PATTERN, "A");
         }
     }
 
@@ -266,7 +247,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(true, CAPACITY_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(true, CAPACITY_PATTERN, "Ah");
         }
     }
 
@@ -274,7 +255,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new UnitFieldAdapter(false, CAPACITY_PATTERN);
+            return (TypeAdapter<T>) new UnitFieldAdapter(false, CAPACITY_PATTERN, "Ah");
         }
     }
 }
