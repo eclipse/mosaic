@@ -131,7 +131,7 @@
                     "description": "Maximal speed. If defined as a number, then the default unit is m/s. Alternatively this can be defined as a string to include the unit of measurement (e.g. '50 kmh').",
                     "anyOf": [
                         { "type": "string", "maxLength": 15 },
-                        { "type": "number", "exclusiveMinimum": 0 }
+                        { "type": "number", "minimum": 0 }
                     ]
                 },
                 "minGap": {
