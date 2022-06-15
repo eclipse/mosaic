@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.docker;
 
+import com.sun.security.auth.module.UnixSystem;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -31,6 +33,7 @@ public class DockerRun {
     private String name;
     private List<Pair<String, Object>> parameters = new Vector<>();
     private List<Pair<Integer, Integer>> portBindings = new Vector<>();
+    private String user;
     private List<Pair<File, String>> volumeBindings = new Vector<>();
     private boolean removeAfterRun = false;
     private boolean removeBeforeRun;
@@ -81,6 +84,31 @@ public class DockerRun {
     }
 
     /**
+     * Sets the user and group of container. See https://docs.docker.com/engine/reference/run/#user for details.
+     *
+     * @param user the user and group as string accepted by Docker's CLI parameter "--user".
+     */
+    public DockerRun user(String user) {
+        this.user = user;
+        return this;
+    }
+
+    /**
+     * Sets user to current user/group.
+     */
+    public DockerRun currentUser() {
+        String user = null;
+
+        // Currently, default user is set on Linux, only.
+        if (SystemUtils.IS_OS_UNIX) {
+            UnixSystem system = new UnixSystem();
+            user = String.format("%d:%d", system.getUid(), system.getGid());
+        }
+
+        return this.user(user);
+    }
+
+    /**
      * Adds an explicit volume binding this docker run command. The resulting
      * container can then share files with the host.
      *
@@ -111,6 +139,11 @@ public class DockerRun {
 
         if (removeAfterRun) {
             options.add("--rm");
+        }
+
+        if (user != null && !user.isEmpty()) {
+            options.add("--user");
+            options.add(user);
         }
 
         for (Pair<File, String> binding : volumeBindings) {
