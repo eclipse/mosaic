@@ -79,9 +79,9 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
         List<Vector3d> nonOccludedVectors = new ArrayList<>();
         nonOccludedVehicles.add(sortedByDistance.get(0)); // closest vehicle is always perceived
         nonOccludedVectors.add(getVectorRelativeTo(ownerPosition, sortedByDistance.get(0)));
-        for (VehicleObject currentVehicleObject : sortedByDistance) { // iterate over all sorted vehicles
-            Vector3d currentRelativeVector = getVectorRelativeTo(ownerPosition, currentVehicleObject);
-            double occlusionAngle = getOcclusionAngle(ownerPosition.distanceTo(currentRelativeVector), m, n);
+        for (int i = 1; i < sortedByDistance.size(); i++) { // iterate over all other sorted vehicles
+            Vector3d currentRelativeVector = getVectorRelativeTo(ownerPosition, sortedByDistance.get(i));
+            double occlusionAngle = getOcclusionAngle(ownerPosition.distanceTo(sortedByDistance.get(i)), m, n);
             isOccluded:
             {
                 for (Vector3d otherVector : nonOccludedVectors) { // iterate over all previously selected vectors
@@ -89,7 +89,7 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
                         break isOccluded;
                     }
                 }
-                nonOccludedVehicles.add(currentVehicleObject);
+                nonOccludedVehicles.add(sortedByDistance.get(i));
                 nonOccludedVectors.add(currentRelativeVector);
             }
         }
