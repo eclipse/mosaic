@@ -74,36 +74,22 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
             out.value(UNLIMITED);
         } else {
             long value = ObjectUtils.defaultIfNull(param, 0L);
-            if(PS.equals(this.unitSuffix)) {
-                String unitPrefix = "";
-                String valueString = Long.toString(value);
-                Pattern pattern = Pattern.compile("0*$");
-                Matcher matcher = pattern.matcher(valueString);
-                if (matcher.find()) {
-                    int nZeroDigitsAtEnd = matcher.group(0).length();
-                    switch (nZeroDigitsAtEnd / 3) {
-                        case 1:
-                            unitPrefix = "k";
-                            value /= 1000L;
-                            break;
-                        case 2:
-                            unitPrefix = "M";
-                            value /= 1000000L;
-                            break;
-                        case 3:
-                            unitPrefix = "G";
-                            value /= 1000000000L;
-                            break;
-                        case 4:
-                        default:
-                            unitPrefix = "T";
-                            value /= 1000000000000L;
-                    }
-                }
-                out.value(value + " " + unitPrefix + "bps");
-            }else{
-                out.value(value);
+            String unitPrefix = "";
+
+            if (value % DATA.TERABIT == 0) {
+                unitPrefix = "T";
+                value /= DATA.TERABIT;
+            } else if (value % DATA.GIGABIT == 0) {
+                unitPrefix = "G";
+                value /= DATA.GIGABIT;
+            } else if (value % DATA.MEGABIT == 0) {
+                unitPrefix = "M";
+                value /= DATA.MEGABIT;
+            } else if (value % DATA.KILOBIT == 0) {
+                unitPrefix = "k";
+                value /= DATA.KILOBIT;
             }
+            out.value(value + " " + unitPrefix + "b" + this.unitSuffix);
         }
     }
 
@@ -154,7 +140,7 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
         }
 
         long multiplier = Validate.notNull(MULTIPLIERS.get(prefix.toLowerCase()), "Invalid unit " + prefix + unit);
-        if ("bytes".equalsIgnoreCase(unit)  || "byte".equalsIgnoreCase(unit) || "B".equals(unit)) {
+        if ("bytes".equalsIgnoreCase(unit) || "byte".equalsIgnoreCase(unit) || "B".equals(unit)) {
             return multiplier * DATA.BYTE;
         } else {
             return multiplier;
