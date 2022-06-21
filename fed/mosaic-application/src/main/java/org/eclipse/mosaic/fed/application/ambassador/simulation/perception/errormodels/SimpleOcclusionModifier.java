@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
@@ -31,7 +32,7 @@ import java.util.List;
  * perceived closer to the current vehicle.
  * If any of those previously perceived vehicles has an angle smaller than
  * defined by {@link #getOcclusionAngle} the current vehicle will not be perceived.
- * <p>
+ * <p/>
  * Additionally, a linear function between {@link #minDetectionAngle} and {@link #maxDetectionAngle}
  * is fitted, which makes it necessary for further vehicles to have a larger "free" angle.
  */
@@ -71,7 +72,12 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
         sortedByDistance.sort(Comparator.comparingDouble(vehicleObject -> vehicleObject.distanceTo(ownerPosition)));
         // fit linear function to (closest distance, min angle) and (furthest distance, max angle)
         double closestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(0));
-        double furthestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(sortedByDistance.size() - 1));
+        double furthestPerceivedDistance;
+        if (owner.getPerceptionModule().getConfiguration().getClass().equals(SimplePerceptionConfiguration.class)) {
+            furthestPerceivedDistance = ((SimplePerceptionConfiguration) owner.getPerceptionModule().getConfiguration()).getViewingRange();
+        } else {
+            furthestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(sortedByDistance.size() - 1));
+        }
         double m = (maxDetectionAngle - minDetectionAngle) / (furthestPerceivedDistance - closestPerceivedDistance);
         double n = minDetectionAngle - (closestPerceivedDistance * m);
 

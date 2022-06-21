@@ -52,6 +52,11 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
     }
 
     @Override
+    public SimplePerceptionConfiguration getConfiguration() {
+        return perceptionModel.configuration;
+    }
+
+    @Override
     public void enable(SimplePerceptionConfiguration configuration) {
         if (configuration == null) {
             log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.",
@@ -59,6 +64,11 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
             configuration = new SimplePerceptionConfiguration(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE);
         }
         this.perceptionModel = new SimplePerceptionModel(this.owner.getId(), configuration);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return perceptionModel != null;
     }
 
     @Override

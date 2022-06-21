@@ -29,7 +29,7 @@ public interface PerceptionModifier {
     /**
      * Applies the implemented filter/modifier.
      *
-     * @return
+     * @return the filtered/modified list
      */
     List<VehicleObject> apply(PerceptionModuleOwner owner, List<VehicleObject> vehicleObjects);
 }

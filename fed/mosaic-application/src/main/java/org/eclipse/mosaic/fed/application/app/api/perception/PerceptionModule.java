@@ -27,9 +27,16 @@ public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration>
      * @param configuration the configuration object
      */
     void enable(ConfigT configuration);
-
     /**
-     * @return a list of all {@link VehicleObject}s inside the perception range of this vehicle.
+     * Returns {@code true} if {@link PerceptionModule} is enabled, otherwise {@code false}.
+     */
+    boolean isEnabled();
+    /**
+     * Returns a list of all {@link VehicleObject}s inside the perception range of this vehicle.
      */
     List<VehicleObject> getPerceivedVehicles();
+    /**
+     * Returns The configuration of the {@link PerceptionModule}.
+     */
+    PerceptionModuleConfiguration getConfiguration();
 }

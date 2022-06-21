@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
@@ -57,24 +58,28 @@ public class DistanceModifier implements PerceptionModifier {
             return vehicleObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
-        double furthestPerceivedDistance = vehicleObjects.stream()
-                .max(Comparator.comparingDouble(ownerPosition::distanceSqrTo)).get().distanceSqrTo(ownerPosition);
-        double closestPerceivedDistance = vehicleObjects.stream()
-                .min(Comparator.comparingDouble(ownerPosition::distanceSqrTo)).get().distanceSqrTo(ownerPosition);
+        double furthestPerceivedDistance;
+        if (owner.getPerceptionModule().getConfiguration().getClass().equals(SimplePerceptionConfiguration.class)) {
+            furthestPerceivedDistance =
+                    Math.pow(((SimplePerceptionConfiguration) owner.getPerceptionModule().getConfiguration()).getViewingRange(), 2);
+        } else {
+            furthestPerceivedDistance = vehicleObjects.stream()
+                    .max(Comparator.comparingDouble(ownerPosition::distanceSqrTo)).get().distanceSqrTo(ownerPosition);
+        }
         vehicleObjects.removeIf(currentVehicleObject ->
-                getDistanceRating(ownerPosition.distanceSqrTo(currentVehicleObject), furthestPerceivedDistance, closestPerceivedDistance)
-                        < rng.nextDouble(0, 1) - offset);
+                getDistanceRating(ownerPosition.distanceSqrTo(currentVehicleObject), furthestPerceivedDistance)
+                        >= rng.nextDouble(0, 1) - offset);
         return vehicleObjects;
     }
 
     /**
      * Gives the best rating (0) to the closest vehicles and the worst to the furthest (1).
-     * @param distance distance of the current vehicle to the ego vehicle
-     * @param closestPerceivedDistance the distance of the closest vehicle
-     * @param furthestDistance the distance of the furthest vehicle
+     *
+     * @param distance         distance of the current vehicle to the ego vehicle
+     * @param furthestDistance the viewing distance or distance of the furthest vehicle
      * @return a rating for the current vehicle depended on distance to the ego vehicle
      */
-    private double getDistanceRating(double distance, double closestPerceivedDistance, double furthestDistance) {
-        return (distance - closestPerceivedDistance) / (furthestDistance - closestPerceivedDistance);
+    private double getDistanceRating(double distance, double furthestDistance) {
+        return distance / furthestDistance;
     }
 }
