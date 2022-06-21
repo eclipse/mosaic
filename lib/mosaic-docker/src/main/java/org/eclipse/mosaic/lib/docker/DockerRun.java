@@ -109,10 +109,10 @@ public class DockerRun {
             // Therefore, its import statement has to be bypassed on Windows.
             try {
                 Class<?> systemClass = Class.forName("com.sun.security.auth.module.UnixSystem");
-                Method getUid = systemClass.getDeclaredMethod("getUid", new Class[]{});
-                Method getGid = systemClass.getDeclaredMethod("getGid", new Class[]{});
+                Method getUid = systemClass.getDeclaredMethod("getUid");
+                Method getGid = systemClass.getDeclaredMethod("getGid");
                 Object system = systemClass.newInstance();
-                user = String.format("%d:%d", getUid.invoke(system), getGid.invoke(system));
+                user = String.format("%d:%d", (Long) getUid.invoke(system), (Long) getGid.invoke(system));
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 LOG.warn("Cannot fetch user id and group id. User will not be set.");
             }
