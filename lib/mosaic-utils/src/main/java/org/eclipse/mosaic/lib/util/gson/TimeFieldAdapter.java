@@ -78,7 +78,26 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
 
     @Override
     public void write(JsonWriter out, Long param) throws IOException {
-        out.value(ObjectUtils.defaultIfNull(param, 0l));
+        String unit = "";
+        param = ObjectUtils.defaultIfNull(param, 0l);
+        if (param == 0) {
+            unit = "s";
+        } else if (param % TIME.HOUR == 0) {
+            unit = "h";
+            param /= TIME.HOUR;
+        } else if (param % TIME.MINUTE == 0) {
+            unit = "min";
+            param /= TIME.MINUTE;
+        } else if (param % TIME.SECOND == 0) {
+            unit = "s";
+            param /= TIME.SECOND;
+        } else if (param % TIME.MILLI_SECOND == 0) {
+            unit = "ms";
+            param /= TIME.MILLI_SECOND;
+        } else {
+            unit = "ns";
+        }
+        out.value(param + " " + unit);
     }
 
     @Override

@@ -58,9 +58,10 @@ public class TrafficLightProgramTraciReader extends AbstractTraciResultReader<Su
         }
 
         int numberOfParams = readIntWithType(in);
-        for (int i = 0; i < numberOfParams; i++) {
+        for (int i = 0; i < numberOfParams; i++) { // each parameter is read using list reader
             paramReader.readFromStream(in); // key/value pair as list with two items
         }
+        numBytesRead += paramReader.getNumberOfBytesRead();
         return new SumoTrafficLightLogic(logicId, phases, phaseIndex);
     }
 

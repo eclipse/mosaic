@@ -220,6 +220,19 @@ public class DockerClientTest {
         verify(commandLine, never()).rm(anyString());
     }
 
+    @Test
+    public void user_explicit() {
+        String user = "Odo";
+        String image = "test-image";
+
+        //RUN
+        DockerContainer container = dockerClient.run(image).user(user).execute();
+
+        //VERIFY
+        assertNotNull(container);
+        verify(commandLine).runAndDetach(anyString(), argThat(containsInOrder("--user", user, "-P", "--name", image)));
+    }
+
     private static <T> ArgumentMatcher<List<T>> containsInOrder(final T... items) {
         return o -> {
             Iterator<T> itExpected = Arrays.asList(items).iterator();

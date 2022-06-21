@@ -209,6 +209,8 @@
         <phase duration="4"  state="rryyrrrrrry"/>
         <phase duration="31" state="rrrrGGgGrrr"/>
         <phase duration="4"  state="rrrryyyyrrr"/>
+        <param key="test" value="this is just a test param"/>
+        <param key="test2" value="this is just a second test param"/>
     </tlLogic>
 
     <junction id="1" type="priority" x="0.00" y="0.00" incLanes="1_2_1_0 1_2_1_1" intLanes=":1_0_0" shape="0.00,0.00 -6.40,0.15 0.00,0.00">
