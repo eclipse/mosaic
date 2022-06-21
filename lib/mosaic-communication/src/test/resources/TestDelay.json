@@ -1,8 +1,8 @@
 {
     "delays": [
-        { "type": "ConstantDelay", "delay": 32 },
-        { "type": "SimpleRandomDelay", "minDelay": 100, "maxDelay": 110, "steps": 0},
-        { "type": "GammaRandomDelay", "minDelay": 250, "expDelay": 300},
-        { "type": "GammaSpeedDelay", "minDelay": 350, "expDelay": 400 }
+        { "type": "ConstantDelay", "delay": "32 ns" },
+        { "type": "SimpleRandomDelay", "minDelay": "100 ns", "maxDelay": "110 ns", "steps": 0},
+        { "type": "GammaRandomDelay", "minDelay": "250 ns", "expDelay": "300 ns"},
+        { "type": "GammaSpeedDelay", "minDelay": "350 ns", "expDelay": "400 ns" }
     ]
 }
