@@ -36,6 +36,9 @@ import java.util.List;
  * No occlusion or error model is considered. The field of view is defined with an opening angle of maximum 180 degrees.
  */
 public class SimplePerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
+    private static final double DEFAULT_VIEWING_ANGLE = 40;
+    private static final double DEFAULT_VIEWING_RANGE = 200;
+
 
     private final PerceptionModuleOwner owner;
     private final Logger log;
@@ -50,8 +53,9 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
     @Override
     public void enable(SimplePerceptionConfiguration configuration) {
         if (configuration == null) {
-            log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.", 40, 200);
-            configuration = new SimplePerceptionConfiguration(40, 200);
+            log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.",
+                    DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_RANGE);
+            configuration = new SimplePerceptionConfiguration(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE);
         }
         this.perceptionModel = new SimplePerception(this.owner.getId(), configuration);
     }
@@ -81,6 +85,7 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         private final SimplePerceptionConfiguration configuration;
 
         private final Vector3d origin = new Vector3d();
+        private final Vector3d directionVector = new Vector3d();
         private final Vector3d rightBoundVector = new Vector3d();
         private final Vector3d leftBoundVector = new Vector3d();
 
@@ -100,7 +105,8 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         private final Vector3d tmpVector2 = new Vector3d();
 
         SimplePerception(String ownerId, SimplePerceptionConfiguration configuration) {
-            Validate.isTrue(configuration.getViewingAngle() < 180, "Only viewing angles less than 180 degrees are supported.");
+            Validate.isTrue(configuration.getViewingAngle() >= 0 && configuration.getViewingAngle() <= 360,
+                    "Only viewing angles from 0 to 360 degrees are supported.");
 
             this.ownerId = ownerId;
             this.configuration = configuration;
@@ -127,9 +133,53 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 other.getProjectedPosition().toVector3d(tmpVector1).subtract(origin);
                 // we use tmpVector2 as origin from the viewpoint of this object
                 tmpVector2.set(0, 0, 0);
-                return VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, rightBoundVector) // vehicle is left of right edge
-                        && !VectorUtils.isLeftOfLine(tmpVector1, tmpVector2, leftBoundVector) // vehicle is right of left edge
-                        && tmpVector1.magnitude() <= configuration.getViewingRange(); // other vehicle is in range
+
+                if (tmpVector1.magnitude() > configuration.getViewingRange()) { // other vehicle is NOT in range
+                    return false;
+                }
+                if (MathUtils.isFuzzyEqual(configuration.getViewingAngle(), 360d)) { // for 360 degree viewing angle field-of-view check is obsolete
+                    return true;
+                } else if (configuration.getViewingAngle() < 180d) { // for < 180 degree viewing angle we use left and right vector
+                    return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector)
+                            || liesOnVector(tmpVector1, leftBoundVector)
+                            || liesOnVector(tmpVector1, rightBoundVector);
+                } else { // for >= 180 degree do two checks: 1st between direction vector and right or 2nd between direction vector and left
+                    return isBetweenVectors(tmpVector1, tmpVector2, directionVector, rightBoundVector)
+                            || isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, directionVector)
+                            || liesOnVector(tmpVector1, leftBoundVector)
+                            || liesOnVector(tmpVector1, rightBoundVector)
+                            || liesOnVector(tmpVector1, directionVector);
+                }
+            }
+        }
+
+        private boolean isBetweenVectors(Vector3d pointToEvaluate, Vector3d linePoint, Vector3d leftVector, Vector3d rightVector) {
+            return VectorUtils.isLeftOfLine(pointToEvaluate, linePoint, rightVector) // is left of right edge
+                    && !VectorUtils.isLeftOfLine(pointToEvaluate, linePoint, leftVector); // is right of left vector
+        }
+
+        /**
+         * Calculates the magnitude of the cross product of the two vectors
+         * and checks if they point in the same direction (to avoid objects being located exactly in the opposite direction).
+         * If the magnitude is equal to 0 the point will be on the line, however could be anywhere in each direction, so
+         * we additionally check if the directions match.
+         * Note: This method only works, since we know that we work around the origin.
+         *
+         * @param pointToEvaluate point to be evaluated
+         * @param line            check point against this line
+         * @return {@code true} if point lies on line, otherwise {@code false}
+         */
+        private boolean liesOnVector(Vector3d pointToEvaluate, Vector3d line) {
+            // first check if the magnitude of the cross product is equal to 0
+            double magCross = pointToEvaluate.z * line.x - pointToEvaluate.x * line.z;
+            if (!MathUtils.isFuzzyEqual(magCross, 0)) {
+                return false;
+            }
+            // check if point vector is pointing in the right direction
+            if (Math.abs(line.z) >= Math.abs(line.x)) {
+                return line.z > 0 ? pointToEvaluate.z > 0 : pointToEvaluate.z <= 0;
+            } else {
+                return line.x > 0 ? pointToEvaluate.x > 0 : pointToEvaluate.x <= 0;
             }
         }
 
@@ -138,16 +188,15 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
          */
         private void calculateSightBoundingVectors(double heading) {
             synchronized (tmpVector1) {
-                // getting the direction vector of the heading from origin (result is written into tmpVector1)
-                Vector3d directionVector = VectorUtils.getDirectionVectorFromHeading(heading, tmpVector1);
-                double viewingAngleRad = toRadians(configuration.getViewingAngle());
-
+                // getting the direction vector of the heading from origin (result is written into direction)
+                VectorUtils.getDirectionVectorFromHeading(heading, directionVector);
+                double viewingAngleRadHalf = toRadians(configuration.getViewingAngle()) / 2;
+                // scale vector by range for minimum bounding rectangle
                 directionVector.multiply(configuration.getViewingRange());
-
                 // rotate the direction vector to the right
-                rightBoundVector.set(directionVector).rotate(-viewingAngleRad / 2, VectorUtils.UP);
+                rightBoundVector.set(directionVector).rotate(-viewingAngleRadHalf, VectorUtils.UP);
                 // rotate the direction vector to the left
-                leftBoundVector.set(directionVector).rotate(viewingAngleRad / 2, VectorUtils.UP);
+                leftBoundVector.set(directionVector).rotate(viewingAngleRadHalf, VectorUtils.UP);
             }
         }
 
