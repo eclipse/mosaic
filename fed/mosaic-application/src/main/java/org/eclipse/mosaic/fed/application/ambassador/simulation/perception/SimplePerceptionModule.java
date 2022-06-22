@@ -145,7 +145,7 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 // we use tmpVector2 as origin from the viewpoint of this object
                 tmpVector2.set(0, 0, 0);
 
-                if (tmpVector1.magnitude() > configuration.getViewingRange()) { // other vehicle is in range
+                if (tmpVector1.magnitude() > configuration.getViewingRange()) { // other vehicle is NOT in range
                     return false;
                 }
                 if (MathUtils.isFuzzyEqual(configuration.getViewingAngle(), 360d)) { // for 360 degree viewing angle field-of-view check is obsolete
