@@ -15,11 +15,14 @@
 
 package org.eclipse.mosaic.lib.docker;
 
-import com.sun.security.auth.module.UnixSystem;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Vector;
 
@@ -27,6 +30,7 @@ import java.util.Vector;
  * Provides methods to easily compose a "docker run" command.
  */
 public class DockerRun {
+    private final static Logger LOG = LoggerFactory.getLogger(DockerRun.class);
 
     private final DockerClient client;
     private final String image;
@@ -99,10 +103,19 @@ public class DockerRun {
     public DockerRun currentUser() {
         String user = null;
 
-        // Currently, default user is set on Linux, only.
+        // Currently, default user is set on Unix systems, only.
         if (SystemUtils.IS_OS_UNIX) {
-            UnixSystem system = new UnixSystem();
-            user = String.format("%d:%d", system.getUid(), system.getGid());
+            // The class "com.sun.security.auth.module.UnixSystem" is not available on Windows.
+            // Therefore, its import statement has to be bypassed on Windows.
+            try {
+                Class<?> systemClass = Class.forName("com.sun.security.auth.module.UnixSystem");
+                Method getUid = systemClass.getDeclaredMethod("getUid");
+                Method getGid = systemClass.getDeclaredMethod("getGid");
+                Object system = systemClass.newInstance();
+                user = String.format("%d:%d", (Long) getUid.invoke(system), (Long) getGid.invoke(system));
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                LOG.warn("Cannot fetch user id and group id. User will not be set.");
+            }
         }
 
         return this.user(user);
