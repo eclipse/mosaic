@@ -233,6 +233,15 @@ public class DockerClientTest {
         verify(commandLine).runAndDetach(anyString(), argThat(containsInOrder("--user", user, "-P", "--name", image)));
     }
 
+    @Test
+    public void user_auto() {
+        //RUN
+        DockerContainer container = dockerClient.run("test-image").currentUser().execute();
+
+        //VERIFY
+        assertNotNull(container);
+    }
+
     private static <T> ArgumentMatcher<List<T>> containsInOrder(final T... items) {
         return o -> {
             Iterator<T> itExpected = Arrays.asList(items).iterator();
