@@ -18,13 +18,14 @@ package org.eclipse.mosaic.app.tutorial;
 import org.eclipse.mosaic.app.tutorial.message.GreenWaveMsg;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
 
 public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleOperatingSystem> {
-    private final static long  TIME_INTERVAL = TIME.SECOND;
+    private final static long TIME_INTERVAL = TIME.SECOND;
 
     private void sendGeocastMessage() {
         final double range = 15;
@@ -37,11 +38,21 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         getLog().infoSimTime(this, "Sent secret passphrase");
     }
 
+    private void sendTopoBroadcastMessage() {
+        int hops = 2;
+        final MessageRouting routing = getOperatingSystem()
+                .getAdHocModule()
+                .createMessageRouting()
+                .topoBroadCast();
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
+        getLog().infoSimTime(this, "Sent secret passphrase via TopoBroadcast");
+    }
+
     private void sample() {
         getOs().getEventManager().addEvent(
                 getOs().getSimulationTime() + TIME_INTERVAL, this
         );
-        sendGeocastMessage();
+        sendTopoBroadcastMessage();
     }
 
     @Override
