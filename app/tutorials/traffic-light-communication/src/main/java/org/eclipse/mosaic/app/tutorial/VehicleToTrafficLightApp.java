@@ -16,8 +16,10 @@
 package org.eclipse.mosaic.app.tutorial;
 
 import org.eclipse.mosaic.app.tutorial.message.GreenWaveMsg;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.interactions.communication.AdHocCommunicationConfiguration;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
@@ -45,7 +47,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .createMessageRouting()
                 .topoBroadCast();
         getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
-        getLog().infoSimTime(this, "Sent secret passphrase via TopoBroadcast");
+        getLog().infoSimTime(this, "Sent secret passphrase");
     }
 
     private void sample() {
@@ -58,7 +60,12 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
     @Override
     public void onStartup() {
         getLog().infoSimTime(this, "Initialize application");
-        getOs().getAdHocModule().enable();
+        AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
+                .addRadio()
+                .channel(AdHocChannel.CCH)
+                .distance(15)
+                .create();
+        getOs().getAdHocModule().enable(configuration);
         getLog().infoSimTime(this, "Activated WLAN Module");
         sample();
     }
