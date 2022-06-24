@@ -27,13 +27,11 @@ public final class GreenWaveMsg extends V2xMessage {
     private final String         message;
     private final EncodedPayload payload;
     private final static long    MIN_LEN = 8L;
-    private final GeoPoint senderPos;
 
     public GreenWaveMsg(MessageRouting routing, String message, GeoPoint position) {
         super(routing);
         this.message = message;
         payload = new EncodedPayload(message.length(), MIN_LEN);
-        senderPos = position;
     }
 
     public String getMessage() {
@@ -44,10 +42,6 @@ public final class GreenWaveMsg extends V2xMessage {
     @Override
     public EncodedPayload getPayLoad() {
         return payload;
-    }
-
-    public GeoPoint getSenderPos() {
-        return senderPos;
     }
 
     @Override
