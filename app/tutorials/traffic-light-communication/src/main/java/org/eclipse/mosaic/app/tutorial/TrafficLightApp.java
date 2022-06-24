@@ -65,13 +65,16 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         if (receivedV2xMessage.getMessage() instanceof GreenWaveMsg) {
             getLog().infoSimTime(this, "Received GreenWaveMsg");
-            if (((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
-                getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
+            if (((GreenWaveMsg) receivedV2xMessage.getMessage()).getSenderPos().distanceTo(getOs().getPosition()) <= 15) {
+                if (((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
+                    getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
 
-                if (DEFAULT_PROGRAM.equals(getOs().getCurrentProgram().getProgramId())) {
-                    setGreen();
+                    if (DEFAULT_PROGRAM.equals(getOs().getCurrentProgram().getProgramId())) {
+                        setGreen();
+                    }
                 }
             }
+
         }
     }
 

@@ -36,17 +36,18 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .getAdHocModule()
                 .createMessageRouting()
                 .geoBroadCast(geoCircle);
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET, getOs().getPosition()));
         getLog().infoSimTime(this, "Sent secret passphrase");
     }
 
+    //Use TopoBroadcast instead of GeoBroadcast because latter is not compatible with OMNeT++ or ns-3
     private void sendTopoBroadcastMessage() {
         int hops = 2;
         final MessageRouting routing = getOperatingSystem()
                 .getAdHocModule()
                 .createMessageRouting()
                 .topoBroadCast();
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET, getOs().getPosition()));
         getLog().infoSimTime(this, "Sent secret passphrase");
     }
 
@@ -64,8 +65,9 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .addRadio()
                 .channel(AdHocChannel.CCH)
                 .distance(15)
+                .power(20)
                 .create();
-        getOs().getAdHocModule().enable(configuration);
+        getOs().getAdHocModule().enable();
         getLog().infoSimTime(this, "Activated WLAN Module");
         sample();
     }
