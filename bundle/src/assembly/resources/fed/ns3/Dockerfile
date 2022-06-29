@@ -2,7 +2,7 @@ FROM ubuntu:bionic
 
 LABEL \
     description="Docker image containing the MOSAIC adapted ns-3 federate" \
-    version="${pom.version}" \
+    version="22.0" \
     maintainer="mosaic@fokus.fraunhofer.de"
 
 RUN \
