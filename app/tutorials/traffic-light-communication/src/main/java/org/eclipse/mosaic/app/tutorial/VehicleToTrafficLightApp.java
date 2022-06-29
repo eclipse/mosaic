@@ -64,8 +64,8 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
                 .addRadio()
                 .channel(AdHocChannel.CCH)
-                .power(20)
-                .distance(20)
+                .power(0.3125)
+                .distance(15)
                 .create();
         getOs().getAdHocModule().enable(configuration);
         getLog().infoSimTime(this, "Activated WLAN Module");
