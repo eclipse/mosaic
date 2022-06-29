@@ -572,7 +572,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
         bridge.getVehicleControl()
-                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), (int) vehicleSlowDown.getInterval());
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), convertTime((int) vehicleSlowDown.getInterval()));
     }
 
     /**
@@ -603,7 +603,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), vehicleStop.getDuration());
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), convertTime(vehicleStop.getDuration()));
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -724,8 +724,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("VehicleLaneChange failed: unsupported lane change mode.");
                     return;
             }
-
-            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, vehicleLaneChange.getDuration());
+            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, convertTime(vehicleLaneChange.getDuration()));
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
@@ -737,6 +736,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         } catch (NumberFormatException e) {
             throw new InternalFederateException(e);
         }
+    }
+
+    private int convertTime(int time) {
+        return (int) (time / TIME.MILLI_SECOND);
     }
 
     /**
@@ -855,7 +858,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
                     // set speed permanently after given interval (in the future) via the event scheduler
                     long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval * TIME.MILLI_SECOND);
-                    eventScheduler.addEvent(new Event(adjustedTime, this, vehicleSpeedChange)
+                    eventScheduler.addEvent(new Event(convertTime((int) adjustedTime), this, vehicleSpeedChange)
                     );
                 } else {
                     // set speed immediately
@@ -1084,16 +1087,16 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
     private void receiveInteraction(TrafficSignSpeedLimitChange trafficSignSpeedLimitChange) throws InternalFederateException {
         trafficSignManager.changeVariableSpeedSign(
-                trafficSignSpeedLimitChange.getTrafficSignId(), 
-                trafficSignSpeedLimitChange.getLane(), 
+                trafficSignSpeedLimitChange.getTrafficSignId(),
+                trafficSignSpeedLimitChange.getLane(),
                 trafficSignSpeedLimitChange.getSpeedLimit()
         );
     }
 
     private void receiveInteraction(TrafficSignLaneAssignmentChange trafficSignLaneAssignmentChange) throws InternalFederateException {
         trafficSignManager.changeVariableLaneAssignmentSign(
-                trafficSignLaneAssignmentChange.getTrafficSignId(), 
-                trafficSignLaneAssignmentChange.getLane(), 
+                trafficSignLaneAssignmentChange.getTrafficSignId(),
+                trafficSignLaneAssignmentChange.getLane(),
                 trafficSignLaneAssignmentChange.getAllowedVehicleClasses()
         );
     }
@@ -1193,7 +1196,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
 
         // schedule events, e.g. change speed events
-        int scheduled = eventScheduler.scheduleEvents(time);
+        int scheduled = eventScheduler.scheduleEvents(convertTime((int) time));
         log.debug("scheduled {} events at time {}", scheduled, TIME.format(time));
 
         try {

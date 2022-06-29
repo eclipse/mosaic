@@ -240,7 +240,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public void stopNow(VehicleStopMode vehicleStopMode, int durationInMs) {
+    public void stopNow(VehicleStopMode vehicleStopMode, int durationInNs) {
         if (getVehicleData() == null) {
             getOsLog().error("Could not stop vehicle as it has no data present to estimate stop position.");
             return;
@@ -252,7 +252,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
                 getNavigationModule().getCurrentRoute(),
                 getNavigationModule().getRoadPosition().getLaneIndex(),
                 distanceToStop + 5
-        ), vehicleStopMode, durationInMs);
+        ), vehicleStopMode, durationInNs);
     }
 
     @Override
