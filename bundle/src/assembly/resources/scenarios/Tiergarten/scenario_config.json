@@ -27,9 +27,9 @@
         "application": true,
         "cell": false,
         "environment": true,
-        "sns": false,
+        "sns": true,
         "ns3": false,
-        "omnetpp": true,
+        "omnetpp": false,
         "output": true,
         "sumo": true
     }
