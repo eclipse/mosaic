@@ -381,8 +381,9 @@ public class MosaicSimulation {
         if (descriptor.isToStartAndStop()) {
 
             if (StringUtils.isNotEmpty(federate.dockerImage)) {
+                final String container = federate.id + '-' + simulationId;
                 descriptor.setFederateExecutor(
-                        descriptor.getAmbassador().createDockerFederateExecutor(federate.dockerImage, host.operatingSystem).setContainerName(simulationId)
+                        descriptor.getAmbassador().createDockerFederateExecutor(federate.dockerImage, host.operatingSystem).setContainerName(container)
                 );
             } else {
                 int port = federate.port;
