@@ -81,7 +81,6 @@ public class DockerFederateExecutor implements FederateExecutor {
         final DockerRun run = this.dockerClient
                 .run(image)
                 .name(containerName)
-                .removeBeforeRun()
                 .removeAfterRun()
                 .currentUser()
                 .volumeBinding(new File(workingDir, sharedDirectoryPath), imageVolume);
