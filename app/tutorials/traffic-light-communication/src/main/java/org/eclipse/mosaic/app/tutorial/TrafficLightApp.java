@@ -33,6 +33,8 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
     private static final String DEFAULT_PROGRAM = "1";
     private static final String GREEN_PROGRAM = "0";
 
+    private static final Integer MIN_DISTANCE = 15;
+
     @Override
     public void onStartup() {
         getLog().infoSimTime(this, "Initialize application");
@@ -65,8 +67,10 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         if (receivedV2xMessage.getMessage() instanceof GreenWaveMsg) {
             getLog().infoSimTime(this, "Received GreenWaveMsg");
+            //Assure that distanceTo does not throw a NullPointerException
+            assert receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition() != null;
             if (receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition()
-                    .distanceTo(getOs().getPosition()) <= 15) {
+                    .distanceTo(getOs().getPosition()) <= MIN_DISTANCE) {
                 if (((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
                     getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
 

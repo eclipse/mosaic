@@ -42,7 +42,6 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
 
     //Use TopoBroadcast instead of GeoBroadcast because latter is not compatible with OMNeT++ or ns-3
     private void sendTopoBroadcastMessage() {
-        int hops = 2;
         final MessageRouting routing = getOperatingSystem()
                 .getAdHocModule()
                 .createMessageRouting()
@@ -64,8 +63,8 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
         AdHocModuleConfiguration configuration = new AdHocModuleConfiguration()
                 .addRadio()
                 .channel(AdHocChannel.CCH)
-                .power(0.3125)
-                .distance(15)
+                .power(17)
+                .distance(300)
                 .create();
         getOs().getAdHocModule().enable(configuration);
         getLog().infoSimTime(this, "Activated WLAN Module");
