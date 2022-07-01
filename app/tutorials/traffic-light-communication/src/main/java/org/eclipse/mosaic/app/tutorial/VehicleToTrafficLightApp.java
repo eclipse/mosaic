@@ -36,7 +36,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .getAdHocModule()
                 .createMessageRouting()
                 .geoBroadCast(geoCircle);
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET, getOs().getPosition()));
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
         getLog().infoSimTime(this, "Sent secret passphrase");
     }
 
@@ -46,7 +46,7 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .getAdHocModule()
                 .createMessageRouting()
                 .topoBroadCast();
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET, getOs().getPosition()));
+        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
         getLog().infoSimTime(this, "Sent secret passphrase");
     }
 

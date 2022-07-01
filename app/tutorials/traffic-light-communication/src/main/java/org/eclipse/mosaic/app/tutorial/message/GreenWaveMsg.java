@@ -28,7 +28,7 @@ public final class GreenWaveMsg extends V2xMessage {
     private final EncodedPayload payload;
     private final static long    MIN_LEN = 8L;
 
-    public GreenWaveMsg(MessageRouting routing, String message, GeoPoint position) {
+    public GreenWaveMsg(MessageRouting routing, String message) {
         super(routing);
         this.message = message;
         payload = new EncodedPayload(message.length(), MIN_LEN);
