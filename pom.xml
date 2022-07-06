@@ -101,7 +101,7 @@
         <version.java-websocket>1.3.9</version.java-websocket><!-- 1.3.9 is approved in CQ19134 -->
         <version.janino>2.7.5</version.janino><!-- 2.7.5 is approved in CQ10307 -->
         <version.johnzon-core>1.1.13</version.johnzon-core><!-- 1.1.13 is approved in CQ22342 -->
-        <version.jsch>0.1.51</version.jsch><!-- 0.1.51 is approved in CQ8378 -->
+        <version.jsch>0.1.54</version.jsch><!-- 0.1.51 is approved in CQ8378 -->
         <version.junit>4.13</version.junit><!-- 4.13 is approved in CQ21439 -->
         <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
         <version.logback>1.2.3</version.logback><!-- 1.2.3 is approved in CQ16622 -->
