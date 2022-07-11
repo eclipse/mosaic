@@ -67,7 +67,7 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (receivedV2xMessage.getMessage() instanceof GreenWaveMsg) {
+        if (!(receivedV2xMessage.getMessage() instanceof GreenWaveMsg)) {
             return;
         }
         getLog().infoSimTime(this, "Received GreenWaveMsg");
