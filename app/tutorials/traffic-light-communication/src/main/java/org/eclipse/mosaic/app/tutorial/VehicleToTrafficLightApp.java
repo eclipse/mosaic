@@ -29,17 +29,6 @@ import org.eclipse.mosaic.rti.TIME;
 public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleOperatingSystem> {
     private final static long TIME_INTERVAL = TIME.SECOND;
 
-    private void sendGeocastMessage() {
-        final double range = 15;
-        final GeoCircle geoCircle = new GeoCircle(getOs().getPosition(), range);
-        final MessageRouting routing = getOperatingSystem()
-                .getAdHocModule()
-                .createMessageRouting()
-                .geoBroadCast(geoCircle);
-        getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
-        getLog().infoSimTime(this, "Sent secret passphrase");
-    }
-
     //Use TopoBroadcast instead of GeoBroadcast because latter is not compatible with OMNeT++ or ns-3
     private void sendTopoBroadcastMessage() {
         final MessageRouting routing = getOperatingSystem()
