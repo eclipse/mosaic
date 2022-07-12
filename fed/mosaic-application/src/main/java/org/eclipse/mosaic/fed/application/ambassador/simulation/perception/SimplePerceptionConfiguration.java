@@ -46,6 +46,7 @@ public class SimplePerceptionConfiguration implements PerceptionModuleConfigurat
         return viewingAngle;
     }
 
+    @Override
     public double getViewingRange() {
         return viewingRange;
     }

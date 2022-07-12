@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SpatialVehicleIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
@@ -56,10 +55,8 @@ public class PerceptionTree implements SpatialVehicleIndex {
     }
 
     @Override
-    public List<VehicleObject> getVehiclesInRange(PerceptionModuleOwner owner, PerceptionModel searchRange) {
-        List<VehicleObject> initiallyPerceivedVehicles =
-                vehicleTree.getObjectsInBoundingArea(searchRange.getBoundingBox(), searchRange::isInRange, new ArrayList<>());
-        return searchRange.applyPerceptionModifiers(owner, initiallyPerceivedVehicles);
+    public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
+        return vehicleTree.getObjectsInBoundingArea(searchRange.getBoundingBox(), searchRange::isInRange, new ArrayList<>());
     }
 
     @Override

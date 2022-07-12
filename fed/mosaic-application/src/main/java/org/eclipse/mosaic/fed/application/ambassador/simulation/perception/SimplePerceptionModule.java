@@ -81,9 +81,10 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         // note, the perception index is updated internally only if vehicles have moved since the last call
         SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
         // request all vehicles within the area of the field of view
-        return SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+        List<VehicleObject> initiallyPerceivedVehicles = SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
                 .getVehicleIndex()
-                .getVehiclesInRange(owner, perceptionModel);
+                .getVehiclesInRange(perceptionModel);
+        return perceptionModel.applyPerceptionModifiers(owner, initiallyPerceivedVehicles);
     }
 
     /**

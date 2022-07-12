@@ -16,14 +16,12 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.apache.commons.lang3.Validate;
 
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -58,14 +56,7 @@ public class DistanceModifier implements PerceptionModifier {
             return vehicleObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
-        double furthestPerceivedDistance;
-        if (owner.getPerceptionModule().getConfiguration().getClass().equals(SimplePerceptionConfiguration.class)) {
-            furthestPerceivedDistance =
-                    Math.pow(((SimplePerceptionConfiguration) owner.getPerceptionModule().getConfiguration()).getViewingRange(), 2);
-        } else {
-            furthestPerceivedDistance = vehicleObjects.stream()
-                    .max(Comparator.comparingDouble(ownerPosition::distanceSqrTo)).get().distanceSqrTo(ownerPosition);
-        }
+        double furthestPerceivedDistance = Math.pow(owner.getPerceptionModule().getConfiguration().getViewingRange(), 2);
         vehicleObjects.removeIf(currentVehicleObject ->
                 getDistanceRating(ownerPosition.distanceSqrTo(currentVehicleObject), furthestPerceivedDistance)
                         >= rng.nextDouble(0, 1) - offset);
