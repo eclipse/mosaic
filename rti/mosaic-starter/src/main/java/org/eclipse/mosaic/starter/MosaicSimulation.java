@@ -99,6 +99,9 @@ public class MosaicSimulation {
     private Logger log = null;
     private ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
+    private String scenarioId;
+    private String simulationId;
+
     public MosaicSimulation setRuntimeConfiguration(CRuntime runtimeConfiguration) {
         this.runtimeConfiguration = runtimeConfiguration;
         return this;
@@ -166,10 +169,13 @@ public class MosaicSimulation {
 
             Validate.isTrue(Files.exists(scenarioDirectory), "Scenario directory at '" + scenarioDirectory + "' does not exist.");
 
-            final String federationId = Validate.notBlank(scenarioConfiguration.simulation.id,
+            scenarioId = Validate.notBlank(scenarioConfiguration.simulation.id,
                     "No simulation id given in scenario configuration file"
             );
-            prepareLogging(federationId);
+            final Calendar cal = Calendar.getInstance();
+            final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+            simulationId = dateFormat.format(cal.getTime()) + "-" + scenarioId;
+            prepareLogging(simulationId);
             printMosaicVersion();
 
             final MosaicComponentParameters simParams = readSimulationParameters(scenarioConfiguration)
@@ -237,7 +243,7 @@ public class MosaicSimulation {
 
         return new MosaicComponentParameters()
                 .setRealTimeBreak(realtimeBrake)
-                .setFederationId(scenarioConfiguration.simulation.id)
+                .setFederationId(scenarioId)
                 .setEndTime(scenarioConfiguration.simulation.duration * TIME.SECOND)
                 .setRandomSeed(scenarioConfiguration.simulation.randomSeed);
     }
@@ -375,8 +381,9 @@ public class MosaicSimulation {
         if (descriptor.isToStartAndStop()) {
 
             if (StringUtils.isNotEmpty(federate.dockerImage)) {
+                final String container = federate.id + '-' + simulationId;
                 descriptor.setFederateExecutor(
-                        descriptor.getAmbassador().createDockerFederateExecutor(federate.dockerImage, host.operatingSystem)
+                        descriptor.getAmbassador().createDockerFederateExecutor(federate.dockerImage, host.operatingSystem).setContainerName(container)
                 );
             } else {
                 int port = federate.port;
@@ -470,9 +477,9 @@ public class MosaicSimulation {
     /**
      * Initialize logback and set properties used in logback.xml
      *
-     * @param federationId federation id is used for creating an according log folder
+     * @param simulationId simulation id is used for creating an according log folder
      */
-    private void prepareLogging(String federationId) {
+    private void prepareLogging(String simulationId) {
         // prepare logging directory
         String logDirectoryValue = readLogFolderFromLogback(logbackConfigurationFile);
 
@@ -480,9 +487,7 @@ public class MosaicSimulation {
         //so we just go the standard way
         Path logDirectory;
         if ("${logDirectory}".equals(logDirectoryValue) || logDirectoryValue == null) {
-            Calendar cal = Calendar.getInstance();
-            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
-            logDirectory = LOG_DIRECTORY.resolve("log-" + dateFormat.format(cal.getTime()) + "-" + federationId);
+            logDirectory = LOG_DIRECTORY.resolve("log-" + simulationId);
         } else {
             logDirectory = Paths.get(logDirectoryValue);
         }

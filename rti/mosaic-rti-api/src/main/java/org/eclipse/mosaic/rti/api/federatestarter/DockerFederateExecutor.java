@@ -41,7 +41,7 @@ public class DockerFederateExecutor implements FederateExecutor {
     private final String image;
     private final String sharedDirectoryPath;
     private final String imageVolume;
-    private final String containerName;
+    private String containerName;
 
     private final Map<String, Object> parameters = new HashMap<>();
     private DockerClient dockerClient;
@@ -69,6 +69,11 @@ public class DockerFederateExecutor implements FederateExecutor {
         return this;
     }
 
+    public DockerFederateExecutor setContainerName(String name) {
+        containerName = name;
+        return this;
+    }
+
     @Override
     public Process startLocalFederate(File workingDir) {
         this.dockerClient = new DockerClient();
@@ -76,7 +81,6 @@ public class DockerFederateExecutor implements FederateExecutor {
         final DockerRun run = this.dockerClient
                 .run(image)
                 .name(containerName)
-                .removeBeforeRun()
                 .removeAfterRun()
                 .currentUser()
                 .volumeBinding(new File(workingDir, sharedDirectoryPath), imageVolume);
