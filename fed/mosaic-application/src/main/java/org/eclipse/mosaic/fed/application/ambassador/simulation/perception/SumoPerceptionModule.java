@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSightDistanceConfiguration;
 
 import java.util.List;
@@ -25,18 +26,26 @@ public class SumoPerceptionModule implements PerceptionModule<SimplePerceptionCo
 
     private final PerceptionModuleOwner owner;
 
+    private SimplePerceptionConfiguration configuration;
+
     public SumoPerceptionModule(PerceptionModuleOwner owner) {
         this.owner = owner;
     }
 
     @Override
     public void enable(SimplePerceptionConfiguration configuration) {
+        this.configuration = configuration;
         this.owner.sendInteractionToRti(new VehicleSightDistanceConfiguration(
                 this.owner.getSimulationTime(),
                 owner.getId(),
                 configuration.getViewingRange(),
                 configuration.getViewingAngle()
         ));
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return configuration != null;
     }
 
     @Override
@@ -47,6 +56,11 @@ public class SumoPerceptionModule implements PerceptionModule<SimplePerceptionCo
                         .setSpeed(v.getSpeed())
                         .setHeading(v.getHeading())
                 ).collect(Collectors.toList());
+    }
+
+    @Override
+    public PerceptionModuleConfiguration getConfiguration() {
+        return configuration;
     }
 
 }

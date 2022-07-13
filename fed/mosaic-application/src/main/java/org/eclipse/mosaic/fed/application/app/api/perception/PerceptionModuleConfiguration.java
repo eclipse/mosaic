@@ -17,5 +17,8 @@ package org.eclipse.mosaic.fed.application.app.api.perception;
 
 public interface PerceptionModuleConfiguration {
 
-    // marker interface
+    /**
+     * Returns the maximal perception range of the configured perception module. [m]
+     */
+    double getViewingRange();
 }

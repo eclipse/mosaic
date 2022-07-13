@@ -13,25 +13,44 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-
 package org.eclipse.mosaic.app.tutorial.vehicle;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleParameter;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
+import com.google.common.collect.Lists;
+
+import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * This application showcases the functionalities of the {@link org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule}
+ * and its {@link org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier}s.
+ * Additionally, it adjusts the color of perceived vehicle in the SUMO-GUI.
+ */
 public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
 
+    /**
+     * The angle used by the perception module. [degree]
+     */
     private static final double VIEWING_ANGLE = 60d;
+    /**
+     * The distance used by the perception module. [m]
+     */
     private static final double VIEWING_RANGE = 200d;
 
     @Override
@@ -39,11 +58,24 @@ public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> i
         getLog().debugSimTime(this, "Started {} on {}.", this.getClass().getSimpleName(), getOs().getId());
 
         enablePerceptionModule();
+
+        getOs().requestVehicleParametersUpdate()
+                .changeColor(Color.BLUE)
+                .apply();
     }
 
     private void enablePerceptionModule() {
-        SimplePerceptionConfiguration perceptionModuleConfiguration =
-                new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE);
+        // filter to emulate occlusion
+        SimpleOcclusionModifier simpleOcclusionModifier = new SimpleOcclusionModifier(3, 5);
+        // filter to reduce perception probability based on distance to ego vehicle
+        DistanceModifier distanceModifier = new DistanceModifier(getRandom(), 0.0);
+        // filter adding noise to longitudinal and lateral
+        PositionErrorModifier positionErrorModifier = new PositionErrorModifier(getRandom());
+
+        SimplePerceptionConfiguration perceptionModuleConfiguration = new SimplePerceptionConfiguration(
+                VIEWING_ANGLE, VIEWING_RANGE,
+                simpleOcclusionModifier, distanceModifier, positionErrorModifier
+        );
         getOs().getPerceptionModule().enable(perceptionModuleConfiguration);
     }
 
@@ -52,20 +84,39 @@ public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> i
 
     }
 
-
     @Override
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
         perceiveVehicles();
     }
 
-    private void perceiveVehicles() {
-        List<VehicleObject> perceivedVehicles = getOs().getPerceptionModule().getPerceivedVehicles();
-        getLog().debugSimTime(this, "Perceived vehicles: {}",
-                perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
-    }
-
     @Override
     public void processEvent(Event event) throws Exception {
 
+    }
+
+    private List<VehicleObject> previouslyPerceivedVehicles = new ArrayList<>();
+
+    /**
+     * Perceives vehicles in viewing range and adjusts their colors in the SUMO-GUI.
+     */
+    private void perceiveVehicles() {
+        List<VehicleObject> perceivedVehicles = getOs().getPerceptionModule().getPerceivedVehicles();
+        getLog().infoSimTime(this, "Perceived vehicles: {}",
+                perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
+
+        colorVehicles(perceivedVehicles, previouslyPerceivedVehicles, Color.GREEN); // set color to perceived
+        colorVehicles(previouslyPerceivedVehicles, perceivedVehicles, Color.YELLOW); // reset color of no longer perceived
+        previouslyPerceivedVehicles = perceivedVehicles;
+    }
+
+    private void colorVehicles(List<VehicleObject> vehiclesToColor, List<VehicleObject> previouslyColoredVehicles, Color color) {
+        for (VehicleObject currentVehicle : vehiclesToColor) {
+            if (!previouslyColoredVehicles.contains(currentVehicle)) {
+                VehicleParameter vehicleParameter = new VehicleParameter(VehicleParameter.VehicleParameterType.COLOR, color);
+                VehicleParametersChange vehicleParametersChange = new VehicleParametersChange(getOs().getSimulationTime(),
+                        currentVehicle.getId(), Lists.newArrayList(vehicleParameter));
+                getOs().sendInteractionToRti(vehicleParametersChange);
+            }
+        }
     }
 }
