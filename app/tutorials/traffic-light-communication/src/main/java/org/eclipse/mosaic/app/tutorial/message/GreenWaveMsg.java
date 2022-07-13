@@ -15,11 +15,9 @@
 
 package org.eclipse.mosaic.app.tutorial.message;
 
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.EncodedPayload;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
-import org.eclipse.mosaic.lib.util.objects.Position;
 
 import javax.annotation.Nonnull;
 
