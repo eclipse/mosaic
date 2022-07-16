@@ -149,14 +149,14 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public void changeLane(int targetLaneIndex, int duration) {
+    public void changeLane(int targetLaneIndex, long duration) {
         VehicleLaneChange vehicleLaneChange =
                 new VehicleLaneChange(SimulationKernel.SimulationKernel.getCurrentSimulationTime(), getId(), targetLaneIndex, duration);
         sendInteractionToRti(vehicleLaneChange);
     }
 
     @Override
-    public void changeLane(VehicleLaneChange.VehicleLaneChangeMode vehicleLaneChangeMode, int duration) {
+    public void changeLane(VehicleLaneChange.VehicleLaneChangeMode vehicleLaneChangeMode, long duration) {
         VehicleLaneChange vehicleLaneChange = new VehicleLaneChange(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId(),
@@ -169,7 +169,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
 
     @Override
-    public void slowDown(float speed, int interval) {
+    public void slowDown(float speed, long interval) {
         VehicleSlowDown vehicleSlowDown = new VehicleSlowDown(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId(),
@@ -180,7 +180,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public void changeSpeedWithInterval(double newSpeed, int interval) {
+    public void changeSpeedWithInterval(double newSpeed, long interval) {
         VehicleSpeedChange vehicleSpeedChange = new VehicleSpeedChange(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId(),
@@ -228,12 +228,12 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, int durationInMs) {
+    public void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, long durationInNs) {
         VehicleStop vehicleStop = new VehicleStop(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId(),
                 stopPosition,
-                durationInMs,
+                durationInNs,
                 vehicleStopMode
         );
         sendInteractionToRti(vehicleStop);

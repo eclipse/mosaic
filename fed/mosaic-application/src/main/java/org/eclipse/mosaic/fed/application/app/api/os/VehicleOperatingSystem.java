@@ -50,19 +50,19 @@ public interface VehicleOperatingSystem
      * @param targetLaneIndex index of target lane
      * @param duration        the duration for the lane change in nanoseconds
      */
-    void changeLane(int targetLaneIndex, int duration);
+    void changeLane(int targetLaneIndex, long duration);
 
     /**
      * Forces a lane change to the lane according to the specified mode; If
      * successful, the lane will be chosen for the given amount of time.
      * <p></p>
-     * Note: use {@link #changeLane(int targetLaneIndex, int duration) changeLane()}, for
+     * Note: use {@link #changeLane(int targetLaneIndex, long duration) changeLane()}, for
      * mode {@code VehicleLaneChangeMode.index}.
      *
      * @param vehicleLaneChangeMode mode to change lane
      * @param duration              the duration for the lane change in nanoseconds
      */
-    void changeLane(VehicleLaneChange.VehicleLaneChangeMode vehicleLaneChangeMode, int duration);
+    void changeLane(VehicleLaneChange.VehicleLaneChangeMode vehicleLaneChangeMode, long duration);
 
     /**
      * Slow down the vehicle with the given Id to the given speed until the
@@ -73,7 +73,7 @@ public interface VehicleOperatingSystem
      * @param interval Time interval for which the slow down should be valid, after that
      *                 interval the vehicle will accelerate again. Unit: [ns].
      */
-    void slowDown(float speed, int interval);
+    void slowDown(float speed, long interval);
 
     /**
      * Resets the speed of the vehicle to car-following rules after the speed has been set
@@ -87,7 +87,7 @@ public interface VehicleOperatingSystem
      * @param newSpeed is the target speed in [m/s]
      * @param interval the new speed should be reached in [ns]
      */
-    void changeSpeedWithInterval(double newSpeed, int interval);
+    void changeSpeedWithInterval(double newSpeed, long interval);
 
     /**
      * Allows control over the vehicle speed and the acceleration.
@@ -111,7 +111,7 @@ public interface VehicleOperatingSystem
      * @param vehicleStopMode Stop mode
      * @param durationInNs    Duration of the stop, unit: [ns]
      */
-    void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, int durationInNs);
+    void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, long durationInNs);
 
     /**
      * Sends a stop message to stop the vehicle along the road or by the road side. The

@@ -572,7 +572,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
         bridge.getVehicleControl()
-                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), convertTime((int) vehicleSlowDown.getInterval()));
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), nsToMs((long) (vehicleSlowDown.getInterval() * TIME.SECOND)));
     }
 
     /**
@@ -603,7 +603,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), convertTime(vehicleStop.getDuration()));
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), nsToMs(vehicleStop.getDuration()));
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -724,7 +724,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("VehicleLaneChange failed: unsupported lane change mode.");
                     return;
             }
-            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, convertTime(vehicleLaneChange.getDuration()));
+            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, nsToMs(vehicleLaneChange.getDuration()));
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
@@ -738,7 +738,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
-    private int convertTime(int time) {
+    private int nsToMs(long time) {
         return (int) (time / TIME.MILLI_SECOND);
     }
 
@@ -851,14 +851,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             case WITH_INTERVAL:
                 if (vehicleSpeedChange.getInterval() > 0) {
                     // set speed smoothly with given interval
-                    final long changeSpeedTimestep = vehicleSpeedChange.getTime() + (vehicleSpeedChange.getInterval() * TIME.MILLI_SECOND);
+                    final long changeSpeedTimestep = vehicleSpeedChange.getTime() + vehicleSpeedChange.getInterval();
                     log.debug("slow down vehicle {} and schedule change speed event for timestep {} ns ", vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
                     bridge.getVehicleControl()
-                            .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(), vehicleSpeedChange.getInterval());
+                            .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(), nsToMs(vehicleSpeedChange.getInterval()));
 
                     // set speed permanently after given interval (in the future) via the event scheduler
-                    long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval * TIME.MILLI_SECOND);
-                    eventScheduler.addEvent(new Event(convertTime((int) adjustedTime), this, vehicleSpeedChange)
+                    long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval);
+                    eventScheduler.addEvent(new Event(adjustedTime, this, vehicleSpeedChange)
                     );
                 } else {
                     // set speed immediately
@@ -1196,7 +1196,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
 
         // schedule events, e.g. change speed events
-        int scheduled = eventScheduler.scheduleEvents(convertTime((int) time));
+        int scheduled = eventScheduler.scheduleEvents(time);
         log.debug("scheduled {} events at time {}", scheduled, TIME.format(time));
 
         try {

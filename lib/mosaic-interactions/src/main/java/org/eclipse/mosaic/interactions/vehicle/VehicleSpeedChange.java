@@ -73,7 +73,7 @@ public final class VehicleSpeedChange extends Interaction {
     /**
      * Interval (in ms) in which the new speed shall be reached.
      */
-    private final int changeInterval;
+    private final long changeInterval;
 
     /**
      * The desired acceleration.
@@ -87,11 +87,11 @@ public final class VehicleSpeedChange extends Interaction {
      * @param vehicleId    vehicle identifier
      * @param type         change speed type
      * @param newSpeed     New desired speed, unit [m/s]
-     * @param interval     Interval in which the desired speed shall be reached, unit [ms]
+     * @param interval     Interval in which the desired speed shall be reached, unit [ns]
      * @param acceleration desired acceleration
      */
     public VehicleSpeedChange(long time, String vehicleId, VehicleSpeedChangeType type,
-                              double newSpeed, int interval, double acceleration) {
+                              double newSpeed, long interval, double acceleration) {
         super(time);
         this.vehicleId = vehicleId;
         this.type = type;
@@ -112,7 +112,7 @@ public final class VehicleSpeedChange extends Interaction {
         return this.newSpeed;
     }
 
-    public int getInterval() {
+    public long getInterval() {
         return changeInterval;
     }
 
