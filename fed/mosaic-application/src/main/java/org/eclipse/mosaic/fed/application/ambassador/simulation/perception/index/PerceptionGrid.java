@@ -16,7 +16,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionRange;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SpatialVehicleIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
@@ -47,7 +47,7 @@ public class PerceptionGrid implements SpatialVehicleIndex {
     }
 
     @Override
-    public List<VehicleObject> getVehiclesInRange(PerceptionRange searchRange) {
+    public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
         return vehicleGrid.getItemsInBoundingArea(searchRange.getBoundingBox(), searchRange::isInRange);
     }
 

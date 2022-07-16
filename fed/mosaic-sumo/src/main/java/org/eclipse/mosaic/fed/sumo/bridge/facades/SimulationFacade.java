@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.sumo.bridge.facades;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
+import org.eclipse.mosaic.fed.sumo.bridge.SumoVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.api.InductionLoopSubscribe;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneAreaSubscribe;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneGetLength;
@@ -79,6 +80,12 @@ import java.util.List;
 import java.util.Map;
 
 public class SimulationFacade {
+
+    /**
+     * Density of vehicle gasoline in g/m^3. Since 1.14.0 SUMO returns
+     * fuel consumptions in mg, thus we convert it back to ml for compatibility.
+     */
+    private final static double FUEL_DENSITY = 0.74; // g/m^3
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -703,7 +710,7 @@ public class SimulationFacade {
      * @return The vehicle consumption.
      */
     private VehicleConsumptions calculateConsumptions(VehicleSubscriptionResult veh, VehicleData lastVehicleData) {
-        final Consumptions currentConsumptions = new Consumptions(fixConsumptionValue(veh.fuel));
+        final Consumptions currentConsumptions = new Consumptions(fixFuelConsumptionValue(veh.fuel));
         if (lastVehicleData != null && lastVehicleData.getVehicleConsumptions() != null) {
             return new VehicleConsumptions(
                     currentConsumptions,
@@ -713,8 +720,11 @@ public class SimulationFacade {
         return new VehicleConsumptions(currentConsumptions, currentConsumptions);
     }
 
-    private double fixConsumptionValue(double consumption) {
-        return consumption * (sumoConfiguration.updateInterval / 1000d);
+    private double fixFuelConsumptionValue(double consumption) {
+        if (bridge.getCurrentVersion().isGreaterOrEqualThan(SumoVersion.SUMO_1_14_x)) {
+            return fixEmissionValue(consumption / FUEL_DENSITY / 1000d);
+        }
+        return fixEmissionValue(consumption);
     }
 
     /**
@@ -726,11 +736,11 @@ public class SimulationFacade {
      */
     private VehicleEmissions calculateEmissions(VehicleSubscriptionResult veh, VehicleData lastVehicleData) {
         final Emissions currentEmissions = new Emissions(
-                fixConsumptionValue(veh.co2),
-                fixConsumptionValue(veh.co),
-                fixConsumptionValue(veh.hc),
-                fixConsumptionValue(veh.pmx),
-                fixConsumptionValue(veh.nox));
+                fixEmissionValue(veh.co2),
+                fixEmissionValue(veh.co),
+                fixEmissionValue(veh.hc),
+                fixEmissionValue(veh.pmx),
+                fixEmissionValue(veh.nox));
         if (lastVehicleData != null && lastVehicleData.getVehicleEmissions() != null) {
             return new VehicleEmissions(
                     currentEmissions,
@@ -738,6 +748,10 @@ public class SimulationFacade {
             );
         }
         return new VehicleEmissions(currentEmissions, currentEmissions);
+    }
+
+    private double fixEmissionValue(double consumption) {
+        return consumption * (sumoConfiguration.updateInterval / 1000d);
     }
 
     /**

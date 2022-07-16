@@ -15,7 +15,12 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
+
+import com.google.common.collect.Lists;
+
+import java.util.List;
 
 public class SimplePerceptionConfiguration implements PerceptionModuleConfiguration {
 
@@ -29,16 +34,24 @@ public class SimplePerceptionConfiguration implements PerceptionModuleConfigurat
      */
     private final double viewingRange;
 
-    public SimplePerceptionConfiguration(double viewingAngle, double viewingRange) {
+    private final List<PerceptionModifier> perceptionModifiers;
+
+    public SimplePerceptionConfiguration(double viewingAngle, double viewingRange, PerceptionModifier... perceptionModifiers) {
         this.viewingAngle = viewingAngle;
         this.viewingRange = viewingRange;
+        this.perceptionModifiers = Lists.newArrayList(perceptionModifiers);
     }
 
     public double getViewingAngle() {
         return viewingAngle;
     }
 
+    @Override
     public double getViewingRange() {
         return viewingRange;
+    }
+
+    public List<PerceptionModifier> getPerceptionModifiers() {
+        return perceptionModifiers;
     }
 }

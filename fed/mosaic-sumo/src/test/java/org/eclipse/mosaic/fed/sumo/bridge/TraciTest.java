@@ -30,6 +30,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoLaneChangeMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoSpeedMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TraciSimulationStepResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
+import org.eclipse.mosaic.fed.sumo.junit.SinceSumo;
 import org.eclipse.mosaic.fed.sumo.junit.SinceTraci;
 import org.eclipse.mosaic.fed.sumo.junit.SumoRunner;
 import org.eclipse.mosaic.fed.sumo.junit.SumoTraciRule;
@@ -395,7 +396,7 @@ public class TraciTest {
         }
     }
 
-    @SinceTraci(TraciVersion.API_20)
+    @SinceSumo(SumoVersion.SUMO_1_14_x)
     @Test
     public void testEmissionsAndFuelConsumptionCalculation() throws Exception {
         // SETUP
@@ -413,12 +414,12 @@ public class TraciTest {
 
         // ASSERT (for emission class HBEFA3/PC_G_EU4: http://sumo.dlr.de/wiki/Models/Emissions/HBEFA3-based)
         double per1kmFactor = 1000 / vehData.getDistanceDriven();
-        assertEquals(54.5, vehData.getVehicleConsumptions().getAllConsumptions().getFuel() * per1kmFactor, 1d);
+        assertEquals(69, vehData.getVehicleConsumptions().getAllConsumptions().getFuel() * per1kmFactor, 1d);
         assertEquals(490, vehData.getVehicleEmissions().getAllEmissions().getCo() * per1kmFactor, 2d);
-        assertEquals(126800, vehData.getVehicleEmissions().getAllEmissions().getCo2() * per1kmFactor, 100d);
+        assertEquals(161000, vehData.getVehicleEmissions().getAllEmissions().getCo2() * per1kmFactor, 100d);
         assertEquals(4.7, vehData.getVehicleEmissions().getAllEmissions().getHc() * per1kmFactor, 1d);
-        assertEquals(43.9, vehData.getVehicleEmissions().getAllEmissions().getNox() * per1kmFactor, 1d);
-        assertEquals(1.23, vehData.getVehicleEmissions().getAllEmissions().getPmx() * per1kmFactor, 0.1d);
+        assertEquals(52, vehData.getVehicleEmissions().getAllEmissions().getNox() * per1kmFactor, 1d);
+        assertEquals(1.35, vehData.getVehicleEmissions().getAllEmissions().getPmx() * per1kmFactor, 0.1d);
     }
 
     /**
