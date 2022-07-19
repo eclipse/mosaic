@@ -99,7 +99,7 @@ public class MosaicSimulation {
     private Logger log = null;
     private ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
-    private String scenarioId;
+    private String federationId;
     private String simulationId;
 
     public MosaicSimulation setRuntimeConfiguration(CRuntime runtimeConfiguration) {
@@ -169,12 +169,12 @@ public class MosaicSimulation {
 
             Validate.isTrue(Files.exists(scenarioDirectory), "Scenario directory at '" + scenarioDirectory + "' does not exist.");
 
-            scenarioId = Validate.notBlank(scenarioConfiguration.simulation.id,
+            federationId = Validate.notBlank(scenarioConfiguration.simulation.id,
                     "No simulation id given in scenario configuration file"
             );
             final Calendar cal = Calendar.getInstance();
             final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
-            simulationId = dateFormat.format(cal.getTime()) + "-" + scenarioId;
+            simulationId = dateFormat.format(cal.getTime()) + "-" + federationId;
             prepareLogging(simulationId);
             printMosaicVersion();
 
@@ -243,7 +243,7 @@ public class MosaicSimulation {
 
         return new MosaicComponentParameters()
                 .setRealTimeBreak(realtimeBrake)
-                .setFederationId(scenarioId)
+                .setFederationId(federationId)
                 .setEndTime(scenarioConfiguration.simulation.duration * TIME.SECOND)
                 .setRandomSeed(scenarioConfiguration.simulation.randomSeed);
     }
