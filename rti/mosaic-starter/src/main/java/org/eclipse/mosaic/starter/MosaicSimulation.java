@@ -432,8 +432,6 @@ public class MosaicSimulation {
      * @throws Exception if something went wrong during initalization of any federate
      */
     private ComponentProvider createFederation(final MosaicComponentParameters simulationParams, final List<FederateDescriptor> federates) throws Exception {
-        final String simId = simulationParams.getFederationId();
-
         final ComponentProvider componentProvider = componentProviderFactory.createComponentProvider(simulationParams);
 
         FederationManagement federation = componentProvider.getFederationManagement();
@@ -442,13 +440,13 @@ public class MosaicSimulation {
         TimeManagement time = componentProvider.getTimeManagement();
 
         if (watchdogInterval > 0) {
-            final WatchDog watchDogThread = time.startWatchDog(simId, watchdogInterval);
+            final WatchDog watchDogThread = time.startWatchDog(federationId, watchdogInterval);
             federation.setWatchdog(watchDogThread);
         }
 
         if (externalWatchdogPort > 0) {
             log.debug("External watchdog port: " + externalWatchdogPort);
-            time.startExternalWatchDog(simId, externalWatchdogPort);
+            time.startExternalWatchDog(federationId, externalWatchdogPort);
         }
 
         final InteractionManagement inter = componentProvider.getInteractionManagement();
