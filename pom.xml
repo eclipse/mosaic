@@ -111,7 +111,7 @@
         <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
-        <version.libsumo>1.14.0-SNAPSHOT</version.libsumo><!-- only snapshot versions are available -->
+        <version.libsumo>1.14.0</version.libsumo>
     </properties>
 
     <dependencies>
@@ -404,6 +404,10 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
                     <version>2.8.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M2</version>
                 </plugin>
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>

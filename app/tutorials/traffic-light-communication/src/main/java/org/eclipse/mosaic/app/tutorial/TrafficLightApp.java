@@ -26,12 +26,16 @@ import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
 
+import org.apache.commons.lang3.Validate;
+
 public final class TrafficLightApp extends AbstractApplication<TrafficLightOperatingSystem> implements CommunicationApplication {
     public final static String SECRET = "open sesame!";
     private final static short GREEN_DURATION = 10;
 
     private static final String DEFAULT_PROGRAM = "1";
     private static final String GREEN_PROGRAM = "0";
+
+    private static final Integer MIN_DISTANCE = 15;
 
     @Override
     public void onStartup() {
@@ -63,16 +67,28 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (receivedV2xMessage.getMessage() instanceof GreenWaveMsg) {
-            getLog().infoSimTime(this, "Received GreenWaveMsg");
-            if (((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
-                getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
-
-                if (DEFAULT_PROGRAM.equals(getOs().getCurrentProgram().getProgramId())) {
-                    setGreen();
-                }
-            }
+        if (!(receivedV2xMessage.getMessage() instanceof GreenWaveMsg)) {
+            return;
         }
+        getLog().infoSimTime(this, "Received GreenWaveMsg");
+
+        if (!((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
+            return;
+        }
+        getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
+
+        Validate.notNull(receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition(),
+                "The source position of the sender cannot be null");
+        if (!(receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition()
+                .distanceTo(getOs().getPosition()) <= MIN_DISTANCE)) {
+            getLog().infoSimTime(this, "Vehicle that sent message is too far away.");
+            return;
+        }
+
+        if (DEFAULT_PROGRAM.equals(getOs().getCurrentProgram().getProgramId())) {
+            setGreen();
+        }
+
     }
 
     @Override
