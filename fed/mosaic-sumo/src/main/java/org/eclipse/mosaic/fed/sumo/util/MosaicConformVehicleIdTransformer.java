@@ -34,7 +34,7 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
 
     private final static Logger log = LoggerFactory.getLogger(MosaicConformVehicleIdTransformer.class);
 
-    private BiMap<String, String> sumoToMosaicVehicleIdMap = HashBiMap.create(1024);
+    private final BiMap<String, String> sumoToMosaicVehicleIdMap = HashBiMap.create(1024);
 
     /**
      * Takes a MOSAIC conform vehicle id (e.g. veh_1) and returns the saved SUMO id in {@link #sumoToMosaicVehicleIdMap}.
@@ -66,7 +66,7 @@ public class MosaicConformVehicleIdTransformer implements IdTransformer<String, 
         if (mosaicVehicleId == null) {
             mosaicVehicleId = UnitNameGenerator.nextVehicleName();
             sumoToMosaicVehicleIdMap.put(sumoVehicleId, mosaicVehicleId);
-            log.info("Assigned vehicle id {} to vehicle {}", mosaicVehicleId, sumoVehicleId);
+            log.debug("Assigned vehicle id {} to vehicle {}", mosaicVehicleId, sumoVehicleId);
         }
         return mosaicVehicleId;
     }
