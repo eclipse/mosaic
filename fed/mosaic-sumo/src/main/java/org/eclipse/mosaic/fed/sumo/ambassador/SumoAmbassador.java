@@ -448,7 +448,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private void propagateRouteIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {
         // if the route is already known (because it is defined in a route-file) don't add route
         if (routeCache.containsKey(routeId)) {
-            log.warn("Couldn't add Route {}, because it is already known to SUMO.", routeId);
+            log.warn("Could not add route \"{}\", because it is already known to SUMO.", routeId);
         } else {
             routeCache.put(routeId, route);
             bridge.getRouteControl().addRoute(routeId, route.getConnectionIds());
