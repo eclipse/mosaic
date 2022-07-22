@@ -33,8 +33,6 @@ import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -127,31 +125,34 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
             final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleTypeId());
             if (prototype == null) {
                 log.debug(
-                        "There is no such CPrototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
+                        "There is no such prototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
                         scenarioVehicle.getVehicleTypeId(),
                         scenarioVehicle.getId()
                 );
                 return;
             }
 
-            List<String> applications = new ArrayList<>();
-            if (
-                    randomNumberGenerator.nextDouble() < ObjectUtils.defaultIfNull(prototype.weight, 1.0)
-                    && prototype.applications != null
-            ) {
-                applications = prototype.applications;
+            if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
+                log.debug(
+                        "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
+                        scenarioVehicle.getVehicleTypeId(),
+                        scenarioVehicle.getId(),
+                        prototype.weight
+                );
+                return;
             }
+
             final VehicleRegistration vehicleRegistration = new VehicleRegistration(
                     scenarioVehicle.getTime(),
                     scenarioVehicle.getName(),
                     prototype.group,
-                    applications,
+                    prototype.applications,
                     null,
                     new VehicleTypeSpawner(prototype).convertType()
             );
             try {
                 log.info("Mapping Scenario Vehicle. time={}, name={}, type={}, apps={}",
-                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleTypeId(), applications);
+                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleTypeId(), prototype.applications);
                 rti.triggerInteraction(vehicleRegistration);
             } catch (Exception e) {
                 throw new InternalFederateException(e);
