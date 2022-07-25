@@ -77,7 +77,7 @@ public interface VehicleOperatingSystem
 
     /**
      * Resets the speed of the vehicle to car-following rules after the speed has been set
-     * with {@link #changeSpeedWithInterval(double, int)}.
+     * with {@link #changeSpeedWithInterval(double, long)}.
      */
     void resetSpeed();
 
