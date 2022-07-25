@@ -48,21 +48,21 @@ public interface VehicleOperatingSystem
      * lane will be chosen for the given amount of time.
      *
      * @param targetLaneIndex index of target lane
-     * @param duration        the duration for the lane change in millisecond
+     * @param duration        the duration for the lane change in nanoseconds
      */
-    void changeLane(int targetLaneIndex, int duration);
+    void changeLane(int targetLaneIndex, long duration);
 
     /**
      * Forces a lane change to the lane according to the specified mode; If
      * successful, the lane will be chosen for the given amount of time.
      * <p></p>
-     * Note: use {@link #changeLane(int targetLaneIndex, int duration) changeLane()}, for
+     * Note: use {@link #changeLane(int targetLaneIndex, long duration) changeLane()}, for
      * mode {@code VehicleLaneChangeMode.index}.
      *
      * @param vehicleLaneChangeMode mode to change lane
-     * @param duration              the duration for the lane change in millisecond
+     * @param duration              the duration for the lane change in nanoseconds
      */
-    void changeLane(VehicleLaneChange.VehicleLaneChangeMode vehicleLaneChangeMode, int duration);
+    void changeLane(VehicleLaneChange.VehicleLaneChangeMode vehicleLaneChangeMode, long duration);
 
     /**
      * Slow down the vehicle with the given Id to the given speed until the
@@ -71,13 +71,13 @@ public interface VehicleOperatingSystem
      *
      * @param speed    new speed
      * @param interval Time interval for which the slow down should be valid, after that
-     *                 interval the vehicle will accelerate again. Unit: [ms].
+     *                 interval the vehicle will accelerate again. Unit: [ns].
      */
-    void slowDown(float speed, int interval);
+    void slowDown(float speed, long interval);
 
     /**
      * Resets the speed of the vehicle to car-following rules after the speed has been set
-     * with {@link #changeSpeedWithInterval(double, int)}.
+     * with {@link #changeSpeedWithInterval(double, long)}.
      */
     void resetSpeed();
 
@@ -85,9 +85,9 @@ public interface VehicleOperatingSystem
      * Allows control over the vehicles speed.
      *
      * @param newSpeed is the target speed in [m/s]
-     * @param interval the new speed should be reached in [ms]
+     * @param interval the new speed should be reached in [ns]
      */
-    void changeSpeedWithInterval(double newSpeed, int interval);
+    void changeSpeedWithInterval(double newSpeed, long interval);
 
     /**
      * Allows control over the vehicle speed and the acceleration.
@@ -109,18 +109,18 @@ public interface VehicleOperatingSystem
      *
      * @param stopPosition    Position on road where the vehicle is supposed to stop at
      * @param vehicleStopMode Stop mode
-     * @param durationInMs    Duration of the stop, unit: [ms]
+     * @param durationInNs    Duration of the stop, unit: [ns]
      */
-    void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, int durationInMs);
+    void stop(IRoadPosition stopPosition, VehicleStopMode vehicleStopMode, long durationInNs);
 
     /**
      * Sends a stop message to stop the vehicle along the road or by the road side. The
      * vehicle is tried to stop as soon as possible.
      *
      * @param vehicleStopMode Stop mode
-     * @param durationInMs    Duration of the stop, unit: [ms]
+     * @param durationInNs    Duration of the stop, unit: [ns]
      */
-    void stopNow(VehicleStopMode vehicleStopMode, int durationInMs);
+    void stopNow(VehicleStopMode vehicleStopMode, long durationInNs);
 
     /**
      * Resumes a previously stopped vehicle.

@@ -70,7 +70,7 @@ public final class VehicleLaneChange extends Interaction {
     /**
      * duration for how long the vehicle shall try to change to the target lane in ms.
      */
-    private final int duration;
+    private final long duration;
 
     /**
      * Creates a new {@link VehicleLaneChange} interaction using a lane index as target.
@@ -80,7 +80,7 @@ public final class VehicleLaneChange extends Interaction {
      * @param targetLaneIndex target lane index
      * @param duration        duration for how long the vehicle shall try to change to the target lane in ms
      */
-    public VehicleLaneChange(long time, String vehicleId, int targetLaneIndex, int duration) {
+    public VehicleLaneChange(long time, String vehicleId, int targetLaneIndex, long duration) {
         super(time);
         this.vehicleId = vehicleId;
         this.vehicleLaneChangeMode = VehicleLaneChangeMode.BY_INDEX;
@@ -99,7 +99,7 @@ public final class VehicleLaneChange extends Interaction {
      * @param duration              duration for how long the vehicle shall try to change to the target lane in ms
      */
     public VehicleLaneChange(long time, String vehicleId, VehicleLaneChangeMode vehicleLaneChangeMode,
-                             int currentLaneIndex, int duration) {
+                             int currentLaneIndex, long duration) {
         super(time);
         this.vehicleId = vehicleId;
         this.currentLaneIndex = currentLaneIndex;
@@ -140,7 +140,7 @@ public final class VehicleLaneChange extends Interaction {
      *
      * @return the duration.
      */
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 

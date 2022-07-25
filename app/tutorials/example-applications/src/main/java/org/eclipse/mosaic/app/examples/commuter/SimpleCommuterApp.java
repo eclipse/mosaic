@@ -71,7 +71,7 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
         if (!initialTripPlanned) {
             IRoadPosition roadPosition =
                     RoadPositionFactory.createAtEndOfRoute(getOs().getNavigationModule().getCurrentRoute(), 0);
-            getOs().stop(roadPosition, VehicleStopMode.PARK_ON_ROADSIDE, Integer.MAX_VALUE);
+            getOs().stop(roadPosition, VehicleStopMode.PARK_ON_ROADSIDE, Long.MAX_VALUE);
             initialTripPlanned = true;
             stopWatch.start();
         }

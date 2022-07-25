@@ -21,6 +21,7 @@ import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
+import org.eclipse.mosaic.rti.TIME;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,7 +72,7 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
 
         if (strength > 0 && !hazardousArea) {
             // Reduce speed when entering potentially hazardous area
-            getOs().changeSpeedWithInterval(SPEED, 5000);
+            getOs().changeSpeedWithInterval(SPEED, 5 * TIME.SECOND);
             hazardousArea = true;
         }
 

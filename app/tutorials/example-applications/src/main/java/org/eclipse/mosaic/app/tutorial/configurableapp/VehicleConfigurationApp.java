@@ -69,7 +69,7 @@ public class VehicleConfigurationApp extends ConfigurableApplication<CExample, V
             int wantedSpeed = this.config.fooInteger;
             if (getOs().getVehicleData().getSpeed() > wantedSpeed) {
                 getLog().info("The current speed equals {}m/s will be slowed down to the wanted speed equals {}m/s", getOs().getVehicleData().getSpeed(), wantedSpeed);
-                getOs().slowDown(wantedSpeed, 10_000); // 10000ms -> 10s
+                getOs().slowDown(wantedSpeed, 10 * TIME.SECOND);
             }
         } else {
             getLog().warn("Configuration wasn't loaded from json file!");

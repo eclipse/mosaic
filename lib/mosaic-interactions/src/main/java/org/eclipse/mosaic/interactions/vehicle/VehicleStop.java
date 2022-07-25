@@ -51,7 +51,7 @@ public final class VehicleStop extends Interaction {
     /**
      * Duration of the stop, unit: [ms].
      */
-    private final int duration;
+    private final long duration;
 
     /**
      * The mode of stopping, e.g. parking at the road side or stopping on the street.
@@ -67,7 +67,7 @@ public final class VehicleStop extends Interaction {
      * @param duration        Duration of the stop, unit: [ms]
      * @param vehicleStopMode How to stop the vehicle.
      */
-    public VehicleStop(long time, String vehicleId, IRoadPosition stopPosition, int duration, VehicleStopMode vehicleStopMode) {
+    public VehicleStop(long time, String vehicleId, IRoadPosition stopPosition, long duration, VehicleStopMode vehicleStopMode) {
         super(time);
         this.vehicleId = vehicleId;
         this.stopPosition = stopPosition;
@@ -83,7 +83,7 @@ public final class VehicleStop extends Interaction {
         return stopPosition;
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
