@@ -51,7 +51,7 @@ public final class VehicleSlowDown extends Interaction {
     /**
      * Time after which the new speed shall be reached.
      */
-    private final double timeInterval;
+    private final long timeInterval;
 
     /**
      * Constructor for a {@link VehicleSlowDown} interaction.
@@ -59,9 +59,9 @@ public final class VehicleSlowDown extends Interaction {
      * @param time         Timestamp of this interaction, unit: [ns]
      * @param vehicleId    The id of the vehicle, that gets slowed down.
      * @param speed        The desired speed.
-     * @param timeInterval The time interval in which the desired speed should be reached, unit: [ms]
+     * @param timeInterval The time interval in which the desired speed should be reached, unit: [ns]
      */
-    public VehicleSlowDown(long time, String vehicleId, float speed, double timeInterval) {
+    public VehicleSlowDown(long time, String vehicleId, float speed, long timeInterval) {
         super(time);
         this.vehicleId = vehicleId;
         this.speed = speed;
@@ -76,7 +76,7 @@ public final class VehicleSlowDown extends Interaction {
         return vehicleId;
     }
 
-    public double getInterval() {
+    public long getInterval() {
         return timeInterval;
     }
 

@@ -572,7 +572,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
         bridge.getVehicleControl()
-                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), nsToMs((long) (vehicleSlowDown.getInterval() * TIME.SECOND)));
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), nsToMs(vehicleSlowDown.getInterval()));
     }
 
     /**
