@@ -195,7 +195,7 @@ public class SumoAmbassadorTest {
 
         // RUN
         VehicleSpeedChange vehicleSpeedChange =
-                new VehicleSpeedChange(0, "veh_0", VehicleSpeedChange.VehicleSpeedChangeType.WITH_INTERVAL, 10, 5000, 0);
+                new VehicleSpeedChange(0, "veh_0", VehicleSpeedChange.VehicleSpeedChangeType.WITH_INTERVAL, 10, 5 * TIME.SECOND, 0);
         ambassador.processInteraction(vehicleSpeedChange);
         mockSimulationStepResult(0L);
         ambassador.advanceTime(0L);
