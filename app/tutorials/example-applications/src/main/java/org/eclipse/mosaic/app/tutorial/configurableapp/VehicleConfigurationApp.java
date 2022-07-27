@@ -68,7 +68,8 @@ public class VehicleConfigurationApp extends ConfigurableApplication<CExample, V
         if (this.config.fooInteger != null) {
             int wantedSpeed = this.config.fooInteger;
             if (getOs().getVehicleData().getSpeed() > wantedSpeed) {
-                getLog().info("The current speed equals {}m/s will be slowed down to the wanted speed equals {}m/s", getOs().getVehicleData().getSpeed(), wantedSpeed);
+                getLog().info("The current speed equals {}m/s will be slowed down to the wanted speed equals {}m/s",
+                        getOs().getVehicleData().getSpeed(), wantedSpeed);
                 getOs().slowDown(wantedSpeed, 10 * TIME.SECOND);
             }
         } else {
