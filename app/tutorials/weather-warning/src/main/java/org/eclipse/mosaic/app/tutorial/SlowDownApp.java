@@ -72,7 +72,7 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
 
         if (strength > 0 && !hazardousArea) {
             // Reduce speed when entering potentially hazardous area
-            getOs().changeSpeedWithInterval(SPEED, (int) (5000 * TIME.MILLI_SECOND));
+            getOs().changeSpeedWithInterval(SPEED, 5 * TIME.SECOND);
             hazardousArea = true;
         }
 
