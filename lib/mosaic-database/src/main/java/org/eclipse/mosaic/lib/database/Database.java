@@ -15,6 +15,9 @@
 
 package org.eclipse.mosaic.lib.database;
 
+import org.eclipse.mosaic.lib.database.building.Building;
+import org.eclipse.mosaic.lib.database.building.Corner;
+import org.eclipse.mosaic.lib.database.building.Wall;
 import org.eclipse.mosaic.lib.database.persistence.DatabaseLoader;
 import org.eclipse.mosaic.lib.database.persistence.OutdatedDatabaseException;
 import org.eclipse.mosaic.lib.database.persistence.SQLiteLoader;
@@ -122,6 +125,12 @@ public class Database {
      * is to retain the information for persisting to a database system or file.
      */
     private final Map<String, Restriction> restrictions = new HashMap<>();
+
+    /**
+     * Contains all {@link Building}s that may have an impact on communication.
+     */
+    private final Map<String, Building> buildings = new HashMap<>();
+
 
     /**
      * Contains all predefined {@link Route}s vehicles can drive on. Each route consists of
@@ -245,6 +254,16 @@ public class Database {
     }
 
     /**
+     * Returns the {@link Building} with the given id.
+     *
+     * @param id id of the building.
+     * @return The building identified by the given id.
+     */
+    public Building getBuilding(String id) {
+        return buildings.get(id);
+    }
+
+    /**
      * Returns the {@link Route} with the given id.
      *
      * @param id Id of the route.
@@ -320,8 +339,17 @@ public class Database {
      *
      * @return List of all roundabouts.
      */
-    public List<Roundabout> getRoundabouts() {
+    public Collection<Roundabout> getRoundabouts() {
         return Collections.unmodifiableList(roundabouts);
+    }
+
+    /**
+     * Returns all buildings from the database.
+     *
+     * @return List of all buildings.
+     */
+    public Collection<Building> getBuildings() {
+        return Collections.unmodifiableCollection(buildings.values());
     }
 
     /**
@@ -470,6 +498,7 @@ public class Database {
             other.getConnections().forEach(this::addConnection);
             other.getRestrictions().forEach(this::addRestriction);
             other.getRoundabouts().forEach(this::addRoundabout);
+            other.getBuildings().forEach(this::addBuilding);
             other.getRoutes().forEach(this::addRoute);
             other.properties.forEach(this::addProperty);
             return this;
@@ -497,6 +526,7 @@ public class Database {
             database.restrictions.clear();
             database.ways.clear();
             database.roundabouts.clear();
+            database.buildings.clear();
             database.borderNodes = null;
             database.minBounds.set(90, 180, 0);
             database.maxBounds.set(-90, -180, 0);
@@ -742,6 +772,38 @@ public class Database {
 
         private void addRestriction(Restriction restriction) {
             database.restrictions.put(restriction.getId(), restriction);
+        }
+
+        /**
+         * Adds a new building by a given list of corners defining the corners of the building.
+         *
+         * @param id the id of the building
+         * @param name the name of the building
+         * @param height the height of the building
+         * @param corners the list geographical points describing the contour of the building
+         */
+        public Building addBuilding(@Nonnull  String id, String name, double height, GeoPoint[] corners) {
+            Validate.isTrue(corners.length > 2, "Building with id " + id + " needs at least three corner points");
+
+            final List<Wall> walls = new ArrayList<>();
+            Corner from = null;
+            for (int i = 1; i < corners.length; i++) {
+                if (from == null) {
+                    from = new Corner(corners[i - 1]);
+                }
+                Corner to = new Corner(corners[i]);
+                walls.add(new Wall(from, to));
+                from = to;
+            }
+            walls.add(new Wall(from, walls.get(0).getFromCorner())); // close loop
+
+            final Building building = new Building(id, name, height, walls);
+            addBuilding(building);
+            return building;
+        }
+
+        private void addBuilding(Building building) {
+            database.buildings.put(building.getId(), building);
         }
 
         /**

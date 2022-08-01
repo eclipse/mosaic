@@ -114,29 +114,6 @@ class SQLiteAccess {
     }
 
     /**
-     * Optimizes connection to database. By not waiting for disk to write the data, let
-     * journaling happen in memory and increasing the cache.
-     * AVOID WHEN WRITING TO DATABASE!
-     *
-     * @throws SQLException
-     * @see <a href="http://www.sqlite.org/pragma.html">SQLite PRAGMAs</a>
-     */
-    protected void optimizeConnection() throws SQLException {
-        dbConnection.setReadOnly(false);
-        try (Statement statement = dbConnection.createStatement()) {
-            // don't wait for disk sync
-            statement.execute("PRAGMA synchronous = OFF;");
-            // hold rollback information only in memory instead of file
-            // -> speedup at the sacrifice of security
-            statement.execute("PRAGMA journal_mode = MEMORY");
-            // increase the number of pages to cache by x10
-            statement.execute("PRAGMA cache_size = 20000");
-            // make sure temporary tables and indices are stored in memory
-            statement.execute("PRAGMA temp_store = 2");
-        }
-    }
-
-    /**
      * Accepts and executes SQL statements. Connects and disconnects each time.
      * Name of SQLite database file must be
      * known by call of setDbName(String).

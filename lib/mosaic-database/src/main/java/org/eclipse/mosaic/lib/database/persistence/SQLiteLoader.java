@@ -16,6 +16,8 @@
 package org.eclipse.mosaic.lib.database.persistence;
 
 import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.database.building.Building;
+import org.eclipse.mosaic.lib.database.building.Wall;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.road.Restriction;
@@ -105,6 +107,8 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
         loadRoundabouts(builder);
         log.debug("Loading restrictions...");
         loadRestrictions(builder);
+        log.debug("Loading buildings...");
+        loadBuildings(builder);
         log.debug("Loading routes...");
         loadRoutes(builder);
         log.debug("Database loaded");
@@ -143,23 +147,25 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
                 Statement statement = connect();
                 log.debug("setting version and properties...");
                 saveProperties(database);
-                log.debug("Saving nodes...");
+                log.info("Saving {} nodes...", database.getNodes().size());
                 saveNodes(database);
-                log.debug("Saving ways...");
+                log.info("Saving {} ways...", database.getWays().size());
                 saveWays(database);
-                log.debug("Saving way <--> node relations...");
                 saveWayNodes(database);
-                log.debug("Saving connections...");
+                log.info("Saving {} connections...", database.getConnections().size());
                 saveConnections(database);
-                log.debug("Saving connection <--> node relations...");
                 saveConnectionNodes(database);
-                log.debug("Saving restrictions...");
+                log.info("Saving {} restrictions...", database.getRestrictions().size());
                 saveRestrictions(database);
-                log.debug("Saving routes...");
+                log.info("Saving {} routes...", database.getRoutes().size());
                 saveRoutes(database);
-                log.debug("Saving roundabouts...");
+                log.info("Saving {} roundabouts...", database.getRoundabouts().size());
                 saveRoundabouts(database);
-                log.debug("Database saved");
+                log.info("Saving {} buildings...", database.getBuildings().size());
+                saveBuildings(database);
+                log.info("Create Indices");
+                createIndices();
+                log.info("Database saved");
                 disconnect(statement);
             } catch (SQLException sqle) {
                 log.error("error while trying to write database content: {}", sqle.getMessage());
@@ -211,6 +217,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
         statement.addBatch("DROP TABLE IF EXISTS Corner;");
         statement.addBatch("DROP TABLE IF EXISTS Wall;");
         statement.addBatch("DROP TABLE IF EXISTS Building;");
+        statement.addBatch("DROP TABLE IF EXISTS BuildingCorner;");
         statement.addBatch("DROP TABLE IF EXISTS Roundabout;");
         statement.addBatch("DROP TABLE IF EXISTS RoundaboutConsistsOf;");
         statement.executeBatch();
@@ -221,7 +228,7 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
     }
 
     /**
-     * Creates all necessary tables. TODO: incorporate if not exists or make sure this is ONLY called after {@link #clearDb()}!
+     * Creates all necessary tables.
      *
      * @throws SQLException Exception that provides information on a database access error or other errors.
      */
@@ -244,16 +251,27 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
         statement.executeUpdate("CREATE TABLE TrafficSignals (id STRING, ref_node_id STRING, phases STRING, timing STRING, from_way_id STRING, via0_way_id STRING, via1_way_id STRING, to_way_id STRING, lanes_from STRING, lanes_via0 STRING, lanes_via1 STRING, lanes_to STRING)");
         // vehicle data
         statement.executeUpdate("CREATE TABLE Route (id STRING, sequence_number INTEGER, connection_id STRING)");
-        // buildings
-        statement.executeUpdate("CREATE TABLE Corner (id STRING, lat DOUBLE, lon DOUBLE, x DOUBLE, y DOUBLE)");
-        statement.executeUpdate("CREATE TABLE Wall (id STRING, building_id STRING, from_corner_id STRING, to_corner_id STRING, length DOUBLE, sequence_number INTEGER)");
-        statement.executeUpdate("CREATE TABLE Building (id STRING, name TEXT, height DOUBLE, min_x DOUBLE, max_x DOUBLE, min_y DOUBLE, max_y DOUBLE)");
         // roundabouts
         statement.executeUpdate("CREATE TABLE Roundabout (id STRING)");
         statement.executeUpdate("CREATE TABLE RoundaboutConsistsOf (roundabout_id STRING, node_id STRING, sequence_number INTEGER)");
+        // buildings
+        statement.executeUpdate("CREATE TABLE Building (id STRING, name TEXT, height DOUBLE)");
+        statement.executeUpdate("CREATE TABLE BuildingCorner (building_id STRING, lat DOUBLE, lon DOUBLE, sequence_number INTEGER)");
 
         // Connection Details (like parking lots)
         statement.executeUpdate("CREATE TABLE ConnectionDetails (id STRING, connection STRING, type STRING, value STRING)");
+        disconnect(statement);
+    }
+
+    /**
+     * Creates indices for faster queries when using WHERE clause.
+     *
+     * @throws SQLException Exception that provides information on a database access error or other errors.
+     */
+    private void createIndices() throws SQLException {
+        Statement statement = connect();
+        statement.executeUpdate("CREATE INDEX building_index on BuildingCorner(building_id)");
+        statement.executeUpdate("CREATE INDEX roundabout_index on RoundaboutConsistsOf(roundabout_id)");
         disconnect(statement);
     }
 
@@ -543,6 +561,42 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
     }
 
     /**
+     * This loads the {@link Building}s from the database.
+     *
+     * @param databaseBuilder Database from which to load the buildings.
+     */
+    private void loadBuildings(Database.Builder databaseBuilder) {
+        //       statement.executeUpdate("CREATE TABLE Building (id STRING, name TEXT, height DOUBLE)");
+        //        statement.executeUpdate("CREATE TABLE BuildingCorner (building_id STRING, lat DOUBLE, lon DOUBLE, sequence_number INTEGER)");
+        try {
+            List<ResultRow> buildingEntries = executeStatement("SELECT id, name, height FROM Building").getRows();
+
+            // rework into objects
+            for (ResultRow buildingEntry : buildingEntries) {
+                String id = buildingEntry.getString("id");
+                String name = buildingEntry.getString("name");
+                double height = buildingEntry.getDouble("height");
+
+                List<ResultRow> cornerEntries = executeStatement(
+                        "SELECT lat, lon FROM BuildingCorner WHERE building_id = \"" + id + "\" ORDER BY sequence_number"
+                ).getRows();
+
+                final GeoPoint[] corners = new GeoPoint[cornerEntries.size()];
+                int i = 0;
+                for (ResultRow cornerEntry : cornerEntries) {
+                    corners[i++] = GeoPoint.latLon(cornerEntry.getDouble("lat"), cornerEntry.getDouble("lon"));
+                }
+
+                // create building and save to db
+                databaseBuilder.addBuilding(id, name, height, corners);
+            }
+
+        } catch (SQLException e) {
+            log.warn("Error loading buildings: {}. Skipping", e.getMessage());
+        }
+    }
+
+    /**
      * This loads the {@link Route}s.
      *
      * @param databaseBuilder Database from which to load the routes.
@@ -824,6 +878,59 @@ public class SQLiteLoader extends SQLiteAccess implements DatabaseLoader {
             log.error("error while trying to persist restriction; {}", sqle.getMessage());
         }
     }
+
+    /**
+     * Saves all {@link Roundabout}s to the SQLite file. References(/relations) to other
+     * objects NOT are saved separately!
+     *
+     * @param database Save roundabouts into the database.
+     */
+    private void saveBuildings(Database database) {
+
+        final String buildingStatement = "INSERT INTO Building(id, name, height) VALUES (?, ?, ?)";
+
+        // Create new building in database
+        try (PreparedStatement prep = dbConnection.prepareStatement(buildingStatement)) {
+            final boolean autoCommit = dbConnection.getAutoCommit();
+            dbConnection.setAutoCommit(false);
+            for (Building building : database.getBuildings()) {
+                prep.setString(1, building.getId());
+                prep.setString(2, building.getName());
+                prep.setDouble(3, building.getHeight());
+                prep.executeUpdate();
+
+            }
+            dbConnection.commit();
+            dbConnection.setAutoCommit(autoCommit);
+        } catch (SQLException sqle) {
+            log.error("error while trying to persist buildings: {}", sqle.getMessage());
+        }
+
+        // Store corner list of building in database
+        final String cornerStatement = "INSERT INTO BuildingCorner(building_id, lat, lon, sequence_number) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement prep = dbConnection.prepareStatement(cornerStatement)) {
+            final boolean autoCommit = dbConnection.getAutoCommit();
+            dbConnection.setAutoCommit(false);
+            for (Building building : database.getBuildings()) {
+                int sequenceNumber = 0;
+                for (Wall wall : building.getWalls()) {
+                    prep.setString(1, building.getId());
+                    // we only store the from-node of each wall, as we already can expect a closed loop of walls
+                    prep.setDouble(2, wall.getFromCorner().getPosition().getLatitude());
+                    prep.setDouble(3, wall.getFromCorner().getPosition().getLongitude());
+                    prep.setInt(4, sequenceNumber++);
+                    prep.executeUpdate();
+                }
+            }
+            dbConnection.commit();
+            dbConnection.setAutoCommit(autoCommit);
+        } catch (SQLException sqle) {
+            log.error("error while trying to persist building corners: {}", sqle.getMessage());
+        }
+
+    }
+
 
     /**
      * Saves all {@link Route}s to the SQLite file.
