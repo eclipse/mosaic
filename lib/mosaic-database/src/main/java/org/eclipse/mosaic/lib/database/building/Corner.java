@@ -73,7 +73,6 @@ public class Corner {
         Corner other = (Corner) obj;
         return new EqualsBuilder()
                 .append(this.position, other.position)
-                .append(this.cartesianPosition, other.cartesianPosition)
                 .isEquals();
     }
 
@@ -81,7 +80,6 @@ public class Corner {
     public int hashCode() {
         return new HashCodeBuilder(5, 31)
                 .append(position)
-                .append(cartesianPosition)
                 .toHashCode();
     }
 
