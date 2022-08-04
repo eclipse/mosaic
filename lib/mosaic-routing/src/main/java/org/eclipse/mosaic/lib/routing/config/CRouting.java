@@ -15,10 +15,12 @@
 
 package org.eclipse.mosaic.lib.routing.config;
 
+import java.io.Serializable;
+
 /**
  * Base Class for the navigation configuration.
  */
-public class CRouting {
+public class CRouting implements Serializable {
 
     /**
      * The source for the route calculation, e.g. the path to the database containing the road network.

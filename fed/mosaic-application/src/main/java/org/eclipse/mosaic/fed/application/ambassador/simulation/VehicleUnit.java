@@ -88,7 +88,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend
                 == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
-            perceptionModule = new SumoPerceptionModule(this); //TODO add perception filter to SumoPerceptionModule?
+            perceptionModule = new SumoPerceptionModule(this, database, getOsLog());
         } else {
             perceptionModule = new SimplePerceptionModule(this, database, getOsLog());
         }

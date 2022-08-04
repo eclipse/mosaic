@@ -23,10 +23,12 @@ import org.eclipse.mosaic.rti.TIME;
 
 import com.google.gson.annotations.JsonAdapter;
 
+import java.io.Serializable;
+
 /**
- * Class for a configuration.
+ * Main configuration of the MOSAIC Application simulator.
  */
-public class CApplicationAmbassador {
+public class CApplicationAmbassador implements Serializable {
 
     /**
      * To free some memory, use a time limit for cached V2XMessages.
@@ -68,7 +70,7 @@ public class CApplicationAmbassador {
      * allowing to define the actual {@link org.eclipse.mosaic.lib.routing.Routing}
      * implementation to use.
      */
-    public static class CRoutingByType extends CRouting {
+    public static class CRoutingByType extends CRouting implements Serializable {
 
         /**
          * Defines the {@link org.eclipse.mosaic.lib.routing.Routing} implementation
@@ -78,15 +80,29 @@ public class CApplicationAmbassador {
         public String type = null;
     }
 
+    /**
+     * Configuration for the perception backend used in the ApplicationSimulator
+     * to determine surrounding vehicles.
+     */
     public CPerception perceptionConfiguration = new CPerception();
 
-    public static class CPerception {
+    public static class CPerception implements Serializable {
+
         public enum PerceptionBackend {
-            Grid, QuadTree, Trivial, SUMO
+            /** Vehicles are stored and accessed using a grid-based index. */
+            Grid,
+            /** Vehicles are stored and accessed using a tree-based index (recommended). */
+            QuadTree,
+            /** Vehicles are stored and accessed using a trivial approach which will be very slow on large number of vehicles. */
+            Trivial,
+            /** The surrounding vehicles are not determined by the ApplicationSimulator, but by utilizing
+             * SUMO integrated features. Depending on the scenario, the performance can be better but also be
+             * worse compared to the MOSAIC-based solutions. */
+            SUMO
         }
 
         /**
-         * The kind of index to use for perception [Grid, QuadTree, Trivial]. Default: QuadTree
+         * The kind of index to use for perception [Grid, QuadTree, Trivial, SUMO]. Default: QuadTree
          */
         public PerceptionBackend perceptionBackend = PerceptionBackend.QuadTree;
 

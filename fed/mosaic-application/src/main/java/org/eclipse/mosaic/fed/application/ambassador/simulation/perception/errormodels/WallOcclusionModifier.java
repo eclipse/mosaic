@@ -26,6 +26,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A simple perception modifier which removes all vehicles behind walls. A list of walls in the vicinity of the
+ * ego vehicle is provided by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule}
+ * which implements the {@link WallProvider} interface. The check for hidden vehicles is done by finding intersection of vectors between
+ * ego and all other vehicles. and all walls in its vicinity.
+ */
 public class WallOcclusionModifier implements PerceptionModifier {
 
     private final Vector3d intersectionResult = new Vector3d();

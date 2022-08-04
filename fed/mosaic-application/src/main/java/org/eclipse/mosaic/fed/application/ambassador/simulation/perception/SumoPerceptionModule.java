@@ -15,52 +15,39 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSightDistanceConfiguration;
+import org.eclipse.mosaic.lib.database.Database;
+
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SumoPerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
+public class SumoPerceptionModule extends AbstractPerceptionModule {
 
-    private final PerceptionModuleOwner owner;
-
-    private SimplePerceptionConfiguration configuration;
-
-    public SumoPerceptionModule(PerceptionModuleOwner owner) {
-        this.owner = owner;
+    public SumoPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
+        super(owner, database, log);
     }
 
     @Override
     public void enable(SimplePerceptionConfiguration configuration) {
-        this.configuration = configuration;
+        super.enable(configuration);
         this.owner.sendInteractionToRti(new VehicleSightDistanceConfiguration(
                 this.owner.getSimulationTime(),
                 owner.getId(),
-                configuration.getViewingRange(),
-                configuration.getViewingAngle()
+                this.configuration.getViewingRange(),
+                this.configuration.getViewingAngle()
         ));
     }
 
     @Override
-    public boolean isEnabled() {
-        return configuration != null;
-    }
-
-    @Override
-    public List<VehicleObject> getPerceivedVehicles() {
+    List<VehicleObject> getVehiclesInRange() {
         return owner.getVehicleData().getVehiclesInSight().stream()
                 .map(v -> new VehicleObject(v.getId())
                         .setPosition(v.getProjectedPosition())
                         .setSpeed(v.getSpeed())
                         .setHeading(v.getHeading())
                 ).collect(Collectors.toList());
-    }
-
-    @Override
-    public PerceptionModuleConfiguration getConfiguration() {
-        return configuration;
     }
 
 }

@@ -20,7 +20,15 @@ import org.eclipse.mosaic.lib.spatial.Edge;
 
 import java.util.Collection;
 
+/**
+ * Marks the perception module to be able to return a collection of walls in the vicinity of
+ * the ego vehicle. We use this extra interface to hide this method from the API
+ * the application developer sees.
+ */
 public interface WallProvider {
 
+    /**
+     * @return a list of walls in the surroundings of the ego vehicle (all walls within the viewing range)
+     */
     Collection<Edge<Vector3d>> getSurroundingWalls();
 }
