@@ -29,7 +29,8 @@ public class SimpleGeoCalculator implements GeoCalculator {
         double scaleX = (Math.PI * 2 * radius) / 360;
         double dY = (b.getLatitude() - a.getLatitude()) * scaleY;
         double dX = (b.getLongitude() - a.getLongitude()) * scaleX;
-        return result.set(dX, 0, -dY);
+        double dZ = b.getAltitude() - a.getAltitude();
+        return result.set(dX, dZ, -dY);
     }
 
     @Override
