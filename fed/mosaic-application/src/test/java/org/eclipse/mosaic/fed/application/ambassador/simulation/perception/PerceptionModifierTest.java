@@ -23,21 +23,25 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
+import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
+import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.spatial.Edge;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,7 +63,7 @@ public class PerceptionModifierTest {
 
     private final static double VIEWING_RANGE = 100d;
     private final static double VIEWING_ANGLE = 360d;
-    private final static CartesianPoint EGO_POSITION = new MutableCartesianPoint(0, 0, 0);
+    private final static CartesianPoint EGO_POSITION = CartesianPoint.xyz(0, 0, 0);
     private final static int VEHICLE_AMOUNT = 100;
     private final RandomNumberGenerator rng = new DefaultRandomNumberGenerator(1);
     private final EventManager eventManagerMock = mock(EventManager.class);
@@ -68,9 +72,12 @@ public class PerceptionModifierTest {
     @Mock
     public VehicleData egoVehicleData;
 
+    @Mock
+    private CentralNavigationComponent cncMock;
+
     @Rule
     @InjectMocks
-    public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, null, cpcMock);
+    public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, cncMock, cpcMock);
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
@@ -89,7 +96,7 @@ public class PerceptionModifierTest {
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
-        simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, mock(Logger.class)));
+        simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, null, mock(Logger.class)));
         doReturn(simplePerceptionModule).when(egoVehicleUnit).getPerceptionModule();
         // setup ego vehicle
         when(egoVehicleData.getHeading()).thenReturn(90d);
@@ -113,7 +120,7 @@ public class PerceptionModifierTest {
         if (PRINT_POSITIONS) {
             printPerceivedPositions(perceivedVehicles);
         }
-        assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT >= perceivedVehicles.size());
+        assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
     }
 
     @Test
@@ -125,7 +132,7 @@ public class PerceptionModifierTest {
         if (PRINT_POSITIONS) {
             printPerceivedPositions(perceivedVehicles);
         }
-        assertTrue("The distance filter should remove vehicles", VEHICLE_AMOUNT >= perceivedVehicles.size());
+        assertTrue("The distance filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
     }
 
     @Test
@@ -140,6 +147,27 @@ public class PerceptionModifierTest {
         assertTrue("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT == perceivedVehicles.size());
     }
 
+    @Test
+    public void testWallOcclusionModifier() {
+        List<Edge<Vector3d>> surroundingWalls = Lists.newArrayList(
+                new Edge<>(CartesianPoint.xy(10, 10).toVector3d(), CartesianPoint.xy(10, -10).toVector3d())
+        );
+        doReturn(surroundingWalls).when(simplePerceptionModule).getSurroundingWalls();
+
+        WallOcclusionModifier occlusionModifier = new WallOcclusionModifier();
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, occlusionModifier));
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        if (PRINT_POSITIONS) {
+            printPerceivedPositions(perceivedVehicles);
+        }
+        assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
+        // assert roughly that every perceived vehicle right of the wall is not hidden by the wall
+        for (VehicleObject v : perceivedVehicles) {
+            if (v.getProjectedPosition().getX() > 10) {
+                assertTrue(v.getProjectedPosition().getY() > 10 || v.getProjectedPosition().getY() < -10);
+            }
+        }
+    }
 
     private List<CartesianPoint> getRandomlyDistributedPointsInRange(CartesianPoint origin, double range, int amount) {
         List<CartesianPoint> points = new ArrayList<>();
@@ -155,11 +183,11 @@ public class PerceptionModifierTest {
         double upperX = origin.getX() + range;
         double upperY = origin.getY() + range;
 
-        CartesianPoint randomPoint = new MutableCartesianPoint(origin.getX() + (range + 10), origin.getY() + (range + 10), origin.getZ());
+        CartesianPoint randomPoint = CartesianPoint.xyz(origin.getX() + (range + 10), origin.getY() + (range + 10), origin.getZ());
         while (randomPoint.distanceTo(origin) > VIEWING_RANGE) {
             double randomX = lowerX <= upperX ? rng.nextDouble(lowerX, upperX) : rng.nextDouble(upperX, lowerX);
             double randomY = lowerY <= upperY ? rng.nextDouble(lowerY, upperY) : rng.nextDouble(upperY, lowerY);
-            randomPoint = new MutableCartesianPoint(randomX, randomY, 0);
+            randomPoint = CartesianPoint.xyz(randomX, randomY, 0);
 
         }
         return randomPoint;

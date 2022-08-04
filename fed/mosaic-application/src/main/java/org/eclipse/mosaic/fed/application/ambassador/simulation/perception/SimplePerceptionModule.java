@@ -19,36 +19,42 @@ import static java.lang.Math.toRadians;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.WallIndex;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
+import org.eclipse.mosaic.lib.spatial.Edge;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * A simplified perception module which detects all vehicles within the defined field of view.
  * No occlusion or error model is considered. The field of view is defined with an opening angle of maximum 180 degrees.
  */
-public class SimplePerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
+public class SimplePerceptionModule implements PerceptionModule<SimplePerceptionConfiguration>, WallProvider {
     private static final double DEFAULT_VIEWING_ANGLE = 40;
     private static final double DEFAULT_VIEWING_RANGE = 200;
 
 
     private final PerceptionModuleOwner owner;
     private final Logger log;
+    private final Database database;
 
     private SimplePerceptionModel perceptionModel;
 
-    public SimplePerceptionModule(PerceptionModuleOwner owner, Logger log) {
+    public SimplePerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
         this.owner = owner;
         this.log = log;
+        this.database = database;
     }
 
     @Override
@@ -85,6 +91,27 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                 .getVehicleIndex()
                 .getVehiclesInRange(perceptionModel);
         return perceptionModel.applyPerceptionModifiers(owner, initiallyPerceivedVehicles);
+    }
+
+    private WallIndex wallIndex = null;
+
+    @Override
+    public Collection<Edge<Vector3d>> getSurroundingWalls() {
+        if (database == null) {
+            log.warn("No database for retrieving walls available.");
+            return Lists.newArrayList();
+        }
+
+        if (wallIndex == null) {
+            if (database.getBuildings().isEmpty()) {
+                log.warn("No buildings to retrieve walls available.");
+            }
+            wallIndex = new WallIndex(database);
+        }
+        return wallIndex.getWallsInRadius(
+                owner.getVehicleData().getProjectedPosition().toVector3d(),
+                getConfiguration().getViewingRange()
+        );
     }
 
     /**
