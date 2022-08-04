@@ -61,7 +61,7 @@ class QuadTreeTraversal {
         if (node.isLeaf()) {
             for (int i = 0; i < node.objects.size(); i++) {
                 QuadTree<T>.ObjectAndNode oan = (QuadTree<T>.ObjectAndNode) node.objects.get(i);
-                if (area.contains(oan.objectPos) && (filter == null || filter.test(oan.object))) {
+                if (containsOnPlane(area, oan.objectPos) && (filter == null || filter.test(oan.object))) {
                     result.add(oan.object);
                 }
             }
@@ -72,6 +72,11 @@ class QuadTreeTraversal {
                 }
             }
         }
+    }
+
+    private static boolean containsOnPlane(BoundingBox area, Vector3d p) {
+        return p.x >= area.min.x && p.x <= area.max.x
+                && p.z >= area.min.z && p.z <= area.max.z;
     }
 
     static <T> T getNearestObject(QuadTree<T> tree, Vector3d center) {
