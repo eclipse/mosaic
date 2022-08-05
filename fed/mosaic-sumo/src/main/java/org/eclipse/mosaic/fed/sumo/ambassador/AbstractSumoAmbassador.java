@@ -165,14 +165,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     /**
      * List of vehicles that are simulated externally.
      */
-    private final HashMap<String, ExternalVehicleState> externalVehicleMap = new HashMap<>();
+    protected final HashMap<String, ExternalVehicleState> externalVehicleMap = new HashMap<>();
 
     /**
      * Manages traffic signs to be added as POIs to SUMO (e.g. for visualization)
      */
     private final TrafficSignManager trafficSignManager;
-
-
+    
     /**
      * Sleep after each connection try. Unit: [ms].
      */
@@ -537,11 +536,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             return;
         }
 
-        ExternalVehicleState vehicleState;
         for (VehicleData updatedVehicle : vehicleUpdates.getUpdated()) {
-            vehicleState = externalVehicleMap.get(updatedVehicle.getName());
-            if (vehicleState != null) {
-                vehicleState.setLastMovementInfo(updatedVehicle);
+            ExternalVehicleState externalVehicleState = externalVehicleMap.get(updatedVehicle.getName());
+            if (externalVehicleState != null) {
+                externalVehicleState.setLastMovementInfo(updatedVehicle);
             }
         }
 
@@ -1248,10 +1246,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     private void setExternalVehiclesToLatestPositions() {
-        VehicleData latestVehicleData;
         for (Map.Entry<String, ExternalVehicleState> external : externalVehicleMap.entrySet()) {
             if (external.getValue().isAdded()) {
-                latestVehicleData = external.getValue().getLastMovementInfo();
+                VehicleData latestVehicleData = external.getValue().getLastMovementInfo();
                 if (latestVehicleData == null) {
                     log.warn("No position data available for external vehicle {}", external.getKey());
                     latestVehicleData = bridge.getSimulationControl().getLastKnownVehicleData(external.getKey());

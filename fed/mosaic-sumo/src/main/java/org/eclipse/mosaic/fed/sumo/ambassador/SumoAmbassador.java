@@ -306,6 +306,17 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
             int departIndex = vehicleRegistration.getDeparture().getDepartureConnectionIndex();
             String departSpeed = extractDepartureSpeed(vehicleRegistration);
             String laneId = extractDepartureLane(vehicleRegistration);
+            if (externalVehicleMap.containsKey(vehicleId)) {
+                if (externalVehicleMap.get(vehicleId).isAdded()) {
+                    iterator.remove();
+                    continue;
+                }
+                // TODO: Find better solution. Currently, an arbitrary SUMO route for external vehicles is selected, since a registered
+                //       SUMO route is required when adding a vehicle to SUMO. Using an empty route id "" leads to an error.
+                Object[] routeIds = routeCache.keySet().toArray();
+                routeId = (String) routeIds[0];
+                laneId = "free";
+            }
 
             try {
                 if (vehicleRegistration.getTime() <= time) {
@@ -313,9 +324,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                             vehicleId, vehicleRegistration.getTime(), vehicleType, routeId, laneId, departPos);
 
                     if (!routeCache.containsKey(routeId)) {
-                        throw new IllegalArgumentException(
-                                "Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime()
-                        );
+                        throw new IllegalArgumentException("Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime());
                     }
 
                     if (departIndex > 0) {
@@ -329,6 +338,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                             vehicleRegistration.getMapping().getVehicleType(),
                             cachedVehicleTypesInitialization.getTypes().get(vehicleType)
                     );
+                    if (externalVehicleMap.containsKey(vehicleId)) {
+                        externalVehicleMap.get(vehicleId).setAdded(true);
+                    }
                     iterator.remove();
                 }
             } catch (InternalFederateException e) {
@@ -360,6 +372,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         for (Iterator<VehicleRegistration> iterator = notYetSubscribedVehicles.iterator(); iterator.hasNext(); ) {
             VehicleRegistration currentVehicleRegistration = iterator.next();
             String vehicleId = currentVehicleRegistration.getMapping().getName();
+            if (externalVehicleMap.containsKey(vehicleId)) {
+                iterator.remove();
+                continue;
+            }
             try {
                 // always subscribe to vehicles, that are came from SUMO and are in notYetSubscribedVehicles-list
                 if (vehiclesAddedViaRouteFile.contains(vehicleId) || currentVehicleRegistration.getTime() <= time) {
