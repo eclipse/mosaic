@@ -425,7 +425,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                                 SumoVersion.LOWEST.getSumoVersion())
                 );
             }
-            log.info("Current API version of SUMO is {} (=SUMO {})", bridge.getCurrentVersion().getApiVersion(), bridge.getCurrentVersion().getSumoVersion());
+            log.info("Current API version of SUMO is {} (=SUMO {})", bridge.getCurrentVersion().getApiVersion(),
+                    bridge.getCurrentVersion().getSumoVersion());
         } catch (IOException e) {
             log.error("Error while trying to initialize SUMO ambassador.", e);
             throw new InternalFederateException("Could not initialize SUMO ambassador. Please see Traffic.log for details.", e);
@@ -586,7 +587,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             final IRoadPosition stopPos = vehicleStop.getStopPosition();
             if (log.isInfoEnabled()) {
                 log.info(
-                        "{} at simulation time {}: vehicleId=\"{}\", edgeId=\"{}\", position=\"{}\", laneIndex={}, duration={}, stopMode={}",
+                        "{} at simulation time {}: vehicleId=\"{}\", edgeId=\"{}\", position=\"{}\", laneIndex={}, duration={}, "
+                                + "stopMode={}",
                         VEHICLE_STOP_REQ,
                         TIME.format(vehicleStop.getTime()),
                         vehicleStop.getVehicleId(),
@@ -737,7 +739,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     private int nsToMs(long time) {
-        return (int) (time / TIME.MILLI_SECOND);
+        long tmp = (time / TIME.MILLI_SECOND);
+        return tmp > (long) Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) tmp;
     }
 
     /**
@@ -794,7 +797,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     bridge.getTrafficLightControl().setPhase(trafficLightGroupId, trafficLightStateChange.getCustomStateList());
                     break;
                 default:
-                    log.warn("Discard this TrafficLightStateChange interaction (paramType={}).", trafficLightStateChange.getParameterType());
+                    log.warn("Discard this TrafficLightStateChange interaction (paramType={}).",
+                            trafficLightStateChange.getParameterType());
                     return;
             }
 
@@ -850,9 +854,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 if (vehicleSpeedChange.getInterval() > 0) {
                     // set speed smoothly with given interval
                     final long changeSpeedTimestep = vehicleSpeedChange.getTime() + vehicleSpeedChange.getInterval();
-                    log.debug("slow down vehicle {} and schedule change speed event for timestep {} ns ", vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
+                    log.debug("slow down vehicle {} and schedule change speed event for timestep {} ns ",
+                            vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
                     bridge.getVehicleControl()
-                            .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(), nsToMs(vehicleSpeedChange.getInterval()));
+                            .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(),
+                                    nsToMs(vehicleSpeedChange.getInterval()));
 
                     // set speed permanently after given interval (in the future) via the event scheduler
                     long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval);
