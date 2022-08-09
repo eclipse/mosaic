@@ -17,8 +17,6 @@ package org.eclipse.mosaic.lib.database.persistence;
 
 import org.eclipse.mosaic.lib.database.Database;
 
-import java.sql.SQLException;
-
 /**
  * This interface regulates how the database accesses its persistence.
  */
@@ -32,20 +30,5 @@ public interface DatabaseLoader {
      * @throws OutdatedDatabaseException when version information is not found or is really outdated.
      */
     Database.Builder loadFromFile(String filename) throws OutdatedDatabaseException;
-
-    /**
-     * Saves the given database into the given file.
-     *
-     * @param db       Database to save.
-     * @param filename Save the database as this file.
-     */
-    void saveToFile(Database db, String filename);
-
-    /**
-     * Updates the database from the file with given filename to the latest scheme.
-     *
-     * @param filename Name of the database file.
-     */
-    void updateDatabase(String filename) throws SQLException, OutdatedDatabaseException;
 
 }
