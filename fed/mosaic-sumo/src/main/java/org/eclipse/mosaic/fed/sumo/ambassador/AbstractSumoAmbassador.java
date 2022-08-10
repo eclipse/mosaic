@@ -741,7 +741,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     private int nsToMs(long time) {
-        return (int) (time / TIME.MILLI_SECOND);
+        long tmp = (time / TIME.MILLI_SECOND);
+        return tmp > (long) Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) tmp;
     }
 
     /**
