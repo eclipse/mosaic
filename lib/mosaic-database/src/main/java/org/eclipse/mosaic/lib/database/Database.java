@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.database;
 import org.eclipse.mosaic.lib.database.building.Building;
 import org.eclipse.mosaic.lib.database.building.Corner;
 import org.eclipse.mosaic.lib.database.building.Wall;
-import org.eclipse.mosaic.lib.database.persistence.DatabaseLoader;
 import org.eclipse.mosaic.lib.database.persistence.OutdatedDatabaseException;
 import org.eclipse.mosaic.lib.database.persistence.SQLiteReader;
 import org.eclipse.mosaic.lib.database.persistence.SQLiteTypeDetector;
@@ -157,7 +156,7 @@ public class Database {
     /**
      * This method loads tries to load a database object from
      * the given {@link File}, which should refer to a database-file.
-     * A {@link DatabaseLoader} is used for the translation of the database
+     * A {@link SQLiteReader} is used for the translation of the database
      * to the Java-Object
      *
      * @param file the database-file
@@ -438,22 +437,21 @@ public class Database {
         /**
          * This method loads tries to load a database object from
          * the given {@link File}, which should refer to a database-file.
-         * A {@link DatabaseLoader} is used for the translation of the database
+         * A {@link SQLiteReader} is used for the translation of the database
          * to the Java-Object
          *
          * @param file the database-file
          * @return the builder for easy cascading of methods
          */
         public static Builder loadFromFile(File file) {
-            DatabaseLoader loader;
-            // determine file type
+            SQLiteReader reader;
             try {
                 String contentType = Files.probeContentType(file.toPath());
                 if (SQLiteTypeDetector.MIME_TYPE.equals(contentType)) {
-                    loader = new SQLiteReader();
+                    reader = new SQLiteReader();
                     log.debug("recognized database format is SQLite");
                 } else {
-                    loader = null;
+                    reader = null;
                     log.error("database format unknown or unsupported: " + contentType);
                 }
             } catch (NullPointerException | IOException e) {
@@ -462,9 +460,9 @@ public class Database {
             }
 
             // type was already determined, start loading
-            if (loader != null) {
+            if (reader != null) {
                 try {
-                    return loader.loadFromFile(file.getCanonicalPath());
+                    return reader.loadFromFile(file.getCanonicalPath());
                 } catch (OutdatedDatabaseException | IOException ode) {
                     throw new RuntimeException(ode);
                 }

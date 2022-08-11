@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 /**
  * This reads all objects from an SQLite database into the given object database.
  */
-public class SQLiteReader implements DatabaseLoader {
+public class SQLiteReader {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

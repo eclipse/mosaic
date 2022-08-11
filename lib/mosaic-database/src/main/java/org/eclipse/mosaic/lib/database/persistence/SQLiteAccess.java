@@ -36,8 +36,10 @@ import java.util.function.Function;
  * Static call of SQL statements.
  */
 class SQLiteAccess {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private Connection dbConnection;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
     private String dbName = "";
 
     /**
