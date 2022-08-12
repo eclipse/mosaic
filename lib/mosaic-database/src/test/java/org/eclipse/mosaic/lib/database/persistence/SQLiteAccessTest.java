@@ -15,130 +15,87 @@
 
 package org.eclipse.mosaic.lib.database.persistence;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import org.eclipse.mosaic.lib.util.junit.TestFileRule;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
  * This tests the access class for SQLite files. At least reading and writing needs to be checked.
  */
-public class SQLiteAccessTest extends SQLiteAccess {
+public class SQLiteAccessTest {
 
-    private final String butzbachDB = "/butzbach_outdated.db";
     private SQLiteAccess testDb;
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-
+    public TestFileRule testFileRule = new TestFileRule().with("/butzbach_outdated.db");
 
     @Before
     public void setUp() throws Exception {
-        // create a temporary copy
-        File databaseCopy = folder.newFile("test.db");
-        try (InputStream in = this.getClass().getResourceAsStream(butzbachDB)) {
-            Files.copy(in, databaseCopy.toPath(), REPLACE_EXISTING);
-        }
+        String path = testFileRule.get("butzbach_outdated.db").getAbsolutePath();
 
-        // open access to copied db
-        testDb = new SQLiteAccess(databaseCopy.getAbsolutePath());
-        try {
-            testDb.connect();
-        } catch (SQLException e) {
-            log.error("Error loading JDBC driver" + e.getMessage());
-        }
-
-//        stat = dbConnection.createStatement();
+        testDb = new SQLiteAccess(path);
+        testDb.connect();
     }
 
     /**
      * Test automatic access to an existing file (independent from it having content)
      */
     @Test
-    public void testSimpleDBConnection() {
-        try {
-            SQLiteAccess connectionDB = new SQLiteAccess(dbName);
+    public void testSimpleDBConnection() throws SQLException {
+        SQLiteAccess connectionDB = new SQLiteAccess("");
 
-            assertNotNull("database object wasn't created", connectionDB);
-            assertNotNull("database connection wasn't created", connectionDB.dbConnection);
-            assertFalse("database connection is closed, but shouldn't be", connectionDB.dbConnection.isClosed());
+        assertNotNull("database object wasn't created", connectionDB);
+        assertNotNull("database connection wasn't created", connectionDB.getConnection());
+        assertFalse("database connection is closed, but shouldn't be", connectionDB.getConnection().isClosed());
 
-            connectionDB.disconnect(null);
-            assertTrue("connection wasn't closed", connectionDB.dbConnection.isClosed());
-
-        } catch (SQLException e) {
-            log.error("error while accessing test database: {}", e.getMessage());
-            fail("unexpected exception while creating database connection");
-        }
+        connectionDB.disconnect(null);
+        assertTrue("connection wasn't closed", connectionDB.getConnection().isClosed());
     }
 
     /**
      * Test manual access to an existing file (independent of it having content).
      */
     @Test
-    public void testManualDBConnection() {
-        try {
-            SQLiteAccess connectionDB = new SQLiteAccess();
-            assertNotNull("database object wasn't created", connectionDB);
+    public void testManualDBConnection() throws SQLException {
+        SQLiteAccess connectionDB = new SQLiteAccess();
 
-            connectionDB.setDatabaseFile(dbName);
-            assertNotNull("connection wasn't created", connectionDB.dbConnection);
-            // TODO: is this the way to go? or simply open and thats it?
-            assertTrue("connection is open, but should still be closed", connectionDB.dbConnection.isClosed());
+        // RUN
+        connectionDB.setDatabaseFile("");
+        //ASSERT
+        assertNotNull("connection wasn't created", connectionDB.getConnection());
+        assertTrue("connection is open, but should still be closed", connectionDB.getConnection().isClosed());
 
-            Statement statement = connectionDB.connect();
-            assertFalse("connection shouldn't be closed", connectionDB.dbConnection.isClosed());
+        //RUN
+        Statement statement = connectionDB.connect();
+        //ASSERT
+        assertFalse("connection shouldn't be closed", connectionDB.getConnection().isClosed());
 
-            connectionDB.disconnect(statement);
-            assertTrue("connection wasn't closed after disconnection", connectionDB.dbConnection.isClosed());
-
-        } catch (SQLException e) {
-            log.error("error while accessing test database: {}", e.getMessage());
-            fail("unexpected exception while creating database connection");
-        }
-    }
-
-    /**
-     * This should test if the optimizations can be effectively activated.
-     */
-    @Test
-    public void testOptimizeConnection() {
-        try {
-            testDb.optimizeConnection();
-        } catch (SQLException e) {
-            fail("error while trying to apply optimizations: " + e.getMessage());
-        }
+        // RUN
+        connectionDB.disconnect(statement);
+        //ASSERT
+        assertTrue("connection wasn't closed after disconnection", connectionDB.getConnection().isClosed());
     }
 
     /**
      * Test if statements can be resolved.
      */
     @Test
-    public void testExecuteStatement() {
-        try {
-            Result testResult = testDb.executeStatement("SELECT name FROM sqlite_master WHERE type='table' and name='nodes' ORDER BY name;");
-            assertNotNull("statement didn't create any result", testResult);
-            assertNotNull("created result isn't valid", testResult.getRows());
-            assertEquals("Wrong result content amount", 1, testResult.getRows().size());
-            assertEquals("result content isn't valid", "nodes", testResult.getFirstRow().getString("name"));
-
-        } catch (SQLException e) {
-            log.error("error while trying to execute simple sql statement");
-            fail("error while trying to execute simple sql statement" + e.getMessage());
-        }
+    public void testExecuteStatement() throws SQLException {
+        SQLiteAccess.Result testResult = testDb.executeStatement("SELECT name FROM sqlite_master WHERE type='table' and name='nodes' ORDER BY name;");
+        assertNotNull("statement didn't create any result", testResult);
+        assertNotNull("created result isn't valid", testResult.getRows());
+        assertEquals("Wrong result content amount", 1, testResult.getRows().size());
+        assertEquals("result content isn't valid", "nodes", testResult.getFirstRow().getString("name"));
     }
 
 }
