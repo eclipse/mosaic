@@ -36,9 +36,11 @@ import java.util.function.Function;
  * Static call of SQL statements.
  */
 class SQLiteAccess {
-    protected Connection dbConnection;
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
-    protected String dbName = "";
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private Connection dbConnection;
+    private String dbName = "";
 
     /**
      * Constructor for accessing an existing database file.
@@ -52,6 +54,10 @@ class SQLiteAccess {
         } catch (SQLException e) {
             throw new RuntimeException("unexpected error while accessing db file", e);
         }
+    }
+
+    Connection getConnection() {
+        return dbConnection;
     }
 
     /**

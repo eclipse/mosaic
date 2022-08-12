@@ -55,11 +55,11 @@ public class SQLiteAccessTest {
         SQLiteAccess connectionDB = new SQLiteAccess("");
 
         assertNotNull("database object wasn't created", connectionDB);
-        assertNotNull("database connection wasn't created", connectionDB.dbConnection);
-        assertFalse("database connection is closed, but shouldn't be", connectionDB.dbConnection.isClosed());
+        assertNotNull("database connection wasn't created", connectionDB.getConnection());
+        assertFalse("database connection is closed, but shouldn't be", connectionDB.getConnection().isClosed());
 
         connectionDB.disconnect(null);
-        assertTrue("connection wasn't closed", connectionDB.dbConnection.isClosed());
+        assertTrue("connection wasn't closed", connectionDB.getConnection().isClosed());
     }
 
     /**
@@ -72,18 +72,18 @@ public class SQLiteAccessTest {
         // RUN
         connectionDB.setDatabaseFile("");
         //ASSERT
-        assertNotNull("connection wasn't created", connectionDB.dbConnection);
-        assertTrue("connection is open, but should still be closed", connectionDB.dbConnection.isClosed());
+        assertNotNull("connection wasn't created", connectionDB.getConnection());
+        assertTrue("connection is open, but should still be closed", connectionDB.getConnection().isClosed());
 
         //RUN
         Statement statement = connectionDB.connect();
         //ASSERT
-        assertFalse("connection shouldn't be closed", connectionDB.dbConnection.isClosed());
+        assertFalse("connection shouldn't be closed", connectionDB.getConnection().isClosed());
 
         // RUN
         connectionDB.disconnect(statement);
         //ASSERT
-        assertTrue("connection wasn't closed after disconnection", connectionDB.dbConnection.isClosed());
+        assertTrue("connection wasn't closed after disconnection", connectionDB.getConnection().isClosed());
     }
 
     /**

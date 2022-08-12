@@ -54,7 +54,7 @@ public interface EdgeProperties {
 
 
     /**
-     * Returns the the type of the belonging way, such as 'primary', 'secondary', or 'residential' depending
+     * Returns the type of the belonging way, such as 'primary', 'secondary', or 'residential' depending
      * on the source for the routing graph.
      * Be aware that this might be an expensive operation which should not be called too often.
      *

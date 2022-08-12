@@ -32,7 +32,7 @@ import org.junit.Test;
 /**
  * Tests the loader class for SQLite Databases.
  */
-public class SQLiteLoaderTest {
+public class SQLiteReaderTest {
 
     @Rule
     public TestFileRule testFileRule = new TestFileRule()
@@ -45,7 +45,7 @@ public class SQLiteLoaderTest {
         String path = testFileRule.get("butzbach.db").getAbsolutePath();
 
         // RUN
-        Database result = new SQLiteLoader().loadFromFile(path).build();
+        Database result = new SQLiteReader().loadFromFile(path).build();
 
         // check counts
         assertEquals("Wrong nodes amount in the database", 25, result.getNodes().size());
@@ -84,7 +84,7 @@ public class SQLiteLoaderTest {
         String path = testFileRule.get("kaiserdammPristine.db").getAbsolutePath();
 
         // RUN
-        Database result = new SQLiteLoader().loadFromFile(path).build();
+        Database result = new SQLiteReader().loadFromFile(path).build();
         assertEquals("Wrong amount of buildings in the database", 100, result.getBuildings().size());
 
         Building building = result.getBuilding("82504793");
