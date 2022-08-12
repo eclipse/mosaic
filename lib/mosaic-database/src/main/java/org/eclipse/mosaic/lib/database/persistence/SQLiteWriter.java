@@ -61,8 +61,8 @@ public class SQLiteWriter {
             properties.load(propertiesStream);
             stable = MosaicVersion.createFromString(properties.getProperty("database.version.stable"));
         } catch (IOException e) {
-            log.error("Could not access properties file!");
-            throw new IllegalStateException("Could not access properties file while preparing SQLiteLoader!", e);
+            log.error("Could not access properties file.");
+            throw new IllegalStateException("Could not access properties file while preparing SQLiteWriter.", e);
         }
     }
 
