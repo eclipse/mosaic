@@ -15,10 +15,13 @@
 
 package org.eclipse.mosaic.lib.database;
 
-import org.eclipse.mosaic.lib.database.persistence.DatabaseLoader;
+import org.eclipse.mosaic.lib.database.building.Building;
+import org.eclipse.mosaic.lib.database.building.Corner;
+import org.eclipse.mosaic.lib.database.building.Wall;
 import org.eclipse.mosaic.lib.database.persistence.OutdatedDatabaseException;
-import org.eclipse.mosaic.lib.database.persistence.SQLiteLoader;
+import org.eclipse.mosaic.lib.database.persistence.SQLiteReader;
 import org.eclipse.mosaic.lib.database.persistence.SQLiteTypeDetector;
+import org.eclipse.mosaic.lib.database.persistence.SQLiteWriter;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.road.Restriction;
@@ -124,6 +127,12 @@ public class Database {
     private final Map<String, Restriction> restrictions = new HashMap<>();
 
     /**
+     * Contains all {@link Building}s that may have an impact on communication.
+     */
+    private final Map<String, Building> buildings = new HashMap<>();
+
+
+    /**
      * Contains all predefined {@link Route}s vehicles can drive on. Each route consists of
      * {@link Connection}s
      */
@@ -147,7 +156,7 @@ public class Database {
     /**
      * This method loads tries to load a database object from
      * the given {@link File}, which should refer to a database-file.
-     * A {@link DatabaseLoader} is used for the translation of the database
+     * A {@link SQLiteReader} is used for the translation of the database
      * to the Java-Object
      *
      * @param file the database-file
@@ -174,7 +183,7 @@ public class Database {
      * @param filename database filename.
      */
     public void saveToFile(String filename) {
-        new SQLiteLoader().saveToFile(this, filename);
+        new SQLiteWriter().saveToFile(this, filename);
     }
 
     /**
@@ -242,6 +251,16 @@ public class Database {
      */
     public Connection getConnection(String id) {
         return connections.get(id);
+    }
+
+    /**
+     * Returns the {@link Building} with the given id.
+     *
+     * @param id id of the building.
+     * @return The building identified by the given id.
+     */
+    public Building getBuilding(String id) {
+        return buildings.get(id);
     }
 
     /**
@@ -318,10 +337,19 @@ public class Database {
     /**
      * Returns all roundabouts from the database.
      *
-     * @return List of all roundabouts.
+     * @return All roundabouts in a {@link Collection}.
      */
-    public List<Roundabout> getRoundabouts() {
-        return Collections.unmodifiableList(roundabouts);
+    public Collection<Roundabout> getRoundabouts() {
+        return Collections.unmodifiableCollection(roundabouts);
+    }
+
+    /**
+     * Returns all buildings from the database.
+     *
+     * @return All buildings in a {@link Collection}.
+     */
+    public Collection<Building> getBuildings() {
+        return Collections.unmodifiableCollection(buildings.values());
     }
 
     /**
@@ -409,22 +437,21 @@ public class Database {
         /**
          * This method loads tries to load a database object from
          * the given {@link File}, which should refer to a database-file.
-         * A {@link DatabaseLoader} is used for the translation of the database
+         * A {@link SQLiteReader} is used for the translation of the database
          * to the Java-Object
          *
          * @param file the database-file
          * @return the builder for easy cascading of methods
          */
         public static Builder loadFromFile(File file) {
-            DatabaseLoader loader;
-            // determine file type
+            SQLiteReader reader;
             try {
                 String contentType = Files.probeContentType(file.toPath());
                 if (SQLiteTypeDetector.MIME_TYPE.equals(contentType)) {
-                    loader = new SQLiteLoader();
+                    reader = new SQLiteReader();
                     log.debug("recognized database format is SQLite");
                 } else {
-                    loader = null;
+                    reader = null;
                     log.error("database format unknown or unsupported: " + contentType);
                 }
             } catch (NullPointerException | IOException e) {
@@ -433,9 +460,9 @@ public class Database {
             }
 
             // type was already determined, start loading
-            if (loader != null) {
+            if (reader != null) {
                 try {
-                    return loader.loadFromFile(file.getCanonicalPath());
+                    return reader.loadFromFile(file.getCanonicalPath());
                 } catch (OutdatedDatabaseException | IOException ode) {
                     throw new RuntimeException(ode);
                 }
@@ -470,6 +497,7 @@ public class Database {
             other.getConnections().forEach(this::addConnection);
             other.getRestrictions().forEach(this::addRestriction);
             other.getRoundabouts().forEach(this::addRoundabout);
+            other.getBuildings().forEach(this::addBuilding);
             other.getRoutes().forEach(this::addRoute);
             other.properties.forEach(this::addProperty);
             return this;
@@ -497,6 +525,7 @@ public class Database {
             database.restrictions.clear();
             database.ways.clear();
             database.roundabouts.clear();
+            database.buildings.clear();
             database.borderNodes = null;
             database.minBounds.set(90, 180, 0);
             database.maxBounds.set(-90, -180, 0);
@@ -742,6 +771,38 @@ public class Database {
 
         private void addRestriction(Restriction restriction) {
             database.restrictions.put(restriction.getId(), restriction);
+        }
+
+        /**
+         * Adds a new building by a given list of corners defining the corners of the building.
+         *
+         * @param id      the id of the building
+         * @param name    the name of the building
+         * @param height  the height of the building
+         * @param corners the list of geographical points describing the contour of the building
+         */
+        public Building addBuilding(@Nonnull String id, String name, double height, GeoPoint[] corners) {
+            Validate.isTrue(corners.length > 2, "Building with id " + id + " needs at least three corner points");
+
+            final List<Wall> walls = new ArrayList<>();
+            Corner from = null;
+            for (int i = 1; i < corners.length; i++) {
+                if (from == null) {
+                    from = new Corner(corners[i - 1]);
+                }
+                Corner to = new Corner(corners[i]);
+                walls.add(new Wall(from, to));
+                from = to;
+            }
+            walls.add(new Wall(from, walls.get(0).getFromCorner())); // close loop
+
+            final Building building = new Building(id, name, height, walls);
+            addBuilding(building);
+            return building;
+        }
+
+        private void addBuilding(Building building) {
+            database.buildings.put(building.getId(), building);
         }
 
         /**
