@@ -48,7 +48,7 @@ public class WallFinder {
             }
         }
         wallTree = new KdTree<>(new SpatialItemAdapter.EdgeAdapter<>(), walls);
-        wallSearch = new SpatialTreeTraverser.InRadius<>();
+        wallSearch = new org.eclipse.mosaic.lib.database.spatial.Edge.InRadius<>();
     }
 
     /**
@@ -56,8 +56,7 @@ public class WallFinder {
      * within the given range.
      *
      * @param center the center point to search for walls
-     * @param range the maximum distance from the center points to search for walls
-     *
+     * @param range  the maximum distance from the center points to search for walls
      * @return a list of edges (pair of {@link Vector3d}) which represent the found walls
      */
     public Collection<Edge<Vector3d>> getWallsInRadius(Vector3d center, double range) {
@@ -65,4 +64,5 @@ public class WallFinder {
         wallSearch.traverse(wallTree);
         return wallSearch.getResult();
     }
+
 }

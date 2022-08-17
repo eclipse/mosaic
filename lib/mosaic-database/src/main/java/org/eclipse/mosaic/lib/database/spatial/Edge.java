@@ -17,6 +17,9 @@ package org.eclipse.mosaic.lib.database.spatial;
 
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
+import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.spatial.SpatialTree;
+import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -63,6 +66,20 @@ public class Edge {
     @Nonnull
     public Node getNextNode() {
         return nextNode;
+    }
+
+    public static class InRadius<V extends Vector3d, E extends org.eclipse.mosaic.lib.spatial.Edge<V>> extends SpatialTreeTraverser.InRadius<E> {
+        @Override
+        protected double getCenterDistanceSqr(E item, SpatialTree<E> tree) {
+            return item.getNearestPointOnEdge(center).distanceSqrTo(center);
+        }
+    }
+
+    static class Nearest<V extends Vector3d, E extends org.eclipse.mosaic.lib.spatial.Edge<V>> extends SpatialTreeTraverser.Nearest<E> {
+        @Override
+        protected double getCenterDistanceSqr(E item, SpatialTree<E> tree) {
+            return item.getNearestPointOnEdge(center).distanceSqrTo(center);
+        }
     }
 
 }
