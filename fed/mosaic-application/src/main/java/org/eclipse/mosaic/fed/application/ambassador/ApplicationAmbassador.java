@@ -666,7 +666,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
          * have no other choice) event, to trigger an internal garbage
          * collection.
          */
-
         final Event triggerGarbageCollection = new Event(
                 vehicleUpdates.getTime(),
                 e -> SimulationKernel.SimulationKernel.garbageCollection());

@@ -58,11 +58,22 @@ public class SurroundingVehicle implements Serializable {
      */
     private final double heading;
 
-    public SurroundingVehicle(String id, Position position, double speed, double heading) {
+    /**
+     * The current edge the vehicle is on.
+     */
+    private final String edgeId;
+    /**
+     * The current lane index the vehicle is on. (From outermost lane ascending)
+     */
+    private final int laneIndex;
+
+    public SurroundingVehicle(String id, Position position, double speed, double heading, String edgeId, int laneIndex) {
         this.id = id;
         this.position = position;
         this.speed = speed;
         this.heading = heading;
+        this.edgeId = edgeId;
+        this.laneIndex = laneIndex;
     }
 
     /**
@@ -102,6 +113,20 @@ public class SurroundingVehicle implements Serializable {
         return heading;
     }
 
+    /**
+     * Retruns the current edge of the surrounding vehicle.
+     */
+    public String getEdgeId() {
+        return edgeId;
+    }
+
+    /**
+     * Returns the current lane index of the surrounding vehicle.
+     */
+    public int getLaneIndex() {
+        return laneIndex;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -119,6 +144,8 @@ public class SurroundingVehicle implements Serializable {
                 .append(heading, that.heading)
                 .append(id, that.id)
                 .append(position, that.position)
+                .append(edgeId, that.edgeId)
+                .append(laneIndex, that.laneIndex)
                 .isEquals();
     }
 
@@ -129,6 +156,8 @@ public class SurroundingVehicle implements Serializable {
                 .append(position)
                 .append(speed)
                 .append(heading)
+                .append(edgeId)
+                .append(laneIndex)
                 .toHashCode();
     }
 
@@ -139,6 +168,8 @@ public class SurroundingVehicle implements Serializable {
                 .append("position", position)
                 .append("speed", speed)
                 .append("heading", heading)
+                .append("edgeId", edgeId)
+                .append("laneIndex", laneIndex)
                 .toString();
     }
 }

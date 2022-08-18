@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.lib.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,5 +92,47 @@ public class FileUtils {
         return searchForFiles(rootFiles, f ->
                 f.canRead() && (f.isDirectory() || (f.isFile() && f.getName().toLowerCase().equals(fileName.toLowerCase())))
         );
+    }
+
+    /**
+     * Creates a new file in the given path and name. If the file already exists, a number suffix
+     * is added to the actual file name.
+     *
+     * @param path        the path to the file to create.
+     * @param ignoreExist if {@code true}, no check is done and the file is returned as requested.
+     * @return the actual file object with the name having a suffix if already exists
+     */
+    public static File getIncrementFile(String path, boolean ignoreExist) throws IOException {
+        return getIncrementFile(new File(path), ignoreExist);
+    }
+
+    /**
+     * Creates a new file in the given path and name. If the file already exists, a number suffix
+     * is added to the actual file name.
+     *
+     * @param file        the file to create
+     * @param ignoreExist if {@code true}, no check is done and the file is returned as requested.
+     * @return the actual file object with the name having a suffix if already exists
+     */
+    public static File getIncrementFile(File file, boolean ignoreExist) throws IOException {
+        if (file.exists() && !ignoreExist) {
+            String filename = file.getName();
+            String extension = "";
+            int pos = filename.lastIndexOf('.');
+            if (pos > 0) {
+                extension = filename.substring(pos);
+            }
+
+            String pathWithoutExtension = file.getCanonicalPath();
+            pathWithoutExtension = pathWithoutExtension.substring(0, pathWithoutExtension.length() - extension.length());
+
+            for (int i = 0; i < Integer.MAX_VALUE; ++i) {
+                File newFile = new File(pathWithoutExtension + '-' + i + extension);
+                if (!newFile.exists()) {
+                    return newFile;
+                }
+            }
+        }
+        return file;
     }
 }

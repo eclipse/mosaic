@@ -15,9 +15,8 @@
 
 package org.eclipse.mosaic.lib.database;
 
-import org.eclipse.mosaic.lib.database.persistence.DatabaseLoader;
-import org.eclipse.mosaic.lib.database.persistence.OutdatedDatabaseException;
-import org.eclipse.mosaic.lib.database.persistence.SQLiteLoader;
+import org.eclipse.mosaic.lib.database.persistence.SQLiteReader;
+import org.eclipse.mosaic.lib.database.persistence.SQLiteWriter;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.road.Restriction;
@@ -27,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,6 +40,7 @@ import javax.annotation.Nonnull;
  * contained in {@link Database}s.
  */
 public class DatabaseUtils {
+
     static final Logger log = LoggerFactory.getLogger(Database.class);
 
     /**
@@ -52,10 +50,16 @@ public class DatabaseUtils {
      * @throws RuntimeException if an SQLException or IOException were caught
      */
     public static void updateDb(@Nonnull final File file) {
-        DatabaseLoader loader = new SQLiteLoader(true);
         try {
-            loader.updateDatabase(file.getCanonicalPath());
-        } catch (SQLException | IOException | OutdatedDatabaseException e) {
+            log.info("The database will now be updated.");
+
+            // between 20.0 and 21.0 we changed the way routes are stored. A simple load+save fixes the database.
+            Database db = new SQLiteReader(true).loadFromFile(file.getCanonicalPath()).build();
+            new SQLiteWriter().saveToFile(db, file.getCanonicalPath());
+
+            log.info("The database has been updated successfully.");
+        } catch (Exception e) {
+            log.error("The database could not be updated.");
             throw new RuntimeException(e);
         }
     }

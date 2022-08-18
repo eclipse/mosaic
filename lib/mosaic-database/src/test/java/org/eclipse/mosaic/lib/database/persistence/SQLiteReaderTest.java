@@ -15,58 +15,37 @@
 
 package org.eclipse.mosaic.lib.database.persistence;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.database.building.Building;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.road.Way;
+import org.eclipse.mosaic.lib.util.junit.TestFileRule;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
 
 /**
  * Tests the loader class for SQLite Databases.
  */
-public class SQLiteLoaderTest {
-
-    private final String butzbachDB = "/butzbach.db";
-
-    private File databaseCopy;
+public class SQLiteReaderTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TestFileRule testFileRule = new TestFileRule()
+            .with("/butzbach.db")
+            .with("/kaiserdammPristine.db");
 
-
-    @Before
-    public void setUp() throws Exception {
-        // create a temporary copy
-        databaseCopy = folder.newFile("test.db");
-
-        try (InputStream in = this.getClass().getResourceAsStream(butzbachDB)) {
-            Files.copy(in, databaseCopy.toPath(), REPLACE_EXISTING);
-        }
-    }
-
-    /**
-     * Test of loadFromFile method, of class SQLiteLoader.
-     */
     @Test
     public void testLoadFromFile() throws OutdatedDatabaseException {
-        testLoadFromFileWithPath(databaseCopy.getAbsolutePath());
-    }
+        // SETUP
+        String path = testFileRule.get("butzbach.db").getAbsolutePath();
 
-    private void testLoadFromFileWithPath(String path) throws OutdatedDatabaseException {
-        SQLiteLoader instance = new SQLiteLoader();
-        Database result = instance.loadFromFile(path).build();
+        // RUN
+        Database result = new SQLiteReader().loadFromFile(path).build();
 
         // check counts
         assertEquals("Wrong nodes amount in the database", 25, result.getNodes().size());
@@ -97,5 +76,22 @@ public class SQLiteLoaderTest {
         assertTrue("\"Part of\" connections of an in-between-node don't contain expected connection", currNode.getPartOfConnections().contains(connection));
         assertTrue("Outgoing connections of in between nodes should be empty!", currNode.getOutgoingConnections().isEmpty());
         assertTrue("Incoming connections of end node don't contain expected connection", connection.getTo().getIncomingConnections().contains(connection));
+    }
+
+    @Test
+    public void testLoadBuildings() throws OutdatedDatabaseException {
+        // SETUP
+        String path = testFileRule.get("kaiserdammPristine.db").getAbsolutePath();
+
+        // RUN
+        Database result = new SQLiteReader().loadFromFile(path).build();
+        assertEquals("Wrong amount of buildings in the database", 100, result.getBuildings().size());
+
+        Building building = result.getBuilding("82504793");
+        assertEquals("Wrong amount of walls for building 82504793", 7, building.getWalls().size());
+        assertSame("Last corner must be first corner.",
+                building.getWalls().get(0).getFromCorner(),
+                building.getWalls().get(6).getToCorner()
+        );
     }
 }

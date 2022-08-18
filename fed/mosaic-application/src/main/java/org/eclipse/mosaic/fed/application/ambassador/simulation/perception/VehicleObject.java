@@ -21,13 +21,18 @@ import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import javax.annotation.Nullable;
+
 public class VehicleObject extends Vector3d implements SpatialObject {
 
     private final String id;
     private final MutableCartesianPoint cartesianPosition = new MutableCartesianPoint();
-
     private double speed;
     private double heading;
+
+    private String edgeId;
+
+    private int laneIndex;
 
     public VehicleObject(String id) {
         this.id = id;
@@ -47,6 +52,21 @@ public class VehicleObject extends Vector3d implements SpatialObject {
     @Override
     public CartesianPoint getProjectedPosition() {
         return cartesianPosition;
+    }
+
+    public VehicleObject setEdgeAndLane(String edgeId, int laneIndex) {
+        this.edgeId = edgeId;
+        this.laneIndex = laneIndex;
+        return this;
+    }
+
+    @Nullable
+    public String getEdgeId() {
+        return edgeId;
+    }
+
+    public int getLaneIndex() {
+        return laneIndex;
     }
 
     public VehicleObject setSpeed(double speed) {
@@ -69,9 +89,13 @@ public class VehicleObject extends Vector3d implements SpatialObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
 
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         VehicleObject that = (VehicleObject) o;
 
@@ -79,6 +103,8 @@ public class VehicleObject extends Vector3d implements SpatialObject {
                 .appendSuper(super.equals(o))
                 .append(speed, that.speed)
                 .append(heading, that.heading)
+                .append(edgeId, that.edgeId)
+                .append(laneIndex, that.laneIndex)
                 .append(id, that.id)
                 .append(cartesianPosition, that.cartesianPosition)
                 .isEquals();
@@ -89,5 +115,4 @@ public class VehicleObject extends Vector3d implements SpatialObject {
         // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
         return this.id.hashCode();
     }
-
 }

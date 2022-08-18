@@ -571,7 +571,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
         bridge.getVehicleControl()
-                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), nsToMs(vehicleSlowDown.getInterval()));
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), ns2Ms(vehicleSlowDown.getInterval()));
     }
 
     /**
@@ -603,7 +603,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), nsToMs(vehicleStop.getDuration()));
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), ns2Ms(vehicleStop.getDuration()));
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -724,7 +724,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("VehicleLaneChange failed: unsupported lane change mode.");
                     return;
             }
-            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, nsToMs(vehicleLaneChange.getDuration()));
+            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, ns2Ms(vehicleLaneChange.getDuration()));
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
@@ -738,8 +738,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
-    private int nsToMs(long time) {
-        long tmp = (time / TIME.MILLI_SECOND);
+    private int ns2Ms(long time) {
+        long tmp = time + (TIME.MILLI_SECOND / 2);
+        time = tmp > time ? tmp : Long.MAX_VALUE;
+        tmp = (time / TIME.MILLI_SECOND);
         return tmp > (long) Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) tmp;
     }
 
@@ -858,7 +860,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                             vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
                     bridge.getVehicleControl()
                             .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(),
-                                    nsToMs(vehicleSpeedChange.getInterval()));
+                                    ns2Ms(vehicleSpeedChange.getInterval()));
 
                     // set speed permanently after given interval (in the future) via the event scheduler
                     long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval);

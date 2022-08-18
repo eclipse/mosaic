@@ -46,11 +46,15 @@ public class PerceptionIndex implements SpatialVehicleIndex {
 
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-        vehiclesToUpdate.forEach(
-                (v) -> indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
-                        .setHeading(v.getHeading())
-                        .setSpeed(v.getSpeed())
-                        .setPosition(v.getProjectedPosition())
+        vehiclesToUpdate.forEach(v -> {
+                    VehicleObject currentVehicle = indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
+                            .setHeading(v.getHeading())
+                            .setSpeed(v.getSpeed())
+                            .setPosition(v.getProjectedPosition());
+                    if (v.getRoadPosition() != null) {
+                        currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
+                    }
+                }
         );
     }
 
