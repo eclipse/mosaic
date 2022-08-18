@@ -75,6 +75,9 @@ public class PerceptionGrid implements SpatialVehicleIndex {
                     .setHeading(v.getHeading())
                     .setSpeed(v.getSpeed())
                     .setPosition(v.getProjectedPosition());
+            if (v.getRoadPosition() != null) {
+                vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
+            }
 
         });
         vehicleGrid.updateGrid();
