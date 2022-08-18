@@ -52,13 +52,9 @@ public class ObjectInstantiation<T> {
 
     private final Logger logger;
 
-    private boolean serializeSpecialFloatingPointValues = false;
-
     /**
-     * Creates a new {@link ObjectInstantiation} which creates an object based on
-     * the given
-     * {@link Class}. No debug information or warnings are logged during object
-     * instantiation.
+     * Creates a new {@link ObjectInstantiation} which creates an object based on the given
+     * {@link Class}. No debug information or warnings are logged during object instantiation.
      *
      * @param clazz The class to instantiate.
      */
@@ -67,23 +63,8 @@ public class ObjectInstantiation<T> {
     }
 
     /**
-     * Creates a new {@link ObjectInstantiation} which creates an object based on
-     * the given
-     * {@link Class}. No debug information or warnings are logged during object
-     * instantiation.
-     *
-     * @param clazz The class to instantiate.
-     */
-    public ObjectInstantiation(Class<T> clazz, boolean serializeSpecialFloatingPointValues) {
-        this(clazz, null);
-        this.serializeSpecialFloatingPointValues = serializeSpecialFloatingPointValues;
-    }
-
-    /**
-     * Creates a new {@link ObjectInstantiation} which creates an object based on
-     * the given
-     * {@link Class}. Debug information and warnings are logged to the given
-     * {@link Logger} during
+     * Creates a new {@link ObjectInstantiation} which creates an object based on the given
+     * {@link Class}. Debug information and warnings are logged to the given {@link Logger} during
      * object instantiation.
      *
      * @param clazz  The class to instantiate.
@@ -92,22 +73,6 @@ public class ObjectInstantiation<T> {
     public ObjectInstantiation(Class<T> clazz, Logger logger) {
         this.clazz = clazz;
         this.logger = logger;
-    }
-
-    /**
-     * Creates a new {@link ObjectInstantiation} which creates an object based on
-     * the given
-     * {@link Class}. Debug information and warnings are logged to the given
-     * {@link Logger} during
-     * object instantiation.
-     *
-     * @param clazz  The class to instantiate.
-     * @param logger The logger which is used to log debug information and warnings.
-     */
-    public ObjectInstantiation(Class<T> clazz, Logger logger, boolean serializeSpecialFloatingPointValues) {
-        this.clazz = clazz;
-        this.logger = logger;
-        this.serializeSpecialFloatingPointValues = serializeSpecialFloatingPointValues;
     }
 
     /**
@@ -181,15 +146,11 @@ public class ObjectInstantiation<T> {
             validateFile(new ByteArrayInputStream(jsonAsByteArray), streamScheme);
         }
 
-        if (this.serializeSpecialFloatingPointValues) {
-            gsonBuilder = gsonBuilder.serializeSpecialFloatingPointValues();
-        }
         final Gson gson = gsonBuilder.create();
 
         T obj = null;
-        // get the Json from the File
-        try (final Reader reader = new InputStreamReader(new ByteArrayInputStream(jsonAsByteArray),
-                StandardCharsets.UTF_8)) {
+        //get the Json from the File
+        try (final Reader reader = new InputStreamReader(new ByteArrayInputStream(jsonAsByteArray), StandardCharsets.UTF_8)) {
             final JsonReader readerJson = new JsonReader(reader);
             obj = gson.fromJson(readerJson, clazz);
         } catch (IOException e) {
