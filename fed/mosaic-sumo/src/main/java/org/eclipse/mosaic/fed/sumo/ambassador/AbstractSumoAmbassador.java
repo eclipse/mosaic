@@ -165,13 +165,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     /**
      * List of vehicles that are simulated externally.
      */
-    protected final HashMap<String, ExternalVehicleState> externalVehicleMap = new HashMap<>();
+    protected final Map<String, ExternalVehicleState> externalVehicles = new HashMap<>();
 
     /**
      * Manages traffic signs to be added as POIs to SUMO (e.g. for visualization)
      */
     private final TrafficSignManager trafficSignManager;
-    
+
     /**
      * Sleep after each connection try. Unit: [ms].
      */
@@ -521,8 +521,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      */
     private synchronized void receiveInteraction(VehicleFederateAssignment vehicleFederateAssignment) {
         if (!vehicleFederateAssignment.getAssignedFederate().equals(getId())
-                && !externalVehicleMap.containsKey(vehicleFederateAssignment.getVehicleId())) {
-            externalVehicleMap.put(vehicleFederateAssignment.getVehicleId(), new ExternalVehicleState());
+                && !externalVehicles.containsKey(vehicleFederateAssignment.getVehicleId())) {
+            externalVehicles.put(vehicleFederateAssignment.getVehicleId(), new ExternalVehicleState());
         }
     }
 
@@ -538,14 +538,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
 
         for (VehicleData updatedVehicle : vehicleUpdates.getUpdated()) {
-            ExternalVehicleState externalVehicleState = externalVehicleMap.get(updatedVehicle.getName());
+            ExternalVehicleState externalVehicleState = externalVehicles.get(updatedVehicle.getName());
             if (externalVehicleState != null) {
                 externalVehicleState.setLastMovementInfo(updatedVehicle);
             }
         }
 
         for (String removed : vehicleUpdates.getRemovedNames()) {
-            if (externalVehicleMap.containsKey(removed)) {
+            if (externalVehicles.containsKey(removed)) {
                 bridge.getSimulationControl().removeVehicle(removed, VehicleSetRemove.Reason.ARRIVED);
             }
         }
@@ -557,7 +557,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @param vehicleSlowDown interaction indicating that a vehicle has to slow down
      */
     private synchronized void receiveInteraction(VehicleSlowDown vehicleSlowDown) throws InternalFederateException {
-        if (externalVehicleMap.containsKey(vehicleSlowDown.getVehicleId())) {
+        if (externalVehicles.containsKey(vehicleSlowDown.getVehicleId())) {
             return;
         }
         if (log.isInfoEnabled()) {
@@ -580,7 +580,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @param vehicleStop interaction indicating that a vehicle has to stop.
      */
     private synchronized void receiveInteraction(VehicleStop vehicleStop) {
-        if (externalVehicleMap.containsKey(vehicleStop.getVehicleId())) {
+        if (externalVehicles.containsKey(vehicleStop.getVehicleId())) {
             return;
         }
         try {
@@ -615,7 +615,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @param vehicleResume interaction indicating that a stopped vehicle has to resume
      */
     private synchronized void receiveInteraction(VehicleResume vehicleResume) throws InternalFederateException {
-        if (externalVehicleMap.containsKey(vehicleResume.getVehicleId())) {
+        if (externalVehicles.containsKey(vehicleResume.getVehicleId())) {
             return;
         }
         if (log.isInfoEnabled()) {
@@ -684,7 +684,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @throws InternalFederateException Exception is thrown if an error occurred while converting to number.
      */
     private synchronized void receiveInteraction(VehicleLaneChange vehicleLaneChange) throws InternalFederateException {
-        if (externalVehicleMap.containsKey(vehicleLaneChange.getVehicleId())) {
+        if (externalVehicles.containsKey(vehicleLaneChange.getVehicleId())) {
             return;
         }
         try {
@@ -837,7 +837,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @param vehicleSpeedChange interaction indicating that a vehicle has to change its speed.
      */
     private synchronized void receiveInteraction(VehicleSpeedChange vehicleSpeedChange) throws InternalFederateException {
-        if (externalVehicleMap.containsKey(vehicleSpeedChange.getVehicleId())) {
+        if (externalVehicles.containsKey(vehicleSpeedChange.getVehicleId())) {
             return;
         }
         if (log.isInfoEnabled()) {
@@ -1037,7 +1037,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @throws InternalFederateException Exception is thrown if an error occurred while changing of the vehicle parameters.
      */
     private void receiveInteraction(VehicleParametersChange vehicleParametersChange) throws InternalFederateException {
-        if (externalVehicleMap.containsKey(vehicleParametersChange.getVehicleId())) {
+        if (externalVehicles.containsKey(vehicleParametersChange.getVehicleId())) {
             return;
         }
 
@@ -1243,18 +1243,18 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         Iterator<VehicleData> updatesAddedIterator = updates.getAdded().iterator();
         while (updatesAddedIterator.hasNext()) {
             VehicleData currentVehicle = updatesAddedIterator.next();
-            if (externalVehicleMap.containsKey(currentVehicle.getName())) {
-                externalVehicleMap.get(currentVehicle.getName()).setAdded(true);
+            if (externalVehicles.containsKey(currentVehicle.getName())) {
+                externalVehicles.get(currentVehicle.getName()).setAdded(true);
                 updatesAddedIterator.remove();
             }
         }
 
-        updates.getUpdated().removeIf(currentVehicle -> externalVehicleMap.containsKey(currentVehicle.getName()));
-        updates.getRemovedNames().removeIf(vehicle -> externalVehicleMap.remove(vehicle) != null);
+        updates.getUpdated().removeIf(currentVehicle -> externalVehicles.containsKey(currentVehicle.getName()));
+        updates.getRemovedNames().removeIf(vehicle -> externalVehicles.remove(vehicle) != null);
     }
 
     private void setExternalVehiclesToLatestPositions() {
-        for (Map.Entry<String, ExternalVehicleState> external : externalVehicleMap.entrySet()) {
+        for (Map.Entry<String, ExternalVehicleState> external : externalVehicles.entrySet()) {
             if (external.getValue().isAdded()) {
                 VehicleData latestVehicleData = external.getValue().getLastMovementInfo();
                 if (latestVehicleData == null) {
