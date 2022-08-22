@@ -67,7 +67,7 @@ public class ObjectInstantiation<T> {
      * {@link Class}. Debug information and warnings are logged to the given {@link Logger} during
      * object instantiation.
      *
-     * @param clazz The class to instantiate.
+     * @param clazz  The class to instantiate.
      * @param logger The logger which is used to log debug information and warnings.
      */
     public ObjectInstantiation(Class<T> clazz, Logger logger) {
@@ -229,7 +229,7 @@ public class ObjectInstantiation<T> {
         try (JsonParser parser = service.createParser(input, schema, handler)) {
             while (parser.hasNext()) {
                 parser.next();
-                //ignore, we let GSON do the parsing later.
+                // ignore, we let GSON do the parsing later.
             }
         }
         if (!problems.isEmpty()) {
@@ -263,6 +263,5 @@ public class ObjectInstantiation<T> {
         }
         logger.warn(msg, objects);
     }
-
 
 }
