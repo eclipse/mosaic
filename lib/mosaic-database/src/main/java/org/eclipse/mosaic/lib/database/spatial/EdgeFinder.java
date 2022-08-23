@@ -53,7 +53,7 @@ public class EdgeFinder {
             }
         }
         edgeIndex = new KdTree<>(new SpatialItemAdapter.EdgeAdapter<>(), items);
-        edgeSearch = new SpatialTreeTraverser.Nearest<>();
+        edgeSearch = new org.eclipse.mosaic.lib.database.spatial.Edge.Nearest<>();
     }
 
     /**

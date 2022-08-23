@@ -35,6 +35,7 @@ public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration>
      * Returns a list of all {@link VehicleObject}s inside the perception range of this vehicle.
      */
     List<VehicleObject> getPerceivedVehicles();
+
     /**
      * Returns The configuration of the {@link PerceptionModule}.
      */

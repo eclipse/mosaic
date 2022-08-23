@@ -38,6 +38,7 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange.VehicleSpeedChangeType;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
@@ -46,6 +47,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
 import java.util.Objects;
@@ -79,11 +81,16 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         navigationModule = new NavigationModule(this);
         navigationModule.setCurrentPosition(initialPosition);
 
+        Database database = null;
+        if (SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting() instanceof DatabaseRouting) {
+            database = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
+        }
+
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend
                 == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
-            perceptionModule = new SumoPerceptionModule(this);
+            perceptionModule = new SumoPerceptionModule(this, database, getOsLog());
         } else {
-            perceptionModule = new SimplePerceptionModule(this, getOsLog());
+            perceptionModule = new SimplePerceptionModule(this, database, getOsLog());
         }
     }
 

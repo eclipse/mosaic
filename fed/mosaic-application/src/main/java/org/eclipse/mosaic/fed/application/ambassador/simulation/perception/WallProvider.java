@@ -15,17 +15,20 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-import org.eclipse.mosaic.lib.spatial.BoundingBox;
+import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.spatial.Edge;
 
-public interface PerceptionModel {
+import java.util.Collection;
+
+/**
+ * Marks the perception module to be able to return a collection of walls in the vicinity of
+ * the ego vehicle. We use this extra interface to hide this method from the API
+ * the application developer sees.
+ */
+public interface WallProvider {
 
     /**
-     * Checks, if the other spatial object is within this perception range.
+     * @return a list of walls in the surroundings of the ego vehicle (all walls within the viewing range)
      */
-    boolean isInRange(SpatialObject other);
-
-    /**
-     * Returns the minimum bounding box around this perception area. This is used for range search queries in the perception index.
-     */
-    BoundingBox getBoundingBox();
+    Collection<Edge<Vector3d>> getSurroundingWalls();
 }

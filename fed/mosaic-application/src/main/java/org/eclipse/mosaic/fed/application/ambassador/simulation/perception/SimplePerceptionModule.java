@@ -18,8 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 import static java.lang.Math.toRadians;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier;
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
@@ -33,46 +32,24 @@ import org.slf4j.Logger;
 import java.util.List;
 
 /**
- * A simplified perception module which detects all vehicles within the defined field of view.
- * No occlusion or error model is considered. The field of view is defined with an opening angle of maximum 180 degrees.
+ * A perception module which detects all vehicles within the defined field of view.
  */
-public class SimplePerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
-    private static final double DEFAULT_VIEWING_ANGLE = 40;
-    private static final double DEFAULT_VIEWING_RANGE = 200;
-
-
-    private final PerceptionModuleOwner owner;
-    private final Logger log;
+public class SimplePerceptionModule extends AbstractPerceptionModule {
 
     private SimplePerceptionModel perceptionModel;
 
-    public SimplePerceptionModule(PerceptionModuleOwner owner, Logger log) {
-        this.owner = owner;
-        this.log = log;
-    }
-
-    @Override
-    public SimplePerceptionConfiguration getConfiguration() {
-        return perceptionModel.configuration;
+    public SimplePerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
+        super(owner, database, log);
     }
 
     @Override
     public void enable(SimplePerceptionConfiguration configuration) {
-        if (configuration == null) {
-            log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.",
-                    DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_RANGE);
-            configuration = new SimplePerceptionConfiguration(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE);
-        }
-        this.perceptionModel = new SimplePerceptionModel(this.owner.getId(), configuration);
+        super.enable(configuration);
+        perceptionModel = new SimplePerceptionModel(owner.getId(), this.configuration);
     }
 
     @Override
-    public boolean isEnabled() {
-        return perceptionModel != null;
-    }
-
-    @Override
-    public List<VehicleObject> getPerceivedVehicles() {
+    List<VehicleObject> getVehiclesInRange() {
         if (perceptionModel == null || owner.getVehicleData() == null) {
             log.warn("No perception model initialized.");
             return Lists.newArrayList();
@@ -81,10 +58,9 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
         // note, the perception index is updated internally only if vehicles have moved since the last call
         SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
         // request all vehicles within the area of the field of view
-        List<VehicleObject> initiallyPerceivedVehicles = SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+        return SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
                 .getVehicleIndex()
                 .getVehiclesInRange(perceptionModel);
-        return perceptionModel.applyPerceptionModifiers(owner, initiallyPerceivedVehicles);
     }
 
     /**
@@ -163,15 +139,6 @@ public class SimplePerceptionModule implements PerceptionModule<SimplePerception
                             || liesOnVector(tmpVector1, directionVector);
                 }
             }
-        }
-
-        @Override
-        public List<VehicleObject> applyPerceptionModifiers(PerceptionModuleOwner owner, List<VehicleObject> perceivedVehicles) {
-            List<VehicleObject> filteredList = perceivedVehicles;
-            for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
-                filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
-            }
-            return filteredList;
         }
 
         private boolean isBetweenVectors(Vector3d pointToEvaluate, Vector3d linePoint, Vector3d leftVector, Vector3d rightVector) {

@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
+import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
@@ -57,9 +58,12 @@ public class SimplePerceptionModuleTest {
     @Mock
     public VehicleData egoVehicleData;
 
+    @Mock
+    private CentralNavigationComponent cncMock;
+
     @Rule
     @InjectMocks
-    public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, null, cpcMock);
+    public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, cncMock, cpcMock);
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
@@ -78,7 +82,7 @@ public class SimplePerceptionModuleTest {
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
-        simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, mock(Logger.class)));
+        simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, null, mock(Logger.class)));
         simplePerceptionModule.enable(new SimplePerceptionConfiguration(90d, 200d));
 
         // setup ego vehicle
