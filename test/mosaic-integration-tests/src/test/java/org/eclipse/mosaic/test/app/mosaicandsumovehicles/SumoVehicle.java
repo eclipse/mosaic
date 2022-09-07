@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.test.app.mosaicandsumovehicles;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
@@ -46,7 +47,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> imp
     @Override
     public void onShutdown() {
         getLog().infoSimTime(this, "Shutdown: I'm a vehicle defined in SUMO route file.");
-
+        getLog().infoSimTime(this, "{} routes are known to the SimulationKernel.", SimulationKernel.SimulationKernel.getRoutesView().size());
     }
 
     @Override

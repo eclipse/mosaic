@@ -61,4 +61,9 @@ public class SumoPredefinedScenarioIntegrationIT {
         LogAssert.contains(simulationRule, VEH_2_SUMO, ".*I can read my route:.*");
     }
 
+    @Test
+    public void applicationAmbassadorReceivesAllRoutes() throws Exception {
+        LogAssert.contains(simulationRule, VEH_1_SUMO, ".*4 routes are known to the SimulationKernel.*");
+    }
+
 }
