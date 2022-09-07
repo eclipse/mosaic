@@ -35,6 +35,7 @@ public class SumoPredefinedScenarioIntegrationIT {
 
     private final static String VEH_0_MAPPING = "apps/veh_0/MappingVehicle.log";
     private final static String VEH_1_SUMO = "apps/veh_1/SumoVehicle.log";
+    private final static String VEH_2_SUMO = "apps/veh_2/SumoVehicle.log";
 
     @BeforeClass
     public static void runSimulation() {
@@ -51,6 +52,13 @@ public class SumoPredefinedScenarioIntegrationIT {
     public void allLogsCreated() {
         LogAssert.exists(simulationRule, VEH_0_MAPPING);
         LogAssert.exists(simulationRule, VEH_1_SUMO);
+        LogAssert.exists(simulationRule, VEH_2_SUMO);
+    }
+
+    @Test
+    public void allSumoVehiclesCanReadTheirRoutes() throws Exception {
+        LogAssert.contains(simulationRule, VEH_1_SUMO, ".*I can read my route:.*");
+        LogAssert.contains(simulationRule, VEH_2_SUMO, ".*I can read my route:.*");
     }
 
 }
