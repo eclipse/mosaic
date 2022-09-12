@@ -225,7 +225,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         startSumoLocal();
         initSumoConnection();
         readInitialRoutesFromTraci();
-        addInitialRoutes();
+        addInitialRoutesFromRti();
     }
 
     /**
@@ -255,7 +255,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @throws InternalFederateException if there was a problem with traci
      */
-    private void addInitialRoutes() throws InternalFederateException {
+    private void addInitialRoutesFromRti() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
             propagateRouteIfAbsent(routeEntry.getKey(), routeEntry.getValue());
         }
@@ -469,6 +469,12 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 || SumoVehicleClassMapping.toSumo(vehicleClass).equals("trailer");
     }
 
+    /**
+     * Propagates the route (e.g., from scenario database) to SUMO using the configured bridge.
+     * @param routeId ID of the route
+     * @param route route definition
+     * @throws InternalFederateException thrown if connection to bridge failed
+     */
     private void propagateRouteIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {
         // if the route is already known (because it is defined in a route-file) don't add route
         if (routes.containsKey(routeId)) {
