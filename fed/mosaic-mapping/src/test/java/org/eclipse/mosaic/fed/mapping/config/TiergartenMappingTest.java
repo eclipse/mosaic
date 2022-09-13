@@ -25,6 +25,7 @@ import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
 import org.eclipse.mosaic.fed.mapping.config.units.CTrafficLight;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
+import org.eclipse.mosaic.rti.TIME;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -198,7 +199,7 @@ public class TiergartenMappingTest {
         assertNull(vehicle1.maxTime);
         assertEquals(vehicle1.pos, 0);
         assertEquals(vehicle1.route, "0");
-        assertEquals(1.0, vehicle1.startingTime, 0.0);
+        assertEquals(1 * TIME.SECOND, vehicle1.startingTime);
         assertNotNull(vehicle1.types);
         assertEquals(vehicle1.types.size(), 1);
 
@@ -227,7 +228,7 @@ public class TiergartenMappingTest {
         assertNull(vehicle2.maxTime);
         assertEquals(vehicle2.pos, 0);
         assertEquals(vehicle2.route, "0");
-        assertEquals(5.0, vehicle2.startingTime, 0.0);
+        assertEquals(5 * TIME.SECOND, vehicle2.startingTime);
         assertNotNull(vehicle2.types);
         assertEquals(1, vehicle2.types.size());
 
@@ -256,7 +257,7 @@ public class TiergartenMappingTest {
         assertNull(vehicle3.maxTime);
         assertEquals(vehicle3.pos, 0);
         assertEquals(vehicle3.route, "0");
-        assertEquals(8.0, vehicle3.startingTime, 0.0);
+        assertEquals(8 * TIME.SECOND, vehicle3.startingTime);
         assertNotNull(vehicle3.types);
         assertEquals(1, vehicle3.types.size());
 
@@ -285,7 +286,7 @@ public class TiergartenMappingTest {
         assertNull(vehicle4.maxTime);
         assertEquals(0, vehicle4.pos);
         assertEquals("0", vehicle4.route);
-        assertEquals(10.0, vehicle4.startingTime, 0.0);
+        assertEquals(10 * TIME.SECOND, vehicle4.startingTime);
         assertNotNull(vehicle4.types);
         assertEquals(1, vehicle4.types.size());
 

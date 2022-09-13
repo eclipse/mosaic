@@ -37,18 +37,23 @@
     ],
     "vehicles": [
         {
-            "startingTime": 5.0,
+            "startingTime": "5s",
             "targetFlow": 1200,
             "maxNumberVehicles": 120,
             "route": "1",
             "types": [
                 {
-                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningAppCell", "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp" ],
+                    "applications": [
+                        "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningAppCell",
+                        "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp"
+                    ],
                     "name": "PKW",
                     "weight": 0.1
                 },
                 {
-                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp", "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp" ],
+                    "applications": [
+                        "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp", "org.eclipse.mosaic.app.tutorials.barnim.SlowDownApp"
+                    ],
                     "name": "PKW",
                     "weight": 0.2
                 },

@@ -60,14 +60,18 @@
             "type": "object",
             "properties": {
                 "start": {
-                    "description": "Defines the point in time (in seconds) to start spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration.",
-                    "type": "number",
-                    "minimum": 0
+                    "description": "Defines the point in time (in nanoseconds) to start spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 0.0 }
+                    ]
                 },
                 "end": {
-                    "description": "Defines the point in time (in seconds) to end spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration or until the simulation ends.",
-                    "type": "number",
-                    "minimum": 0
+                    "description": "Defines the point in time (in nanoseconds) to end spawning vehicles. If not set (default), all vehicles will be spawned according to the vehicles configuration or until the simulation ends.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 0.0 }
+                    ]
                 },
                 "scaleTraffic": {
                     "description": "Scales the traffic by the given factor. E.g. 2.0 would double the number of spawned vehicles",
@@ -194,15 +198,18 @@
             "type": "object",
             "properties": {
                 "startingTime": {
-                    "description": "Time at which the first vehicle will be created.",
-                    "type": "number",
-                    "minimum": 0,
-                    "default": 0.0
+                    "description": "Time in nanoseconds at which the first vehicle will be created.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 0.0 }
+                    ]
                 },
                 "maxTime": {
-                    "description": "Simulation time in seconds at which no more vehicles will be created.",
-                    "type": "number",
-                    "minimum": 0
+                    "description": "Simulation time in nanoseconds at which no more vehicles will be created.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 0.0 }
+                    ]
                 },
                 "targetFlow": {
                     "description": "Density of vehicles per hour. Vehicles will be spawned uniformly.",
@@ -331,15 +338,18 @@
                     }
                 },
                 "startingTime": {
-                    "description": "Time at which the first vehicle will be created.",
-                    "type": "number",
-                    "minimum": 0,
-                    "default": 0.0
+                    "description": "Time in nanoseconds at which the first vehicle will be created.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 0.0 }
+                    ]
                 },
                 "maxTime": {
-                    "description": "Simulation time in seconds at which no more vehicles will be created.",
-                    "type": "number",
-                    "minimum": 0
+                    "description": "Simulation time in nanoseconds at which no more vehicles will be created.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0 }
+                    ]
                 },
                 "departSpeedMode": {
                     "description": "The depart speed mode determines the vehicle's speed at insertion.",

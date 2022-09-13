@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.DepartureSpeedMode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.LaneSelectionMode;
 import org.eclipse.mosaic.lib.util.gson.AbstractEnumDefaultValueTypeAdapter;
+import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -47,15 +48,17 @@ public class CVehicle implements Comparable<CVehicle> {
     }
 
     /**
-     * Time at which the first vehicle will be created.
+     * Time at which the first vehicle will be created. [ns]
      */
-    public double startingTime = 0.0;
+    @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
+    public long startingTime = 0;
 
     /**
-     * Simulation time in seconds at which no more vehicles will be created.
+     * Simulation time in seconds at which no more vehicles will be created. [ns]
      */
     @SerializedName(value = "maxTime", alternate = {"endingTime"})
-    public Double maxTime;
+    @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
+    public Long maxTime;
 
     /**
      * Density of vehicles per hour. Vehicles will be spawned uniformly.
@@ -198,14 +201,14 @@ public class CVehicle implements Comparable<CVehicle> {
 
     @Override
     public int compareTo(CVehicle o) {
-        if (Double.compare(o.startingTime, 0) < 0 && Double.compare(this.startingTime, 0) < 0) {
+        if (o.startingTime < 0 && this.startingTime < 0) {
             return 0;
-        } else if (Double.compare(this.startingTime, 0) < 0) {
+        } else if (this.startingTime < 0) {
             return 1;
-        } else if (Double.compare(o.startingTime, 0) < 0) {
+        } else if (o.startingTime < 0) {
             return -1;
         } else {
-            return Double.compare(this.startingTime, o.startingTime);
+            return Long.compare(this.startingTime, o.startingTime);
         }
     }
 

@@ -82,7 +82,7 @@
     ],
     "vehicles": [
         {
-            "startingTime": 0.0,
+            "startingTime": "0s",
             "route": "0",
             "pos": 10,
             "maxNumberVehicles": 1,
@@ -94,7 +94,7 @@
             ]
         },
         {
-            "startingTime": 160.0,
+            "startingTime": "160s",
             "route": "0",
             "pos": 10,
             "maxNumberVehicles": 1,
@@ -108,7 +108,7 @@
             ]
         },
         {
-            "startingTime": 230.0,
+            "startingTime": "230s",
             "route": "0",
             "pos": 10,
             "maxNumberVehicles": 1,
@@ -120,7 +120,7 @@
             ]
         },
         {
-            "startingTime": 300.0,
+            "startingTime": "300s",
             "route": "0",
             "pos": 10,
             "maxNumberVehicles": 1,

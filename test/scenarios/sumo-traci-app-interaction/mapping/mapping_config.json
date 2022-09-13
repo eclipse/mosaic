@@ -27,12 +27,12 @@
     ],
     "vehicles": [
         {
-            "startingTime": 2.0,
+            "startingTime": "2s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "Car" } ]
         }, {
-            "startingTime": 6.0,
+            "startingTime": "6s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "Car" } ]

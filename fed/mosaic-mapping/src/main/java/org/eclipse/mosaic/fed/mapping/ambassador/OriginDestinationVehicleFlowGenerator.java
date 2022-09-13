@@ -38,8 +38,8 @@ public class OriginDestinationVehicleFlowGenerator {
     private final List<List<Double>> odValues;
     private final VehicleDeparture.LaneSelectionMode laneSelectionMode;
     private final VehicleDeparture.DepartureSpeedMode departureSpeedMode;
-    private final double startingTime;
-    private final Double maxTime;
+    private final long startingTime;
+    private final Long maxTime;
 
     /**
      * Constructor for {@link OriginDestinationVehicleFlowGenerator}.

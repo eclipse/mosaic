@@ -1,45 +1,44 @@
 {
-	"prototypes":[
-		{
-			"name":"Car",
-			"accel":2.6,
-			"decel":4.5,
-			"length":5.00,
-			"maxSpeed":70.0,
-			"minGap":2.5,
-			"sigma":0.5,
-			"tau":1
-		}
-	],
-	"typeDistributions": {
-		"myDistribution" : [
-			{
-				"name":"Car",
-				"applications":["Car1App"],
-				"weight": 20
-			},
-			{
-				"name":"Car",
-				"applications":["Car2App"],
-				"weight": 80
-			}
-		]
-	},
-
-	"vehicles":[
-		{
-			"startingTime": 5.0,
-			"targetFlow":1200,
-			"maxNumberVehicles": 5,
-			"route":"1",
-			"typeDistribution": "myDistribution"
-		},
-		{
-			"startingTime": 20.0,
-			"targetFlow":1200,
-			"maxNumberVehicles": 5,
-			"route":"1",
-			"typeDistribution": "myDistribution"
-		}
-	]
+    "prototypes": [
+        {
+            "name": "Car",
+            "accel": 2.6,
+            "decel": 4.5,
+            "length": 5.00,
+            "maxSpeed": 70.0,
+            "minGap": 2.5,
+            "sigma": 0.5,
+            "tau": 1
+        }
+    ],
+    "typeDistributions": {
+        "myDistribution": [
+            {
+                "name": "Car",
+                "applications": [ "Car1App" ],
+                "weight": 20
+            },
+            {
+                "name": "Car",
+                "applications": [ "Car2App" ],
+                "weight": 80
+            }
+        ]
+    },
+    "vehicles": [
+        {
+            "startingTime": "5s",
+            "targetFlow": 1200,
+            "maxNumberVehicles": 5,
+            "route": "1",
+            "typeDistribution": "myDistribution"
+        },
+        {
+            "startingTime": "20s",
+            "targetFlow": 1200,
+            "maxNumberVehicles": 5,
+            "route": "1",
+            "typeDistribution": "myDistribution"
+        }
+    ]
 }

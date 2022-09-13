@@ -60,25 +60,25 @@
     ],
     "vehicles": [
         {
-            "startingTime": 1.0,
+            "startingTime": "1s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "Car" } ]
         },
         {
-            "startingTime": 5.0,
+            "startingTime": "5s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "Car" } ]
         },
         {
-            "startingTime": 8.0,
+            "startingTime": "8s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "TrafficLightCar" } ]
         },
         {
-            "startingTime": 10.0,
+            "startingTime": "10s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "Car" } ]

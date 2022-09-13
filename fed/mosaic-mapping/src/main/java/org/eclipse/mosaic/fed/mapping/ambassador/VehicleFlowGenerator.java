@@ -186,14 +186,13 @@ public class VehicleFlowGenerator {
             CVehicle vehicleConfiguration, RandomNumberGenerator randomNumberGenerator, boolean flowNoise) {
 
         CVehicle.SpawningMode spawningMode = vehicleConfiguration.spawningMode;
-        long startingTime = (long) vehicleConfiguration.startingTime * TIME.SECOND;
+        long startingTime = vehicleConfiguration.startingTime;
         // if no maxTime was given determine it by dividing the maximum amount of vehicles by the desired flow and adding the start time
         long maxTime;
         if (vehicleConfiguration.maxTime == null) {
-            maxTime = (long) (((double) maxNumberVehicles / vehicleConfiguration.targetFlow) * (double) TIME.HOUR)
-                    + (long) vehicleConfiguration.startingTime * TIME.SECOND;
+            maxTime = (long) (((double) maxNumberVehicles / vehicleConfiguration.targetFlow) * (double) TIME.HOUR) + startingTime;
         } else {
-            maxTime = vehicleConfiguration.maxTime.longValue() * TIME.SECOND;
+            maxTime = vehicleConfiguration.maxTime;
         }
         double targetFlow = vehicleConfiguration.targetFlow;
         SpawningMode newSpawningMode;
@@ -311,10 +310,10 @@ public class VehicleFlowGenerator {
 
     void configure(CMappingConfiguration mappingParameterizationConfiguration) {
         if (mappingParameterizationConfiguration.start != null) {
-            this.start = Double.valueOf(mappingParameterizationConfiguration.start * TIME.SECOND).longValue();
+            this.start = mappingParameterizationConfiguration.start;
         }
         if (mappingParameterizationConfiguration.end != null) {
-            this.end = Double.valueOf(mappingParameterizationConfiguration.end * TIME.SECOND).longValue();
+            this.end = mappingParameterizationConfiguration.end;
         }
         Validate.isTrue(this.end > this.start);
     }

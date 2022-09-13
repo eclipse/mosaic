@@ -19,7 +19,7 @@
     ],
     "vehicles": [
         {
-            "startingTime": 10.0,
+            "startingTime": "10s",
             "route": "3",
             "targetFlow": 1200,
             "maxNumberVehicles": 3,

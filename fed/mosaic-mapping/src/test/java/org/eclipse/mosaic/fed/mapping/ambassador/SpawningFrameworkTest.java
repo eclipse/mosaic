@@ -213,7 +213,7 @@ public class SpawningFrameworkTest {
     private CVehicle newSpawner(String prototype) {
         CVehicle spawner = new CVehicle();
         spawner.route = "1";
-        spawner.startingTime = 0;
+        spawner.startingTime = 0L;
         spawner.targetFlow = 1200;
         spawner.maxNumberVehicles = 100;
         spawner.types = Lists.newArrayList(newPrototype(prototype));

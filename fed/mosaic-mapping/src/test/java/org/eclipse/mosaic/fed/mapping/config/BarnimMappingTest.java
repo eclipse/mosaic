@@ -25,6 +25,7 @@ import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
+import org.eclipse.mosaic.rti.TIME;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -161,7 +162,7 @@ public class BarnimMappingTest {
         assertNull(vehicle.maxTime);
         assertEquals(vehicle.pos, 0);
         assertEquals(vehicle.route, "1");
-        assertEquals(5.0, vehicle.startingTime, 0.0);
+        assertEquals(5 * TIME.SECOND, vehicle.startingTime);
         checkVehicleTypes(vehicle);
     }
 

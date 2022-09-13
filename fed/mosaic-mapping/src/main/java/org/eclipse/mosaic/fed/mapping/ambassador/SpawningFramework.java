@@ -42,6 +42,7 @@ import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -194,7 +195,6 @@ public class SpawningFramework {
             double remainderSum = 0;
             double scaleTraffic = mappingConfiguration.config != null ? mappingConfiguration.config.scaleTraffic : 1d;
             for (CVehicle vehicleConfiguration : mappingConfiguration.vehicles) {
-
                 //The "continue" still can be called if the spawner exists but the value of
                 // maxNumberVehicles was explicitly set to 0 in the mapping
                 //(convenient for testing of different mapping variations)
@@ -289,7 +289,7 @@ public class SpawningFramework {
         if (spawner.spawningMode != CVehicle.SpawningMode.CONSTANT) {
             return;
         }
-        spawner.startingTime = Math.max(0, Math.round(spawner.startingTime + rng.nextDouble(-20, 20)));
+        spawner.startingTime = Math.max(0, spawner.startingTime + rng.nextLong(-60 * TIME.SECOND, 60 * TIME.SECOND));
     }
 
     private void randomizeWeights(RandomNumberGenerator rng, List<CPrototype> types) {
@@ -303,7 +303,6 @@ public class SpawningFramework {
         for (CPrototype type : types) {
             if (type.weight != null && type.weight > 0) {
                 // randomize weight within a reasonable range
-
                 double newWeight = Math.round(rng.nextGaussian(type.weight, sum / 100d) * 100d) / 100d;
                 type.weight = Math.min(Math.max(type.weight - sum / 100d, newWeight), type.weight + sum / 100d);
                 sum -= type.weight;

@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.mapping.config.units;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
+import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -55,15 +56,17 @@ public class COriginDestinationMatrixMapper {
     public List<List<Double>> odValues;
 
     /**
-     * Time at which the first vehicle will be created.
+     * Time at which the first vehicle will be created. [ns]
      */
-    public double startingTime = 0.0;
+    @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
+    public long startingTime = 0L;
 
     /**
-     * Simulation time in seconds at which no more vehicles will be created.
+     * Simulation time at which no more vehicles will be created. [ns]
      */
     @SerializedName(value = "maxTime", alternate = {"endingTime"})
-    public Double maxTime;
+    @JsonAdapter(TimeFieldAdapter.NanoSeconds.class)
+    public Long maxTime;
 
     /**
      * The lane selection mode which chooses the lane for the next departing vehicle.
