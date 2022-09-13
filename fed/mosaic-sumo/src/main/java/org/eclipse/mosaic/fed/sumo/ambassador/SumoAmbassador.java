@@ -196,8 +196,8 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         log.debug("Received VehicleRoutesInitialization: {}", vehicleRoutesInitialization.getTime());
 
         cachedVehicleRoutesInitialization = vehicleRoutesInitialization;
-        if (sumoReadyToStart()) {
-            sumoStartupProcedure();
+        if (cachedVehicleTypesInitialization != null) {
+            addInitialRoutesFromRti();
         }
     }
 
@@ -211,13 +211,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         log.debug("Received VehicleTypesInitialization");
 
         cachedVehicleTypesInitialization = vehicleTypesInitialization;
-        if (sumoReadyToStart()) {
-            sumoStartupProcedure();
-        }
-    }
-
-    private boolean sumoReadyToStart() {
-        return descriptor != null && cachedVehicleRoutesInitialization != null && cachedVehicleTypesInitialization != null;
+        sumoStartupProcedure();
     }
 
     private void sumoStartupProcedure() throws InternalFederateException {
@@ -225,7 +219,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         startSumoLocal();
         initSumoConnection();
         readInitialRoutesFromTraci();
-        addInitialRoutes();
+        if (cachedVehicleRoutesInitialization != null) {
+            addInitialRoutesFromRti();
+        }
     }
 
     /**
@@ -248,7 +244,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      *
      * @throws InternalFederateException if there was a problem with traci
      */
-    private void addInitialRoutes() throws InternalFederateException {
+    private void addInitialRoutesFromRti() throws InternalFederateException {
         for (Map.Entry<String, VehicleRoute> routeEntry : cachedVehicleRoutesInitialization.getRoutes().entrySet()) {
             propagateRouteIfAbsent(routeEntry.getKey(), routeEntry.getValue());
         }
