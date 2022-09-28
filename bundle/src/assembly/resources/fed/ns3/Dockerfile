@@ -21,7 +21,8 @@ RUN \
   python \
   unzip \
   rsync \
-  wget
+  wget \
+  cmake
 
 WORKDIR /home/mosaic/bin/fed/ns3
 
