@@ -376,7 +376,7 @@ build_ns3()
 
   # adjust build instruction to cover scrambled files
   sed -i -e "s|/usr/local|.|" premake5.lua
-  sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build\"|" premake5.lua
+  sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/include\"|" premake5.lua
   sed -i -e "s|\"/usr/lib\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/lib\"|" premake5.lua
   if [ "${arg_regen_protobuf}" == "true" ]; then
     ./premake5 gmake --generate-protobuf --install
