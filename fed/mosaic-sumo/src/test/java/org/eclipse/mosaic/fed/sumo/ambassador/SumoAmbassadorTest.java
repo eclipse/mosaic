@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -144,7 +145,7 @@ public class SumoAmbassadorTest {
         ambassador.processInteraction(vehicleRoutesInitialization);
 
         // ASSERT
-        // because SumoAmbassador.cachedVehicleTypesInitialization was "null" at the moment as we called
+        // because SumoAmbassador.cachedVehicleTypesInitialization was "null" at the moment when we called
         // processMessage(VehicleRoutesInitialization) but as we called it, we saved the reference to the
         // VehicleRoutesInitialization in the cachedVehicleTypesInitialization variable, so at the next
         // assertion traci will already be initialised (at the time of calling processMessage(VehicleTypesInitialization)
@@ -163,7 +164,9 @@ public class SumoAmbassadorTest {
     @Test
     public void simulationStep() throws Throwable {
         sendVehiclePathsAndTypes_doInitTraci();
-
+        // there is one route registration for the initially read route "0"
+        verify(rtiMock, times(1)).triggerInteraction(isA(VehicleRouteRegistration.class));
+        clearInvocations(rtiMock);
         // SETUP
         VehicleData veh0 = new VehicleData.Builder(0L, "veh_0").route("0").create();
         mockSimulationStepResult(0L, veh0);
@@ -175,6 +178,7 @@ public class SumoAmbassadorTest {
         verify(rtiMock, times(1)).requestAdvanceTime(eq(TIME.SECOND), eq(0L), anyByte());
         verify(rtiMock, times(1)).triggerInteraction(isA(VehicleUpdates.class));
         verify(rtiMock, times(1)).triggerInteraction(isA(TrafficDetectorUpdates.class));
+        // in this simulation step there is no new route propagated
         verify(rtiMock, never()).triggerInteraction(isA(VehicleRouteRegistration.class));
     }
 
