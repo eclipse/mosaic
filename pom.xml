@@ -106,7 +106,7 @@
         <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
         <version.logback>1.2.3</version.logback><!-- 1.2.3 is approved in CQ16622 -->
         <version.mockito>2.23.0</version.mockito><!-- 2.23.0 is approved in CQ17976 -->
-        <version.protobuf>3.8.0</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
+        <version.protobuf>3.16.3</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
         <version.slf4j>1.7.30</version.slf4j><!-- 1.7.30 is approved in CQ21339 -->
         <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
