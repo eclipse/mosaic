@@ -190,7 +190,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Extract data from the {@link VehicleRoutesInitialization} to SUMO.
      *
      * @param vehicleRoutesInitialization interaction containing vehicle departures and pre calculated routes for change route requests.
-     * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci(), completeRoutes() or readRouteFromTraci()
+     * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci(), completeRoutes() or InRouteFromTraci()
      */
     private void receiveInteraction(VehicleRoutesInitialization vehicleRoutesInitialization) throws InternalFederateException {
         log.debug("Received VehicleRoutesInitialization: {}", vehicleRoutesInitialization.getTime());
@@ -232,15 +232,22 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      */
     private void readInitialRoutesFromTraci() throws InternalFederateException {
         for (String id : bridge.getRouteControl().getRouteIds()) {
-            if (!routeCache.containsKey(id)) {
+            if (!routes.containsKey(id)) {
                 VehicleRoute route = readRouteFromTraci(id);
-                routeCache.put(route.getId(), route);
+                routes.put(route.getId(), route);
+                // propagate new route
+                final VehicleRouteRegistration vehicleRouteRegistration = new VehicleRouteRegistration(super.nextTimeStep, route);
+                try {
+                    rti.triggerInteraction(vehicleRouteRegistration);
+                } catch (IllegalValueException e) {
+                    throw new InternalFederateException(e);
+                }
             }
         }
     }
 
     /**
-     * Passes on initial routes to SUMO.
+     * Passes on initial routes (e.g., from scenario database) to SUMO.
      *
      * @throws InternalFederateException if there was a problem with traci
      */
@@ -311,7 +318,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 }
                 // TODO: Find better solution. Currently, an arbitrary SUMO route for external vehicles is selected, since a registered
                 //       SUMO route is required when adding a vehicle to SUMO. Using an empty route id "" leads to an error.
-                routeId = Iterables.getFirst(routeCache.keySet(), null);
+                routeId = Iterables.getFirst(routes.keySet(), null);
                 laneId = "free";
             }
 
@@ -320,7 +327,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     log.info("Adding new vehicle \"{}\" at simulation time {} ns (type={}, routeId={}, laneId={}, departPos={})",
                             vehicleId, vehicleRegistration.getTime(), vehicleType, routeId, laneId, departPos);
 
-                    if (!routeCache.containsKey(routeId)) {
+                    if (!routes.containsKey(routeId)) {
                         throw new IllegalArgumentException("Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime());
                     }
 
@@ -352,10 +359,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
     private String cutAndAddRoute(String routeId, int departIndex) throws InternalFederateException {
         String newRouteId = routeId + "_cut" + departIndex;
-        if (routeCache.containsKey(newRouteId)) {
+        if (routes.containsKey(newRouteId)) {
             return newRouteId;
         }
-        final VehicleRoute route = routeCache.get(routeId);
+        final VehicleRoute route = routes.get(routeId);
         final List<String> connections = route.getConnectionIds();
         if (departIndex >= connections.size()) {
             throw new IllegalArgumentException("The departIndex=" + departIndex + " is too large for route with id=" + routeId);
@@ -458,12 +465,18 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 || SumoVehicleClassMapping.toSumo(vehicleClass).equals("trailer");
     }
 
+    /**
+     * Propagates the route (e.g., from scenario database) to SUMO using the configured bridge.
+     * @param routeId ID of the route
+     * @param route route definition
+     * @throws InternalFederateException thrown if connection to bridge failed
+     */
     private void propagateRouteIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {
         // if the route is already known (because it is defined in a route-file) don't add route
-        if (routeCache.containsKey(routeId)) {
-            log.warn("Could not add route \"{}\", because it is already known to SUMO.", routeId);
+        if (routes.containsKey(routeId)) {
+            log.debug("Could not add route \"{}\", because it is already known to SUMO.", routeId);
         } else {
-            routeCache.put(routeId, route);
+            routes.put(routeId, route);
             bridge.getRouteControl().addRoute(routeId, route.getConnectionIds());
         }
     }

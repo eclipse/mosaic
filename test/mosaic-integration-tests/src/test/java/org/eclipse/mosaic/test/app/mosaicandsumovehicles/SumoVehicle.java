@@ -15,12 +15,18 @@
 
 package org.eclipse.mosaic.test.app.mosaicandsumovehicles;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
+import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
 
-public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
 
     /**
      * Sample interval. Unit: [ns].
@@ -41,7 +47,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> {
     @Override
     public void onShutdown() {
         getLog().infoSimTime(this, "Shutdown: I'm a vehicle defined in SUMO route file.");
-
+        getLog().infoSimTime(this, "{} routes are known to the SimulationKernel.", SimulationKernel.SimulationKernel.getRoutesView().size());
     }
 
     @Override
@@ -49,5 +55,12 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> {
         getLog().infoSimTime(this, "I'm still here!");
 
         sample();
+    }
+
+    @Override
+    public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
+        if (previousVehicleData == null) {
+            getLog().infoSimTime(this, "I can read my route: {}", getOs().getNavigationModule().getCurrentRoute());
+        }
     }
 }
