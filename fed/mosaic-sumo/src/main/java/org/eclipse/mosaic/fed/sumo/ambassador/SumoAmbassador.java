@@ -196,8 +196,8 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         log.debug("Received VehicleRoutesInitialization: {}", vehicleRoutesInitialization.getTime());
 
         cachedVehicleRoutesInitialization = vehicleRoutesInitialization;
-        if (sumoReadyToStart()) {
-            sumoStartupProcedure();
+        if (cachedVehicleTypesInitialization != null) {
+            addInitialRoutesFromRti();
         }
     }
 
@@ -211,13 +211,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         log.debug("Received VehicleTypesInitialization");
 
         cachedVehicleTypesInitialization = vehicleTypesInitialization;
-        if (sumoReadyToStart()) {
-            sumoStartupProcedure();
-        }
-    }
-
-    private boolean sumoReadyToStart() {
-        return descriptor != null && cachedVehicleRoutesInitialization != null && cachedVehicleTypesInitialization != null;
+        sumoStartupProcedure();
     }
 
     private void sumoStartupProcedure() throws InternalFederateException {
