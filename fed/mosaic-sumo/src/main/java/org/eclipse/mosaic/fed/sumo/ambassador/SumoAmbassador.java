@@ -190,7 +190,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Extract data from the {@link VehicleRoutesInitialization} to SUMO.
      *
      * @param vehicleRoutesInitialization interaction containing vehicle departures and pre calculated routes for change route requests.
-     * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci(), completeRoutes() or readRouteFromTraci()
+     * @throws InternalFederateException if something goes wrong in startSumoLocal(), initTraci(), completeRoutes() or InRouteFromTraci()
      */
     private void receiveInteraction(VehicleRoutesInitialization vehicleRoutesInitialization) throws InternalFederateException {
         log.debug("Received VehicleRoutesInitialization: {}", vehicleRoutesInitialization.getTime());
@@ -219,6 +219,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         startSumoLocal();
         initSumoConnection();
         readInitialRoutesFromTraci();
+        if (cachedVehicleRoutesInitialization != null) {
+            addInitialRoutesFromRti();
+        }
     }
 
     /**
