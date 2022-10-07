@@ -219,7 +219,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         startSumoLocal();
         initSumoConnection();
         readInitialRoutesFromTraci();
-        addInitialRoutesFromRti();
     }
 
     /**
