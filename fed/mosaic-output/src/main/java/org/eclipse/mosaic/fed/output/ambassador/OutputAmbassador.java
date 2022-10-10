@@ -23,6 +23,7 @@ import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
+import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -89,7 +90,7 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
             createOutputGenerator(loadConfiguration());
 
             this.nextTimestep = startTime + this.globalUpdateInterval;
-            this.rti.requestAdvanceTime(this.nextTimestep, this.globalUpdateInterval, (byte) 0);
+            this.rti.requestAdvanceTime(this.nextTimestep, this.globalUpdateInterval, FederatePriority.LOWEST);
         } catch (IllegalValueException e) {
             throw new InternalFederateException(e);
         }
@@ -179,7 +180,7 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
             }
 
             this.nextTimestep += this.globalUpdateInterval;
-            this.rti.requestAdvanceTime(this.nextTimestep, this.globalUpdateInterval, (byte) 0);
+            this.rti.requestAdvanceTime(this.nextTimestep, this.globalUpdateInterval, FederatePriority.LOWEST);
         } catch (Exception e) {
             throw new InternalFederateException(e);
         }

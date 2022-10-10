@@ -96,6 +96,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.federatestarter.ExecutableFederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
+import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
 import org.eclipse.mosaic.rti.config.CLocalHost;
 
 import com.google.common.collect.Iterables;
@@ -395,7 +396,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
 
         try {
-            rti.requestAdvanceTime(nextTimeStep, 0, (byte) 1);
+            rti.requestAdvanceTime(nextTimeStep, 0,  FederatePriority.higher(descriptor.getPriority()));
         } catch (IllegalValueException e) {
             log.error("Error during advanceTime request", e);
             throw new InternalFederateException(e);
@@ -1231,7 +1232,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             rti.triggerInteraction(simulationStepResult.getTrafficDetectorUpdates());
             this.rti.triggerInteraction(simulationStepResult.getTrafficLightUpdates());
 
-            rti.requestAdvanceTime(nextTimeStep, 0, (byte) 2);
+            rti.requestAdvanceTime(nextTimeStep, 0,  FederatePriority.higher(descriptor.getPriority()));
 
             lastAdvanceTime = time;
         } catch (InternalFederateException | IOException | IllegalValueException e) {

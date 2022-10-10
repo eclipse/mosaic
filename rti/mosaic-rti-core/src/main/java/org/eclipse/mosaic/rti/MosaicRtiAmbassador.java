@@ -22,6 +22,7 @@ import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.Monitor;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
+import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
 
 import com.google.common.collect.ImmutableCollection;
 
@@ -44,7 +45,7 @@ public class MosaicRtiAmbassador implements RtiAmbassador {
 
     @Override
     public synchronized void requestAdvanceTime(long time) throws IllegalValueException {
-        requestAdvanceTime(time, 0, (byte) 0);
+        requestAdvanceTime(time, 0, FederatePriority.LOWEST);
     }
 
     @Override

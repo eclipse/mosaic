@@ -344,8 +344,8 @@ public class MosaicSimulation {
 
         // create new descriptor and set common properties
         final int readPriority = federate.priority;
-        if (federate.priority > FederatePriority.LOWEST || federate.priority < FederatePriority.HIGHEST) {
-            throw new IllegalArgumentException("Provided priority " + federate.priority + "lies out of allowed range: "
+        if (FederatePriority.isInRange(readPriority)) {
+            throw new IllegalArgumentException("Provided priority " + readPriority + "lies out of allowed range: "
                     + FederatePriority.LOWEST + " - " + FederatePriority.HIGHEST + " (lowest priority - highest priority)");
         }
         final FederateDescriptor descriptor = new FederateDescriptor(federate.id, ambassador, (byte) readPriority);

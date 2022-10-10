@@ -128,8 +128,7 @@ public class FederateDescriptor {
     }
 
     /**
-     * Returns the priority of this fedreate. The lower
-     * the value the higher the priority.
+     * Returns the priority of this federate. The lower the value the higher the priority.
      */
     public byte getPriority() {
         return priority;
