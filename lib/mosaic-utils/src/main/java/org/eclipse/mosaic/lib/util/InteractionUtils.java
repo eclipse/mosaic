@@ -48,7 +48,6 @@ public class InteractionUtils {
     @SuppressWarnings({"unchecked", "UnstableApiUsage"})
     public static Map<String, Class<?>> getAllSupportedInteractions(String... allowedPackages) {
         if (supportedInteractions.isEmpty()) {
-
             try {
                 ImmutableSet<ClassInfo> topLevelClassesRecursive = from(InteractionUtils.class.getClassLoader()).getAllClasses();
                 for (ClassInfo info : topLevelClassesRecursive) {

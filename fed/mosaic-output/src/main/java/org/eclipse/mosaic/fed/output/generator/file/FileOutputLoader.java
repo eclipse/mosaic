@@ -46,6 +46,7 @@ public class FileOutputLoader extends OutputGeneratorLoader {
     private static final String FILE_NAME = "filename";
     private static final String DIR = "directory";
     private static final String SEPARATOR = "separator";
+    private static final String DECIMAL_SEPARATOR = "decimalSeparator";
     private static final String WRITE = "write";
     private static final String APPEND = "append";
 
@@ -72,7 +73,16 @@ public class FileOutputLoader extends OutputGeneratorLoader {
     private InteractionFormatter createInteractionFormatter(HierarchicalConfiguration<ImmutableNode> sub)
             throws SecurityException, NoSuchMethodException, ClassNotFoundException, IllegalArgumentException {
 
-        String sep = sub.getString(SEPARATOR);
+        String separator = sub.getString(SEPARATOR);
+        String decimalSeparatorInput = sub.getString(DECIMAL_SEPARATOR);
+        Character decimalSeparator = null;
+        if (decimalSeparatorInput.length() == 1) {
+            decimalSeparator = decimalSeparatorInput.charAt(0);
+        } else {
+            log.warn("decimalSeparator is required to be one character, defaulting to locale separator");
+        }
+
+
         Map<String, List<List<String>>> interactionDefs = new HashMap<>();
 
         List<HierarchicalConfiguration<ImmutableNode>> interactionList = sub.configurationsAt("subscriptions.subscription");
@@ -89,7 +99,7 @@ public class FileOutputLoader extends OutputGeneratorLoader {
                     .add(entries);
         }
 
-        return new InteractionFormatter(sep, interactionDefs);
+        return new InteractionFormatter(separator, decimalSeparator, interactionDefs);
     }
 
     /**
