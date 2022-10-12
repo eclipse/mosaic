@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file;
+package org.eclipse.mosaic.fed.output.generator.file;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.ConfigHelper;
@@ -76,12 +76,11 @@ public class FileOutputLoader extends OutputGeneratorLoader {
         String separator = sub.getString(SEPARATOR);
         String decimalSeparatorInput = sub.getString(DECIMAL_SEPARATOR);
         Character decimalSeparator = null;
-        if (decimalSeparatorInput.length() == 1) {
+        if (decimalSeparatorInput != null && decimalSeparatorInput.length() == 1) {
             decimalSeparator = decimalSeparatorInput.charAt(0);
         } else {
             log.warn("decimalSeparator is required to be one character, defaulting to locale separator");
         }
-
 
         Map<String, List<List<String>>> interactionDefs = new HashMap<>();
 
