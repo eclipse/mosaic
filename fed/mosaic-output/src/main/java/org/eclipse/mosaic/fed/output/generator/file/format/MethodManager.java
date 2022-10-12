@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 /**
  * A MethodManager saves the methods to be used for visualizing interactions
@@ -35,7 +34,7 @@ import javax.annotation.Nullable;
  */
 class MethodManager {
 
-    private final String separator;
+    private final char separator;
 
     private final DecimalFormat decimalFormat;
     /**
@@ -56,17 +55,14 @@ class MethodManager {
      * @param methodsDefinitions method definitions
      * @param interactionClass   interaction class
      */
-    MethodManager(String separator, @Nullable Character decimalSeparator, List<String> methodsDefinitions, Class<?> interactionClass)
+    MethodManager(char separator, char decimalSeparator, List<String> methodsDefinitions, Class<?> interactionClass)
             throws SecurityException, NoSuchMethodException, IllegalArgumentException {
         this.separator = separator;
         String formatString = "#0.0##############"; // maximum of 15 decimal digits
-        if (decimalSeparator == null) {
-            this.decimalFormat = new DecimalFormat(formatString, new DecimalFormatSymbols(Locale.US)); // US is default Locale
-        } else {
-            DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-            decimalFormatSymbols.setDecimalSeparator(decimalSeparator);
-            this.decimalFormat = new DecimalFormat(formatString, decimalFormatSymbols);
-        }
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+        decimalFormatSymbols.setDecimalSeparator(decimalSeparator);
+        this.decimalFormat = new DecimalFormat(formatString, decimalFormatSymbols);
+
         decimalFormat.setGroupingUsed(false); // disable grouping when using custom separator to prevent issues
 
         final List<String> methods = new ArrayList<>(methodsDefinitions);

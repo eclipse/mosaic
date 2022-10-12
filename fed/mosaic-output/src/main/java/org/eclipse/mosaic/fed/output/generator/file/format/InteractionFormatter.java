@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.annotation.Nullable;
 
 public class InteractionFormatter {
 
@@ -43,7 +42,7 @@ public class InteractionFormatter {
      * @param decimalSeparator       separator for floating-point numbers
      * @param interactionDefinitions message definitions
      */
-    public InteractionFormatter(String separator, @Nullable Character decimalSeparator, Map<String,
+    public InteractionFormatter(char separator, char decimalSeparator, Map<String,
             List<List<String>>> interactionDefinitions)
             throws SecurityException, NoSuchMethodException, ClassNotFoundException, IllegalArgumentException {
 

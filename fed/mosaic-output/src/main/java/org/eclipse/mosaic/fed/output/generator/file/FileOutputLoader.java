@@ -40,8 +40,9 @@ import java.util.stream.Collectors;
 
 public class FileOutputLoader extends OutputGeneratorLoader {
 
-    private final static Logger log = LoggerFactory.getLogger(FileOutputLoader.class);
-
+    private static final Logger log = LoggerFactory.getLogger(FileOutputLoader.class);
+    private static final char DEFAULT_SEPARATOR = ';';
+    private static final char DEFAULT_DECIMAL_SEPARATOR = '.';
     /* Configuration properties */
     private static final String FILE_NAME = "filename";
     private static final String DIR = "directory";
@@ -72,14 +73,19 @@ public class FileOutputLoader extends OutputGeneratorLoader {
 
     private InteractionFormatter createInteractionFormatter(HierarchicalConfiguration<ImmutableNode> sub)
             throws SecurityException, NoSuchMethodException, ClassNotFoundException, IllegalArgumentException {
-
-        String separator = sub.getString(SEPARATOR);
-        String decimalSeparatorInput = sub.getString(DECIMAL_SEPARATOR);
-        Character decimalSeparator = null;
-        if (decimalSeparatorInput != null && decimalSeparatorInput.length() == 1) {
-            decimalSeparator = decimalSeparatorInput.charAt(0);
+        String separatorInput = sub.getString(SEPARATOR);
+        char separator = DEFAULT_SEPARATOR;
+        if (separatorInput == null || separatorInput.length() != 1) {
+            log.warn("separator is required to be one character, defaulting to '{}' as entry separator.", DEFAULT_SEPARATOR);
         } else {
-            log.warn("decimalSeparator is required to be one character, defaulting to locale separator");
+            separator = separatorInput.charAt(0);
+        }
+        String decimalSeparatorInput = sub.getString(DECIMAL_SEPARATOR);
+        char decimalSeparator = DEFAULT_DECIMAL_SEPARATOR;
+        if (decimalSeparatorInput == null || decimalSeparatorInput.length() != 1) {
+            log.warn("decimalSeparator is required to be one character, defaulting to '{}' as decimal separator.", DEFAULT_DECIMAL_SEPARATOR);
+        } else {
+            decimalSeparator = decimalSeparatorInput.charAt(0);
         }
 
         Map<String, List<List<String>>> interactionDefs = new HashMap<>();
