@@ -1,5 +1,5 @@
-<a href="https://eclipse.org/mosaic#gh-light-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg"></p></a>
-<a href="https://eclipse.org/mosaic#gh-dark-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-negativ.svg"></p></a>
+<a href="https://eclipse.org/mosaic#gh-light-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg#gh-light-mode-only"></p></a>
+<a href="https://eclipse.org/mosaic#gh-dark-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-negativ.svg#gh-dark-mode-only"></p></a>
 
 # Eclipse MOSAIC Essentials - <br> The Simulation Suite for Connected and Automated Mobility
 
