@@ -48,7 +48,7 @@ public abstract class GeoProjection {
         GeoProjection.instance = geoProjection;
     }
 
-    private GeoCalculator geoCalculator = null;
+    private volatile GeoCalculator geoCalculator = null;
 
     public GeoProjection setGeoCalculator(GeoCalculator geoCalculator) {
         if (this.geoCalculator != null) {
@@ -60,7 +60,11 @@ public abstract class GeoProjection {
 
     public final GeoCalculator getGeoCalculator() {
         if (geoCalculator == null) {
-            setGeoCalculator(new SimpleGeoCalculator());
+            synchronized (this) {
+                if (geoCalculator == null) {
+                    setGeoCalculator(new SimpleGeoCalculator());
+                }
+            }
         }
         return geoCalculator;
     }
