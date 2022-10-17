@@ -115,4 +115,19 @@ public class VehicleObject extends Vector3d implements SpatialObject {
         // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
         return this.id.hashCode();
     }
+
+    /**
+     * Returns a hard copy of the {@link VehicleObject}, this should be used
+     * when the data of a perceived vehicle is to be stored in memory.
+     *
+     * @return a copy of the {@link VehicleObject}
+     */
+    public VehicleObject copy() {
+        VehicleObject copy = new VehicleObject(getId());
+        copy.setPosition(getProjectedPosition());
+        copy.setHeading(getHeading());
+        copy.setSpeed(getSpeed());
+        copy.setEdgeAndLane(getEdgeId(), getLaneIndex());
+        return copy;
+    }
 }
