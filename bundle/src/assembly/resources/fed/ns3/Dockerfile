@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:jammy
 
 LABEL \
     description="Docker image containing the MOSAIC adapted ns-3 federate" \
@@ -18,10 +18,11 @@ RUN \
   libxml2-dev \
   protobuf-compiler \
   patch \
-  python \
+  python3 \
   unzip \
   rsync \
-  wget
+  wget \
+  cmake
 
 WORKDIR /home/mosaic/bin/fed/ns3
 
