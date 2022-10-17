@@ -15,12 +15,11 @@
 
 package org.eclipse.mosaic.fed.output.ambassador;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-import org.apache.commons.lang3.StringUtils;
-
 import org.eclipse.mosaic.lib.util.InteractionUtils;
 import org.eclipse.mosaic.rti.api.Interaction;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

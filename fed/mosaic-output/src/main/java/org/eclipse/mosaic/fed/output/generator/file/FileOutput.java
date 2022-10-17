@@ -13,18 +13,18 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file;
+package org.eclipse.mosaic.fed.output.generator.file;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.Handle;
 import org.eclipse.mosaic.fed.output.generator.file.format.ExtendedMethodSet;
 import org.eclipse.mosaic.fed.output.generator.file.format.InteractionFormatter;
 import org.eclipse.mosaic.fed.output.generator.file.write.Write;
-
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.mosaic.interactions.communication.V2xMessageRemoval;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.rti.api.Interaction;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class FileOutput extends AbstractOutputGenerator {
     /**
      * Construct FileVisualizer with a writer and a message formatter.
      *
-     * @param writer       the writer visualizes the formatted message into file
+     * @param writer               the writer visualizes the formatted message into file
      * @param interactionFormatter the message formatter transfers the messages in a format defined in the configuration file
      */
     public FileOutput(Write writer, InteractionFormatter interactionFormatter) {

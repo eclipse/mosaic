@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.filter;
+package org.eclipse.mosaic.fed.output.generator.file.filter;
 
 import org.apache.commons.lang3.StringUtils;
 

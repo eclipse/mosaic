@@ -15,13 +15,14 @@
 
 package org.eclipse.mosaic.fed.output.ambassador;
 
-import com.google.common.collect.Sets;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.trafficsigns.TrafficSignRegistration;
+
+import com.google.common.collect.Sets;
 
 import java.util.Collections;
 import java.util.Set;

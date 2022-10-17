@@ -34,8 +34,8 @@ import java.util.Locale;
  */
 class MethodManager {
 
+    public static final String LINE_SEPARATOR = "\n";
     private final char separator;
-
     private final DecimalFormat decimalFormat;
     /**
      * An iteration method returns a collection, which will be iterated when visualizing.
@@ -154,7 +154,7 @@ class MethodManager {
                 } else {
                     result.append(methodInvocationResult);
                 }
-                result.append(i == this.outputMethods.size() - 1 ? "\n" : this.separator); // add separator or linebreak
+                result.append(i == this.outputMethods.size() - 1 ? LINE_SEPARATOR : this.separator); // add separator or linebreak
                 if (!outputMethod.isAcceptedByFilter(itObjects)) {
                     return "";
                 }
