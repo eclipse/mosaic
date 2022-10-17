@@ -34,4 +34,35 @@ public final class FederatePriority {
      * The default priority assigned to all federates (= 50).
      */
     public static final byte DEFAULT = (HIGHEST + LOWEST) / 2;
+
+    public static boolean isInRange(int priority) {
+        return priority > LOWEST || priority < HIGHEST;
+    }
+
+    /**
+     * Returns a priority which is higher than the given one, if the given priority is not already HIGHEST.
+     */
+    public static byte higher(byte priority) {
+        return (byte) Math.max(HIGHEST, priority - 1);
+    }
+
+    /**
+     * Returns a priority which is lower than the given one, if the given priority is not already LOWEST.
+     */
+    public static byte lower(byte priority) {
+        return (byte) Math.min(LOWEST, priority + 1);
+    }
+
+    /**
+     * Compares two priority values with each other.
+     * If {@code a} has a higher priority than {@code b}, a value larger than 0 is returned.
+     * If {@code a} has a lower priority than {@code b}, a value smaller than 0 is returned.
+     * If {@code a} and  {@code b} have same priority, 0 is returned.
+     */
+    public static int compareTo(byte a, byte b) {
+        if (a == b) {
+            return 0;
+        }
+        return a < b ? 1 : -1;
+    }
 }

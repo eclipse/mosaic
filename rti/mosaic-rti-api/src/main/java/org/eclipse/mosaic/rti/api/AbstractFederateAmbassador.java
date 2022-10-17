@@ -19,7 +19,6 @@ import org.eclipse.mosaic.rti.api.federatestarter.DockerFederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.api.parameters.FederateDescriptor;
-import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
 import org.eclipse.mosaic.rti.config.CLocalHost;
 
 import org.slf4j.Logger;
@@ -127,35 +126,19 @@ public abstract class AbstractFederateAmbassador implements FederateAmbassador {
         try {
             // request time advance to process interaction if necessary
             if (isTimeConstrained()) {
+                final long lookahead;
                 if (isTimeRegulating()) {
-                    /* TODO(2019)
-                     *  Currently all ambassadors pass the old priority to the requestTimeAdvance
-                     *  method. However, this priority has the constraint, that the higher the value is
-                     *  the higher is the priority. This is contrary to the priority which can be
-                     *  assigned to ambassadors (the lower the value, the higher the priority).
-                     *  To avoid changes in all ambassadors (for now!) we convert the new priority
-                     *  to the old one.
-                     */
-                    byte legacyPriority = (byte) (FederatePriority.LOWEST - descriptor.getPriority());
-                    this.rti.requestAdvanceTime(
-                            interaction.getTime(),
-                            lookahead,
-                            legacyPriority
-                    );
+                    lookahead = this.lookahead;
                 } else {
-                    // request with MAX lookahead since federate promised not to
-                    // send any time stamped interactions (!timeRegulating)
-                    this.rti.requestAdvanceTime(
-                            interaction.getTime(),
-                            Long.MAX_VALUE,
-                            FederatePriority.HIGHEST
-                    );
+                    // request with MAX lookahead since federate promised not to send any time stamped interactions (!timeRegulating)
+                    lookahead = Long.MAX_VALUE;
                 }
+                rti.requestAdvanceTime(interaction.getTime(), lookahead, descriptor.getPriority());
                 interactionQueue.add(interaction);
             } else {
                 // not time constrained --> doesn't care about timestamps
                 rti.getMonitor().onProcessInteraction(getId(), interaction);
-                this.processInteraction(interaction);
+                processInteraction(interaction);
                 // if fed is time regulating but not time constrained,
                 // it would have to request advance time before it may send
                 // any interaction to other federates

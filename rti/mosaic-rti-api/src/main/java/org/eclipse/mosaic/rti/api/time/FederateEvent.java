@@ -15,10 +15,12 @@
 
 package org.eclipse.mosaic.rti.api.time;
 
+import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
 
 /**
@@ -27,26 +29,30 @@ import javax.annotation.Nonnull;
  */
 public class FederateEvent implements Comparable<FederateEvent> {
 
-    private static AtomicInteger idCounter = new AtomicInteger();
+    private static final AtomicLong ID_COUNTER = new AtomicLong();
 
-    public static int createUniqueId() {
-        return idCounter.incrementAndGet();
+    public static long createUniqueId() {
+        return ID_COUNTER.incrementAndGet();
     }
-
-    private int id;
-
-    /**
-     * simulation time that has been requested.
-     */
-    protected long requestedTime;
 
     /**
      * identifier of the requesting federate.
      */
-    protected String federateId;
+    private final String federateId;
 
     /**
-     * time interval after this event time in which the requesting federate
+     * The unique ID of the event, assigned during construction of any {@link FederateEvent}.
+     */
+    private final long id;
+
+
+    /**
+     * Simulation time that has been requested.
+     */
+    protected long requestedTime;
+
+    /**
+     * Time interval after this event time in which the requesting federate
      * will not create any further events.
      */
     protected final long lookahead;
@@ -59,11 +65,11 @@ public class FederateEvent implements Comparable<FederateEvent> {
     /**
      * Constructor to create an event using all fields.
      *
-     * @param federateId identifier of the requesting federate
-     * @param requestedTime       simulation time that has been requested
-     * @param lookahead  time interval after this event time in which the requesting
-     *                   federate will not create any further events
-     * @param priority   priority to schedule two events if they have the same time
+     * @param federateId    identifier of the requesting federate
+     * @param requestedTime simulation time that has been requested
+     * @param lookahead     time interval after this event time in which the requesting
+     *                      federate will not create any further events
+     * @param priority      priority to schedule two events if they have the same time
      */
     public FederateEvent(String federateId, long requestedTime, long lookahead, byte priority) {
         id = createUniqueId();
@@ -78,7 +84,7 @@ public class FederateEvent implements Comparable<FederateEvent> {
      *
      * @return the unique ID of this event.
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -92,7 +98,7 @@ public class FederateEvent implements Comparable<FederateEvent> {
     }
 
     /**
-     * Getter for time.
+     * Getter for time. Events with a lower time are handled first.
      *
      * @return time in [ns]
      */
@@ -121,14 +127,13 @@ public class FederateEvent implements Comparable<FederateEvent> {
     @Override
     public int compareTo(@Nonnull FederateEvent event) {
         if (event.requestedTime == this.requestedTime) {
-            if (event.priority == this.priority) {
-                return (event.lookahead < this.lookahead) ? 1 : -1;
-            } else {
-                return (event.priority > this.priority) ? 1 : -1;
+            int priorityCompare = FederatePriority.compareTo(event.priority, this.priority);
+            if (priorityCompare == 0) {
+                return event.lookahead < this.lookahead ? 1 : -1;
             }
-        } else {
-            return (event.requestedTime < this.requestedTime) ? 1 : -1;
+            return priorityCompare;
         }
+        return event.requestedTime < this.requestedTime ? 1 : -1;
     }
 
     @Override
