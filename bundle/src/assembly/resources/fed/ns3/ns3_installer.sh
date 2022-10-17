@@ -49,7 +49,7 @@ required_programs=( python3 gcc unzip tar )
 required_libraries=( "libprotobuf-dev >= 3.7.0" "libxml2-dev" "libsqlite3-dev" )
 
 ####### configurable parameters ##########
-ns3_version="3.34"
+ns3_version="3.36.1"
 
 ####### automated parameters #############
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
@@ -376,7 +376,7 @@ build_ns3()
 
   # adjust build instruction to cover scrambled files
   sed -i -e "s|/usr/local|.|" premake5.lua
-  sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build\"|" premake5.lua
+  sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/include\"|" premake5.lua
   sed -i -e "s|\"/usr/lib\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/lib\"|" premake5.lua
   if [ "${arg_regen_protobuf}" == "true" ]; then
     ./premake5 gmake --generate-protobuf --install
