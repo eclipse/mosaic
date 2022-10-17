@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.format;
+package org.eclipse.mosaic.fed.output.generator.file.format;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -65,7 +65,6 @@ public class InteractionFormatterTest {
 
     @Before
     public void setUp() {
-        // ======================================================
         v1 = new VehicleData.Builder(111, "1").position(GeoPoint.lonLat(11, 10), null).create();
         v2 = new VehicleData.Builder(222, "2").position(GeoPoint.lonLat(22, 20), null).create();
         v3 = new VehicleData.Builder(333, "3").position(GeoPoint.lonLat(33, 30), null).create();
@@ -115,7 +114,6 @@ public class InteractionFormatterTest {
         // ======================================================
 
         List<VehicleUpdates> interactions = new ArrayList<>();
-
         interactions.add(vehicleUpdates);
         interactions.add(moveUpdates2);
 
@@ -132,8 +130,6 @@ public class InteractionFormatterTest {
         list.add(vehicleUpdatesMethods);
 
         vehicleUpdatesDef.put("VehicleUpdates", list);
-
-
     }
 
     @Test
@@ -146,9 +142,26 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Updated:Position.Latitude");
         vehicleUpdatesMethods.add("Updated:Position.Longitude");
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
         String interaction = interactionFormatter.format(vehicleUpdates);
         String[] expected = {"Test;0;1;10.0;11.0\n", "Test;0;2;20.0;22.0\n"};
+
+        assertEquals(expected[0] + expected[1], interaction);
+    }
+
+    @Test
+    public void testNormalIterationDifferentDecimalSeperator() throws Exception {
+
+        vehicleUpdatesMethods.clear();
+        vehicleUpdatesMethods.add("\"Test\"");
+        vehicleUpdatesMethods.add("Time");
+        vehicleUpdatesMethods.add("Updated:Name");
+        vehicleUpdatesMethods.add("Updated:Position.Latitude");
+        vehicleUpdatesMethods.add("Updated:Position.Longitude");
+
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', ',', vehicleUpdatesDef);
+        String interaction = interactionFormatter.format(vehicleUpdates);
+        String[] expected = {"Test;0;1;10,0;11,0\n", "Test;0;2;20,0;22,0\n"};
 
         assertEquals(expected[0] + expected[1], interaction);
     }
@@ -161,7 +174,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Time[min=1200000000,max=1400000000]");
         vehicleUpdatesMethods.add("Updated:Name");
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
 
         assertEquals("", interactionFormatter.format(vehicleUpdates));
         assertEquals("Test;1300000000;3\nTest;1300000000;4\n", interactionFormatter.format(moveUpdates2));
@@ -177,7 +190,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Time[max=1400000000]");
         vehicleUpdatesMethods.add("Updated:Name[eq=1]");
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
 
         assertEquals("Test;0;1\n", interactionFormatter.format(vehicleUpdates));
         assertEquals("", interactionFormatter.format(moveUpdates2));
@@ -193,7 +206,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Time");
         vehicleUpdatesMethods.add("Updated:Name[regex=[1-2]{1}]");
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
 
         assertEquals("Test;0;1\nTest;0;2\n", interactionFormatter.format(vehicleUpdates));
         assertEquals("", interactionFormatter.format(moveUpdates2));
@@ -210,7 +223,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Updated:Name");
         vehicleUpdatesMethods.add("Added:Name");
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
 
         String[] expected = {"Test;1;3\n", "Test;1;4\n", "Test;2;3\n", "Test;2;4\n"};
 
@@ -232,7 +245,7 @@ public class InteractionFormatterTest {
 
         interactionDef.put("MyInteraction", list);
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", interactionDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', interactionDef);
 
         String[] expected = {"1\n", "2\n", "3\n", "4\n"};
 
@@ -255,7 +268,7 @@ public class InteractionFormatterTest {
 
         recvInteractiongDef.put("V2xMessageReception", list);
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", recvInteractiongDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', recvInteractiongDef);
 
         String[] expected = {"RECV;5\n"};
 
@@ -271,32 +284,32 @@ public class InteractionFormatterTest {
         list.add(methods);
 
         interactionDef.put("VehicleUpdates", list);
-        new InteractionFormatter(";", interactionDef);
+        new InteractionFormatter(';', '.', interactionDef);
         interactionDef.clear();
 
         interactionDef.put("V2xMessageReception", list);
-        new InteractionFormatter(";", interactionDef);
+        new InteractionFormatter(';', '.', interactionDef);
         interactionDef.clear();
 
         interactionDef.put("V2xMessageTransmission", list);
-        new InteractionFormatter(";", interactionDef);
+        new InteractionFormatter(';', '.', interactionDef);
         interactionDef.clear();
 
         interactionDef.put("TrafficLightRegistration", list);
-        new InteractionFormatter(";", interactionDef);
+        new InteractionFormatter(';', '.', interactionDef);
         interactionDef.clear();
 
         interactionDef.put("RsuRegistration", list);
-        new InteractionFormatter(";", interactionDef);
+        new InteractionFormatter(';', '.', interactionDef);
         interactionDef.clear();
 
         interactionDef.put("VehicleRegistration", list);
-        new InteractionFormatter(";", interactionDef);
+        new InteractionFormatter(';', '.', interactionDef);
         interactionDef.clear();
 
         try {
             interactionDef.put("Interaction", list);
-            new InteractionFormatter(";", interactionDef);
+            new InteractionFormatter(';', '.', interactionDef);
             fail();
         } catch (ClassNotFoundException e) {
             assertEquals("Interaction is an unknown parameter in the visualizeMessage method set.", e.getMessage());
@@ -309,7 +322,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.clear();
         vehicleUpdatesMethods.add("");
         try {
-            new InteractionFormatter(";", vehicleUpdatesDef);
+            new InteractionFormatter(';', '.', vehicleUpdatesDef);
             fail();
         } catch (NoSuchMethodException e) {
             assertEquals("Method() is not supported "
@@ -320,7 +333,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.clear();
         vehicleUpdatesMethods.add("Time.ID");
         try {
-            new InteractionFormatter(";", vehicleUpdatesDef);
+            new InteractionFormatter(';', '.', vehicleUpdatesDef);
             fail();
         } catch (NoSuchMethodException e) {
             assertEquals("Method(ID) is not supported "
@@ -331,7 +344,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.clear();
         vehicleUpdatesMethods.add("Time.");
         try {
-            new InteractionFormatter(";", vehicleUpdatesDef);
+            new InteractionFormatter(';', '.', vehicleUpdatesDef);
             fail();
         } catch (NoSuchMethodException e) {
             assertEquals("Method() is not supported "
@@ -342,7 +355,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.clear();
         vehicleUpdatesMethods.add("Updated:What");
         try {
-            new InteractionFormatter(";", vehicleUpdatesDef);
+            new InteractionFormatter(';', '.', vehicleUpdatesDef);
             fail();
         } catch (NoSuchMethodException e) {
             assertEquals("Method(What) is not supported"
@@ -353,7 +366,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.clear();
         vehicleUpdatesMethods.add("Updated:Position:Latitude");
         try {
-            new InteractionFormatter(";", vehicleUpdatesDef);
+            new InteractionFormatter(';', '.', vehicleUpdatesDef);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Method defined by (Position) does not return a Collection.", e.getMessage());
@@ -370,7 +383,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Updated:Position.Latitude");
         vehicleUpdatesMethods.add("Updated:Position.Longitude");
 
-        InteractionFormatter interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        InteractionFormatter interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
 
         String[] expected = {"Test;1600000000;null;null;null\n",
                 "Test;1700000000;6;null;null\n",
@@ -388,7 +401,7 @@ public class InteractionFormatterTest {
         vehicleUpdatesMethods.add("Added:Position.Latitude");
         vehicleUpdatesMethods.add("Added:Position.Longitude");
 
-        interactionFormatter = new InteractionFormatter(";", vehicleUpdatesDef);
+        interactionFormatter = new InteractionFormatter(';', '.', vehicleUpdatesDef);
 
         assertEquals(expected[1] + expected[3], interactionFormatter.format(vehicleUpdatesNull2));
 

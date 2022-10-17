@@ -15,11 +15,12 @@
 
 package org.eclipse.mosaic.fed.output.ambassador;
 
+import org.eclipse.mosaic.rti.TIME;
+
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.eclipse.mosaic.rti.TIME;
 
 import java.util.Collection;
 import java.util.HashSet;

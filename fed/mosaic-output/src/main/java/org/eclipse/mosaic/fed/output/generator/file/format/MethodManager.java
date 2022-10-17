@@ -13,14 +13,17 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.format;
+package org.eclipse.mosaic.fed.output.generator.file.format;
 
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A MethodManager saves the methods to be used for visualizing interactions
@@ -31,53 +34,60 @@ import java.util.List;
  */
 class MethodManager {
 
-    private final String separator;
-
+    public static final String LINE_SEPARATOR = "\n";
+    private final char separator;
+    private final DecimalFormat decimalFormat;
     /**
-     * an iteration method returns a collection, which will be iterated when visualizing. *
+     * An iteration method returns a collection, which will be iterated when visualizing.
      */
     private final List<MethodElement> iterationMethods = new ArrayList<>();
 
     /**
-     * an output method returns a string, which will be written in file. *
+     * An output method returns a string, which will be written in file.
      */
     private final List<MethodElement> outputMethods = new ArrayList<>();
 
     /**
      * Constructs a MethodManager.
      *
-     * @param separator  separator
+     * @param separator          separator
+     * @param decimalSeparator   separator for floating-point numbers
      * @param methodsDefinitions method definitions
      * @param interactionClass   interaction class
      */
-    MethodManager(String separator, List<String> methodsDefinitions, Class<?> interactionClass)
+    MethodManager(char separator, char decimalSeparator, List<String> methodsDefinitions, Class<?> interactionClass)
             throws SecurityException, NoSuchMethodException, IllegalArgumentException {
         this.separator = separator;
+        String formatString = "#0.0##############"; // maximum of 15 decimal digits
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+        decimalFormatSymbols.setDecimalSeparator(decimalSeparator);
+        this.decimalFormat = new DecimalFormat(formatString, decimalFormatSymbols);
+
+        decimalFormat.setGroupingUsed(false); // disable grouping when using custom separator to prevent issues
 
         final List<String> methods = new ArrayList<>(methodsDefinitions);
 
         final List<Integer> objLevels = new ArrayList<>();
         final List<Class<?>> objClasses = new ArrayList<>();
 
-        // when initialize, set all methods to the root level of iteration
-        // and all the declare class to msgClass
+        // when initialized, set all methods to the root level of iteration and all the declare-classes to interactionClass
         for (int i = 0; i < methods.size(); i++) {
             objLevels.add(i, 0);
             objClasses.add(i, interactionClass);
         }
 
-        int itMetIdx;
+        int iterationMethodIndex;
 
         // initialize iteration methods
-        for (int level = 1; (itMetIdx = findIterationMethod(methods)) != -1; level++) {
+        for (int level = 1; (iterationMethodIndex = findIterationMethod(methods)) != -1; level++) {
             // what is the name of this iteration method, without "get"
-            String methodName = getIterationMethodName(methods.get(itMetIdx));
+            String methodName = getIterationMethodName(methods.get(iterationMethodIndex));
 
             // which class declares this iteration method
-            Class<?> declare = objClasses.get(itMetIdx);
+            Class<?> declare = objClasses.get(iterationMethodIndex);
 
             // what is the level of the object, that calls the iteration method
-            int objLevel = objLevels.get(itMetIdx);
+            int objLevel = objLevels.get(iterationMethodIndex);
 
             MethodElement me = new MethodElement(objLevel, declare, methodName);
 
@@ -93,7 +103,7 @@ class MethodManager {
             // set all the methods iterated by this iteration method in a level
             // deeper than the given level
             // and also its iterated object class
-            for (int i = itMetIdx; i < methods.size(); i++) {
+            for (int i = iterationMethodIndex; i < methods.size(); i++) {
                 String method = methods.get(i);
 
                 if (!method.startsWith(methodName)) {
@@ -117,8 +127,7 @@ class MethodManager {
             // which class declares this iteration method
             Class<?> declaredClass = objClasses.get(i);
 
-            this.outputMethods.add(
-                    new MethodElement(objLevel, declaredClass, methods.get(i))
+            this.outputMethods.add(new MethodElement(objLevel, declaredClass, methods.get(i))
             );
         }
     }
@@ -130,14 +139,22 @@ class MethodManager {
     }
 
     private String format(List<Object> itObjects, int level) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        StringBuilder res = new StringBuilder();
+        StringBuilder result = new StringBuilder();
 
         if (level == this.iterationMethods.size()) {
             // output method
             MethodElement outputMethod;
             for (int i = 0; i < this.outputMethods.size(); i++) {
                 outputMethod = this.outputMethods.get(i);
-                res.append(outputMethod.invoke(itObjects)).append((i == this.outputMethods.size() - 1 ? "\n" : this.separator));
+                Object methodInvocationResult = outputMethod.invoke(itObjects);
+                // if result of method invocation is float or double use defined decimal format
+                if (methodInvocationResult instanceof Double || methodInvocationResult instanceof Float) {
+                    String invocationResultString = decimalFormat.format(methodInvocationResult);
+                    result.append(invocationResultString);
+                } else {
+                    result.append(methodInvocationResult);
+                }
+                result.append(i == this.outputMethods.size() - 1 ? LINE_SEPARATOR : this.separator); // add separator or linebreak
                 if (!outputMethod.isAcceptedByFilter(itObjects)) {
                     return "";
                 }
@@ -150,17 +167,17 @@ class MethodManager {
 
             if (c == null) {
                 itObjects.set(level + 1, null);
-                res.append(format(itObjects, level + 1));
+                result.append(format(itObjects, level + 1));
             } else {
                 for (Object element : c) {
                     itObjects.set(level + 1, element);
-                    res.append(format(itObjects, level + 1));
+                    result.append(format(itObjects, level + 1));
                 }
             }
             itObjects.remove(level);
         }
 
-        return res.toString();
+        return result.toString();
     }
 
     private String getIterationMethodName(String method) {

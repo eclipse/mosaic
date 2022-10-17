@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.filter;
+package org.eclipse.mosaic.fed.output.generator.file.filter;
 
 import org.eclipse.mosaic.fed.output.generator.file.format.ExtendedMethodSet;
 
@@ -26,7 +26,7 @@ public abstract class Filter {
 
     private static final Logger log = LoggerFactory.getLogger(Filter.class);
 
-    private Method method;
+    private final Method method;
 
     protected Filter(Method method) {
         this.method = method;

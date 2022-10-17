@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.format;
+package org.eclipse.mosaic.fed.output.generator.file.format;
 
 import org.eclipse.mosaic.fed.output.generator.file.FileOutputLoader;
 import org.eclipse.mosaic.fed.output.generator.file.filter.Filter;
@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A MethodElement defines a specific method, including the name
+ * A {@link MethodElement} defines a specific method, including the name
  * of the method to be called and from which level of the iterate
- * structure(That means, within an iterate, there can be another
- * embedded iterate.)comes the object, to which the method belongs.
+ * structure (That means, within an iterate, there can be another
+ * embedded iterate.) comes the object, to which the method belongs.
  */
 class MethodElement {
 
@@ -75,7 +75,7 @@ class MethodElement {
     }
 
     /**
-     * create a static method list. Thus, we don't parse the method definition any more.
+     * create a static method list. Thus, we don't parse the method definition anymore.
      *
      * @param declare class
      * @param methods methods list

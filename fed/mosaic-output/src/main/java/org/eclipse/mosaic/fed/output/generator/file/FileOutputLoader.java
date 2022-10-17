@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file;
+package org.eclipse.mosaic.fed.output.generator.file;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.ConfigHelper;
@@ -40,12 +40,14 @@ import java.util.stream.Collectors;
 
 public class FileOutputLoader extends OutputGeneratorLoader {
 
-    private final static Logger log = LoggerFactory.getLogger(FileOutputLoader.class);
-
+    private static final Logger log = LoggerFactory.getLogger(FileOutputLoader.class);
+    private static final char DEFAULT_SEPARATOR = ';';
+    private static final char DEFAULT_DECIMAL_SEPARATOR = '.';
     /* Configuration properties */
     private static final String FILE_NAME = "filename";
     private static final String DIR = "directory";
     private static final String SEPARATOR = "separator";
+    private static final String DECIMAL_SEPARATOR = "decimalSeparator";
     private static final String WRITE = "write";
     private static final String APPEND = "append";
 
@@ -71,8 +73,21 @@ public class FileOutputLoader extends OutputGeneratorLoader {
 
     private InteractionFormatter createInteractionFormatter(HierarchicalConfiguration<ImmutableNode> sub)
             throws SecurityException, NoSuchMethodException, ClassNotFoundException, IllegalArgumentException {
+        String separatorInput = sub.getString(SEPARATOR);
+        char separator = DEFAULT_SEPARATOR;
+        if (separatorInput == null || separatorInput.length() != 1) {
+            log.warn("separator is required to be one character, defaulting to '{}' as entry separator.", DEFAULT_SEPARATOR);
+        } else {
+            separator = separatorInput.charAt(0);
+        }
+        String decimalSeparatorInput = sub.getString(DECIMAL_SEPARATOR);
+        char decimalSeparator = DEFAULT_DECIMAL_SEPARATOR;
+        if (decimalSeparatorInput == null || decimalSeparatorInput.length() != 1) {
+            log.warn("decimalSeparator is required to be one character, defaulting to '{}' as decimal separator.", DEFAULT_DECIMAL_SEPARATOR);
+        } else {
+            decimalSeparator = decimalSeparatorInput.charAt(0);
+        }
 
-        String sep = sub.getString(SEPARATOR);
         Map<String, List<List<String>>> interactionDefs = new HashMap<>();
 
         List<HierarchicalConfiguration<ImmutableNode>> interactionList = sub.configurationsAt("subscriptions.subscription");
@@ -89,7 +104,7 @@ public class FileOutputLoader extends OutputGeneratorLoader {
                     .add(entries);
         }
 
-        return new InteractionFormatter(sep, interactionDefs);
+        return new InteractionFormatter(separator, decimalSeparator, interactionDefs);
     }
 
     /**

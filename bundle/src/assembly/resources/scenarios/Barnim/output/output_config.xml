@@ -7,6 +7,7 @@
         <filename>output.csv</filename>
         <directory>.</directory>
         <separator>;</separator>
+        <decimalSeparator>.</decimalSeparator>
         <subscriptions>
             <subscription id="VehicleUpdates">
                 <entries>
