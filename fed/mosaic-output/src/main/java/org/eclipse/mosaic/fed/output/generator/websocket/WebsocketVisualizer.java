@@ -13,11 +13,10 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.websocket;
+package org.eclipse.mosaic.fed.output.generator.websocket;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.Handle;
-
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;

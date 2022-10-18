@@ -59,6 +59,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.api.parameters.FederateDescriptor;
+import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
 import org.eclipse.mosaic.rti.config.CLocalHost;
 
 import com.google.common.collect.Lists;
@@ -105,6 +106,7 @@ public class SumoAmbassadorTest {
         testHostConfig.workingDirectory = workingDir.getAbsolutePath();
         when(handleMock.getHost()).thenReturn(testHostConfig);
         when(handleMock.getId()).thenReturn("sumo");
+        when(handleMock.getPriority()).thenReturn(FederatePriority.DEFAULT);
 
         traciClientBridgeMock = null;
         ambassador = new SumoAmbassador(new AmbassadorParameter("sumo", temporaryFolder.newFile("sumo/sumo_config.json"))) {
@@ -130,7 +132,8 @@ public class SumoAmbassadorTest {
         ambassador.initialize(0, 1000 * TIME.SECOND);
 
         // ASSERT
-        verify(rtiMock, times(1)).requestAdvanceTime(eq(0L), eq(0L), eq((byte) 1));
+        verify(rtiMock, times(1))
+                .requestAdvanceTime(eq(0L), eq(0L), eq((byte)(FederatePriority.DEFAULT -  1)));
         assertNull(traciClientBridgeMock);
     }
 

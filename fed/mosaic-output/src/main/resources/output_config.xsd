@@ -18,6 +18,7 @@
                         <xs:element minOccurs="0" ref="filename" />
                         <xs:element ref="directory" />
                         <xs:element ref="separator" />
+                        <xs:element minOccurs="0" ref="decimalSeperator" />
                     </xs:sequence>
                     <xs:sequence>
                         <xs:element ref="synchronized" />
@@ -84,6 +85,13 @@
         <xs:annotation>
             <xs:documentation xml:lang="en">
                 The delimiter [.] can be escaped by a backslash [\.].
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="decimalSeperator" type="xs:string">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The seperator for floating-point numbers.
             </xs:documentation>
         </xs:annotation>
     </xs:element>

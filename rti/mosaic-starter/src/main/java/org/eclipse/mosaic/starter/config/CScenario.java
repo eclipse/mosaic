@@ -55,8 +55,9 @@ public class CScenario {
         public long duration;
 
         /**
-         * The random seed to use for all random number generators. If not set (null),
-         * only
+         * The random seed to use for all random number generators. If not set,
+         * all random number generators are initialized with a different seed, thus every
+         * simulation run may return different results.
          */
         @Nullable
         public Long randomSeed;

@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.filter;
+package org.eclipse.mosaic.fed.output.generator.file.filter;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;

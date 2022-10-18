@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.format;
+package org.eclipse.mosaic.fed.output.generator.file.format;
 
 import org.eclipse.mosaic.lib.util.InteractionUtils;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -38,20 +38,19 @@ public class InteractionFormatter {
      * message types and their definitions. The definition for all interaction types
      * are composed of a list of method definitions for each column in the interaction.
      *
-     * @param separator          string separator
+     * @param separator              string separator
+     * @param decimalSeparator       separator for floating-point numbers
      * @param interactionDefinitions message definitions
      */
-    public InteractionFormatter(String separator, Map<String, List<List<String>>> interactionDefinitions)
+    public InteractionFormatter(char separator, char decimalSeparator, Map<String,
+            List<List<String>>> interactionDefinitions)
             throws SecurityException, NoSuchMethodException, ClassNotFoundException, IllegalArgumentException {
 
         this.methodManagers = new HashMap<>();
 
-        Map<String, Class<?>> interactionClasses = InteractionUtils.getAllSupportedInteractions(
-                "com.dcaiti.mosaic"
-        );
+        Map<String, Class<?>> interactionClasses = InteractionUtils.getAllSupportedInteractions("com.dcaiti.mosaic");
 
         for (Entry<String, List<List<String>>> e : interactionDefinitions.entrySet()) {
-
             String interactionId = e.getKey();
 
             this.methodManagers.putIfAbsent(interactionId, new ArrayList<>());
@@ -61,7 +60,8 @@ public class InteractionFormatter {
 
                 for (List<String> interactionDef : interactionDefList) {
                     // create method manager for this definition
-                    MethodManager methodMgr = new MethodManager(separator, interactionDef, interactionClasses.get(interactionId));
+                    MethodManager methodMgr =
+                            new MethodManager(separator, decimalSeparator, interactionDef, interactionClasses.get(interactionId));
 
                     this.methodManagers.get(interactionId).add(methodMgr);
                 }

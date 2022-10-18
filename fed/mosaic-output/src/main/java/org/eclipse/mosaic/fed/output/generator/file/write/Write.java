@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org. eclipse.mosaic.fed.output.generator.file.write;
+package org.eclipse.mosaic.fed.output.generator.file.write;
 
 import java.io.IOException;
 
