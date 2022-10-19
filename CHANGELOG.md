@@ -1,3 +1,19 @@
+# Changelog Eclipse MOSAIC 22.1 (October 2022)
+
+* [A+] Perception module is now working with viewing angles larger than 180 degrees.
+* [A+] Introducing perception modifiers, such as occlusion or simple error models.
+* [A+] Improved API of vehicle operating system; action methods (e.g., change speed) now accept nanoseconds instead of milliseconds.
+* [M+] Improved handling of priorities when processing time advance requests.
+* [M+] Allow parallel execution of federates based on same Docker image (e.g., when running simulations in parallel).
+* [M+] Added configuration option to configure decimal separator in file output generator.
+* [C+] Upgraded ns-3 federate to support ns3-36.1.
+* [C+] Improved default logging of OMNeT++ and ns-3 simulations to be less verbose.
+* [C-] Fixed a bug in OMneT++ federate using the wrong `omnetpp.ini`.
+* [S+] Added import of building information from OSM, e.g., for wall occlusion in perception module.
+* [T+] Improved coupling of traffic simulator SUMO with vehicle simulators (e.g., PHABMACS or Carla).
+* [T+] Now supports SUMO 1.14.1
+* [T+] Released Berlin SUMO Traffic (BeST) scenario at https://github.com/mosaic-addons/best-scenario
+
 # Changelog Eclipse MOSAIC 22.0 (May 2022)
 
 * [A+] A perception module has been added. Vehicles can now perceive other vehicles in their field of view.
