@@ -42,11 +42,12 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Related repositories
 
-* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.14.0`.
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.14.1`.
 * The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
-  We currently support ns-3 version `3.34`. 
+  We currently support ns-3 version `3.36.1`. 
 * The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
   We currently support OMNeT++ version `5.5` in combination with the INET framework in version `4.1`.  
+* We created the [Berlin SUMO Traffic (BeST) scenario](https://github.com/mosaic-addons/best-scenario) which provides 2.2 million vehicle trips in 24h for Berlin, Germany. The scenario is fully compatible with the latest release of MOSAIC.
 
 ## Contact
 
@@ -59,8 +60,8 @@ For further questions we are available via mosaic@fokus.fraunhofer.de
 For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
-* **Java 8 or 11** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk8).
-* **SUMO 1.14.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **Java 8, 11, or 17** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk8).
+* **SUMO 1.14.1** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 

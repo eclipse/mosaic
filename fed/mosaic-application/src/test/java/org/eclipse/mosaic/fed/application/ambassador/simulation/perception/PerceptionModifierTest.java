@@ -46,16 +46,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PerceptionModifierTest {
     // FLag used for visualization purposes
     private final static boolean PRINT_POSITIONS =
@@ -68,15 +66,15 @@ public class PerceptionModifierTest {
     private final RandomNumberGenerator rng = new DefaultRandomNumberGenerator(1);
     private final EventManager eventManagerMock = mock(EventManager.class);
     private final CentralPerceptionComponent cpcMock = mock(CentralPerceptionComponent.class);
+    private final CentralNavigationComponent cncMock = mock(CentralNavigationComponent.class);
+
+    @Rule
+    public MockitoRule initRule = MockitoJUnit.rule();
 
     @Mock
     public VehicleData egoVehicleData;
 
-    @Mock
-    private CentralNavigationComponent cncMock;
-
     @Rule
-    @InjectMocks
     public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, cncMock, cpcMock);
 
     @Rule

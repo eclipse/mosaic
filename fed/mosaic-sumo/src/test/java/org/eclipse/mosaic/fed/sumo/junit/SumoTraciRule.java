@@ -43,6 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,8 +81,9 @@ public class SumoTraciRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                before();
                 try {
+                    before();
+
                     SinceTraci sinceTraci = description.getAnnotation(SinceTraci.class);
                     if (sinceTraci != null) {
                         SumoVersion currentVersion = SumoTraciRule.this.traci.getCurrentVersion();
@@ -129,10 +131,8 @@ public class SumoTraciRule implements TestRule {
                 "--step-length", String.format(Locale.ENGLISH, "%.2f", (double) sumoConfig.updateInterval / 1000d));
         startArgs.addAll(Arrays.asList(StringUtils.split(sumoConfig.additionalSumoParameters.trim(), " ")));
 
-        sumoProcess = new ExecutableFederateExecutor(
-                null,
-                getSumoExecutable(sumoCmd), startArgs).startLocalFederate(scenarioConfig.getParentFile()
-        );
+        sumoProcess = new ExecutableFederateExecutor(null, getSumoExecutable(sumoCmd), startArgs)
+                .startLocalFederate(scenarioConfig.getParentFile());
 
         if (!GUI_DEBUG) {
             // make sure to read until server is started, otherwise test will fail!
@@ -151,6 +151,8 @@ public class SumoTraciRule implements TestRule {
         assertNotEquals(0, port);
 
         redirectOutputToLog(); // this is necessary, otherwise TraCI will hang due to full output buffer
+
+        Thread.sleep(500); // wait a bit until TraCI server of SUMO is ready
 
         log.info("Connect to SUMO on port {}", port);
         final Socket socket = new Socket("localhost", port);
@@ -188,43 +190,44 @@ public class SumoTraciRule implements TestRule {
     private void after() {
         Bridge.VEHICLE_ID_TRANSFORMER.reset();
         try {
-            log.info("Close Traci Connection");
-            traci.close();
+            if (traci != null) {
+                log.info("Close Traci Connection");
+                traci.close();
+            }
         } catch (Exception e) {
             log.error("Could not close TraCI connection properly", e);
         }
 
         try {
-            log.info("Close SUMO process");
-            sumoProcess.waitFor();
-            sumoProcess.destroyForcibly().waitFor();
-            sumoProcess = null;
+            if (outputLoggingThread != null) {
+                log.info("Close Output Logging Thread");
+                outputLoggingThread.close();
+                outputLoggingThread = null;
+            }
         } catch (Exception e) {
-            log.error("Could not SUMO process", e);
+            log.error("Could not close Output Logging Thread", e);
         }
 
         try {
-            log.info("Close Output Logging Thread");
-            outputLoggingThread.close();
-            outputLoggingThread = null;
+            if (errorLoggingThread != null) {
+                log.info("Close Error Logging Thread");
+                errorLoggingThread.close();
+                errorLoggingThread = null;
+            }
         } catch (Exception e) {
-            log.error("Could not close Logging Thread", e);
+            log.error("Could not close Error Logging Thread", e);
         }
 
         try {
-            log.info("Close Error Logging Thread");
-            errorLoggingThread.close();
-            errorLoggingThread = null;
+            if (sumoProcess != null) {
+                log.info("Close SUMO process");
+                sumoProcess.waitFor(5, TimeUnit.SECONDS);
+                sumoProcess.destroyForcibly().waitFor();
+                sumoProcess = null;
+            }
         } catch (Exception e) {
-            log.error("Could not close Logging Thread", e);
+            log.error("Could not stop SUMO process", e);
         }
-
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-            //
-        }
-
     }
 
     public Bridge getTraciConnection() {
