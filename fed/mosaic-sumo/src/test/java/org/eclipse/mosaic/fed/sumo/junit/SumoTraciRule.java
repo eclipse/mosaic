@@ -131,7 +131,7 @@ public class SumoTraciRule implements TestRule {
                 "--step-length", String.format(Locale.ENGLISH, "%.2f", (double) sumoConfig.updateInterval / 1000d));
         startArgs.addAll(Arrays.asList(StringUtils.split(sumoConfig.additionalSumoParameters.trim(), " ")));
 
-        sumoProcess = new ExecutableFederateExecutor(null,getSumoExecutable(sumoCmd), startArgs)
+        sumoProcess = new ExecutableFederateExecutor(null, getSumoExecutable(sumoCmd), startArgs)
                 .startLocalFederate(scenarioConfig.getParentFile());
 
         if (!GUI_DEBUG) {
@@ -205,7 +205,7 @@ public class SumoTraciRule implements TestRule {
                 outputLoggingThread = null;
             }
         } catch (Exception e) {
-            log.error("Could not close Logging Thread", e);
+            log.error("Could not close Output Logging Thread", e);
         }
 
         try {
@@ -215,7 +215,7 @@ public class SumoTraciRule implements TestRule {
                 errorLoggingThread = null;
             }
         } catch (Exception e) {
-            log.error("Could not close Logging Thread", e);
+            log.error("Could not close Error Logging Thread", e);
         }
 
         try {
