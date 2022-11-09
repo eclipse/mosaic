@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -54,6 +55,8 @@ public class SumoTraciRule implements TestRule {
     private static final Pattern PORT_PATTERN = Pattern.compile(".*Starting server on port ([0-9]+).*");
 
     private static final SumoVersion MINIMUM_VERSION_TESTED = SumoVersion.SUMO_1_0_x;
+
+    private static final int MAX_CONNECTION_TRIES = 10;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -152,12 +155,24 @@ public class SumoTraciRule implements TestRule {
 
         redirectOutputToLog(); // this is necessary, otherwise TraCI will hang due to full output buffer
 
-        Thread.sleep(500); // wait a bit until TraCI server of SUMO is ready
-
         log.info("Connect to SUMO on port {}", port);
-        final Socket socket = new Socket("localhost", port);
-        socket.setPerformancePreferences(0, 100, 10);
-        socket.setTcpNoDelay(true);
+
+        Socket socket = null;
+        int tries = 0;
+        while(tries++ < MAX_CONNECTION_TRIES && socket == null) {
+            try {
+                Thread.sleep(500);
+                socket = new Socket("localhost", port);
+                socket.setPerformancePreferences(0, 100, 10);
+                socket.setTcpNoDelay(true);
+            } catch (ConnectException e) {
+                log.debug("Could not connect, try again in 500ms");
+            }
+        }
+
+        if (socket == null) {
+            throw new IllegalStateException("Could not establish connection to SUMO.");
+        }
 
         final CommandRegister commandRegister = new CommandRegister(sumoConfig, "traci");
         this.traci = new TraciClientBridge(sumoConfig, socket, commandRegister);

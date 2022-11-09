@@ -53,7 +53,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +67,14 @@ public class TraciTest {
 
     private final File scenarioConfig = FileUtils.toFile(getClass().getResource("/sumo-test-scenario/scenario.sumocfg"));
 
-    private final CSumo sumoConfig = new CSumo();
+    private final CSumo sumoConfig = createSumoConfig();
+
+    private static CSumo createSumoConfig() {
+        CSumo config = new CSumo();
+        config.subscriptions =
+                Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER);
+        return config;
+    }
 
     private final static double MAX_SPEED = 30d;
     private final static double REACTION_TIME = 1.4d;
@@ -86,12 +92,6 @@ public class TraciTest {
     public GeoProjectionRule coordinateTransformationRule = new GeoProjectionRule(
             UtmPoint.eastNorth(UtmZone.from(GeoPoint.lonLat(13.0, 52.0)), -385281.94, 5817994.50)
     );
-
-    @Before
-    public void setup() {
-        sumoConfig.subscriptions =
-                Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER);
-    }
 
     @Test
     public void addVehicles() throws Exception {
