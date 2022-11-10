@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<additionals xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
     <e1Detector id="detector_0" lane="319292433_3257049721_1288275815_0" pos="700" freq="100.00" file="detectors.txt" friendlyPos="0"/>
     <e1Detector id="detector_1" lane="319292433_3257049721_1288275815_1" pos="700" freq="100.00" file="detectors.txt" friendlyPos="0"/>
     <e1Detector id="detector_2" lane="319292433_3257049721_1288275815_2" pos="700" freq="100.00" file="detectors.txt" friendlyPos="0"/>
-</additionals>
+</additional>
