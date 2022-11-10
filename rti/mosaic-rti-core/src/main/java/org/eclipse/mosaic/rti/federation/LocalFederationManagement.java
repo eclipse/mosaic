@@ -15,8 +15,6 @@
 
 package org.eclipse.mosaic.rti.federation;
 
-import ch.qos.logback.classic.LoggerContext;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.mosaic.lib.util.ProcessLoggingThread;
 import org.eclipse.mosaic.rti.api.ComponentProvider;
 import org.eclipse.mosaic.rti.api.FederateAmbassador;
@@ -25,6 +23,9 @@ import org.eclipse.mosaic.rti.api.FederationManagement;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.WatchDog;
 import org.eclipse.mosaic.rti.api.parameters.FederateDescriptor;
+
+import ch.qos.logback.classic.LoggerContext;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -252,10 +253,7 @@ public class LocalFederationManagement implements FederationManagement {
 
         // read error output of process in an extra thread
         ProcessLoggingThread errorLoggingThread = new ProcessLoggingThread(
-                LoggerFactory.getLogger(federateName + "Error"),
-                p.getErrorStream(),
-                federateName,
-                ProcessLoggingThread.Level.Error
+                federateName, p.getErrorStream(), LoggerFactory.getLogger(federateName + "Error")::error
         );
         errorLoggingThread.start();
 
@@ -266,10 +264,7 @@ public class LocalFederationManagement implements FederationManagement {
 
         // read the federates stdout in an extra thread and add this to our logging instance
         ProcessLoggingThread outputLoggingThread = new ProcessLoggingThread(
-                LoggerFactory.getLogger(federateName + "Output"),
-                p.getInputStream(),
-                federateName,
-                ProcessLoggingThread.Level.Info
+                federateName, p.getInputStream(), LoggerFactory.getLogger(federateName + "Output")::error
         );
         outputLoggingThread.start();
     }

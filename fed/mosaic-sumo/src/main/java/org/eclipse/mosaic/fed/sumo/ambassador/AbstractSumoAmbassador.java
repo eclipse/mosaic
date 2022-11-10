@@ -396,7 +396,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
 
         try {
-            rti.requestAdvanceTime(nextTimeStep, 0,  FederatePriority.higher(descriptor.getPriority()));
+            rti.requestAdvanceTime(nextTimeStep, 0, FederatePriority.higher(descriptor.getPriority()));
         } catch (IllegalValueException e) {
             log.error("Error during advanceTime request", e);
             throw new InternalFederateException(e);
@@ -1172,8 +1172,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             connectToFederate("localhost", p.getInputStream(), p.getErrorStream());
             // read error output of process in an extra thread
-            new ProcessLoggingThread(log, p.getInputStream(), "sumo", ProcessLoggingThread.Level.Info).start();
-            new ProcessLoggingThread(log, p.getErrorStream(), "sumo", ProcessLoggingThread.Level.Error).start();
+            new ProcessLoggingThread("sumo", p.getInputStream(), log::info).start();
+            new ProcessLoggingThread("sumo", p.getErrorStream(), log::error).start();
 
         } catch (FederateExecutor.FederateStarterException e) {
             log.error("Error while executing command: {}", federateExecutor.toString());
@@ -1232,7 +1232,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             rti.triggerInteraction(simulationStepResult.getTrafficDetectorUpdates());
             this.rti.triggerInteraction(simulationStepResult.getTrafficLightUpdates());
 
-            rti.requestAdvanceTime(nextTimeStep, 0,  FederatePriority.higher(descriptor.getPriority()));
+            rti.requestAdvanceTime(nextTimeStep, 0, FederatePriority.higher(descriptor.getPriority()));
 
             lastAdvanceTime = time;
         } catch (InternalFederateException | IOException | IllegalValueException e) {
@@ -1422,6 +1422,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 "--remote-port", Integer.toString(port),
                 "--step-length", String.format(Locale.ENGLISH, "%.2f", stepSize)
         );
+
+        // if SUMO_HOME is not set, the XML input validation in SUMO might fail as no XSDs are available.
+        // Therefore, we disable XML validation if SUMO_HOME is not set.
+        if (!sumoConfig.validateSumoFiles || StringUtils.isBlank(System.getenv("SUMO_HOME"))) {
+            args.add("--xml-validation");
+            args.add("never");
+        }
 
         if (sumoConfig.additionalSumoParameters != null) {
             args.addAll(Arrays.asList(StringUtils.split(sumoConfig.additionalSumoParameters.trim(), " ")));

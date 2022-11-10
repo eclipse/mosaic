@@ -131,7 +131,9 @@ public class SumoTraciRule implements TestRule {
         // startup sumo
         final List<String> startArgs = Lists.newArrayList("-c", scenarioConfig.getName(),
                 "-v", "--remote-port", Integer.toString(port),
-                "--step-length", String.format(Locale.ENGLISH, "%.2f", (double) sumoConfig.updateInterval / 1000d));
+                "--step-length", String.format(Locale.ENGLISH, "%.2f", (double) sumoConfig.updateInterval / 1000d),
+                "--xml-validation", "never"
+        );
         startArgs.addAll(Arrays.asList(StringUtils.split(sumoConfig.additionalSumoParameters.trim(), " ")));
 
         sumoProcess = new ExecutableFederateExecutor(null, getSumoExecutable(sumoCmd), startArgs)
@@ -159,7 +161,7 @@ public class SumoTraciRule implements TestRule {
 
         Socket socket = null;
         int tries = 0;
-        while(tries++ < MAX_CONNECTION_TRIES && socket == null) {
+        while (tries++ < MAX_CONNECTION_TRIES && socket == null) {
             try {
                 Thread.sleep(500);
                 socket = new Socket("localhost", port);
@@ -191,10 +193,13 @@ public class SumoTraciRule implements TestRule {
 
     private void redirectOutputToLog() {
         log.info("Start logging threads");
-        outputLoggingThread = new ProcessLoggingThread(log, sumoProcess.getInputStream(), "SumoAmbassador", ProcessLoggingThread.Level.Debug);
+        outputLoggingThread = new ProcessLoggingThread("sumo", sumoProcess.getInputStream(), log::debug);
         outputLoggingThread.start();
 
-        errorLoggingThread = new ProcessLoggingThread(log, sumoProcess.getErrorStream(), "SumoAmbassador", ProcessLoggingThread.Level.Error);
+        errorLoggingThread = new ProcessLoggingThread("sumo", sumoProcess.getErrorStream(), line -> {
+            log.error(line);
+            System.err.println(line); // make sure that we see what's wrong when SUMO cannot start
+        });
         errorLoggingThread.start();
     }
 

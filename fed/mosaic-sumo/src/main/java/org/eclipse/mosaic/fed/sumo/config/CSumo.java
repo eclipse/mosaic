@@ -65,7 +65,13 @@ public class CSumo implements Serializable {
      * setting time-to-teleport to 0. This avoid unmoved "vehicles" (in our case
      * also RSUs) being removed from simulation.
      */
-    public String additionalSumoParameters = "--time-to-teleport 0 --seed 100000 --xml-validation always";
+    public String additionalSumoParameters = "--time-to-teleport 0 --seed 100000";
+
+    /**
+     * Per default, SUMO will validate all input files for correctness. To disable
+     * this behavior, this field can be set to {@code false}.
+     */
+    public boolean validateSumoFiles = true;
 
     /**
      * Defines the time window in seconds in which vehicle counts on induction loops

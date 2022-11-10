@@ -22,23 +22,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 public class ProcessLoggingThread extends Thread {
 
-    public enum Level { Error, Info, Debug, Trace }
-
+    private final String processName;
+    private final Consumer<String> lineConsumer;
     private final InputStream stream;
-    private final org.slf4j.Logger log;
-    private final String id;
-    private final Level level;
     private boolean running = true;
 
-    public ProcessLoggingThread(org.slf4j.Logger log, InputStream stream, String identifier, Level level) {
+    public ProcessLoggingThread(String processName, InputStream stream, Consumer<String> lineConsumer) {
+        this.processName = processName;
         this.stream = stream;
-        this.log = log;
-
-        this.id = identifier;
-        this.level = level;
+        this.lineConsumer = lineConsumer;
     }
 
     public void close() {
@@ -63,36 +59,8 @@ public class ProcessLoggingThread extends Thread {
 
             String line;
             while (running) {
-
                 if ((line = bufferedReader.readLine()) != null) {
-                    if (this.level.equals(Level.Error)) {
-                        if (id == null || id.length() == 0) {
-                            this.log.error(line);
-                        } else {
-                            this.log.error("Process {} : {}", this.id, line);
-                        }
-                    }
-                    if (this.level.equals(Level.Info)) {
-                        if (id == null || id.length() == 0) {
-                            this.log.info(line);
-                        } else {
-                            this.log.info("Process {} : {}", this.id, line);
-                        }
-                    }
-                    if (this.level.equals(Level.Debug)) {
-                        if (id == null || id.length() == 0) {
-                            this.log.debug(line);
-                        } else {
-                            this.log.debug("Process {} : {}", this.id, line);
-                        }
-                    }
-                    if (this.level.equals(Level.Trace)) {
-                        if (id == null || id.length() == 0) {
-                            this.log.trace(line);
-                        } else {
-                            this.log.trace("Process {} : {}", this.id, line);
-                        }
-                    }
+                    lineConsumer.accept("Process " + processName + ": " + line);
                 }
             }
 
