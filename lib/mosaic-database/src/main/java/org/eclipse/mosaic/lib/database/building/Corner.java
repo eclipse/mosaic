@@ -85,9 +85,9 @@ public class Corner {
 
     @Override
     public String toString() {
-        return "Corner{" +
-                "position=" + position +
-                ", cartesianPosition=" + cartesianPosition +
-                '}';
+        return "Corner{"
+                + "position=" + position
+                + ", cartesianPosition=" + cartesianPosition
+                + '}';
     }
 }

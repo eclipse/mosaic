@@ -104,10 +104,10 @@ public class Wall {
 
     @Override
     public String toString() {
-        return "Wall{" +
-                "length=" + length +
-                ", fromCorner=" + fromCorner +
-                ", toCorner=" + toCorner +
-                '}';
+        return "Wall{"
+                + "length=" + length
+                + ", fromCorner=" + fromCorner
+                + ", toCorner=" + toCorner
+                + '}';
     }
 }
