@@ -68,12 +68,6 @@ public class CSumo implements Serializable {
     public String additionalSumoParameters = "--time-to-teleport 0 --seed 100000";
 
     /**
-     * Per default, SUMO will validate all input files for correctness. To disable
-     * this behavior, this field can be set to {@code false}.
-     */
-    public boolean validateSumoFiles = true;
-
-    /**
      * Defines the time window in seconds in which vehicle counts on induction loops
      * should be aggregated to traffic flow (veh/h).
      */

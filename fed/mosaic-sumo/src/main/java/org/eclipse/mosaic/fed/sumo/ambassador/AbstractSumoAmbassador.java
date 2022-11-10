@@ -1425,7 +1425,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
         // if SUMO_HOME is not set, the XML input validation in SUMO might fail as no XSDs are available.
         // Therefore, we disable XML validation if SUMO_HOME is not set.
-        if (!sumoConfig.validateSumoFiles || StringUtils.isBlank(System.getenv("SUMO_HOME"))) {
+        if (StringUtils.isBlank(System.getenv("SUMO_HOME"))) {
             args.add("--xml-validation");
             args.add("never");
         }
