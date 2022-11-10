@@ -133,22 +133,23 @@ public class SQLiteWriter {
 
         sqlite.getConnection().setAutoCommit(false);
         // delete old contents
-        statement.addBatch("DROP TABLE IF EXISTS Properties;");
-        statement.addBatch("DROP TABLE IF EXISTS Node;");
-        statement.addBatch("DROP TABLE IF EXISTS Way;");
-        statement.addBatch("DROP TABLE IF EXISTS WayConsistsOf;");
-        statement.addBatch("DROP TABLE IF EXISTS Connection;");
-        statement.addBatch("DROP TABLE IF EXISTS ConnectionConsistsOf;");
-        statement.addBatch("DROP TABLE IF EXISTS ConnectionDetails;");
-        statement.addBatch("DROP TABLE IF EXISTS Restriction;");
-        statement.addBatch("DROP TABLE IF EXISTS TrafficSignals;");
-        statement.addBatch("DROP TABLE IF EXISTS Route;");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.PROPERTIES + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.NODE + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.WAY + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.WAY_CONSISTS_OF + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.CONNECTION + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.CONNECTION_CONSISTS_OF + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.CONNECTION_DETAILS + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.RESTRICTION + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.TRAFFIC_SIGNALS + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.ROUTE + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.BUILDING + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.BUILDING_CONSISTS_OF + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.ROUNDABOUT + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.ROUNDABOUT_CONSISTS_OF + ";");
+        // TODO: Deprecated tables?
         statement.addBatch("DROP TABLE IF EXISTS Corner;");
         statement.addBatch("DROP TABLE IF EXISTS Wall;");
-        statement.addBatch("DROP TABLE IF EXISTS Building;");
-        statement.addBatch("DROP TABLE IF EXISTS BuildingConsistsOf;");
-        statement.addBatch("DROP TABLE IF EXISTS Roundabout;");
-        statement.addBatch("DROP TABLE IF EXISTS RoundaboutConsistsOf;");
         statement.executeBatch();
         sqlite.getConnection().commit();
         // close connection (includes already a stat.close())
@@ -164,30 +165,30 @@ public class SQLiteWriter {
         Statement statement = sqlite.connect();
         // create tables
         // integrity
-        statement.executeUpdate("CREATE TABLE Properties (id String UNIQUE, value TEXT)");
-        statement.executeUpdate("INSERT INTO Properties(id, value) VALUES ('" + Database.PROPERTY_VERSION + "', '" + Database.VERSION_UNKNOWN + "')");
-        statement.executeUpdate("INSERT INTO Properties(id, value) VALUES ('" + Database.PROPERTY_IMPORT_ORIGIN + "', '')");
+        statement.executeUpdate("CREATE TABLE " + TABLES.PROPERTIES + " (id String UNIQUE, value TEXT)");
+        statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES + "(id, value) VALUES ('" + Database.PROPERTY_VERSION + "', '" + Database.VERSION_UNKNOWN + "')");
+        statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES + "(id, value) VALUES ('" + Database.PROPERTY_IMPORT_ORIGIN + "', '')");
         // pure network
-        statement.executeUpdate("CREATE TABLE Node (id STRING, lat DOUBLE, lon DOUBLE, ele DOUBLE, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
-        statement.executeUpdate("CREATE TABLE Way (id STRING, name TEXT, type TEXT, speed DOUBLE, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
-        statement.executeUpdate("CREATE TABLE WayConsistsOf (way_id STRING, node_id STRING, sequence_number INTEGER)");
-        statement.executeUpdate("CREATE TABLE Connection (id STRING, way_id STRING, lanes INTEGER, length FLOAT)");
-        statement.executeUpdate("CREATE TABLE ConnectionConsistsOf (connection_id STRING, node_id STRING, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.NODE + " (id STRING, lat DOUBLE, lon DOUBLE, ele DOUBLE, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.WAY + " (id STRING, name TEXT, type TEXT, speed DOUBLE, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.WAY_CONSISTS_OF + " (way_id STRING, node_id STRING, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION + " (id STRING, way_id STRING, lanes INTEGER, length FLOAT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_CONSISTS_OF + " (connection_id STRING, node_id STRING, sequence_number INTEGER)");
         // turn restrictions
-        statement.executeUpdate("CREATE TABLE Restriction (id STRING, source_way_id STRING, via_node_id STRING, target_way_id STRING, type STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.RESTRICTION + " (id STRING, source_way_id STRING, via_node_id STRING, target_way_id STRING, type STRING)");
         // traffic signals
-        statement.executeUpdate("CREATE TABLE TrafficSignals (id STRING, ref_node_id STRING, phases STRING, timing STRING, from_way_id STRING, via0_way_id STRING, via1_way_id STRING, to_way_id STRING, lanes_from STRING, lanes_via0 STRING, lanes_via1 STRING, lanes_to STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.TRAFFIC_SIGNALS + " (id STRING, ref_node_id STRING, phases STRING, timing STRING, from_way_id STRING, via0_way_id STRING, via1_way_id STRING, to_way_id STRING, lanes_from STRING, lanes_via0 STRING, lanes_via1 STRING, lanes_to STRING)");
         // vehicle data
-        statement.executeUpdate("CREATE TABLE Route (id STRING, sequence_number INTEGER, connection_id STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUTE + " (id STRING, sequence_number INTEGER, connection_id STRING)");
         // roundabouts
-        statement.executeUpdate("CREATE TABLE Roundabout (id STRING)");
-        statement.executeUpdate("CREATE TABLE RoundaboutConsistsOf (roundabout_id STRING, node_id STRING, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT + " (id STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT_CONSISTS_OF + " (roundabout_id STRING, node_id STRING, sequence_number INTEGER)");
         // buildings and its corners
-        statement.executeUpdate("CREATE TABLE Building (id STRING, name TEXT, height DOUBLE)");
-        statement.executeUpdate("CREATE TABLE BuildingConsistsOf (building_id STRING, lat DOUBLE, lon DOUBLE, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING + " (id STRING, name TEXT, height DOUBLE)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING_CONSISTS_OF + " (building_id STRING, lat DOUBLE, lon DOUBLE, sequence_number INTEGER)");
 
         // Connection Details (like parking lots)
-        statement.executeUpdate("CREATE TABLE ConnectionDetails (id STRING, connection STRING, type STRING, value STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_DETAILS + " (id STRING, connection STRING, type STRING, value STRING)");
         sqlite.disconnect(statement);
     }
 
@@ -198,8 +199,8 @@ public class SQLiteWriter {
      */
     private void createIndices() throws SQLException {
         Statement statement = sqlite.connect();
-        statement.executeUpdate("CREATE INDEX building_index on BuildingCorner(building_id)");
-        statement.executeUpdate("CREATE INDEX roundabout_index on RoundaboutConsistsOf(roundabout_id)");
+        statement.executeUpdate("CREATE INDEX building_index on " + TABLES.BUILDING_CONSISTS_OF + "(building_id)");
+        statement.executeUpdate("CREATE INDEX roundabout_index on " + TABLES.ROUNDABOUT_CONSISTS_OF + "(roundabout_id)");
         sqlite.disconnect(statement);
     }
 
@@ -218,7 +219,7 @@ public class SQLiteWriter {
                 }
             }
             // actually write away
-            String statement = "UPDATE Properties SET value = ? WHERE id = ?";
+            String statement = "UPDATE " + TABLES.PROPERTIES + " SET value = ? WHERE id = ?";
             try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
                 prep.setString(1, currentValue);
                 prep.setString(2, currentKey);
@@ -237,7 +238,7 @@ public class SQLiteWriter {
      */
     private void saveNodes(Database database) {
         String columns = "id, lon, lat, ele, is_traffic_light, is_intersection, is_generated";
-        String statement = "INSERT INTO Node(" + columns + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.NODE + "(" + columns + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
             sqlite.getConnection().setAutoCommit(false);
@@ -266,7 +267,7 @@ public class SQLiteWriter {
      */
     private void saveWays(Database database) {
         String columns = "id, name, type, speed, lanesForward, lanesBackward, oneway";
-        String statement = "INSERT INTO Way(" + columns + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.WAY + "(" + columns + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
             sqlite.getConnection().setAutoCommit(false);
@@ -297,7 +298,7 @@ public class SQLiteWriter {
         for (Roundabout roundabout : database.getRoundabouts()) {
 
             // Create new roundabout reference in database
-            final String newRoundaboutStatement = "INSERT INTO Roundabout(id) VALUES (?)";
+            final String newRoundaboutStatement = "INSERT INTO " + TABLES.ROUNDABOUT + "(id) VALUES (?)";
             try (PreparedStatement prep = sqlite.getConnection().prepareStatement(newRoundaboutStatement)) {
                 final boolean autoCommit = sqlite.getConnection().getAutoCommit();
                 sqlite.getConnection().setAutoCommit(false);
@@ -311,7 +312,7 @@ public class SQLiteWriter {
 
             // Add roundabout node references
             final String columns = "roundabout_id, node_id, sequence_number";
-            final String statement = "INSERT INTO RoundaboutConsistsOf(" + columns + ") VALUES (?, ?, ?)";
+            final String statement = "INSERT INTO " + TABLES.ROUNDABOUT_CONSISTS_OF + "(" + columns + ") VALUES (?, ?, ?)";
             int sequenceNumber = 0;
             try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
                 final boolean autoCommit = sqlite.getConnection().getAutoCommit();
@@ -339,7 +340,7 @@ public class SQLiteWriter {
      */
     private void saveWayNodes(Database database) {
         String columns = "way_id, node_id, sequence_number";
-        String statement = "INSERT INTO WayConsistsOf(" + columns + ") VALUES (?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.WAY_CONSISTS_OF + "(" + columns + ") VALUES (?, ?, ?)";
         int sequenceNumber;
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
@@ -370,7 +371,7 @@ public class SQLiteWriter {
      */
     private void saveConnections(Database database) {
         String columns = "id, way_id, lanes, length";
-        String statement = "INSERT INTO Connection(" + columns + ") VALUES (?, ?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.CONNECTION + "(" + columns + ") VALUES (?, ?, ?, ?)";
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
             sqlite.getConnection().setAutoCommit(false);
@@ -396,7 +397,7 @@ public class SQLiteWriter {
      */
     private void saveConnectionNodes(Database database) {
         String columns = "connection_id, node_id, sequence_number";
-        String statement = "INSERT INTO ConnectionConsistsOf(" + columns + ") VALUES (?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.CONNECTION_CONSISTS_OF + "(" + columns + ") VALUES (?, ?, ?)";
         int sequenceNumber;
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
@@ -426,7 +427,7 @@ public class SQLiteWriter {
      */
     private void saveRestrictions(Database database) {
         String columns = "id, source_way_id, via_node_id, target_way_id, type";
-        String statement = "INSERT INTO Restriction(" + columns + ") VALUES (?, ?, ?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.RESTRICTION + "(" + columns + ") VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
@@ -454,7 +455,7 @@ public class SQLiteWriter {
      */
     private void saveBuildings(Database database) {
 
-        final String buildingStatement = "INSERT INTO Building(id, name, height) VALUES (?, ?, ?)";
+        final String buildingStatement = "INSERT INTO " + TABLES.BUILDING + "(id, name, height) VALUES (?, ?, ?)";
 
         // Create new building in database
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(buildingStatement)) {
@@ -474,7 +475,7 @@ public class SQLiteWriter {
         }
 
         // Store corner list of building in database
-        final String cornerStatement = "INSERT INTO BuildingConsistsOf(building_id, lat, lon, sequence_number) VALUES (?, ?, ?, ?)";
+        final String cornerStatement = "INSERT INTO " + TABLES.BUILDING_CONSISTS_OF + "(building_id, lat, lon, sequence_number) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(cornerStatement)) {
             final boolean autoCommit = sqlite.getConnection().getAutoCommit();
@@ -505,7 +506,7 @@ public class SQLiteWriter {
      */
     private void saveRoutes(Database database) {
         String columns = "id, sequence_number, connection_id";
-        String statement = "INSERT INTO Route(" + columns + ") VALUES (?, ?, ?)";
+        String statement = "INSERT INTO " + TABLES.ROUTE + "(" + columns + ") VALUES (?, ?, ?)";
         int sequenceNumber;
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();

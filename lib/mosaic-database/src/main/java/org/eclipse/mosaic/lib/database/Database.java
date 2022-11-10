@@ -525,7 +525,6 @@ public class Database {
             database.restrictions.clear();
             database.ways.clear();
             database.roundabouts.clear();
-            database.buildings.clear();
             database.borderNodes = null;
             database.minBounds.set(90, 180, 0);
             database.maxBounds.set(-90, -180, 0);
