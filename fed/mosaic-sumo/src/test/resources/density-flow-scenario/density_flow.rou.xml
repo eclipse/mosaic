@@ -1,7 +1,6 @@
-<?xml version="1.0"?>
-
-<routes>
-    <vType model="IDMM" id="PKW" accel="1.5" decel="4.5" sigma="0.5" length="5.0" maxspeed="50.0" tau="1.0" speedDev="0.1" emissionClass="HBEFA3/PC_G_EU4" speedFactor="1.0"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType carFollowModel="IDMM" id="PKW" accel="1.5" decel="4.5" sigma="0.5" length="5.0" maxSpeed="50.0" tau="1.0" speedDev="0.1" emissionClass="HBEFA3/PC_G_EU4" speedFactor="1.0"/>
     <route id="1" edges="1_1_2_1 1_2_3_2 1_3_4_3"/>
     <flow id="1" route="1" type="PKW" begin="0" end="300" period="3" departLane="best" departSpeed="max"/>
 </routes>
