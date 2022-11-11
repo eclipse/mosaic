@@ -111,7 +111,9 @@
         <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
-        <version.libsumo>1.14.0</version.libsumo><!-- no newer version available in maven repository -->
+        <!-- FIXME this should be updated to the latest SUMO version, but currently no newer version is available in maven repository -->
+        <!-- note, when upgrading, the field LibSumoAmbassador#VALID_LIBSUMO_VERSIONS needs to be changed too -->
+        <version.libsumo>1.14.0</version.libsumo>
     </properties>
 
     <dependencies>

@@ -57,6 +57,7 @@ public class SumoTraciRule implements TestRule {
     private static final SumoVersion MINIMUM_VERSION_TESTED = SumoVersion.SUMO_1_0_x;
 
     private static final int MAX_CONNECTION_TRIES = 10;
+    private static final int CONNECTION_RETRY_TIME_MS = 500;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -163,7 +164,7 @@ public class SumoTraciRule implements TestRule {
         int tries = 0;
         while (tries++ < MAX_CONNECTION_TRIES && socket == null) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(CONNECTION_RETRY_TIME_MS);
                 socket = new Socket("localhost", port);
                 socket.setPerformancePreferences(0, 100, 10);
                 socket.setTcpNoDelay(true);

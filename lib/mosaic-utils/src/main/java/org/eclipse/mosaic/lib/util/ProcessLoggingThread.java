@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.util;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -54,12 +53,11 @@ public class ProcessLoggingThread extends Thread {
     @SuppressWarnings(value = "REC_CATCH_EXCEPTION",
             justification = "Read exception will always occur if something goes wrong and the process we monitor is dead.")
     private void flushLog(InputStream stream) {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))){
 
             String line;
             while (running) {
-                if ((line = bufferedReader.readLine()) != null) {
+                if ((line = reader.readLine()) != null) {
                     lineConsumer.accept("Process " + processName + ": " + line);
                 }
             }
@@ -68,13 +66,6 @@ public class ProcessLoggingThread extends Thread {
             /* Read exception will always occur, if something goes wrong and the process we monitor is dead.
              * Therefore it is a normal behavior and it is safe to ignore them.
              */
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                // quiet
-            }
-
         }
     }
 }
