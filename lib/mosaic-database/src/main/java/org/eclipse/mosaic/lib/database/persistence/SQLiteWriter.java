@@ -147,9 +147,9 @@ public class SQLiteWriter {
         statement.addBatch("DROP TABLE IF EXISTS " + TABLES.BUILDING_CONSISTS_OF + ";");
         statement.addBatch("DROP TABLE IF EXISTS " + TABLES.ROUNDABOUT + ";");
         statement.addBatch("DROP TABLE IF EXISTS " + TABLES.ROUNDABOUT_CONSISTS_OF + ";");
-        // TODO: Deprecated tables?
-        statement.addBatch("DROP TABLE IF EXISTS Corner;");
-        statement.addBatch("DROP TABLE IF EXISTS Wall;");
+        // removing deprecated tables
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.CORNER + ";");
+        statement.addBatch("DROP TABLE IF EXISTS " + TABLES.WALL + ";");
         statement.executeBatch();
         sqlite.getConnection().commit();
         // close connection (includes already a stat.close())

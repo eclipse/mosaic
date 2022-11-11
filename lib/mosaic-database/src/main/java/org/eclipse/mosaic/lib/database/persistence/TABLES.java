@@ -30,5 +30,17 @@ final class TABLES {
     static String BUILDING = "Building";
     static String BUILDING_CONSISTS_OF = "BuildingConsistsOf";
     static String CONNECTION_DETAILS = "ConnectionDetails";
+    /**
+     * Will no longer be written to, but used to update old versions of databases.
+     */
+    @Deprecated
+    static String CORNER = "Corner";
+    /**
+     * Will no longer be written to, but used to update old versions of databases.
+     */
+    @Deprecated
+    static String WALL = "Wall";
+
+
     
 }
