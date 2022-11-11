@@ -133,7 +133,7 @@ public class SumoTraciRule implements TestRule {
         final List<String> startArgs = Lists.newArrayList("-c", scenarioConfig.getName(),
                 "-v", "--remote-port", Integer.toString(port),
                 "--step-length", String.format(Locale.ENGLISH, "%.2f", (double) sumoConfig.updateInterval / 1000d),
-                "--xml-validation", "never"
+                "--xml-validation", "always"
         );
         startArgs.addAll(Arrays.asList(StringUtils.split(sumoConfig.additionalSumoParameters.trim(), " ")));
 
