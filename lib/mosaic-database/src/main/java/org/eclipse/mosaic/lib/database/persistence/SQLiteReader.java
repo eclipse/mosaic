@@ -128,7 +128,7 @@ public class SQLiteReader {
     private String checkVersion() throws OutdatedDatabaseException {
         String versionString;
         try {
-            SQLiteAccess.Result queryResult = sqlite.executeStatement("SELECT value FROM Properties WHERE id = '" + Database.PROPERTY_VERSION + "'");
+            SQLiteAccess.Result queryResult = sqlite.executeStatement("SELECT value FROM " + TABLES.PROPERTIES + " WHERE id = '" + Database.PROPERTY_VERSION + "'");
             versionString = queryResult.getFirstRow().getString("value");
         } catch (SQLException | ArrayIndexOutOfBoundsException e) {
             log.warn("Database follows outdated scheme.", e);
@@ -153,7 +153,7 @@ public class SQLiteReader {
         try {
             // get all properties
             List<SQLiteAccess.ResultRow> propertyList = sqlite.executeStatement(
-                    "SELECT id, value FROM Properties"
+                    "SELECT id, value FROM " + TABLES.PROPERTIES
             ).getRows();
 
             // rework into objects
@@ -183,7 +183,7 @@ public class SQLiteReader {
         try {
             // get all nodes
             List<SQLiteAccess.ResultRow> nodeList = sqlite.executeStatement(
-                    "SELECT id, lat, lon, ele, is_traffic_light, is_intersection, is_generated FROM Node"
+                    "SELECT id, lat, lon, ele, is_traffic_light, is_intersection, is_generated FROM " + TABLES.NODE
             ).getRows();
 
             // rework into objects
@@ -222,7 +222,7 @@ public class SQLiteReader {
         try {
             // get all ways
             List<SQLiteAccess.ResultRow> wayList = sqlite.executeStatement(
-                    "SELECT id, name, type, speed, lanesForward, lanesBackward, oneway FROM Way"
+                    "SELECT id, name, type, speed, lanesForward, lanesBackward, oneway FROM " + TABLES.WAY
             ).getRows();
 
             for (SQLiteAccess.ResultRow wayEntry : wayList) {
@@ -258,7 +258,7 @@ public class SQLiteReader {
     private void loadWayNodes(Database.Builder databaseBuilder) {
         try {
             List<SQLiteAccess.ResultRow> consists = sqlite.executeStatement(
-                    "SELECT way_id, node_id FROM WayConsistsOf ORDER BY sequence_number"
+                    "SELECT way_id, node_id FROM " + TABLES.WAY_CONSISTS_OF+ " ORDER BY sequence_number"
             ).getRows();
 
             // rework into objects
@@ -281,7 +281,7 @@ public class SQLiteReader {
     private void loadConnections(Database.Builder databaseBuilder) {
         try {
             List<SQLiteAccess.ResultRow> connections = sqlite.executeStatement(
-                    "SELECT id, way_id, lanes, length FROM Connection"
+                    "SELECT id, way_id, lanes, length FROM " + TABLES.CONNECTION
             ).getRows();
 
             // rework into objects
@@ -309,7 +309,7 @@ public class SQLiteReader {
     private void loadConnectionNodes(Database.Builder databaseBuilder) {
         try {
             List<SQLiteAccess.ResultRow> consists = sqlite.executeStatement(
-                    "SELECT connection_id, node_id FROM ConnectionConsistsOf ORDER BY sequence_number"
+                    "SELECT connection_id, node_id FROM " + TABLES.CONNECTION_CONSISTS_OF + " ORDER BY sequence_number"
             ).getRows();
 
             // rework into objects
@@ -336,7 +336,7 @@ public class SQLiteReader {
     private void loadRoundabouts(Database.Builder databaseBuilder) {
         try {
             List<SQLiteAccess.ResultRow> roundabouts = sqlite.executeStatement(
-                    "SELECT id FROM Roundabout"
+                    "SELECT id FROM " + TABLES.ROUNDABOUT
             ).getRows();
 
             // rework into objects
@@ -362,7 +362,7 @@ public class SQLiteReader {
     private List<Node> loadRoundaboutNodes(String roundaboutId, Database.Builder databaseBuilder) {
         try {
             List<SQLiteAccess.ResultRow> restrictions = sqlite.executeStatement(
-                    "SELECT node_id FROM RoundaboutConsistsOf WHERE roundabout_id = \""
+                    "SELECT node_id FROM " + TABLES.ROUNDABOUT_CONSISTS_OF + " WHERE roundabout_id = \""
                             + roundaboutId + "\" ORDER BY sequence_number ASC"
             ).getRows();
             List<Node> restrictionNodes = new ArrayList<>();
@@ -386,7 +386,7 @@ public class SQLiteReader {
 
         try {
             List<SQLiteAccess.ResultRow> restrictions = sqlite.executeStatement(
-                    "SELECT id, source_way_id, via_node_id, target_way_id, type FROM Restriction"
+                    "SELECT id, source_way_id, via_node_id, target_way_id, type FROM " + TABLES.RESTRICTION
             ).getRows();
 
             for (SQLiteAccess.ResultRow restrictionEntry : restrictions) {
@@ -411,7 +411,7 @@ public class SQLiteReader {
      */
     private void loadBuildings(Database.Builder databaseBuilder) {
         try {
-            List<SQLiteAccess.ResultRow> buildingEntries = sqlite.executeStatement("SELECT id, name, height FROM Building").getRows();
+            List<SQLiteAccess.ResultRow> buildingEntries = sqlite.executeStatement("SELECT id, name, height FROM " + TABLES.BUILDING).getRows();
 
             // rework into objects
             for (SQLiteAccess.ResultRow buildingEntry : buildingEntries) {
@@ -420,7 +420,7 @@ public class SQLiteReader {
                 double height = buildingEntry.getDouble("height");
 
                 List<SQLiteAccess.ResultRow> cornerEntries = sqlite.executeStatement(
-                        "SELECT lat, lon FROM BuildingConsistsOf WHERE building_id = \"" + id + "\" ORDER BY sequence_number"
+                        "SELECT lat, lon FROM " + TABLES.BUILDING_CONSISTS_OF + " WHERE building_id = \"" + id + "\" ORDER BY sequence_number"
                 ).getRows();
 
                 final GeoPoint[] corners = new GeoPoint[cornerEntries.size()];
@@ -446,7 +446,7 @@ public class SQLiteReader {
     private void loadRoutes(Database.Builder databaseBuilder) {
         try {
             List<SQLiteAccess.ResultRow> routes = sqlite.executeStatement(
-                    "SELECT id, connection_id FROM Route ORDER BY id, sequence_number"
+                    "SELECT id, connection_id FROM " + TABLES.ROUTE + " ORDER BY id, sequence_number"
             ).getRows();
 
             String lastId = null;
