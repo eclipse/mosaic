@@ -65,7 +65,7 @@ public class CSumo implements Serializable {
      * setting time-to-teleport to 0. This avoid unmoved "vehicles" (in our case
      * also RSUs) being removed from simulation.
      */
-    public String additionalSumoParameters = " --time-to-teleport 0  --seed 100000";
+    public String additionalSumoParameters = "--time-to-teleport 0 --seed 100000";
 
     /**
      * Defines the time window in seconds in which vehicle counts on induction loops
