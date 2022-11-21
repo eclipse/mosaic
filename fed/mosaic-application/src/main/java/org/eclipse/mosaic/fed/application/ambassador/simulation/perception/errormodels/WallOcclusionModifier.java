@@ -16,8 +16,8 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.WallProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.Edge;
@@ -37,31 +37,33 @@ public class WallOcclusionModifier implements PerceptionModifier {
     private final Vector3d intersectionResult = new Vector3d();
 
     @Override
-    public synchronized List<VehicleObject> apply(PerceptionModuleOwner owner, List<VehicleObject> vehicleObjects) {
-        if (vehicleObjects.size() == 0) {
-            return vehicleObjects;
+    public synchronized List<SpatialObject> apply(PerceptionModuleOwner owner, List<SpatialObject> spatialObjects) {
+        if (spatialObjects.size() == 0) {
+            return spatialObjects;
         }
 
         if (!(owner.getPerceptionModule() instanceof WallProvider)) {
-            return vehicleObjects;
+            return spatialObjects;
         }
 
         final Collection<Edge<Vector3d>> walls = ((WallProvider) owner.getPerceptionModule()).getSurroundingWalls();
         final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         final Vector3d otherPosition = new Vector3d();
 
-        final List<VehicleObject> result = new ArrayList<>();
+        final List<SpatialObject> result = new ArrayList<>();
 
-        vehicleLoop: for (VehicleObject vehicle: vehicleObjects) {
-            vehicle.getProjectedPosition().toVector3d(otherPosition);
+        vehicleLoop:
+        for (SpatialObject spatialObject : spatialObjects) {
+            spatialObject.getProjectedPosition().toVector3d(otherPosition);
 
-            for (Edge<Vector3d> wall: walls) {
-                boolean isHidden = VectorUtils.computeXZEdgeIntersectionPoint(ownerPosition, otherPosition, wall.a, wall.b, intersectionResult);
+            for (Edge<Vector3d> wall : walls) {
+                boolean isHidden =
+                        VectorUtils.computeXZEdgeIntersectionPoint(ownerPosition, otherPosition, wall.a, wall.b, intersectionResult);
                 if (isHidden) {
                     continue vehicleLoop;
                 }
             }
-            result.add(vehicle);
+            result.add(spatialObject);
         }
 
         return result;

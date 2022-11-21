@@ -13,42 +13,69 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
-
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SpatialVehicleIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObjectAdapter;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
-import org.eclipse.mosaic.lib.spatial.Grid;
+import org.eclipse.mosaic.lib.spatial.QuadTree;
 
+import com.google.gson.annotations.Expose;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PerceptionGrid implements SpatialVehicleIndex {
+/**
+ * Quad-tree based implementation of a {@link SpatialIndex}.
+ */
+public class VehicleTree implements VehicleIndexProvider {
+
+    /**
+     * The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.
+     * Filled by gson.
+     */
+    @Expose()
+    public int splitSize = 20;
+
+    /**
+     * Maximum depth of the quad tree.
+     * Filled by gson.
+     */
+    @Expose()
+    public int maxDepth = 12;
+
     /**
      * Stores {@link VehicleObject}s for fast removal and position update.
      */
     private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
 
     /**
-     * The Grid to be used for spatial search of {@link VehicleObject}s.
+     * The Quad-Tree to be used for spatial search of {@link VehicleObject}s.
      */
-    private final Grid<VehicleObject> vehicleGrid;
+    private QuadTree<VehicleObject> vehicleTree;
 
-
-    public PerceptionGrid(CartesianRectangle bounds, double cellWidth, double cellHeight) {
+    /**
+     * Configures a QuadTree as spatial index for vehicles on first use.
+     */
+    @Override
+    public void initialize() {
+        QuadTree.configure(splitSize, splitSize / 2, maxDepth);
+        CartesianRectangle bounds = SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds();
         BoundingBox boundingArea = new BoundingBox();
         boundingArea.add(bounds.getA().toVector3d(), bounds.getB().toVector3d());
-        vehicleGrid = new Grid<>(new VehicleObjectAdapter(), cellWidth, cellHeight, boundingArea);
+        vehicleTree = new QuadTree<>(new VehicleObjectAdapter(), boundingArea);
     }
 
     @Override
     public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
-        return vehicleGrid.getItemsInBoundingArea(searchRange.getBoundingBox(), searchRange::isInRange);
+        return vehicleTree.getObjectsInBoundingArea(searchRange.getBoundingBox(), searchRange::isInRange, new ArrayList<>());
     }
 
     @Override
@@ -56,7 +83,7 @@ public class PerceptionGrid implements SpatialVehicleIndex {
         vehiclesToRemove.forEach(v -> {
             VehicleObject vehicleObject = indexedVehicles.remove(v);
             if (vehicleObject != null) {
-                vehicleGrid.removeItem(vehicleObject);
+                vehicleTree.removeObject(vehicleObject);
             }
         });
     }
@@ -67,7 +94,7 @@ public class PerceptionGrid implements SpatialVehicleIndex {
             VehicleObject vehicleObject = indexedVehicles.get(v.getName());
             if (vehicleObject == null) {
                 vehicleObject = new VehicleObject(v.getName()).setPosition(v.getProjectedPosition());
-                if (vehicleGrid.addItem(vehicleObject)) {
+                if (vehicleTree.addItem(vehicleObject)) {
                     indexedVehicles.put(v.getName(), vehicleObject);
                 }
             }
@@ -78,9 +105,8 @@ public class PerceptionGrid implements SpatialVehicleIndex {
             if (v.getRoadPosition() != null) {
                 vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
             }
-
         });
-        vehicleGrid.updateGrid();
+        vehicleTree.updateTree();
     }
 
     @Override

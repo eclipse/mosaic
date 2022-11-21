@@ -1,5 +1,7 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "SUMO"
+        "vehicleIndexProvider": {
+            "type": "SumoIndexProvider"
+        }
     }
 }

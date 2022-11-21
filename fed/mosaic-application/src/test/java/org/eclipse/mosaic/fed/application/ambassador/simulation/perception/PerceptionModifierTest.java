@@ -29,7 +29,10 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.error
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusionModifier;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndexProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
@@ -80,7 +83,7 @@ public class PerceptionModifierTest {
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
 
-    public SpatialVehicleIndex vehicleIndex;
+    public SpatialIndex spatialIndex;
 
     private SimplePerceptionModule simplePerceptionModule;
 
@@ -88,9 +91,11 @@ public class PerceptionModifierTest {
     public void setup() {
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
-        vehicleIndex = new PerceptionIndex();
+        spatialIndex = new SpatialIndexProvider.Builder(mock(Logger.class))
+                .withVehicleIndexProvider(new VehicleIndex())
+                .build();
         // setup cpc
-        when(cpcMock.getVehicleIndex()).thenReturn(vehicleIndex);
+        when(cpcMock.getSpatialIndex()).thenReturn(spatialIndex);
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
@@ -200,7 +205,7 @@ public class PerceptionModifierTest {
             when(vehicleDataMock.getName()).thenReturn("veh_" + i++);
             vehiclesInIndex.add(vehicleDataMock);
         }
-        vehicleIndex.updateVehicles(vehiclesInIndex);
+        spatialIndex.updateVehicles(vehiclesInIndex);
     }
 
     private void printPerceivedPositions(List<VehicleObject> perceivedVehicles) {

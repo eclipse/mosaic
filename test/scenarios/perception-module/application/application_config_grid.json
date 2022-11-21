@@ -1,7 +1,9 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "Grid",
-        "gridCellWidth": "5m",
-        "gridCellHeight": "5m"
+        "vehicleIndexProvider": {
+            "type": "VehicleGrid",
+            "cellWidth": "5m",
+            "cellHeight": "5m"
+        }
     }
 }

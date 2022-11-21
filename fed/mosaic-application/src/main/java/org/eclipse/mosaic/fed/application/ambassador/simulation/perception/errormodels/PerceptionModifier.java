@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.PerceptionModifierTypeAdapterFactory;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -31,5 +31,5 @@ public interface PerceptionModifier {
      *
      * @return the filtered/modified list
      */
-    List<VehicleObject> apply(PerceptionModuleOwner owner, List<VehicleObject> vehicleObjects);
+    List<SpatialObject> apply(PerceptionModuleOwner owner, List<SpatialObject> spatialObjects);
 }

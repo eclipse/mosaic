@@ -15,6 +15,9 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSightDistanceConfiguration;
 import org.eclipse.mosaic.lib.database.Database;
 
@@ -50,5 +53,18 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
                         .setHeading(v.getHeading())
                 ).collect(Collectors.toList());
     }
+
+    @Override
+    public List<TrafficLightObject> getTrafficLightsInRange() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    List<SpatialObject> getObjectsInRange() {
+        // TODO
+        return null;
+    }
+
 
 }

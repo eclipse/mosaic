@@ -44,6 +44,7 @@ import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.RoutelessVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
+import org.eclipse.mosaic.interactions.traffic.TrafficLightSubscription;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
@@ -354,6 +355,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final TrafficLightRegistration trafficLightRegistration) {
+        subscribeToTrafficLight(trafficLightRegistration);
         UnitSimulator.UnitSimulator.registerTrafficLight(trafficLightRegistration);
     }
 
@@ -608,7 +610,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 addEvent(event);
             }
         }
-
+        // TODO: See if this is behind a step
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateTrafficLights(trafficLightUpdates);
     }
 
     private void process(final VehicleUpdates vehicleUpdates) {
@@ -699,5 +702,23 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             log.error(ErrorRegister.AMBASSADOR_RequestingAdvanceTime.toString(), ex);
             throw new RuntimeException(ErrorRegister.AMBASSADOR_RequestingAdvanceTime.toString(), ex);
         }
+    }
+
+    private void subscribeToTrafficLight(TrafficLightRegistration trafficLightRegistration) {
+        // TODO: this needs to be validated and be made possible to be disabled
+        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndexProvider == null) {
+            return;
+        }
+        Interaction trafficLightSubscription = new TrafficLightSubscription(trafficLightRegistration.getTime(),
+                trafficLightRegistration.getTrafficLightGroup().getGroupId());
+        log.info("Sending TrafficLightSubscription: {}", trafficLightSubscription);
+        try {
+            rti.triggerInteraction(trafficLightSubscription);
+        } catch (InternalFederateException | IllegalValueException e) {
+            log.error(ErrorRegister.AMBASSADOR_ErrorSendInteraction.toString(), e);
+            return;
+        }
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+                .addTrafficLightGroup(trafficLightRegistration.getTrafficLightGroup());
     }
 }

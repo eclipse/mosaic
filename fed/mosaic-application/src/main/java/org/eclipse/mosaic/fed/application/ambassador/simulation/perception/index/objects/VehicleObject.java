@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects;
 
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
@@ -43,15 +43,26 @@ public class VehicleObject extends Vector3d implements SpatialObject {
         return id;
     }
 
-    public VehicleObject setPosition(CartesianPoint position) {
-        this.cartesianPosition.set(position);
-        position.toVector3d(this);
+    @Override
+    public CartesianPoint getProjectedPosition() {
+        return cartesianPosition;
+    }
+
+    @Override
+    public Vector3d getPosition() {
         return this;
     }
 
     @Override
-    public CartesianPoint getProjectedPosition() {
-        return cartesianPosition;
+    public void setPosition(double x, double y, double z) {
+        this.set(x, y, z);
+        cartesianPosition.set(this.toCartesian());
+    }
+
+    public VehicleObject setPosition(CartesianPoint position) {
+        this.cartesianPosition.set(position);
+        position.toVector3d(this);
+        return this;
     }
 
     public VehicleObject setEdgeAndLane(String edgeId, int laneIndex) {

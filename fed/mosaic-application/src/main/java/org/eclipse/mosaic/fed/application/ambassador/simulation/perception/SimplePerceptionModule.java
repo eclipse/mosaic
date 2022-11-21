@@ -18,6 +18,9 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 import static java.lang.Math.toRadians;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.math.MathUtils;
@@ -29,6 +32,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,8 +63,42 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
         SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
         // request all vehicles within the area of the field of view
         return SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
-                .getVehicleIndex()
+                .getSpatialIndex()
                 .getVehiclesInRange(perceptionModel);
+    }
+
+    @Override
+    public List<TrafficLightObject> getTrafficLightsInRange() {
+        if (perceptionModel == null || owner.getVehicleData() == null) {
+            log.warn("No perception model initialized.");
+            return Lists.newArrayList();
+        }
+        perceptionModel.updateOrigin(owner.getVehicleData().getProjectedPosition(), owner.getVehicleData().getHeading());
+        // note, the perception index is updated internally only if vehicles have moved since the last call
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
+        // request all vehicles within the area of the field of view
+        return SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+                .getSpatialIndex()
+                .getTrafficLightsInRange(perceptionModel);
+
+    }
+
+    @Override
+    public List<SpatialObject> getObjectsInRange() {
+        if (perceptionModel == null || owner.getVehicleData() == null) {
+            log.warn("No perception model initialized.");
+            return Lists.newArrayList();
+        }
+        perceptionModel.updateOrigin(owner.getVehicleData().getProjectedPosition(), owner.getVehicleData().getHeading());
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
+        List<SpatialObject> objectsInRange = new ArrayList<>();
+        objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+                .getSpatialIndex()
+                .getVehiclesInRange(perceptionModel));
+        objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+                .getSpatialIndex()
+                .getTrafficLightsInRange(perceptionModel));
+        return objectsInRange;
     }
 
     /**

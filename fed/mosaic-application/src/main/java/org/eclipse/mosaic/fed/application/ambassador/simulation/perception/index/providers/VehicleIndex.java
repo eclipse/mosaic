@@ -13,11 +13,11 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SpatialVehicleIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
 import java.util.HashMap;
@@ -26,11 +26,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Trivial implementation of {@link SpatialVehicleIndex}, which uses a for loop to solve the range query.
+ * Trivial implementation of {@link SpatialIndex}, which uses a for loop to solve the range query.
  */
-public class PerceptionIndex implements SpatialVehicleIndex {
+public class VehicleIndex implements VehicleIndexProvider {
 
     private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
+
+    @Override
+    public void initialize() {
+        // nothing to initialize
+    }
 
     @Override
     public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {

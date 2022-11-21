@@ -1,5 +1,7 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "Trivial"
+        "vehicleIndexProvider": {
+            "type": "VehicleIndex"
+        }
     }
 }

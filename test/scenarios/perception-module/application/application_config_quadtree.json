@@ -1,7 +1,9 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "QuadTree",
-        "treeSplitSize": 10,
-        "treeMaxDepth": 2
+        "vehicleIndexProvider": {
+            "type": "VehicleTree",
+            "splitSize": 10,
+            "maxDepth": 2
+        }
     }
 }

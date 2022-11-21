@@ -53,49 +53,166 @@
             "description": "Configuration options for perception backend",
             "type": "object",
             "properties": {
-                "perceptionBackend": {
-                    "description": "The underlying data structure for the spatial index",
-                    "type": "string",
-                    "enum": [ "Grid", "QuadTree", "Trivial", "SUMO" ],
-                    "default": "Trivial"
+                "vehicleIndexProvider": {
+                    "description": "The underlying data structure for the spatial index for vehicles",
+                    "$ref": "#/definitions/vehicleIndexProvider"
+                },
+                "trafficLightIndexProvider": {
+                    "description": "The underlying data structure for the spatial index for traffic lights",
+                    "$ref": "#/definitions/trafficLightIndexProvider"
                 },
                 "measurePerformance": {
                     "description": "If set to true, a PerceptionPerformance.csv is generated with detailed information about execution calls of the perception backend.",
                     "type": "boolean"
                 },
-                "gridCellWidth": {
-                    "description": "If Grid is used as backend, this indicates the width of a single cell. [m]",
-                    "anyOf": [
-                        { "type": "string", "maxLength": 15 },
-                        { "type": "number", "minimum": 0 }
-                    ],
-                    "default": "200m"
-                },
-                "gridCellHeight": {
-                    "description": "If Grid is used as backend, this indicates the height of a single cell. [m]",
-                    "anyOf": [
-                        { "type": "string", "maxLength": 15 },
-                        { "type": "number", "minimum": 0 }
-                    ],
-                    "default": "200m"
-                },
-                "treeSplitSize": {
-                    "description": "If QuadTree is used as backend, this indicates the maximum number of vehicles inside a tile before splitting.",
-                    "anyOf": [
-                        { "type": "string", "maxLength": 15 },
-                        { "type": "number", "minimum": 0 }
-                    ],
-                    "default": 20
-                },
-                "treeMaxDepth": {
-                    "description": "If QuadTree is used as backend, this indicates the maximum depth of the quad-tree.",
-                    "anyOf": [
-                        { "type": "string", "maxLength": 15 },
-                        { "type": "number", "minimum": 0 }
-                    ],
-                    "default": 12
+                "perceptionArea": {
+                    "description": "Area used to define the bounds of the perception index. Useful if only part of your scenario needs to evaluate perception.",
+                    "$ref": "#/definitions/geoRectangle"
                 }
             }
+        },
+        "vehicleIndexProvider": {
+            "title": "vehicleIndexProvider",
+            "description": "Class providing the spatial index for the perception of vehicles.",
+            "type": "object",
+            "oneOf": [
+                { "$ref": "#/definitions/vehicleIndex" },
+                { "$ref": "#/definitions/vehicleTree" },
+                { "$ref": "#/definitions/vehicleGrid" },
+                { "$ref": "#/definitions/sumoIndexProvider" }
+            ]
+        },
+        "vehicleIndex": {
+            "title": "vehicleIndex",
+            "description": "Trivial spatial vehicle index using a hash map to store vehicles.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "VehicleIndex" ]
+                }
+            },
+            "required": [ "type" ]
+        },
+        "vehicleGrid": {
+            "title": "vehicleGrid",
+            "description": "Spatial vehicle index using a grid structure to store vehicles.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "VehicleGrid" ]
+                },
+                "cellWidth": {
+                    "description": "Width of a grid cell. [m]",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                },
+                "cellHeight": {
+                    "description": "Height of a grid cell. [m]",
+                    "anyOf": [
+                        { "type": "number", "minimum": 0 },
+                        { "type": "string", "minLength": 2 }
+                    ]
+                }
+            },
+            "required": [ "type" ]
+        },
+        "vehicleTree": {
+            "title": "vehicleTree",
+            "description": "Spatial vehicle index using a quad tree structure to store vehicles.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "VehicleTree" ]
+                },
+                "splitSize": {
+                    "description": "The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "maxDepth": {
+                    "description": "Maximum depth of the quad tree.",
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [ "type" ]
+        },
+        "sumoIndexProvider": {
+            "title": "sumoIndexProvider",
+            "description": "Class setting the index provider to use SUMO's built-in functions (see  context subscription)",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "SumoIndexProvider" ]
+                }
+            }
+        },
+        "trafficLightIndexProvider": {
+            "title": "trafficLightIndexProvider",
+            "description": "Class providing the spatial index for the perception of traffic lights.",
+            "type": "object",
+            "oneOf": [
+                { "$ref": "#/definitions/trafficLightIndex" }
+            ]
+        },
+        "trafficLightIndex": {
+            "title": "trafficLightIndex",
+            "description": "Trivial spatial traffic light index using a hash map to store traffic lights.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "TrafficLightIndex" ]
+                }
+            },
+            "required": [ "type" ]
+        },
+        "geoPoint": {
+            "title": "geoPoint",
+            "description": "Object to define geographical point coordinates.",
+            "type": "object",
+            "properties": {
+                "longitude": {
+                    "description": "East-west position of a point on earth.",
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
+                },
+                "latitude": {
+                    "description": "North-south position of a point on earth.",
+                    "type": "number",
+                    "maximum": 90,
+                    "minimmum": -90
+                }
+            },
+            "required": [ "longitude", "latitude" ]
+        },
+        "geoRectangle": {
+            "title": "geoRectangle",
+            "description": "Object to define an immutable pair of two different geoPoints. Together they form a rectangular area.",
+            "type": "object",
+            "properties": {
+                "a": {
+                    "description": "GeoPoint defining the north-western vertex of the rectangle.",
+                    "$ref": "#/definitions/geoPoint"
+                },
+                "b": {
+                    "description": "GeoPoint defining the south-east vertex of the rectangle.",
+                    "$ref": "#/definitions/geoPoint"
+                }
+            },
+            "required": [ "a", "b" ]
         }
     }
 }

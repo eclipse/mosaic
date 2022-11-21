@@ -13,40 +13,38 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
 import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 
-class VehicleObjectAdapter implements SpatialItemAdapter<VehicleObject> {
-
+public class TrafficLightObjectAdapter implements SpatialItemAdapter<TrafficLightObject> {
     @Override
-    public double getCenterX(VehicleObject item) {
+    public double getCenterX(TrafficLightObject item) {
         return item.getProjectedPosition().getX();
     }
 
     @Override
-    public double getCenterY(VehicleObject item) {
+    public double getCenterY(TrafficLightObject item) {
         return item.getProjectedPosition().getZ();
     }
 
     @Override
-    public double getCenterZ(VehicleObject item) {
+    public double getCenterZ(TrafficLightObject item) {
         return -item.getProjectedPosition().getY();
     }
 
     @Override
-    public double getMinX(VehicleObject item) {
+    public double getMinX(TrafficLightObject item) {
         return getCenterX(item);
     }
 
     @Override
-    public double getMinY(VehicleObject item) {
+    public double getMinY(TrafficLightObject item) {
         return getCenterY(item);
     }
 
     @Override
-    public double getMinZ(VehicleObject item) {
+    public double getMinZ(TrafficLightObject item) {
         return getCenterZ(item);
     }
 }
