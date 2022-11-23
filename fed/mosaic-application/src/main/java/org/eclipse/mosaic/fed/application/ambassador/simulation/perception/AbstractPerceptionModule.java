@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractPerceptionModule
         implements PerceptionModule<SimplePerceptionConfiguration>, WallProvider {
@@ -93,11 +92,13 @@ public abstract class AbstractPerceptionModule
         );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<VehicleObject> getPerceivedVehicles() {
-        List<SpatialObject> vehiclesInRange = new ArrayList<>(getVehiclesInRange());
+        List<? extends SpatialObject> vehiclesInRange = new ArrayList<>(getVehiclesInRange());
         vehiclesInRange = applyPerceptionModifiers(vehiclesInRange);
-        return vehiclesInRange.stream().map(spatialObject -> (VehicleObject) spatialObject).collect(Collectors.toList());
+        // TODO: this cast is ugly, but I couldn't come up with a better way to generify the perception modifiers
+        return (List<VehicleObject>) vehiclesInRange;
     }
 
     /**
@@ -108,11 +109,14 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<VehicleObject> getVehiclesInRange();
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<TrafficLightObject> getPerceivedTrafficLights() {
-        List<SpatialObject> trafficLightsInRange = new ArrayList<>(getTrafficLightsInRange());
+        List<? extends SpatialObject> trafficLightsInRange = new ArrayList<>(getTrafficLightsInRange());
+        // TODO: we could add an additional filter here to check the traffic lights' orientation
         trafficLightsInRange = applyPerceptionModifiers(trafficLightsInRange);
-        return trafficLightsInRange.stream().map(spatialObject -> (TrafficLightObject) spatialObject).collect(Collectors.toList());
+        // TODO: this cast is ugly, but I couldn't come up with a better way to generify the perception modifiers
+        return (List<TrafficLightObject>) trafficLightsInRange;
     }
 
     /**
@@ -123,11 +127,12 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<TrafficLightObject> getTrafficLightsInRange();
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<SpatialObject> getPerceivedObjects() {
-        List<SpatialObject> objectsInRange = getObjectsInRange();
+        List<? extends SpatialObject> objectsInRange = getObjectsInRange();
         objectsInRange = applyPerceptionModifiers(objectsInRange);
-        return objectsInRange;
+        return (List<SpatialObject>) objectsInRange;
     }
 
     /**
@@ -138,8 +143,8 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<SpatialObject> getObjectsInRange();
 
-    private List<SpatialObject> applyPerceptionModifiers(List<SpatialObject> objectsInRange) {
-        List<SpatialObject> filteredList = objectsInRange;
+    private List<? extends SpatialObject> applyPerceptionModifiers(List<? extends SpatialObject> objectsInRange) {
+        List<? extends SpatialObject> filteredList = objectsInRange;
         for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
             filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
         }

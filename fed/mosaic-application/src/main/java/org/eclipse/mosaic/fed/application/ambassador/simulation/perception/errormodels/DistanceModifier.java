@@ -51,7 +51,7 @@ public class DistanceModifier implements PerceptionModifier {
     }
 
     @Override
-    public List<SpatialObject> apply(PerceptionModuleOwner owner, List<SpatialObject> spatialObjects) {
+    public List<? extends SpatialObject> apply(PerceptionModuleOwner owner, List<? extends SpatialObject> spatialObjects) {
         if (spatialObjects.size() == 0) {
             return spatialObjects;
         }

@@ -31,5 +31,5 @@ public interface PerceptionModifier {
      *
      * @return the filtered/modified list
      */
-    List<SpatialObject> apply(PerceptionModuleOwner owner, List<SpatialObject> spatialObjects);
+    List<? extends SpatialObject> apply(PerceptionModuleOwner owner, List<? extends SpatialObject> spatialObjects);
 }
