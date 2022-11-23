@@ -44,14 +44,14 @@ public abstract class AbstractPerceptionModuleIT {
     @Test
     public void rightAmountOfVehiclesPerceived() throws Exception {
         // perceived vehicles repeat their route 10 times resulting in 11 perceptions
-        assertEquals(11, LogAssert.count(simulationRule,
+        assertEquals(18, LogAssert.count(simulationRule,
                 PERCEPTION_VEHICLE_LOG,
-                ".*Perceived vehicles: \\[veh_1\\].*"));
-        assertEquals(11, LogAssert.count(simulationRule,
-                PERCEPTION_VEHICLE_LOG,
-                ".*Perceived vehicles: \\[veh_2\\].*"));
-        assertEquals(11, LogAssert.count(simulationRule,
-                PERCEPTION_VEHICLE_LOG,
-                ".*Perceived vehicles: \\[veh_3\\].*"));
+                ".*Perceived all vehicles: \\[veh_[1-3], veh_[1-3], veh_[1-3]\\].*"));
+    }
+
+    @Test
+    public void rightAmountOfTrafficLightPhaseSwitches() throws Exception {
+        // perceived vehicles repeat their route 10 times resulting in 11 perceptions
+        LogAssert.contains(simulationRule, PERCEPTION_VEHICLE_LOG, ".*Traffic Light switched 12 times\\..*");
     }
 }

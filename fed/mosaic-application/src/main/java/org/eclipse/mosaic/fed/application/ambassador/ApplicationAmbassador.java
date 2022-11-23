@@ -610,7 +610,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 addEvent(event);
             }
         }
-        // TODO: See if this is behind a step
         SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateTrafficLights(trafficLightUpdates);
     }
 
@@ -705,7 +704,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void subscribeToTrafficLight(TrafficLightRegistration trafficLightRegistration) {
-        // TODO: this needs to be validated and be made possible to be disabled
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndexProvider == null) {
             return;
         }

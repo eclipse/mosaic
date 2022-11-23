@@ -23,6 +23,7 @@ import org.eclipse.mosaic.lib.database.Database;
 
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,14 +57,14 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
 
     @Override
     public List<TrafficLightObject> getTrafficLightsInRange() {
-        // TODO
-        return null;
+        this.log.warn("Traffic Light Perception not implemented for {}.", this.getClass().getSimpleName());
+        return new ArrayList<>();
     }
 
     @Override
     List<SpatialObject> getObjectsInRange() {
-        // TODO
-        return null;
+        this.log.warn("Traffic Light Perception not implemented for {} only vehicles will be retrieved.", this.getClass().getSimpleName());
+        return new ArrayList<>(getVehiclesInRange());
     }
 
 

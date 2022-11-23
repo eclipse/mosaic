@@ -4,6 +4,9 @@
             "type": "VehicleTree",
             "splitSize": 10,
             "maxDepth": 2
+        },
+        "trafficLightIndexProvider": {
+            "type": "TrafficLightIndex"
         }
     }
 }
