@@ -29,8 +29,6 @@ public class TrafficLightObject extends Vector3d implements SpatialObject {
 
     private final MutableCartesianPoint cartesianPoint = new MutableCartesianPoint();
 
-    private boolean mapped = false;
-
     private String trafficLightGroupId;
 
     private TrafficLightState trafficLightState;
@@ -58,25 +56,17 @@ public class TrafficLightObject extends Vector3d implements SpatialObject {
         return this;
     }
 
+    @Override
     public void setPosition(double x, double y, double z) {
         this.set(x, y, z);
         cartesianPoint.set(this.toCartesian());
     }
 
     public TrafficLightObject setPosition(CartesianPoint position) {
-        if (!isMapped()) {
-            this.cartesianPoint.set(position);
-            position.toVector3d(this);
-        }
+        this.cartesianPoint.set(position);
+        position.toVector3d(this);
+
         return this;
-    }
-
-    public boolean isMapped() {
-        return mapped;
-    }
-
-    public void setMapped() {
-        mapped = true;
     }
 
     public String getTrafficLightGroupId() {
