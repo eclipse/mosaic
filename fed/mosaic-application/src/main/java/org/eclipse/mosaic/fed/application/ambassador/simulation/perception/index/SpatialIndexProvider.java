@@ -20,7 +20,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndexProvider;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -149,23 +148,6 @@ public class SpatialIndexProvider implements SpatialIndex {
             trafficLightIndexProvider.updateTrafficLights(trafficLightsToUpdate);
         } else {
             log.debug("No Traffic Light Index Provider configured. Index won't be updated.");
-        }
-    }
-
-    /**
-     * Allows to map the position of a traffic light exactly once. Make sure to measure the proper position.
-     * This is necessary if it is not easily possible to extract the individual traffic light positions from the traffic simulator
-     *
-     * @param trafficLightId       id of traffic light
-     * @param trafficLightPosition position of the traffic light
-     * @return {@code true} if tl was mapped, else {@code false}
-     */
-    public boolean mapTrafficLightPosition(String trafficLightId, GeoPoint trafficLightPosition) {
-        if (trafficLightIndexProviderConfigured()) {
-            return trafficLightIndexProvider.mapTrafficLightPosition(trafficLightId, trafficLightPosition);
-        } else {
-            log.debug("No Traffic Light Index Provider configured. No Traffic Light will be mapped.");
-            return false;
         }
     }
 

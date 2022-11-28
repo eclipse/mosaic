@@ -26,7 +26,6 @@ import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -192,18 +191,6 @@ public class CentralPerceptionComponent {
     }
 
     /**
-     * Allows to map the position of a traffic light exactly once. Make sure to measure the proper position.
-     * This is necessary if it is not easily possible to extract the individual traffic light positions from the traffic simulator
-     *
-     * @param trafficLightId       id of traffic light
-     * @param trafficLightPosition position of the traffic light
-     * @return {@code true} if tl was mapped, else {@code false}
-     */
-    public boolean mapTrafficLightPosition(String trafficLightId, GeoPoint trafficLightPosition) {
-        return spatialIndex.mapTrafficLightPosition(trafficLightId, trafficLightPosition);
-    }
-
-    /**
      * Wrapper class to measure atomic calls of update, search and remove of the used spatial index.
      */
     static class MonitoringSpatialIndexProvider implements SpatialIndex {
@@ -268,11 +255,6 @@ public class CentralPerceptionComponent {
                         .restart();
                 parent.updateTrafficLights(trafficLightsToUpdate);
             }
-        }
-
-        @Override
-        public boolean mapTrafficLightPosition(String trafficLightId, GeoPoint trafficLightPosition) {
-            return parent.mapTrafficLightPosition(trafficLightId, trafficLightPosition);
         }
 
         @Override

@@ -17,16 +17,30 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObjectAdapter;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
+import org.eclipse.mosaic.lib.spatial.KdTree;
+import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TrafficLightIndex implements TrafficLightIndexProvider {
+/**
+ * {@link TrafficLightIndexProvider} using a KD-Tree to store traffic lights.
+ * TODO: actual performance benefits have to be evaluated
+ */
+public class TrafficLightTree implements TrafficLightIndexProvider {
+
+    public int bucketSize = 20;
+
+    private KdTree<TrafficLightObject> trafficLightTree;
+
+    private SpatialTreeTraverser.InRadius<TrafficLightObject> treeTraverser;
 
     private final Map<String, TrafficLightObject> indexedTrafficLights = new HashMap<>();
 
@@ -37,9 +51,10 @@ public class TrafficLightIndex implements TrafficLightIndexProvider {
 
     @Override
     public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
-        return indexedTrafficLights.values().stream()
-                .filter(perceptionModel::isInRange)
-                .collect(Collectors.toList());
+        treeTraverser.setup(perceptionModel.getBoundingBox().center,
+                perceptionModel.getBoundingBox().center.distanceSqrTo(perceptionModel.getBoundingBox().min)); // overestimating distance
+        treeTraverser.traverse(trafficLightTree);
+        return treeTraverser.getResult().stream().filter(perceptionModel::isInRange).collect(Collectors.toList());
     }
 
     @Override
@@ -60,6 +75,11 @@ public class TrafficLightIndex implements TrafficLightIndexProvider {
 
     @Override
     public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightGroupsToUpdate) {
+        if (trafficLightTree == null) {
+            List<TrafficLightObject> allTrafficLights = new ArrayList<>(indexedTrafficLights.values());
+            trafficLightTree = new KdTree<>(new TrafficLightObjectAdapter(), allTrafficLights, bucketSize);
+            treeTraverser = new SpatialTreeTraverser.InRadius<>();
+        }
         trafficLightGroupsToUpdate.forEach(
                 (trafficLightGroupId, trafficLightGroupInfo) -> {
                     List<TrafficLightState> trafficLightStates = trafficLightGroupInfo.getCurrentState();
@@ -74,7 +94,7 @@ public class TrafficLightIndex implements TrafficLightIndexProvider {
 
     @Override
     public int getNumberOfTrafficLights() {
-        return indexedTrafficLights.size();
+        return trafficLightTree.getRoot().size();
     }
 
     private String calculateTrafficLightId(String trafficLightGroupId, int trafficLightIndex) {

@@ -28,6 +28,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
@@ -59,6 +60,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SimplePerceptionModuleTest {
@@ -295,6 +297,16 @@ public class SimplePerceptionModuleTest {
         assertEquals(TrafficLightState.GREEN, simplePerceptionModule.getTrafficLightsInRange().get(0).getTrafficLightState());
     }
 
+    @Test
+    public void trafficLightsCanBePerceived_TrafficLightTree() {
+        useTlTree();
+        setupTrafficLights(new MutableCartesianPoint(110, 100, 0));
+        spatialIndex.updateTrafficLights(mock(Map.class)); // update needs to be called to initialize tree
+
+        assertEquals(1, simplePerceptionModule.getTrafficLightsInRange().size());
+        assertEquals(TrafficLightState.GREEN, simplePerceptionModule.getTrafficLightsInRange().get(0).getTrafficLightState());
+    }
+
     private void setupVehicles(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
         int i = 1;
@@ -343,6 +355,15 @@ public class SimplePerceptionModuleTest {
         spatialIndex = new SpatialIndexProvider.Builder((mock(Logger.class)))
                 .withVehicleIndexProvider(vehicleGrid)
                 .build();
+        when(cpcMock.getSpatialIndex()).thenReturn(spatialIndex);
+    }
+
+    private void useTlTree() {
+        TrafficLightTree trafficLightTree = new TrafficLightTree();
+        spatialIndex = new SpatialIndexProvider.Builder((mock(Logger.class)))
+                .withTrafficLightIndexProvider(trafficLightTree)
+                .build();
+
         when(cpcMock.getSpatialIndex()).thenReturn(spatialIndex);
     }
 }

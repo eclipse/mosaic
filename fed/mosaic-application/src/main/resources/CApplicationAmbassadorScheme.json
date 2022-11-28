@@ -162,7 +162,8 @@
             "description": "Class providing the spatial index for the perception of traffic lights.",
             "type": "object",
             "oneOf": [
-                { "$ref": "#/definitions/trafficLightIndex" }
+                { "$ref": "#/definitions/trafficLightIndex" },
+                { "$ref": "#/definitions/trafficLightTree" }
             ]
         },
         "trafficLightIndex": {
@@ -175,6 +176,24 @@
                     "type": "string",
                     "enum": [ "TrafficLightIndex" ]
                 }
+            },
+            "required": [ "type" ]
+        },
+        "trafficLightTree": {
+            "title": "trafficLightTree",
+            "description": "Spatial traffic light index using a kd-tree structure to store vehicles.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "TrafficLightTree" ]
+                }
+            },
+            "bucketSize": {
+                "description": "The maximum amount of traffic lights in one leaf before it gets split.",
+                "type": "number",
+                "minimum": 0
             },
             "required": [ "type" ]
         },
