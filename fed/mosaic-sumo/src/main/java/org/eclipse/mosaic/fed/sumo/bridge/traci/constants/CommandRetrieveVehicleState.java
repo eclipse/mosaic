@@ -67,6 +67,8 @@ public class CommandRetrieveVehicleState {
 
     public final static SumoVar VAR_EMISSIONS_ELECTRICITY = SumoVar.var(0x71);
 
+    public final static SumoVar VAR_GET_STOPS = SumoVar.var(0x74);
+
     public final static SumoVar VAR_STOP_STATE = SumoVar.var(0xb5);
 
     public final static SumoVar VAR_SLOPE = SumoVar.var(0x36);

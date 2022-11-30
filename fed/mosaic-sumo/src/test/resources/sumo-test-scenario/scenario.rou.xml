@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2022-11-30 10:44:02 by Eclipse SUMO netedit Version 1.15.0
+-->
+
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-    <vType carFollowModel="Krauss" id="PKW" accel="1.5" decel="4.5" sigma="0.5" length="5.0" maxSpeed="50.0" tau="1.0" emissionClass="HBEFA3/PC_G_EU4" speedFactor="1.0" speedDev="0.0"/>
+    <!-- VTypes -->
+    <vType id="BUS" vClass="bus"/>
+    <vType id="PKW" length="5.00" maxSpeed="50.00" speedFactor="normc(1.00,0.00)" emissionClass="HBEFA3/PC_G_EU4" carFollowModel="Krauss" accel="1.5" decel="4.5" sigma="0.5" tau="1.0"/>
+    <vType id="t_0"/>
+    <!-- Routes -->
     <route id="0" edges="1_1_2 1_2_3 1_3_4"/>
     <route id="1" edges="1_1_2 2_2_5 2_5_6 2_6_3 1_3_4"/>
-    <vehicle id="1" type="PKW" route="1" depart="2"/>
-    <vehicle id="0" type="PKW" route="0" depart="5"/>
+    <route id="3" edges="1_4_3 1_3_2 1_2_1"/>
+    <!-- Vehicles, persons and containers (sorted by depart) -->
+    <vehicle id="1" type="PKW" depart="2.00" route="1"/>
+    <vehicle id="0" type="PKW" depart="5.00" route="0"/>
+    <vehicle id="3" type="BUS" depart="10.00" route="3">
+        <stop busStop="bs_0" duration="5"/>
+        <stop busStop="bs_1" duration="5"/>
+    </vehicle>
 </routes>

@@ -309,8 +309,6 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         return camBuilder;
     }
 
-
-
     @Override
     public VehicleType getInitialVehicleType() {
         return vehicleParameters.getInitialVehicleType();

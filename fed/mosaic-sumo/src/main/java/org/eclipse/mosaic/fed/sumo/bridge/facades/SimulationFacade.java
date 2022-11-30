@@ -475,7 +475,7 @@ public class SimulationFacade {
     ) {
 
         final SumoVehicleState sumoVehicle = getVehicleState(veh.id);
-        final VehicleStopMode vehicleStopMode = decodeStopMode(veh.stoppedStateEncoded);
+        final VehicleStopMode vehicleStopMode = VehicleStopMode.fromSumoInt(veh.stoppedStateEncoded);
         final boolean isParking = vehicleStopMode.isParking();
         final boolean hasInvalidPosition = veh.position == null || !veh.position.isValid();
         final boolean isNewVehicle = sumoVehicle.lastVehicleData == null;
@@ -808,24 +808,6 @@ public class SimulationFacade {
         return new SimpleRoadPosition(edgeId, laneIndex, offset, lateralLanePosition);
     }
 
-    /**
-     * Getter for the stop mode (stop, park).
-     *
-     * @param stoppedStateEncoded Encoded number indicating the stop mode.
-     * @return The stop mode.
-     */
-    private VehicleStopMode decodeStopMode(int stoppedStateEncoded) {
-        if ((stoppedStateEncoded & 0b10000000) > 0) {
-            return VehicleStopMode.PARK_IN_PARKING_AREA;
-        }
-        if ((stoppedStateEncoded & 0b0010) > 0) {
-            return VehicleStopMode.PARK_ON_ROADSIDE;
-        }
-        if ((stoppedStateEncoded & 0b0001) > 0) {
-            return VehicleStopMode.STOP;
-        }
-        return VehicleStopMode.NOT_STOPPED;
-    }
 
     /**
      * This method decodes the vehicle signals.
