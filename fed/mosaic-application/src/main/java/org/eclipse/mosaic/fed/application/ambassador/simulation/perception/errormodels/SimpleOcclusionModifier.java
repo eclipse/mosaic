@@ -62,7 +62,7 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
     }
 
     @Override
-    public List<? extends SpatialObject> apply(PerceptionModuleOwner owner, List<? extends SpatialObject> spatialObjects) {
+    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         if (spatialObjects.size() == 0) {
             return spatialObjects;
         }

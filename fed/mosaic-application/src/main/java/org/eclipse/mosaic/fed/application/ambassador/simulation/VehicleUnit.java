@@ -21,10 +21,8 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DisabledPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SumoPerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.SumoIndexProvider;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
@@ -86,11 +84,11 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
             database = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
         }
 
-        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndexProvider
-                instanceof SumoIndexProvider) { // TODO: preferably figure out a better way to differentiate this
-            perceptionModule = new SumoPerceptionModule(this, database, getOsLog());
+        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndexProvider != null) {
+            perceptionModule = SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndexProvider
+                    .createPerceptionModule(this, database, getOsLog());
         } else {
-            perceptionModule = new SimplePerceptionModule(this, database, getOsLog());
+            perceptionModule = new DisabledPerceptionModule(this, database, getOsLog());
         }
     }
 

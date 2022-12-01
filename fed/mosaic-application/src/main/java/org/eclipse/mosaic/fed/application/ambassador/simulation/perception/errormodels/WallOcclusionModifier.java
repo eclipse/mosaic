@@ -37,7 +37,7 @@ public class WallOcclusionModifier implements PerceptionModifier {
     private final Vector3d intersectionResult = new Vector3d();
 
     @Override
-    public synchronized List<? extends SpatialObject> apply(PerceptionModuleOwner owner, List<? extends SpatialObject> spatialObjects) {
+    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         if (spatialObjects.size() == 0) {
             return spatialObjects;
         }
@@ -50,10 +50,10 @@ public class WallOcclusionModifier implements PerceptionModifier {
         final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         final Vector3d otherPosition = new Vector3d();
 
-        final List<SpatialObject> result = new ArrayList<>();
+        final List<T> result = new ArrayList<>();
 
         vehicleLoop:
-        for (SpatialObject spatialObject : spatialObjects) {
+        for (T spatialObject : spatialObjects) {
             spatialObject.getProjectedPosition().toVector3d(otherPosition);
 
             for (Edge<Vector3d> wall : walls) {

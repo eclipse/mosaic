@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -48,12 +49,15 @@ public class TrafficLightIndex implements TrafficLightIndexProvider {
         trafficLightGroup.getTrafficLights().forEach(
                 (trafficLight) -> {
                     String trafficLightId = calculateTrafficLightId(trafficLightGroupId, trafficLight.getId());
-                    indexedTrafficLights.computeIfAbsent(trafficLightId, TrafficLightObject::new)
-                            .setTrafficLightGroupId(trafficLightGroupId)
-                            .setPosition(trafficLight.getPosition().toCartesian())
-                            .setIncomingLane(trafficLight.getIncomingLane())
-                            .setOutgoingLane(trafficLight.getOutgoingLane())
-                            .setTrafficLightState(trafficLight.getCurrentState());
+                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+                            .contains(trafficLight.getPosition().toCartesian())) { // check if inside bounding area
+                        indexedTrafficLights.computeIfAbsent(trafficLightId, TrafficLightObject::new)
+                                .setTrafficLightGroupId(trafficLightGroupId)
+                                .setPosition(trafficLight.getPosition().toCartesian())
+                                .setIncomingLane(trafficLight.getIncomingLane())
+                                .setOutgoingLane(trafficLight.getOutgoingLane())
+                                .setTrafficLightState(trafficLight.getCurrentState());
+                    }
                 }
         );
     }
@@ -65,8 +69,9 @@ public class TrafficLightIndex implements TrafficLightIndexProvider {
                     List<TrafficLightState> trafficLightStates = trafficLightGroupInfo.getCurrentState();
                     for (int i = 0; i < trafficLightStates.size(); i++) {
                         String trafficLightId = calculateTrafficLightId(trafficLightGroupId, i);
-                        indexedTrafficLights.get(trafficLightId)
-                                .setTrafficLightState(trafficLightStates.get(i));
+                        final TrafficLightState trafficLightState = trafficLightStates.get(i);
+                        indexedTrafficLights.computeIfPresent(trafficLightId, (id, trafficLightObject)
+                                -> trafficLightObject.setTrafficLightState(trafficLightState));
                     }
                 }
         );

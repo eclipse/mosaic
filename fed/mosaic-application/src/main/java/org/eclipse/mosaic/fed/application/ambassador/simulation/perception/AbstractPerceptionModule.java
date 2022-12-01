@@ -92,13 +92,11 @@ public abstract class AbstractPerceptionModule
         );
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<VehicleObject> getPerceivedVehicles() {
-        List<? extends SpatialObject> vehiclesInRange = new ArrayList<>(getVehiclesInRange());
+        List<VehicleObject> vehiclesInRange = new ArrayList<>(getVehiclesInRange());
         vehiclesInRange = applyPerceptionModifiers(vehiclesInRange);
-        // TODO: this cast is ugly, but I couldn't come up with a better way to generify the perception modifiers
-        return (List<VehicleObject>) vehiclesInRange;
+        return vehiclesInRange;
     }
 
     /**
@@ -109,14 +107,12 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<VehicleObject> getVehiclesInRange();
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<TrafficLightObject> getPerceivedTrafficLights() {
-        List<? extends SpatialObject> trafficLightsInRange = new ArrayList<>(getTrafficLightsInRange());
+        List<TrafficLightObject> trafficLightsInRange = new ArrayList<>(getTrafficLightsInRange());
         // TODO: we could add an additional filter here to check the traffic lights' orientation
         trafficLightsInRange = applyPerceptionModifiers(trafficLightsInRange);
-        // TODO: this cast is ugly, but I couldn't come up with a better way to generify the perception modifiers
-        return (List<TrafficLightObject>) trafficLightsInRange;
+        return trafficLightsInRange;
     }
 
     /**
@@ -127,12 +123,11 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<TrafficLightObject> getTrafficLightsInRange();
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<SpatialObject> getPerceivedObjects() {
-        List<? extends SpatialObject> objectsInRange = getObjectsInRange();
+        List<SpatialObject> objectsInRange = getObjectsInRange();
         objectsInRange = applyPerceptionModifiers(objectsInRange);
-        return (List<SpatialObject>) objectsInRange;
+        return objectsInRange;
     }
 
     /**
@@ -143,8 +138,8 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<SpatialObject> getObjectsInRange();
 
-    private List<? extends SpatialObject> applyPerceptionModifiers(List<? extends SpatialObject> objectsInRange) {
-        List<? extends SpatialObject> filteredList = objectsInRange;
+    private <T extends SpatialObject> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
+        List<T> filteredList = objectsInRange;
         for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
             filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
         }

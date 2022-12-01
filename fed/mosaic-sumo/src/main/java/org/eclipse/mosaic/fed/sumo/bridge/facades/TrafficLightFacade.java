@@ -216,7 +216,7 @@ public class TrafficLightFacade {
                 try {
                     // try to get exact traffic light position
                     List<Position> laneShape = bridge.getSimulationControl().getShapeOfLane(incoming);
-                    trafficLightPosition = laneShape.get(laneShape.size() - 1).getGeographicPosition();
+                    trafficLightPosition = Iterables.getLast(laneShape).getGeographicPosition();
                 } catch (Exception e) {
                     trafficLightPosition = junctionPosition;
                 }

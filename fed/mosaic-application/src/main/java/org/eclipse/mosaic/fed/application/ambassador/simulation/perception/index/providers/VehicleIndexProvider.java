@@ -16,12 +16,17 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexProviderTypeAdapterFactory;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
 import com.google.gson.annotations.JsonAdapter;
+import org.slf4j.Logger;
 
 import java.io.Serializable;
 import java.util.List;
@@ -59,4 +64,15 @@ public interface VehicleIndexProvider extends Serializable {
      * @return the number of vehicles
      */
     int getNumberOfVehicles();
+
+    /**
+     * Creates the perception module to be used for perception purposes. Allows for the implementation of different
+     * provider sources.
+     *
+     * @param owner    the unit the perception module belongs to
+     * @param database the database for the scenario
+     * @param log      the logger
+     * @return an instantiated perception module
+     */
+    PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log);
 }

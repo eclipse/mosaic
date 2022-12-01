@@ -15,10 +15,18 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,12 +60,17 @@ public class VehicleIndex implements VehicleIndexProvider {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-                    VehicleObject currentVehicle = indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
-                            .setHeading(v.getHeading())
-                            .setSpeed(v.getSpeed())
-                            .setPosition(v.getProjectedPosition());
-                    if (v.getRoadPosition() != null) {
-                        currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
+                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+                            .contains(v.getProjectedPosition())) { // check if inside bounding area
+                        VehicleObject currentVehicle = indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
+                                .setHeading(v.getHeading())
+                                .setSpeed(v.getSpeed())
+                                .setPosition(v.getProjectedPosition());
+                        if (v.getRoadPosition() != null) {
+                            currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
+                        }
+                    } else {
+                        indexedVehicles.remove(v.getName());
                     }
                 }
         );
@@ -66,5 +79,10 @@ public class VehicleIndex implements VehicleIndexProvider {
     @Override
     public int getNumberOfVehicles() {
         return indexedVehicles.size();
+    }
+
+    @Override
+    public PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
+        return new SimplePerceptionModule(owner, database, log);
     }
 }

@@ -62,7 +62,7 @@
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-geomath</artifactId>
-            <version>23.0-SNAPSHOT</version>
+            <version>${mosaic.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

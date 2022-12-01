@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObjectAdapter;
@@ -24,6 +25,8 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.spatial.KdTree;
 import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +35,10 @@ import java.util.stream.Collectors;
 
 /**
  * {@link TrafficLightIndexProvider} using a KD-Tree to store traffic lights.
- * TODO: actual performance benefits have to be evaluated
  */
 public class TrafficLightTree implements TrafficLightIndexProvider {
 
+    @Expose
     public int bucketSize = 20;
 
     private KdTree<TrafficLightObject> trafficLightTree;
@@ -63,12 +66,15 @@ public class TrafficLightTree implements TrafficLightIndexProvider {
         trafficLightGroup.getTrafficLights().forEach(
                 (trafficLight) -> {
                     String trafficLightId = calculateTrafficLightId(trafficLightGroupId, trafficLight.getId());
-                    indexedTrafficLights.computeIfAbsent(trafficLightId, TrafficLightObject::new)
-                            .setTrafficLightGroupId(trafficLightGroupId)
-                            .setPosition(trafficLight.getPosition().toCartesian())
-                            .setIncomingLane(trafficLight.getIncomingLane())
-                            .setOutgoingLane(trafficLight.getOutgoingLane())
-                            .setTrafficLightState(trafficLight.getCurrentState());
+                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+                            .contains(trafficLight.getPosition().toCartesian())) {
+                        indexedTrafficLights.computeIfAbsent(trafficLightId, TrafficLightObject::new)
+                                .setTrafficLightGroupId(trafficLightGroupId)
+                                .setPosition(trafficLight.getPosition().toCartesian())
+                                .setIncomingLane(trafficLight.getIncomingLane())
+                                .setOutgoingLane(trafficLight.getOutgoingLane())
+                                .setTrafficLightState(trafficLight.getCurrentState());
+                    }
                 }
         );
     }
@@ -83,10 +89,11 @@ public class TrafficLightTree implements TrafficLightIndexProvider {
         trafficLightGroupsToUpdate.forEach(
                 (trafficLightGroupId, trafficLightGroupInfo) -> {
                     List<TrafficLightState> trafficLightStates = trafficLightGroupInfo.getCurrentState();
-                    for (int i = 0; i < trafficLightStates.size(); i++) {
+                    for (int i = 0; i < trafficLightStates.size(); i++) { // check if inside bounding area
                         String trafficLightId = calculateTrafficLightId(trafficLightGroupId, i);
-                        indexedTrafficLights.get(trafficLightId)
-                                .setTrafficLightState(trafficLightStates.get(i));
+                        final TrafficLightState trafficLightState = trafficLightStates.get(i);
+                        indexedTrafficLights.computeIfPresent(trafficLightId, (id, trafficLightObject)
+                                -> trafficLightObject.setTrafficLightState(trafficLightState));
                     }
                 }
         );

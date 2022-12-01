@@ -44,7 +44,6 @@ import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.RoutelessVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
-import org.eclipse.mosaic.interactions.traffic.TrafficLightSubscription;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
@@ -705,15 +704,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void subscribeToTrafficLight(TrafficLightRegistration trafficLightRegistration) {
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndexProvider == null) {
-            return;
-        }
-        Interaction trafficLightSubscription = new TrafficLightSubscription(trafficLightRegistration.getTime(),
-                trafficLightRegistration.getTrafficLightGroup().getGroupId());
-        log.info("Sending TrafficLightSubscription: {}", trafficLightSubscription);
-        try {
-            rti.triggerInteraction(trafficLightSubscription);
-        } catch (InternalFederateException | IllegalValueException e) {
-            log.error(ErrorRegister.AMBASSADOR_ErrorSendInteraction.toString(), e);
             return;
         }
         SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()

@@ -16,15 +16,18 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SumoPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+
+import org.slf4j.Logger;
 
 import java.util.List;
 
-/**
- * Marker class.
- * TODO: maybe there is a prettier way to achieve this.
- */
 public class SumoIndexProvider implements VehicleIndexProvider {
 
     @Override
@@ -50,5 +53,10 @@ public class SumoIndexProvider implements VehicleIndexProvider {
     @Override
     public int getNumberOfVehicles() {
         return 0;
+    }
+
+    @Override
+    public PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
+        return new SumoPerceptionModule(owner, database, log);
     }
 }
