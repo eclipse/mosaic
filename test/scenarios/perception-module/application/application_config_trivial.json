@@ -4,7 +4,7 @@
             "type": "VehicleIndex"
         },
         "trafficLightIndexProvider": {
-            "type": "TrafficLightTree"
+            "type": "TrafficLightIndex"
         }
     }
 }

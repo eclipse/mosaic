@@ -17,34 +17,34 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 
 import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 
-public class TrafficLightObjectAdapter implements SpatialItemAdapter<TrafficLightObject> {
+public class SpatialObjectAdapter<T extends SpatialObject> implements SpatialItemAdapter<T> {
     @Override
-    public double getCenterX(TrafficLightObject item) {
+    public double getCenterX(T item) {
         return item.getProjectedPosition().getX();
     }
 
     @Override
-    public double getCenterY(TrafficLightObject item) {
+    public double getCenterY(T item) {
         return item.getProjectedPosition().getZ();
     }
 
     @Override
-    public double getCenterZ(TrafficLightObject item) {
+    public double getCenterZ(T item) {
         return -item.getProjectedPosition().getY();
     }
 
     @Override
-    public double getMinX(TrafficLightObject item) {
+    public double getMinX(T item) {
         return getCenterX(item);
     }
 
     @Override
-    public double getMinY(TrafficLightObject item) {
+    public double getMinY(T item) {
         return getCenterY(item);
     }
 
     @Override
-    public double getMinZ(TrafficLightObject item) {
+    public double getMinZ(T item) {
         return getCenterZ(item);
     }
 }

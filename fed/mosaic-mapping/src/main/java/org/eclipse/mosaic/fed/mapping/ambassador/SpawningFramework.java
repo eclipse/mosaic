@@ -489,16 +489,14 @@ public class SpawningFramework {
 
             List<String> apps;
 
-            String name;
+            String name = UnitNameGenerator.nextTlName();
             String group;
             if (prototype != null) {
                 apps = prototype.getAppList();
                 group = ObjectUtils.defaultIfNull(prototype.getGroup(), tl.getGroupId());
-                name = UnitNameGenerator.nextTlName();
             } else {
                 apps = new ArrayList<>();
                 group = null;
-                name = tl.getGroupId();
             }
 
             TrafficLightRegistration interaction = new TrafficLightRegistration(

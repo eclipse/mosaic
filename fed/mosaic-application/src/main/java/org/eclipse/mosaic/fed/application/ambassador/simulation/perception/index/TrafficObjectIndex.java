@@ -26,25 +26,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link SpatialIndex} is a representation of space using a special data structure.
+ * A {@link TrafficObjectIndex} is a representation of space using a special data structure.
  * The goal is to allow for efficient querying of nearby entities.
  */
-public interface SpatialIndex {
+public interface TrafficObjectIndex {
 
     /**
-     * Queries the {@link SpatialIndex} and returns all vehicles inside the {@link PerceptionModel}.
+     * Queries the {@link TrafficObjectIndex} and returns all vehicles inside the {@link PerceptionModel}.
      */
     List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange);
 
     /**
-     * Remove all vehicles from the {@link SpatialIndex} by a list of vehicle ids.
+     * Remove all vehicles from the {@link TrafficObjectIndex} by a list of vehicle ids.
      *
      * @param vehiclesToRemove the list of vehicles to remove from the index
      */
     void removeVehicles(Iterable<String> vehiclesToRemove);
 
     /**
-     * Updates the {@link SpatialIndex} with a list of {@link VehicleData} objects.
+     * Updates the {@link TrafficObjectIndex} with a list of {@link VehicleData} objects.
      *
      * @param vehiclesToUpdate the list of vehicles to add or update in the index
      */
@@ -58,7 +58,7 @@ public interface SpatialIndex {
     int getNumberOfVehicles();
 
     /**
-     * Queries the {@link SpatialIndex} and returns all traffic lights inside the {@link PerceptionModel}.
+     * Queries the {@link TrafficObjectIndex} and returns all traffic lights inside the {@link PerceptionModel}.
      */
     List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel);
 
@@ -71,7 +71,7 @@ public interface SpatialIndex {
     void addTrafficLightGroup(TrafficLightGroup trafficLightGroup);
 
     /**
-     * Updates the {@link SpatialIndex} in regard to traffic lights. The unit simulator has to be queried as
+     * Updates the {@link TrafficObjectIndex} in regard to traffic lights. The unit simulator has to be queried as
      * {@code TrafficLightUpdates} do not contain all necessary information.
      *
      * @param trafficLightsToUpdate a list of information packages transmitted by the traffic simulator

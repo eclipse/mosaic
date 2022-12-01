@@ -18,7 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndexProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexProviderTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
@@ -40,19 +40,19 @@ public interface VehicleIndexProvider extends Serializable {
     void initialize();
 
     /**
-     * Queries the {@link SpatialIndexProvider} and returns all vehicles inside the {@link PerceptionModel}.
+     * Queries the {@link TrafficObjectIndexProvider} and returns all vehicles inside the {@link PerceptionModel}.
      */
     List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
 
     /**
-     * Remove all vehicles from the {@link SpatialIndexProvider} by a list of vehicle ids.
+     * Remove all vehicles from the {@link TrafficObjectIndexProvider} by a list of vehicle ids.
      *
      * @param vehiclesToRemove the list of vehicles to remove from the index
      */
     void removeVehicles(Iterable<String> vehiclesToRemove);
 
     /**
-     * Updates the {@link SpatialIndexProvider} with a list of {@link VehicleData} objects.
+     * Updates the {@link TrafficObjectIndexProvider} with a list of {@link VehicleData} objects.
      *
      * @param vehiclesToUpdate the list of vehicles to add or update in the index
      */

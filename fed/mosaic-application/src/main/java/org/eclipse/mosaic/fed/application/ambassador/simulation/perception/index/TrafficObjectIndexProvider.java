@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link SpatialIndexProvider} is a representation of space using a special data structure.
+ * A {@link TrafficObjectIndexProvider} is a representation of space using a special data structure.
  * The goal is to allow for efficient querying of nearby entities.
  */
-public class SpatialIndexProvider implements SpatialIndex {
+public class TrafficObjectIndexProvider implements TrafficObjectIndex {
     private final Logger log;
     private final VehicleIndexProvider vehicleIndexProvider;
     private final TrafficLightIndexProvider trafficLightIndexProvider;
 
-    private SpatialIndexProvider(Logger log, VehicleIndexProvider vehicleIndexProvider, TrafficLightIndexProvider trafficLightIndexProvider) {
+    private TrafficObjectIndexProvider(Logger log, VehicleIndexProvider vehicleIndexProvider, TrafficLightIndexProvider trafficLightIndexProvider) {
         this.log = log;
         this.vehicleIndexProvider = vehicleIndexProvider;
         this.trafficLightIndexProvider = trafficLightIndexProvider;
@@ -54,7 +54,7 @@ public class SpatialIndexProvider implements SpatialIndex {
     }
 
     /**
-     * Queries the {@link SpatialIndexProvider} and returns all vehicles inside the {@link PerceptionModel}.
+     * Queries the {@link TrafficObjectIndexProvider} and returns all vehicles inside the {@link PerceptionModel}.
      */
     @Override
     public List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel) {
@@ -67,7 +67,7 @@ public class SpatialIndexProvider implements SpatialIndex {
     }
 
     /**
-     * Remove all vehicles from the {@link SpatialIndexProvider} by a list of vehicle ids.
+     * Remove all vehicles from the {@link TrafficObjectIndexProvider} by a list of vehicle ids.
      *
      * @param vehiclesToRemove the list of vehicles to remove from the index
      */
@@ -81,7 +81,7 @@ public class SpatialIndexProvider implements SpatialIndex {
     }
 
     /**
-     * Updates the {@link SpatialIndexProvider} with a list of {@link VehicleData} objects.
+     * Updates the {@link TrafficObjectIndexProvider} with a list of {@link VehicleData} objects.
      *
      * @param vehiclesToUpdate the list of vehicles to add or update in the index
      */
@@ -110,7 +110,7 @@ public class SpatialIndexProvider implements SpatialIndex {
     }
 
     /**
-     * Queries the {@link SpatialIndexProvider} and returns all traffic lights inside the {@link PerceptionModel}.
+     * Queries the {@link TrafficObjectIndexProvider} and returns all traffic lights inside the {@link PerceptionModel}.
      */
     @Override
     public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
@@ -137,7 +137,7 @@ public class SpatialIndexProvider implements SpatialIndex {
     }
 
     /**
-     * Updates the {@link SpatialIndexProvider} in regard to traffic lights. The unit simulator has to be queried as
+     * Updates the {@link TrafficObjectIndexProvider} in regard to traffic lights. The unit simulator has to be queried as
      * {@code TrafficLightUpdates} do not contain all necessary information.
      *
      * @param trafficLightsToUpdate a list of information packages transmitted by the traffic simulator
@@ -185,14 +185,14 @@ public class SpatialIndexProvider implements SpatialIndex {
             return this;
         }
 
-        public SpatialIndexProvider build() {
+        public TrafficObjectIndexProvider build() {
             if (vehicleIndexProvider != null) {
                 vehicleIndexProvider.initialize();
             }
             if (trafficLightIndexProvider != null) {
                 trafficLightIndexProvider.initialize();
             }
-            return new SpatialIndexProvider(log, vehicleIndexProvider, trafficLightIndexProvider);
+            return new TrafficObjectIndexProvider(log, vehicleIndexProvider, trafficLightIndexProvider);
         }
     }
 }

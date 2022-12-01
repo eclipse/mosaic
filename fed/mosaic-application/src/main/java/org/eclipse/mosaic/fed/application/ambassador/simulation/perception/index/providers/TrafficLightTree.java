@@ -17,8 +17,8 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObjectAdapter;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObjectAdapter;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
@@ -83,7 +83,7 @@ public class TrafficLightTree implements TrafficLightIndexProvider {
     public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightGroupsToUpdate) {
         if (trafficLightTree == null) {
             List<TrafficLightObject> allTrafficLights = new ArrayList<>(indexedTrafficLights.values());
-            trafficLightTree = new KdTree<>(new TrafficLightObjectAdapter(), allTrafficLights, bucketSize);
+            trafficLightTree = new KdTree<>(new SpatialObjectAdapter<>(), allTrafficLights, bucketSize);
             treeTraverser = new SpatialTreeTraverser.InRadius<>();
         }
         trafficLightGroupsToUpdate.forEach(

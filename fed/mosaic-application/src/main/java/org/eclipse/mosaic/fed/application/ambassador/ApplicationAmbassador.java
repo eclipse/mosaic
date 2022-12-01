@@ -354,8 +354,9 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final TrafficLightRegistration trafficLightRegistration) {
-        subscribeToTrafficLight(trafficLightRegistration);
         UnitSimulator.UnitSimulator.registerTrafficLight(trafficLightRegistration);
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
+                .addTrafficLightGroup(trafficLightRegistration.getTrafficLightGroup());
     }
 
     private void process(final VehicleRegistration vehicleRegistration) {
@@ -700,13 +701,5 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             log.error(ErrorRegister.AMBASSADOR_RequestingAdvanceTime.toString(), ex);
             throw new RuntimeException(ErrorRegister.AMBASSADOR_RequestingAdvanceTime.toString(), ex);
         }
-    }
-
-    private void subscribeToTrafficLight(TrafficLightRegistration trafficLightRegistration) {
-        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndexProvider == null) {
-            return;
-        }
-        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
-                .addTrafficLightGroup(trafficLightRegistration.getTrafficLightGroup());
     }
 }

@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndexProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.TrafficLightIndexProviderTypeAdapterFactory;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -35,7 +35,7 @@ public interface TrafficLightIndexProvider {
     void initialize();
 
     /**
-     * Queries the {@link SpatialIndexProvider} and returns all traffic lights inside the {@link PerceptionModel}.
+     * Queries the {@link TrafficObjectIndexProvider} and returns all traffic lights inside the {@link PerceptionModel}.
      */
     List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel);
 
@@ -48,7 +48,7 @@ public interface TrafficLightIndexProvider {
     void addTrafficLight(TrafficLightGroup trafficLightGroup);
 
     /**
-     * Updates the {@link SpatialIndexProvider} in regard to traffic lights. The unit simulator has to be queried as
+     * Updates the {@link TrafficObjectIndexProvider} in regard to traffic lights. The unit simulator has to be queried as
      * {@code TrafficLightUpdates} do not contain all necessary information.
      *
      * @param trafficLightGroupsToUpdate a list of information packages transmitted by the traffic simulator

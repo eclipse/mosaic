@@ -16,8 +16,8 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndexProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
@@ -57,7 +57,7 @@ public class CentralPerceptionComponent {
     /**
      * The spatial index used to store and find objects by their positions.
      */
-    private SpatialIndex spatialIndex;
+    private TrafficObjectIndex trafficObjectIndex;
 
     /**
      * The last {@link VehicleUpdates} interaction which is used to update the vehicleIndex.
@@ -98,7 +98,7 @@ public class CentralPerceptionComponent {
             boolean vehicleIndexConfigured = configuration.vehicleIndexProvider != null;
             boolean trafficLightIndexConfigured = configuration.trafficLightIndexProvider != null;
 
-            SpatialIndexProvider.Builder indexBuilder = new SpatialIndexProvider.Builder(LOG);
+            TrafficObjectIndexProvider.Builder indexBuilder = new TrafficObjectIndexProvider.Builder(LOG);
             if (scenarioBounds.getArea() <= 0) {
                 LOG.warn("The bounding area of the scenario could not be determined. Defaulting to low performance spatial index.");
                 if (vehicleIndexConfigured) { // if configured default to map index
@@ -115,10 +115,10 @@ public class CentralPerceptionComponent {
                     indexBuilder.withTrafficLightIndexProvider(configuration.trafficLightIndexProvider);
                 }
             }
-            spatialIndex = indexBuilder.build();
+            trafficObjectIndex = indexBuilder.build();
 
             if (configuration.measurePerformance) {
-                spatialIndex = new MonitoringSpatialIndexProvider(spatialIndex, PerformanceMonitor.getInstance());
+                trafficObjectIndex = new MonitoringTrafficObjectIndexProvider(trafficObjectIndex, PerformanceMonitor.getInstance());
             }
         } catch (Exception e) {
             throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent", e);
@@ -126,10 +126,10 @@ public class CentralPerceptionComponent {
     }
 
     /**
-     * Returns the {@link SpatialIndex} storing all vehicles.
+     * Returns the {@link TrafficObjectIndex} storing all vehicles.
      */
-    public SpatialIndex getSpatialIndex() {
-        return spatialIndex;
+    public TrafficObjectIndex getSpatialIndex() {
+        return trafficObjectIndex;
     }
 
     public CartesianRectangle getScenarioBounds() {
@@ -145,13 +145,13 @@ public class CentralPerceptionComponent {
             // do not update index until next VehicleUpdates interaction is received
             updateVehicleIndex = false;
             // using Iterables.concat allows iterating over both lists subsequently without creating a new list
-            spatialIndex.updateVehicles(Iterables.concat(latestVehicleUpdates.getAdded(), latestVehicleUpdates.getUpdated()));
+            trafficObjectIndex.updateVehicles(Iterables.concat(latestVehicleUpdates.getAdded(), latestVehicleUpdates.getUpdated()));
         }
         if (updateTrafficLightIndex) {
             // do not update index until next TrafficLightUpdates interaction is received
             updateVehicleIndex = false;
             // using Iterables.concat allows iterating over both lists subsequently without creating a new list
-            spatialIndex.updateTrafficLights(latestTrafficLightUpdates.getUpdated());
+            trafficObjectIndex.updateTrafficLights(latestTrafficLightUpdates.getUpdated());
         }
     }
 
@@ -164,8 +164,8 @@ public class CentralPerceptionComponent {
         latestVehicleUpdates = vehicleUpdates;
         updateVehicleIndex = true;
         // we need to remove arrived vehicles in every simulation step, otherwise we could have dead vehicles in the index
-        if (spatialIndex.getNumberOfVehicles() > 0) {
-            spatialIndex.removeVehicles(vehicleUpdates.getRemovedNames());
+        if (trafficObjectIndex.getNumberOfVehicles() > 0) {
+            trafficObjectIndex.removeVehicles(vehicleUpdates.getRemovedNames());
         }
     }
 
@@ -176,7 +176,7 @@ public class CentralPerceptionComponent {
      * @param trafficLightGroup the registered traffic light group interaction
      */
     public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
-        spatialIndex.addTrafficLightGroup(trafficLightGroup);
+        trafficObjectIndex.addTrafficLightGroup(trafficLightGroup);
     }
 
     /**
@@ -193,11 +193,11 @@ public class CentralPerceptionComponent {
     /**
      * Wrapper class to measure atomic calls of update, search and remove of the used spatial index.
      */
-    static class MonitoringSpatialIndexProvider implements SpatialIndex {
-        private final SpatialIndex parent;
+    static class MonitoringTrafficObjectIndexProvider implements TrafficObjectIndex {
+        private final TrafficObjectIndex parent;
         private final PerformanceMonitor monitor;
 
-        MonitoringSpatialIndexProvider(SpatialIndex parent, PerformanceMonitor monitor) {
+        MonitoringTrafficObjectIndexProvider(TrafficObjectIndex parent, PerformanceMonitor monitor) {
             this.parent = parent;
             this.monitor = monitor;
         }

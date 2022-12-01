@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.Perce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.SpatialIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Trivial implementation of {@link SpatialIndex}, which uses a for loop to solve the range query.
+ * Trivial implementation of {@link TrafficObjectIndex}, which uses a for loop to solve the range query.
  */
 public class VehicleIndex implements VehicleIndexProvider {
 
