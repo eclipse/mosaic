@@ -206,50 +206,52 @@
             "title": "Prototype Parameter Deviations",
             "description": "Object to define a standard deviation of single parameters of a specific prototype. For each spawned vehicle, a variation of the prototype will be generated, if at least one of the following parameters is larger than 0.",
             "type": "object",
-            "length": {
-                "description": "The standard deviation to apply on the length of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "width": {
-                "description": "The standard deviation to apply on the width of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "height": {
-                "description": "The standard deviation to apply on the height of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "minGap": {
-                "description": "The standard deviation to apply on the minimum gap of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "maxSpeed": {
-                "description": "The standard deviation to apply on the maximum speed of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "speedFactor": {
-                "description": "The standard deviation to apply on the speed factor of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "accel": {
-                "description": "The standard deviation to apply on the acceleration value of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "decel": {
-                "description": "The standard deviation to apply on the deceleration value of the prototype.",
-                "type": "number",
-                "minimum": 0
-            },
-            "tau": {
-                "description": "The standard deviation to apply on the desired headway time (tau) of the prototype.",
-                "type": "number",
-                "minimum": 0
+            "properties": {
+                "length": {
+                    "description": "The standard deviation to apply on the length of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "width": {
+                    "description": "The standard deviation to apply on the width of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "height": {
+                    "description": "The standard deviation to apply on the height of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "minGap": {
+                    "description": "The standard deviation to apply on the minimum gap of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "maxSpeed": {
+                    "description": "The standard deviation to apply on the maximum speed of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "speedFactor": {
+                    "description": "The standard deviation to apply on the speed factor of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "accel": {
+                    "description": "The standard deviation to apply on the acceleration value of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "decel": {
+                    "description": "The standard deviation to apply on the deceleration value of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "tau": {
+                    "description": "The standard deviation to apply on the desired headway time (tau) of the prototype.",
+                    "type": "number",
+                    "minimum": 0
+                }
             }
         },
         "typeDistribution": {
