@@ -110,6 +110,10 @@
                     "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple prototype entities.",
                     "type": "string"
                 },
+                "color": {
+                    "description": "The color of the vehicle for visualization purposes.",
+                    "type": "string"
+                },
                 "accel": {
                     "description": "Acceleration in m/s^2.",
                     "type": "number",
@@ -134,6 +138,11 @@
                         { "type": "number", "minimum": 0 }
                     ]
                 },
+                "speedFactor": {
+                    "description": "The speed factor of the vehicle to apply to speed limits. E.g., with a value of 1.1 the vehicle would exceed the speed limit of an edge by 10 percent.",
+                    "type": "number",
+                    "minimum": 0
+                },
                 "minGap": {
                     "description": "Distance in meter between front bumper of a vehicle and the back bumper of its leader in a traffic jam. If defined as a number, then the default unit is m. Alternatively this can be defined as a string to include the unit of measurement (e.g. '300 cm').",
                     "anyOf": [
@@ -157,6 +166,24 @@
                     "type": "number",
                     "minimum": 0
                 },
+                "deviations": {
+                    "description": "Configure deviation of parameters for each individual vehicle based in this prototype.",
+                    "$ref": "#/definitions/deviations"
+                },
+                "laneChangeMode": {
+                    "description": "Predefined modes adjusting the lane change behavior.",
+                    "type": "string",
+                    "enum": [
+                        "DEFAULT", "OFF", "CAUTIOUS", "COOPERATIVE", "AGGRESSIVE", "PASSIVE"
+                    ]
+                },
+                "speedMode": {
+                    "description": "Predefined modes adjusting the speed appliance behavior.",
+                    "type": "string",
+                    "enum": [
+                        "DEFAULT", "CAUTIOUS", "NORMAL", "AGGRESSIVE", "SPEEDER"
+                    ]
+                },
                 "vehicleClass": {
                     "description": "Class of the vehicle. The classes are used in lane definitions and allow/disallow the use of lanes for certain vehicle types (e.g. a taxi lane).",
                     "type": "string",
@@ -174,6 +201,53 @@
                 }
             },
             "required": [ "name" ]
+        },
+        "deviations": {
+            "length": {
+                "description": "The standard deviation to apply on the length of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "width": {
+                "description": "The standard deviation to apply on the width of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "height": {
+                "description": "The standard deviation to apply on the height of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "minGap": {
+                "description": "The standard deviation to apply on the minimum gap of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "maxSpeed": {
+                "description": "The standard deviation to apply on the maximum speed of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "speedFactor": {
+                "description": "The standard deviation to apply on the speed factor of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "accel": {
+                "description": "The standard deviation to apply on the acceleration value of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "decel": {
+                "description": "The standard deviation to apply on the deceleration value of the prototype.",
+                "type": "number",
+                "minimum": 0
+            },
+            "tau": {
+                "description": "The standard deviation to apply on the desired headway time (tau) of the prototype.",
+                "type": "number",
+                "minimum": 0
+            }
         },
         "typeDistribution": {
             "title": "typeDistribution",
