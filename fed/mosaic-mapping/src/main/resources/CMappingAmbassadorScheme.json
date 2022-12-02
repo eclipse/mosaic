@@ -203,6 +203,9 @@
             "required": [ "name" ]
         },
         "deviations": {
+            "title": "Prototype Parameter Deviations",
+            "description": "Object to define a standard deviation of single parameters of a specific prototype. For each spawned vehicle, a variation of the prototype will be generated, if at least one of the following parameters is larger than 0.",
+            "type": "object",
             "length": {
                 "description": "The standard deviation to apply on the length of the prototype.",
                 "type": "number",
