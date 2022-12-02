@@ -19,21 +19,27 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadFollowVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
+import org.eclipse.mosaic.lib.objects.vehicle.StoppingPlace;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciReader<VehicleSubscriptionResult> {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public VehicleSubscriptionTraciReader() {
-        getTypeBasedTraciReader().registerCompoundReader(new LeadingVehicleReader());
+        LeadingVehicleReader leadingVehicleReader = new LeadingVehicleReader();
+        getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_LEADER.var, leadingVehicleReader);
+        getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_FOLLOWER.var, leadingVehicleReader);
+        getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_GET_NEXT_STOPS.var, new StoppingPlaceReader());
     }
 
     @Override
@@ -99,6 +105,8 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
             result.followerVehicle = (LeadFollowVehicle) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_MIN_GAP.var) {
             result.minGap = (double) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_GET_NEXT_STOPS.var) {
+            result.nextStop = Iterables.getFirst((List<StoppingPlace>) varValue, null);
         } else {
             log.warn("Unknown subscription variable {}. Skipping.", String.format("%02X ", varId));
         }

@@ -26,7 +26,9 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.TrafficLightSubscriptionRe
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleContextSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
+import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.objects.vehicle.StoppingPlace;
 import org.eclipse.mosaic.lib.util.objects.Position;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -38,6 +40,8 @@ import org.eclipse.sumo.libsumo.LaneArea;
 import org.eclipse.sumo.libsumo.Simulation;
 import org.eclipse.sumo.libsumo.StringDoublePair;
 import org.eclipse.sumo.libsumo.StringVector;
+import org.eclipse.sumo.libsumo.TraCINextStopData;
+import org.eclipse.sumo.libsumo.TraCINextStopDataVector2;
 import org.eclipse.sumo.libsumo.TraCIPosition;
 import org.eclipse.sumo.libsumo.TraCIVehicleData;
 import org.eclipse.sumo.libsumo.TrafficLight;
@@ -164,8 +168,22 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
                 result.followerVehicle = LeadFollowVehicle.NONE;
             }
 
+            result.nextStop = getNextStop(Vehicle.getStops(sumoVehicleId, 1));
+
             results.add(result);
         }
+    }
+
+    private StoppingPlace getNextStop(TraCINextStopDataVector2 stops) {
+        if (stops.isEmpty()) {
+            return null;
+        }
+        TraCINextStopData stopData = stops.get(0);
+        return new StoppingPlace.Builder()
+                .laneId(stopData.getLane()).endPos(stopData.getEndPos()).stoppingPlaceId(stopData.getStoppingPlaceID())
+                .stopFlags(VehicleStopMode.fromSumoInt(stopData.getStopFlags())).stopDuration(stopData.getDuration())
+                .stoppedUntil(stopData.getUntil()).startPos(stopData.getStartPos())
+                .build();
     }
 
     private LeadFollowVehicle getLeaderFollower(StringDoublePair leaderFollower) {

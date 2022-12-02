@@ -20,7 +20,9 @@ import org.eclipse.mosaic.lib.util.objects.Position;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
 
@@ -28,7 +30,8 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
     private final Position3dTraciReader position3dReader = new Position3dTraciReader();
     private final ListTraciReader<String> stringListReader = new ListTraciReader<>(new StringTraciReader());
 
-    private AbstractTraciResultReader<?> compoundReader = null;
+    private Map<Integer, AbstractTraciResultReader<?>> compoundReaders = new HashMap<>();
+    private int currentVarId;
 
     protected TypeBasedTraciReader() {
         this(null);
@@ -38,8 +41,8 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
         super(matcher);
     }
 
-    public void registerCompoundReader(AbstractTraciResultReader<?> compoundReader) {
-        this.compoundReader = compoundReader;
+    public void registerCompoundReader(Integer command, AbstractTraciResultReader<?> compoundReader) {
+        this.compoundReaders.put(command, compoundReader);
     }
 
     @Override
@@ -71,6 +74,7 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
                 return readUnsignedByte(in);
             case TraciDatatypes.COMPOUND:
                 readInt(in); // required at least for reading inductionloop vehicle data compound
+                AbstractTraciResultReader<?> compoundReader = compoundReaders.get(currentVarId);
                 if (compoundReader != null) {
                     Object complex = compoundReader.read(in, totalBytesLeft - numBytesRead);
                     numBytesRead += compoundReader.getNumberOfBytesRead();
@@ -79,5 +83,9 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
             default:
                 throw new RuntimeException("Subscribed variable type " + varReturnType + " not known.");
         }
+    }
+
+    public void setVar(int varId) {
+        this.currentVarId = varId;
     }
 }

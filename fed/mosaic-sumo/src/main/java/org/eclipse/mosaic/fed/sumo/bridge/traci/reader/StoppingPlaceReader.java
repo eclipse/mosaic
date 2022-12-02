@@ -41,10 +41,9 @@ public class StoppingPlaceReader extends AbstractTraciResultReader<List<Stopping
 
     @Override
     protected List<StoppingPlace> readFromStream(DataInputStream in) throws IOException {
-        int count = readIntWithType(in); // number of entries * 4 + 1 (don't know the use case)
-        int size = readIntWithType(in);
+        int count = readIntWithType(in);
         List<StoppingPlace> stoppingPlaces = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < count; i++) {
             StoppingPlace.Builder stoppingPlaceBuilder = new StoppingPlace.Builder();
             stoppingPlaceBuilder.laneId(readStringWitType(in));
             stoppingPlaceBuilder.endPos(readDoubleWithType(in));
@@ -52,17 +51,18 @@ public class StoppingPlaceReader extends AbstractTraciResultReader<List<Stopping
             stoppingPlaceBuilder.stopFlags(VehicleStopMode.fromSumoInt(readIntWithType(in)));
             stoppingPlaceBuilder.stopDuration(readDoubleWithType(in));
             stoppingPlaceBuilder.stoppedUntil(readDoubleWithType(in));
-            stoppingPlaceBuilder.startPos(readDoubleWithType(in));
-            // read unused fields
-            readDoubleWithType(in); // intended arrival
-            readDoubleWithType(in); // arrival
-            readDoubleWithType(in); // depart
-            readStringWitType(in); // split
-            readStringWitType(in); // join
-            readStringWitType(in); // actType
-            readStringWitType(in); // tripId
-            readStringWitType(in); // line
-            readDoubleWithType(in); // speed
+
+            // TODO these would be filled in when using getStops instead of nextStops
+//            stoppingPlaceBuilder.startPos(readDoubleWithType(in));
+//            readDoubleWithType(in); // intended arrival
+//            readDoubleWithType(in); // arrival
+//            readDoubleWithType(in); // depart
+//            readStringWitType(in); // split
+//            readStringWitType(in); // join
+//            readStringWitType(in); // actType
+//            readStringWitType(in); // tripId
+//            readStringWitType(in); // line
+//            readDoubleWithType(in); // speed
             stoppingPlaces.add(stoppingPlaceBuilder.build());
         }
         return stoppingPlaces;

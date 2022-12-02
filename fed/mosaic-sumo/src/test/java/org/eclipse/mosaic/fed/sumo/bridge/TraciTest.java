@@ -71,6 +71,7 @@ public class TraciTest {
 
     private static CSumo createSumoConfig() {
         CSumo config = new CSumo();
+        config.debugTraciCalls = true;
         config.subscriptions =
                 Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER);
         return config;

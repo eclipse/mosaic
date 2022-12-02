@@ -55,10 +55,10 @@ public enum VehicleStopMode {
      * @return The stop mode.
      */
     public static VehicleStopMode fromSumoInt(int stopFlag) {
-        if ((stopFlag & 0b10000000) > 0) {
+        if ((stopFlag & 0b110000000) > 0) {
             return VehicleStopMode.PARK_IN_PARKING_AREA;
         }
-        if ((stopFlag & 0b1000) > 0) {
+        if ((stopFlag & 0b10000) > 0) {
             return VehicleStopMode.BUS_STOP;
         }
         if ((stopFlag & 0b0010) > 0) {

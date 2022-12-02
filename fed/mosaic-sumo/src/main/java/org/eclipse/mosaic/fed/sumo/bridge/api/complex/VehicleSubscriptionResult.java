@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.sumo.bridge.api.complex;
 
+import org.eclipse.mosaic.lib.objects.vehicle.StoppingPlace;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
 /**
@@ -48,4 +49,5 @@ public class VehicleSubscriptionResult extends AbstractSubscriptionResult {
 
     public LeadFollowVehicle leadingVehicle = LeadFollowVehicle.NONE;
     public LeadFollowVehicle followerVehicle = LeadFollowVehicle.NONE;
+    public StoppingPlace nextStop;
 }

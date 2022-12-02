@@ -519,7 +519,8 @@ public class SimulationFacade {
                     .signals(decodeVehicleSignals(veh.signalsEncoded))
                     .stopped(vehicleStopMode)
                     .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
-                    .laneArea(vehicleSegmentInfo.get(veh.id));
+                    .laneArea(vehicleSegmentInfo.get(veh.id))
+                    .nextStop(veh.nextStop);
             if (isParking) {
                 if (!sumoVehicle.lastVehicleData.isStopped()) {
                     log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);

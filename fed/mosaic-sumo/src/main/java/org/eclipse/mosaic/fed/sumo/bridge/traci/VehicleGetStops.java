@@ -43,7 +43,7 @@ public class VehicleGetStops extends AbstractTraciCommand<List<StoppingPlace>>
 
         write()
                 .command(CommandRetrieveVehicleState.COMMAND)
-                .variable(CommandRetrieveVehicleState.VAR_GET_STOPS)
+                .variable(CommandRetrieveVehicleState.VAR_GET_NEXT_STOPS)
                 .writeVehicleIdParam()
                 .writeIntParamWithType();
 
