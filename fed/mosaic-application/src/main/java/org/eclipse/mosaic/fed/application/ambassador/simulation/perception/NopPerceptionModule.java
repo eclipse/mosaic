@@ -29,9 +29,9 @@ import java.util.List;
  * Extension of {@link AbstractPerceptionModule} which gets instantiated if the vehicle index provider wasn't configured
  * in the application configuration.
  */
-public class DisabledPerceptionModule extends AbstractPerceptionModule {
+public class NopPerceptionModule extends AbstractPerceptionModule {
 
-    public DisabledPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
+    public NopPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
         super(owner, database, log);
         log.debug("No vehicle index provider configured, leading to disabled perception.");
     }

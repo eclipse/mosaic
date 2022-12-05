@@ -15,74 +15,64 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
-import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexProviderTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
+import com.google.gson.annotations.JsonAdapter;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-/**
- * Trivial implementation of {@link TrafficObjectIndex}, which uses a for loop to solve the range query.
- */
-public class VehicleIndex implements VehicleIndexProvider {
+@JsonAdapter(VehicleIndexProviderTypeAdapterFactory.class)
+public interface VehicleIndex extends Serializable {
 
-    private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
+    /**
+     * Method called to initialize index after configuration has been read.
+     */
+    void initialize();
 
-    @Override
-    public void initialize() {
-        // nothing to initialize
-    }
+    /**
+     * Queries the {@link TrafficObjectIndex} and returns all vehicles inside the {@link PerceptionModel}.
+     */
+    List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
 
-    @Override
-    public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
-        return indexedVehicles.values().stream()
-                .filter(searchRange::isInRange)
-                .collect(Collectors.toList());
-    }
+    /**
+     * Remove all vehicles from the {@link TrafficObjectIndex} by a list of vehicle ids.
+     *
+     * @param vehiclesToRemove the list of vehicles to remove from the index
+     */
+    void removeVehicles(Iterable<String> vehiclesToRemove);
 
-    @Override
-    public void removeVehicles(Iterable<String> vehiclesToRemove) {
-        vehiclesToRemove.forEach(indexedVehicles::remove);
-    }
+    /**
+     * Updates the {@link TrafficObjectIndex} with a list of {@link VehicleData} objects.
+     *
+     * @param vehiclesToUpdate the list of vehicles to add or update in the index
+     */
+    void updateVehicles(Iterable<VehicleData> vehiclesToUpdate);
 
-    @Override
-    public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-        vehiclesToUpdate.forEach(v -> {
-                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
-                            .contains(v.getProjectedPosition())) { // check if inside bounding area
-                        VehicleObject currentVehicle = indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
-                                .setHeading(v.getHeading())
-                                .setSpeed(v.getSpeed())
-                                .setPosition(v.getProjectedPosition());
-                        if (v.getRoadPosition() != null) {
-                            currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
-                        }
-                    } else {
-                        indexedVehicles.remove(v.getName());
-                    }
-                }
-        );
-    }
+    /**
+     * Returns the amount of indexed vehicles.
+     *
+     * @return the number of vehicles
+     */
+    int getNumberOfVehicles();
 
-    @Override
-    public int getNumberOfVehicles() {
-        return indexedVehicles.size();
-    }
-
-    @Override
-    public PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
-        return new SimplePerceptionModule(owner, database, log);
-    }
+    /**
+     * Creates the perception module to be used for perception purposes. Allows for the implementation of different
+     * provider sources.
+     *
+     * @param owner    the unit the perception module belongs to
+     * @param database the database for the scenario
+     * @param log      the logger
+     * @return an instantiated perception module
+     */
+    PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log);
 }

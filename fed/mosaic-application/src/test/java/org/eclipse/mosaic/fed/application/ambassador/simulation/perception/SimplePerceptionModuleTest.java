@@ -26,11 +26,10 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndexProvider;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleGrid;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
@@ -93,9 +92,9 @@ public class SimplePerceptionModuleTest {
                 .thenReturn(new CartesianRectangle(new MutableCartesianPoint(100, 90, 0), new MutableCartesianPoint(310, 115, 0)));
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
-        trafficObjectIndex = new TrafficObjectIndexProvider.Builder(mock((Logger.class)))
-                .withVehicleIndexProvider(new VehicleIndex())
-                .withTrafficLightIndexProvider(new TrafficLightIndex())
+        trafficObjectIndex = new TrafficObjectIndex.Builder(mock((Logger.class)))
+                .withVehicleIndexProvider(new VehicleMap())
+                .withTrafficLightIndexProvider(new TrafficLightMap())
                 .build();
         // setup cpc
         when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
@@ -342,7 +341,7 @@ public class SimplePerceptionModuleTest {
         VehicleTree vehicleTree = new VehicleTree();
         vehicleTree.splitSize = 20;
         vehicleTree.maxDepth = 12;
-        trafficObjectIndex = new TrafficObjectIndexProvider.Builder((mock(Logger.class)))
+        trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
                 .withVehicleIndexProvider(vehicleTree)
                 .build();
         when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
@@ -352,7 +351,7 @@ public class SimplePerceptionModuleTest {
         VehicleGrid vehicleGrid = new VehicleGrid();
         vehicleGrid.cellHeight = 5;
         vehicleGrid.cellWidth = 5;
-        trafficObjectIndex = new TrafficObjectIndexProvider.Builder((mock(Logger.class)))
+        trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
                 .withVehicleIndexProvider(vehicleGrid)
                 .build();
         when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
@@ -360,7 +359,7 @@ public class SimplePerceptionModuleTest {
 
     private void useTlTree() {
         TrafficLightTree trafficLightTree = new TrafficLightTree();
-        trafficObjectIndex = new TrafficObjectIndexProvider.Builder((mock(Logger.class)))
+        trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
                 .withTrafficLightIndexProvider(trafficLightTree)
                 .build();
 

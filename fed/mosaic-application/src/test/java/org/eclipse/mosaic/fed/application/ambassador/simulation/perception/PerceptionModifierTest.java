@@ -30,9 +30,8 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.error
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
@@ -96,8 +95,8 @@ public class PerceptionModifierTest {
                         new MutableCartesianPoint(VIEWING_RANGE * 2, VIEWING_ANGLE * 2, 0)));
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
-        trafficObjectIndex = new TrafficObjectIndexProvider.Builder(mock(Logger.class))
-                .withVehicleIndexProvider(new VehicleIndex())
+        trafficObjectIndex = new TrafficObjectIndex.Builder(mock(Logger.class))
+                .withVehicleIndexProvider(new VehicleMap())
                 .build();
         // setup cpc
         when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);

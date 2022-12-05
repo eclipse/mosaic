@@ -17,11 +17,10 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndexProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
@@ -95,24 +94,24 @@ public class CentralPerceptionComponent {
                     ? SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds()
                     : configuration.perceptionArea.toCartesian();
             // see what backends are configured
-            boolean vehicleIndexConfigured = configuration.vehicleIndexProvider != null;
-            boolean trafficLightIndexConfigured = configuration.trafficLightIndexProvider != null;
+            boolean vehicleIndexConfigured = configuration.vehicleIndex != null;
+            boolean trafficLightIndexConfigured = configuration.trafficLightIndex != null;
 
-            TrafficObjectIndexProvider.Builder indexBuilder = new TrafficObjectIndexProvider.Builder(LOG);
+            TrafficObjectIndex.Builder indexBuilder = new TrafficObjectIndex.Builder(LOG);
             if (scenarioBounds.getArea() <= 0) {
                 LOG.warn("The bounding area of the scenario could not be determined. Defaulting to low performance spatial index.");
                 if (vehicleIndexConfigured) { // if configured default to map index
-                    indexBuilder.withVehicleIndexProvider(new VehicleIndex());
+                    indexBuilder.withVehicleIndexProvider(new VehicleMap());
                 }
                 if (trafficLightIndexConfigured) { // if configured default to map index
-                    indexBuilder.withTrafficLightIndexProvider(new TrafficLightIndex());
+                    indexBuilder.withTrafficLightIndexProvider(new TrafficLightMap());
                 }
             } else {
                 if (vehicleIndexConfigured) {
-                    indexBuilder.withVehicleIndexProvider(configuration.vehicleIndexProvider);
+                    indexBuilder.withVehicleIndexProvider(configuration.vehicleIndex);
                 }
                 if (trafficLightIndexConfigured) {
-                    indexBuilder.withTrafficLightIndexProvider(configuration.trafficLightIndexProvider);
+                    indexBuilder.withTrafficLightIndexProvider(configuration.trafficLightIndex);
                 }
             }
             trafficObjectIndex = indexBuilder.build();
@@ -193,73 +192,64 @@ public class CentralPerceptionComponent {
     /**
      * Wrapper class to measure atomic calls of update, search and remove of the used spatial index.
      */
-    static class MonitoringTrafficObjectIndexProvider implements TrafficObjectIndex {
-        private final TrafficObjectIndex parent;
+    static class MonitoringTrafficObjectIndexProvider extends TrafficObjectIndex {
         private final PerformanceMonitor monitor;
 
         MonitoringTrafficObjectIndexProvider(TrafficObjectIndex parent, PerformanceMonitor monitor) {
-            this.parent = parent;
+            super(parent);
             this.monitor = monitor;
         }
 
-        @Override
         public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                return parent.getVehiclesInRange(searchRange);
+                return super.getVehiclesInRange(searchRange);
             }
         }
 
-        @Override
         public void removeVehicles(Iterable<String> vehiclesToRemove) {
             try (PerformanceMonitor.Measurement m = monitor.start("remove-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                parent.removeVehicles(vehiclesToRemove);
+                super.removeVehicles(vehiclesToRemove);
             }
         }
 
-        @Override
         public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
             try (PerformanceMonitor.Measurement m = monitor.start("update-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                parent.updateVehicles(vehiclesToUpdate);
+                super.updateVehicles(vehiclesToUpdate);
             }
         }
 
-        @Override
         public int getNumberOfVehicles() {
-            return parent.getNumberOfVehicles();
+            return super.getNumberOfVehicles();
         }
 
-        @Override
         public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-traffic-light")) {
                 m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                return parent.getTrafficLightsInRange(perceptionModel);
+                return super.getTrafficLightsInRange(perceptionModel);
             }
         }
 
-        @Override
         public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
-            parent.addTrafficLightGroup(trafficLightGroup);
+            super.addTrafficLightGroup(trafficLightGroup);
         }
 
-        @Override
         public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightsToUpdate) {
             try (PerformanceMonitor.Measurement m = monitor.start("update-traffic-light")) {
                 m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                parent.updateTrafficLights(trafficLightsToUpdate);
+                super.updateTrafficLights(trafficLightsToUpdate);
             }
         }
 
-        @Override
         public int getNumberOfTrafficLights() {
-            return parent.getNumberOfTrafficLights();
+            return super.getNumberOfTrafficLights();
         }
     }
 }

@@ -21,7 +21,7 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DisabledPerceptionModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
@@ -84,11 +84,11 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
             database = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
         }
 
-        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndexProvider != null) {
-            perceptionModule = SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndexProvider
+        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex != null) {
+            perceptionModule = SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex
                     .createPerceptionModule(this, database, getOsLog());
         } else {
-            perceptionModule = new DisabledPerceptionModule(this, database, getOsLog());
+            perceptionModule = new NopPerceptionModule(this, database, getOsLog());
         }
     }
 

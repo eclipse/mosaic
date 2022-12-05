@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndexProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
 import org.eclipse.mosaic.lib.gson.AbstractTypeAdapterFactory;
 
 import com.google.gson.Gson;
@@ -25,7 +25,7 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
 public class TrafficLightIndexProviderTypeAdapterFactory implements TypeAdapterFactory {
-    public static class TrafficLightIndexProviderTypeAdapter extends AbstractTypeAdapterFactory<TrafficLightIndexProvider> {
+    public static class TrafficLightIndexProviderTypeAdapter extends AbstractTypeAdapterFactory<TrafficLightIndex> {
 
         private TrafficLightIndexProviderTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
             super(parentFactory, gson);
@@ -34,7 +34,7 @@ public class TrafficLightIndexProviderTypeAdapterFactory implements TypeAdapterF
         @Override
         protected Class<?> fromTypeName(String type) {
             try {
-                return Class.forName(TrafficLightIndexProvider.class.getPackage().getName() + "." + type);
+                return Class.forName(TrafficLightIndex.class.getPackage().getName() + "." + type);
             } catch (ClassNotFoundException e) {
                 throw new JsonParseException(
                         "Cannot deserialize Traffic Light Index Provider named " + type + "; Traffic Light Index Provider doesn't exist.");

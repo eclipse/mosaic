@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Quad-tree based implementation of a {@link VehicleIndexProvider}.
+ * Quad-tree based implementation of a {@link VehicleIndex}.
  */
-public class VehicleTree implements VehicleIndexProvider {
+public class VehicleTree implements VehicleIndex {
 
     /**
      * The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.

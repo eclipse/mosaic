@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VehicleGrid implements VehicleIndexProvider {
+public class VehicleGrid implements VehicleIndex {
 
     @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
     public double cellWidth = 200;

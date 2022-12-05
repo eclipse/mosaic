@@ -359,7 +359,7 @@ public enum UnitSimulator implements EventProcessor {
      */
     public void registerTrafficLight(TrafficLightRegistration trafficLightRegistration) {
         if (!trafficLightRegistration.getMapping().hasApplication()
-        && SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndexProvider == null) {
+        && SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndex == null) {
             return;
         }
         final TrafficLightGroupUnit trafficLightGroupUnit = new TrafficLightGroupUnit(

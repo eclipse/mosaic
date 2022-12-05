@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-public class SumoIndexProvider implements VehicleIndexProvider {
+public class SumoIndex implements VehicleIndex {
 
     @Override
     public void initialize() {

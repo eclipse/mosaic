@@ -15,8 +15,8 @@
 
 package org.eclipse.mosaic.fed.application.config;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndexProvider;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndexProvider;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
 import org.eclipse.mosaic.lib.geo.GeoRectangle;
 import org.eclipse.mosaic.lib.routing.config.CRouting;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
@@ -93,12 +93,12 @@ public class CApplicationAmbassador implements Serializable {
         /**
          * Backend for the spatial index providing vehicle information.
          */
-        public VehicleIndexProvider vehicleIndexProvider;
+        public VehicleIndex vehicleIndex;
 
         /**
          * Backend for the spatial index providing traffic light information.
          */
-        public TrafficLightIndexProvider trafficLightIndexProvider;
+        public TrafficLightIndex trafficLightIndex;
 
         /**
          * Area defining the section of the map in which traffic lights should be held in the index.
