@@ -234,8 +234,8 @@ public class TraciClientBridge implements Bridge {
             return;
         }
 
-        System.out.println("Command:\t" + toHex(outCapture.toByteArray()));
-        System.out.println("Response:\t" + toHex(inCapture.toByteArray()));
+        log.info("Command:\t" + toHex(outCapture.toByteArray()));
+        log.info("Response:\t" + toHex(inCapture.toByteArray()));
         outCapture.reset();
         inCapture.reset();
     }

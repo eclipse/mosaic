@@ -71,7 +71,6 @@ public class TraciTest {
 
     private static CSumo createSumoConfig() {
         CSumo config = new CSumo();
-        config.debugTraciCalls = true;
         config.subscriptions =
                 Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER);
         return config;
@@ -274,10 +273,10 @@ public class TraciTest {
         final TraciClientBridge traci = traciRule.getTraciClient();
 
         // RUN
-        traci.getRouteControl().addRoute("2", Lists.newArrayList("2_5_2", "1_2_3", "1_3_4"));
+        traci.getRouteControl().addRoute("3", Lists.newArrayList("2_5_2", "1_2_3", "1_3_4"));
 
         // ASSERT (by adding a vehicle on that route
-        traci.getSimulationControl().addVehicle("veh_0", "2", "PKW", "0", "0", "max");
+        traci.getSimulationControl().addVehicle("veh_0", "3", "PKW", "0", "0", "max");
         traci.getSimulationControl().subscribeForVehicle("veh_0", 0L, 4000 * TIME.SECOND);
 
         // ASSERT (by checking if vehicle is first edge on route)

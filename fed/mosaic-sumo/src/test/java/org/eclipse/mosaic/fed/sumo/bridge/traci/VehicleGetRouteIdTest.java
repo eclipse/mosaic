@@ -28,8 +28,6 @@ public class VehicleGetRouteIdTest extends AbstractTraciCommandTest {
 
     private final VehicleGetRouteId getRouteId = new VehicleGetRouteId();
 
-    private final VehicleGetStops vehicleGetStops = new VehicleGetStops();
-
     @Test
     public void execute_existingVehicle() throws Exception {
         // RUN
