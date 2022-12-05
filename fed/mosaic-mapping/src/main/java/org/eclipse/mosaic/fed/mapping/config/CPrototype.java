@@ -174,7 +174,7 @@ public class CPrototype {
         copy.color = color;
         copy.laneChangeMode = laneChangeMode;
         copy.speedMode = speedMode;
-        copy.deviations = deviations;
+        copy.deviations = deviations.copy();
         return copy;
     }
 
@@ -198,6 +198,7 @@ public class CPrototype {
                 + ", laneChangeMode: " + laneChangeMode
                 + ", speedMode: " + speedMode
                 + ", vehicleClass: " + vehicleClass
+                + ", deviations: " + deviations
                 + ", applications: " + (applications != null ? applications : "null")
                 + "]";
     }
