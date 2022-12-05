@@ -34,7 +34,7 @@
     ],
     "vehicles": [
         {
-            "startingTime": 5.0,
+            "startingTime": "5.0 s",
             "targetFlow": 1800,
             "maxNumberVehicles": 120,
             "pos": 1417,
