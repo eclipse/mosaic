@@ -17,11 +17,11 @@ package org.eclipse.mosaic.test;
 
 import org.junit.BeforeClass;
 
-public class PerceptionModuleQuadTreeIT extends AbstractPerceptionModuleIT {
+public class PerceptionModuleMapIndexesIT extends AbstractPerceptionModuleIT {
 
     @BeforeClass
     public static void runSimulation() {
-        simulationRule.federateConfigurationManipulator("application", (conf) -> conf.configuration = "application_config_quadtree.json");
+        simulationRule.federateConfigurationManipulator("application", (conf) -> conf.configuration = "application_config_trivial.json");
         simulationResult = simulationRule.executeTestScenario("perception-module");
     }
 }

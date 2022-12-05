@@ -93,11 +93,11 @@ public class SimplePerceptionModuleTest {
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock((Logger.class)))
-                .withVehicleIndexProvider(new VehicleMap())
-                .withTrafficLightIndexProvider(new TrafficLightMap())
+                .withVehicleIndex(new VehicleMap())
+                .withTrafficLightIndex(new TrafficLightMap())
                 .build();
         // setup cpc
-        when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
+        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
@@ -342,9 +342,9 @@ public class SimplePerceptionModuleTest {
         vehicleTree.splitSize = 20;
         vehicleTree.maxDepth = 12;
         trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
-                .withVehicleIndexProvider(vehicleTree)
+                .withVehicleIndex(vehicleTree)
                 .build();
-        when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
+        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
     }
 
     private void useGrid() {
@@ -352,17 +352,17 @@ public class SimplePerceptionModuleTest {
         vehicleGrid.cellHeight = 5;
         vehicleGrid.cellWidth = 5;
         trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
-                .withVehicleIndexProvider(vehicleGrid)
+                .withVehicleIndex(vehicleGrid)
                 .build();
-        when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
+        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
     }
 
     private void useTlTree() {
         TrafficLightTree trafficLightTree = new TrafficLightTree();
         trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
-                .withTrafficLightIndexProvider(trafficLightTree)
+                .withTrafficLightIndex(trafficLightTree)
                 .build();
 
-        when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
+        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
     }
 }

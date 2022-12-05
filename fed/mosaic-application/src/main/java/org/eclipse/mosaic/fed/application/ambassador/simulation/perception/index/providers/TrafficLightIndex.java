@@ -18,7 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.TrafficLightIndexProviderTypeAdapterFactory;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.TrafficLightIndexTypeAdapterFactory;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 
@@ -27,7 +27,7 @@ import com.google.gson.annotations.JsonAdapter;
 import java.util.List;
 import java.util.Map;
 
-@JsonAdapter(TrafficLightIndexProviderTypeAdapterFactory.class)
+@JsonAdapter(TrafficLightIndexTypeAdapterFactory.class)
 public interface TrafficLightIndex {
     /**
      * Method called to initialize index after configuration has been read.

@@ -53,13 +53,13 @@
             "description": "Configuration options for perception backend",
             "type": "object",
             "properties": {
-                "vehicleIndexProvider": {
+                "vehicleIndex": {
                     "description": "The underlying data structure for the spatial index for vehicles",
-                    "$ref": "#/definitions/vehicleIndexProvider"
+                    "$ref": "#/definitions/vehicleIndex"
                 },
-                "trafficLightIndexProvider": {
+                "trafficLightIndex": {
                     "description": "The underlying data structure for the spatial index for traffic lights",
-                    "$ref": "#/definitions/trafficLightIndexProvider"
+                    "$ref": "#/definitions/trafficLightIndex"
                 },
                 "measurePerformance": {
                     "description": "If set to true, a PerceptionPerformance.csv is generated with detailed information about execution calls of the perception backend.",
@@ -71,26 +71,26 @@
                 }
             }
         },
-        "vehicleIndexProvider": {
-            "title": "vehicleIndexProvider",
+        "vehicleIndex": {
+            "title": "vehicleIndex",
             "description": "Class providing the spatial index for the perception of vehicles.",
             "type": "object",
             "oneOf": [
-                { "$ref": "#/definitions/vehicleIndex" },
+                { "$ref": "#/definitions/vehicleMap" },
                 { "$ref": "#/definitions/vehicleTree" },
                 { "$ref": "#/definitions/vehicleGrid" },
-                { "$ref": "#/definitions/sumoIndexProvider" }
+                { "$ref": "#/definitions/sumoIndex" }
             ]
         },
-        "vehicleIndex": {
-            "title": "vehicleIndex",
+        "vehicleMap": {
+            "title": "vehicleMap",
             "description": "Trivial spatial vehicle index using a hash map to store vehicles.",
             "type": "object",
             "properties": {
                 "type": {
                     "description": "The type of the spatial index.",
                     "type": "string",
-                    "enum": [ "VehicleIndex" ]
+                    "enum": [ "VehicleMap" ]
                 }
             },
             "required": [ "type" ]
@@ -145,36 +145,36 @@
             },
             "required": [ "type" ]
         },
-        "sumoIndexProvider": {
-            "title": "sumoIndexProvider",
+        "sumoIndex": {
+            "title": "sumoIndex",
             "description": "Class setting the index provider to use SUMO's built-in functions (see  context subscription)",
             "type": "object",
             "properties": {
                 "type": {
                     "description": "The type of the spatial index.",
                     "type": "string",
-                    "enum": [ "SumoIndexProvider" ]
+                    "enum": [ "SumoIndex" ]
                 }
             }
         },
-        "trafficLightIndexProvider": {
-            "title": "trafficLightIndexProvider",
+        "trafficLightIndex": {
+            "title": "trafficLightIndex",
             "description": "Class providing the spatial index for the perception of traffic lights.",
             "type": "object",
             "oneOf": [
-                { "$ref": "#/definitions/trafficLightIndex" },
+                { "$ref": "#/definitions/trafficLightMap" },
                 { "$ref": "#/definitions/trafficLightTree" }
             ]
         },
-        "trafficLightIndex": {
-            "title": "trafficLightIndex",
+        "trafficLightMap": {
+            "title": "trafficLightMap",
             "description": "Trivial spatial traffic light index using a hash map to store traffic lights.",
             "type": "object",
             "properties": {
                 "type": {
                     "description": "The type of the spatial index.",
                     "type": "string",
-                    "enum": [ "TrafficLightIndex" ]
+                    "enum": [ "TrafficLightMap" ]
                 }
             },
             "required": [ "type" ]

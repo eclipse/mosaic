@@ -60,7 +60,7 @@ public class VehicleGrid implements VehicleIndex {
      */
     @Override
     public void initialize() {
-        CartesianRectangle bounds = SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds();
+        CartesianRectangle bounds = SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds();
         BoundingBox boundingArea = new BoundingBox();
         boundingArea.add(bounds.getA().toVector3d(), bounds.getB().toVector3d());
         vehicleGrid = new Grid<>(new SpatialObjectAdapter<>(), cellWidth, cellHeight, boundingArea);
@@ -85,7 +85,7 @@ public class VehicleGrid implements VehicleIndex {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
                     .contains(v.getProjectedPosition())) { // check if inside bounding area
                 VehicleObject vehicleObject = indexedVehicles.get(v.getName());
                 if (vehicleObject == null) {

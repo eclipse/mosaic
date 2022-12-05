@@ -24,7 +24,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
-public class VehicleIndexProviderTypeAdapterFactory implements TypeAdapterFactory {
+public class VehicleIndexTypeAdapterFactory implements TypeAdapterFactory {
     public static class VehicleIndexProviderTypeAdapter extends AbstractTypeAdapterFactory<VehicleIndex> {
 
         private VehicleIndexProviderTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {

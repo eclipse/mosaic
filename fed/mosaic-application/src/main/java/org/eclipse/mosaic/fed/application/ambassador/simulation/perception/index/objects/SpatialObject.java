@@ -16,24 +16,22 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects;
 
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
-public interface SpatialObject {
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
-    /**
-     * Returns the unique identifier of this spatial object.
-     */
-    String getId();
+public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d {
 
-    /**
-     * Returns the projected position on the X,Y-plane of this spatial object.
-     */
-    CartesianPoint getProjectedPosition();
+    private final String id;
 
-    /**
-     * Returns the position as a {@link Vector3d}.
-     */
-    Vector3d getPosition();
+    final MutableCartesianPoint cartesianPosition = new MutableCartesianPoint();
+
+    public SpatialObject(String id) {
+        this.id = id;
+    }
+
+    public abstract T setPosition(CartesianPoint position);
 
     /**
      * Sets the position of the {@link SpatialObject}.
@@ -42,13 +40,54 @@ public interface SpatialObject {
      * @param y y-coordinate
      * @param z z-coordinate
      */
-    void setPosition(double x, double y, double z);
+    public void setPosition(double x, double y, double z) {
+        this.set(x, y, z);
+        cartesianPosition.set(this.toCartesian());
+    }
 
     /**
-     * Sets the position of the {@link SpatialObject}.
-     * @param vector vector which coordinates are used
+     * Returns the unique identifier of this spatial object.
      */
-    default void setPosition(Vector3d vector) {
-        setPosition(vector.x, vector.y, vector.z);
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Returns the projected position on the X,Y-plane of this spatial object.
+     */
+    public CartesianPoint getProjectedPosition() {
+        return cartesianPosition;
+    }
+
+    /**
+     * Returns the position as a {@link Vector3d}.
+     */
+    public Vector3d getPosition() {
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SpatialObject<T> that = (SpatialObject<T>) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(id, that.id)
+                .append(cartesianPosition, that.cartesianPosition)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
+        return this.id.hashCode();
     }
 }

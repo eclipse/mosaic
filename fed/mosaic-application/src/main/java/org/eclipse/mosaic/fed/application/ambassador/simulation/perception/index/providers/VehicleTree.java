@@ -72,7 +72,7 @@ public class VehicleTree implements VehicleIndex {
     @Override
     public void initialize() {
         QuadTree.configure(splitSize, splitSize / 2, maxDepth);
-        CartesianRectangle bounds = SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds();
+        CartesianRectangle bounds = SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds();
         BoundingBox boundingArea = new BoundingBox();
         boundingArea.add(bounds.getA().toVector3d(), bounds.getB().toVector3d());
         vehicleTree = new QuadTree<>(new SpatialObjectAdapter<>(), boundingArea);
@@ -96,7 +96,7 @@ public class VehicleTree implements VehicleIndex {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
                     .contains(v.getProjectedPosition())) { // check if inside bounding area
                 VehicleObject vehicleObject = indexedVehicles.get(v.getName());
                 if (vehicleObject == null) {

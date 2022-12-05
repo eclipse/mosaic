@@ -101,17 +101,17 @@ public class CentralPerceptionComponent {
             if (scenarioBounds.getArea() <= 0) {
                 LOG.warn("The bounding area of the scenario could not be determined. Defaulting to low performance spatial index.");
                 if (vehicleIndexConfigured) { // if configured default to map index
-                    indexBuilder.withVehicleIndexProvider(new VehicleMap());
+                    indexBuilder.withVehicleIndex(new VehicleMap());
                 }
                 if (trafficLightIndexConfigured) { // if configured default to map index
-                    indexBuilder.withTrafficLightIndexProvider(new TrafficLightMap());
+                    indexBuilder.withTrafficLightIndex(new TrafficLightMap());
                 }
             } else {
                 if (vehicleIndexConfigured) {
-                    indexBuilder.withVehicleIndexProvider(configuration.vehicleIndex);
+                    indexBuilder.withVehicleIndex(configuration.vehicleIndex);
                 }
                 if (trafficLightIndexConfigured) {
-                    indexBuilder.withTrafficLightIndexProvider(configuration.trafficLightIndex);
+                    indexBuilder.withTrafficLightIndex(configuration.trafficLightIndex);
                 }
             }
             trafficObjectIndex = indexBuilder.build();
@@ -127,7 +127,7 @@ public class CentralPerceptionComponent {
     /**
      * Returns the {@link TrafficObjectIndex} storing all vehicles.
      */
-    public TrafficObjectIndex getSpatialIndex() {
+    public TrafficObjectIndex getTrafficObjectIndex() {
         return trafficObjectIndex;
     }
 

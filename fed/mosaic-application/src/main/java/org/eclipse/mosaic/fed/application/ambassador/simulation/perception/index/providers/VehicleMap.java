@@ -60,7 +60,7 @@ public class VehicleMap implements VehicleIndex {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
                             .contains(v.getProjectedPosition())) { // check if inside bounding area
                         VehicleObject currentVehicle = indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
                                 .setHeading(v.getHeading())

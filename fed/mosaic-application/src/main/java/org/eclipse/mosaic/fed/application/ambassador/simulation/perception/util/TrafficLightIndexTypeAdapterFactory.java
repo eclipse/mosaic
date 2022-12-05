@@ -24,7 +24,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
-public class TrafficLightIndexProviderTypeAdapterFactory implements TypeAdapterFactory {
+public class TrafficLightIndexTypeAdapterFactory implements TypeAdapterFactory {
     public static class TrafficLightIndexProviderTypeAdapter extends AbstractTypeAdapterFactory<TrafficLightIndex> {
 
         private TrafficLightIndexProviderTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
@@ -50,7 +50,7 @@ public class TrafficLightIndexProviderTypeAdapterFactory implements TypeAdapterF
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        return (TypeAdapter<T>) new TrafficLightIndexProviderTypeAdapterFactory
+        return (TypeAdapter<T>) new TrafficLightIndexTypeAdapterFactory
                 .TrafficLightIndexProviderTypeAdapter(this, gson).nullSafe();
     }
 }

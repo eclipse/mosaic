@@ -1,10 +1,10 @@
 {
     "perceptionConfiguration": {
-        "vehicleIndexProvider": {
-            "type": "SumoIndexProvider"
+        "vehicleIndex": {
+            "type": "SumoIndex"
         },
-        "trafficLightIndexProvider": {
-            "type": "TrafficLightIndex"
+        "trafficLightIndex": {
+            "type": "TrafficLightMap"
         }
     }
 }

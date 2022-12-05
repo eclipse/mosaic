@@ -1,11 +1,11 @@
 {
     "perceptionConfiguration": {
-        "vehicleIndexProvider": {
+        "vehicleIndex": {
             "type": "VehicleTree",
             "splitSize": 10,
             "maxDepth": 2
         },
-        "trafficLightIndexProvider": {
+        "trafficLightIndex": {
             "type": "TrafficLightTree"
         }
     }

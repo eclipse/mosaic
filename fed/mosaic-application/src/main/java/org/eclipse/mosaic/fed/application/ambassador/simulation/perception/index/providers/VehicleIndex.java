@@ -20,7 +20,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.Perce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexProviderTypeAdapterFactory;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import java.io.Serializable;
 import java.util.List;
 
-@JsonAdapter(VehicleIndexProviderTypeAdapterFactory.class)
+@JsonAdapter(VehicleIndexTypeAdapterFactory.class)
 public interface VehicleIndex extends Serializable {
 
     /**

@@ -96,10 +96,10 @@ public class PerceptionModifierTest {
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock(Logger.class))
-                .withVehicleIndexProvider(new VehicleMap())
+                .withVehicleIndex(new VehicleMap())
                 .build();
         // setup cpc
-        when(cpcMock.getSpatialIndex()).thenReturn(trafficObjectIndex);
+        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
         // setup perception module
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();

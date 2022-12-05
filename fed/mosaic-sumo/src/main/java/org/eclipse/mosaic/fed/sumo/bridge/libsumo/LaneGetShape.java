@@ -36,6 +36,5 @@ public class LaneGetShape implements org.eclipse.mosaic.fed.sumo.bridge.api.Lane
             shape.add(new Position(CartesianPoint.xy(traciPosition.getX(), traciPosition.getY())));
         }
         return shape;
-
     }
 }

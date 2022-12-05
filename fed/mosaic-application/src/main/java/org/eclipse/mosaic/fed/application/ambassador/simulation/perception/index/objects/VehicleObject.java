@@ -16,17 +16,13 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects;
 
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
-import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.annotation.Nullable;
 
-public class VehicleObject extends Vector3d implements SpatialObject {
+public class VehicleObject extends SpatialObject<VehicleObject> {
 
-    private final String id;
-    private final MutableCartesianPoint cartesianPosition = new MutableCartesianPoint();
     private double speed;
     private double heading;
 
@@ -35,32 +31,12 @@ public class VehicleObject extends Vector3d implements SpatialObject {
     private int laneIndex;
 
     public VehicleObject(String id) {
-        this.id = id;
+        super(id);
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public CartesianPoint getProjectedPosition() {
-        return cartesianPosition;
-    }
-
-    @Override
-    public Vector3d getPosition() {
-        return this;
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-        this.set(x, y, z);
-        cartesianPosition.set(this.toCartesian());
-    }
-
     public VehicleObject setPosition(CartesianPoint position) {
-        this.cartesianPosition.set(position);
+        cartesianPosition.set(position);
         position.toVector3d(this);
         return this;
     }
@@ -116,15 +92,7 @@ public class VehicleObject extends Vector3d implements SpatialObject {
                 .append(heading, that.heading)
                 .append(edgeId, that.edgeId)
                 .append(laneIndex, that.laneIndex)
-                .append(id, that.id)
-                .append(cartesianPosition, that.cartesianPosition)
                 .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
-        return this.id.hashCode();
     }
 
     /**

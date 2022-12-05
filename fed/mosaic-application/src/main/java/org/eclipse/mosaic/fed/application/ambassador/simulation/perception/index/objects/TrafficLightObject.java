@@ -16,56 +16,36 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects;
 
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
-import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 
-public class TrafficLightObject extends Vector3d implements SpatialObject {
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
+public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
     /**
-     * Manually created traffic light id using group-id_tl-index.
+     * Id of the group the individual traffic light belongs to.
      */
-    private final String id;
-
-    private final MutableCartesianPoint cartesianPoint = new MutableCartesianPoint();
-
     private String trafficLightGroupId;
-
+    /**
+     * The current state of the traffic light (see {@link TrafficLightState}).
+     */
     private TrafficLightState trafficLightState;
-
+    /**
+     * The incoming lane controlled by this traffic light.
+     */
     private String incomingLane;
-
+    /**
+     * The outgoing lane controlled by this traffic light.
+     */
     private String outgoingLane;
 
     public TrafficLightObject(String id) {
-        this.id = id;
+        super(id);
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public CartesianPoint getProjectedPosition() {
-        return cartesianPoint;
-    }
-
-    @Override
-    public Vector3d getPosition() {
-        return this;
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-        this.set(x, y, z);
-        cartesianPoint.set(this.toCartesian());
-    }
-
     public TrafficLightObject setPosition(CartesianPoint position) {
-        this.cartesianPoint.set(position);
+        cartesianPosition.set(position);
         position.toVector3d(this);
-
         return this;
     }
 
@@ -103,5 +83,26 @@ public class TrafficLightObject extends Vector3d implements SpatialObject {
     public TrafficLightObject setTrafficLightState(TrafficLightState trafficLightState) {
         this.trafficLightState = trafficLightState;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TrafficLightObject that = (TrafficLightObject) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(trafficLightGroupId, that.trafficLightGroupId)
+                .append(trafficLightState, that.trafficLightState)
+                .append(incomingLane, that.incomingLane)
+                .append(outgoingLane, that.outgoingLane)
+                .isEquals();
     }
 }

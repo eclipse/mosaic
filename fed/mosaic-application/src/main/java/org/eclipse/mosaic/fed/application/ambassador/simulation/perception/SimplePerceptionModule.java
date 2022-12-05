@@ -60,10 +60,10 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
         }
         perceptionModel.updateOrigin(owner.getVehicleData().getProjectedPosition(), owner.getVehicleData().getHeading());
         // note, the perception index is updated internally only if vehicles have moved since the last call
-        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().updateSpatialIndices();
         // request all vehicles within the area of the field of view
-        return SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
-                .getSpatialIndex()
+        return SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .getTrafficObjectIndex()
                 .getVehiclesInRange(perceptionModel);
     }
 
@@ -75,10 +75,10 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
         }
         perceptionModel.updateOrigin(owner.getVehicleData().getProjectedPosition(), owner.getVehicleData().getHeading());
         // note, the perception index is updated internally only if vehicles have moved since the last call
-        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().updateSpatialIndices();
         // request all vehicles within the area of the field of view
-        return SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
-                .getSpatialIndex()
+        return SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .getTrafficObjectIndex()
                 .getTrafficLightsInRange(perceptionModel);
 
     }
@@ -90,13 +90,13 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
             return Lists.newArrayList();
         }
         perceptionModel.updateOrigin(owner.getVehicleData().getProjectedPosition(), owner.getVehicleData().getHeading());
-        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateSpatialIndices();
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().updateSpatialIndices();
         List<SpatialObject> objectsInRange = new ArrayList<>();
-        objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
-                .getSpatialIndex()
+        objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .getTrafficObjectIndex()
                 .getVehiclesInRange(perceptionModel));
-        objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent()
-                .getSpatialIndex()
+        objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .getTrafficObjectIndex()
                 .getTrafficLightsInRange(perceptionModel));
         return objectsInRange;
     }

@@ -1,10 +1,10 @@
 {
     "perceptionConfiguration": {
-        "vehicleIndexProvider": {
-            "type": "VehicleIndex"
+        "vehicleIndex": {
+            "type": "VehicleMap"
         },
-        "trafficLightIndexProvider": {
-            "type": "TrafficLightIndex"
+        "trafficLightIndex": {
+            "type": "TrafficLightMap"
         }
     }
 }

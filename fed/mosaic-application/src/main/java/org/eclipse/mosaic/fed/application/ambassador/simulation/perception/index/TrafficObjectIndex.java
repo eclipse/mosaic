@@ -178,12 +178,12 @@ public class TrafficObjectIndex {
             this.log = log;
         }
 
-        public Builder withVehicleIndexProvider(VehicleIndex vehicleIndex) {
+        public Builder withVehicleIndex(VehicleIndex vehicleIndex) {
             this.vehicleIndex = vehicleIndex;
             return this;
         }
 
-        public Builder withTrafficLightIndexProvider(TrafficLightIndex trafficLightIndex) {
+        public Builder withTrafficLightIndex(TrafficLightIndex trafficLightIndex) {
             this.trafficLightIndex = trafficLightIndex;
             return this;
         }

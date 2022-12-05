@@ -1,12 +1,12 @@
 {
     "perceptionConfiguration": {
-        "vehicleIndexProvider": {
+        "vehicleIndex": {
             "type": "VehicleGrid",
             "cellWidth": "5m",
             "cellHeight": "5m"
         },
-        "trafficLightIndexProvider": {
-            "type": "TrafficLightIndex"
+        "trafficLightIndex": {
+            "type": "TrafficLightMap"
         }
     }
 }

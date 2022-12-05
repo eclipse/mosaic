@@ -49,7 +49,7 @@ public class TrafficLightMap implements TrafficLightIndex {
         trafficLightGroup.getTrafficLights().forEach(
                 (trafficLight) -> {
                     String trafficLightId = calculateTrafficLightId(trafficLightGroupId, trafficLight.getId());
-                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().getScenarioBounds()
+                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
                             .contains(trafficLight.getPosition().toCartesian())) { // check if inside bounding area
                         indexedTrafficLights.computeIfAbsent(trafficLightId, TrafficLightObject::new)
                                 .setTrafficLightGroupId(trafficLightGroupId)

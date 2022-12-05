@@ -18,7 +18,7 @@ package org.eclipse.mosaic.test;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class PerceptionModuleSumoIT extends AbstractPerceptionModuleIT {
+public class PerceptionModuleSumoIndexIT extends AbstractPerceptionModuleIT {
 
     @BeforeClass
     public static void runSimulation() {
