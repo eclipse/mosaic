@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,18 +17,22 @@ package org.eclipse.mosaic.fed.sumo.bridge.api;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
+import org.eclipse.mosaic.lib.util.objects.Position;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-public interface LaneGetLength {
+import java.util.List;
 
+/**
+ * This class represents the SUMO command to retrieve the shape of a lane.
+ */
+public interface LaneGetShape {
     /**
-     * This method executes the command with the given arguments and returns the length of the lane.
+     * This method executes the command to retrieve the shape of a lane.
      *
      * @param bridge Connection to SUMO.
      * @param laneId Id of the lane.
-     * @return The length of the lane.
      * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    Double execute(Bridge bridge, String laneId) throws CommandException, InternalFederateException;
+    List<Position> execute(Bridge bridge, String laneId) throws CommandException, InternalFederateException;
 }

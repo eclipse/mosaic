@@ -35,29 +35,24 @@ import javax.annotation.concurrent.Immutable;
 public class SurroundingVehicle implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     /**
      * The id of the surrounding vehicle.
      */
     private final String id;
-
     /**
      * The (cartesian and geographical) position of the surrounding vehicle.
      */
     private final Position position;
-
     /**
      * The current speed of the surrounding vehicle.
      * Unit: [m/s]
      */
     private final double speed;
-
     /**
      * The current heading of the surrounding vehicle.
      * Unit: [degrees from north clockwise]
      */
     private final double heading;
-
     /**
      * The current edge the vehicle is on.
      */

@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
@@ -78,14 +78,14 @@ public class PositionErrorModifier implements PerceptionModifier {
     }
 
     @Override
-    public List<VehicleObject> apply(PerceptionModuleOwner owner, List<VehicleObject> vehicleObjects) {
+    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         Vector3d ownerDirection = new Vector3d();
         VectorUtils.getDirectionVectorFromHeading(owner.getVehicleData().getHeading(), ownerDirection);
         double angleToNorth = ownerDirection.angle(VectorUtils.NORTH);
-        vehicleObjects.forEach(
-                vehicleObject -> {
-                    Vector3d relativePosition = getVectorRelativeTo(ownerPosition, vehicleObject); // get position relative to owner
+        spatialObjects.forEach(
+                spatialObject -> {
+                    Vector3d relativePosition = getVectorRelativeTo(ownerPosition, spatialObject.getPosition()); // get position relative to owner
                     Vector3d adjustedVector = new Vector3d(relativePosition);
                     adjustedVector.rotate(-angleToNorth, VectorUtils.UP); // rotate vector according to orientation
                     // add lateral and longitudinal errors
@@ -96,15 +96,15 @@ public class PositionErrorModifier implements PerceptionModifier {
                     );
                     adjustedVector.rotate(angleToNorth, VectorUtils.UP); // rotate back
                     // move vector back to absolute position and set values
-                    vehicleObject.set(
-                            vehicleObject.x + (adjustedVector.x - relativePosition.x),
-                            vehicleObject.y,
-                            vehicleObject.z + (adjustedVector.z - relativePosition.z)
+                    spatialObject.setPosition(
+                            spatialObject.getPosition().x + (adjustedVector.x - relativePosition.x),
+                            spatialObject.getPosition().y,
+                            spatialObject.getPosition().z + (adjustedVector.z - relativePosition.z)
                     );
                 }
         );
 
-        return vehicleObjects;
+        return spatialObjects;
     }
 
     private Vector3d getVectorRelativeTo(Vector3d origin, Vector3d relative) {

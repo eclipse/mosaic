@@ -15,9 +15,11 @@
 
 package org.eclipse.mosaic.fed.application.config;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.lib.geo.GeoRectangle;
 import org.eclipse.mosaic.lib.routing.config.CRouting;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
-import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 import org.eclipse.mosaic.lib.util.scheduling.MultiThreadedEventScheduler;
 import org.eclipse.mosaic.rti.TIME;
 
@@ -88,52 +90,26 @@ public class CApplicationAmbassador implements Serializable {
 
     public static class CPerception implements Serializable {
 
-        public enum PerceptionBackend {
-            /** Vehicles are stored and accessed using a grid-based index. */
-            Grid,
-            /** Vehicles are stored and accessed using a tree-based index (recommended). */
-            QuadTree,
-            /** Vehicles are stored and accessed using a trivial approach which will be very slow on large number of vehicles. */
-            Trivial,
-            /** The surrounding vehicles are not determined by the ApplicationSimulator, but by utilizing
-             * SUMO integrated features. Depending on the scenario, the performance can be better but also be
-             * worse compared to the MOSAIC-based solutions. */
-            SUMO
-        }
+        /**
+         * Backend for the spatial index providing vehicle information.
+         */
+        public VehicleIndex vehicleIndex;
 
         /**
-         * The kind of index to use for perception [Grid, QuadTree, Trivial, SUMO]. Default: QuadTree
+         * Backend for the spatial index providing traffic light information.
          */
-        public PerceptionBackend perceptionBackend = PerceptionBackend.QuadTree;
+        public TrafficLightIndex trafficLightIndex;
+
+        /**
+         * Area defining the section of the map in which traffic lights should be held in the index.
+         * This is useful if only part of your network contains vehicles.
+         */
+        public GeoRectangle perceptionArea;
 
         /**
          * If set to {@code true}, a PerceptionPerformance.csv is generated with detailed information about execution calls
          * of the perception backend.
          */
         public boolean measurePerformance = false;
-
-        /**
-         * If {@link PerceptionBackend#Grid} is used as backend, this indicates the width of a single cell. [m]
-         */
-        @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
-        public double gridCellWidth = 200;
-
-        /**
-         * If {@link PerceptionBackend#Grid} is used as backend, this indicates the height of a single cell. [m]
-         */
-        @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
-        public double gridCellHeight = 200;
-
-        /**
-         * If {@link PerceptionBackend#QuadTree} is used as backend,
-         * this indicates the maximum number of vehicles inside a tile before splitting.
-         */
-        public int treeSplitSize = 20;
-
-        /**
-         * If {@link PerceptionBackend#QuadTree} is used as backend,
-         * this indicates the maximum depth of the quad-tree.
-         */
-        public int treeMaxDepth = 12;
     }
 }

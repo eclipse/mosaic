@@ -71,6 +71,11 @@ public class TraciDatatypes {
     public static final byte POSITION3D = 0x03;
 
     /**
+     * Polygon definition.
+     */
+    public static final byte POLYGON =  0x06;
+
+    /**
      * Invalid value returned by TraCI, e.g. for positions of vehicles which are not simulated yet.
      */
     public static final int INVALID_VALUE = -1001;

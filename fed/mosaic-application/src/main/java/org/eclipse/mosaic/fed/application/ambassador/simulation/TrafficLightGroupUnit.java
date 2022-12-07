@@ -22,7 +22,6 @@ import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.TrafficLightOperatingSystem;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightStateChange;
-import org.eclipse.mosaic.interactions.traffic.TrafficLightSubscription;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -73,8 +72,6 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
 
         this.trafficLightGroup = trafficLightGroup;
         this.currentProgram = Iterables.getLast(trafficLightGroup.getPrograms().values(), null);
-
-        sendInteractionToRti(new TrafficLightSubscription(getSimulationTime(), trafficLightGroup.getGroupId()));
     }
 
     @Override

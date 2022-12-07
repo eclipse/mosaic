@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,24 +16,32 @@
 package org.eclipse.mosaic.fed.sumo.bridge.traci;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.fed.sumo.junit.SumoRunner;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.util.objects.Position;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.List;
+
 @RunWith(SumoRunner.class)
-public class LaneGetLengthTest extends AbstractTraciCommandTest {
+public class LaneGetShapeTest extends AbstractTraciCommandTest {
 
     @Test
     public void execute() throws Exception {
         String laneId = "2_6_5_0";
+
         // RUN
-        double length = new LaneGetLength().execute(traci.getTraciConnection(), laneId);
+        List<Position> shape = new LaneGetShape().execute(traci.getTraciConnection(), laneId);
 
         // ASSERT
-        assertEquals(1106.4, length, 0.1);
+        assertEquals(2, shape.size());
+        assertTrue(shape.get(0).getProjectedPosition().distanceTo(CartesianPoint.xy(728.70, 2205.37)) < 0.1);
+        assertTrue(shape.get(1).getProjectedPosition().distanceTo(CartesianPoint.xy(703.06, 1099.24)) < 0.1);
     }
 
     @Test(expected = CommandException.class)
@@ -41,7 +49,7 @@ public class LaneGetLengthTest extends AbstractTraciCommandTest {
         String laneId = "2_6_5_2";
 
         // RUN
-        new LaneGetLength().execute(traci.getTraciConnection(), laneId);
+        new LaneGetShape().execute(traci.getTraciConnection(), laneId);
     }
 
 }

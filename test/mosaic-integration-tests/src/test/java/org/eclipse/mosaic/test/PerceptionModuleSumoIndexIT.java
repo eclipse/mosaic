@@ -16,12 +16,19 @@
 package org.eclipse.mosaic.test;
 
 import org.junit.BeforeClass;
+import org.junit.Test;
 
-public class PerceptionModuleSumoIT extends AbstractPerceptionModuleIT {
+public class PerceptionModuleSumoIndexIT extends AbstractPerceptionModuleIT {
 
     @BeforeClass
     public static void runSimulation() {
         simulationRule.federateConfigurationManipulator("application", (conf) -> conf.configuration = "application_config_sumo.json");
         simulationResult = simulationRule.executeTestScenario("perception-module");
+    }
+
+    @Override
+    @Test
+    public void rightAmountOfTrafficLightPhaseSwitches() throws Exception {
+        // SUMO perception currently doesn't support traffic lights
     }
 }

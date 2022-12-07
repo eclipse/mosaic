@@ -15,29 +15,48 @@
 
 package org.eclipse.mosaic.fed.application.app.api.perception;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 
 import java.util.List;
 
 public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration> {
-
     /**
      * Enables and configures this perception module.
      *
      * @param configuration the configuration object
      */
     void enable(ConfigT configuration);
+
+    /**
+     * Returns The configuration of the {@link PerceptionModule}.
+     */
+    ConfigT getConfiguration();
+
     /**
      * Returns {@code true} if {@link PerceptionModule} is enabled, otherwise {@code false}.
      */
     boolean isEnabled();
+
     /**
      * Returns a list of all {@link VehicleObject}s inside the perception range of this vehicle.
      */
     List<VehicleObject> getPerceivedVehicles();
 
     /**
-     * Returns The configuration of the {@link PerceptionModule}.
+     * Call to get all traffic lights within perception range.
+     *
+     * @return a list of all {@link TrafficLightObject}s inside the perception range of this vehicle.
      */
-    PerceptionModuleConfiguration getConfiguration();
+    List<TrafficLightObject> getPerceivedTrafficLights();
+
+    /**
+     * Call to get all perceived traffic objection within perception range.
+     * Note: That these will all be the type of {@link SpatialObject} and you need to properly
+     * check types using instanceof.
+     *
+     * @return a list of all {@link SpatialObject}s inside the perception range
+     */
+    List<SpatialObject> getPerceivedObjects();
 }

@@ -21,14 +21,12 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SumoPerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
@@ -86,11 +84,11 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
             database = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
         }
 
-        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend
-                == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
-            perceptionModule = new SumoPerceptionModule(this, database, getOsLog());
+        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex != null) {
+            perceptionModule = SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex
+                    .createPerceptionModule(this, database, getOsLog());
         } else {
-            perceptionModule = new SimplePerceptionModule(this, database, getOsLog());
+            perceptionModule = new NopPerceptionModule(this, database, getOsLog());
         }
     }
 
