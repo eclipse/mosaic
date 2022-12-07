@@ -22,14 +22,11 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TrafficLightMap implements TrafficLightIndex {
-
-    private final Map<String, TrafficLightObject> indexedTrafficLights = new HashMap<>();
+public class TrafficLightMap extends TrafficLightIndex {
 
     @Override
     public void initialize() {
@@ -75,11 +72,6 @@ public class TrafficLightMap implements TrafficLightIndex {
                     }
                 }
         );
-    }
-
-    @Override
-    public int getNumberOfTrafficLights() {
-        return indexedTrafficLights.size();
     }
 
     private String calculateTrafficLightId(String trafficLightGroupId, int trafficLightIndex) {

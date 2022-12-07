@@ -20,6 +20,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -72,6 +73,19 @@ public class TrafficObjectIndex {
         } else {
             log.debug("No Traffic Light Index Provider configured. No Vehicles will be in range.");
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Adds a vehicle to the {@link TrafficObjectIndex}.
+     *
+     * @param vehicleRegistration The interaction containing information about the spawned vehicles
+     */
+    public void addVehicle(VehicleRegistration vehicleRegistration) {
+        if (vehicleIndexProviderConfigured()) {
+            vehicleIndex.addVehicle(vehicleRegistration);
+        } else {
+            log.debug("No Vehicle Index Provider configured. No Vehicle will be added.");
         }
     }
 

@@ -28,17 +28,13 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
 import org.slf4j.Logger;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Trivial implementation of {@link TrafficObjectIndex}, which uses a for loop to solve the range query.
  */
-public class VehicleMap implements VehicleIndex {
-
-    private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
+public class VehicleMap extends VehicleIndex {
 
     @Override
     public void initialize() {
@@ -74,11 +70,6 @@ public class VehicleMap implements VehicleIndex {
                     }
                 }
         );
-    }
-
-    @Override
-    public int getNumberOfVehicles() {
-        return indexedVehicles.size();
     }
 
     @Override

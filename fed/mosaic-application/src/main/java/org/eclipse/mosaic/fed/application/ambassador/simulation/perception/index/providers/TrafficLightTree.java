@@ -28,7 +28,6 @@ import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * {@link TrafficLightIndex} using a KD-Tree to store traffic lights.
  */
-public class TrafficLightTree implements TrafficLightIndex {
+public class TrafficLightTree extends TrafficLightIndex {
 
     @Expose
     public int bucketSize = 20;
@@ -44,8 +43,6 @@ public class TrafficLightTree implements TrafficLightIndex {
     private KdTree<TrafficLightObject> trafficLightTree;
 
     private SpatialTreeTraverser.InRadius<TrafficLightObject> treeTraverser;
-
-    private final Map<String, TrafficLightObject> indexedTrafficLights = new HashMap<>();
 
     @Override
     public void initialize() {
