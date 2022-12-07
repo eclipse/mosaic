@@ -54,7 +54,7 @@
             "types": [ { "name": "PKW" } ]
         },
         {
-            "startingTime": 5.0,
+            "startingTime": "5.0 s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "PKW" } ]
@@ -66,7 +66,7 @@
             "types": [ { "name": "TLPKW" } ]
         },
         {
-            "startingTime": 10.0,
+            "startingTime": "10.0 s",
             "route": "0",
             "maxNumberVehicles": 1,
             "types": [ { "name": "PKW" } ]
