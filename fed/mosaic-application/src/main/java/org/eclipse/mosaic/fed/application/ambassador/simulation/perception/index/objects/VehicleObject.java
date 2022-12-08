@@ -120,8 +120,9 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         return height;
     }
 
-    public void setInitialized() {
+    public VehicleObject setInitialized() {
         this.isInitialized = true;
+        return this;
     }
 
     public boolean isInitialized() {
