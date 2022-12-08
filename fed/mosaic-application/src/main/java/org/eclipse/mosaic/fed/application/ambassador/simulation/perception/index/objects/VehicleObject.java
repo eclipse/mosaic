@@ -52,6 +52,11 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
      */
     private double height;
 
+    /**
+     * Before the first vehicle update is received vehicles have no valid positions.
+     */
+    private boolean isInitialized = false;
+
     public VehicleObject(String id) {
         super(id);
     }
@@ -115,6 +120,14 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         return height;
     }
 
+    public void setInitialized() {
+        this.isInitialized = true;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -135,6 +148,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(laneIndex, that.laneIndex)
                 .append(length, that.length)
                 .append(width, that.width)
+                .append(height, that.height)
                 .append(height, that.height)
                 .isEquals();
     }

@@ -89,22 +89,20 @@ public class VehicleTree extends VehicleIndex {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
-                    .contains(v.getProjectedPosition())) { // check if inside bounding area
+            CartesianPoint vehiclePosition = v.getProjectedPosition();
+            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds().contains(vehiclePosition)) { // check if inside bounding area
                 VehicleObject vehicleObject = indexedVehicles.get(v.getName());
-                if (vehicleObject == null) { // if vehicle is added by update and not yet initialized
-                    vehicleObject = new VehicleObject(v.getName()).setPosition(v.getProjectedPosition());
-                    if (vehicleTree.addItem(vehicleObject)) {
-                        indexedVehicles.put(v.getName(), vehicleObject);
-                    }
-                } else if (vehicleObject.getProjectedPosition().distanceTo(CartesianPoint.ORIGO) <= 0.01d) { // add item to tree if it was added by registration
-                    vehicleObject.setPosition(v.getProjectedPosition());
+                if (vehicleObject == null) { // this should never be the case as vehicle registrations for all vehicles should be received
+                    return;
+                }
+                if (!vehicleObject.isInitialized()) { // if this is the first update for a vehicle, add vehicle to tree
+                    vehicleObject.setPosition(vehiclePosition).setInitialized();
                     vehicleTree.addItem(vehicleObject);
                 }
                 vehicleObject
                         .setHeading(v.getHeading())
                         .setSpeed(v.getSpeed())
-                        .setPosition(v.getProjectedPosition());
+                        .setPosition(vehiclePosition);
                 if (v.getRoadPosition() != null) { // if not inside or left bounding area
                     vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
                 }

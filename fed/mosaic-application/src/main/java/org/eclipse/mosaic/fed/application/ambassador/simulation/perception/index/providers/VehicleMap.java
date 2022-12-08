@@ -62,6 +62,9 @@ public class VehicleMap extends VehicleIndex {
                                 .setHeading(v.getHeading())
                                 .setSpeed(v.getSpeed())
                                 .setPosition(v.getProjectedPosition());
+                        if (!currentVehicle.isInitialized()) { // if this is the first update for a vehicle set initialized
+                            currentVehicle.setInitialized();
+                        }
                         if (v.getRoadPosition() != null) {
                             currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
                         }
