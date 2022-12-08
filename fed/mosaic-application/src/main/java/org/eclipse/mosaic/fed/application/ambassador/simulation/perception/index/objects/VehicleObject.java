@@ -149,7 +149,6 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(length, that.length)
                 .append(width, that.width)
                 .append(height, that.height)
-                .append(height, that.height)
                 .isEquals();
     }
 
