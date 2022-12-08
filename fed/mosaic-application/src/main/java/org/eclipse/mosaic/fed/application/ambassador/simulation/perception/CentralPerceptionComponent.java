@@ -210,6 +210,7 @@ public class CentralPerceptionComponent {
             this.monitor = monitor;
         }
 
+        @Override
         public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
