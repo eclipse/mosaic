@@ -678,6 +678,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final VehicleRegistration vehicleRegistration = vehicleRegistrations.remove(unitName);
         if (vehicleRegistration != null) {
             UnitSimulator.UnitSimulator.registerVehicle(time, vehicleRegistration);
+            SimulationKernel.SimulationKernel.getCentralPerceptionComponent().addVehicle(vehicleRegistration);
         }
     }
 

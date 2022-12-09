@@ -99,6 +99,12 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
             result.followerVehicle = (LeadFollowVehicle) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_MIN_GAP.var) {
             result.minGap = (double) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_LENGTH.var) {
+            result.length = (double) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_WIDTH.var) {
+            result.width = (double) varValue;
+        } else if (varId == CommandRetrieveVehicleState.VAR_HEIGHT.var) {
+            result.height = (double) varValue;
         } else {
             log.warn("Unknown subscription variable {}. Skipping.", String.format("%02X ", varId));
         }

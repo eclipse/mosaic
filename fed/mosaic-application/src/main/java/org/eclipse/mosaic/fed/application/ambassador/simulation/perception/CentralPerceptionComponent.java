@@ -22,6 +22,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
@@ -155,6 +156,15 @@ public class CentralPerceptionComponent {
     }
 
     /**
+     * Store new vehicle registration of Vehicle.
+     *
+     * @param vehicleRegistration the interaction holding information about the spawnend vehicle
+     */
+    public void addVehicle(VehicleRegistration vehicleRegistration) {
+        trafficObjectIndex.addVehicle(vehicleRegistration);
+    }
+
+    /**
      * Store new updates of all Vehicles to be used in the next update of the spatial index.
      *
      * @param vehicleUpdates the interaction holding all vehicle updates
@@ -200,6 +210,7 @@ public class CentralPerceptionComponent {
             this.monitor = monitor;
         }
 
+        @Override
         public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
@@ -208,6 +219,12 @@ public class CentralPerceptionComponent {
             }
         }
 
+        @Override
+        public void addVehicle(VehicleRegistration vehicleRegistration) {
+            super.addVehicle(vehicleRegistration);
+        }
+
+        @Override
         public void removeVehicles(Iterable<String> vehiclesToRemove) {
             try (PerformanceMonitor.Measurement m = monitor.start("remove-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
@@ -216,6 +233,7 @@ public class CentralPerceptionComponent {
             }
         }
 
+        @Override
         public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
             try (PerformanceMonitor.Measurement m = monitor.start("update-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
@@ -224,10 +242,12 @@ public class CentralPerceptionComponent {
             }
         }
 
+        @Override
         public int getNumberOfVehicles() {
             return super.getNumberOfVehicles();
         }
 
+        @Override
         public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-traffic-light")) {
                 m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
@@ -236,10 +256,12 @@ public class CentralPerceptionComponent {
             }
         }
 
+        @Override
         public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
             super.addTrafficLightGroup(trafficLightGroup);
         }
 
+        @Override
         public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightsToUpdate) {
             try (PerformanceMonitor.Measurement m = monitor.start("update-traffic-light")) {
                 m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
@@ -248,6 +270,7 @@ public class CentralPerceptionComponent {
             }
         }
 
+        @Override
         public int getNumberOfTrafficLights() {
             return super.getNumberOfTrafficLights();
         }

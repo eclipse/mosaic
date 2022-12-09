@@ -24,6 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
@@ -33,22 +34,15 @@ import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class VehicleGrid implements VehicleIndex {
+public class VehicleGrid extends VehicleIndex {
 
     @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
     public double cellWidth = 200;
 
     @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
     public double cellHeight = 200;
-
-    /**
-     * Stores {@link VehicleObject}s for fast removal and position update.
-     */
-    private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
 
     /**
      * The Grid to be used for spatial search of {@link VehicleObject}s.
@@ -85,19 +79,20 @@ public class VehicleGrid implements VehicleIndex {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
-                    .contains(v.getProjectedPosition())) { // check if inside bounding area
+            CartesianPoint vehiclePosition = v.getProjectedPosition();
+            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds().contains(vehiclePosition)) { // check if inside bounding area
                 VehicleObject vehicleObject = indexedVehicles.get(v.getName());
-                if (vehicleObject == null) {
-                    vehicleObject = new VehicleObject(v.getName()).setPosition(v.getProjectedPosition());
-                    if (vehicleGrid.addItem(vehicleObject)) {
-                        indexedVehicles.put(v.getName(), vehicleObject);
-                    }
+                if (vehicleObject == null) { // this should never be the case as vehicle registrations for all vehicles should be received
+                    return;
+                }
+                if (!vehicleObject.isInitialized()) { // if this is the first update for a vehicle, add vehicle to grid
+                    vehicleObject.setPosition(vehiclePosition).setInitialized();
+                    vehicleGrid.addItem(vehicleObject);
                 }
                 vehicleObject
                         .setHeading(v.getHeading())
                         .setSpeed(v.getSpeed())
-                        .setPosition(v.getProjectedPosition());
+                        .setPosition(vehiclePosition);
                 if (v.getRoadPosition() != null) {
                     vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
                 }
@@ -110,11 +105,6 @@ public class VehicleGrid implements VehicleIndex {
 
         });
         vehicleGrid.updateGrid();
-    }
-
-    @Override
-    public int getNumberOfVehicles() {
-        return indexedVehicles.size();
     }
 
     @Override

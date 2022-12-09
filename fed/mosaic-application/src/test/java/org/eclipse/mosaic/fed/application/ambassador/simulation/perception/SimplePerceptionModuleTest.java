@@ -26,18 +26,21 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleGrid;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
+import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
@@ -116,6 +119,17 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
+    public void vehicleCanBePerceived_includesDimensions_TrivialIndex() {
+        setupVehicles(new MutableCartesianPoint(110, 100, 0));
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        assertEquals(1, perceivedVehicles.size());
+        VehicleObject perceivedVehicle = perceivedVehicles.get(0);
+        assertEquals(5d, perceivedVehicle.getLength(), 0.01);
+        assertEquals(2.5d, perceivedVehicle.getWidth(), 0.01);
+        assertEquals(10d, perceivedVehicle.getHeight(), 0.01);
+    }
+
+    @Test
     public void vehicleCannotBePerceived_outOfRange_TrivialIndex() {
         setupVehicles(new MutableCartesianPoint(310, 100, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
@@ -180,6 +194,18 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
+    public void vehicleCanBePerceived_includesDimensions_QuadTree() {
+        useQuadTree();
+        setupVehicles(new MutableCartesianPoint(110, 100, 0));
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        assertEquals(1, perceivedVehicles.size());
+        VehicleObject perceivedVehicle = perceivedVehicles.get(0);
+        assertEquals(5d, perceivedVehicle.getLength(), 0.01);
+        assertEquals(2.5d, perceivedVehicle.getWidth(), 0.01);
+        assertEquals(10d, perceivedVehicle.getHeight(), 0.01);
+    }
+
+    @Test
     public void vehicleCannotBePerceived_outOfRange_QuadTree() {
         useQuadTree();
         setupVehicles(new MutableCartesianPoint(310, 100, 0));
@@ -235,6 +261,18 @@ public class SimplePerceptionModuleTest {
         useGrid();
         setupVehicles(new MutableCartesianPoint(110, 100, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
+    }
+
+    @Test
+    public void vehicleCanBePerceived_includesDimensions_Grid() {
+        useQuadTree();
+        setupVehicles(new MutableCartesianPoint(110, 100, 0));
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        assertEquals(1, perceivedVehicles.size());
+        VehicleObject perceivedVehicle = perceivedVehicles.get(0);
+        assertEquals(5d, perceivedVehicle.getLength(), 0.01);
+        assertEquals(2.5d, perceivedVehicle.getWidth(), 0.01);
+        assertEquals(10d, perceivedVehicle.getHeight(), 0.01);
     }
 
     @Test
@@ -308,13 +346,26 @@ public class SimplePerceptionModuleTest {
 
     private void setupVehicles(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
+        List<VehicleRegistration> vehicleRegistrations = new ArrayList<>();
         int i = 1;
         for (CartesianPoint position : positions) {
+            String vehicleName = "veh_" + i++;
             VehicleData vehicleDataMock = mock(VehicleData.class);
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
-            when(vehicleDataMock.getName()).thenReturn("veh_" + i++);
+            when(vehicleDataMock.getName()).thenReturn(vehicleName);
             vehiclesInIndex.add(vehicleDataMock);
+            VehicleRegistration vehicleRegistration = mock(VehicleRegistration.class);
+            VehicleMapping vehicleMapping = mock(VehicleMapping.class);
+            when(vehicleRegistration.getMapping()).thenReturn(vehicleMapping);
+            when(vehicleMapping.getName()).thenReturn(vehicleName);
+            VehicleType vehicleType = mock(VehicleType.class);
+            when(vehicleMapping.getVehicleType()).thenReturn(vehicleType);
+            when(vehicleType.getLength()).thenReturn(5d);
+            when(vehicleType.getWidth()).thenReturn(2.5d);
+            when(vehicleType.getHeight()).thenReturn(10d);
+            vehicleRegistrations.add(vehicleRegistration);
         }
+        vehicleRegistrations.forEach(vehicleRegistration -> trafficObjectIndex.addVehicle(vehicleRegistration));
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
     }
 

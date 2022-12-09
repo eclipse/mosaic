@@ -585,7 +585,8 @@ public class SimulationFacade {
             }
             sumoVehicleState.currentVehicleData.getVehiclesInSight().add(
                     new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed,
-                            vehInSight.heading, vehInSight.edgeId, vehInSight.laneIndex)
+                            vehInSight.heading, vehInSight.edgeId, vehInSight.laneIndex,
+                            vehInSight.length, vehInSight.width, vehInSight.height)
             );
         }
     }

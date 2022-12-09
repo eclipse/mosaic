@@ -24,6 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
@@ -33,15 +34,12 @@ import com.google.gson.annotations.Expose;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Quad-tree based implementation of a {@link VehicleIndex}.
  */
-public class VehicleTree implements VehicleIndex {
-
+public class VehicleTree extends VehicleIndex {
     /**
      * The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.
      * Filled by gson.
@@ -55,11 +53,6 @@ public class VehicleTree implements VehicleIndex {
      */
     @Expose()
     public int maxDepth = 12;
-
-    /**
-     * Stores {@link VehicleObject}s for fast removal and position update.
-     */
-    private final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
 
     /**
      * The Quad-Tree to be used for spatial search of {@link VehicleObject}s.
@@ -96,19 +89,20 @@ public class VehicleTree implements VehicleIndex {
     @Override
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
         vehiclesToUpdate.forEach(v -> {
-            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
-                    .contains(v.getProjectedPosition())) { // check if inside bounding area
+            CartesianPoint vehiclePosition = v.getProjectedPosition();
+            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds().contains(vehiclePosition)) { // check if inside bounding area
                 VehicleObject vehicleObject = indexedVehicles.get(v.getName());
-                if (vehicleObject == null) {
-                    vehicleObject = new VehicleObject(v.getName()).setPosition(v.getProjectedPosition());
-                    if (vehicleTree.addItem(vehicleObject)) {
-                        indexedVehicles.put(v.getName(), vehicleObject);
-                    }
+                if (vehicleObject == null) { // this should never be the case as vehicle registrations for all vehicles should be received
+                    return;
+                }
+                if (!vehicleObject.isInitialized()) { // if this is the first update for a vehicle, add vehicle to tree
+                    vehicleObject.setPosition(vehiclePosition).setInitialized();
+                    vehicleTree.addItem(vehicleObject);
                 }
                 vehicleObject
                         .setHeading(v.getHeading())
                         .setSpeed(v.getSpeed())
-                        .setPosition(v.getProjectedPosition());
+                        .setPosition(vehiclePosition);
                 if (v.getRoadPosition() != null) { // if not inside or left bounding area
                     vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
                 }
@@ -120,11 +114,6 @@ public class VehicleTree implements VehicleIndex {
             }
         });
         vehicleTree.updateTree();
-    }
-
-    @Override
-    public int getNumberOfVehicles() {
-        return indexedVehicles.size();
     }
 
     @Override

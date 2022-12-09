@@ -23,12 +23,39 @@ import javax.annotation.Nullable;
 
 public class VehicleObject extends SpatialObject<VehicleObject> {
 
+    /**
+     * The current speed of the vehicle. [m/s]
+     */
     private double speed;
+    /**
+     * The current heading of the vehicle. [degrees clockwise from north]
+     */
     private double heading;
-
+    /**
+     * The edge the vehicle is currently on.
+     */
     private String edgeId;
-
+    /**
+     * The lane index the vehicle is currently on.
+     */
     private int laneIndex;
+    /**
+     * The length of the vehicle. [m]
+     */
+    private double length;
+    /**
+     * The width of the vehicle. [m]
+     */
+    private double width;
+    /**
+     * The height of the vehicle. [m]
+     */
+    private double height;
+
+    /**
+     * Before the first vehicle update is received vehicles have no valid positions.
+     */
+    private boolean isInitialized = false;
 
     public VehicleObject(String id) {
         super(id);
@@ -74,6 +101,34 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         return heading;
     }
 
+    public VehicleObject setDimensions(double length, double width, double height) {
+        this.length = length;
+        this.width = width;
+        this.height = height;
+        return this;
+    }
+
+    public double getLength() {
+        return length;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public VehicleObject setInitialized() {
+        this.isInitialized = true;
+        return this;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -92,6 +147,9 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(heading, that.heading)
                 .append(edgeId, that.edgeId)
                 .append(laneIndex, that.laneIndex)
+                .append(length, that.length)
+                .append(width, that.width)
+                .append(height, that.height)
                 .isEquals();
     }
 
@@ -107,6 +165,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         copy.setHeading(getHeading());
         copy.setSpeed(getSpeed());
         copy.setEdgeAndLane(getEdgeId(), getLaneIndex());
+        copy.setDimensions(getLength(), getWidth(), getHeight());
         return copy;
     }
 }

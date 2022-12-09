@@ -52,6 +52,8 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
                         .setEdgeAndLane(v.getEdgeId(), v.getLaneIndex())
                         .setSpeed(v.getSpeed())
                         .setHeading(v.getHeading())
+                        .setDimensions(v.getLength(), v.getWidth(), v.getHeight())
+                        .setInitialized()
                 ).collect(Collectors.toList());
     }
 

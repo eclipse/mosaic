@@ -24,20 +24,36 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 
 import com.google.gson.annotations.JsonAdapter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @JsonAdapter(TrafficLightIndexTypeAdapterFactory.class)
-public interface TrafficLightIndex {
+public abstract class TrafficLightIndex {
+
+    /**
+     * Stores {@link TrafficLightObject}s for fast removal and position update.
+     */
+    final Map<String, TrafficLightObject> indexedTrafficLights = new HashMap<>();
+
+    /**
+     * Returns the number of TLs in the simulation.
+     *
+     * @return the number of TLs
+     */
+    public int getNumberOfTrafficLights() {
+        return indexedTrafficLights.size();
+    }
+
     /**
      * Method called to initialize index after configuration has been read.
      */
-    void initialize();
+    public abstract void initialize();
 
     /**
      * Queries the {@link TrafficObjectIndex} and returns all traffic lights inside the {@link PerceptionModel}.
      */
-    List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel);
+    public abstract List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel);
 
     /**
      * Adds traffic lights to the spatial index, as their positions are static it is sufficient
@@ -45,7 +61,7 @@ public interface TrafficLightIndex {
      *
      * @param trafficLightGroup the registration interaction
      */
-    void addTrafficLight(TrafficLightGroup trafficLightGroup);
+    public abstract void addTrafficLight(TrafficLightGroup trafficLightGroup);
 
     /**
      * Updates the {@link TrafficObjectIndex} in regard to traffic lights. The unit simulator has to be queried as
@@ -53,13 +69,6 @@ public interface TrafficLightIndex {
      *
      * @param trafficLightGroupsToUpdate a list of information packages transmitted by the traffic simulator
      */
-    void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightGroupsToUpdate);
+    public abstract void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightGroupsToUpdate);
 
-
-    /**
-     * Returns the number of TLs in the simulation.
-     *
-     * @return the number of TLs
-     */
-    int getNumberOfTrafficLights();
 }

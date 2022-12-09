@@ -22,6 +22,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
@@ -29,41 +30,64 @@ import com.google.gson.annotations.JsonAdapter;
 import org.slf4j.Logger;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @JsonAdapter(VehicleIndexTypeAdapterFactory.class)
-public interface VehicleIndex extends Serializable {
+public abstract class VehicleIndex implements Serializable {
 
     /**
-     * Method called to initialize index after configuration has been read.
+     * Stores {@link VehicleObject}s for fast removal and position update.
      */
-    void initialize();
+    final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
 
     /**
-     * Queries the {@link TrafficObjectIndex} and returns all vehicles inside the {@link PerceptionModel}.
+     * Adds a vehicle to the index using its {@link VehicleRegistration} to keep track of its dimensions.
+     * @param vehicleRegistration the interaction containing information of the vehicles' dimensions
      */
-    List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
-
-    /**
-     * Remove all vehicles from the {@link TrafficObjectIndex} by a list of vehicle ids.
-     *
-     * @param vehiclesToRemove the list of vehicles to remove from the index
-     */
-    void removeVehicles(Iterable<String> vehiclesToRemove);
-
-    /**
-     * Updates the {@link TrafficObjectIndex} with a list of {@link VehicleData} objects.
-     *
-     * @param vehiclesToUpdate the list of vehicles to add or update in the index
-     */
-    void updateVehicles(Iterable<VehicleData> vehiclesToUpdate);
+    public void addVehicle(VehicleRegistration vehicleRegistration) {
+        String vehicleId = vehicleRegistration.getMapping().getName();
+        VehicleObject newVehicle = new VehicleObject(vehicleId)
+                .setDimensions(
+                        vehicleRegistration.getMapping().getVehicleType().getLength(),
+                        vehicleRegistration.getMapping().getVehicleType().getWidth(),
+                        vehicleRegistration.getMapping().getVehicleType().getHeight()
+                );
+        indexedVehicles.put(vehicleId, newVehicle);
+    }
 
     /**
      * Returns the amount of indexed vehicles.
      *
      * @return the number of vehicles
      */
-    int getNumberOfVehicles();
+    public int getNumberOfVehicles() {
+        return indexedVehicles.size();
+    }
+
+    /**
+     * Method called to initialize index after configuration has been read.
+     */
+    public abstract void initialize();
+    /**
+     * Queries the {@link TrafficObjectIndex} and returns all vehicles inside the {@link PerceptionModel}.
+     */
+    public abstract List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
+
+    /**
+     * Remove all vehicles from the {@link TrafficObjectIndex} by a list of vehicle ids.
+     *
+     * @param vehiclesToRemove the list of vehicles to remove from the index
+     */
+    public abstract void removeVehicles(Iterable<String> vehiclesToRemove);
+
+    /**
+     * Updates the {@link TrafficObjectIndex} with a list of {@link VehicleData} objects.
+     *
+     * @param vehiclesToUpdate the list of vehicles to add or update in the index
+     */
+    public abstract void updateVehicles(Iterable<VehicleData> vehiclesToUpdate);
 
     /**
      * Creates the perception module to be used for perception purposes. Allows for the implementation of different
@@ -74,5 +98,5 @@ public interface VehicleIndex extends Serializable {
      * @param log      the logger
      * @return an instantiated perception module
      */
-    PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log);
+    public abstract PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log);
 }
