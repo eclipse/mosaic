@@ -85,10 +85,12 @@ class ScheduledEvents {
      * @return the maximum valid time
      */
     long getMaximumValidTime() {
-        if (this.lookahead.isEmpty()) {
-            return Long.MAX_VALUE;
-        } else {
-            return this.lookahead.peek();
+        synchronized (isEmptyMutex) {
+            if (this.lookahead.isEmpty()) {
+                return Long.MAX_VALUE;
+            } else {
+                return this.lookahead.peek();
+            }
         }
     }
 }
