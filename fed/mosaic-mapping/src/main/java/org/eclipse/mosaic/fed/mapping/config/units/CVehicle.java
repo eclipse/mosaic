@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.DepartureSpeedMode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture.LaneSelectionMode;
 import org.eclipse.mosaic.lib.util.gson.AbstractEnumDefaultValueTypeAdapter;
+import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -49,12 +50,14 @@ public class CVehicle implements Comparable<CVehicle> {
     /**
      * Time at which the first vehicle will be created.
      */
+    @JsonAdapter(TimeFieldAdapter.DoubleSeconds.class)
     public double startingTime = 0.0;
 
     /**
      * Simulation time in seconds at which no more vehicles will be created.
      */
     @SerializedName(value = "maxTime", alternate = {"endingTime"})
+    @JsonAdapter(TimeFieldAdapter.DoubleSecondsNullable.class)
     public Double maxTime;
 
     /**

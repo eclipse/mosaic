@@ -222,7 +222,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             log.trace("subscribedInteractions: {}", Arrays.toString(this.rti.getSubscribedInteractions().toArray()));
         }
         SimulationKernel.SimulationKernel.getCentralNavigationComponent().initialize(this.rti);
-        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().initialize();
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().initialize();
         SimulationKernel.SimulationKernel.setInteractable(rti);
         SimulationKernel.SimulationKernel.setRandomNumberGenerator(rti.createRandomNumberGenerator());
     }
@@ -355,6 +355,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void process(final TrafficLightRegistration trafficLightRegistration) {
         UnitSimulator.UnitSimulator.registerTrafficLight(trafficLightRegistration);
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .addTrafficLightGroup(trafficLightRegistration.getTrafficLightGroup());
     }
 
     private void process(final VehicleRegistration vehicleRegistration) {
@@ -608,11 +610,11 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 addEvent(event);
             }
         }
-
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().updateTrafficLights(trafficLightUpdates);
     }
 
     private void process(final VehicleUpdates vehicleUpdates) {
-        SimulationKernel.SimulationKernel.getCentralPerceptionComponentComponent().updateVehicles(vehicleUpdates);
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().updateVehicles(vehicleUpdates);
         // schedule all added vehicles
         for (VehicleData vehicleData : vehicleUpdates.getAdded()) {
             addVehicleIfNotYetAdded(vehicleUpdates.getTime(), vehicleData.getName());
@@ -676,6 +678,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final VehicleRegistration vehicleRegistration = vehicleRegistrations.remove(unitName);
         if (vehicleRegistration != null) {
             UnitSimulator.UnitSimulator.registerVehicle(time, vehicleRegistration);
+            SimulationKernel.SimulationKernel.getCentralPerceptionComponent().addVehicle(vehicleRegistration);
         }
     }
 

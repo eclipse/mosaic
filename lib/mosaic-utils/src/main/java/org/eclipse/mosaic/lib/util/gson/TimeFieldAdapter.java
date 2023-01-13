@@ -48,8 +48,7 @@ import java.util.regex.Pattern;
  *
  * </pre>
  */
-public class TimeFieldAdapter extends TypeAdapter<Long> {
-
+public abstract class TimeFieldAdapter<N extends Number> extends TypeAdapter<N> {
 
     private static final Logger log = LoggerFactory.getLogger(TimeFieldAdapter.class);
 
@@ -64,53 +63,64 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
             .put("milli", TIME.MILLI_SECOND)
             .build();
 
+    private final N emptyValue;
+    private final N defaultValue;
     private final long legacyDivisor;
     private final boolean failOnError;
 
-    private TimeFieldAdapter(boolean failOnError) {
-        this(TIME.NANO_SECOND, failOnError);
-    }
-
-    private TimeFieldAdapter(long legacyDivisor, boolean failOnError) {
+    private TimeFieldAdapter(N emptyValue, N defaultValue, long legacyDivisor, boolean failOnError) {
+        this.emptyValue = emptyValue;
+        this.defaultValue = defaultValue;
         this.legacyDivisor = legacyDivisor;
         this.failOnError = failOnError;
     }
 
     @Override
-    public void write(JsonWriter out, Long param) throws IOException {
-        String unit = "";
-        param = ObjectUtils.defaultIfNull(param, 0l);
-        if (param == 0) {
+    public void write(JsonWriter out, N param) throws IOException {
+        if (param == null && emptyValue == null) {
+            out.nullValue();
+            return;
+        }
+
+        long value = toNanoseconds(ObjectUtils.defaultIfNull(param, defaultValue));
+        final String unit;
+        if (value == 0) {
             unit = "s";
-        } else if (param % TIME.HOUR == 0) {
+        } else if (value % TIME.HOUR == 0) {
             unit = "h";
-            param /= TIME.HOUR;
-        } else if (param % TIME.MINUTE == 0) {
+            value /= TIME.HOUR;
+        } else if (value % TIME.MINUTE == 0) {
             unit = "min";
-            param /= TIME.MINUTE;
-        } else if (param % TIME.SECOND == 0) {
+            value /= TIME.MINUTE;
+        } else if (value % TIME.SECOND == 0) {
             unit = "s";
-            param /= TIME.SECOND;
-        } else if (param % TIME.MILLI_SECOND == 0) {
+            value /= TIME.SECOND;
+        } else if (value % TIME.MILLI_SECOND == 0) {
             unit = "ms";
-            param /= TIME.MILLI_SECOND;
+            value /= TIME.MILLI_SECOND;
         } else {
             unit = "ns";
         }
-        out.value(param + " " + unit);
+        out.value(value + " " + unit);
     }
 
+    abstract N readNumber(JsonReader in) throws IOException;
+
+    abstract N fromNanoseconds(long nanoseconds);
+
+    abstract long toNanoseconds(N time);
+
     @Override
-    public Long read(JsonReader in) throws IOException {
+    public N read(JsonReader in) throws IOException {
         if (in.peek() == JsonToken.NULL) {
-            return 0L;
+            return emptyValue;
         } else if (in.peek() == JsonToken.NUMBER) {
-            return in.nextLong();
+            return readNumber(in);
         } else if (in.peek() == JsonToken.STRING) {
             String time = StringUtils.lowerCase(in.nextString()).trim();
-            return parseTime(time);
+            return fromNanoseconds(parseTime(time));
         } else {
-            return 0L;
+            return defaultValue;
         }
     }
 
@@ -151,12 +161,60 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
         return Validate.notNull(MULTIPLIERS.get(prefix), "Invalid time prefix " + prefix);
     }
 
+    private static class LongTimeFieldAdapter extends TimeFieldAdapter<Long> {
+
+        private LongTimeFieldAdapter(boolean failOnError) {
+            this(TIME.NANO_SECOND, failOnError);
+        }
+
+        private LongTimeFieldAdapter(long legacyDivisor, boolean failOnError) {
+            super(0L, 0L, legacyDivisor, failOnError);
+        }
+
+        @Override
+        Long fromNanoseconds(long nanoseconds) {
+            return nanoseconds;
+        }
+
+        @Override
+        long toNanoseconds(Long time) {
+            return time;
+        }
+
+        @Override
+        Long readNumber(JsonReader in) throws IOException {
+            return in.nextLong();
+        }
+    }
+
+    private static class DoubleTimeFieldAdapter extends TimeFieldAdapter<Double> {
+
+        private DoubleTimeFieldAdapter(Double emptyValue, boolean failOnError) {
+            super(emptyValue, 0D, TIME.NANO_SECOND, failOnError);
+        }
+
+        @Override
+        Double fromNanoseconds(long nanoseconds) {
+            return ((double) nanoseconds) / TIME.SECOND;
+        }
+
+        @Override
+        long toNanoseconds(Double time) {
+            return (long) (time * TIME.SECOND);
+        }
+
+        @Override
+        Double readNumber(JsonReader in) throws IOException {
+            return in.nextDouble();
+        }
+    }
+
     public static class NanoSeconds implements TypeAdapterFactory {
 
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new TimeFieldAdapter(true);
+            return (TypeAdapter<T>) new LongTimeFieldAdapter(true);
         }
     }
 
@@ -165,7 +223,7 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new TimeFieldAdapter(TIME.MILLI_SECOND, true);
+            return (TypeAdapter<T>) new LongTimeFieldAdapter(TIME.MILLI_SECOND, true);
         }
     }
 
@@ -174,7 +232,7 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new TimeFieldAdapter(TIME.SECOND, true);
+            return (TypeAdapter<T>) new LongTimeFieldAdapter(TIME.SECOND, true);
         }
     }
 
@@ -183,7 +241,7 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new TimeFieldAdapter(false);
+            return (TypeAdapter<T>) new LongTimeFieldAdapter(false);
         }
     }
 
@@ -192,7 +250,7 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new TimeFieldAdapter(TIME.MILLI_SECOND, false);
+            return (TypeAdapter<T>) new LongTimeFieldAdapter(TIME.MILLI_SECOND, false);
         }
     }
 
@@ -201,7 +259,43 @@ public class TimeFieldAdapter extends TypeAdapter<Long> {
         @SuppressWarnings("unchecked")
         @Override
         public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            return (TypeAdapter<T>) new TimeFieldAdapter(TIME.SECOND, false);
+            return (TypeAdapter<T>) new LongTimeFieldAdapter(TIME.SECOND, false);
+        }
+    }
+
+    public static class DoubleSeconds implements TypeAdapterFactory {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new DoubleTimeFieldAdapter(0D, true);
+        }
+    }
+
+    public static class DoubleSecondsQuiet implements TypeAdapterFactory {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new DoubleTimeFieldAdapter(0D, false);
+        }
+    }
+
+    public static class DoubleSecondsNullable implements TypeAdapterFactory {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new DoubleTimeFieldAdapter(null, true);
+        }
+    }
+
+    public static class DoubleSecondsQuietNullable implements TypeAdapterFactory {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            return (TypeAdapter<T>) new DoubleTimeFieldAdapter(null, false);
         }
     }
 }

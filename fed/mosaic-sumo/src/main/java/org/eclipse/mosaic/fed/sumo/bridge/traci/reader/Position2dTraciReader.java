@@ -44,7 +44,7 @@ public class Position2dTraciReader extends AbstractTraciResultReader<Position> {
 
         if (isValid(x) && isValid(y)) {
             try {
-                return new Position(CartesianPoint.xyz(x, y, 0));
+                return new Position(CartesianPoint.xy(x, y));
             } catch (Exception e) {
                 log.warn("Could not transform read position at ({}, {})", x, y);
             }

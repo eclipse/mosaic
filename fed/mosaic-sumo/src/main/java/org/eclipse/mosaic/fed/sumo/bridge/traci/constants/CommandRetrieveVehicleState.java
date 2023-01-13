@@ -72,5 +72,8 @@ public class CommandRetrieveVehicleState {
     public final static SumoVar VAR_STOP_STATE = SumoVar.var(0xb5);
 
     public final static SumoVar VAR_SLOPE = SumoVar.var(0x36);
+    public final static SumoVar VAR_LENGTH = SumoVar.var(0x44);
+    public final static SumoVar VAR_WIDTH = SumoVar.var(0x4d);
+    public final static SumoVar VAR_HEIGHT = SumoVar.var(0xbc);
 }
 

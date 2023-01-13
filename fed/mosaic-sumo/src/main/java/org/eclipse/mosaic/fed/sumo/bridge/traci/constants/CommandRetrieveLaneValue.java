@@ -18,12 +18,17 @@ package org.eclipse.mosaic.fed.sumo.bridge.traci.constants;
 public class CommandRetrieveLaneValue {
 
     /**
-     * Command for the boundary of the visible network.
+     * Command for the Lane value retrieval.
      */
     public final static int COMMAND = 0xa3;
 
     /**
-     * The length of the vehicles.
+     * Command to retrieve the length of a lane.
      */
     public final static int VAR_LENGTH = 0x44;
+
+    /**
+     * Command to retrieve the shape of a lane.
+     */
+    public final static int VAR_SHAPE = 0x4e;
 }

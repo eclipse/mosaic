@@ -44,7 +44,7 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
-
+        <!-- Testing -->
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-objects</artifactId>
@@ -55,6 +55,13 @@
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
             <artifactId>mosaic-utils</artifactId>
+            <version>${mosaic.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.mosaic</groupId>
+            <artifactId>mosaic-geomath</artifactId>
             <version>${mosaic.version}</version>
             <type>test-jar</type>
             <scope>test</scope>

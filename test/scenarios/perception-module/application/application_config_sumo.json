@@ -1,5 +1,10 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "SUMO"
+        "vehicleIndex": {
+            "type": "SumoIndex"
+        },
+        "trafficLightIndex": {
+            "type": "TrafficLightMap"
+        }
     }
 }

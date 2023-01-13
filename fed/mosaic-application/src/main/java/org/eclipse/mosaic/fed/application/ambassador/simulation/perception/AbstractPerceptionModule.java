@@ -16,6 +16,9 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.spatial.WallFinder;
@@ -25,6 +28,7 @@ import org.eclipse.mosaic.lib.spatial.Edge;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -90,17 +94,55 @@ public abstract class AbstractPerceptionModule
 
     @Override
     public List<VehicleObject> getPerceivedVehicles() {
-        List<VehicleObject> filteredList = getVehiclesInRange();
-        for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
-            filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
-        }
-        return filteredList;
+        List<VehicleObject> vehiclesInRange = new ArrayList<>(getVehiclesInRange());
+        vehiclesInRange = applyPerceptionModifiers(vehiclesInRange);
+        return vehiclesInRange;
     }
 
     /**
      * As an intermediate step, this method returns all vehicles in range without applying
      * any perception modifiers.
-     * @return the raw list of vehicles in range of the ego
+     *
+     * @return the raw list of vehicles in range of the ego vehicle
      */
     abstract List<VehicleObject> getVehiclesInRange();
+
+    @Override
+    public List<TrafficLightObject> getPerceivedTrafficLights() {
+        List<TrafficLightObject> trafficLightsInRange = new ArrayList<>(getTrafficLightsInRange());
+        // TODO: we could add an additional filter here to check the traffic lights' orientation
+        trafficLightsInRange = applyPerceptionModifiers(trafficLightsInRange);
+        return trafficLightsInRange;
+    }
+
+    /**
+     * As an intermediate step, this method returns all traffic lights in range without applying
+     * any perception modifiers.
+     *
+     * @return the raw list of traffic lights in range of the ego vehicle
+     */
+    abstract List<TrafficLightObject> getTrafficLightsInRange();
+
+    @Override
+    public List<SpatialObject> getPerceivedObjects() {
+        List<SpatialObject> objectsInRange = getObjectsInRange();
+        objectsInRange = applyPerceptionModifiers(objectsInRange);
+        return objectsInRange;
+    }
+
+    /**
+     * As an intermediate step, this method returns all spatial objects in range without applying
+     * any perception modifiers.
+     *
+     * @return the raw list of objects in range of the ego vehicle
+     */
+    abstract List<SpatialObject> getObjectsInRange();
+
+    private <T extends SpatialObject> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
+        List<T> filteredList = objectsInRange;
+        for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
+            filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
+        }
+        return filteredList;
+    }
 }

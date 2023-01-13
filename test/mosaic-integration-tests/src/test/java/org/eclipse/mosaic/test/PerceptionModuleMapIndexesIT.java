@@ -13,19 +13,15 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
+package org.eclipse.mosaic.test;
 
-import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.junit.BeforeClass;
 
-public interface SpatialObject {
+public class PerceptionModuleMapIndexesIT extends AbstractPerceptionModuleIT {
 
-    /**
-     * Returns the unique identifier of this spatial object.
-     */
-    String getId();
-
-    /**
-     * Returns the projected position on the X,Y-plane of this spatial object.
-     */
-    CartesianPoint getProjectedPosition();
+    @BeforeClass
+    public static void runSimulation() {
+        simulationRule.federateConfigurationManipulator("application", (conf) -> conf.configuration = "application_config_trivial.json");
+        simulationResult = simulationRule.executeTestScenario("perception-module");
+    }
 }

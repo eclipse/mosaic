@@ -105,7 +105,7 @@ public class DelayTypeAdapterFactoryTest {
     }
 
     @Test
-    public void unitIO() throws IOException{
+    public void unitIO() throws IOException {
 
         StringBuilder jsonStringBuilder = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(
@@ -121,11 +121,11 @@ public class DelayTypeAdapterFactoryTest {
         //ASSERT
         Delay first = configFromJsonUnit.delays.get(0);
         assertTrue(first instanceof ConstantDelay);
-        ConstantDelay cDelayUnit = (ConstantDelay)first;
+        ConstantDelay cDelayUnit = (ConstantDelay) first;
 
         Delay second = configFromJsonUnitless.delays.get(0);
         assertTrue(second instanceof ConstantDelay);
-        ConstantDelay cDelayUnitless = (ConstantDelay)first;
+        ConstantDelay cDelayUnitless = (ConstantDelay) first;
 
         assertEquals(cDelayUnit.delay, cDelayUnitless.delay);
 

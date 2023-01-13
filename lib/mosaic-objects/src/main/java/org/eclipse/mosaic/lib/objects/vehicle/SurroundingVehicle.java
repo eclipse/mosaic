@@ -35,29 +35,24 @@ import javax.annotation.concurrent.Immutable;
 public class SurroundingVehicle implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     /**
      * The id of the surrounding vehicle.
      */
     private final String id;
-
     /**
      * The (cartesian and geographical) position of the surrounding vehicle.
      */
     private final Position position;
-
     /**
      * The current speed of the surrounding vehicle.
      * Unit: [m/s]
      */
     private final double speed;
-
     /**
      * The current heading of the surrounding vehicle.
      * Unit: [degrees from north clockwise]
      */
     private final double heading;
-
     /**
      * The current edge the vehicle is on.
      */
@@ -66,14 +61,30 @@ public class SurroundingVehicle implements Serializable {
      * The current lane index the vehicle is on. (From outermost lane ascending)
      */
     private final int laneIndex;
+    /**
+     * The length of the vehicle.
+     */
+    private final double length;
+    /**
+     * The width of the vehicle.
+     */
+    private final double width;
+    /**
+     * The height of the vehicle.
+     */
+    private final double height;
 
-    public SurroundingVehicle(String id, Position position, double speed, double heading, String edgeId, int laneIndex) {
+    public SurroundingVehicle(String id, Position position, double speed, double heading,
+                              String edgeId, int laneIndex, double length, double width, double height) {
         this.id = id;
         this.position = position;
         this.speed = speed;
         this.heading = heading;
         this.edgeId = edgeId;
         this.laneIndex = laneIndex;
+        this.length = length;
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -114,7 +125,7 @@ public class SurroundingVehicle implements Serializable {
     }
 
     /**
-     * Retruns the current edge of the surrounding vehicle.
+     * Returns the current edge of the surrounding vehicle.
      */
     public String getEdgeId() {
         return edgeId;
@@ -125,6 +136,30 @@ public class SurroundingVehicle implements Serializable {
      */
     public int getLaneIndex() {
         return laneIndex;
+    }
+
+    /**
+     * Returns the length of the surrounding vehicle.
+     * Unit: [m]
+     */
+    public double getLength() {
+        return length;
+    }
+
+    /**
+     * Returns the width of the surrounding vehicle.
+     * Unit: [m]
+     */
+    public double getWidth() {
+        return width;
+    }
+
+    /**
+     * Returns the height of the surrounding vehicle.
+     * Unit: [m]
+     */
+    public double getHeight() {
+        return height;
     }
 
     @Override
@@ -146,6 +181,9 @@ public class SurroundingVehicle implements Serializable {
                 .append(position, that.position)
                 .append(edgeId, that.edgeId)
                 .append(laneIndex, that.laneIndex)
+                .append(length, that.length)
+                .append(width, that.width)
+                .append(height, that.height)
                 .isEquals();
     }
 
@@ -158,6 +196,9 @@ public class SurroundingVehicle implements Serializable {
                 .append(heading)
                 .append(edgeId)
                 .append(laneIndex)
+                .append(length)
+                .append(width)
+                .append(height)
                 .toHashCode();
     }
 
@@ -170,6 +211,9 @@ public class SurroundingVehicle implements Serializable {
                 .append("heading", heading)
                 .append("edgeId", edgeId)
                 .append("laneIndex", laneIndex)
+                .append("length", length)
+                .append("width", width)
+                .append("height", height)
                 .toString();
     }
 }

@@ -15,11 +15,15 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSightDistanceConfiguration;
 import org.eclipse.mosaic.lib.database.Database;
 
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +52,22 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
                         .setEdgeAndLane(v.getEdgeId(), v.getLaneIndex())
                         .setSpeed(v.getSpeed())
                         .setHeading(v.getHeading())
+                        .setDimensions(v.getLength(), v.getWidth(), v.getHeight())
+                        .setInitialized()
                 ).collect(Collectors.toList());
     }
+
+    @Override
+    public List<TrafficLightObject> getTrafficLightsInRange() {
+        this.log.warn("Traffic Light Perception not implemented for {}.", this.getClass().getSimpleName());
+        return new ArrayList<>();
+    }
+
+    @Override
+    List<SpatialObject> getObjectsInRange() {
+        this.log.warn("Traffic Light Perception not implemented for {} only vehicles will be retrieved.", this.getClass().getSimpleName());
+        return new ArrayList<>(getVehiclesInRange());
+    }
+
 
 }

@@ -24,12 +24,11 @@ public interface LaneGetLength {
     /**
      * This method executes the command with the given arguments and returns the length of the lane.
      *
-     * @param bridge    Connection to SUMO.
-     * @param edgeId    Id of the edge.
-     * @param laneIndex Id of the lane.
+     * @param bridge Connection to SUMO.
+     * @param laneId Id of the lane.
      * @return The length of the lane.
      * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The connection to SUMO is shut down.
      */
-    Double execute(Bridge bridge, String edgeId, int laneIndex) throws CommandException, InternalFederateException;
+    Double execute(Bridge bridge, String laneId) throws CommandException, InternalFederateException;
 }

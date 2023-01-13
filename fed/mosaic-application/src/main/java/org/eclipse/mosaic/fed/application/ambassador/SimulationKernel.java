@@ -261,7 +261,7 @@ public enum SimulationKernel implements FinishSimulationCallback {
         this.centralPerceptionComponent = centralPerceptionComponent;
     }
 
-    public CentralPerceptionComponent getCentralPerceptionComponentComponent() {
+    public CentralPerceptionComponent getCentralPerceptionComponent() {
         if (centralPerceptionComponent == null) {
             throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_CentralPerceptionComponentNotSet.toString());
         }

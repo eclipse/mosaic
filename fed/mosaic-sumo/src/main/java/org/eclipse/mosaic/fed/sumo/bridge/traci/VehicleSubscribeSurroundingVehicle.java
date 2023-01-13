@@ -44,10 +44,13 @@ public class VehicleSubscribeSurroundingVehicle
                 .writeVehicleIdParam() // vehicle id
                 .writeByte(CommandRetrieveVehicleState.COMMAND) // subscribe for vehicle values
                 .writeDoubleParam() // range parameter
-                .writeByte(3)
+                .writeByte(6)
                 .writeByte(CommandRetrieveVehicleState.VAR_SPEED.var)
                 .writeByte(CommandRetrieveVehicleState.VAR_POSITION_3D.var)
-                .writeByte(CommandRetrieveVehicleState.VAR_ANGLE.var);
+                .writeByte(CommandRetrieveVehicleState.VAR_ANGLE.var)
+                .writeByte(CommandRetrieveVehicleState.VAR_LENGTH.var)
+                .writeByte(CommandRetrieveVehicleState.VAR_WIDTH.var)
+                .writeByte(CommandRetrieveVehicleState.VAR_HEIGHT.var);
 
         read()
                 .expectByte(CommandVariableSubscriptions.RESPONSE_SUBSCRIBE_CONTEXT_VEHICLE_VALUES)

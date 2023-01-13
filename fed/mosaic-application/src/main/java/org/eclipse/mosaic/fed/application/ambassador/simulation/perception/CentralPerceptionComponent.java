@@ -16,12 +16,18 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionGrid;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.PerceptionTree;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
+import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
+import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
+import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -32,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@link CentralPerceptionComponent} is responsible for keeping a spatial index of all vehicles,
@@ -41,12 +48,16 @@ public class CentralPerceptionComponent {
 
     private final static Logger LOG = LoggerFactory.getLogger(CentralPerceptionComponent.class);
 
+    private CartesianRectangle scenarioBounds;
+    /**
+     * Configuration containing parameters for setting up the spatial indexes.
+     */
     private final CApplicationAmbassador.CPerception configuration;
 
     /**
-     * The spatial index used to store and find vehicles by their positions.
+     * The spatial index used to store and find objects by their positions.
      */
-    private SpatialVehicleIndex vehicleIndex;
+    private TrafficObjectIndex trafficObjectIndex;
 
     /**
      * The last {@link VehicleUpdates} interaction which is used to update the vehicleIndex.
@@ -54,9 +65,19 @@ public class CentralPerceptionComponent {
     private VehicleUpdates latestVehicleUpdates;
 
     /**
-     * If set to true, the vehicleIndex will be updated when {@code updateSpatialIndices} is called.
+     * The last {@link TrafficLightUpdates} interaction which is used to update the vehicleIndex.
+     */
+    private TrafficLightUpdates latestTrafficLightUpdates;
+
+    /**
+     * If set to true, the traffic light index will be updated when {@code updateSpatialIndices} is called.
      */
     private boolean updateVehicleIndex = false;
+
+    /**
+     * If set to true, the traffic light index will be updated when {@code updateSpatialIndices} is called.
+     */
+    private boolean updateTrafficLightIndex = false;
 
     public CentralPerceptionComponent(CApplicationAmbassador.CPerception perceptionConfiguration) {
         this.configuration = Validate.notNull(perceptionConfiguration, "perceptionConfiguration must not be null");
@@ -69,29 +90,35 @@ public class CentralPerceptionComponent {
      */
     public void initialize() throws InternalFederateException {
         try {
-            CartesianRectangle scenarioBounds =
-                    SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds();
-            if (scenarioBounds.getArea() > 0) {
-                switch (configuration.perceptionBackend) {
-                    case Grid:
-                        vehicleIndex = new PerceptionGrid(scenarioBounds, configuration.gridCellWidth, configuration.gridCellHeight);
-                        break;
-                    case QuadTree:
-                        vehicleIndex = new PerceptionTree(scenarioBounds, configuration.treeSplitSize, configuration.treeMaxDepth);
-                        break;
-                    case SUMO:
-                        LOG.info("Using SUMO to detect surrounding vehicles.");
-                    case Trivial:
-                    default:
-                        vehicleIndex = new PerceptionIndex();
+            // evaluate bounding box for perception
+            scenarioBounds = configuration.perceptionArea == null
+                    ? SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds()
+                    : configuration.perceptionArea.toCartesian();
+            // see what backends are configured
+            boolean vehicleIndexConfigured = configuration.vehicleIndex != null;
+            boolean trafficLightIndexConfigured = configuration.trafficLightIndex != null;
+
+            TrafficObjectIndex.Builder indexBuilder = new TrafficObjectIndex.Builder(LOG);
+            if (scenarioBounds.getArea() <= 0) {
+                LOG.warn("The bounding area of the scenario could not be determined. Defaulting to low performance spatial index.");
+                if (vehicleIndexConfigured) { // if configured default to map index
+                    indexBuilder.withVehicleIndex(new VehicleMap());
+                }
+                if (trafficLightIndexConfigured) { // if configured default to map index
+                    indexBuilder.withTrafficLightIndex(new TrafficLightMap());
                 }
             } else {
-                LOG.warn("The bounding area of the scenario could not be determined. A low performance spatial index will be used for perception.");
-                vehicleIndex = new PerceptionIndex();
+                if (vehicleIndexConfigured) {
+                    indexBuilder.withVehicleIndex(configuration.vehicleIndex);
+                }
+                if (trafficLightIndexConfigured) {
+                    indexBuilder.withTrafficLightIndex(configuration.trafficLightIndex);
+                }
             }
+            trafficObjectIndex = indexBuilder.build();
 
             if (configuration.measurePerformance) {
-                vehicleIndex = new MonitoringSpatialIndex(vehicleIndex, PerformanceMonitor.getInstance());
+                trafficObjectIndex = new MonitoringTrafficObjectIndexProvider(trafficObjectIndex, PerformanceMonitor.getInstance());
             }
         } catch (Exception e) {
             throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent", e);
@@ -99,10 +126,14 @@ public class CentralPerceptionComponent {
     }
 
     /**
-     * Returns the {@link SpatialVehicleIndex} storing all vehicles.
+     * Returns the {@link TrafficObjectIndex} storing all vehicles.
      */
-    public SpatialVehicleIndex getVehicleIndex() {
-        return vehicleIndex;
+    public TrafficObjectIndex getTrafficObjectIndex() {
+        return trafficObjectIndex;
+    }
+
+    public CartesianRectangle getScenarioBounds() {
+        return scenarioBounds;
     }
 
     /**
@@ -114,8 +145,23 @@ public class CentralPerceptionComponent {
             // do not update index until next VehicleUpdates interaction is received
             updateVehicleIndex = false;
             // using Iterables.concat allows iterating over both lists subsequently without creating a new list
-            vehicleIndex.updateVehicles(Iterables.concat(latestVehicleUpdates.getAdded(), latestVehicleUpdates.getUpdated()));
+            trafficObjectIndex.updateVehicles(Iterables.concat(latestVehicleUpdates.getAdded(), latestVehicleUpdates.getUpdated()));
         }
+        if (updateTrafficLightIndex) {
+            // do not update index until next TrafficLightUpdates interaction is received
+            updateVehicleIndex = false;
+            // using Iterables.concat allows iterating over both lists subsequently without creating a new list
+            trafficObjectIndex.updateTrafficLights(latestTrafficLightUpdates.getUpdated());
+        }
+    }
+
+    /**
+     * Store new vehicle registration of Vehicle.
+     *
+     * @param vehicleRegistration the interaction holding information about the spawnend vehicle
+     */
+    public void addVehicle(VehicleRegistration vehicleRegistration) {
+        trafficObjectIndex.addVehicle(vehicleRegistration);
     }
 
     /**
@@ -127,54 +173,106 @@ public class CentralPerceptionComponent {
         latestVehicleUpdates = vehicleUpdates;
         updateVehicleIndex = true;
         // we need to remove arrived vehicles in every simulation step, otherwise we could have dead vehicles in the index
-        if (vehicleIndex.getNumberOfVehicles() > 0) {
-            vehicleIndex.removeVehicles(vehicleUpdates.getRemovedNames());
+        if (trafficObjectIndex.getNumberOfVehicles() > 0) {
+            trafficObjectIndex.removeVehicles(vehicleUpdates.getRemovedNames());
         }
+    }
+
+    /**
+     * Adds traffic lights to the spatial index, as their positions are static it is sufficient
+     * to store positional information only once.
+     *
+     * @param trafficLightGroup the registered traffic light group interaction
+     */
+    public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
+        trafficObjectIndex.addTrafficLightGroup(trafficLightGroup);
+    }
+
+    /**
+     * Updates the traffic light index in regard to traffic lights. The unit simulator has to be queried as
+     * {@link TrafficLightUpdates} do not contain all necessary information.
+     *
+     * @param trafficLightUpdates a list of information packages transmitted by the traffic simulator
+     */
+    public void updateTrafficLights(TrafficLightUpdates trafficLightUpdates) {
+        latestTrafficLightUpdates = trafficLightUpdates;
+        updateTrafficLightIndex = true;
     }
 
     /**
      * Wrapper class to measure atomic calls of update, search and remove of the used spatial index.
      */
-    static class MonitoringSpatialIndex implements SpatialVehicleIndex {
-
-        private final SpatialVehicleIndex parent;
+    static class MonitoringTrafficObjectIndexProvider extends TrafficObjectIndex {
         private final PerformanceMonitor monitor;
 
-        MonitoringSpatialIndex(SpatialVehicleIndex parent, PerformanceMonitor monitor) {
-            this.parent = parent;
+        MonitoringTrafficObjectIndexProvider(TrafficObjectIndex parent, PerformanceMonitor monitor) {
+            super(parent);
             this.monitor = monitor;
         }
 
         @Override
         public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
-            try (PerformanceMonitor.Measurement m = monitor.start("search")) {
+            try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                return parent.getVehiclesInRange(searchRange);
+                return super.getVehiclesInRange(searchRange);
             }
         }
 
         @Override
+        public void addVehicle(VehicleRegistration vehicleRegistration) {
+            super.addVehicle(vehicleRegistration);
+        }
+
+        @Override
         public void removeVehicles(Iterable<String> vehiclesToRemove) {
-            try (PerformanceMonitor.Measurement m = monitor.start("remove")) {
-                m.setProperties(parent.getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
+            try (PerformanceMonitor.Measurement m = monitor.start("remove-vehicle")) {
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                parent.removeVehicles(vehiclesToRemove);
+                super.removeVehicles(vehiclesToRemove);
             }
         }
 
         @Override
         public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-            try (PerformanceMonitor.Measurement m = monitor.start("update")) {
+            try (PerformanceMonitor.Measurement m = monitor.start("update-vehicle")) {
                 m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
                         .restart();
-                parent.updateVehicles(vehiclesToUpdate);
+                super.updateVehicles(vehiclesToUpdate);
             }
         }
 
         @Override
         public int getNumberOfVehicles() {
-            return parent.getNumberOfVehicles();
+            return super.getNumberOfVehicles();
+        }
+
+        @Override
+        public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
+            try (PerformanceMonitor.Measurement m = monitor.start("search-traffic-light")) {
+                m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
+                        .restart();
+                return super.getTrafficLightsInRange(perceptionModel);
+            }
+        }
+
+        @Override
+        public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
+            super.addTrafficLightGroup(trafficLightGroup);
+        }
+
+        @Override
+        public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightsToUpdate) {
+            try (PerformanceMonitor.Measurement m = monitor.start("update-traffic-light")) {
+                m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
+                        .restart();
+                super.updateTrafficLights(trafficLightsToUpdate);
+            }
+        }
+
+        @Override
+        public int getNumberOfTrafficLights() {
+            return super.getNumberOfTrafficLights();
         }
     }
 }

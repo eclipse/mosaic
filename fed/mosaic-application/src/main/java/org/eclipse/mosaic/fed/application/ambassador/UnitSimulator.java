@@ -32,12 +32,14 @@ import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
 import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
+import org.eclipse.mosaic.interactions.traffic.TrafficLightSubscription;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
+import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -356,7 +358,8 @@ public enum UnitSimulator implements EventProcessor {
      * @param trafficLightRegistration traffic light
      */
     public void registerTrafficLight(TrafficLightRegistration trafficLightRegistration) {
-        if (!trafficLightRegistration.getMapping().hasApplication()) {
+        if (!trafficLightRegistration.getMapping().hasApplication()
+                && SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndex == null) {
             return;
         }
         final TrafficLightGroupUnit trafficLightGroupUnit = new TrafficLightGroupUnit(
@@ -364,6 +367,10 @@ public enum UnitSimulator implements EventProcessor {
                 trafficLightRegistration.getMapping().getPosition(),
                 trafficLightRegistration.getTrafficLightGroup()
         );
+        Interaction trafficLightSubscription = new TrafficLightSubscription(trafficLightRegistration.getTime(),
+                trafficLightRegistration.getTrafficLightGroup().getGroupId());
+        log.info("Sending TrafficLightSubscription: {}", trafficLightSubscription);
+        trafficLightGroupUnit.sendInteractionToRti(trafficLightSubscription);
         addSimulationUnit(trafficLightGroupUnit);
         doSensorRegistration(trafficLightRegistration.getTime(), trafficLightGroupUnit.getId());
 
