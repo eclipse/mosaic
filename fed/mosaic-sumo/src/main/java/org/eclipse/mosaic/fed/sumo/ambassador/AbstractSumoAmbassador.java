@@ -1368,7 +1368,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         Map<String, Collection<String>> tlgLaneMap = new HashMap<>();
         for (String tlgId : tlgIds) {
             try {
-                tlgs.add(bridge.getTrafficLightControl().getTrafficLightGroup(tlgId));
+                TrafficLightGroup trafficLightGroup = bridge.getTrafficLightControl().getTrafficLightGroup(tlgId);
+                if (trafficLightGroup == null) {  // FIXME: workaround for railway signals
+                    continue;
+                }
+                tlgs.add(trafficLightGroup);
                 Collection<String> ctrlLanes = bridge.getTrafficLightControl().getControlledLanes(tlgId);
                 tlgLaneMap.put(tlgId, ctrlLanes);
             } catch (InternalFederateException e) {

@@ -183,7 +183,9 @@ public class TrafficLightFacade {
                             controlledLinks,
                             junctionPosition
                     );
-
+            if (trafficLights.size() == 0) { // FIXME: workaround for railway signals
+                return null;
+            }
             return new TrafficLightGroup(trafficLightGroupId, trafficLightPrograms, trafficLights);
         } catch (CommandException e) {
             throw new InternalFederateException(e);
@@ -198,7 +200,9 @@ public class TrafficLightFacade {
             List<TrafficLightGetControlledLinks.TrafficLightControlledLink> controlledLinks,
             GeoPoint junctionPosition
     ) {
-
+        if (currentProgram.getPhases().size() == 0) {  // FIXME: workaround for railway signals
+            return new ArrayList<>();
+        }
         List<TrafficLight> trafficLights = new ArrayList<>();
         int index = 0;
         for (TrafficLightState state : currentProgram.getCurrentPhase().getStates()) {
