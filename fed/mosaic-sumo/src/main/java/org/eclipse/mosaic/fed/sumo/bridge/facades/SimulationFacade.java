@@ -539,7 +539,7 @@ public class SimulationFacade {
                     .stopped(vehicleStopMode)
                     .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
                     .laneArea(vehicleSegmentInfo.get(veh.id));
-            if (sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_TRAINS)) {
+            if (sumoConfiguration != null && sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_TRAINS)) {
                 vehicleDataBuilder.additional(extractTrainData(veh));
             }
             if (isParking) {
