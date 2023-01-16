@@ -143,4 +143,6 @@ public interface OperatingSystem extends CommunicationModuleOwner {
      * @return the list containing all applications.
      */
     <A extends Application> Iterable<A> getApplicationsIterator(Class<A> applicationClass);
+
+    String getGroup();
 }

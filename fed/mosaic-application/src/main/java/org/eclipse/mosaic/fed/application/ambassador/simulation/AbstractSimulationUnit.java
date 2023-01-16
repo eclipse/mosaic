@@ -80,6 +80,8 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
     @Nonnull
     private final String id;
 
+    private String group;
+
     /**
      * Position of the unit.
      */
@@ -128,6 +130,11 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         this.adhocModule = new AdHocModule(this, messageSequenceNumberGenerator, getOsLog());
         this.cellModule = new CellModule(this, messageSequenceNumberGenerator, getOsLog());
         this.initialPosition = initialPosition;
+    }
+
+    public AbstractSimulationUnit setGroup(String vehicleGroup) {
+        this.group = vehicleGroup;
+        return this;
     }
 
     @Nonnull
@@ -489,5 +496,10 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     public boolean canProcessEvent() {
         return true;
+    }
+
+    @Override
+    public String getGroup() {
+        return group;
     }
 }
