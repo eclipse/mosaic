@@ -461,6 +461,7 @@
                             <header>${parent.dir}/legal/templates/license-header-2020.txt</header>
                             <header>${parent.dir}/legal/templates/license-header-2021.txt</header>
                             <header>${parent.dir}/legal/templates/license-header-2022.txt</header>
+                            <header>${parent.dir}/legal/templates/license-header-2023.txt</header>
                         </validHeaders>
                         <headerDefinitions>
                         </headerDefinitions>

@@ -60,6 +60,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.objects.vehicle.Consumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.Emissions;
 import org.eclipse.mosaic.lib.objects.vehicle.SurroundingVehicle;
+import org.eclipse.mosaic.lib.objects.vehicle.TrainData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleConsumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleEmissions;
@@ -538,7 +539,7 @@ public class SimulationFacade {
                     .stopped(vehicleStopMode)
                     .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
                     .laneArea(vehicleSegmentInfo.get(veh.id))
-                    .nextStop(veh.nextStop);
+                    .additional(extractTrainData(veh));
             if (isParking) {
                 if (!sumoVehicle.lastVehicleData.isStopped()) {
                     log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
@@ -562,6 +563,10 @@ public class SimulationFacade {
 
         sumoVehicle.currentVehicleData = vehicleDataBuilder.create();
         return sumoVehicle;
+    }
+
+    private TrainData extractTrainData(VehicleSubscriptionResult veh) {
+        return new TrainData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
     }
 
     private List<String> findRemovedVehicles(long time) {

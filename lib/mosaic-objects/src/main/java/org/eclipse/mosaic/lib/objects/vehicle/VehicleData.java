@@ -149,7 +149,6 @@ public class VehicleData extends UnitData {
      * by the traffic simulator, if configured properly.
      */
     private final List<SurroundingVehicle> vehiclesInSight = new ArrayList<>(0);
-    private final StoppingPlace nextStop;
 
     /**
      * Private constructor, use {@link VehicleData.Builder} instead.
@@ -162,7 +161,7 @@ public class VehicleData extends UnitData {
             VehicleEmissions vehicleEmissions, VehicleConsumptions vehicleConsumptions,
             VehicleSignals vehicleSignals, VehicleSensors vehicleSensors,
             Double brake, Double throttle, DriveDirection driveDirection,
-            Object additionalData, StoppingPlace nextStop
+            Object additionalData
     ) {
         super(time, name, position);
         this.projectedPosition = projectedPosition;
@@ -183,7 +182,6 @@ public class VehicleData extends UnitData {
         this.throttle = throttle;
         this.driveDirection = driveDirection;
         this.additionalData = additionalData;
-        this.nextStop = nextStop;
     }
 
     /**
@@ -339,10 +337,6 @@ public class VehicleData extends UnitData {
         return vehiclesInSight;
     }
 
-    public StoppingPlace getNextStop() {
-        return nextStop;
-    }
-
     public Double getBrake() {
         return brake;
     }
@@ -485,8 +479,6 @@ public class VehicleData extends UnitData {
         private Object additionalData;
         private List<SurroundingVehicle> vehiclesInSight;
 
-        private StoppingPlace nextStop;
-
         /**
          * Init the builder with the current simulation time [ns] and name of the vehicle.
          */
@@ -607,11 +599,6 @@ public class VehicleData extends UnitData {
             return this;
         }
 
-        public Builder nextStop(StoppingPlace nextStop) {
-            this.nextStop = nextStop;
-            return this;
-        }
-
         /**
          * Copy all values from an existing {@link VehicleData} object.
          */
@@ -635,7 +622,6 @@ public class VehicleData extends UnitData {
             this.driveDirection = veh.getDriveDirection();
             this.additionalData = veh.getAdditionalData();
             this.vehiclesInSight = veh.getVehiclesInSight();
-            this.nextStop = veh.getNextStop();
             return this;
         }
 
@@ -650,7 +636,7 @@ public class VehicleData extends UnitData {
                     vehicleStopMode, vehicleEmissions,
                     vehicleConsumptions, vehicleSignals, vehicleSensors,
                     0d, 0d, driveDirection,
-                    additionalData, nextStop);
+                    additionalData);
             if (this.vehiclesInSight != null) {
                 result.vehiclesInSight.addAll(this.vehiclesInSight);
             }

@@ -16,10 +16,7 @@
 package org.eclipse.mosaic.fed.sumo.bridge.traci.reader;
 
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
-import org.eclipse.mosaic.lib.objects.vehicle.StoppingPlace;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.mosaic.lib.objects.vehicle.TrainData;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -27,24 +24,22 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class StoppingPlaceReader extends AbstractTraciResultReader<List<StoppingPlace>> {
-
-    private static Logger log = LoggerFactory.getLogger(StoppingPlaceReader.class);
+public class StoppingPlaceReader extends AbstractTraciResultReader<List<TrainData.StoppingPlace>> {
 
     public StoppingPlaceReader() {
         this(null);
     }
 
-    protected StoppingPlaceReader(@Nullable Matcher<List<StoppingPlace>> matcher) {
+    protected StoppingPlaceReader(@Nullable Matcher<List<TrainData.StoppingPlace>> matcher) {
         super(matcher);
     }
 
     @Override
-    protected List<StoppingPlace> readFromStream(DataInputStream in) throws IOException {
+    protected List<TrainData.StoppingPlace> readFromStream(DataInputStream in) throws IOException {
         int count = readIntWithType(in);
-        List<StoppingPlace> stoppingPlaces = new ArrayList<>();
+        List<TrainData.StoppingPlace> stoppingPlaces = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            StoppingPlace.Builder stoppingPlaceBuilder = new StoppingPlace.Builder();
+            TrainData.StoppingPlace.Builder stoppingPlaceBuilder = new TrainData.StoppingPlace.Builder();
             stoppingPlaceBuilder.laneId(readStringWitType(in));
             stoppingPlaceBuilder.endPos(readDoubleWithType(in));
             stoppingPlaceBuilder.stoppingPlaceId(readStringWitType(in));
@@ -52,17 +47,6 @@ public class StoppingPlaceReader extends AbstractTraciResultReader<List<Stopping
             stoppingPlaceBuilder.stopDuration(readDoubleWithType(in));
             stoppingPlaceBuilder.stoppedUntil(readDoubleWithType(in));
 
-            // TODO these would be filled in when using getStops instead of nextStops
-//            stoppingPlaceBuilder.startPos(readDoubleWithType(in));
-//            readDoubleWithType(in); // intended arrival
-//            readDoubleWithType(in); // arrival
-//            readDoubleWithType(in); // depart
-//            readStringWitType(in); // split
-//            readStringWitType(in); // join
-//            readStringWitType(in); // actType
-//            readStringWitType(in); // tripId
-//            readStringWitType(in); // line
-//            readDoubleWithType(in); // speed
             stoppingPlaces.add(stoppingPlaceBuilder.build());
         }
         return stoppingPlaces;

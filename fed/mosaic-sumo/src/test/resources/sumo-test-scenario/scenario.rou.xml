@@ -15,7 +15,7 @@
     <!-- Vehicles, persons and containers (sorted by depart) -->
     <vehicle id="1" type="PKW" depart="2.00" route="1"/>
     <vehicle id="0" type="PKW" depart="5.00" route="0"/>
-    <vehicle id="2" type="BUS" depart="10.00" route="2">
+    <vehicle id="2" type="BUS" depart="10.00" route="2" line="testLine">
         <stop busStop="bs_0" duration="5"/>
         <stop busStop="bs_1" duration="5"/>
     </vehicle>

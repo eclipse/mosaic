@@ -28,7 +28,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.objects.vehicle.StoppingPlace;
+import org.eclipse.mosaic.lib.objects.vehicle.TrainData;
 import org.eclipse.mosaic.lib.util.objects.Position;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -168,22 +168,26 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
                 result.followerVehicle = LeadFollowVehicle.NONE;
             }
 
-            result.nextStop = getNextStop(Vehicle.getStops(sumoVehicleId, 1));
+            result.nextStops = getNextStop(Vehicle.getStops(sumoVehicleId, 1));
 
             results.add(result);
         }
     }
 
-    private StoppingPlace getNextStop(TraCINextStopDataVector2 stops) {
+    private List<TrainData.StoppingPlace> getNextStop(TraCINextStopDataVector2 stops) {
         if (stops.isEmpty()) {
             return null;
         }
-        TraCINextStopData stopData = stops.get(0);
-        return new StoppingPlace.Builder()
-                .laneId(stopData.getLane()).endPos(stopData.getEndPos()).stoppingPlaceId(stopData.getStoppingPlaceID())
-                .stopFlags(VehicleStopMode.fromSumoInt(stopData.getStopFlags())).stopDuration(stopData.getDuration())
-                .stoppedUntil(stopData.getUntil()).startPos(stopData.getStartPos())
-                .build();
+        List<TrainData.StoppingPlace> nextStops = new ArrayList<>();
+        for (TraCINextStopData stopData : stops) {
+            TrainData.StoppingPlace stoppingPlace = new TrainData.StoppingPlace.Builder()
+                    .laneId(stopData.getLane()).endPos(stopData.getEndPos()).stoppingPlaceId(stopData.getStoppingPlaceID())
+                    .stopFlags(VehicleStopMode.fromSumoInt(stopData.getStopFlags())).stopDuration(stopData.getDuration())
+                    .stoppedUntil(stopData.getUntil()).startPos(stopData.getStartPos())
+                    .build();
+            nextStops.add(stoppingPlace);
+        }
+        return nextStops;
     }
 
     private LeadFollowVehicle getLeaderFollower(StringDoublePair leaderFollower) {

@@ -15,8 +15,10 @@
 
 package org.eclipse.mosaic.fed.sumo.bridge.api.complex;
 
-import org.eclipse.mosaic.lib.objects.vehicle.StoppingPlace;
+import org.eclipse.mosaic.lib.objects.vehicle.TrainData;
 import org.eclipse.mosaic.lib.util.objects.Position;
+
+import java.util.List;
 
 /**
  * This class summarizes the results of the vehicle subscription.
@@ -49,7 +51,8 @@ public class VehicleSubscriptionResult extends AbstractSubscriptionResult {
 
     public LeadFollowVehicle leadingVehicle = LeadFollowVehicle.NONE;
     public LeadFollowVehicle followerVehicle = LeadFollowVehicle.NONE;
-    public StoppingPlace nextStop;
+    public List<TrainData.StoppingPlace> nextStops;
+    public String line;
 
     public double length;
     public double width;

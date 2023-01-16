@@ -57,19 +57,6 @@ public class VehicleSubscribeTest extends AbstractTraciCommandTest {
     }
 
     @Test
-    public void execute_vehicleStopInfoIncluded() throws Exception {
-        // RUN
-        new VehicleSubscribe(traci.getTraciConnection()).execute(traci.getTraciConnection(), "2", 0L, 25 * TIME.SECOND);
-
-        // ASSERT
-        List<AbstractSubscriptionResult> subscriptions = simulateStep.execute(traci.getTraciConnection(), 12 * TIME.SECOND);
-        assertEquals(1, subscriptions.size());
-        assertEquals("1_4_3", ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).edgeId);
-        assertEquals("bs_0", ((VehicleSubscriptionResult) Iterables.getOnlyElement(subscriptions)).nextStop.getStoppingPlaceId());
-
-    }
-
-    @Test
     public void execute_vehicleNotYetDeparted() throws Exception {
         // RUN
         new VehicleSubscribe(traci.getTraciConnection()).execute(traci.getTraciConnection(), "0", 0L, 10 * TIME.SECOND);
