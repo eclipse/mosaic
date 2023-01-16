@@ -538,8 +538,10 @@ public class SimulationFacade {
                     .signals(decodeVehicleSignals(veh.signalsEncoded))
                     .stopped(vehicleStopMode)
                     .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
-                    .laneArea(vehicleSegmentInfo.get(veh.id))
-                    .additional(extractTrainData(veh));
+                    .laneArea(vehicleSegmentInfo.get(veh.id));
+            if (sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_TRAINS)) {
+                vehicleDataBuilder.additional(extractTrainData(veh));
+            }
             if (isParking) {
                 if (!sumoVehicle.lastVehicleData.isStopped()) {
                     log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
