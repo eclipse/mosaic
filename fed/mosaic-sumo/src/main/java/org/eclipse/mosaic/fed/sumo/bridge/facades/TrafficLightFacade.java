@@ -184,7 +184,7 @@ public class TrafficLightFacade {
                             controlledLinks,
                             junctionPosition
                     );
-            if (trafficLights.size() == 0) { // FIXME: workaround for railway signals
+            if (trafficLights.isEmpty()) { // railway signals can be defined without a phase logic and will be ignored
                 return null;
             }
             return new TrafficLightGroup(trafficLightGroupId, trafficLightPrograms, trafficLights);
@@ -201,7 +201,7 @@ public class TrafficLightFacade {
             List<TrafficLightGetControlledLinks.TrafficLightControlledLink> controlledLinks,
             GeoPoint junctionPosition
     ) {
-        if (currentProgram.getPhases().size() == 0) {  // FIXME: workaround for railway signals
+        if (currentProgram.getPhases().isEmpty()) {  // default railway signals don't have phases and won't be added to simulation
             return new ArrayList<>();
         }
         List<TrafficLight> trafficLights = new ArrayList<>();

@@ -1369,7 +1369,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         for (String trafficLightGroupId : trafficLightGroupIds) {
             try {
                 TrafficLightGroup trafficLightGroup = bridge.getTrafficLightControl().getTrafficLightGroup(trafficLightGroupId);
-                if (trafficLightGroup == null) {  // FIXME: workaround for railway signals
+                if (trafficLightGroup == null) {  // Reading traffic light groups doesn't work for railway signals
                     continue;
                 }
                 trafficLightGroups.add(trafficLightGroup);

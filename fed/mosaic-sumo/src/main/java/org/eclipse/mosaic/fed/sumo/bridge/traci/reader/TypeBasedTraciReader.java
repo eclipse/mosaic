@@ -30,8 +30,12 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
     private final Position3dTraciReader position3dReader = new Position3dTraciReader();
     private final ListTraciReader<String> stringListReader = new ListTraciReader<>(new StringTraciReader());
 
-    private Map<Integer, AbstractTraciResultReader<?>> compoundReaders = new HashMap<>();
-    private int currentVarId;
+    /**
+     * This map is used to differentiate between different compound readers. The readers are identified using the
+     * {@link #currentCompoundVarId}, which will be set by the {@link AbstractSubscriptionTraciReader}.
+     */
+    private final Map<Integer, AbstractTraciResultReader<?>> compoundReaders = new HashMap<>();
+    private int currentCompoundVarId;
 
     protected TypeBasedTraciReader() {
         this(null);
@@ -41,7 +45,7 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
         super(matcher);
     }
 
-    public void registerCompoundReader(Integer command, AbstractTraciResultReader<?> compoundReader) {
+    public void registerCompoundReader(int command, AbstractTraciResultReader<?> compoundReader) {
         this.compoundReaders.put(command, compoundReader);
     }
 
@@ -73,8 +77,8 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
             case TraciDatatypes.UBYTE:
                 return readUnsignedByte(in);
             case TraciDatatypes.COMPOUND:
-                readInt(in); // required at least for reading inductionloop vehicle data compound
-                AbstractTraciResultReader<?> compoundReader = compoundReaders.get(currentVarId);
+                readInt(in); // this field needs to be read but can be ignored
+                AbstractTraciResultReader<?> compoundReader = compoundReaders.get(currentCompoundVarId);
                 if (compoundReader != null) {
                     Object complex = compoundReader.read(in, totalBytesLeft - numBytesRead);
                     numBytesRead += compoundReader.getNumberOfBytesRead();
@@ -85,7 +89,13 @@ public class TypeBasedTraciReader extends AbstractTraciResultReader<Object> {
         }
     }
 
-    public void setVar(int varId) {
-        this.currentVarId = varId;
+    /**
+     * This method is used to differentiate between different compound readers, which are identified by
+     * a unique identifier, which will be returned by TraCI before sending the actual content of the command.
+     *
+     * @param compoundVarId identifier for the next compound reader
+     */
+    void setNextCompoundVarId(int compoundVarId) {
+        this.currentCompoundVarId = compoundVarId;
     }
 }

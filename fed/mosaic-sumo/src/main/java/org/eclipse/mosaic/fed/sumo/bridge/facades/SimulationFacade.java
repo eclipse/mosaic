@@ -59,8 +59,8 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.objects.vehicle.Consumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.Emissions;
+import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.objects.vehicle.SurroundingVehicle;
-import org.eclipse.mosaic.lib.objects.vehicle.TrainData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleConsumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleEmissions;
@@ -567,8 +567,8 @@ public class SimulationFacade {
         return sumoVehicle;
     }
 
-    private TrainData extractTrainData(VehicleSubscriptionResult veh) {
-        return new TrainData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
+    private PublicTransportData extractTrainData(VehicleSubscriptionResult veh) {
+        return new PublicTransportData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
     }
 
     private List<String> findRemovedVehicles(long time) {

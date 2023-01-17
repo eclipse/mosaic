@@ -19,7 +19,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.LeadFollowVehicle;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandRetrieveVehicleState;
-import org.eclipse.mosaic.lib.objects.vehicle.TrainData;
+import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
 import org.apache.commons.lang3.StringUtils;
@@ -105,7 +105,7 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
         } else if (varId == CommandRetrieveVehicleState.VAR_MIN_GAP.var) {
             result.minGap = (double) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_GET_NEXT_STOPS.var) {
-            result.nextStops = (List<TrainData.StoppingPlace>) varValue;
+            result.nextStops = (List<PublicTransportData.StoppingPlace>) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_GET_LINE.var) {
             result.line = (String) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_LENGTH.var) {

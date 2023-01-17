@@ -21,7 +21,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.List;
 
-public class TrainData {
+public class PublicTransportData {
 
     /**
      * The line the train belongs to.
@@ -33,7 +33,7 @@ public class TrainData {
      */
     private final List<StoppingPlace> nextStops;
 
-    private TrainData(String lineId, List<StoppingPlace> nextStops) {
+    private PublicTransportData(String lineId, List<StoppingPlace> nextStops) {
         this.lineId = lineId;
         this.nextStops = nextStops;
     }
@@ -60,8 +60,8 @@ public class TrainData {
             return this;
         }
 
-        public TrainData build() {
-            return new TrainData(lineId, nextStops);
+        public PublicTransportData build() {
+            return new PublicTransportData(lineId, nextStops);
         }
     }
 
