@@ -28,13 +28,13 @@ public class RouteAddTest extends AbstractTraciCommandTest {
     @Test
     public void execute() throws Exception {
         // RUN
-        new RouteAdd().execute(traci.getTraciConnection(), "2", Lists.newArrayList("1_1_2", "1_2_3", "1_3_4"));
+        new RouteAdd().execute(traci.getTraciConnection(), "3", Lists.newArrayList("1_1_2", "1_2_3", "1_3_4"));
     }
 
     @Test(expected = CommandException.class)
     public void executeWrongEdges() throws Exception {
         // RUN
-        new RouteAdd().execute(traci.getTraciConnection(), "2", Lists.newArrayList("1_1_2_x", "1_2_3", "1_3_4"));
+        new RouteAdd().execute(traci.getTraciConnection(), "3", Lists.newArrayList("1_1_2_x", "1_2_3", "1_3_4"));
     }
 
     @Test(expected = CommandException.class)
