@@ -48,12 +48,17 @@ public class SimulationGetDepartedVehicleIdsTest extends AbstractTraciCommandTes
         assertEquals(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId("1"), vehicleIdsDeparted.get(0));
         assertEquals(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId("0"), vehicleIdsDeparted.get(1));
 
-        simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
-
         // RUN
+        simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
         vehicleIdsDeparted = simulateGetDepartedVehicles.execute(traci.getTraciConnection());
 
         // ASSERT
+        assertEquals(1, vehicleIdsDeparted.size());
+        assertEquals(Bridge.VEHICLE_ID_TRANSFORMER.fromExternalId("2"), vehicleIdsDeparted.get(0));
+
+        // RUN
+        simulateStep.execute(traci.getTraciConnection(), 11 * TIME.SECOND);
+        vehicleIdsDeparted = simulateGetDepartedVehicles.execute(traci.getTraciConnection());
         assertTrue(vehicleIdsDeparted.isEmpty());
     }
 

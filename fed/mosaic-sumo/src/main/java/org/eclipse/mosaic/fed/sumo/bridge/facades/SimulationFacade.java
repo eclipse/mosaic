@@ -59,6 +59,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.objects.vehicle.Consumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.Emissions;
+import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.objects.vehicle.SurroundingVehicle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleConsumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -493,7 +494,7 @@ public class SimulationFacade {
     ) {
 
         final SumoVehicleState sumoVehicle = getVehicleState(veh.id);
-        final VehicleStopMode vehicleStopMode = decodeStopMode(veh.stoppedStateEncoded);
+        final VehicleStopMode vehicleStopMode = VehicleStopMode.fromSumoInt(veh.stoppedStateEncoded);
         final boolean isParking = vehicleStopMode.isParking();
         final boolean hasInvalidPosition = veh.position == null || !veh.position.isValid();
         final boolean isNewVehicle = sumoVehicle.lastVehicleData == null;
@@ -538,6 +539,9 @@ public class SimulationFacade {
                     .stopped(vehicleStopMode)
                     .sensors(createSensorData(sumoVehicle, veh.leadingVehicle, veh.followerVehicle, veh.minGap))
                     .laneArea(vehicleSegmentInfo.get(veh.id));
+            if (sumoConfiguration.subscriptions != null && sumoConfiguration.subscriptions.contains(CSumo.SUBSCRIPTION_TRAINS)) {
+                vehicleDataBuilder.additional(extractTrainData(veh));
+            }
             if (isParking) {
                 if (!sumoVehicle.lastVehicleData.isStopped()) {
                     log.info("Vehicle {} has parked at {} (edge: {})", veh.id, veh.position, veh.edgeId);
@@ -561,6 +565,10 @@ public class SimulationFacade {
 
         sumoVehicle.currentVehicleData = vehicleDataBuilder.create();
         return sumoVehicle;
+    }
+
+    private PublicTransportData extractTrainData(VehicleSubscriptionResult veh) {
+        return new PublicTransportData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
     }
 
     private List<String> findRemovedVehicles(long time) {
@@ -827,24 +835,6 @@ public class SimulationFacade {
         return new SimpleRoadPosition(edgeId, laneIndex, offset, lateralLanePosition);
     }
 
-    /**
-     * Getter for the stop mode (stop, park).
-     *
-     * @param stoppedStateEncoded Encoded number indicating the stop mode.
-     * @return The stop mode.
-     */
-    private VehicleStopMode decodeStopMode(int stoppedStateEncoded) {
-        if ((stoppedStateEncoded & 0b10000000) > 0) {
-            return VehicleStopMode.PARK_IN_PARKING_AREA;
-        }
-        if ((stoppedStateEncoded & 0b0010) > 0) {
-            return VehicleStopMode.PARK_ON_ROADSIDE;
-        }
-        if ((stoppedStateEncoded & 0b0001) > 0) {
-            return VehicleStopMode.STOP;
-        }
-        return VehicleStopMode.NOT_STOPPED;
-    }
 
     /**
      * This method decodes the vehicle signals.

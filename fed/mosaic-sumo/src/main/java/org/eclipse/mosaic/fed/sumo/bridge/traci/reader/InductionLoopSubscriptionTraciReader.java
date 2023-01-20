@@ -33,7 +33,8 @@ public class InductionLoopSubscriptionTraciReader extends AbstractSubscriptionTr
      */
     @SuppressWarnings("WeakerAccess")
     public InductionLoopSubscriptionTraciReader() {
-        getTypeBasedTraciReader().registerCompoundReader(new ListTraciReader<>(new InductionLoopVehicleDataTraciReader(), true));
+        getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveInductionLoopState.VAR_LAST_STEP_VEHICLE_DATA,
+                new ListTraciReader<>(new InductionLoopVehicleDataTraciReader(), true));
     }
 
     @Override

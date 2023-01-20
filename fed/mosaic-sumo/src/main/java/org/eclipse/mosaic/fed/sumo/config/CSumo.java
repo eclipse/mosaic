@@ -120,9 +120,14 @@ public class CSumo implements Serializable {
     public final static String SUBSCRIPTION_EMISSIONS = "emissions";
 
     /**
-     * Subscription identifier for subscribing for leader and follower information for each vehicle.
+     * Subscription identifier for subscribing to leader and follower information for each vehicle.
      */
     public final static String SUBSCRIPTION_LEADER = "leader";
+
+    /**
+     * Subscription identifier for subscribing to train information such next stops and line information.
+     */
+    public final static String SUBSCRIPTION_TRAINS = "trains";
 
     /**
      * The default lane width to be used when adding traffic signs per

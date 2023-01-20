@@ -34,8 +34,8 @@ public class RouteGetIdsTest extends AbstractTraciCommandTest {
         List<String> routeIds = new RouteGetIds().execute(traci.getTraciConnection());
 
         // ASSERT
-        assertEquals(2, routeIds.size());
-        assertEquals("0, 1", StringUtils.join(routeIds, ", "));
+        assertEquals(3, routeIds.size());
+        assertEquals("0, 1, 2", StringUtils.join(routeIds, ", "));
     }
 
 }

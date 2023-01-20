@@ -19,6 +19,7 @@ import static org.eclipse.mosaic.fed.sumo.config.CSumo.SUBSCRIPTION_EMISSIONS;
 import static org.eclipse.mosaic.fed.sumo.config.CSumo.SUBSCRIPTION_LEADER;
 import static org.eclipse.mosaic.fed.sumo.config.CSumo.SUBSCRIPTION_ROAD_POSITION;
 import static org.eclipse.mosaic.fed.sumo.config.CSumo.SUBSCRIPTION_SIGNALS;
+import static org.eclipse.mosaic.fed.sumo.config.CSumo.SUBSCRIPTION_TRAINS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -44,6 +45,7 @@ import org.eclipse.mosaic.lib.geo.UtmZone;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
+import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.SensorValue.SensorStatus;
 import org.eclipse.mosaic.rti.TIME;
@@ -72,7 +74,7 @@ public class TraciTest {
     private static CSumo createSumoConfig() {
         CSumo config = new CSumo();
         config.subscriptions =
-                Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER);
+                Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER, SUBSCRIPTION_TRAINS);
         return config;
     }
 
@@ -194,6 +196,21 @@ public class TraciTest {
     }
 
     @Test
+    public void trainInfoIncluded() throws Exception {
+        final TraciClientBridge traci = traciRule.getTraciClient();
+        traci.getSimulationControl().simulateUntil(6 * TIME.SECOND);
+        traci.getSimulationControl().subscribeForVehicle("2", 0L, 25 * TIME.SECOND);
+        // RUN
+        traci.getSimulationControl().simulateUntil(12 * TIME.SECOND);
+        // ASSERT
+        VehicleData vehData = traci.getSimulationControl().getLastKnownVehicleData("2");
+        assertEquals("1_4_3", vehData.getRoadPosition().getConnection().getId());
+        PublicTransportData publicTransportData = (PublicTransportData) vehData.getAdditionalData();
+        assertEquals("bs_0", publicTransportData.getNextStops().get(0).getStoppingPlaceId());
+        assertEquals("testLine", publicTransportData.getLineId());
+    }
+
+    @Test
     public void setSpeedFactor() throws Exception {
         final TraciClientBridge traci = traciRule.getTraciClient();
 
@@ -273,10 +290,10 @@ public class TraciTest {
         final TraciClientBridge traci = traciRule.getTraciClient();
 
         // RUN
-        traci.getRouteControl().addRoute("2", Lists.newArrayList("2_5_2", "1_2_3", "1_3_4"));
+        traci.getRouteControl().addRoute("3", Lists.newArrayList("2_5_2", "1_2_3", "1_3_4"));
 
         // ASSERT (by adding a vehicle on that route
-        traci.getSimulationControl().addVehicle("veh_0", "2", "PKW", "0", "0", "max");
+        traci.getSimulationControl().addVehicle("veh_0", "3", "PKW", "0", "0", "max");
         traci.getSimulationControl().subscribeForVehicle("veh_0", 0L, 4000 * TIME.SECOND);
 
         // ASSERT (by checking if vehicle is first edge on route)

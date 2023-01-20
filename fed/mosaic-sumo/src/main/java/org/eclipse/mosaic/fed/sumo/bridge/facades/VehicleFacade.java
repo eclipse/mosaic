@@ -197,8 +197,7 @@ public class VehicleFacade {
      */
     public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, VehicleStopMode stopMode) throws InternalFederateException {
         try {
-
-            stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, vehicleStopModeToInt(stopMode));
+            stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, VehicleStopMode.toSumoInt(stopMode));
         } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not stop vehicle " + vehicle, e);
         }
@@ -511,23 +510,5 @@ public class VehicleFacade {
         }
     }
 
-    /**
-     * Returns the corresponding integer for different stop modes according to
-     * <a href="https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html#stop_0x12">stop</a>.
-     *
-     * @return the corresponding int to the stop mode
-     */
-    private int vehicleStopModeToInt(VehicleStopMode vehicleStopMode) {
-        switch (vehicleStopMode) {
-            case STOP:
-                return 0;
-            case PARK_ON_ROADSIDE:
-                return 1;
-            case PARK_IN_PARKING_AREA: // these flags are additive (see sumo docs)
-                return 64 + vehicleStopModeToInt(VehicleStopMode.PARK_ON_ROADSIDE);
-            case NOT_STOPPED:
-            default:
-                return -1;
-        }
-    }
+
 }

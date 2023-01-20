@@ -184,7 +184,9 @@ public class TrafficLightFacade {
                             controlledLinks,
                             junctionPosition
                     );
-
+            if (trafficLights.isEmpty()) { // railway signals can be defined without a phase logic and will be ignored
+                return null;
+            }
             return new TrafficLightGroup(trafficLightGroupId, trafficLightPrograms, trafficLights);
         } catch (CommandException e) {
             throw new InternalFederateException(e);
@@ -199,7 +201,9 @@ public class TrafficLightFacade {
             List<TrafficLightGetControlledLinks.TrafficLightControlledLink> controlledLinks,
             GeoPoint junctionPosition
     ) {
-
+        if (currentProgram.getPhases().isEmpty()) {  // default railway signals don't have phases and won't be added to simulation
+            return new ArrayList<>();
+        }
         List<TrafficLight> trafficLights = new ArrayList<>();
         int index = 0;
         for (TrafficLightState state : currentProgram.getCurrentPhase().getStates()) {
