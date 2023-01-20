@@ -144,5 +144,11 @@ public interface OperatingSystem extends CommunicationModuleOwner {
      */
     <A extends Application> Iterable<A> getApplicationsIterator(Class<A> applicationClass);
 
+    /**
+     * Get the group of this simulation unit, defined in the mapping.
+     *
+     * @return the group of this simulation unit.
+     */
+
     String getGroup();
 }
