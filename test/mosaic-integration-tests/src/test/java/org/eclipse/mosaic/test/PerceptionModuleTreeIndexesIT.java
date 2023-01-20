@@ -17,7 +17,7 @@ package org.eclipse.mosaic.test;
 
 import org.junit.BeforeClass;
 
-public class PerceptionModuleQuadTreeIT extends AbstractPerceptionModuleIT {
+public class PerceptionModuleTreeIndexesIT extends AbstractPerceptionModuleIT {
 
     @BeforeClass
     public static void runSimulation() {

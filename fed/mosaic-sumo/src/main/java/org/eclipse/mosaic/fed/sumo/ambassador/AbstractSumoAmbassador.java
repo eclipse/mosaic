@@ -396,7 +396,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
 
         try {
-            rti.requestAdvanceTime(nextTimeStep, 0,  FederatePriority.higher(descriptor.getPriority()));
+            rti.requestAdvanceTime(nextTimeStep, 0, FederatePriority.higher(descriptor.getPriority()));
         } catch (IllegalValueException e) {
             log.error("Error during advanceTime request", e);
             throw new InternalFederateException(e);
@@ -1118,7 +1118,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             throws InternalFederateException {
         double stopPosition = 0;
         if (stopMode != VehicleStopMode.PARK_IN_PARKING_AREA) {
-            double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId(), stopPos.getLaneIndex());
+            double lengthOfLane = bridge.getSimulationControl().getLengthOfLane(stopPos.getConnectionId() + "_" + stopPos.getLaneIndex());
             stopPosition = stopPos.getOffset() < 0 ? lengthOfLane + stopPos.getOffset() : stopPos.getOffset();
             stopPosition = Math.min(Math.max(0.1, stopPosition), lengthOfLane);
         }
@@ -1172,8 +1172,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             connectToFederate("localhost", p.getInputStream(), p.getErrorStream());
             // read error output of process in an extra thread
-            new ProcessLoggingThread(log, p.getInputStream(), "sumo", ProcessLoggingThread.Level.Info).start();
-            new ProcessLoggingThread(log, p.getErrorStream(), "sumo", ProcessLoggingThread.Level.Error).start();
+            new ProcessLoggingThread("sumo", p.getInputStream(), log::info).start();
+            new ProcessLoggingThread("sumo", p.getErrorStream(), log::error).start();
 
         } catch (FederateExecutor.FederateStarterException e) {
             log.error("Error while executing command: {}", federateExecutor.toString());
@@ -1232,7 +1232,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             rti.triggerInteraction(simulationStepResult.getTrafficDetectorUpdates());
             this.rti.triggerInteraction(simulationStepResult.getTrafficLightUpdates());
 
-            rti.requestAdvanceTime(nextTimeStep, 0,  FederatePriority.higher(descriptor.getPriority()));
+            rti.requestAdvanceTime(nextTimeStep, 0, FederatePriority.higher(descriptor.getPriority()));
 
             lastAdvanceTime = time;
         } catch (InternalFederateException | IOException | IllegalValueException e) {
@@ -1362,20 +1362,20 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * @param time Current time
      */
     private void initializeTrafficLights(long time) throws InternalFederateException, IOException, IllegalValueException {
-        List<String> tlgIds = bridge.getSimulationControl().getTrafficLightGroupIds();
+        List<String> trafficLightGroupIds = bridge.getSimulationControl().getTrafficLightGroupIds();
 
-        List<TrafficLightGroup> tlgs = new ArrayList<>();
-        Map<String, Collection<String>> tlgLaneMap = new HashMap<>();
-        for (String tlgId : tlgIds) {
+        List<TrafficLightGroup> trafficLightGroups = new ArrayList<>();
+        Map<String, Collection<String>> trafficLightGroupLaneMap = new HashMap<>();
+        for (String trafficLightGroupId : trafficLightGroupIds) {
             try {
-                tlgs.add(bridge.getTrafficLightControl().getTrafficLightGroup(tlgId));
-                Collection<String> ctrlLanes = bridge.getTrafficLightControl().getControlledLanes(tlgId);
-                tlgLaneMap.put(tlgId, ctrlLanes);
+                trafficLightGroups.add(bridge.getTrafficLightControl().getTrafficLightGroup(trafficLightGroupId));
+                Collection<String> ctrlLanes = bridge.getTrafficLightControl().getControlledLanes(trafficLightGroupId);
+                trafficLightGroupLaneMap.put(trafficLightGroupId, ctrlLanes);
             } catch (InternalFederateException e) {
-                log.warn("Could not add traffic light {} to simulation. Skipping.", tlgId);
+                log.warn("Could not add traffic light {} to simulation. Skipping.", trafficLightGroupId);
             }
         }
-        Interaction stlRegistration = new ScenarioTrafficLightRegistration(time, tlgs, tlgLaneMap);
+        Interaction stlRegistration = new ScenarioTrafficLightRegistration(time, trafficLightGroups, trafficLightGroupLaneMap);
         rti.triggerInteraction(stlRegistration);
     }
 
@@ -1422,6 +1422,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 "--remote-port", Integer.toString(port),
                 "--step-length", String.format(Locale.ENGLISH, "%.2f", stepSize)
         );
+
+        // if SUMO_HOME is not set, the XML input validation in SUMO might fail as no XSDs are available.
+        // Therefore, we disable XML validation if SUMO_HOME is not set.
+        if (StringUtils.isBlank(System.getenv("SUMO_HOME"))) {
+            args.add("--xml-validation");
+            args.add("never");
+        }
 
         if (sumoConfig.additionalSumoParameters != null) {
             args.addAll(Arrays.asList(StringUtils.split(sumoConfig.additionalSumoParameters.trim(), " ")));

@@ -1,9 +1,8 @@
-<?xml version="1.0"?>
-
-<routes>
-    <vType carFollowModel="Krauss" id="PKW" accel="1.5" decel="4.5" sigma="0.5" length="5.0" maxspeed="50.0" tau="1.0" emissionClass="HBEFA3/PC_G_EU4" speedFactor="1.0" speedDev="0.0"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType carFollowModel="Krauss" id="PKW" accel="1.5" decel="4.5" sigma="0.5" length="5.0" maxSpeed="50.0" tau="1.0" emissionClass="HBEFA3/PC_G_EU4" speedFactor="1.0" speedDev="0.0"/>
     <route id="0" edges="1_1_2 1_2_3 1_3_4"/>
     <route id="1" edges="1_1_2 2_2_5 2_5_6 2_6_3 1_3_4"/>
-    <vehicle id="1" type="PKW" route="1" depart="2" repno="1" period="8"/>
-    <vehicle id="0" type="PKW" route="0" depart="5" repno="1" period="3"/>
+    <vehicle id="1" type="PKW" route="1" depart="2"/>
+    <vehicle id="0" type="PKW" route="0" depart="5"/>
 </routes>

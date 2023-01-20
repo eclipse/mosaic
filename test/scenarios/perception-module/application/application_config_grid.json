@@ -1,7 +1,12 @@
 {
     "perceptionConfiguration": {
-        "perceptionBackend": "Grid",
-        "gridCellWidth": "5m",
-        "gridCellHeight": "5m"
+        "vehicleIndex": {
+            "type": "VehicleGrid",
+            "cellWidth": "5m",
+            "cellHeight": "5m"
+        },
+        "trafficLightIndex": {
+            "type": "TrafficLightMap"
+        }
     }
 }

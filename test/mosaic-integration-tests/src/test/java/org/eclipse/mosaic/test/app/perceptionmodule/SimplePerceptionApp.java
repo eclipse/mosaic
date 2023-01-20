@@ -17,7 +17,8 @@
 package org.eclipse.mosaic.test.app.perceptionmodule;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
@@ -35,8 +36,8 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
     private static final String EVENT_RESOURCE = "PERCEPTION";
     private static final long queryInterval = 2 * TIME.SECOND;
 
-    private static final double VIEWING_ANGLE = 108d;
-    private static final double VIEWING_RANGE = 25d;
+    private static final double VIEWING_ANGLE = 60d;
+    private static final double VIEWING_RANGE = 50d;
 
     @Override
     public void onStartup() {
@@ -54,7 +55,7 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
 
     @Override
     public void onShutdown() {
-
+        getLog().infoSimTime(this, "Traffic Light switched {} times.", greenCount);
     }
 
     @Override
@@ -62,6 +63,7 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
         if (event.getResource() != null && event.getResource() instanceof String) {
             if (event.getResource().equals(EVENT_RESOURCE)) {
                 perceiveVehicles();
+                perceiveTrafficLights();
                 schedulePerception();
             }
         }
@@ -80,8 +82,35 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
 
     private void perceiveVehicles() {
         List<VehicleObject> perceivedVehicles = getOs().getPerceptionModule().getPerceivedVehicles();
-        getLog().infoSimTime(this, "Perceived vehicles: {}",
-                perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
+        if (perceivedVehicles.size() == 3) {
+            getLog().infoSimTime(this, "Perceived all vehicles: {}",
+                    perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
+        }
     }
 
+    private boolean isGreen = false;
+    private int greenCount = 0;
+
+    private void perceiveTrafficLights() {
+        // get all traffic lights in range
+        List<TrafficLightObject> perceivedTrafficLights = getOs().getPerceptionModule().getPerceivedTrafficLights();
+        // get traffic light controlling lane of ego vehicle
+        List<TrafficLightObject> trafficLightsOnLane = perceivedTrafficLights.stream()
+                .filter(trafficLightObject -> trafficLightObject.getIncomingLane().equals(getLaneId())).collect(Collectors.toList());
+        if (trafficLightsOnLane.size() != 1) {
+            return;
+        }
+        TrafficLightObject trafficLightOnLane = trafficLightsOnLane.get(0);
+        if (trafficLightOnLane.getTrafficLightState().isGreen() && !isGreen) { // check if traffic light changed to green
+            greenCount++;
+            isGreen = true;
+        }
+        if (trafficLightOnLane.getTrafficLightState().isRed() && isGreen) {
+            isGreen = false;
+        }
+    }
+
+    private String getLaneId() {
+        return getOs().getRoadPosition().getConnectionId() + "_" + getOs().getRoadPosition().getLaneIndex();
+    }
 }

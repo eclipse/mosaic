@@ -13,45 +13,59 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects;
 
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
-import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.annotation.Nullable;
 
-public class VehicleObject extends Vector3d implements SpatialObject {
+public class VehicleObject extends SpatialObject<VehicleObject> {
 
-    private final String id;
-    private final MutableCartesianPoint cartesianPosition = new MutableCartesianPoint();
+    /**
+     * The current speed of the vehicle. [m/s]
+     */
     private double speed;
+    /**
+     * The current heading of the vehicle. [degrees clockwise from north]
+     */
     private double heading;
-
+    /**
+     * The edge the vehicle is currently on.
+     */
     private String edgeId;
-
+    /**
+     * The lane index the vehicle is currently on.
+     */
     private int laneIndex;
+    /**
+     * The length of the vehicle. [m]
+     */
+    private double length;
+    /**
+     * The width of the vehicle. [m]
+     */
+    private double width;
+    /**
+     * The height of the vehicle. [m]
+     */
+    private double height;
+
+    /**
+     * Before the first vehicle update is received vehicles have no valid positions.
+     */
+    private boolean isInitialized = false;
 
     public VehicleObject(String id) {
-        this.id = id;
+        super(id);
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
     public VehicleObject setPosition(CartesianPoint position) {
-        this.cartesianPosition.set(position);
+        cartesianPosition.set(position);
         position.toVector3d(this);
         return this;
-    }
-
-    @Override
-    public CartesianPoint getProjectedPosition() {
-        return cartesianPosition;
     }
 
     public VehicleObject setEdgeAndLane(String edgeId, int laneIndex) {
@@ -87,6 +101,34 @@ public class VehicleObject extends Vector3d implements SpatialObject {
         return heading;
     }
 
+    public VehicleObject setDimensions(double length, double width, double height) {
+        this.length = length;
+        this.width = width;
+        this.height = height;
+        return this;
+    }
+
+    public double getLength() {
+        return length;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public VehicleObject setInitialized() {
+        this.isInitialized = true;
+        return this;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -105,15 +147,10 @@ public class VehicleObject extends Vector3d implements SpatialObject {
                 .append(heading, that.heading)
                 .append(edgeId, that.edgeId)
                 .append(laneIndex, that.laneIndex)
-                .append(id, that.id)
-                .append(cartesianPosition, that.cartesianPosition)
+                .append(length, that.length)
+                .append(width, that.width)
+                .append(height, that.height)
                 .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
-        return this.id.hashCode();
     }
 
     /**
@@ -128,6 +165,7 @@ public class VehicleObject extends Vector3d implements SpatialObject {
         copy.setHeading(getHeading());
         copy.setSpeed(getSpeed());
         copy.setEdgeAndLane(getEdgeId(), getLaneIndex());
+        copy.setDimensions(getLength(), getWidth(), getHeight());
         return copy;
     }
 }

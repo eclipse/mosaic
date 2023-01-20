@@ -17,7 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.apache.commons.lang3.Validate;
@@ -62,32 +62,32 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
     }
 
     @Override
-    public List<VehicleObject> apply(PerceptionModuleOwner owner, List<VehicleObject> vehicleObjects) {
-        if (vehicleObjects.size() == 0) {
-            return vehicleObjects;
+    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+        if (spatialObjects.size() == 0) {
+            return spatialObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         // sort by distances
-        List<VehicleObject> sortedByDistance = new ArrayList<>(vehicleObjects);
-        sortedByDistance.sort(Comparator.comparingDouble(vehicleObject -> vehicleObject.distanceTo(ownerPosition)));
+        List<SpatialObject> sortedByDistance = new ArrayList<>(spatialObjects);
+        sortedByDistance.sort(Comparator.comparingDouble(vehicleObject -> vehicleObject.getPosition().distanceTo(ownerPosition)));
         // fit linear function to (closest distance, min angle) and (furthest distance, max angle)
-        double closestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(0));
+        double closestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(0).getPosition());
         double furthestPerceivedDistance;
         if (owner.getPerceptionModule().getConfiguration().getClass().equals(SimplePerceptionConfiguration.class)) {
-            furthestPerceivedDistance = ((SimplePerceptionConfiguration) owner.getPerceptionModule().getConfiguration()).getViewingRange();
+            furthestPerceivedDistance = owner.getPerceptionModule().getConfiguration().getViewingRange();
         } else {
-            furthestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(sortedByDistance.size() - 1));
+            furthestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(sortedByDistance.size() - 1).getPosition());
         }
         double m = (maxDetectionAngle - minDetectionAngle) / (furthestPerceivedDistance - closestPerceivedDistance);
         double n = minDetectionAngle - (closestPerceivedDistance * m);
 
-        List<VehicleObject> nonOccludedVehicles = new ArrayList<>();
+        List<SpatialObject> notOccludedObjects = new ArrayList<>();
         List<Vector3d> nonOccludedVectors = new ArrayList<>();
-        nonOccludedVehicles.add(sortedByDistance.get(0)); // closest vehicle is always perceived
-        nonOccludedVectors.add(getVectorRelativeTo(ownerPosition, sortedByDistance.get(0)));
+        notOccludedObjects.add(sortedByDistance.get(0)); // closest vehicle is always perceived
+        nonOccludedVectors.add(getVectorRelativeTo(ownerPosition, sortedByDistance.get(0).getPosition()));
         for (int i = 1; i < sortedByDistance.size(); i++) { // iterate over all other sorted vehicles
-            Vector3d currentRelativeVector = getVectorRelativeTo(ownerPosition, sortedByDistance.get(i));
-            double occlusionAngle = getOcclusionAngle(ownerPosition.distanceTo(sortedByDistance.get(i)), m, n);
+            Vector3d currentRelativeVector = getVectorRelativeTo(ownerPosition, sortedByDistance.get(i).getPosition());
+            double occlusionAngle = getOcclusionAngle(ownerPosition.distanceTo(sortedByDistance.get(i).getPosition()), m, n);
             isOccluded:
             {
                 for (Vector3d otherVector : nonOccludedVectors) { // iterate over all previously selected vectors
@@ -95,12 +95,12 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
                         break isOccluded;
                     }
                 }
-                nonOccludedVehicles.add(sortedByDistance.get(i));
+                notOccludedObjects.add(sortedByDistance.get(i));
                 nonOccludedVectors.add(currentRelativeVector);
             }
         }
-        vehicleObjects.retainAll(nonOccludedVehicles); // apply changes on initial list
-        return vehicleObjects;
+        spatialObjects.retainAll(notOccludedObjects); // apply changes on initial list
+        return spatialObjects;
     }
 
     private Vector3d getVectorRelativeTo(Vector3d origin, Vector3d relative) {

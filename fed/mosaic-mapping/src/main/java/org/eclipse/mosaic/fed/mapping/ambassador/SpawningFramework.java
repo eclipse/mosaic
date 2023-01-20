@@ -460,25 +460,18 @@ public class SpawningFramework {
     }
 
     private void initTrafficLights(long time, RtiAmbassador rti, RandomNumberGenerator rng) throws InternalFederateException {
-
-        LOG.debug(
-                "tl 0: size={},{}",
-                scenarioTrafficLightRegistration.getTrafficLightGroups().size(),
-                scenarioTrafficLightRegistration.getLanesControlledByGroups().keySet().size()
-        );
-
         WeightedSelector<TrafficLightSpawner> selector = null;
         List<TrafficLightSpawner> itemsWithWeight = tls.values().stream().filter(tl -> tl.getWeight() != 0).collect(Collectors.toList());
         if (!itemsWithWeight.isEmpty()) {
             selector = new StochasticSelector<>(itemsWithWeight, rng);
         }
 
-        for (TrafficLightGroup tl : scenarioTrafficLightRegistration.getTrafficLightGroups()) {
+        for (TrafficLightGroup tlGroup : scenarioTrafficLightRegistration.getTrafficLightGroups()) {
             // do we have a specific overwrite?
             TrafficLightSpawner prototype = null;
-            for (TrafficLightSpawner value : tls.values()) {
-                if ((value.getTlName() != null) && (value.getTlName().contentEquals(tl.getGroupId()))) {
-                    prototype = value;
+            for (TrafficLightSpawner spawner : tls.values()) {
+                if ((spawner.getTlName() != null) && (spawner.getTlName().contentEquals(tlGroup.getGroupId()))) {
+                    prototype = spawner;
                 }
             }
 
@@ -489,31 +482,30 @@ public class SpawningFramework {
 
             List<String> apps;
 
-            String name;
+            String name = UnitNameGenerator.nextTlName();
             String group;
             if (prototype != null) {
                 apps = prototype.getAppList();
-                group = ObjectUtils.defaultIfNull(prototype.getGroup(), tl.getGroupId());
-                name = UnitNameGenerator.nextTlName();
+                group = ObjectUtils.defaultIfNull(prototype.getGroup(), tlGroup.getGroupId());
             } else {
                 apps = new ArrayList<>();
                 group = null;
-                name = tl.getGroupId();
             }
 
-            TrafficLightRegistration interaction = new TrafficLightRegistration(
-                    time, name, group, apps, tl,
-                    scenarioTrafficLightRegistration.getLanesControlledByGroups().get(tl.getGroupId())
+            TrafficLightRegistration tlRegistration = new TrafficLightRegistration(
+                    time, name, group, apps, tlGroup,
+                    scenarioTrafficLightRegistration.getLanesControlledByGroups().get(tlGroup.getGroupId())
             );
             if (prototype != null) {
-                LOG.info("Creating Traffic Light: name={}, apps=[{}]", tl.getGroupId(), StringUtils.join(apps, ","));
+                LOG.info("Creating Traffic Light Group: name={}, apps=[{}]", tlGroup.getGroupId(), StringUtils.join(apps, ","));
             } else {
-                LOG.info("Creating Traffic Light: name={}, apps=[]", tl.getGroupId());
+                LOG.info("Creating Traffic Light Group: name={}, apps=[]", tlGroup.getGroupId());
             }
             try {
-                rti.triggerInteraction(interaction);
+                rti.triggerInteraction(tlRegistration);
             } catch (IllegalValueException e) {
-                LOG.error("Couldn't send a interaction about registering a traffic light.", e);
+                LOG.error("Couldn't send {}, for tlGroup={}",
+                        TrafficLightRegistration.class.getSimpleName(), tlRegistration.getTrafficLightGroup().getGroupId(), e);
                 throw new InternalFederateException(e);
             }
         }

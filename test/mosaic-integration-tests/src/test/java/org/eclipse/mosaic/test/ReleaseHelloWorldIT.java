@@ -56,7 +56,7 @@ public class ReleaseHelloWorldIT {
 
     @Test
     public void allVehiclesLoaded() throws Exception {
-        LogAssert.contains(simulationRule, "Traffic.log", ".*sumo :  Inserted: 450.*");
+        LogAssert.contains(simulationRule, "Traffic.log", ".*sumo:  Inserted: 450.*");
     }
 
     @Test

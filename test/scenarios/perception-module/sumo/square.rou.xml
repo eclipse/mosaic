@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
   ~
@@ -18,7 +19,7 @@
     <route id="0" repeat="10" edges="E0 E1 E2 E3"/>
     <route id="1" repeat="10" edges="-E3 -E2 -E1 -E0"/>
     <vehicle id="0" type="PerceptionVehicle" depart="0" route="0">
-        <stop edge="E0" startPos="5" endPos="6" duration="1000"/>
+        <stop edge="E0" startPos="-50" endPos="-45" duration="1000"/>
     </vehicle>
     <vehicle id="1" type="DefaultVehicle" depart="0" route="1"/>
     <vehicle id="2" type="DefaultVehicle" depart="5" route="1"/>

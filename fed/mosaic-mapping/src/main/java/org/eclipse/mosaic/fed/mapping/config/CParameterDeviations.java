@@ -30,6 +30,20 @@ public class CParameterDeviations {
     public double decel = 0.0;
     public double tau = 0.0;
 
+    public CParameterDeviations copy() {
+        final CParameterDeviations copy = new CParameterDeviations();
+        copy.length = length;
+        copy.width = width;
+        copy.height = height;
+        copy.minGap = minGap;
+        copy.maxSpeed = maxSpeed;
+        copy.speedFactor = speedFactor;
+        copy.accel = accel;
+        copy.decel = decel;
+        copy.tau = tau;
+        return copy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -68,5 +82,19 @@ public class CParameterDeviations {
                 .append(decel)
                 .append(tau)
                 .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "CDeviations[length: " + length
+                + ", width: " + width
+                + ", height: " + height
+                + ", minGap: " + minGap
+                + ", maxSpeed: " + maxSpeed
+                + ", speedFactor: " + speedFactor
+                + ", accel: " + accel
+                + ", decel: " + decel
+                + ", tau: " + tau
+                + "]";
     }
 }

@@ -21,6 +21,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.SumoVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.api.InductionLoopSubscribe;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneAreaSubscribe;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneGetLength;
+import org.eclipse.mosaic.fed.sumo.bridge.api.LaneGetShape;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneSetAllow;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneSetDisallow;
 import org.eclipse.mosaic.fed.sumo.bridge.api.LaneSetMaxSpeed;
@@ -66,6 +67,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleSensors;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleSignals;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.DistanceSensor;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.RadarSensor;
+import org.eclipse.mosaic.lib.util.objects.Position;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -111,6 +113,7 @@ public class SimulationFacade {
     private final LaneSetMaxSpeed laneSetMaxSpeed;
 
     private final LaneGetLength laneGetLength;
+    private final LaneGetShape laneGetShape;
 
     private final Map<String, InductionLoop> inductionLoops = new HashMap<>();
     private final Map<String, SumoVehicleState> sumoVehicles = new HashMap<>();
@@ -176,6 +179,7 @@ public class SimulationFacade {
         this.laneSetMaxSpeed = bridge.getCommandRegister().getOrCreate(LaneSetMaxSpeed.class);
 
         this.laneGetLength = bridge.getCommandRegister().getOrCreate(LaneGetLength.class);
+        this.laneGetShape = bridge.getCommandRegister().getOrCreate(LaneGetShape.class);
 
         this.vehicleSubscribeSurrounding = bridge.getCommandRegister().getOrCreate(VehicleSubscribeSurroundingVehicle.class);
         this.vehicleSubscriptionFilterFieldOfVision = bridge.getCommandRegister().getOrCreate(VehicleSubscriptionSetFieldOfVision.class);
@@ -367,14 +371,28 @@ public class SimulationFacade {
     /**
      * Gets length of a lane on an edge.
      *
-     * @param laneIndex the id of the lane. Must be known to the simulation
+     * @param laneId The id of the lane. Must be known to the simulation.
      * @throws InternalFederateException if the length of the wanted lane on the wanted edge couldn't be retrieved
      */
-    public final double getLengthOfLane(String edgeId, int laneIndex) throws InternalFederateException {
+    public final double getLengthOfLane(String laneId) throws InternalFederateException {
         try {
-            return laneGetLength.execute(bridge, edgeId, laneIndex);
+            return laneGetLength.execute(bridge, laneId);
         } catch (CommandException e) {
-            throw new InternalFederateException(String.format("Could not retrieve length of lane %s (lane %d)", edgeId, laneIndex), e);
+            throw new InternalFederateException(String.format("Could not retrieve length of lane %s", laneId), e);
+        }
+    }
+
+    /**
+     * Gets the shape of a lane, which is used for extracting the stop-lines of lanes.
+     *
+     * @param laneId The id of the lane. Must be known to the simulation.
+     * @throws InternalFederateException if the length of the wanted lane on the wanted edge couldn't be retrieved
+     */
+    public final List<Position> getShapeOfLane(String laneId) throws InternalFederateException {
+        try {
+            return laneGetShape.execute(bridge, laneId);
+        } catch (CommandException e) {
+            throw new InternalFederateException(String.format("Could not retrieve shape of lane %s", laneId), e);
         }
     }
 
@@ -567,7 +585,8 @@ public class SimulationFacade {
             }
             sumoVehicleState.currentVehicleData.getVehiclesInSight().add(
                     new SurroundingVehicle(vehInSight.id, vehInSight.position, vehInSight.speed,
-                            vehInSight.heading, vehInSight.edgeId, vehInSight.laneIndex)
+                            vehInSight.heading, vehInSight.edgeId, vehInSight.laneIndex,
+                            vehInSight.length, vehInSight.width, vehInSight.height)
             );
         }
     }

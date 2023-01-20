@@ -1,4 +1,5 @@
-<additional>
+<?xml version="1.0" encoding="UTF-8"?>
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
     <inductionLoop id="area_entry_0" lane="1_1_2_1_0" pos="300" freq="300" file="out.xml" friendlyPos="true"/>
     <inductionLoop id="area_entry_1" lane="1_1_2_1_1" pos="300" freq="300" file="out.xml" friendlyPos="true"/>
     

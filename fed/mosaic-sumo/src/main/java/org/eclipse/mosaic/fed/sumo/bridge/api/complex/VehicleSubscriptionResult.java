@@ -48,4 +48,8 @@ public class VehicleSubscriptionResult extends AbstractSubscriptionResult {
 
     public LeadFollowVehicle leadingVehicle = LeadFollowVehicle.NONE;
     public LeadFollowVehicle followerVehicle = LeadFollowVehicle.NONE;
+
+    public double length;
+    public double width;
+    public double height;
 }

@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
 
 public interface PerceptionModel {
