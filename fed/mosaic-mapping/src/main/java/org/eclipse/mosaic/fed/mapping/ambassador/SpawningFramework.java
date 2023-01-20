@@ -241,8 +241,7 @@ public class SpawningFramework {
         }
 
         if (mappingConfiguration.vehicles == null || !spawnersExist) {
-            LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
-                    .warn("You didn't define any spawners in your mapping config. Only external vehicles will be simulated.");
+            LOG.info("No vehicle spawners defined in mapping config. Only external vehicles will be simulated.");
         }
 
         // OD-Matrices

@@ -48,7 +48,7 @@ public abstract class AbstractSubscriptionTraciReader<T extends AbstractSubscrip
         for (int i = 0; i < varCount; i++) {
             int varId = readUnsignedByte(in);
             int varStatus = readUnsignedByte(in);
-
+            typeBasedTraciReader.setNextCompoundVarId(varId);
             Object varValue = typeBasedTraciReader.read(in, totalBytesLeft - numBytesRead);
             this.numBytesRead += typeBasedTraciReader.getNumberOfBytesRead();
 

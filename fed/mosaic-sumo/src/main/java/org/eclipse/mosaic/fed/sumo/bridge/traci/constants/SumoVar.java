@@ -80,4 +80,22 @@ public class SumoVar {
             return new WithParam(var, value, TraciVersion.LOWEST, null);
         }
     }
+
+    public static class WithIntParam extends SumoVar {
+
+        private Integer value;
+
+        private WithIntParam(int var, Integer value, TraciVersion since, TraciVersion deprecatedSince) {
+            super(var, since, deprecatedSince);
+            this.value = value;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        static SumoVar.WithIntParam var(int var, int value) {
+            return new WithIntParam(var, value, TraciVersion.LOWEST, null);
+        }
+    }
 }
