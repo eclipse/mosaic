@@ -29,6 +29,7 @@ Changes in the documentation required?
 **Required**
 
 - [ ] The title of this merge request follows the scheme `type(scope): description`  (in the style of [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary))
+- [ ] You have assigned a suitable label to this pull request (e.g., `enhancement`, or `bugfix`)
 - [ ] `origin/main` has been merged into your Fork.
 - [ ] Coding guidelines have been followed (see CONTRIBUTING.md).
 - [ ] All checks on GitHub pass.
