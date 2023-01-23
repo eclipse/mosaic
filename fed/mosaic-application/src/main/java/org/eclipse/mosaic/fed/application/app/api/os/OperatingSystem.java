@@ -149,6 +149,5 @@ public interface OperatingSystem extends CommunicationModuleOwner {
      *
      * @return the group of this simulation unit.
      */
-
     String getGroup();
 }
