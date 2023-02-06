@@ -26,9 +26,10 @@ import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Objects;
 
@@ -263,7 +264,10 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
 
     @Override
     public String toString() {
-        return "Vehicle: name=" + prototype + ", apps=" + StringUtils.join(applications, ",");
+        return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
+                .append("name", prototype)
+                .append("apps", applications)
+                .build();
     }
 
     @Override

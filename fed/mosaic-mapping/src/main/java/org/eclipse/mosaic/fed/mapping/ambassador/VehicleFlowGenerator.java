@@ -74,7 +74,7 @@ public class VehicleFlowGenerator {
     private final LaneIndexSelector laneSelector;
     private final SpawningMode spawningMode;
     private final List<VehicleTypeSpawner> types;
-    private final int departureConnectionIndex;
+    private final int departConnectionIndex;
     private final int pos;
     private final String route;
     private final GeoCircle origin;
@@ -125,7 +125,7 @@ public class VehicleFlowGenerator {
         this.randomNumberGenerator = randomNumberGenerator;
 
         // set simple values
-        this.departureConnectionIndex = vehicleConfiguration.departConnectionIndex;
+        this.departConnectionIndex = vehicleConfiguration.departConnectionIndex;
         this.pos = vehicleConfiguration.pos;
         this.route = vehicleConfiguration.route;
         this.group = vehicleConfiguration.group;
@@ -418,29 +418,29 @@ public class VehicleFlowGenerator {
             return;
         }
         // if no group is defined in vehicle definition take group declared in prototype
-        group = ObjectUtils.defaultIfNull(group, type.getGroup());
+        String spawningGroup = ObjectUtils.defaultIfNull(group, type.getGroup());
 
         VehicleDeparture vehicleDeparture = new VehicleDeparture.Builder(route)
                 .departureLane(laneSelectionMode, lane, pos)
-                .departureConnection(departureConnectionIndex)
+                .departureConnection(departConnectionIndex)
                 .departureSpeed(departureSpeedMode, departSpeed)
                 .create();
 
         Interaction interaction;
         if (origin != null) {
             interaction = new RoutelessVehicleRegistration(
-                    framework.getTime(), name, group, type.getAppList(), vehicleDeparture, type.convertType(), odInfo
+                    framework.getTime(), name, spawningGroup, type.getAppList(), vehicleDeparture, type.convertType(), odInfo
             );
         } else {
-            interaction = new VehicleRegistration(framework.getTime(), name, group, type.getAppList(), vehicleDeparture,
+            interaction = new VehicleRegistration(framework.getTime(), name, spawningGroup, type.getAppList(), vehicleDeparture,
                     type.convertTypeAndVaryParameters(randomNumberGenerator)
             );
         }
 
         try {
-            LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, departureConnectionIndex{}, pos={}, "
-                            + "type={}, departSpeed={}, apps={}",
-                    framework.getTime(), name, route, laneSelectionMode, lane, departureConnectionIndex, pos, type, departSpeed, type.getAppList());
+            LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, departConnectionIndex={}, pos={}, type={}, departSpeed={}, apps={}",
+                    framework.getTime(), name, route, laneSelectionMode, lane,
+                    departConnectionIndex, pos, type.getPrototype(), departSpeed, type.getAppList());
             framework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Couldn't send an {} interaction in VehicleStreamGenerator.timeAdvance()", interaction.getTypeId(), e);
@@ -454,7 +454,7 @@ public class VehicleFlowGenerator {
                 .append("spawningMode", spawningMode)
                 .append("lanes", lanes)
                 .append("types", types)
-                .append("departureConnectionIndex", departureConnectionIndex)
+                .append("departConnectionIndex", departConnectionIndex)
                 .append("pos", pos)
                 .append("departSpeed", departSpeed)
                 .append("route", route)
