@@ -36,7 +36,7 @@ abstract class UnitSpawner {
     /**
      * All applications defined for a unit.
      */
-    List<String> applications = new ArrayList<>();
+    final List<String> applications = new ArrayList<>();
     /**
      * The prototype of the unit.
      */

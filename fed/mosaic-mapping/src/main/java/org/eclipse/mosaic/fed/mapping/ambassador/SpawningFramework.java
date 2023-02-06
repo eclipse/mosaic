@@ -494,7 +494,7 @@ public class SpawningFramework {
                     time, name, group, apps, tlGroup,
                     scenarioTrafficLightRegistration.getLanesControlledByGroups().get(tlGroup.getGroupId())
             );
-            LOG.info("Creating Traffic Light Group: name={}, apps={}", tlGroup.getGroupId(), apps);
+            LOG.info("Creating Traffic Light Group: name={},tlGroupId={},apps={}", name, tlGroup.getGroupId(), apps);
             try {
                 rti.triggerInteraction(tlRegistration);
             } catch (IllegalValueException e) {
