@@ -158,7 +158,7 @@ public class VehicleFlowGenerator {
             this.odInfo = null;
         }
 
-        LOG.debug("New VehicleStreamGenerator created: " + this);
+        LOG.info("Creating VehicleFlowGenerator: {}", this);
     }
 
     private List<VehicleTypeSpawner> createPrototypes(CVehicle vehicleConfiguration) {
@@ -321,7 +321,7 @@ public class VehicleFlowGenerator {
 
     void fillInPrototype(SpawningFramework framework) {
         for (VehicleTypeSpawner vehicleTypeSpawner : types) {
-            CPrototype prototypeConfiguration = framework.getPrototypeByName(vehicleTypeSpawner.getPrototype());
+            CPrototype prototypeConfiguration = framework.getPrototypeByName(vehicleTypeSpawner.getPrototypeName());
             if (prototypeConfiguration == null) {
                 continue;
             }
@@ -331,16 +331,16 @@ public class VehicleFlowGenerator {
 
     void collectVehicleTypes(HashMap<String, VehicleType> types) {
         for (VehicleTypeSpawner vehicleTypeSpawner : this.types) {
-            String key = vehicleTypeSpawner.getPrototype();
+            String key = vehicleTypeSpawner.getPrototypeName();
             if (types.containsKey(key) && (vehicleTypeSpawner.convertType().equals(types.get(key)))) {
                 continue;
             }
             if ((key == null) || types.containsKey(key)) {
-                key = UnitNameGenerator.nextPrototypeName(vehicleTypeSpawner.getPrototype());
-                vehicleTypeSpawner.setPrototype(key);
+                key = UnitNameGenerator.nextPrototypeName(vehicleTypeSpawner.getPrototypeName());
+                vehicleTypeSpawner.setPrototypeName(key);
             }
             types.put(key, vehicleTypeSpawner.convertType());
-            LOG.trace("Registering Vehicle Type: " + key + ": " + types.get(key));
+            LOG.info("Registering Vehicle Type: {}", types.get(key));
         }
     }
 
@@ -353,7 +353,6 @@ public class VehicleFlowGenerator {
      */
     boolean timeAdvance(SpawningFramework framework) throws InternalFederateException {
         // to reduce load, first handle everything that might stop execution
-        // =================================================================
         if (!spawningMode.isSpawningActive(framework.getTime())) {
             return true;
         }
@@ -363,9 +362,7 @@ public class VehicleFlowGenerator {
             return true;
         }
         // now determine if a vehicle has to be spawned
-        // =================================================================
-        // init some variables on the first time advance
-        if (nextSpawnTime == -1) {
+        if (nextSpawnTime == -1) { // init some variables before the first time advance
             nextSpawnTime = spawningMode.getNextSpawningTime(framework.getTime());
             try {
                 framework.getRti().requestAdvanceTime(nextSpawnTime);
@@ -429,18 +426,18 @@ public class VehicleFlowGenerator {
         Interaction interaction;
         if (origin != null) {
             interaction = new RoutelessVehicleRegistration(
-                    framework.getTime(), name, spawningGroup, type.getAppList(), vehicleDeparture, type.convertType(), odInfo
+                    framework.getTime(), name, spawningGroup, type.getApplications(), vehicleDeparture, type.convertType(), odInfo
             );
         } else {
-            interaction = new VehicleRegistration(framework.getTime(), name, spawningGroup, type.getAppList(), vehicleDeparture,
+            interaction = new VehicleRegistration(framework.getTime(), name, spawningGroup, type.getApplications(), vehicleDeparture,
                     type.convertTypeAndVaryParameters(randomNumberGenerator)
             );
         }
 
         try {
-            LOG.info("Creating Vehicle. time={}, name={}, route={}, laneSelectionMode={}, lane={}, departConnectionIndex={}, pos={}, type={}, departSpeed={}, apps={}",
+            LOG.info("Creating Vehicle: time={},name={},route={},laneSelectionMode={},lane={},departConnectionIndex={},pos={},type={},departSpeed={},applications={}",
                     framework.getTime(), name, route, laneSelectionMode, lane,
-                    departConnectionIndex, pos, type.getPrototype(), departSpeed, type.getAppList());
+                    departConnectionIndex, pos, type.getPrototypeName(), departSpeed, type.getApplications());
             framework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Couldn't send an {} interaction in VehicleStreamGenerator.timeAdvance()", interaction.getTypeId(), e);

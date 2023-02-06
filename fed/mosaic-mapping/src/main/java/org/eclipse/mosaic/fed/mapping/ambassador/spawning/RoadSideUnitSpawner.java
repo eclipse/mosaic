@@ -23,7 +23,8 @@ import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +61,9 @@ public class RoadSideUnitSpawner extends UnitSpawner implements Spawner {
      */
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = UnitNameGenerator.nextRsuName();
-        RsuRegistration interaction = new RsuRegistration(0, name, group, getAppList(), this.position);
+        RsuRegistration interaction = new RsuRegistration(0, name, group, getApplications(), this.position);
         try {
-            LOG.info("Creating RSU " + this.toString());
+            LOG.info("Creating RSU: {}", this);
             spawningFramework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Exception while sending Interaction in RoadSideUnitSpawner.init()");
@@ -72,6 +73,9 @@ public class RoadSideUnitSpawner extends UnitSpawner implements Spawner {
 
     @Override
     public String toString() {
-        return "@" + position + " with apps: " + StringUtils.join(applications, ",");
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("position", position)
+                .append("applications", applications)
+                .build();
     }
 }

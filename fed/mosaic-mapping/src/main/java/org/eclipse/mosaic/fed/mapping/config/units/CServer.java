@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class CServer {
     /**
-     * The name of the tmc to be matched against this object. All
+     * The name of the server to be matched against this object. All
      * properties which are not specified will then be replaced.
      */
     public String name;

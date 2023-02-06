@@ -157,7 +157,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         if (deviations == null) {
             return convertType();
         }
-        return new VehicleType(prototype,
+        return new VehicleType(prototypeName,
                 deviateWithBounds(random, length, deviations.length),
                 deviateWithBounds(random, width, deviations.width),
                 deviateWithBounds(random, height, deviations.height),
@@ -183,8 +183,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         return mean;
     }
 
-    public void setPrototype(String prototype) {
-        this.prototype = prototype;
+    public void setPrototypeName(String prototypeName) {
+        this.prototypeName = prototypeName;
     }
 
     public double getWeight() {
@@ -202,7 +202,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
      */
     public VehicleType convertType() {
         return new VehicleType(
-                prototype,
+                prototypeName,
                 length,
                 width,
                 height,
@@ -265,7 +265,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
-                .append("name", prototype)
+                .append("name", prototypeName)
                 .append("apps", applications)
                 .build();
     }
@@ -273,7 +273,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(1, 31)
-                .append(prototype)
+                .append(prototypeName)
                 .append(applications)
                 .append(group)
                 .append(weight)
@@ -309,7 +309,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         }
         VehicleTypeSpawner other = (VehicleTypeSpawner) obj;
         return new EqualsBuilder()
-                .append(prototype, other.prototype)
+                .append(prototypeName, other.prototypeName)
                 .append(applications, other.applications)
                 .append(group, other.group)
                 .append(weight, other.weight)

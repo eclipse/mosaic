@@ -47,7 +47,6 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -358,23 +357,23 @@ public class SpawningFramework {
      */
     private void completeSpawnerDefinitions() {
         for (RoadSideUnitSpawner rsu : rsus) {
-            rsu.fillInPrototype(getPrototypeByName(rsu.getPrototype()));
+            rsu.fillInPrototype(getPrototypeByName(rsu.getPrototypeName()));
         }
 
         for (TrafficManagementCenterSpawner tmc : tmcs) {
-            tmc.fillInPrototype(getPrototypeByName(tmc.getPrototype()));
+            tmc.fillInPrototype(getPrototypeByName(tmc.getPrototypeName()));
         }
 
         for (ServerSpawner server : servers) {
-            server.fillInPrototype(getPrototypeByName(server.getPrototype()));
+            server.fillInPrototype(getPrototypeByName(server.getPrototypeName()));
         }
 
         for (TrafficLightSpawner tl : tls.values()) {
-            tl.fillInPrototype(getPrototypeByName(tl.getPrototype()));
+            tl.fillInPrototype(getPrototypeByName(tl.getPrototypeName()));
         }
 
         for (ChargingStationSpawner chargingStation : chargingStations) {
-            chargingStation.fillInPrototype(getPrototypeByName(chargingStation.getPrototype()));
+            chargingStation.fillInPrototype(getPrototypeByName(chargingStation.getPrototypeName()));
         }
 
         // If adjustStartingTimes is configured, only the end time is relevant for remaining spawners.
@@ -484,7 +483,7 @@ public class SpawningFramework {
             String name = UnitNameGenerator.nextTlName();
             String group;
             if (prototype != null) {
-                apps = prototype.getAppList();
+                apps = prototype.getApplications();
                 group = ObjectUtils.defaultIfNull(prototype.getGroup(), tlGroup.getGroupId());
             } else {
                 apps = new ArrayList<>();
@@ -495,11 +494,7 @@ public class SpawningFramework {
                     time, name, group, apps, tlGroup,
                     scenarioTrafficLightRegistration.getLanesControlledByGroups().get(tlGroup.getGroupId())
             );
-            if (prototype != null) {
-                LOG.info("Creating Traffic Light Group: name={}, apps=[{}]", tlGroup.getGroupId(), StringUtils.join(apps, ","));
-            } else {
-                LOG.info("Creating Traffic Light Group: name={}, apps=[]", tlGroup.getGroupId());
-            }
+            LOG.info("Creating Traffic Light Group: name={}, apps={}", tlGroup.getGroupId(), apps);
             try {
                 rti.triggerInteraction(tlRegistration);
             } catch (IllegalValueException e) {
