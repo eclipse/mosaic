@@ -26,9 +26,10 @@ import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Objects;
 
@@ -156,7 +157,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         if (deviations == null) {
             return convertType();
         }
-        return new VehicleType(prototype,
+        return new VehicleType(prototypeName,
                 deviateWithBounds(random, length, deviations.length),
                 deviateWithBounds(random, width, deviations.width),
                 deviateWithBounds(random, height, deviations.height),
@@ -182,8 +183,8 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         return mean;
     }
 
-    public void setPrototype(String prototype) {
-        this.prototype = prototype;
+    public void setPrototypeName(String prototypeName) {
+        this.prototypeName = prototypeName;
     }
 
     public double getWeight() {
@@ -201,7 +202,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
      */
     public VehicleType convertType() {
         return new VehicleType(
-                prototype,
+                prototypeName,
                 length,
                 width,
                 height,
@@ -263,13 +264,16 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
 
     @Override
     public String toString() {
-        return "Vehicle: name=" + prototype + ", apps=" + StringUtils.join(applications, ",");
+        return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
+                .append("name", prototypeName)
+                .append("apps", applications)
+                .build();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(1, 31)
-                .append(prototype)
+                .append(prototypeName)
                 .append(applications)
                 .append(group)
                 .append(weight)
@@ -305,7 +309,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         }
         VehicleTypeSpawner other = (VehicleTypeSpawner) obj;
         return new EqualsBuilder()
-                .append(prototype, other.prototype)
+                .append(prototypeName, other.prototypeName)
                 .append(applications, other.applications)
                 .append(group, other.group)
                 .append(weight, other.weight)

@@ -38,7 +38,7 @@ public class VehicleTypeSpawnerTest {
         VehicleTypeSpawner vehicleType = new VehicleTypeSpawner(a);
 
         //PRE-ASSERT
-        assertEquals("Car", vehicleType.getPrototype());
+        assertEquals("Car", vehicleType.getPrototypeName());
         assertEquals(VehicleClass.AutomatedVehicle, vehicleType.getVehicleClass());
         assertEquals(100d, vehicleType.convertType().getMaxSpeed(), 0.1d);
         assertNull(vehicleType.getGroup());
@@ -53,7 +53,7 @@ public class VehicleTypeSpawnerTest {
         vehicleType.fillInPrototype(b);
 
         //ASSERT
-        assertEquals("Car", vehicleType.getPrototype());
+        assertEquals("Car", vehicleType.getPrototypeName());
         assertEquals(VehicleClass.AutomatedVehicle, vehicleType.getVehicleClass());
         assertEquals(100d, vehicleType.convertType().getMaxSpeed(), 0.1d);
         assertEquals(0.8d, vehicleType.convertType().getTau(), 0.1d);

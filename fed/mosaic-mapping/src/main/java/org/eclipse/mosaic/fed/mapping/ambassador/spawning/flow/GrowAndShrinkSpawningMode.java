@@ -20,6 +20,9 @@ import static java.lang.Math.max;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.rti.TIME;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * This implementation of {@link SpawningMode} spawns the vehicles in a
  * way where first the flow is increased, then it stays constant and afterwards
@@ -83,5 +86,14 @@ public class GrowAndShrinkSpawningMode implements SpawningMode {
             nextSpawningTime = decreaseMode.getNextSpawningTime(currentTime);
         }
         return max(nextSpawningTime, currentTime + 10 * TIME.MILLI_SECOND);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("endIncrease", endIncrease)
+                .append("endConstant", endConstant)
+                .append("endDecrease", endDecrease)
+                .build();
     }
 }

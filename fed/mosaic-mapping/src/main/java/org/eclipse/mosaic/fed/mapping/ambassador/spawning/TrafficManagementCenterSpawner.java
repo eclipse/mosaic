@@ -22,6 +22,8 @@ import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,9 +66,9 @@ public class TrafficManagementCenterSpawner extends ServerSpawner {
      */
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = UnitNameGenerator.nextTmcName();
-        TmcRegistration interaction = new TmcRegistration(0, name, group, getAppList(), getInductionLoopList(), getLaneAreaList());
+        TmcRegistration interaction = new TmcRegistration(0, name, group, getApplications(), getInductionLoopList(), getLaneAreaList());
         try {
-            LOG.info("Creating TMC " + this.toString());
+            LOG.info("Creating TMC: {}", this);
             spawningFramework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Exception while sending Interaction in TrafficManagementCenterSpawner.init()");
@@ -92,5 +94,14 @@ public class TrafficManagementCenterSpawner extends ServerSpawner {
      */
     private List<String> getLaneAreaList() {
         return laneAreaDetectors == null ? new ArrayList<>() : new ArrayList<>(laneAreaDetectors);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .appendSuper(super.toString())
+                .append("inductionLoopDetectors", inductionLoopDetectors)
+                .append("laneAreaDetectors", laneAreaDetectors)
+                .build();
     }
 }
