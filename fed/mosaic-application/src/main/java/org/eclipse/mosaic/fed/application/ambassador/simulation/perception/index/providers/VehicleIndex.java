@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
@@ -22,9 +23,9 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
 import com.google.gson.annotations.JsonAdapter;
 import org.slf4j.Logger;
@@ -43,18 +44,32 @@ public abstract class VehicleIndex implements Serializable {
     final Map<String, VehicleObject> indexedVehicles = new HashMap<>();
 
     /**
-     * Adds a vehicle to the index using its {@link VehicleRegistration} to keep track of its dimensions.
-     * @param vehicleRegistration the interaction containing information of the vehicles' dimensions
+     * Stores the types of vehicles to extract vehicle dimensions.
      */
-    public void addVehicle(VehicleRegistration vehicleRegistration) {
-        String vehicleId = vehicleRegistration.getMapping().getName();
-        VehicleObject newVehicle = new VehicleObject(vehicleId)
-                .setDimensions(
-                        vehicleRegistration.getMapping().getVehicleType().getLength(),
-                        vehicleRegistration.getMapping().getVehicleType().getWidth(),
-                        vehicleRegistration.getMapping().getVehicleType().getHeight()
-                );
-        indexedVehicles.put(vehicleId, newVehicle);
+    private final Map<String, String> registeredVehicleTypes = new HashMap<>();
+
+    /**
+     * Adds a vehicle to the index if it hasn't been added to keep track of its dimensions.
+     *
+     * @param vehicleData the data containing information about the vehicle
+     */
+    protected VehicleObject addOrGetVehicle(VehicleData vehicleData) {
+        String vehicleId = vehicleData.getName();
+        VehicleObject vehicleObject = indexedVehicles.get(vehicleId);
+        if (vehicleObject == null) {
+            VehicleType vehicleType = SimulationKernel.SimulationKernel.getVehicleTypes().get(registeredVehicleTypes.get(vehicleId));
+            vehicleObject = new VehicleObject(vehicleId)
+                    .setHeading(vehicleData.getHeading())
+                    .setSpeed(vehicleData.getSpeed())
+                    .setPosition(vehicleData.getProjectedPosition())
+                    .setDimensions(
+                            vehicleType.getLength(),
+                            vehicleType.getWidth(),
+                            vehicleType.getHeight()
+                    );
+            indexedVehicles.put(vehicleId, vehicleObject);
+        }
+        return vehicleObject;
     }
 
     /**
@@ -70,10 +85,15 @@ public abstract class VehicleIndex implements Serializable {
      * Method called to initialize index after configuration has been read.
      */
     public abstract void initialize();
+
     /**
      * Queries the {@link TrafficObjectIndex} and returns all vehicles inside the {@link PerceptionModel}.
      */
     public abstract List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
+
+    public void registerVehicleType(String vehicleId, String vehicleTypeName) {
+        registeredVehicleTypes.put(vehicleId, vehicleTypeName);
+    }
 
     /**
      * Remove all vehicles from the {@link TrafficObjectIndex} by a list of vehicle ids.

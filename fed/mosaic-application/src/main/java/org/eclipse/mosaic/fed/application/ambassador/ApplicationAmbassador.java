@@ -360,7 +360,15 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final VehicleRegistration vehicleRegistration) {
-        vehicleRegistrations.put(vehicleRegistration.getMapping().getName(), vehicleRegistration);
+        String vehicleName = vehicleRegistration.getMapping().getName();
+        vehicleRegistrations.put(vehicleName, vehicleRegistration);
+
+        // register vehicle type for perception
+        String vehicleTypeName = vehicleRegistration.getMapping().getVehicleType().getName();
+        SimulationKernel.SimulationKernel.getVehicleTypes().putIfAbsent(
+                vehicleTypeName, vehicleRegistration.getMapping().getVehicleType()
+        );
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent().registerVehicleType(vehicleName, vehicleTypeName);
     }
 
     private void process(final RoutelessVehicleRegistration routelessVehicleRegistration) {
@@ -678,7 +686,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final VehicleRegistration vehicleRegistration = vehicleRegistrations.remove(unitName);
         if (vehicleRegistration != null) {
             UnitSimulator.UnitSimulator.registerVehicle(time, vehicleRegistration);
-            SimulationKernel.SimulationKernel.getCentralPerceptionComponent().addVehicle(vehicleRegistration);
         }
     }
 

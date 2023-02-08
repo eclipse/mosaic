@@ -20,7 +20,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -77,15 +76,17 @@ public class TrafficObjectIndex {
     }
 
     /**
-     * Adds a vehicle to the {@link TrafficObjectIndex}.
+     * Registers a vehicle and stores its corresponding vehicle type by name.
+     * This is required to extract vehicle dimensions.
      *
-     * @param vehicleRegistration The interaction containing information about the spawned vehicles
+     * @param vehicleId       id of the vehicle to register
+     * @param vehicleTypeName name of the vehicle type
      */
-    public void addVehicle(VehicleRegistration vehicleRegistration) {
+    public void registerVehicleType(String vehicleId, String vehicleTypeName) {
         if (vehicleIndexProviderConfigured()) {
-            vehicleIndex.addVehicle(vehicleRegistration);
+            vehicleIndex.registerVehicleType(vehicleId, vehicleTypeName);
         } else {
-            log.debug("No Vehicle Index Provider configured. No Vehicle will be added.");
+            log.debug("No Vehicle Index Provider configured. Vehicle Type won't be registered.");
         }
     }
 

@@ -58,13 +58,10 @@ public class VehicleMap extends VehicleIndex {
         vehiclesToUpdate.forEach(v -> {
                     if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
                             .contains(v.getProjectedPosition())) { // check if inside bounding area
-                        VehicleObject currentVehicle = indexedVehicles.computeIfAbsent(v.getName(), VehicleObject::new)
+                        VehicleObject currentVehicle = addOrGetVehicle(v)
                                 .setHeading(v.getHeading())
                                 .setSpeed(v.getSpeed())
                                 .setPosition(v.getProjectedPosition());
-                        if (!currentVehicle.isInitialized()) { // if this is the first update for a vehicle set initialized
-                            currentVehicle.setInitialized();
-                        }
                         if (v.getRoadPosition() != null) {
                             currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
                         }

@@ -67,6 +67,16 @@ public class VehicleGrid extends VehicleIndex {
     }
 
     @Override
+    protected VehicleObject addOrGetVehicle(VehicleData vehicleData) {
+        boolean isNew = !indexedVehicles.containsKey(vehicleData.getName());
+        VehicleObject vehicleObject = super.addOrGetVehicle(vehicleData);
+        if (isNew) {
+            vehicleGrid.addItem(vehicleObject);
+        }
+        return vehicleObject;
+    }
+
+    @Override
     public void removeVehicles(Iterable<String> vehiclesToRemove) {
         vehiclesToRemove.forEach(v -> {
             VehicleObject vehicleObject = indexedVehicles.remove(v);
@@ -81,15 +91,7 @@ public class VehicleGrid extends VehicleIndex {
         vehiclesToUpdate.forEach(v -> {
             CartesianPoint vehiclePosition = v.getProjectedPosition();
             if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds().contains(vehiclePosition)) { // check if inside bounding area
-                VehicleObject vehicleObject = indexedVehicles.get(v.getName());
-                if (vehicleObject == null) { // this should never be the case as vehicle registrations for all vehicles should be received
-                    return;
-                }
-                if (!vehicleObject.isInitialized()) { // if this is the first update for a vehicle, add vehicle to grid
-                    vehicleObject.setPosition(vehiclePosition).setInitialized();
-                    vehicleGrid.addItem(vehicleObject);
-                }
-                vehicleObject
+                VehicleObject vehicleObject = addOrGetVehicle(v)
                         .setHeading(v.getHeading())
                         .setSpeed(v.getSpeed())
                         .setPosition(vehiclePosition);

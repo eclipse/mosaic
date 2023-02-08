@@ -22,7 +22,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
@@ -156,12 +155,14 @@ public class CentralPerceptionComponent {
     }
 
     /**
-     * Store new vehicle registration of Vehicle.
+     * Registers a vehicle and stores its corresponding vehicle type by name.
+     * This is required to extract vehicle dimensions.
      *
-     * @param vehicleRegistration the interaction holding information about the spawnend vehicle
+     * @param vehicleId       id of the vehicle to register
+     * @param vehicleTypeName name of the vehicle type
      */
-    public void addVehicle(VehicleRegistration vehicleRegistration) {
-        trafficObjectIndex.addVehicle(vehicleRegistration);
+    public void registerVehicleType(String vehicleId, String vehicleTypeName) {
+        trafficObjectIndex.registerVehicleType(vehicleId, vehicleTypeName);
     }
 
     /**
@@ -217,11 +218,6 @@ public class CentralPerceptionComponent {
                         .restart();
                 return super.getVehiclesInRange(searchRange);
             }
-        }
-
-        @Override
-        public void addVehicle(VehicleRegistration vehicleRegistration) {
-            super.addVehicle(vehicleRegistration);
         }
 
         @Override

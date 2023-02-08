@@ -13,7 +13,7 @@
   ~
   ~ Contact: mosaic@fokus.fraunhofer.de
   -->
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+<routes xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://sumo.dlr.de/xsd/routes_file.xsd">
     <vType id="PerceptionVehicle"/>
     <vType id="DefaultVehicle"/>
     <route id="0" repeat="10" edges="E0 E1 E2 E3"/>
