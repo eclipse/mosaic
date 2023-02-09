@@ -33,14 +33,12 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
-import org.eclipse.mosaic.lib.objects.mapping.VehicleMapping;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
@@ -346,7 +344,6 @@ public class SimplePerceptionModuleTest {
 
     private void setupVehicles(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
-        List<VehicleRegistration> vehicleRegistrations = new ArrayList<>();
         int i = 1;
         for (CartesianPoint position : positions) {
             String vehicleName = "veh_" + i++;
@@ -354,18 +351,13 @@ public class SimplePerceptionModuleTest {
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
             when(vehicleDataMock.getName()).thenReturn(vehicleName);
             vehiclesInIndex.add(vehicleDataMock);
-            VehicleRegistration vehicleRegistration = mock(VehicleRegistration.class);
-            VehicleMapping vehicleMapping = mock(VehicleMapping.class);
-            when(vehicleRegistration.getMapping()).thenReturn(vehicleMapping);
-            when(vehicleMapping.getName()).thenReturn(vehicleName);
+
             VehicleType vehicleType = mock(VehicleType.class);
-            when(vehicleMapping.getVehicleType()).thenReturn(vehicleType);
             when(vehicleType.getLength()).thenReturn(5d);
             when(vehicleType.getWidth()).thenReturn(2.5d);
             when(vehicleType.getHeight()).thenReturn(10d);
-            vehicleRegistrations.add(vehicleRegistration);
+            trafficObjectIndex.registerVehicleType(vehicleName, vehicleType);
         }
-        vehicleRegistrations.forEach(vehicleRegistration -> trafficObjectIndex.addVehicle(vehicleRegistration));
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
     }
 

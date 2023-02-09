@@ -29,11 +29,11 @@ import org.junit.Test;
 public abstract class AbstractPerceptionModuleIT {
 
     @ClassRule
-    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule().watchdog(0);
+    public static MosaicSimulationRule simulationRule = new MosaicSimulationRule();
 
     protected static MosaicSimulation.SimulationResult simulationResult;
 
-    private final static String PERCEPTION_VEHICLE_LOG = "apps/veh_0/SimplePerceptionApp.log";
+    final static String PERCEPTION_VEHICLE_LOG = "apps/veh_0/SimplePerceptionApp.log";
 
     @Test
     public void executionSuccessful() throws Exception {
@@ -43,15 +43,16 @@ public abstract class AbstractPerceptionModuleIT {
 
     @Test
     public void rightAmountOfVehiclesPerceived() throws Exception {
-        // perceived vehicles repeat their route 10 times resulting in 11 perceptions
-        assertEquals(19, LogAssert.count(simulationRule,
+        // perceived vehicles repeat their route 10 times resulting in 10 perceptions
+        assertEquals(10, LogAssert.count(simulationRule,
                 PERCEPTION_VEHICLE_LOG,
-                ".*Perceived all vehicles: \\[veh_[1-3], veh_[1-3], veh_[1-3]\\].*"));
+                ".*Perceived all vehicles: \\[veh_[1-4], veh_[1-4], veh_[1-4], veh_[1-4]\\], 1 without dimensions.*")
+        );
     }
 
     @Test
     public void rightAmountOfTrafficLightPhaseSwitches() throws Exception {
         // perceived vehicles repeat their route 10 times resulting in 11 perceptions
-        LogAssert.contains(simulationRule, PERCEPTION_VEHICLE_LOG, ".*Traffic Light switched 12 times\\..*");
+        LogAssert.contains(simulationRule, PERCEPTION_VEHICLE_LOG, ".*Traffic Light switched 11 times\\..*");
     }
 }

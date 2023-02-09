@@ -78,6 +78,9 @@ public class PerceptionModifierTest {
     @Mock
     public VehicleData egoVehicleData;
 
+    @Mock
+    public VehicleType vehicleType;
+
     @Rule
     public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManagerMock, null, cncMock, cpcMock);
 
@@ -94,14 +97,19 @@ public class PerceptionModifierTest {
                 .thenReturn(new CartesianRectangle(new MutableCartesianPoint(-VIEWING_RANGE * 2, -VIEWING_RANGE * 2, 0),
                         new MutableCartesianPoint(VIEWING_RANGE * 2, VIEWING_ANGLE * 2, 0)));
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
-
+        // register vehicleType
+        when(vehicleType.getName()).thenReturn("vType");
+        when(vehicleType.getLength()).thenReturn(5d);
+        when(vehicleType.getWidth()).thenReturn(2.5d);
+        when(vehicleType.getHeight()).thenReturn(10d);
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock(Logger.class))
                 .withVehicleIndex(new VehicleMap())
                 .build();
         // setup cpc
         when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
         // setup perception module
-        VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
+        trafficObjectIndex.registerVehicleType("veh_0", vehicleType);
+        VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", vehicleType, null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
         simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, null, mock(Logger.class)));
         doReturn(simplePerceptionModule).when(egoVehicleUnit).getPerceptionModule();
@@ -204,10 +212,12 @@ public class PerceptionModifierTest {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
         int i = 1;
         for (CartesianPoint position : positions) {
+            String vehicleId = "veh_" + i++;
             VehicleData vehicleDataMock = mock(VehicleData.class);
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
-            when(vehicleDataMock.getName()).thenReturn("veh_" + i++);
+            when(vehicleDataMock.getName()).thenReturn(vehicleId);
             vehiclesInIndex.add(vehicleDataMock);
+            trafficObjectIndex.registerVehicleType(vehicleId, vehicleType);
         }
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
     }

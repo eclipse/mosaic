@@ -36,8 +36,8 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
     private static final String EVENT_RESOURCE = "PERCEPTION";
     private static final long queryInterval = 2 * TIME.SECOND;
 
-    private static final double VIEWING_ANGLE = 60d;
-    private static final double VIEWING_RANGE = 50d;
+    private static final double VIEWING_ANGLE = 160d;
+    private static final double VIEWING_RANGE = 100d;
 
     @Override
     public void onStartup() {
@@ -80,11 +80,19 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
                 .schedule();
     }
 
+    private boolean perceivedNoVehicles = true;
+
     private void perceiveVehicles() {
         List<VehicleObject> perceivedVehicles = getOs().getPerceptionModule().getPerceivedVehicles();
-        if (perceivedVehicles.size() == 3) {
-            getLog().infoSimTime(this, "Perceived all vehicles: {}",
-                    perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
+        if (perceivedVehicles.isEmpty()) {
+            perceivedNoVehicles = true;
+        }
+        if (perceivedNoVehicles && perceivedVehicles.size() == 4) {
+            long vehiclesWithInvalidDimensions = perceivedVehicles.stream()
+                    .filter(v -> v.getLength() == 0 && v.getWidth() == 0 && v.getHeight() == 0).count();
+            getLog().infoSimTime(this, "Perceived all vehicles: {}, {} without dimensions.",
+                    perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()), vehiclesWithInvalidDimensions);
+            perceivedNoVehicles = false;
         }
     }
 
