@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoLaneChangeMode;
@@ -38,6 +39,7 @@ import org.eclipse.mosaic.fed.sumo.junit.SumoTraciRule;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SpeedMode;
+import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
@@ -47,6 +49,7 @@ import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.SensorValue.SensorStatus;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -133,6 +136,35 @@ public class TraciTest {
         traci.getVehicleControl().setSpeedFactor(vehicle, SPEED_FACTOR);
         traci.getVehicleControl().setLaneChangeMode(vehicle, LANE_CHANGE_MODE);
         traci.getVehicleControl().setSpeedMode(vehicle, SPEED_MODE);
+
+    }
+
+    @Test
+    public void getVehicleType() throws Exception {
+        final TraciClientBridge traci = traciRule.getTraciClient();
+        final String vehicle = "1";
+
+        // RUN
+        String vehicleTypeId = traci.getVehicleControl().getVehicleTypeId(vehicle);
+        VehicleType type = traci.getVehicleControl().getVehicleType(vehicleTypeId);
+
+        // ASSERT
+        assertEquals(vehicleTypeId, type.getName());
+        assertEquals(5.0, type.getLength(), 0.00001d);
+        assertEquals(1.8, type.getWidth(), 0.00001d);
+        assertEquals(1.5, type.getHeight(), 0.00001d);
+        assertEquals(2.5, type.getMinGap(), 0.00001d);
+        assertEquals(50.0, type.getMaxSpeed(), 0.00001d);
+        assertEquals(1.0, type.getSpeedFactor(), 0.00001d);
+        assertEquals(1.5, type.getAccel(), 0.00001d);
+        assertEquals(4.5, type.getDecel(), 0.00001d);
+        assertEquals(1.0, type.getTau(), 0.00001d);
+        assertEquals(0.5, type.getSigma(), 0.00001d);
+        assertEquals(VehicleClass.Car, type.getVehicleClass());
+
+        assertNull(type.getColor());
+        assertEquals(LaneChangeMode.DEFAULT, type.getLaneChangeMode());
+        assertEquals(SpeedMode.DEFAULT, type.getSpeedMode());
 
     }
 

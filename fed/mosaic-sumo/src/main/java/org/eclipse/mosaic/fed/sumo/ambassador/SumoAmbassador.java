@@ -282,14 +282,16 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private void propagateSumoVehiclesToRti() throws InternalFederateException {
         final List<String> departedVehicles = bridge.getSimulationControl().getDepartedVehicles();
         String vehicleTypeId;
+        VehicleType vehicleType;
         for (String vehicleId : departedVehicles) {
             if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
                 continue;
             }
             vehiclesAddedViaRouteFile.add(vehicleId);
             vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
+            vehicleType = bridge.getVehicleControl().getVehicleType(vehicleTypeId);
             try {
-                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleTypeId));
+                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleType));
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
             }

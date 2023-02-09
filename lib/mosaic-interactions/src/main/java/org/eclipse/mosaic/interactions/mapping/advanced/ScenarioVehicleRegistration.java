@@ -17,6 +17,7 @@ package org.eclipse.mosaic.interactions.mapping.advanced;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -24,8 +25,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * This extension of {@link Interaction} is sent by SUMO ambassador if it launches vehicles by
- * itself (e.g. by using predefined scenarios).
+ * This extension of {@link Interaction} is sent by any simulator, which launches vehicles by
+ * itself (e.g., SUMO by using predefined scenarios).
  */
 public final class ScenarioVehicleRegistration extends Interaction {
 
@@ -37,34 +38,34 @@ public final class ScenarioVehicleRegistration extends Interaction {
     public final static String TYPE_ID = createTypeIdentifier(ScenarioVehicleRegistration.class);
 
     private final String name;
-    private final String vehicleTypeId;
+    private final VehicleType vehicleType;
 
     /**
      * Creates a new interaction that informs that a vehicle was added to the simulation by SUMO.
      *
-     * @param time          Timestamp of this interaction, unit: [ns]
-     * @param name          name of the vehicle
-     * @param vehicleTypeId name of the vehicle type
+     * @param time        Timestamp of this interaction, unit: [ns]
+     * @param name        name of the vehicle
+     * @param vehicleType the complete vehicle type
      */
-    public ScenarioVehicleRegistration(final long time, final String name, final String vehicleTypeId) {
+    public ScenarioVehicleRegistration(final long time, final String name, final VehicleType vehicleType) {
         super(time);
         this.name = name;
-        this.vehicleTypeId = vehicleTypeId;
+        this.vehicleType = vehicleType;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getVehicleTypeId() {
-        return vehicleTypeId;
+    public VehicleType getVehicleType() {
+        return vehicleType;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(7, 19)
                 .append(name)
-                .append(vehicleTypeId)
+                .append(vehicleType)
                 .toHashCode();
     }
 
@@ -83,7 +84,7 @@ public final class ScenarioVehicleRegistration extends Interaction {
         ScenarioVehicleRegistration other = (ScenarioVehicleRegistration) obj;
         return new EqualsBuilder()
                 .append(this.name, other.name)
-                .append(this.vehicleTypeId, other.vehicleTypeId)
+                .append(this.vehicleType, other.vehicleType)
                 .isEquals();
     }
 
@@ -92,7 +93,7 @@ public final class ScenarioVehicleRegistration extends Interaction {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
                 .append("name", name)
-                .append("vehicleTypeId", vehicleTypeId)
+                .append("vehicleType", vehicleType)
                 .toString();
     }
 
