@@ -351,14 +351,12 @@ public class SimplePerceptionModuleTest {
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
             when(vehicleDataMock.getName()).thenReturn(vehicleName);
             vehiclesInIndex.add(vehicleDataMock);
+
             VehicleType vehicleType = mock(VehicleType.class);
             when(vehicleType.getLength()).thenReturn(5d);
             when(vehicleType.getWidth()).thenReturn(2.5d);
             when(vehicleType.getHeight()).thenReturn(10d);
-            when(vehicleType.getName()).thenReturn("vType");
-
-            SimulationKernel.SimulationKernel.getVehicleTypes().put(vehicleType.getName(), vehicleType);
-            trafficObjectIndex.registerVehicleType(vehicleName, vehicleType.getName());
+            trafficObjectIndex.registerVehicleType(vehicleName, vehicleType);
         }
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
     }

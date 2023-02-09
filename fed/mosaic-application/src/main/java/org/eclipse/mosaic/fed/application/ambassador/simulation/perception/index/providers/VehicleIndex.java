@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
-import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
@@ -46,7 +45,7 @@ public abstract class VehicleIndex implements Serializable {
     /**
      * Stores the types of vehicles to extract vehicle dimensions.
      */
-    private final Map<String, String> registeredVehicleTypes = new HashMap<>();
+    private final Map<String, VehicleType> registeredVehicleTypes = new HashMap<>();
 
     /**
      * Adds a vehicle to the index if it hasn't been added to keep track of its dimensions.
@@ -57,13 +56,12 @@ public abstract class VehicleIndex implements Serializable {
         String vehicleId = vehicleData.getName();
         VehicleObject vehicleObject = indexedVehicles.get(vehicleId);
         if (vehicleObject == null) {
-            VehicleType vehicleType = SimulationKernel.SimulationKernel.getVehicleTypes().get(registeredVehicleTypes.get(vehicleId));
             vehicleObject = new VehicleObject(vehicleId)
                     .setHeading(vehicleData.getHeading())
                     .setSpeed(vehicleData.getSpeed())
                     .setPosition(vehicleData.getProjectedPosition());
-
-            if (vehicleType != null) {
+            VehicleType vehicleType = registeredVehicleTypes.get(vehicleId);
+            if (vehicleType != null) { // vehicles with no cached type will have (0,0,0) dimensions
                 vehicleObject.setDimensions(
                         vehicleType.getLength(),
                         vehicleType.getWidth(),
@@ -94,8 +92,24 @@ public abstract class VehicleIndex implements Serializable {
      */
     public abstract List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
 
-    public void registerVehicleType(String vehicleId, String vehicleTypeName) {
-        registeredVehicleTypes.put(vehicleId, vehicleTypeName);
+    /**
+     * Registers a vehicle and stores its corresponding vehicle type by name.
+     * This is required to extract vehicle dimensions.
+     *
+     * @param vehicleId   id of the vehicle to register
+     * @param vehicleType the vehicle type of the vehicle
+     */
+    public void registerVehicleType(String vehicleId, VehicleType vehicleType) {
+        registeredVehicleTypes.put(vehicleId, vehicleType);
+    }
+
+    /**
+     * Unregisters the cached types of vehicles that left the simulation.
+     *
+     * @param vehicleId id of the removed vehicle
+     */
+    void unregisterVehicleType(String vehicleId) {
+        registeredVehicleTypes.remove(vehicleId);
     }
 
     /**

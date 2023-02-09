@@ -50,7 +50,11 @@ public class VehicleMap extends VehicleIndex {
 
     @Override
     public void removeVehicles(Iterable<String> vehiclesToRemove) {
-        vehiclesToRemove.forEach(indexedVehicles::remove);
+        vehiclesToRemove.forEach(v -> {
+                    indexedVehicles.remove(v);
+                    unregisterVehicleType(v);
+                }
+        );
     }
 
     @Override

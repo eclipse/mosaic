@@ -28,6 +28,7 @@ import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -158,11 +159,11 @@ public class CentralPerceptionComponent {
      * Registers a vehicle and stores its corresponding vehicle type by name.
      * This is required to extract vehicle dimensions.
      *
-     * @param vehicleId       id of the vehicle to register
-     * @param vehicleTypeName name of the vehicle type
+     * @param vehicleId   id of the vehicle to register
+     * @param vehicleType the vehicle type of the vehicle
      */
-    public void registerVehicleType(String vehicleId, String vehicleTypeName) {
-        trafficObjectIndex.registerVehicleType(vehicleId, vehicleTypeName);
+    public void registerVehicleType(String vehicleId, VehicleType vehicleType) {
+        trafficObjectIndex.registerVehicleType(vehicleId, vehicleType);
     }
 
     /**

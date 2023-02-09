@@ -93,6 +93,7 @@ public class VehicleTree extends VehicleIndex {
             if (vehicleObject != null) {
                 vehicleTree.removeObject(vehicleObject);
             }
+            unregisterVehicleType(v);
         });
     }
 

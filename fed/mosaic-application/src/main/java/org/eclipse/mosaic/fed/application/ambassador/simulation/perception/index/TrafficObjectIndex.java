@@ -23,6 +23,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
 import org.slf4j.Logger;
 
@@ -80,11 +81,11 @@ public class TrafficObjectIndex {
      * This is required to extract vehicle dimensions.
      *
      * @param vehicleId       id of the vehicle to register
-     * @param vehicleTypeName name of the vehicle type
+     * @param vehicleType the vehicle type of the vehicle
      */
-    public void registerVehicleType(String vehicleId, String vehicleTypeName) {
+    public void registerVehicleType(String vehicleId, VehicleType vehicleType) {
         if (vehicleIndexProviderConfigured()) {
-            vehicleIndex.registerVehicleType(vehicleId, vehicleTypeName);
+            vehicleIndex.registerVehicleType(vehicleId, vehicleType);
         } else {
             log.debug("No Vehicle Index Provider configured. Vehicle Type won't be registered.");
         }

@@ -102,14 +102,13 @@ public class PerceptionModifierTest {
         when(vehicleType.getLength()).thenReturn(5d);
         when(vehicleType.getWidth()).thenReturn(2.5d);
         when(vehicleType.getHeight()).thenReturn(10d);
-        SimulationKernel.SimulationKernel.getVehicleTypes().put(vehicleType.getName(), vehicleType);
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock(Logger.class))
                 .withVehicleIndex(new VehicleMap())
                 .build();
         // setup cpc
         when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
         // setup perception module
-        trafficObjectIndex.registerVehicleType("veh_0", vehicleType.getName());
+        trafficObjectIndex.registerVehicleType("veh_0", vehicleType);
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", vehicleType, null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
         simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, null, mock(Logger.class)));
@@ -218,7 +217,7 @@ public class PerceptionModifierTest {
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
             when(vehicleDataMock.getName()).thenReturn(vehicleId);
             vehiclesInIndex.add(vehicleDataMock);
-            trafficObjectIndex.registerVehicleType(vehicleId, vehicleType.getName());
+            trafficObjectIndex.registerVehicleType(vehicleId, vehicleType);
         }
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
     }

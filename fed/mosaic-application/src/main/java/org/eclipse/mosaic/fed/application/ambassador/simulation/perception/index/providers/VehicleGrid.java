@@ -83,6 +83,7 @@ public class VehicleGrid extends VehicleIndex {
             if (vehicleObject != null) {
                 vehicleGrid.removeItem(vehicleObject);
             }
+            unregisterVehicleType(v);
         });
     }
 
