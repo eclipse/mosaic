@@ -61,12 +61,15 @@ public abstract class VehicleIndex implements Serializable {
             vehicleObject = new VehicleObject(vehicleId)
                     .setHeading(vehicleData.getHeading())
                     .setSpeed(vehicleData.getSpeed())
-                    .setPosition(vehicleData.getProjectedPosition())
-                    .setDimensions(
-                            vehicleType.getLength(),
-                            vehicleType.getWidth(),
-                            vehicleType.getHeight()
-                    );
+                    .setPosition(vehicleData.getProjectedPosition());
+
+            if (vehicleType != null) {
+                vehicleObject.setDimensions(
+                        vehicleType.getLength(),
+                        vehicleType.getWidth(),
+                        vehicleType.getHeight()
+                );
+            }
             indexedVehicles.put(vehicleId, vehicleObject);
         }
         return vehicleObject;

@@ -111,9 +111,9 @@
     </edge>
 
     <tlLogic id="J1" type="static" programID="0" offset="0">
-        <phase duration="42" state="GG"/>
-        <phase duration="3"  state="yy"/>
         <phase duration="42" state="rr"/>
+        <phase duration="3"  state="yy"/>
+        <phase duration="42" state="GG"/>
         <phase duration="3"  state="yy"/>
     </tlLogic>
 
