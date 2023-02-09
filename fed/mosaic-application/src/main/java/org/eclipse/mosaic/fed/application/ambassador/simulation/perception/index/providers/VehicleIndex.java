@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
@@ -23,6 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.VehicleIndexTypeAdapterFactory;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 
@@ -52,7 +54,7 @@ public abstract class VehicleIndex implements Serializable {
      *
      * @param vehicleData the data containing information about the vehicle
      */
-    protected VehicleObject addOrGetVehicle(VehicleData vehicleData) {
+    VehicleObject addOrGetVehicle(VehicleData vehicleData) {
         String vehicleId = vehicleData.getName();
         VehicleObject vehicleObject = indexedVehicles.get(vehicleId);
         if (vehicleObject == null) {
@@ -69,6 +71,7 @@ public abstract class VehicleIndex implements Serializable {
                 );
             }
             indexedVehicles.put(vehicleId, vehicleObject);
+            onVehicleAdded(vehicleObject);
         }
         return vehicleObject;
     }
@@ -93,6 +96,28 @@ public abstract class VehicleIndex implements Serializable {
     public abstract List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel);
 
     /**
+     * Abstract method to be implemented by vehicle indexes.
+     * Shall include functionality to add a vehicle object to the specific index.
+     *
+     * @param vehicleObject the vehicle to be added
+     */
+    abstract void onVehicleAdded(VehicleObject vehicleObject);
+
+    /**
+     * Abstract method to be implemented by vehicle indexes.
+     * Updates the specific data type implemented by the index.
+     */
+    abstract void onIndexUpdate();
+
+    /**
+     * Abstract method to be implemented by vehicle indexes.
+     * Shall include functionality to remove a vehicle object from the specific index.
+     *
+     * @param vehicleObject the vehicle to be removed
+     */
+    abstract void onVehicleRemoved(VehicleObject vehicleObject);
+
+    /**
      * Registers a vehicle and stores its corresponding vehicle type by name.
      * This is required to extract vehicle dimensions.
      *
@@ -104,27 +129,48 @@ public abstract class VehicleIndex implements Serializable {
     }
 
     /**
-     * Unregisters the cached types of vehicles that left the simulation.
-     *
-     * @param vehicleId id of the removed vehicle
-     */
-    void unregisterVehicleType(String vehicleId) {
-        registeredVehicleTypes.remove(vehicleId);
-    }
-
-    /**
-     * Remove all vehicles from the {@link TrafficObjectIndex} by a list of vehicle ids.
+     * Remove all vehicles from the {@link VehicleIndex} by a list of vehicle ids.
+     * When vehicles are removed from simulation we can remove the cached {@link VehicleType}.
      *
      * @param vehiclesToRemove the list of vehicles to remove from the index
      */
-    public abstract void removeVehicles(Iterable<String> vehiclesToRemove);
+    public void removeVehicles(Iterable<String> vehiclesToRemove) {
+        vehiclesToRemove.forEach(v -> {
+            VehicleObject vehicleObject = indexedVehicles.remove(v);
+            if (vehicleObject != null) {
+                onVehicleRemoved(vehicleObject);
+            }
+            registeredVehicleTypes.remove(v);
+        });
+    }
 
     /**
      * Updates the {@link TrafficObjectIndex} with a list of {@link VehicleData} objects.
      *
      * @param vehiclesToUpdate the list of vehicles to add or update in the index
      */
-    public abstract void updateVehicles(Iterable<VehicleData> vehiclesToUpdate);
+    public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
+        vehiclesToUpdate.forEach(v -> {
+            CartesianPoint vehiclePosition = v.getProjectedPosition();
+            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds().contains(vehiclePosition)) {
+                VehicleObject vehicleObject = addOrGetVehicle(v)
+                        .setHeading(v.getHeading())
+                        .setSpeed(v.getSpeed())
+                        .setPosition(vehiclePosition);
+                if (v.getRoadPosition() != null) {
+                    vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
+                }
+            } else { // if not inside perception bounding area
+                VehicleObject vehicleObject = indexedVehicles.remove(v.getName());
+                if (vehicleObject != null) {
+                    // remove vehicle from index but keep cached vehicle type, as vehicle could re-enter perception bounding area
+                    onVehicleRemoved(vehicleObject);
+                }
+            }
+
+        });
+        onIndexUpdate();
+    }
 
     /**
      * Creates the perception module to be used for perception purposes. Allows for the implementation of different

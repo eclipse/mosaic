@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
-import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
@@ -24,7 +23,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 
 import org.slf4j.Logger;
 
@@ -49,31 +47,18 @@ public class VehicleMap extends VehicleIndex {
     }
 
     @Override
-    public void removeVehicles(Iterable<String> vehiclesToRemove) {
-        vehiclesToRemove.forEach(v -> {
-                    indexedVehicles.remove(v);
-                    unregisterVehicleType(v);
-                }
-        );
+    void onVehicleAdded(VehicleObject vehicleObject) {
+        // do nothing
     }
 
     @Override
-    public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-        vehiclesToUpdate.forEach(v -> {
-                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
-                            .contains(v.getProjectedPosition())) { // check if inside bounding area
-                        VehicleObject currentVehicle = addOrGetVehicle(v)
-                                .setHeading(v.getHeading())
-                                .setSpeed(v.getSpeed())
-                                .setPosition(v.getProjectedPosition());
-                        if (v.getRoadPosition() != null) {
-                            currentVehicle.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
-                        }
-                    } else {
-                        indexedVehicles.remove(v.getName());
-                    }
-                }
-        );
+    void onIndexUpdate() {
+        // do nothing
+    }
+
+    @Override
+    void onVehicleRemoved(VehicleObject vehicleObject) {
+        // do nothing
     }
 
     @Override

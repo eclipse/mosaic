@@ -134,6 +134,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                 return;
             }
             List<String> applications = prototype.applications == null ? new ArrayList<>() : prototype.applications;
+            String group = prototype.group == null ? null : prototype.group;
             if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
                 log.debug(
                         "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
@@ -142,12 +143,13 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                         prototype.weight
                 );
                 applications = new ArrayList<>();
+                group = null;
             }
 
             final VehicleRegistration vehicleRegistration = new VehicleRegistration(
                     scenarioVehicle.getTime(),
                     scenarioVehicle.getName(),
-                    prototype.group,
+                    group,
                     applications,
                     null,
                     new VehicleTypeSpawner(prototype).convertType()

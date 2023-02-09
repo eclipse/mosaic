@@ -24,9 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
 import org.eclipse.mosaic.lib.spatial.QuadTree;
 
@@ -77,46 +75,18 @@ public class VehicleTree extends VehicleIndex {
     }
 
     @Override
-    protected VehicleObject addOrGetVehicle(VehicleData vehicleData) {
-        boolean isNew = !indexedVehicles.containsKey(vehicleData.getName());
-        VehicleObject vehicleObject = super.addOrGetVehicle(vehicleData);
-        if (isNew) {
-            vehicleTree.addItem(vehicleObject);
-        }
-        return vehicleObject;
+    void onVehicleAdded(VehicleObject vehicleObject) {
+        vehicleTree.addItem(vehicleObject);
     }
 
     @Override
-    public void removeVehicles(Iterable<String> vehiclesToRemove) {
-        vehiclesToRemove.forEach(v -> {
-            VehicleObject vehicleObject = indexedVehicles.remove(v);
-            if (vehicleObject != null) {
-                vehicleTree.removeObject(vehicleObject);
-            }
-            unregisterVehicleType(v);
-        });
-    }
-
-    @Override
-    public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-        vehiclesToUpdate.forEach(v -> {
-            CartesianPoint vehiclePosition = v.getProjectedPosition();
-            if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds().contains(vehiclePosition)) { // check if inside bounding area
-                VehicleObject vehicleObject = addOrGetVehicle(v)
-                        .setHeading(v.getHeading())
-                        .setSpeed(v.getSpeed())
-                        .setPosition(vehiclePosition);
-                if (v.getRoadPosition() != null) { // if not inside or left bounding area
-                    vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
-                }
-            } else { // if not inside or left bounding area
-                VehicleObject vehicleObject = indexedVehicles.remove(v.getName());
-                if (vehicleObject != null) {
-                    vehicleTree.removeObject(vehicleObject);
-                }
-            }
-        });
+    void onIndexUpdate() {
         vehicleTree.updateTree();
+    }
+
+    @Override
+    void onVehicleRemoved(VehicleObject vehicleObject) {
+        vehicleTree.removeObject(vehicleObject);
     }
 
     @Override

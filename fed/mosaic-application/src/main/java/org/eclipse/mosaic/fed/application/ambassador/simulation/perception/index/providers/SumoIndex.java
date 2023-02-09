@@ -41,6 +41,20 @@ public class SumoIndex extends VehicleIndex {
     }
 
     @Override
+    void onVehicleAdded(VehicleObject vehicleObject) {
+    }
+
+    @Override
+    void onIndexUpdate() {
+
+    }
+
+    @Override
+    void onVehicleRemoved(VehicleObject vehicleObject) {
+
+    }
+
+    @Override
     public void removeVehicles(Iterable<String> vehiclesToRemove) {
 
     }
