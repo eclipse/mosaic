@@ -15,12 +15,14 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.TrafficLightIndexTypeAdapterFactory;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
+import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 
 import com.google.gson.annotations.JsonAdapter;
 
@@ -56,12 +58,34 @@ public abstract class TrafficLightIndex {
     public abstract List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel);
 
     /**
+     * Abstract method to be implemented by the specific traffic light indexes.
+     * Shall contain functionality to be called before traffic lights are updated.
+     */
+    public abstract void onTrafficLightsUpdate();
+
+    /**
      * Adds traffic lights to the spatial index, as their positions are static it is sufficient
      * to store positional information only once.
      *
      * @param trafficLightGroup the registration interaction
      */
-    public abstract void addTrafficLight(TrafficLightGroup trafficLightGroup);
+    public void addTrafficLight(TrafficLightGroup trafficLightGroup) {
+        String trafficLightGroupId = trafficLightGroup.getGroupId();
+        trafficLightGroup.getTrafficLights().forEach(
+                (trafficLight) -> {
+                    String trafficLightId = calculateTrafficLightId(trafficLightGroupId, trafficLight.getId());
+                    if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getScenarioBounds()
+                            .contains(trafficLight.getPosition().toCartesian())) { // check if inside bounding area
+                        indexedTrafficLights.computeIfAbsent(trafficLightId, TrafficLightObject::new)
+                                .setTrafficLightGroupId(trafficLightGroupId)
+                                .setPosition(trafficLight.getPosition().toCartesian())
+                                .setIncomingLane(trafficLight.getIncomingLane())
+                                .setOutgoingLane(trafficLight.getOutgoingLane())
+                                .setTrafficLightState(trafficLight.getCurrentState());
+                    }
+                }
+        );
+    }
 
     /**
      * Updates the {@link TrafficObjectIndex} in regard to traffic lights. The unit simulator has to be queried as
@@ -69,6 +93,22 @@ public abstract class TrafficLightIndex {
      *
      * @param trafficLightGroupsToUpdate a list of information packages transmitted by the traffic simulator
      */
-    public abstract void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightGroupsToUpdate);
+    public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightGroupsToUpdate) {
+        onTrafficLightsUpdate();
+        trafficLightGroupsToUpdate.forEach(
+                (trafficLightGroupId, trafficLightGroupInfo) -> {
+                    List<TrafficLightState> trafficLightStates = trafficLightGroupInfo.getCurrentState();
+                    for (int i = 0; i < trafficLightStates.size(); i++) {
+                        String trafficLightId = calculateTrafficLightId(trafficLightGroupId, i);
+                        final TrafficLightState trafficLightState = trafficLightStates.get(i);
+                        indexedTrafficLights.computeIfPresent(trafficLightId, (id, trafficLightObject)
+                                -> trafficLightObject.setTrafficLightState(trafficLightState));
+                    }
+                }
+        );
+    }
 
+    private String calculateTrafficLightId(String trafficLightGroupId, int trafficLightIndex) {
+        return trafficLightGroupId + "_" + trafficLightIndex;
+    }
 }

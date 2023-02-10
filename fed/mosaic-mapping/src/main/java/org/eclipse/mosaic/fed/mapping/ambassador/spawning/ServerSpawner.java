@@ -22,7 +22,8 @@ import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class ServerSpawner extends UnitSpawner implements Spawner {
 
     /**
      * Constructor for {@link ServerSpawner} using configuration
-     * to construct spawning object used by specialized servers (e.g. TMCs
+     * to construct spawning object used by specialized servers (i.e., TMCs)
      *
      * @param applications list of applications
      * @param name         name of the unit
@@ -70,9 +71,9 @@ public class ServerSpawner extends UnitSpawner implements Spawner {
     @Override
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
         String name = UnitNameGenerator.nextServerName();
-        ServerRegistration interaction = new ServerRegistration(0, name, group, getAppList());
+        ServerRegistration interaction = new ServerRegistration(0, name, group, getApplications());
         try {
-            LOG.info("Creating Server " + this.toString());
+            LOG.info("Creating Server: {}", this);
             spawningFramework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
             LOG.error("Exception while sending Interaction in ServerSpawner.init()");
@@ -82,6 +83,8 @@ public class ServerSpawner extends UnitSpawner implements Spawner {
 
     @Override
     public String toString() {
-        return " with apps: " + StringUtils.join(applications, ",");
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("applications", applications)
+                .build();
     }
 }

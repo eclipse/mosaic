@@ -22,13 +22,13 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
-import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -156,12 +156,14 @@ public class CentralPerceptionComponent {
     }
 
     /**
-     * Store new vehicle registration of Vehicle.
+     * Registers a vehicle and stores its corresponding vehicle type by name.
+     * This is required to extract vehicle dimensions.
      *
-     * @param vehicleRegistration the interaction holding information about the spawnend vehicle
+     * @param vehicleId   id of the vehicle to register
+     * @param vehicleType the vehicle type of the vehicle
      */
-    public void addVehicle(VehicleRegistration vehicleRegistration) {
-        trafficObjectIndex.addVehicle(vehicleRegistration);
+    public void registerVehicleType(String vehicleId, VehicleType vehicleType) {
+        trafficObjectIndex.registerVehicleType(vehicleId, vehicleType);
     }
 
     /**
@@ -217,11 +219,6 @@ public class CentralPerceptionComponent {
                         .restart();
                 return super.getVehiclesInRange(searchRange);
             }
-        }
-
-        @Override
-        public void addVehicle(VehicleRegistration vehicleRegistration) {
-            super.addVehicle(vehicleRegistration);
         }
 
         @Override

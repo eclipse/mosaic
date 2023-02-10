@@ -16,8 +16,10 @@
 package org.eclipse.mosaic.fed.mapping.config.units;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 
@@ -46,6 +48,16 @@ public class CChargingStation {
          * The maximal current this charging spot can deliver.
          */
         public double maxCurrent;
+
+        @Override
+        public String toString() {
+            // NO_CLASS_NAME_STYLE for better formatting in ChargingStationSpawner
+            return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
+                    .append("chargingType", chargingType)
+                    .append("maxVoltage", maxVoltage)
+                    .append("maxCurrent", maxCurrent)
+                    .build();
+        }
     }
 
     /**

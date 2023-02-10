@@ -18,6 +18,9 @@ package org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.rti.TIME;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import javax.annotation.Nullable;
 
 /**
@@ -61,5 +64,13 @@ public class PoissonSpawningMode implements SpawningMode {
         long step = (long) (Math.log(1 - (rng.nextDouble())) / (-lambda));
         nextSpawnTime += step;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("spawningEndTime", spawningEndTime)
+                .append("lambda", lambda)
+                .build();
     }
 }

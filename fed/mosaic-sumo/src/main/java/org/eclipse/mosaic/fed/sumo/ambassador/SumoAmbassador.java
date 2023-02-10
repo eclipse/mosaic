@@ -350,7 +350,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     iterator.remove();
                 }
             } catch (InternalFederateException e) {
-                log.warn("Vehicle with id: " + vehicleId + " could not be added.(" + e.getClass().getCanonicalName() + ")", e);
+                log.warn("Vehicle with id: {} could not be added.({})", vehicleId, e.getClass().getCanonicalName(), e);
                 if (sumoConfig.exitOnInsertionError) {
                     throw e;
                 }

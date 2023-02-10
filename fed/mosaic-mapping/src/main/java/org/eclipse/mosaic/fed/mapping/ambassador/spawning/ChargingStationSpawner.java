@@ -26,11 +26,14 @@ import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class responsible for configuring Charging Stations to be added to the simulation.
@@ -65,7 +68,7 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
 
     /**
      * Called by the {@link SpawningFramework} used to initialize the
-     * Road Side Units for the simulation.
+     * Charging Stations for the simulation.
      *
      * @param spawningFramework the framework handling the spawning
      * @throws InternalFederateException thrown if {@link ChargingStationRegistration} couldn't be handled by rti
@@ -83,9 +86,9 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
             id++;
         }
         ChargingStationRegistration chargingStationRegistration =
-                new ChargingStationRegistration(0, chargingStationName, group, getAppList(), position, chargingSpots);
+                new ChargingStationRegistration(0, chargingStationName, group, getApplications(), position, chargingSpots);
         try {
-            LOG.info("Creating Charging Station " + this);
+            LOG.info("Creating Charging Station: {}", this);
             spawningFramework.getRti().triggerInteraction(chargingStationRegistration);
         } catch (IllegalValueException e) {
             LOG.error("Exception while sending ChargingStationRegistration interaction in ChargingStationSpawner.init()");
@@ -96,33 +99,15 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("@position: ")
-                .append(position)
-                .append(", charging spots: ");
-
-        String delimiter = "";
-        int id = 0;
-        for (CChargingSpot chargingSpotConfiguration : chargingSpotConfigurations) {
-            sb.append(delimiter)
-                    .append("[chargingSpotId: ")
-                    .append(id)
-                    .append(", chargingType: ")
-                    .append(chargingSpotConfiguration.chargingType)
-                    .append("]");
-            delimiter = ", ";
-            id++;
-        }
-
-        sb.append("] with apps: ");
-
-        delimiter = "";
-        for (String application : getAppList()) {
-            sb.append(delimiter).append(application);
-            delimiter = ", ";
-        }
-
-        return sb.toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .appendSuper(super.toString())
+                .append("position", position)
+                .append("chargingSpots",
+                        chargingSpotConfigurations.stream()
+                                .map(chargingSpot ->
+                                        "chargingSpot(" + chargingSpotConfigurations.indexOf(chargingSpot) + ")=" + chargingSpot.toString())
+                                .collect(Collectors.toList())
+                )
+                .build();
     }
 }

@@ -13,9 +13,10 @@
   ~
   ~ Contact: mosaic@fokus.fraunhofer.de
   -->
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+<routes xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://sumo.dlr.de/xsd/routes_file.xsd">
     <vType id="PerceptionVehicle"/>
     <vType id="DefaultVehicle"/>
+    <vType id="NoPrototypeVehicle"/> <!-- Vehicles of this type will have default dimensions-->
     <route id="0" repeat="10" edges="E0 E1 E2 E3"/>
     <route id="1" repeat="10" edges="-E3 -E2 -E1 -E0"/>
     <vehicle id="0" type="PerceptionVehicle" depart="0" route="0">
@@ -24,4 +25,5 @@
     <vehicle id="1" type="DefaultVehicle" depart="0" route="1"/>
     <vehicle id="2" type="DefaultVehicle" depart="5" route="1"/>
     <vehicle id="3" type="DefaultVehicle" depart="10" route="1"/>
+    <vehicle id="4" type="NoPrototypeVehicle" depart="15" route="1"/>
 </routes>

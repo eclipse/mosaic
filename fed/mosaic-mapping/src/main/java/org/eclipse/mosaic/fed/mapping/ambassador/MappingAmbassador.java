@@ -32,6 +32,8 @@ import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -130,7 +132,8 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                 );
                 return;
             }
-
+            List<String> applications = prototype.applications == null ? new ArrayList<>() : prototype.applications;
+            String group = prototype.group == null ? null : prototype.group;
             if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
                 log.debug(
                         "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
@@ -138,20 +141,21 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                         scenarioVehicle.getId(),
                         prototype.weight
                 );
-                return;
+                applications = new ArrayList<>();
+                group = null;
             }
 
             final VehicleRegistration vehicleRegistration = new VehicleRegistration(
                     scenarioVehicle.getTime(),
                     scenarioVehicle.getName(),
-                    prototype.group,
-                    prototype.applications,
+                    group,
+                    applications,
                     null,
-                   scenarioVehicle.getVehicleType()
+                    scenarioVehicle.getVehicleType()
             );
             try {
                 log.info("Mapping Scenario Vehicle. time={}, name={}, type={}, apps={}",
-                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleType().getName(), prototype.applications);
+                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleType().getName(), applications);
                 rti.triggerInteraction(vehicleRegistration);
             } catch (Exception e) {
                 throw new InternalFederateException(e);

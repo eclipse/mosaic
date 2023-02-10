@@ -19,6 +19,9 @@ package org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.rti.TIME;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * The default mode of spawning vehicles with constant time gaps
  * based on a given target flow.
@@ -58,4 +61,10 @@ public class ConstantSpawningMode extends AbstractSpawningMode {
         return maximumFlow;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("timeSpacing", timeSpacing)
+                .build();
+    }
 }
