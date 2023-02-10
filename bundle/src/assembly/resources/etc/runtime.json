@@ -18,6 +18,7 @@
                 "TrafficLightRegistration",
                 "VehicleRegistration",
                 "RoutelessVehicleRegistration",
+                "ScenarioVehicleRegistration",
                 "ApplicationInteraction",
                 "ChargingStationUpdate",
                 "VehicleChargingDenial",
