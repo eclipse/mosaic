@@ -134,8 +134,8 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
             if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
                 log.debug(
                         "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
-                        scenarioVehicle.getVehicleType().getName(),
                         scenarioVehicle.getId(),
+                        scenarioVehicle.getVehicleType().getName(),
                         prototype.weight
                 );
                 return;
