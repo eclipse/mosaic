@@ -40,16 +40,31 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetSpeedFactor;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetSpeedMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetStop;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetVehicleLength;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetAccel;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetDecel;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetHeight;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetLength;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetMaxSpeed;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetMinGap;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetSigma;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetSpeedFactor;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetTau;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetVClass;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleTypeGetWidth;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoLaneChangeMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.SumoSpeedMode;
+import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VehicleFacade {
 
@@ -85,6 +100,20 @@ public class VehicleFacade {
     private final VehicleSetSpeedMode setSpeedMode;
     private final VehicleSetParameter setParameter;
 
+    private final VehicleTypeGetLength getVehicleTypeLength;
+    private final VehicleTypeGetWidth getVehicleTypeWidth;
+    private final VehicleTypeGetHeight getVehicleTypeHeight;
+    private final VehicleTypeGetMinGap getVehicleTypeMinGap;
+    private final VehicleTypeGetMaxSpeed getVehicleTypeMaxSpeed;
+    private final VehicleTypeGetVClass getVehicleTypeVClass;
+    private final VehicleTypeGetAccel getVehicleTypeAccel;
+    private final VehicleTypeGetDecel getVehicleTypeDecel;
+    private final VehicleTypeGetSigma getVehicleTypeSigma;
+    private final VehicleTypeGetTau getVehicleTypeTau;
+    private final VehicleTypeGetSpeedFactor getVehicleTypeSpeedFactor;
+
+    private final Map<String, VehicleType> cachedVehicleTypes = new HashMap<>();
+
 
     /**
      * Creates a new {@link VehicleFacade} object.
@@ -119,6 +148,18 @@ public class VehicleFacade {
         setSpeedMode = bridge.getCommandRegister().getOrCreate(VehicleSetSpeedMode.class);
         setParameter = bridge.getCommandRegister().getOrCreate(VehicleSetParameter.class);
 
+        getVehicleTypeLength = bridge.getCommandRegister().getOrCreate(VehicleTypeGetLength.class);
+        getVehicleTypeWidth = bridge.getCommandRegister().getOrCreate(VehicleTypeGetWidth.class);
+        getVehicleTypeHeight = bridge.getCommandRegister().getOrCreate(VehicleTypeGetHeight.class);
+        getVehicleTypeMinGap = bridge.getCommandRegister().getOrCreate(VehicleTypeGetMinGap.class);
+        getVehicleTypeMaxSpeed = bridge.getCommandRegister().getOrCreate(VehicleTypeGetMaxSpeed.class);
+        getVehicleTypeVClass = bridge.getCommandRegister().getOrCreate(VehicleTypeGetVClass.class);
+        getVehicleTypeAccel = bridge.getCommandRegister().getOrCreate(VehicleTypeGetAccel.class);
+        getVehicleTypeDecel = bridge.getCommandRegister().getOrCreate(VehicleTypeGetDecel.class);
+        getVehicleTypeSigma = bridge.getCommandRegister().getOrCreate(VehicleTypeGetSigma.class);
+        getVehicleTypeTau = bridge.getCommandRegister().getOrCreate(VehicleTypeGetTau.class);
+        getVehicleTypeSpeedFactor = bridge.getCommandRegister().getOrCreate(VehicleTypeGetSpeedFactor.class);
+
         highlight = bridge.getCommandRegister().getOrCreate(VehicleSetHighlight.class);
     }
 
@@ -149,6 +190,43 @@ public class VehicleFacade {
             return getVehicleTypeId.execute(bridge, vehicleId);
         } catch (IllegalArgumentException | CommandException e) {
             throw new InternalFederateException("Could not request route for vehicle " + vehicleId, e);
+        }
+    }
+
+    /**
+     * Getter for the complete Vehicle type.
+     *
+     * @param vehicleTypeId The id of the vehicle type.
+     * @return The complete vehicle type.
+     * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
+     */
+    public VehicleType getVehicleType(String vehicleTypeId) throws InternalFederateException {
+        try {
+            VehicleType vehicleType = cachedVehicleTypes.get(vehicleTypeId);
+            if (vehicleType == null) {
+                vehicleType = new VehicleType(
+                        vehicleTypeId,
+                        getVehicleTypeLength.execute(bridge, vehicleTypeId),
+                        getVehicleTypeWidth.execute(bridge, vehicleTypeId),
+                        getVehicleTypeHeight.execute(bridge, vehicleTypeId),
+                        getVehicleTypeMinGap.execute(bridge, vehicleTypeId),
+                        getVehicleTypeMaxSpeed.execute(bridge, vehicleTypeId),
+                        SumoVehicleClassMapping.fromSumo(getVehicleTypeVClass.execute(bridge, vehicleTypeId)),
+                        getVehicleTypeAccel.execute(bridge, vehicleTypeId),
+                        getVehicleTypeDecel.execute(bridge, vehicleTypeId),
+                        null, // not available via TraCI, will use the decel value instead
+                        getVehicleTypeSigma.execute(bridge, vehicleTypeId),
+                        getVehicleTypeTau.execute(bridge, vehicleTypeId),
+                        getVehicleTypeSpeedFactor.execute(bridge, vehicleTypeId),
+                        null, // would require to translate from rgb to a string name
+                        null, // not available via TraCI
+                        null // not available via TraCI
+                );
+                cachedVehicleTypes.put(vehicleTypeId, vehicleType);
+            }
+            return vehicleType;
+        } catch (IllegalArgumentException | CommandException e) {
+            throw new InternalFederateException("Could not request vehicle type for type id " + vehicleTypeId, e);
         }
     }
 

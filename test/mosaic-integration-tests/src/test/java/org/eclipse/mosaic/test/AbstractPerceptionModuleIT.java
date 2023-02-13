@@ -46,7 +46,7 @@ public abstract class AbstractPerceptionModuleIT {
         // perceived vehicles repeat their route 10 times resulting in 10 perceptions
         assertEquals(10, LogAssert.count(simulationRule,
                 PERCEPTION_VEHICLE_LOG,
-                ".*Perceived all vehicles: \\[veh_[1-4], veh_[1-4], veh_[1-4], veh_[1-4]\\], 1 without dimensions.*")
+                ".*Perceived all vehicles: \\[veh_[1-4], veh_[1-4], veh_[1-4], veh_[1-4]\\], 0 without dimensions.*")
         );
     }
 

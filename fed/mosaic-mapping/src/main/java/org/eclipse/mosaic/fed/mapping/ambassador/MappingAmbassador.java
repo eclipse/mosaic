@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador;
 
-import org.eclipse.mosaic.fed.mapping.ambassador.spawning.VehicleTypeSpawner;
 import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -33,8 +32,6 @@ import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -124,39 +121,37 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
      */
     private void handleInteraction(ScenarioVehicleRegistration scenarioVehicle) throws InternalFederateException {
         if (framework != null) {
-            final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleTypeId());
+            final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleType().getName());
             if (prototype == null) {
                 log.debug(
                         "There is no such prototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
-                        scenarioVehicle.getVehicleTypeId(),
+                        scenarioVehicle.getVehicleType().getName(),
                         scenarioVehicle.getId()
                 );
                 return;
             }
-            List<String> applications = prototype.applications == null ? new ArrayList<>() : prototype.applications;
-            String group = prototype.group == null ? null : prototype.group;
+
             if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
                 log.debug(
                         "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
-                        scenarioVehicle.getVehicleTypeId(),
                         scenarioVehicle.getId(),
+                        scenarioVehicle.getVehicleType().getName(),
                         prototype.weight
                 );
-                applications = new ArrayList<>();
-                group = null;
+                return;
             }
 
             final VehicleRegistration vehicleRegistration = new VehicleRegistration(
                     scenarioVehicle.getTime(),
                     scenarioVehicle.getName(),
-                    group,
-                    applications,
+                    prototype.group,
+                    prototype.applications,
                     null,
-                    new VehicleTypeSpawner(prototype).convertType()
+                    scenarioVehicle.getVehicleType()
             );
             try {
                 log.info("Mapping Scenario Vehicle. time={}, name={}, type={}, apps={}",
-                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleTypeId(), applications);
+                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleType().getName(), prototype.applications);
                 rti.triggerInteraction(vehicleRegistration);
             } catch (Exception e) {
                 throw new InternalFederateException(e);

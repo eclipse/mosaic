@@ -43,6 +43,7 @@ import org.eclipse.mosaic.interactions.mapping.TmcRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.RoutelessVehicleRegistration;
+import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
@@ -262,6 +263,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TrafficLightRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRegistration.TYPE_ID)) {
                 this.process((VehicleRegistration) interaction);
+            } else if (interaction.getTypeId().startsWith(ScenarioVehicleRegistration.TYPE_ID)) {
+                this.process((ScenarioVehicleRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(RoutelessVehicleRegistration.TYPE_ID)) {
                 this.process((RoutelessVehicleRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(TmcRegistration.TYPE_ID)) {
@@ -365,6 +368,12 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         // register vehicle type for perception
         SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
                 .registerVehicleType(vehicleName, vehicleRegistration.getMapping().getVehicleType());
+    }
+
+    private void process(final ScenarioVehicleRegistration scenarioVehicleRegistration) {
+        // register vehicle type for perception, may be overridden later by VehicleRegistration
+        SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .registerVehicleType(scenarioVehicleRegistration.getName(), scenarioVehicleRegistration.getVehicleType());
     }
 
     private void process(final RoutelessVehicleRegistration routelessVehicleRegistration) {

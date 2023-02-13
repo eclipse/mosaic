@@ -31,6 +31,7 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -286,16 +287,16 @@ public class MappingAmbassadorTest {
         final MappingAmbassador ambassador = createMappingAmbassadorWithMappingFile("mapping_config.json");
         ambassador.initialize(0, 100 * TIME.SECOND);
 
-        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", "PKW"));
+        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("PKW")));
         assertVehicleRegistration();
 
-        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", "electricPKW"));
+        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("electricPKW")));
         assertVehicleRegistration(
                 "org.eclipse.mosaic.app.examples.eventprocessing.sampling.HelloWorldApp",
                 "org.eclipse.mosaic.app.examples.eventprocessing.sampling.IntervalSamplingApp"
         );
 
-        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", "UNKNOWN"));
+        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("UNKNOWN")));
         Assert.assertNull(lastReceivedInteraction);
     }
 
