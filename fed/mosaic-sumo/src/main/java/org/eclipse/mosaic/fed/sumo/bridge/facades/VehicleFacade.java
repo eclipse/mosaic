@@ -111,6 +111,7 @@ public class VehicleFacade {
     private final VehicleTypeGetSigma getVehicleTypeSigma;
     private final VehicleTypeGetTau getVehicleTypeTau;
     private final VehicleTypeGetSpeedFactor getVehicleTypeSpeedFactor;
+
     private final Map<String, VehicleType> cachedVehicleTypes = new HashMap<>();
 
 
@@ -213,13 +214,13 @@ public class VehicleFacade {
                         SumoVehicleClassMapping.fromSumo(getVehicleTypeVClass.execute(bridge, vehicleTypeId)),
                         getVehicleTypeAccel.execute(bridge, vehicleTypeId),
                         getVehicleTypeDecel.execute(bridge, vehicleTypeId),
-                        null,
+                        null, // not available via TraCI, will use the decel value instead
                         getVehicleTypeSigma.execute(bridge, vehicleTypeId),
                         getVehicleTypeTau.execute(bridge, vehicleTypeId),
                         getVehicleTypeSpeedFactor.execute(bridge, vehicleTypeId),
-                        null,
-                        null,
-                        null
+                        null, // would require to translate from rgb to a string name
+                        null, // not available via TraCI
+                        null // not available via TraCI
                 );
                 cachedVehicleTypes.put(vehicleTypeId, vehicleType);
             }
