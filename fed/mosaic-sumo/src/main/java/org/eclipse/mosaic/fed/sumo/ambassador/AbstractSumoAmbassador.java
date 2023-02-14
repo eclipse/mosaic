@@ -254,11 +254,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     @Override
     public FederateExecutor createFederateExecutor(String host, int port, CLocalHost.OperatingSystem os) {
         // SUMO needs to start the federate by itself, therefore we need to store the federate starter locally and use it later
-        federateExecutor = new ExecutableFederateExecutor(descriptor, getSumoExecutable("sumo"), getProgramArguments(port));
+        federateExecutor = new ExecutableFederateExecutor(descriptor, getFromSumoHome("sumo"), getProgramArguments(port));
         return new NopFederateExecutor();
     }
 
-    static String getSumoExecutable(String executable) {
+    static String getFromSumoHome(String executable) {
         String sumoHome = System.getenv("SUMO_HOME");
         if (StringUtils.isNotBlank(sumoHome)) {
             return sumoHome + File.separator + "bin" + File.separator + executable;
