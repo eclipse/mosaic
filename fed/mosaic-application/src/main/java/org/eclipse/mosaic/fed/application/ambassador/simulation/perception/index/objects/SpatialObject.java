@@ -90,4 +90,12 @@ public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d
         // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
         return this.id.hashCode();
     }
+
+    /**
+     * Returns a hard copy of the {@link SpatialObject}, this should be used
+     * when the data of a perceived object is to be altered or stored in memory.
+     *
+     * @return a copy of the {@link SpatialObject}
+     */
+    public abstract T copy();
 }

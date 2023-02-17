@@ -15,7 +15,9 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -30,6 +32,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.error
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
@@ -57,6 +60,8 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PerceptionModifierTest {
     // FLag used for visualization purposes
@@ -181,6 +186,35 @@ public class PerceptionModifierTest {
             if (v.getProjectedPosition().getX() > 10) {
                 assertTrue(v.getProjectedPosition().getY() > 10 || v.getProjectedPosition().getY() < -10);
             }
+        }
+    }
+
+    @Test
+    public void testIndexedObjectsNotChanged() {
+        PositionErrorModifier positionErrorModifier = new PositionErrorModifier(rng, 1, 1);
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, positionErrorModifier));
+
+        // collect positions of perceived objects BEFORE applying modifier
+        PerceptionModel godView = mock(PerceptionModel.class);
+        when(godView.isInRange(isA(SpatialObject.class))).thenReturn(true);
+        Map<String, Vector3d> allVehiclesInIndexPre = trafficObjectIndex.getVehiclesInRange(godView)
+                .stream().collect(Collectors.toMap(VehicleObject::getId, v -> new Vector3d(v.getPosition())));
+
+        // RUN perceived objects and modify positions
+        List<VehicleObject> perceivedAndAlteredObjects = simplePerceptionModule.getPerceivedVehicles();
+
+        // collect positions of perceived objects AFTER applying modifier
+        Map<String, Vector3d> allVehiclesInIndexPost = trafficObjectIndex.getVehiclesInRange(godView)
+                .stream().collect(Collectors.toMap(VehicleObject::getId, v -> new Vector3d(v.getPosition())));
+
+        // ASSERT that all positions in the index are still the same as before applying modifier
+        allVehiclesInIndexPre.forEach((id, pos) -> {
+            assertTrue(pos.isFuzzyEqual(allVehiclesInIndexPost.get(id)));
+        });
+
+        // ASSERT that all modified positions differ from the positions before (or after) applying the modifier
+        for (VehicleObject object: perceivedAndAlteredObjects) {
+            assertFalse(object.getPosition().isFuzzyEqual(allVehiclesInIndexPre.get(object.getId())));
         }
     }
 
