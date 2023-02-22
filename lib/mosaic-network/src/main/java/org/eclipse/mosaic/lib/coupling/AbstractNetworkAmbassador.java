@@ -46,6 +46,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.federatestarter.DockerFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
 
@@ -498,33 +499,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     throw new InternalFederateException("Could not update nodes: " + this.federateAmbassadorChannel.getLastStatusMessage());
                 }
             }
-
-            if (!interaction.getRemovedNames().isEmpty()) {
-                List<Integer> nodesToRemove = new ArrayList<>();
-                long time = interaction.getTime();
-                for (String id : interaction.getRemovedNames()) {
-                    // verify the vehicles are simulated in the current simulation
-                    Integer externalId = simulatedNodes.containsInternalId(id) ? simulatedNodes.toExternalId(id) : null;
-                    if (externalId != null) {
-                        this.log.info("removeNode ID[int={}, ext={}] time={}", id, simulatedNodes.toExternalId(id), TIME.format(time));
-                        nodesToRemove.add(externalId); // If simulated, add to the list, which will be handed to the channel
-                        simulatedNodes.removeUsingInternalId(id); // remove the vehicle from our internal list
-                        removedNodes.add(id);
-                    } else if (registeredNodes.containsKey(id)) {
-                        this.log.info("removeNode (still virtual) ID[int={}] time={}", id, TIME.format(time));
-                        registeredNodes.remove(id);
-                        removedNodes.add(id);
-                    } else {
-                        this.log.warn("Node ID[int={}] is not simulated", id);
-                    }
-                }
-                if (CMD.SUCCESS != this.ambassadorFederateChannel.writeRemoveNodesMessage(time, nodesToRemove)) {
-                    throw new InternalFederateException(
-                            "Could not remove vehicles: " + this.federateAmbassadorChannel.getLastStatusMessage()
-                    );
-                }
-                this.log.debug("Movements were successfully handed to the federate");
-            }
         } catch (IOException | InternalFederateException e) {
             this.log.error(e.getMessage(), e);
             throw new InternalFederateException("Could not update positions or remove vehicles.", e);
@@ -620,7 +594,45 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     protected synchronized void process(AdHocCommunicationConfiguration interaction) throws InternalFederateException {
         final String nodeId = interaction.getConfiguration().getNodeId();
-        log.debug("Received AdHoc configuration for node {}", nodeId);
+        if (interaction.getConfiguration().getRadioMode() == AdHocConfiguration.RadioMode.OFF) {
+            log.debug("Received AdHoc configuration (disable) for node {}", nodeId);
+            disableRadioForNode(nodeId, interaction);
+        } else {
+            log.debug("Received AdHoc configuration (enable) for node {}", nodeId);
+            configureRadioForNode(nodeId, interaction);
+        }
+    }
+
+    private void disableRadioForNode(String nodeId, AdHocCommunicationConfiguration interaction) throws InternalFederateException {
+        final long time = interaction.getTime();
+        // verify the vehicles are simulated in the current simulation
+        final Integer nodeToRemove = simulatedNodes.containsInternalId(nodeId) ? simulatedNodes.toExternalId(nodeId) : null;
+        if (nodeToRemove != null) {
+            this.log.info("removeNode ID[int={}, ext={}] time={}", nodeId, nodeToRemove, TIME.format(time));
+            simulatedNodes.removeUsingInternalId(nodeId); // remove the vehicle from our internal list
+            removedNodes.add(nodeId);
+        } else if (registeredNodes.containsKey(nodeId)) {
+            this.log.info("removeNode (still virtual) ID[int={}] time={}", nodeId, TIME.format(time));
+            registeredNodes.remove(nodeId);
+            return;
+        } else {
+            this.log.warn("Node ID[int={}] is not simulated", nodeId);
+            return;
+        }
+
+        try {
+            if (CMD.SUCCESS != this.ambassadorFederateChannel.writeRemoveNodesMessage(time, Lists.newArrayList(nodeToRemove))) {
+                throw new InternalFederateException(
+                        "Could not remove nodes: " + this.federateAmbassadorChannel.getLastStatusMessage()
+                );
+            }
+        } catch (IOException | InternalFederateException e) {
+            this.log.error("{}, time={}", e.getMessage(), TIME.format(interaction.getTime()));
+            throw new InternalFederateException("Could not remove node from the simulator.", e);
+        }
+    }
+
+    private void configureRadioForNode(String nodeId, AdHocCommunicationConfiguration interaction) throws InternalFederateException {
         if (simulatedNodes.containsInternalId(nodeId)) {
             // node is already simulated -> configure
             log.debug("Updating Configuration for simulated node {}", nodeId);
