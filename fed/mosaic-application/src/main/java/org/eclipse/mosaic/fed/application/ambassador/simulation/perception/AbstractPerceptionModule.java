@@ -94,9 +94,7 @@ public abstract class AbstractPerceptionModule
 
     @Override
     public List<VehicleObject> getPerceivedVehicles() {
-        List<VehicleObject> vehiclesInRange = new ArrayList<>(getVehiclesInRange());
-        vehiclesInRange = applyPerceptionModifiers(vehiclesInRange);
-        return vehiclesInRange;
+        return applyPerceptionModifiers(getVehiclesInRange());
     }
 
     /**
@@ -109,10 +107,8 @@ public abstract class AbstractPerceptionModule
 
     @Override
     public List<TrafficLightObject> getPerceivedTrafficLights() {
-        List<TrafficLightObject> trafficLightsInRange = new ArrayList<>(getTrafficLightsInRange());
         // TODO: we could add an additional filter here to check the traffic lights' orientation
-        trafficLightsInRange = applyPerceptionModifiers(trafficLightsInRange);
-        return trafficLightsInRange;
+        return applyPerceptionModifiers(getTrafficLightsInRange());
     }
 
     /**
@@ -138,8 +134,13 @@ public abstract class AbstractPerceptionModule
      */
     abstract List<SpatialObject> getObjectsInRange();
 
-    private <T extends SpatialObject> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
-        List<T> filteredList = objectsInRange;
+    private <T extends SpatialObject<T>> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
+        if (configuration.getPerceptionModifiers().isEmpty()) {
+            return objectsInRange;
+        }
+        List<T> filteredList = new ArrayList<>(objectsInRange);
+        // create copy of all perceived objects to avoid interference with modifiers of other perception modules.
+        filteredList.replaceAll(T::copy);
         for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
             filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
         }

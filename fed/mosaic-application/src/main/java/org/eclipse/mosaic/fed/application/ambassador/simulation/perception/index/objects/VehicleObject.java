@@ -141,17 +141,18 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
 
     /**
      * Returns a hard copy of the {@link VehicleObject}, this should be used
-     * when the data of a perceived vehicle is to be stored in memory.
+     * when the data of a perceived vehicle is to be altered or stored in memory.
      *
      * @return a copy of the {@link VehicleObject}
      */
+    @Override
     public VehicleObject copy() {
-        VehicleObject copy = new VehicleObject(getId());
-        copy.setPosition(getProjectedPosition());
-        copy.setHeading(getHeading());
-        copy.setSpeed(getSpeed());
-        copy.setEdgeAndLane(getEdgeId(), getLaneIndex());
-        copy.setDimensions(getLength(), getWidth(), getHeight());
-        return copy;
+        return (VehicleObject) new VehicleObject(getId())
+                .setHeading(getHeading())
+                .setSpeed(getSpeed())
+                .setEdgeAndLane(getEdgeId(), getLaneIndex())
+                .setDimensions(getLength(), getWidth(), getHeight())
+                .setPosition(getProjectedPosition());
+
     }
 }
