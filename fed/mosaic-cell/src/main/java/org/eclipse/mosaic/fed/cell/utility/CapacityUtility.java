@@ -27,8 +27,6 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-
 /**
  * Static methods for handling the bandwidth calculation.
  */
@@ -47,7 +45,7 @@ public final class CapacityUtility {
      * @throws IllegalArgumentException if delay or message size were set to invalid values
      */
     public static long calculateNeededCapacity(long messageSizeInBit, long delayInNs) throws IllegalArgumentException {
-        if (delayInNs <= 0 || messageSizeInBit <= 0) {
+        if (delayInNs <= 0 || messageSizeInBit < 0) {
             throw new IllegalArgumentException("Could not calculate the needed bandwidth because an argument was smaller"
                     + " than or equal to 0, messageSize:" + messageSizeInBit + ", delay: " + delayInNs);
         }
@@ -65,7 +63,7 @@ public final class CapacityUtility {
      */
     public static long calculateNeededDelay(long messageSizeInBit, long availableBandwidth) {
         double delay;
-        if (availableBandwidth <= 0 || messageSizeInBit <= 0) {
+        if (availableBandwidth <= 0 || messageSizeInBit < 0) {
             throw new IllegalArgumentException("Could not calculate the needed delay because an argument was smaller"
                     + " than or equal to 0, messageSize:" + messageSizeInBit + ", available bandwidth: " + availableBandwidth);
         } else {
@@ -112,7 +110,7 @@ public final class CapacityUtility {
             log.warn("Could not consume capacity because the cell configuration of the node is null");
             return;
         }
-        if (consume <= 0) {
+        if (consume < 0) {
             log.warn("Could not consume capacity because the capacity to consume is {}, which is smaller than 0.", consume);
             return;
         }
