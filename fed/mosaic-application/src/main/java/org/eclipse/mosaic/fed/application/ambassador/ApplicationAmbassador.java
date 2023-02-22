@@ -203,17 +203,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     @Override
     public void finishSimulation() {
-        try {
-            SimulationKernel.SimulationKernel.setCurrentSimulationTime(this.rti.getNextEventTimestamp());
-
-            log.debug("remaining events: {}", eventScheduler.getAllEvents());
-            UnitSimulator.UnitSimulator.removeAllSimulationUnits();
-
-            log.debug("inform about finishSimulation");
-            SimulationKernel.SimulationKernel.finishSimulation();
-        } catch (IllegalValueException e) {
-            log.error("Could not shutdown applications.", e);
-        }
+        // we already shut down everything in the last simulation step
     }
 
     @Override
@@ -226,6 +216,19 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         SimulationKernel.SimulationKernel.getCentralPerceptionComponent().initialize();
         SimulationKernel.SimulationKernel.setInteractable(rti);
         SimulationKernel.SimulationKernel.setRandomNumberGenerator(rti.createRandomNumberGenerator());
+
+        // shutdown remaining simulation units within the simulation time frame
+        SimulationKernel.SimulationKernel.getEventManager().addEvent(endTime, this::shutdownSimulationUnits);
+    }
+
+    private void shutdownSimulationUnits(Event event) {
+        SimulationKernel.SimulationKernel.setCurrentSimulationTime(event.getTime());
+
+        log.debug("remaining events: {}", eventScheduler.getAllEvents());
+        UnitSimulator.UnitSimulator.removeAllSimulationUnits();
+
+        log.debug("inform about finishSimulation");
+        SimulationKernel.SimulationKernel.finishSimulation();
     }
 
     @Override
