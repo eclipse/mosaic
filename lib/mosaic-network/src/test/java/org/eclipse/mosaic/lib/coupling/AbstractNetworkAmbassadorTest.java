@@ -29,12 +29,14 @@ import static org.mockito.Mockito.when;
 import org.eclipse.mosaic.interactions.communication.AdHocCommunicationConfiguration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
+import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
 import org.eclipse.mosaic.lib.geo.UtmZone;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
+import org.eclipse.mosaic.lib.objects.communication.InterfaceConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -51,6 +53,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractNetworkAmbassadorTest {
@@ -92,6 +97,14 @@ public class AbstractNetworkAmbassadorTest {
                 anyInt(),
                 isA(AdHocConfiguration.class))
         ).thenReturn(ClientServerChannel.CMD.SUCCESS);
+    }
+
+    private static Inet4Address createDummyIp() {
+        try {
+            return (Inet4Address) InetAddress.getByAddress(new byte[]{0, 0, 0, 0});
+        } catch (UnknownHostException e) {
+            return null;
+        }
     }
 
     @Test
@@ -139,7 +152,9 @@ public class AbstractNetworkAmbassadorTest {
         );
         networkAmbassador.processInteraction(vehicleUpdates); // Move vehicle
 
-        final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("veh_0").create();
+        final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("veh_0")
+                .addInterface(new InterfaceConfiguration.Builder(AdHocChannel.CCH).power(50d).ip(createDummyIp()).subnet(createDummyIp()).create())
+                .create();
         final Interaction adHocCommunicationConfiguration = new AdHocCommunicationConfiguration(2 * TIME.SECOND, adHocConfiguration);
         // Configure vehicle -> Add vehicle to simulation, send configuration to federate
         networkAmbassador.processInteraction(adHocCommunicationConfiguration);
@@ -155,7 +170,9 @@ public class AbstractNetworkAmbassadorTest {
         networkAmbassador.initialize(0, 1000);
 
         // Run
-        final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("veh_0").create();
+        final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("veh_0")
+                .addInterface(new InterfaceConfiguration.Builder(AdHocChannel.CCH).power(50d).ip(createDummyIp()).subnet(createDummyIp()).create())
+                .create();
         final Interaction adHocCommunicationConfiguration = new AdHocCommunicationConfiguration(2 * TIME.SECOND, adHocConfiguration);
         // Configure vehicle -> Add vehicle to simulation, send configuration to federate
         networkAmbassador.processInteraction(adHocCommunicationConfiguration);
@@ -202,7 +219,9 @@ public class AbstractNetworkAmbassadorTest {
         final Interaction rsuRegistration = new RsuRegistration(1 * TIME.SECOND, "rsu_0", "rsu", Lists.newArrayList(), GeoPoint.latLon(52.0, 13.5));
         networkAmbassador.processInteraction(rsuRegistration);
 
-        final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("rsu_0").create();
+        final AdHocConfiguration adHocConfiguration = new AdHocConfiguration.Builder("rsu_0")
+                .addInterface(new InterfaceConfiguration.Builder(AdHocChannel.CCH).power(50d).ip(createDummyIp()).subnet(createDummyIp()).create())
+                .create();
         final Interaction adHocCommunicationConfiguration = new AdHocCommunicationConfiguration(2 * TIME.SECOND, adHocConfiguration);
         // Configure rsu adhoc -> Add rsu to simulation, send configuration to federate
         networkAmbassador.processInteraction(adHocCommunicationConfiguration);
@@ -218,5 +237,6 @@ public class AbstractNetworkAmbassadorTest {
         when(vehInfo.getProjectedPosition()).thenReturn(CartesianPoint.xy(10, 20));
         return vehInfo;
     }
+
 
 }
