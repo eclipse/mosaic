@@ -27,6 +27,7 @@ import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.model.delay.GammaSpeedDelay;
 import org.eclipse.mosaic.lib.model.transmission.TransmissionResult;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
@@ -116,7 +117,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 this.process((TrafficLightRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
                 this.process((ChargingStationRegistration) interaction);
-            }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(AdHocCommunicationConfiguration.TYPE_ID)) {
                 this.process((AdHocCommunicationConfiguration) interaction);
@@ -175,9 +176,9 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         switch (configuration.getRadioMode()) {
             case OFF:
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
-                    removeNode(interaction.getTime(), nodeId);
+                    disableNode(interaction.getTime(), nodeId);
                 } else if (registeredVehicles.remove(nodeId) != null) {
-                    log.debug("Disabled Wifi of vehicle, which was enabled before, but not yet moved.");
+                    log.debug("Disabled Wifi of node, which was enabled before, but not yet moved.");
                 }
                 break;
             case DUAL:
@@ -253,11 +254,14 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
      *
      * @param nodeId the id of the node to be removed
      */
-    private void removeNode(long time, String nodeId) {
-        if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId) || registeredVehicles.get(nodeId) != null) {
+    private void disableNode(long time, String nodeId) {
+        if (UnitNameGenerator.isVehicle(nodeId)) {
             SimulationEntities.INSTANCE.removeNode(nodeId);
             registeredVehicles.remove(nodeId);
             log.info("Removed Node id={} @time={}", nodeId, TIME.format(time));
+        } else {
+            SimulationEntities.INSTANCE.disableWifi(nodeId);
+            log.info("Disabled Wifi for Node id={} @time={}", nodeId, TIME.format(time));
         }
     }
 
