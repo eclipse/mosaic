@@ -15,20 +15,22 @@
 
 package org.eclipse.mosaic.test.junit;
 
+import static org.junit.Assert.fail;
+
 import com.google.common.base.Charsets;
 
 import java.nio.file.Files;
-
-import static org.junit.Assert.fail;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LogAssert {
 
     public static void contains(MosaicSimulationRule rule, String logFile, String logPattern) throws Exception {
         exists(rule, logFile);
 
-        boolean found = Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).anyMatch(
-                line -> line.matches(logPattern)
-        );
+        boolean found = Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).anyMatch(line -> line.matches(logPattern));
         if (!found) {
             fail("Could not find pattern \"" + logPattern + "\" in file " + logFile);
         }
@@ -37,9 +39,20 @@ public class LogAssert {
     public static int count(MosaicSimulationRule rule, String logFile, String logPattern) throws Exception {
         exists(rule, logFile);
 
-        return (int) Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).filter(
-                line -> line.matches(logPattern)
-        ).count();
+        return (int) Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).filter(line -> line.matches(logPattern)).count();
+    }
+
+    public static List<String> getMatches(MosaicSimulationRule rule, String logFile, int matchingGroup, String logPattern) throws Exception {
+        exists(rule, logFile);
+        Pattern pattern = Pattern.compile(logPattern);
+        List<String> matches = new ArrayList<>();
+        Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).forEach(line -> {
+            Matcher matcher = pattern.matcher(line);
+            while (matcher.find()) {
+                matches.add(matcher.group(matchingGroup));
+            }
+        });
+        return matches;
     }
 
     public static void exists(MosaicSimulationRule rule, String logFile) {
