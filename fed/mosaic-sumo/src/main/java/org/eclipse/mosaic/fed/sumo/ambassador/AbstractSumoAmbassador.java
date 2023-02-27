@@ -45,6 +45,7 @@ import org.eclipse.mosaic.fed.sumo.util.TrafficSignManager;
 import org.eclipse.mosaic.interactions.application.SumoTraciRequest;
 import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration;
+import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.InductionLoopDetectorSubscription;
 import org.eclipse.mosaic.interactions.traffic.LaneAreaDetectorSubscription;
 import org.eclipse.mosaic.interactions.traffic.LanePropertyChange;
@@ -80,6 +81,7 @@ import org.eclipse.mosaic.lib.objects.trafficsign.TrafficSignSpeed;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleParameter;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.ProcessLoggingThread;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -117,10 +119,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -167,6 +171,16 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      * List of vehicles that are simulated externally.
      */
     protected final Map<String, ExternalVehicleState> externalVehicles = new HashMap<>();
+
+    /**
+     * Set containing all vehicles, that have been added from the RTI e.g. using the Mapping file.
+     */
+    final Set<String> vehiclesAddedViaRti = new HashSet<>();
+
+    /**
+     * Set containing all vehicles, that have been added using the SUMO route file.
+     */
+    final Set<String> vehiclesAddedViaRouteFile = new HashSet<>();
 
     /**
      * Manages traffic signs to be added as POIs to SUMO (e.g. for visualization)
@@ -1220,16 +1234,17 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             setExternalVehiclesToLatestPositions();
             TraciSimulationStepResult simulationStepResult = bridge.getSimulationControl().simulateUntil(time);
-
+            VehicleUpdates vehicleUpdates = simulationStepResult.getVehicleUpdates();
             log.trace("Leaving advance time: {}", time);
-            removeExternalVehiclesFromUpdates(simulationStepResult.getVehicleUpdates());
-            propagateNewRoutes(simulationStepResult.getVehicleUpdates(), time);
-            // TODO: propagate vehicles here (propagateSumoVehiclesToRti)
+            removeExternalVehiclesFromUpdates(vehicleUpdates);
+            propagateNewRoutes(vehicleUpdates, time);
+            // add SUMO vehicles to RTI
+            propagateSumoVehiclesToRti(time);
 
             nextTimeStep += sumoConfig.updateInterval * TIME.MILLI_SECOND;
             simulationStepResult.getVehicleUpdates().setNextUpdate(nextTimeStep);
 
-            rti.triggerInteraction(simulationStepResult.getVehicleUpdates());
+            rti.triggerInteraction(vehicleUpdates);
             rti.triggerInteraction(simulationStepResult.getTrafficDetectorUpdates());
             this.rti.triggerInteraction(simulationStepResult.getTrafficLightUpdates());
 
@@ -1240,20 +1255,6 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             log.error("Error during advanceTime(" + time + ")", e);
             throw new InternalFederateException(e);
         }
-    }
-
-    private void removeExternalVehiclesFromUpdates(VehicleUpdates updates) {
-        Iterator<VehicleData> updatesAddedIterator = updates.getAdded().iterator();
-        while (updatesAddedIterator.hasNext()) {
-            VehicleData currentVehicle = updatesAddedIterator.next();
-            if (externalVehicles.containsKey(currentVehicle.getName())) {
-                externalVehicles.get(currentVehicle.getName()).setAdded(true);
-                updatesAddedIterator.remove();
-            }
-        }
-
-        updates.getUpdated().removeIf(currentVehicle -> externalVehicles.containsKey(currentVehicle.getName()));
-        updates.getRemovedNames().removeIf(vehicle -> externalVehicles.remove(vehicle) != null);
     }
 
     private void setExternalVehiclesToLatestPositions() {
@@ -1280,13 +1281,19 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
-    /**
-     * Vehicles of the notYetRegisteredVehicles list will be added by this function
-     * or cached again for the next time.
-     *
-     * @param time Current system time
-     */
-    abstract void flushNotYetAddedVehicles(long time) throws InternalFederateException;
+    private void removeExternalVehiclesFromUpdates(VehicleUpdates updates) {
+        Iterator<VehicleData> updatesAddedIterator = updates.getAdded().iterator();
+        while (updatesAddedIterator.hasNext()) {
+            VehicleData currentVehicle = updatesAddedIterator.next();
+            if (externalVehicles.containsKey(currentVehicle.getName())) {
+                externalVehicles.get(currentVehicle.getName()).setAdded(true);
+                updatesAddedIterator.remove();
+            }
+        }
+
+        updates.getUpdated().removeIf(currentVehicle -> externalVehicles.containsKey(currentVehicle.getName()));
+        updates.getRemovedNames().removeIf(vehicle -> externalVehicles.remove(vehicle) != null);
+    }
 
     /**
      * This handles the case that sumo handles routing and creates new routes while doing so.
@@ -1327,6 +1334,36 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             routes.put(route.getId(), route);
         }
     }
+
+    private void propagateSumoVehiclesToRti(long time) throws InternalFederateException {
+        List<String> routeFileVehicles = getRouteFileVehicles();
+        String vehicleTypeId;
+        VehicleType vehicleType;
+        for (String vehicleId : routeFileVehicles) {
+            vehiclesAddedViaRouteFile.add(vehicleId);
+            vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
+            vehicleType = bridge.getVehicleControl().getVehicleType(vehicleTypeId);
+            try {
+                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleType));
+            } catch (IllegalValueException e) {
+                throw new InternalFederateException(e);
+            }
+        }
+    }
+
+    private List<String> getRouteFileVehicles() throws InternalFederateException {
+        return bridge.getSimulationControl().getDepartedVehicles().stream()
+                .filter(v -> !vehiclesAddedViaRti.contains(v)) // all vehicles not added via MOSAIC are added by SUMO
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Vehicles of the notYetRegisteredVehicles list will be added by this function
+     * or cached again for the next time.
+     *
+     * @param time Current system time
+     */
+    abstract void flushNotYetAddedVehicles(long time) throws InternalFederateException;
 
     /**
      * Reads the route from the SUMO Traci.

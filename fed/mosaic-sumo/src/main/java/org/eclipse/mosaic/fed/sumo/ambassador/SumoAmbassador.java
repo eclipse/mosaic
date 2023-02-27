@@ -80,16 +80,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
     private final List<VehicleRegistration> notYetSubscribedVehicles = new ArrayList<>();
 
     /**
-     * Set containing all vehicles, that have been added using the SUMO route file.
-     */
-    private final Set<String> vehiclesAddedViaRouteFile = new HashSet<>();
-
-    /**
-     * Set containing all vehicles, that have been added from the RTI e.g. using the Mapping file.
-     */
-    private final Set<String> vehiclesAddedViaRti = new HashSet<>();
-
-    /**
      * Constructor for {@link SumoAmbassador}.
      *
      * @param ambassadorParameter parameters for the ambassador containing its' id and configuration
@@ -270,35 +260,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (time < 0) {
             return;
         }
-        // first check if there were new vehicles added via SUMO
-        propagateSumoVehiclesToRti();
         // now add all vehicles, that were received from RTI
         addNotYetAddedVehicles(time);
         // now subscribe to all relevant vehicles
         subscribeToNotYetSubscribedVehicles(time);
-
-    }
-
-    private void propagateSumoVehiclesToRti() throws InternalFederateException {
-        final List<String> departedVehicles = bridge.getSimulationControl().getDepartedVehicles();
-        String vehicleTypeId;
-        VehicleType vehicleType;
-        for (String vehicleId : departedVehicles) {
-            if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
-                continue;
-            }
-            vehiclesAddedViaRouteFile.add(vehicleId);
-            vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
-            vehicleType = bridge.getVehicleControl().getVehicleType(vehicleTypeId);
-            try {
-                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleType));
-            } catch (IllegalValueException e) {
-                throw new InternalFederateException(e);
-            }
-            if (sumoConfig.subscribeToAllVehicles) {
-                bridge.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
-            }
-        }
     }
 
     private void addNotYetAddedVehicles(long time) throws InternalFederateException {
