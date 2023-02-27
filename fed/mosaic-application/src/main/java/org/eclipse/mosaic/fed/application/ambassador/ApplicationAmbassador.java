@@ -226,9 +226,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
         log.debug("remaining events: {}", eventScheduler.getAllEvents());
         UnitSimulator.UnitSimulator.removeAllSimulationUnits();
-
-        log.debug("inform about finishSimulation");
-        SimulationKernel.SimulationKernel.finishSimulation();
     }
 
     @Override
