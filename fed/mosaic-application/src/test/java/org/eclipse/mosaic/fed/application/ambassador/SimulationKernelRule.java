@@ -79,7 +79,6 @@ public class SimulationKernelRule extends ExternalResource {
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configuration", null);
         TestUtils.setPrivateField(SimulationKernel.SimulationKernel, "configurationPath", null);
 
-        SimulationKernel.SimulationKernel.finishSimulation();
         UnitSimulator.UnitSimulator.removeAllSimulationUnits();
     }
 
