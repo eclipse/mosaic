@@ -1224,6 +1224,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             log.trace("Leaving advance time: {}", time);
             removeExternalVehiclesFromUpdates(simulationStepResult.getVehicleUpdates());
             propagateNewRoutes(simulationStepResult.getVehicleUpdates(), time);
+            // TODO: propagate vehicles here (propagateSumoVehiclesToRti)
 
             nextTimeStep += sumoConfig.updateInterval * TIME.MILLI_SECOND;
             simulationStepResult.getVehicleUpdates().setNextUpdate(nextTimeStep);
