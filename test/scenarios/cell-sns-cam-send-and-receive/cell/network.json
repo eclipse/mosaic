@@ -23,7 +23,7 @@
                 },
                 "transmission": {
                     "lossProbability": 0.0,
-                    "retries": 2
+                    "maxRetries": 2
                 }
             },
             "multicast": {

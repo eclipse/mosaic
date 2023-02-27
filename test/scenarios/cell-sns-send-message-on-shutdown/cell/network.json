@@ -23,7 +23,7 @@
                 },
                 "transmission": {
                     "lossProbability": 0.0,
-                    "retries": 2
+                    "maxRetries": 2
                 }
             },
             "multicast": {
@@ -33,7 +33,8 @@
                     "expDelay": "200 ms"
                 },
                 "transmission": {
-                    "lossProbability": 0.0
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
                 },
                 "usableCapacity": 0.6
             },
@@ -49,7 +50,8 @@
                     "delay": "1 ms"
                 },
                 "transmission": {
-                    "lossProbability": 0.0
+                    "lossProbability": 0.0,
+                    "maxRetries": 2
                 }
             },
             "downlink": {
@@ -59,7 +61,8 @@
                         "delay": "1 ms"
                     },
                     "transmission": {
-                        "lossProbability": 0.0
+                        "lossProbability": 0.0,
+                        "maxRetries": 2
                     }
                 }
             }

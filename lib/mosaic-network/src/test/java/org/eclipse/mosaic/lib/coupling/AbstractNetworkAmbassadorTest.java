@@ -238,5 +238,4 @@ public class AbstractNetworkAmbassadorTest {
         return vehInfo;
     }
 
-
 }
