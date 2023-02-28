@@ -586,7 +586,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             );
         }
         bridge.getVehicleControl()
-                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), convertDuration(vehicleSlowDown.getInterval()));
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), nsToMs(vehicleSlowDown.getInterval()));
     }
 
     /**
@@ -618,7 +618,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), convertDuration(vehicleStop.getDuration()));
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(),
+                    nsToMs(vehicleStop.getDuration()));
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -740,7 +741,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     return;
             }
             bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId,
-                    convertDuration(vehicleLaneChange.getDuration()));
+                    nsToMs(vehicleLaneChange.getDuration()));
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
@@ -752,13 +753,6 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         } catch (NumberFormatException e) {
             throw new InternalFederateException(e);
         }
-    }
-
-    private int convertDuration(long time) {
-        long tmp = time + (TIME.MILLI_SECOND / 2);
-        time = tmp > time ? tmp : Long.MAX_VALUE;
-        tmp = (time / TIME.MILLI_SECOND);
-        return tmp > (long) Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) tmp;
     }
 
     /**
@@ -876,7 +870,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                             vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
                     bridge.getVehicleControl()
                             .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(),
-                                    convertDuration(vehicleSpeedChange.getInterval()));
+                                    nsToMs(vehicleSpeedChange.getInterval()));
 
                     // set speed permanently after given interval (in the future) via the event scheduler
                     long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval);
@@ -1123,6 +1117,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         );
     }
 
+    private int nsToMs(long timeInNs) {
+        long tmp = timeInNs + (TIME.MILLI_SECOND / 2);
+        timeInNs = tmp > timeInNs ? tmp : Long.MAX_VALUE;
+        tmp = timeInNs / TIME.MILLI_SECOND;
+        return tmp > (long) Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) tmp;
+    }
+
     /**
      * Tries to stop the vehicle at the given edge and offset. However, if the offset is larger
      * than the edge's length, the stop command will fail. In such cases, the offset will decrease,
@@ -1344,9 +1345,12 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
             vehicleType = bridge.getVehicleControl().getVehicleType(vehicleTypeId);
             try {
-                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleType));
+                rti.triggerInteraction(new ScenarioVehicleRegistration(time, vehicleId, vehicleType));
             } catch (IllegalValueException e) {
                 throw new InternalFederateException(e);
+            }
+            if (sumoConfig.subscribeToAllVehicles) { // this is required as vehicles with no apps can't be subscribed to otherwise
+                bridge.getSimulationControl().subscribeForVehicle(vehicleId, time, this.getEndTime());
             }
         }
     }

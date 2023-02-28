@@ -49,7 +49,7 @@ public final class VehicleSlowDown extends Interaction {
     private final float speed;
 
     /**
-     * Time after which the new speed shall be reached.
+     * Time after which the new speed shall be reached. [ns]
      */
     private final long timeInterval;
 
