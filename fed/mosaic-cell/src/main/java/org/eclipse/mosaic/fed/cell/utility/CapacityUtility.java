@@ -111,7 +111,7 @@ public final class CapacityUtility {
             return;
         }
         if (consume <= 0) {
-            log.warn("Could not consume capacity because the capacity to consume is {}, which is smaller than 0.", consume);
+            log.warn("Could not consume capacity because the capacity to consume is {}, which is smaller than or equal to 0.", consume);
             return;
         }
         if (mode.equals(TransmissionMode.DownlinkMulticast)) {
