@@ -18,7 +18,6 @@ package org.eclipse.mosaic.test.app.sendonshutdown;
 import org.eclipse.mosaic.lib.objects.v2x.EncodedPayload;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
-import org.eclipse.mosaic.rti.DATA;
 
 import javax.annotation.Nonnull;
 
@@ -31,6 +30,6 @@ public class ShutdownMessage extends V2xMessage {
     @Nonnull
     @Override
     public EncodedPayload getPayLoad() {
-        return new EncodedPayload(8 * DATA.BYTE);
+        return new EncodedPayload(8);
     }
 }
