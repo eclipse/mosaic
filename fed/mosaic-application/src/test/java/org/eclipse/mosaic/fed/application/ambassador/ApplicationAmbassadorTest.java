@@ -99,8 +99,9 @@ import javax.annotation.Nonnull;
  */
 public class ApplicationAmbassadorTest {
 
+    public static final long END_TIME = 100 * TIME.SECOND;
     private RtiAmbassador rtiAmbassador;
-    private long lastAdvanceTime = 0L;
+    private long recentAdvanceTime = 0L;
     private ArrayList<Event> addedEvents = new ArrayList<>();
 
     @Rule
@@ -124,7 +125,7 @@ public class ApplicationAmbassadorTest {
 
         // Catch the latest call of "requestAdvanceTime" in order to assert the last advance time the ambassador requests
         Answer<Void> timeAdvanceAnswer = invocation -> {
-            lastAdvanceTime = invocation.getArgument(0);
+            recentAdvanceTime = invocation.getArgument(0);
             return null;
         };
         Mockito.doAnswer(timeAdvanceAnswer).when(rtiAmbassador).requestAdvanceTime(ArgumentMatchers.anyLong());
@@ -133,9 +134,9 @@ public class ApplicationAmbassadorTest {
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.anyByte()
         );
-        Mockito.doAnswer((i) -> lastAdvanceTime).when(rtiAmbassador).getNextEventTimestamp();
+        Mockito.doAnswer((i) -> recentAdvanceTime).when(rtiAmbassador).getNextEventTimestamp();
 
-        lastAdvanceTime = 0;
+        recentAdvanceTime = 0;
     }
 
     @After
@@ -185,7 +186,8 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
+        assertEquals("Time advance should be requested for the end of the simulation", END_TIME, recentAdvanceTime);
 
         TestVehicleApplication app = testAddUnit(
                 ambassador,
@@ -197,8 +199,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -211,7 +214,8 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
+        assertEquals("Time advance should be requested for the end of the simulation", END_TIME, recentAdvanceTime);
 
         TestVehicleApplication app = testAddUnit(
                 ambassador,
@@ -226,8 +230,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -241,7 +246,8 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
+        assertEquals("Time advance should be requested for the end of the simulation", END_TIME, recentAdvanceTime);
 
         TestVehicleApplication app = testAddUnit(
                 ambassador,
@@ -253,8 +259,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -268,7 +275,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestElectricVehicleApplication app = testAddUnit(
                 ambassador,
@@ -280,8 +287,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -314,7 +322,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // add unit to ambassador
         TestVehicleApplication app = testAddUnit(
@@ -333,16 +341,17 @@ public class ApplicationAmbassadorTest {
         ambassador.processInteraction(v2xMessageReception);
 
         // ASSERT + RUN: process event, which has been created by the ambassador
-        assertEquals(v2xMessageReception.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(v2xMessageReception.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT: Verify, that the method v2xMessageReception has been
         // called in the application by the simulation kernel with the expected arguments
         Mockito.verify(app.getApplicationSpy()).onMessageReceived(argThat(argument -> argument.getMessage() == v2xMessage));
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -357,7 +366,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // add unit to ambassador
         TestVehicleApplication app = testAddUnit(
@@ -383,8 +392,8 @@ public class ApplicationAmbassadorTest {
         );
         ambassador.processInteraction(vehicleUpdates);
 
-        assertEquals(vehicleUpdates.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(vehicleUpdates.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // Assert that update info methods have been called twice in application and
         // that the position has been updated (first call after adding vehicle, second call after updating vehicle)
@@ -402,7 +411,7 @@ public class ApplicationAmbassadorTest {
                 Collections.singletonList(vehInfo),
                 Collections.emptyList())
         );
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // Assert that update info methods have been called again in application and that the position has been updated to the new position
         Mockito.verify(app.getApplicationSpy(), Mockito.times(3)).onVehicleUpdated(any(), any());
@@ -414,14 +423,15 @@ public class ApplicationAmbassadorTest {
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.singletonList("veh_0")));
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT that tear down of application is called when removing the vehicle
         Mockito.verify(app.getApplicationSpy()).onShutdown();
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
 
         // ASSERT that tear down of application is not called again
         Mockito.verify(app.getApplicationSpy()).onShutdown();
@@ -435,7 +445,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // add unit to ambassador
         TestElectricVehicleApplication app = testAddUnit(
@@ -452,15 +462,16 @@ public class ApplicationAmbassadorTest {
 
         // RUN: send interaction and process events
         ambassador.processInteraction(vehicleBatteryUpdates);
-        assertEquals(vehicleBatteryUpdates.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(vehicleBatteryUpdates.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT that the correct methods are called
         Mockito.verify(app.getApplicationSpy(), Mockito.times(2)).onBatteryDataUpdated(any(), any());
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -472,7 +483,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestVehicleApplication app = testAddUnit(
                 ambassador,
@@ -484,12 +495,13 @@ public class ApplicationAmbassadorTest {
                 new ApplicationInteraction(10 * TIME.SECOND, "veh_0") {};
         ambassador.processInteraction(applicationInteraction);
 
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
         // ASSERT that the interaction is received by the application
         Mockito.verify(app.getApplicationSpy()).onInteractionReceived(ArgumentMatchers.same(applicationInteraction));
 
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -502,7 +514,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // SETUP init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // SETUP add unit to ambassador
         TestVehicleApplication app = testAddUnit(
@@ -522,8 +534,8 @@ public class ApplicationAmbassadorTest {
 
         // RUN send interaction and process event
         ambassador.processInteraction(v2xMessageAcknowledgement);
-        assertEquals(v2xMessageAcknowledgement.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(v2xMessageAcknowledgement.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT that the interaction is received by the application
         Mockito.verify(app.getApplicationSpy()).onAcknowledgementReceived(
@@ -531,8 +543,9 @@ public class ApplicationAmbassadorTest {
         );
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -545,7 +558,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestRoadSideUnitApplication app = testAddUnit(ambassador, "rsu_0", InteractionTestHelper.createRsuRegistration("rsu_0", 5, true));
 
@@ -553,8 +566,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -568,7 +582,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestTrafficLightApplication app =
                 testAddUnit(ambassador, "tl_0", InteractionTestHelper.createTrafficLightRegistration("tl_0", 5, true));
@@ -577,8 +591,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -591,7 +606,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TrafficLightRegistration trafficLightRegistration = InteractionTestHelper.createTrafficLightRegistration("tl_0", 5, true);
 
@@ -612,16 +627,17 @@ public class ApplicationAmbassadorTest {
         ambassador.processInteraction(trafficLightUpdates);
 
         // ASSERT + RUN: process event, which has been created by the ambassador
-        assertEquals(trafficLightUpdates.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(trafficLightUpdates.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT that relevant methods have been called and that the traffic light group has been set
         Mockito.verify(app.getApplicationSpy()).onTrafficLightGroupUpdated(any(), any());
         assertSame(tlg, app.getOperatingSystem().getTrafficLightGroup());
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -633,7 +649,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // Prepare and send vehicle types
         final Map<String, VehicleType> types = new HashMap<>();
@@ -647,8 +663,9 @@ public class ApplicationAmbassadorTest {
         assertEquals(types.get("type2"), SimulationKernel.SimulationKernel.getVehicleTypes().get("type2"));
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -660,7 +677,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // Prepare and send vehicle routes
         final Map<String, VehicleRoute> routes = new HashMap<>();
@@ -674,8 +691,9 @@ public class ApplicationAmbassadorTest {
         assertEquals(routes.get("1"), SimulationKernel.SimulationKernel.getRoutesView().get("1"));
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -687,7 +705,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         // PREPARE VehicleRouteRegistration interaction
         VehicleRoute route = mock(VehicleRoute.class);
@@ -701,8 +719,9 @@ public class ApplicationAmbassadorTest {
         assertSame(route, SimulationKernel.SimulationKernel.getRoutes().get("0"));
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -715,7 +734,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestChargingStationApplication app = testAddUnit(
                 ambassador,
@@ -727,8 +746,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -742,7 +762,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestTrafficManagementCenterApplication app = testAddUnit(
                 ambassador,
@@ -754,8 +774,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -764,7 +785,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestTrafficManagementCenterApplication app = testAddUnit(
                 ambassador,
@@ -788,16 +809,17 @@ public class ApplicationAmbassadorTest {
         ambassador.processInteraction(trafficDetectorUpdates);
 
         // ASSERT + RUN: process event which has been created by the ambassador
-        assertEquals(trafficDetectorUpdates.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(trafficDetectorUpdates.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT that  relevant methods have been called and that the traffic light group has been set
         Mockito.verify(app.getApplicationSpy(), times(1)).onInductionLoopUpdated(any());
         Mockito.verify(app.getApplicationSpy(), never()).onLaneAreaDetectorUpdated(any());
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     @Test
@@ -805,7 +827,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestTrafficManagementCenterApplication app = testAddUnit(
                 ambassador,
@@ -813,7 +835,7 @@ public class ApplicationAmbassadorTest {
                 InteractionTestHelper.createTmcRegistrationWithInductionLoops("tmc_0", 5, true, "induction_loop_x")
         );
 
-        final long previousAdvanceTime = lastAdvanceTime;
+        final long previousAdvanceTime = recentAdvanceTime;
 
         // RUN: Send interaction V2xMessageReception
         final List<InductionLoopInfo> inductionLoopInfo = Lists.newArrayList(
@@ -826,15 +848,16 @@ public class ApplicationAmbassadorTest {
         ambassador.processInteraction(trafficDetectorUpdates);
 
         // ASSERT + RUN: process event, which has been created by the ambassador
-        assertEquals(previousAdvanceTime, lastAdvanceTime);
+        assertEquals(previousAdvanceTime, recentAdvanceTime);
 
         // ASSERT that  relevant methods have been called and that the traffic light group has been set
         Mockito.verify(app.getApplicationSpy(), never()).onInductionLoopUpdated(any());
         Mockito.verify(app.getApplicationSpy(), never()).onLaneAreaDetectorUpdated(any());
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     @Test
@@ -842,7 +865,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestTrafficManagementCenterApplication app = testAddUnit(
                 ambassador,
@@ -871,16 +894,17 @@ public class ApplicationAmbassadorTest {
         ambassador.processInteraction(trafficDetectorUpdates);
 
         // ASSERT + RUN: process event, which has been created by the ambassador
-        assertEquals(trafficDetectorUpdates.getTime(), lastAdvanceTime);
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        assertEquals(trafficDetectorUpdates.getTime(), recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         // ASSERT that  relevant methods have been called and that the traffic light group has been set
         Mockito.verify(app.getApplicationSpy(), never()).onInductionLoopUpdated(any());
         Mockito.verify(app.getApplicationSpy(), times(1)).onLaneAreaDetectorUpdated(any());
 
         // finish simulation
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
     }
 
     /**
@@ -893,7 +917,7 @@ public class ApplicationAmbassadorTest {
         final ApplicationAmbassador ambassador = createAmbassador();
 
         // init ambassador
-        ambassador.initialize(0L, 100 * TIME.SECOND);
+        ambassador.initialize(0L, END_TIME);
 
         TestServerApplication app = testAddUnit(
                 ambassador,
@@ -905,8 +929,9 @@ public class ApplicationAmbassadorTest {
         Mockito.verify(app.getApplicationSpy()).onStartup();
 
         // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
         ambassador.finishSimulation();
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
         Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
@@ -925,18 +950,18 @@ public class ApplicationAmbassadorTest {
                 new ArrayList<>()
         );
         ambassador.processInteraction(movements);
-        Assert.assertEquals(interaction.getTime(), lastAdvanceTime);
+        Assert.assertEquals(interaction.getTime(), recentAdvanceTime);
         Assert.assertTrue(interactionTimeEquals(interaction.getTime()));
         Assert.assertTrue(countStartApplicationEvents() > 0);
 
         // should initialize the application
-        ambassador.processTimeAdvanceGrant(lastAdvanceTime);
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         @SuppressWarnings("unchecked")
         TEST_APP app = (TEST_APP) UnitSimulator.UnitSimulator.getAllUnits().get(unitId).getApplications().get(0);
 
         // assert that the requested advance time of the ambassador did not change
-        Assert.assertEquals(interaction.getTime(), lastAdvanceTime);
+        Assert.assertEquals(interaction.getTime(), recentAdvanceTime);
 
         return app;
     }

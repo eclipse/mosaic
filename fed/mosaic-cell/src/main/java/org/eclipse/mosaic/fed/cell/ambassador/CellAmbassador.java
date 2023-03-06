@@ -222,7 +222,9 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         } else if (interaction.getTypeId().equals(VehicleUpdates.TYPE_ID)) {
             process((VehicleUpdates) interaction);
         } else if (interaction.getTypeId().equals(CellularCommunicationConfiguration.TYPE_ID)) {
-            process((CellularCommunicationConfiguration) interaction);
+            final CellularCommunicationConfiguration configInteraction = (CellularCommunicationConfiguration) interaction;
+            // Node configuration must be done in the correct order, therefore we must ensure that it is scheduled by the chain manager
+            chainManager.addEvent(configInteraction.getTime(), e -> process(configInteraction));
         } else if (interaction.getTypeId().equals(V2xMessageTransmission.TYPE_ID)) {
             // Communication dependent (cell) interactions go directly through the chainManager
             chainManager.startEvent((V2xMessageTransmission) interaction);
@@ -356,37 +358,31 @@ public class CellAmbassador extends AbstractFederateAmbassador {
     private void process(VehicleUpdates vehicleUpdates) throws InternalFederateException {
         latestVehicleUpdates = vehicleUpdates;
 
-        List<HandoverInfo> handovers = new ArrayList<>();
+        final long currentTime = vehicleUpdates.getTime();
+        final List<HandoverInfo> handovers = new ArrayList<>();
 
         for (VehicleData added : vehicleUpdates.getAdded()) {
             if (isVehicleCellEnabled(added)) {
-                Optional<HandoverInfo> handoverInfo = registerOrUpdateVehicle(vehicleUpdates.getTime(), added);
+                Optional<HandoverInfo> handoverInfo = registerOrUpdateVehicle(currentTime, added);
                 handoverInfo.ifPresent(handovers::add);
             }
         }
         for (VehicleData updated : vehicleUpdates.getUpdated()) {
             if (isVehicleCellEnabled(updated)) {
-                Optional<HandoverInfo> handoverInfo = registerOrUpdateVehicle(vehicleUpdates.getTime(), updated);
+                Optional<HandoverInfo> handoverInfo = registerOrUpdateVehicle(currentTime, updated);
                 handoverInfo.ifPresent(handovers::add);
             }
         }
 
-        for (String removed : vehicleUpdates.getRemovedNames()) {
-            unregisterVehicle(vehicleUpdates.getTime(), removed).ifPresent(handovers::add);
-        }
-
         if (log.isTraceEnabled()) {
-            log.trace("Regionstatus at t={}",
-                    TIME.format(vehicleUpdates.getTime()));
+            log.trace("Regionstatus at t={}", TIME.format(currentTime));
             for (CNetworkProperties region : RegionUtility.getAllRegions(true, false)) {
-                log.trace(" \"{}\" contains the node(s) {}",
-                        region.id, RegionUtility.getNodesForRegion(region));
+                log.trace(" \"{}\" contains the node(s) {}", region.id, RegionUtility.getNodesForRegion(region));
             }
         }
 
         if (handovers.size() > 0) {
-            CellularHandoverUpdates handoverUpdatesMessage = new CellularHandoverUpdates(vehicleUpdates.getTime(), handovers);
-            chainManager.sendInteractionToRti(handoverUpdatesMessage);
+            chainManager.sendInteractionToRti(new CellularHandoverUpdates(currentTime, handovers));
         }
     }
 
@@ -434,18 +430,14 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                 }
             }
         } else {
-            handoverInfo = disableCellForNode(nodeId);
             if (isVehicle) {
-                // keep the vehicle in the registeredVehicles map since it could enable the cell module again (and move in the meantime)
-                // the update cell configuration has the cell module disabled
-                registeredVehicles
-                        .computeIfAbsent(nodeId, k -> new AtomicReference<>())
-                        .set(cellConfiguration);
+                // disables cell node and removes vehicle
+                handoverInfo = unregisterVehicle(interactionTime, nodeId);
+            } else {
+                disableCellForNode(nodeId);
             }
             log.info(
-                    "Disabled Cell Communication for "
-                            + (isVehicle ? "vehicle" : "entity")
-                            + "={}, t={}", nodeId, TIME.format(interactionTime)
+                    "Disabled Cell Communication for {}={}, t={}", (isVehicle ? "vehicle" : "entity"), nodeId, TIME.format(interactionTime)
             );
         }
         handoverInfo.ifPresent((handover) -> {
@@ -536,7 +528,7 @@ public class CellAmbassador extends AbstractFederateAmbassador {
                     nodeId, TIME.format(interactionTime));
 
             VehicleData vehicleData = fetchVehicleDataFromLastUpdate(nodeId);
-            if(vehicleData != null) {
+            if (vehicleData != null) {
                 handoverInfo = registerOrUpdateVehicle(interactionTime, vehicleData);
             }
         }

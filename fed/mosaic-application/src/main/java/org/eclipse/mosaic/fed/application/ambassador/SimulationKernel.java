@@ -18,7 +18,6 @@ package org.eclipse.mosaic.fed.application.ambassador;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
-import org.eclipse.mosaic.fed.application.ambassador.util.FinishSimulationCallback;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.communication.V2xMessageRemoval;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
@@ -34,16 +33,14 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public enum SimulationKernel implements FinishSimulationCallback {
+public enum SimulationKernel {
 
     SimulationKernel;
 
@@ -56,16 +53,6 @@ public enum SimulationKernel implements FinishSimulationCallback {
 
     private ClassLoader classLoader;
     private transient RandomNumberGenerator randomNumberGenerator;
-    private final List<FinishSimulationCallback> finishSimulationCallbacks = new ArrayList<>();
-
-    /**
-     * Returns the list to register on a finish simulation event.
-     *
-     * @return the list.
-     */
-    public List<FinishSimulationCallback> getFinishSimulationCallbackList() {
-        return finishSimulationCallbacks;
-    }
 
     /**
      * The current simulation time. Unit: [ns].
@@ -363,13 +350,6 @@ public enum SimulationKernel implements FinishSimulationCallback {
                     throw new RuntimeException(ex);
                 }
             }
-        }
-    }
-
-    @Override
-    public void finishSimulation() {
-        for (FinishSimulationCallback cb : finishSimulationCallbacks) {
-            cb.finishSimulation();
         }
     }
 }
