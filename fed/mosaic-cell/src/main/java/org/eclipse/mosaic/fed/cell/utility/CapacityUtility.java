@@ -45,7 +45,7 @@ public final class CapacityUtility {
      * @throws IllegalArgumentException if delay or message size were set to invalid values
      */
     public static long calculateNeededCapacity(long messageSizeInBit, long delayInNs) throws IllegalArgumentException {
-        if (delayInNs <= 0 || messageSizeInBit < 0) {
+        if (delayInNs <= 0 || messageSizeInBit <= 0) {
             throw new IllegalArgumentException("Could not calculate the needed bandwidth because an argument was smaller"
                     + " than or equal to 0, messageSize:" + messageSizeInBit + ", delay: " + delayInNs);
         }
@@ -63,7 +63,7 @@ public final class CapacityUtility {
      */
     public static long calculateNeededDelay(long messageSizeInBit, long availableBandwidth) {
         double delay;
-        if (availableBandwidth <= 0 || messageSizeInBit < 0) {
+        if (availableBandwidth <= 0 || messageSizeInBit <= 0) {
             throw new IllegalArgumentException("Could not calculate the needed delay because an argument was smaller"
                     + " than or equal to 0, messageSize:" + messageSizeInBit + ", available bandwidth: " + availableBandwidth);
         } else {
