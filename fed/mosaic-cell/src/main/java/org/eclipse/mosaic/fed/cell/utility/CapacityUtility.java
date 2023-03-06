@@ -110,7 +110,7 @@ public final class CapacityUtility {
             log.warn("Could not consume capacity because the cell configuration of the node is null");
             return;
         }
-        if (consume < 0) {
+        if (consume <= 0) {
             log.warn("Could not consume capacity because the capacity to consume is {}, which is smaller than 0.", consume);
             return;
         }
