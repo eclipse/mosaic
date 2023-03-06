@@ -129,8 +129,7 @@ public class ChainManager implements EventManager {
 
         final int scheduled = eventScheduler.scheduleEvents(time);
         if (log.isTraceEnabled()) {
-            log.trace("t={}: scheduled {} events",
-                    TIME.format(time), scheduled);
+            log.trace("t={}: scheduled {} events", TIME.format(time), scheduled);
         }
     }
 
@@ -196,8 +195,7 @@ public class ChainManager implements EventManager {
         eventScheduler.addEvent(event);
 
         if (log.isTraceEnabled()) {
-            log.trace(" and requestAdvanceTime({})",
-                    TIME.format(event.getTime()));
+            log.trace(" and requestAdvanceTime({})", TIME.format(event.getTime()));
         }
         try {
             rti.requestAdvanceTime(event.getTime());

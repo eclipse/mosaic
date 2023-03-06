@@ -63,7 +63,8 @@ public class SequentialTimeManagement extends AbstractTimeManagement {
         FederateEvent event;
         FederateAmbassador ambassador;
 
-        while (this.time < getEndTime()) {
+        while (this.time <= getEndTime()) {
+            // the end time is inclusive, in order to schedule events in the last simulation time step
 
             // sync with real time
             if (this.time > 0) {
