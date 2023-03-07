@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(SumoRunner.class)
-public class VehicleSetLaneTest extends AbstractTraciCommandTest {
+public class VehicleSetChangeLaneTest extends AbstractTraciCommandTest {
 
 
 
@@ -46,7 +46,7 @@ public class VehicleSetLaneTest extends AbstractTraciCommandTest {
         assertEquals(11d, vehInfo.position.getY(), 5d);
 
         // RUN
-        new VehicleSetLane().execute(traci.getTraciConnection(), "1", 1, 4000);
+        new VehicleSetChangeLane().execute(traci.getTraciConnection(), "1", 1, 4000);
 
         // ASSERT
         vehInfo = (VehicleSubscriptionResult) Iterables.getOnlyElement(simulateStep.execute(traci.getTraciConnection(), 9 * TIME.SECOND));

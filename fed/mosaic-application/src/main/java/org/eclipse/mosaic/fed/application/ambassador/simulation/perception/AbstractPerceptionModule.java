@@ -135,9 +135,6 @@ public abstract class AbstractPerceptionModule
     abstract List<SpatialObject> getObjectsInRange();
 
     private <T extends SpatialObject<T>> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
-        if (configuration.getPerceptionModifiers().isEmpty()) {
-            return objectsInRange;
-        }
         List<T> filteredList = new ArrayList<>(objectsInRange);
         // create copy of all perceived objects to avoid interference with modifiers of other perception modules.
         filteredList.replaceAll(T::copy);

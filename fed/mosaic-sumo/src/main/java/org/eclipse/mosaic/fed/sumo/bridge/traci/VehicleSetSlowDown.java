@@ -21,6 +21,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.Status;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeVehicleValue;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.TraciDatatypes;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
@@ -53,13 +54,13 @@ public class VehicleSetSlowDown
      *
      * @param bridge      Connection to SUMO.
      * @param vehicleId   The Id of the vehicle to change the route.
-     * @param newSpeedMps The new speed of the vehicle.
-     * @param timeInMs    The duration for the new speed.
+     * @param newSpeedMps The new speed of the vehicle. [m/s]
+     * @param time        The duration for the new speed. [ns]
      * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge bridge, String vehicleId, double newSpeedMps, int timeInMs) throws CommandException, InternalFederateException {
-        super.execute(bridge, vehicleId, newSpeedMps, timeInMs / 1000d);
+    public void execute(Bridge bridge, String vehicleId, double newSpeedMps, long time) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, newSpeedMps, (double) time / TIME.SECOND);
     }
 
     @Override

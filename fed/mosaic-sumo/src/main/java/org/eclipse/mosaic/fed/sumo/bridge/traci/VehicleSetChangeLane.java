@@ -21,23 +21,24 @@ import org.eclipse.mosaic.fed.sumo.bridge.TraciVersion;
 import org.eclipse.mosaic.fed.sumo.bridge.api.complex.Status;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.CommandChangeVehicleValue;
 import org.eclipse.mosaic.fed.sumo.bridge.traci.constants.TraciDatatypes;
+import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 /**
  * This class represents the SUMO command which allows to set a lane for the vehicle for a specific time.
  */
-public class VehicleSetLane
+public class VehicleSetChangeLane
         extends AbstractTraciCommand<Void>
-        implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetLane {
+        implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetChangeLane {
 
     /**
-     * Creates a new {@link VehicleSetLane} object.
+     * Creates a new {@link VehicleSetChangeLane} object.
      * Access needs to be public, because command is called using Reflection.
      *
      * @see <a href="https://sumo.dlr.de/docs/TraCI/Change_Vehicle_State.html">Vehicle State Change</a>
      */
     @SuppressWarnings("WeakerAccess")
-    public VehicleSetLane() {
+    public VehicleSetChangeLane() {
         super(TraciVersion.LOWEST);
 
         write()
@@ -53,15 +54,15 @@ public class VehicleSetLane
     /**
      * This method executes the command with the given arguments in order to set a lane for the vehicle.
      *
-     * @param bridge     Connection to SUMO.
-     * @param vehicleId  The Id of the vehicle.
-     * @param laneIndex  The index of the lane.
-     * @param durationMs Set the lane for this time..
+     * @param bridge    Connection to SUMO.
+     * @param vehicleId The Id of the vehicle.
+     * @param laneIndex The index of the lane.
+     * @param duration  Set the lane for this time..
      * @throws CommandException          if the status code of the response is ERROR. The connection to SUMO is still available.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void execute(Bridge bridge, String vehicleId, int laneIndex, int durationMs) throws CommandException, InternalFederateException {
-        super.execute(bridge, vehicleId, laneIndex, durationMs / 1000d);
+    public void execute(Bridge bridge, String vehicleId, int laneIndex, long duration) throws CommandException, InternalFederateException {
+        super.execute(bridge, vehicleId, laneIndex, duration / (double) TIME.SECOND);
     }
 
     @Override

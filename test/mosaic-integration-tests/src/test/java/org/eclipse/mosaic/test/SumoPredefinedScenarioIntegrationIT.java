@@ -72,9 +72,9 @@ public class SumoPredefinedScenarioIntegrationIT {
     public void sumoVehicleFirstUpdateAtStartup() throws Exception {
         for (String sumoVehicleLog : Lists.newArrayList(VEH_1_SUMO, VEH_2_SUMO)) {
             String onStartupTime = LogAssert.getMatches(simulationRule, sumoVehicleLog, 1,
-                    ".*Startup @(.*?) s: I'm a vehicle defined in SUMO route file.*").get(0);
+                    ".*Startup: I'm a vehicle defined in SUMO route file. \\(at simulation time (.*?) s\\).*").get(0);
             String firstUpdateTime = LogAssert.getMatches(simulationRule, sumoVehicleLog, 1,
-                    ".*First update @(.*?) s .*").get(0);
+                    ".*First update \\(at simulation time (.*?) s\\).*").get(0);
             assertEquals(onStartupTime, firstUpdateTime);
         }
     }

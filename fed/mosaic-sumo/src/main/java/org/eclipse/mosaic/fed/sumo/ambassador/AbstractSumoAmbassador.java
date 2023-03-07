@@ -582,11 +582,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     TIME.format(vehicleSlowDown.getTime()),
                     vehicleSlowDown.getVehicleId(),
                     vehicleSlowDown.getSpeed(),
-                    vehicleSlowDown.getInterval()
+                    vehicleSlowDown.getDuration()
             );
         }
         bridge.getVehicleControl()
-                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), nsToMs(vehicleSlowDown.getInterval()));
+                .slowDown(vehicleSlowDown.getVehicleId(), vehicleSlowDown.getSpeed(), vehicleSlowDown.getDuration());
     }
 
     /**
@@ -618,8 +618,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 log.warn("Stop mode {} is not supported", vehicleStop.getVehicleStopMode());
             }
 
-            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(),
-                    nsToMs(vehicleStop.getDuration()));
+            stopVehicleAt(vehicleStop.getVehicleId(), stopPos, vehicleStop.getVehicleStopMode(), vehicleStop.getDuration());
         } catch (InternalFederateException e) {
             log.warn("Vehicle {} could not be stopped", vehicleStop.getVehicleId());
         }
@@ -740,8 +739,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("VehicleLaneChange failed: unsupported lane change mode.");
                     return;
             }
-            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId,
-                    nsToMs(vehicleLaneChange.getDuration()));
+            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, vehicleLaneChange.getDuration());
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
@@ -854,7 +852,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             log.info(
                     "{} at simulation time {}: " + "vehicleId=\"{}\", targetSpeed={}m/s, interval={}ms",
                     VEHICLE_SPEED_CHANGE_REQ, TIME.format(vehicleSpeedChange.getTime()), vehicleSpeedChange.getVehicleId(),
-                    vehicleSpeedChange.getSpeed(), vehicleSpeedChange.getInterval()
+                    vehicleSpeedChange.getSpeed(), vehicleSpeedChange.getDuration()
             );
         }
         switch (vehicleSpeedChange.getType()) {
@@ -862,15 +860,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 // reset speed to car-following rules
                 bridge.getVehicleControl().setSpeed(vehicleSpeedChange.getVehicleId(), -1.0);
                 break;
-            case WITH_INTERVAL:
-                if (vehicleSpeedChange.getInterval() > 0) {
+            case WITH_DURATION:
+                if (vehicleSpeedChange.getDuration() > 0) {
                     // set speed smoothly with given interval
-                    final long changeSpeedTimestep = vehicleSpeedChange.getTime() + vehicleSpeedChange.getInterval();
+                    final long changeSpeedTimestep = vehicleSpeedChange.getTime() + vehicleSpeedChange.getDuration();
                     log.debug("slow down vehicle {} and schedule change speed event for timestep {} ns ",
                             vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
                     bridge.getVehicleControl()
-                            .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(),
-                                    nsToMs(vehicleSpeedChange.getInterval()));
+                            .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(), vehicleSpeedChange.getDuration());
 
                     // set speed permanently after given interval (in the future) via the event scheduler
                     long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval);
@@ -1117,19 +1114,12 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         );
     }
 
-    private int nsToMs(long timeInNs) {
-        long tmp = timeInNs + (TIME.MILLI_SECOND / 2);
-        timeInNs = tmp > timeInNs ? tmp : Long.MAX_VALUE;
-        tmp = timeInNs / TIME.MILLI_SECOND;
-        return tmp > (long) Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) tmp;
-    }
-
     /**
      * Tries to stop the vehicle at the given edge and offset. However, if the offset is larger
      * than the edge's length, the stop command will fail. In such cases, the offset will decrease,
      * and the stop is requested again.
      */
-    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final VehicleStopMode stopMode, final int duration)
+    private void stopVehicleAt(final String vehicleId, final IRoadPosition stopPos, final VehicleStopMode stopMode, final long duration)
             throws InternalFederateException {
         double stopPosition = 0;
         if (stopMode != VehicleStopMode.PARK_IN_PARKING_AREA) {
@@ -1235,11 +1225,11 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
             setExternalVehiclesToLatestPositions();
             TraciSimulationStepResult simulationStepResult = bridge.getSimulationControl().simulateUntil(time);
+
             VehicleUpdates vehicleUpdates = simulationStepResult.getVehicleUpdates();
             log.trace("Leaving advance time: {}", time);
             removeExternalVehiclesFromUpdates(vehicleUpdates);
             propagateNewRoutes(vehicleUpdates, time);
-            // add SUMO vehicles to RTI
             propagateSumoVehiclesToRti(time);
 
             nextTimeStep += sumoConfig.updateInterval * TIME.MILLI_SECOND;

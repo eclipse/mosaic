@@ -25,8 +25,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Collection of static methods that allow to the assertion of entries in a generated log file.
+ */
 public class LogAssert {
 
+    /**
+     * Fails if pattern isn't contained within the defined {@code logFile}.
+     *
+     * @param rule       the simulation rule used for the test
+     * @param logFile    the log file to search in
+     * @param logPattern the pattern to search for
+     * @throws Exception thrown if parsing of log file fails
+     */
     public static void contains(MosaicSimulationRule rule, String logFile, String logPattern) throws Exception {
         exists(rule, logFile);
 
@@ -42,14 +53,14 @@ public class LogAssert {
         return (int) Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).filter(line -> line.matches(logPattern)).count();
     }
 
-    public static List<String> getMatches(MosaicSimulationRule rule, String logFile, int matchingGroup, String logPattern) throws Exception {
+    public static List<String> getMatches(MosaicSimulationRule rule, String logFile, int captureGroup, String logPattern) throws Exception {
         exists(rule, logFile);
         Pattern pattern = Pattern.compile(logPattern);
         List<String> matches = new ArrayList<>();
         Files.lines(rule.getLogDirectory().resolve(logFile), Charsets.UTF_8).forEach(line -> {
             Matcher matcher = pattern.matcher(line);
             while (matcher.find()) {
-                matches.add(matcher.group(matchingGroup));
+                matches.add(matcher.group(captureGroup));
             }
         });
         return matches;

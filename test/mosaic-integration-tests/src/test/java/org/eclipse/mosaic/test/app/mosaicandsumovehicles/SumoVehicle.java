@@ -40,7 +40,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> imp
 
     @Override
     public void onStartup() {
-        getLog().infoSimTime(this, "Startup @{}: I'm a vehicle defined in SUMO route file.", TIME.format(getOs().getSimulationTime()));
+        getLog().infoSimTime(this, "Startup: I'm a vehicle defined in SUMO route file.", TIME.format(getOs().getSimulationTime()));
         sample();
     }
 
@@ -61,7 +61,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> imp
     @Override
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
         if (previousVehicleData == null) {
-            getLog().infoSimTime(this, "First update @{}", TIME.format(getOs().getSimulationTime()));
+            getLog().infoSimTime(this, "First update", TIME.format(getOs().getSimulationTime()));
             getLog().infoSimTime(this, "I can read my route: {}", getOs().getNavigationModule().getCurrentRoute());
         }
     }
