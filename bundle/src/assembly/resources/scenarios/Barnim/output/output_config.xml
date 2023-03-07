@@ -122,7 +122,7 @@
                     <entry>VehicleId</entry>
                     <entry>Type</entry>
                     <entry>Speed</entry>
-                    <entry>Interval</entry>
+                    <entry>Duration</entry>
                     <entry>Acceleration</entry>
                 </entries>
             </subscription>
