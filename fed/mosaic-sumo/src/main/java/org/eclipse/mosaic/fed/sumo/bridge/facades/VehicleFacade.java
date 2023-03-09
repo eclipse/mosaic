@@ -20,10 +20,10 @@ import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetParameter;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetRouteId;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetVehicleTypeId;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetChangeLane;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetColor;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetHighlight;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetImperfection;
-import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetLane;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetLaneChangeMode;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetMaxAcceleration;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetMaxDeceleration;
@@ -77,7 +77,7 @@ public class VehicleFacade {
     private final VehicleGetParameter getParameter;
 
 
-    private final VehicleSetLane changeLane;
+    private final VehicleSetChangeLane changeLane;
     private final VehicleSetSlowDown slowDown;
     private final VehicleSetStop stop;
     private final VehicleSetResume resume;
@@ -127,7 +127,7 @@ public class VehicleFacade {
         getVehicleTypeId = bridge.getCommandRegister().getOrCreate(VehicleGetVehicleTypeId.class);
         getParameter = bridge.getCommandRegister().getOrCreate(VehicleGetParameter.class);
 
-        changeLane = bridge.getCommandRegister().getOrCreate(VehicleSetLane.class);
+        changeLane = bridge.getCommandRegister().getOrCreate(VehicleSetChangeLane.class);
         slowDown = bridge.getCommandRegister().getOrCreate(VehicleSetSlowDown.class);
         stop = bridge.getCommandRegister().getOrCreate(VehicleSetStop.class);
         resume = bridge.getCommandRegister().getOrCreate(VehicleSetResume.class);
@@ -233,14 +233,14 @@ public class VehicleFacade {
     /**
      * This method enables a vehicle to change the lane.
      *
-     * @param vehicle    The Id of the vehicle.
-     * @param lane       The number of the lane.
-     * @param durationMs The duration in [ms].
+     * @param vehicle  The Id of the vehicle.
+     * @param lane     The number of the lane.
+     * @param duration The duration in [ns].
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void changeLane(String vehicle, int lane, int durationMs) throws InternalFederateException {
+    public void changeLane(String vehicle, int lane, long duration) throws InternalFederateException {
         try {
-            changeLane.execute(bridge, vehicle, lane, durationMs);
+            changeLane.execute(bridge, vehicle, lane, duration);
         } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not change lane for vehicle {}", vehicle);
         }
@@ -251,12 +251,12 @@ public class VehicleFacade {
      *
      * @param vehicle     The if of the vehicle.
      * @param newSpeedMps The new speed in [m/s].
-     * @param durationMs  The duration of slow down in [m/s].
+     * @param duration    The duration of slow down in [ns].
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void slowDown(String vehicle, double newSpeedMps, int durationMs) throws InternalFederateException {
+    public void slowDown(String vehicle, double newSpeedMps, long duration) throws InternalFederateException {
         try {
-            slowDown.execute(bridge, vehicle, newSpeedMps, durationMs);
+            slowDown.execute(bridge, vehicle, newSpeedMps, duration);
         } catch (IllegalArgumentException | CommandException e) {
             log.warn("Could not slow down vehicle {}", vehicle);
         }
@@ -269,11 +269,11 @@ public class VehicleFacade {
      * @param edgeId    The id of the edge.
      * @param position  The position of the stop.
      * @param laneIndex The index of the lane on which to stop.
-     * @param duration  The duration for stop in [ms].
+     * @param duration  The duration for stop in [ns].
      * @param stopMode  The mode indicating the type of the stop.
      * @throws InternalFederateException if some serious error occurs during writing or reading. The TraCI connection is shut down.
      */
-    public void stop(String vehicle, String edgeId, double position, int laneIndex, int duration, VehicleStopMode stopMode) throws InternalFederateException {
+    public void stop(String vehicle, String edgeId, double position, int laneIndex, long duration, VehicleStopMode stopMode) throws InternalFederateException {
         try {
             stop.execute(bridge, vehicle, edgeId, position, laneIndex, duration, VehicleStopMode.toSumoInt(stopMode));
         } catch (IllegalArgumentException | CommandException e) {

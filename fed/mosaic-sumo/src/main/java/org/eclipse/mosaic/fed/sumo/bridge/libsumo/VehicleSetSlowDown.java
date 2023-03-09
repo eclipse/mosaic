@@ -16,13 +16,22 @@
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.rti.TIME;
 
 import org.eclipse.sumo.libsumo.Vehicle;
 
 public class VehicleSetSlowDown implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetSlowDown {
 
-    public void execute(Bridge bridge, String vehicleId, double newSpeedMps, int timeInMs) {
-        Vehicle.slowDown(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), newSpeedMps, timeInMs / 1000d);
+    /**
+     * This method executes the command with the given arguments in order to slow down the vehicle to the new speed.
+     *
+     * @param bridge    Connection to SUMO.
+     * @param vehicleId The Id of the vehicle to change the route.
+     * @param newSpeed  The new speed of the vehicle. [m/s]
+     * @param time      The duration for the new speed. [ns]
+     */
+    public void execute(Bridge bridge, String vehicleId, double newSpeed, long time) {
+        Vehicle.slowDown(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), newSpeed, (double) time / TIME.SECOND);
     }
 
 }

@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,7 @@ import org.eclipse.mosaic.starter.MosaicSimulation;
 import org.eclipse.mosaic.test.junit.LogAssert;
 import org.eclipse.mosaic.test.junit.MosaicSimulationRule;
 
+import com.google.common.collect.Lists;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -64,6 +66,17 @@ public class SumoPredefinedScenarioIntegrationIT {
     @Test
     public void applicationAmbassadorReceivesAllRoutes() throws Exception {
         LogAssert.contains(simulationRule, VEH_1_SUMO, ".*4 routes are known to the SimulationKernel.*");
+    }
+
+    @Test
+    public void sumoVehicleFirstUpdateAtStartup() throws Exception {
+        for (String sumoVehicleLog : Lists.newArrayList(VEH_1_SUMO, VEH_2_SUMO)) {
+            String onStartupTime = LogAssert.getMatches(simulationRule, sumoVehicleLog, 1,
+                    ".*Startup: I'm a vehicle defined in SUMO route file. \\(at simulation time (.*?) s\\).*").get(0);
+            String firstUpdateTime = LogAssert.getMatches(simulationRule, sumoVehicleLog, 1,
+                    ".*First update \\(at simulation time (.*?) s\\).*").get(0);
+            assertEquals(onStartupTime, firstUpdateTime);
+        }
     }
 
 }

@@ -81,7 +81,8 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
         Database database = null;
         if (SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting() instanceof DatabaseRouting) {
-            database = ((DatabaseRouting) SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting()).getScenarioDatabase();
+            database = ((DatabaseRouting) SimulationKernel.SimulationKernel
+                    .getCentralNavigationComponent().getRouting()).getScenarioDatabase();
         }
 
         if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex != null) {
@@ -174,12 +175,12 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
 
     @Override
-    public void slowDown(float speed, long interval) {
+    public void slowDown(float speed, long duration) {
         VehicleSlowDown vehicleSlowDown = new VehicleSlowDown(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId(),
                 speed,
-                interval
+                duration
         );
         sendInteractionToRti(vehicleSlowDown);
     }
@@ -189,7 +190,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         VehicleSpeedChange vehicleSpeedChange = new VehicleSpeedChange(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
                 getId(),
-                VehicleSpeedChangeType.WITH_INTERVAL,
+                VehicleSpeedChangeType.WITH_DURATION,
                 newSpeed,
                 interval, 0
         );

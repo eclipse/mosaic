@@ -18,7 +18,6 @@ package org.eclipse.mosaic.fed.sumo.ambassador;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleClassMapping;
 import org.eclipse.mosaic.fed.sumo.util.SumoVehicleTypesWriter;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
-import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
@@ -39,12 +38,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of a {@link AbstractSumoAmbassador} for the traffic simulator
@@ -78,16 +75,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
      * Cached {@link VehicleRegistration}-interactions, for vehicles, that haven't been subscribed to yet.
      */
     private final List<VehicleRegistration> notYetSubscribedVehicles = new ArrayList<>();
-
-    /**
-     * Set containing all vehicles, that have been added using the SUMO route file.
-     */
-    private final Set<String> vehiclesAddedViaRouteFile = new HashSet<>();
-
-    /**
-     * Set containing all vehicles, that have been added from the RTI e.g. using the Mapping file.
-     */
-    private final Set<String> vehiclesAddedViaRti = new HashSet<>();
 
     /**
      * Constructor for {@link SumoAmbassador}.
@@ -169,9 +156,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
         boolean subscribeToVehicle = sumoConfig.subscribeToAllVehicles || vehicleMapping.hasApplication();
         log.info(logMessage, vehicleId, vehicleRegistration.getTime(), subscribeToVehicle);
-
-        // now prepare vehicles to subscribe to
-        if (subscribeToVehicle) {
+        if (subscribeToVehicle) { // now prepare vehicles to subscribe to
             notYetSubscribedVehicles.add(vehicleRegistration);
         }
     }
@@ -270,35 +255,10 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (time < 0) {
             return;
         }
-        // first check if there were new vehicles added via SUMO
-        propagateSumoVehiclesToRti();
         // now add all vehicles, that were received from RTI
         addNotYetAddedVehicles(time);
         // now subscribe to all relevant vehicles
         subscribeToNotYetSubscribedVehicles(time);
-
-    }
-
-    private void propagateSumoVehiclesToRti() throws InternalFederateException {
-        final List<String> departedVehicles = bridge.getSimulationControl().getDepartedVehicles();
-        String vehicleTypeId;
-        VehicleType vehicleType;
-        for (String vehicleId : departedVehicles) {
-            if (vehiclesAddedViaRti.contains(vehicleId)) { // only handle route file vehicles here
-                continue;
-            }
-            vehiclesAddedViaRouteFile.add(vehicleId);
-            vehicleTypeId = bridge.getVehicleControl().getVehicleTypeId(vehicleId);
-            vehicleType = bridge.getVehicleControl().getVehicleType(vehicleTypeId);
-            try {
-                rti.triggerInteraction(new ScenarioVehicleRegistration(this.nextTimeStep, vehicleId, vehicleType));
-            } catch (IllegalValueException e) {
-                throw new InternalFederateException(e);
-            }
-            if (sumoConfig.subscribeToAllVehicles) {
-                bridge.getSimulationControl().subscribeForVehicle(vehicleId, this.nextTimeStep, this.getEndTime());
-            }
-        }
     }
 
     private void addNotYetAddedVehicles(long time) throws InternalFederateException {
@@ -330,7 +290,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                             vehicleId, vehicleRegistration.getTime(), vehicleType, routeId, laneId, departPos);
 
                     if (!routes.containsKey(routeId)) {
-                        throw new IllegalArgumentException("Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime());
+                        throw new IllegalArgumentException(
+                                "Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime()
+                        );
                     }
 
                     if (departIndex > 0) {
@@ -369,7 +331,8 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
         if (departIndex >= connections.size()) {
             throw new IllegalArgumentException("The departIndex=" + departIndex + " is too large for route with id=" + routeId);
         }
-        final VehicleRoute cutRoute = new VehicleRoute(newRouteId, connections.subList(departIndex, connections.size()), route.getNodeIds(), route.getLength());
+        final VehicleRoute cutRoute =
+                new VehicleRoute(newRouteId, connections.subList(departIndex, connections.size()), route.getNodeIds(), route.getLength());
         propagateRouteIfAbsent(newRouteId, cutRoute);
         return newRouteId;
     }
@@ -469,8 +432,9 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
     /**
      * Propagates the route (e.g., from scenario database) to SUMO using the configured bridge.
+     *
      * @param routeId ID of the route
-     * @param route route definition
+     * @param route   route definition
      * @throws InternalFederateException thrown if connection to bridge failed
      */
     private void propagateRouteIfAbsent(String routeId, VehicleRoute route) throws InternalFederateException {

@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.sumo.ambassador;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -75,6 +76,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Tests for {@link SumoAmbassador}.
@@ -202,14 +204,14 @@ public class SumoAmbassadorTest {
 
         // RUN
         VehicleSpeedChange vehicleSpeedChange =
-                new VehicleSpeedChange(0, "veh_0", VehicleSpeedChange.VehicleSpeedChangeType.WITH_INTERVAL, 10, 5 * TIME.SECOND, 0);
+                new VehicleSpeedChange(0, "veh_0", VehicleSpeedChange.VehicleSpeedChangeType.WITH_DURATION, 10, 5 * TIME.SECOND, 0);
         ambassador.processInteraction(vehicleSpeedChange);
         mockSimulationStepResult(0L);
         ambassador.advanceTime(0L);
 
         // ASSERT
         verify(traciClientBridgeMock.getVehicleControl(), never()).setSpeed(anyString(), anyDouble());
-        verify(traciClientBridgeMock.getVehicleControl()).slowDown(eq("veh_0"), eq(10.0), eq(5000));
+        verify(traciClientBridgeMock.getVehicleControl()).slowDown(eq("veh_0"), eq(10.0), eq(5 * TIME.SECOND));
 
         // RUN+ASSERT: setSpeed is NOT called after 4 seconds
         ambassador.advanceTime(4 * TIME.SECOND);
@@ -284,7 +286,8 @@ public class SumoAmbassadorTest {
         sendVehiclePathsAndTypes_doInitTraci();
 
         TrafficLightGroup tlg = new TrafficLightGroup("tl_0", new HashMap<>(1), Lists.newArrayList());
-        when(traciClientBridgeMock.getSimulationControl().getTrafficLightGroupIds()).thenReturn(Lists.newArrayList(tlg.getGroupId(), "unknown"));
+        when(traciClientBridgeMock.getSimulationControl().getTrafficLightGroupIds())
+                .thenReturn(Lists.newArrayList(tlg.getGroupId(), "unknown"));
 
         TrafficLightFacade trafficLightControlMock = mock(TrafficLightFacade.class);
         when(traciClientBridgeMock.getTrafficLightControl()).thenReturn(trafficLightControlMock);
@@ -300,8 +303,12 @@ public class SumoAmbassadorTest {
 
         // ASSERT
         verify(rtiMock, atLeastOnce()).triggerInteraction(captor.capture());
-        ScenarioTrafficLightRegistration trafficLights = (ScenarioTrafficLightRegistration) captor.getAllValues().stream()
-                .filter(m -> m instanceof ScenarioTrafficLightRegistration).findFirst().get();
+        Optional<Interaction> registration =
+                captor.getAllValues().stream().filter(m -> m instanceof ScenarioTrafficLightRegistration).findFirst();
+        if (!registration.isPresent()) {
+            fail();
+        }
+        ScenarioTrafficLightRegistration trafficLights = (ScenarioTrafficLightRegistration) registration.get();
 
         assertTrue(trafficLights.getTrafficLightGroups().contains(tlg));
         assertTrue(trafficLights.getLanesControlledByGroups().containsKey(tlg.getGroupId()));
@@ -311,8 +318,11 @@ public class SumoAmbassadorTest {
 
     private void mockSimulationStepResult(long time, VehicleData... vehicles) throws InternalFederateException {
         VehicleUpdates vehicleUpdates = new VehicleUpdates(time, Lists.newArrayList(vehicles), Lists.newArrayList(), Lists.newArrayList());
-        TraciSimulationStepResult traciSimulationResult =
-                new TraciSimulationStepResult(vehicleUpdates, new TrafficDetectorUpdates(time, Lists.newArrayList(), Lists.newArrayList()), new TrafficLightUpdates(time, new HashMap<>()));
+        TraciSimulationStepResult traciSimulationResult = new TraciSimulationStepResult(
+                vehicleUpdates,
+                new TrafficDetectorUpdates(time, Lists.newArrayList(), Lists.newArrayList()),
+                new TrafficLightUpdates(time, new HashMap<>())
+        );
         when(traciClientBridgeMock.getSimulationControl().simulateUntil(anyLong())).thenReturn(traciSimulationResult);
     }
 
