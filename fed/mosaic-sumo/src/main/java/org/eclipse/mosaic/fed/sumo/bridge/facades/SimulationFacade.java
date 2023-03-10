@@ -30,6 +30,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.SimulationGetTrafficLightIds;
 import org.eclipse.mosaic.fed.sumo.bridge.api.SimulationSimulateStep;
 import org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightSubscribe;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleAdd;
+import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetTeleportingList;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetRemove;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetUpdateBestLanes;
 import org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe;
@@ -100,6 +101,7 @@ public class SimulationFacade {
     private final SimulationGetTrafficLightIds getTrafficLightIds;
     private final VehicleAdd vehicleAdd;
     private final VehicleSetRemove remove;
+    private final VehicleGetTeleportingList getTeleportingList;
 
 
     private final VehicleSubscribe vehicleSubscribe;
@@ -139,7 +141,7 @@ public class SimulationFacade {
             return lastVehicleData != currentVehicleData && currentVehicleData != null;
         }
 
-        private boolean isRemoved() {
+        private boolean isNotUpdated() {
             return lastVehicleData != null && currentVehicleData == lastVehicleData;
         }
     }
@@ -169,6 +171,7 @@ public class SimulationFacade {
         this.getTrafficLightIds = bridge.getCommandRegister().getOrCreate(SimulationGetTrafficLightIds.class);
         this.vehicleAdd = bridge.getCommandRegister().getOrCreate(VehicleAdd.class);
         this.remove = bridge.getCommandRegister().getOrCreate(VehicleSetRemove.class);
+        this.getTeleportingList = bridge.getCommandRegister().getOrCreate(VehicleGetTeleportingList.class);
 
         this.inductionloopSubscribe = bridge.getCommandRegister().getOrCreate(InductionLoopSubscribe.class);
         this.laneAreaSubscribe = bridge.getCommandRegister().getOrCreate(LaneAreaSubscribe.class);
@@ -401,7 +404,7 @@ public class SimulationFacade {
      * Enables the calculation of distance sensor values for the given vehicle.
      */
     public void configureDistanceSensors(String vehicleId, double maximumLookahead, boolean front, boolean rear) {
-        SumoVehicleState vehicleState = getVehicleState(vehicleId);
+        SumoVehicleState vehicleState = getOrCreateVehicleState(vehicleId);
         if (front) {
             vehicleState.frontSensorDistance = maximumLookahead > 0 ? maximumLookahead : null;
         }
@@ -491,9 +494,9 @@ public class SimulationFacade {
     private SumoVehicleState processVehicleSubscriptionResult(final long time,
                                                               final VehicleSubscriptionResult veh,
                                                               final Map<String, String> vehicleSegmentInfo
-    ) {
+    ) throws CommandException, InternalFederateException {
 
-        final SumoVehicleState sumoVehicle = getVehicleState(veh.id);
+        final SumoVehicleState sumoVehicle = getOrCreateVehicleState(veh.id);
         final VehicleStopMode vehicleStopMode = VehicleStopMode.fromSumoInt(veh.stoppedStateEncoded);
         final boolean isParking = vehicleStopMode.isParking();
         final boolean hasInvalidPosition = veh.position == null || !veh.position.isValid();
@@ -503,17 +506,23 @@ public class SimulationFacade {
         final boolean isWaitingToLeaveParking = !isNewVehicle && hasInvalidPosition // check for "waiting" state
                 && sumoVehicle.lastVehicleData.getVehicleStopMode().isParking(); // check if was parked
 
-        if (hasInvalidPosition && isNewVehicle) {
-            /* if a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
-             * We ignore this vehicle until it's added to the simulation. */
-            log.debug("Skip vehicle {} which is loaded but not yet simulated.", veh.id);
-            return null;
-        }
-
         if (hasInvalidPosition && !isWaitingToLeaveParking) {
-            /* If the vehicle, however,  has already been in the simulation (lastVehicleData was valid),
-             * then there seems to be an error and the vehicle state will not be updated, resulting in a removal of the vehicle. */
-            log.warn("vehicle {} has no valid position and will be removed.", veh.id);
+            if (isNewVehicle) {
+                /* If a vehicle has not yet been simulated but loaded by SUMO, the vehicle's position will be invalid.
+                 * We ignore this vehicle until it's added to the simulation. */
+                log.debug("Skip vehicle {} which is loaded but not yet simulated.", veh.id);
+                return null;
+            }
+            boolean isTeleporting = getTeleportingList.execute(bridge).contains(veh.id); // we check this here to limit SUMO API calls
+            if (isTeleporting) {
+                /* If the vehicle is teleporting we don't stop the subscription. However, the state of the vehicle won't
+                be updated until the teleport is finished, as we cannot be sure of the behaviour during teleporting. */
+                sumoVehicle.currentVehicleData = new VehicleData.Builder(time, veh.id).copyFrom(sumoVehicle.lastVehicleData)
+                        .stopped(VehicleStopMode.NOT_STOPPED) // teleporting vehicles are not stopped to differentiate from stopped vehicles
+                        .create();
+                return sumoVehicle;
+            }
+            log.warn("Vehicle {} has no valid position and will be removed.", veh.id);
             return sumoVehicle;
         }
 
@@ -552,9 +561,8 @@ public class SimulationFacade {
                         // for parking vehicles, there are no consumptions and emissions to measure
                         .consumptions(new VehicleConsumptions(
                                 new Consumptions(0d), sumoVehicle.lastVehicleData.getVehicleConsumptions().getAllConsumptions())
-                        ).emissions(
-                                new VehicleEmissions(new Emissions(0d, 0d, 0d, 0d, 0d),
-                                        sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
+                        ).emissions(new VehicleEmissions(
+                                new Emissions(0d, 0d, 0d, 0d, 0d), sumoVehicle.lastVehicleData.getVehicleEmissions().getAllEmissions()));
             } else {
                 vehicleDataBuilder
                         .road(getRoadPosition(veh, sumoVehicle.lastVehicleData))
@@ -571,11 +579,11 @@ public class SimulationFacade {
         return new PublicTransportData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
     }
 
-    private List<String> findRemovedVehicles(long time) {
+    private List<String> findRemovedVehicles(long time) throws CommandException, InternalFederateException {
         final List<String> removedVehicles = new LinkedList<>();
         for (Iterator<SumoVehicleState> vehicleIt = sumoVehicles.values().iterator(); vehicleIt.hasNext(); ) {
             SumoVehicleState vehicle = vehicleIt.next();
-            if (vehicle.isRemoved()) {
+            if (vehicle.isNotUpdated()) {
                 removedVehicles.add(vehicle.id);
                 vehicleIt.remove();
                 log.info("Removed vehicle \"{}\" at simulation time {}ns", vehicle.id, time);
@@ -586,7 +594,7 @@ public class SimulationFacade {
 
 
     private void processVehicleContextSubscriptionResult(VehicleContextSubscriptionResult contextSubscriptionResult) {
-        SumoVehicleState sumoVehicleState = getVehicleState(contextSubscriptionResult.id);
+        SumoVehicleState sumoVehicleState = getOrCreateVehicleState(contextSubscriptionResult.id);
         for (VehicleSubscriptionResult vehInSight : contextSubscriptionResult.contextSubscriptions) {
             if (contextSubscriptionResult.id.equals(vehInSight.id)) {
                 continue;
@@ -726,7 +734,7 @@ public class SimulationFacade {
         return vehicleToSegmentMap;
     }
 
-    private SumoVehicleState getVehicleState(String id) {
+    private SumoVehicleState getOrCreateVehicleState(String id) {
         return sumoVehicles.computeIfAbsent(id, SumoVehicleState::new);
     }
 
