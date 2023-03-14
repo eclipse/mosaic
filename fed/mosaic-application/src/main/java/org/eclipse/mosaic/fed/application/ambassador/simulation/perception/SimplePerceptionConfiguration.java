@@ -18,8 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModuleConfiguration;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class SimplePerceptionConfiguration implements PerceptionModuleConfiguration {
@@ -36,10 +35,10 @@ public class SimplePerceptionConfiguration implements PerceptionModuleConfigurat
 
     private final List<PerceptionModifier> perceptionModifiers;
 
-    public SimplePerceptionConfiguration(double viewingAngle, double viewingRange, PerceptionModifier... perceptionModifiers) {
+    private SimplePerceptionConfiguration(double viewingAngle, double viewingRange, List<PerceptionModifier> perceptionModifiers) {
         this.viewingAngle = viewingAngle;
         this.viewingRange = viewingRange;
-        this.perceptionModifiers = Lists.newArrayList(perceptionModifiers);
+        this.perceptionModifiers = perceptionModifiers;
     }
 
     public double getViewingAngle() {
@@ -53,5 +52,26 @@ public class SimplePerceptionConfiguration implements PerceptionModuleConfigurat
 
     public List<PerceptionModifier> getPerceptionModifiers() {
         return perceptionModifiers;
+    }
+
+    public static class Builder {
+        private final double viewingAngle;
+        private final double viewingRange;
+
+        private final List<PerceptionModifier> perceptionModifiers = new ArrayList<>();
+
+        public Builder(double viewingAngle, double viewingRange) {
+            this.viewingAngle = viewingAngle;
+            this.viewingRange = viewingRange;
+        }
+
+        public Builder addModifier(PerceptionModifier perceptionModifier) {
+            perceptionModifiers.add(perceptionModifier);
+            return this;
+        }
+
+        public SimplePerceptionConfiguration build() {
+            return new SimplePerceptionConfiguration(viewingAngle, viewingRange, perceptionModifiers);
+        }
     }
 }

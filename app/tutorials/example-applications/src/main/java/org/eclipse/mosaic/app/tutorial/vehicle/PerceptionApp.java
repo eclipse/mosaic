@@ -72,10 +72,12 @@ public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> i
         // filter adding noise to longitudinal and lateral
         PositionErrorModifier positionErrorModifier = new PositionErrorModifier(getRandom());
 
-        SimplePerceptionConfiguration perceptionModuleConfiguration = new SimplePerceptionConfiguration(
-                VIEWING_ANGLE, VIEWING_RANGE,
-                simpleOcclusionModifier, distanceModifier, positionErrorModifier
-        );
+        SimplePerceptionConfiguration perceptionModuleConfiguration =
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE)
+                        .addModifier(simpleOcclusionModifier)
+                        .addModifier(distanceModifier)
+                        .addModifier(positionErrorModifier)
+                        .build();
         getOs().getPerceptionModule().enable(perceptionModuleConfiguration);
     }
 
