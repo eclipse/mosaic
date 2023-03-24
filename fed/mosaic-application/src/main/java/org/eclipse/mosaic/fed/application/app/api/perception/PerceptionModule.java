@@ -58,5 +58,5 @@ public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration>
      *
      * @return a list of all {@link SpatialObject}s inside the perception range
      */
-    List<SpatialObject> getPerceivedObjects();
+    <T extends SpatialObject<T>> List<T> getPerceivedObjects();
 }

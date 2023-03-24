@@ -105,4 +105,21 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
                 .append(outgoingLane, that.outgoingLane)
                 .isEquals();
     }
+
+    /**
+     * Returns a hard copy of the {@link TrafficLightObject}, this should be used
+     * when the data of a perceived traffic light is to be altered or stored in memory.
+     *
+     * @return a copy of the {@link TrafficLightObject}
+     */
+    @Override
+    public TrafficLightObject copy() {
+        return (TrafficLightObject) new TrafficLightObject(getId())
+                .setIncomingLane(getIncomingLane())
+                .setOutgoingLane(getOutgoingLane())
+                .setTrafficLightState(getTrafficLightState())
+                .setTrafficLightGroupId(getTrafficLightGroupId())
+                .setPosition(getProjectedPosition());
+
+    }
 }

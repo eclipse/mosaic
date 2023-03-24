@@ -16,12 +16,13 @@
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.rti.TIME;
 
 import org.eclipse.sumo.libsumo.Vehicle;
 
-public class VehicleSetLane implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetLane {
+public class VehicleSetChangeLane implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSetChangeLane {
 
-    public void execute(Bridge bridge, String vehicleId, int laneIndex, int durationMs) {
-        Vehicle.changeLane(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), laneIndex, durationMs / 1000d);
+    public void execute(Bridge bridge, String vehicleId, int laneIndex, long duration) {
+        Vehicle.changeLane(Bridge.VEHICLE_ID_TRANSFORMER.toExternalId(vehicleId), laneIndex, duration / (double) TIME.SECOND);
     }
 }

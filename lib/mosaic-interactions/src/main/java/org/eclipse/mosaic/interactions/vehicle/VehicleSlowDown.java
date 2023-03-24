@@ -49,23 +49,23 @@ public final class VehicleSlowDown extends Interaction {
     private final float speed;
 
     /**
-     * Time after which the new speed shall be reached.
+     * Time after which the new speed shall be reached. [ns]
      */
-    private final long timeInterval;
+    private final long duration;
 
     /**
      * Constructor for a {@link VehicleSlowDown} interaction.
      *
-     * @param time         Timestamp of this interaction, unit: [ns]
-     * @param vehicleId    The id of the vehicle, that gets slowed down.
-     * @param speed        The desired speed.
-     * @param timeInterval The time interval in which the desired speed should be reached, unit: [ns]
+     * @param time      Timestamp of this interaction, unit: [ns]
+     * @param vehicleId The id of the vehicle, that gets slowed down.
+     * @param speed     The desired speed.
+     * @param duration  The duration in which the desired speed should be reached, unit: [ns]
      */
-    public VehicleSlowDown(long time, String vehicleId, float speed, long timeInterval) {
+    public VehicleSlowDown(long time, String vehicleId, float speed, long duration) {
         super(time);
         this.vehicleId = vehicleId;
         this.speed = speed;
-        this.timeInterval = timeInterval;
+        this.duration = duration;
     }
 
     public float getSpeed() {
@@ -76,8 +76,8 @@ public final class VehicleSlowDown extends Interaction {
         return vehicleId;
     }
 
-    public long getInterval() {
-        return timeInterval;
+    public long getDuration() {
+        return duration;
     }
 
     @Override
@@ -85,7 +85,7 @@ public final class VehicleSlowDown extends Interaction {
         return new HashCodeBuilder(5, 71)
                 .append(vehicleId)
                 .append(speed)
-                .append(timeInterval)
+                .append(duration)
                 .toHashCode();
     }
 
@@ -105,7 +105,7 @@ public final class VehicleSlowDown extends Interaction {
         return new EqualsBuilder()
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.speed, other.speed)
-                .append(this.timeInterval, other.timeInterval)
+                .append(this.duration, other.duration)
                 .isEquals();
     }
 
@@ -115,7 +115,7 @@ public final class VehicleSlowDown extends Interaction {
                 .appendSuper(super.toString())
                 .append("vehicleId", vehicleId)
                 .append("speed", speed)
-                .append("timeInterval", timeInterval)
+                .append("duration", duration)
                 .toString();
     }
 }

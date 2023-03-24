@@ -44,7 +44,7 @@ public final class VehicleSpeedChange extends Interaction {
      * These are all available types of speed changes currently supported.
      */
     public enum VehicleSpeedChangeType {
-        WITH_INTERVAL,
+        WITH_DURATION,
         RESET,
         WITH_FORCED_ACCELERATION,
         WITH_PLEASANT_ACCELERATION
@@ -71,9 +71,9 @@ public final class VehicleSpeedChange extends Interaction {
     private final double newSpeed;
 
     /**
-     * Interval (in ms) in which the new speed shall be reached.
+     * The duration (in ns) in which the new speed shall be reached.
      */
-    private final long changeInterval;
+    private final long duration;
 
     /**
      * The desired acceleration.
@@ -87,16 +87,16 @@ public final class VehicleSpeedChange extends Interaction {
      * @param vehicleId    vehicle identifier
      * @param type         change speed type
      * @param newSpeed     New desired speed, unit [m/s]
-     * @param interval     Interval in which the desired speed shall be reached, unit [ns]
+     * @param duration     Duration in which the desired speed shall be reached, unit [ns]
      * @param acceleration desired acceleration
      */
     public VehicleSpeedChange(long time, String vehicleId, VehicleSpeedChangeType type,
-                              double newSpeed, long interval, double acceleration) {
+                              double newSpeed, long duration, double acceleration) {
         super(time);
         this.vehicleId = vehicleId;
         this.type = type;
         this.newSpeed = newSpeed;
-        this.changeInterval = interval;
+        this.duration = duration;
         this.acceleration = acceleration;
     }
 
@@ -112,8 +112,8 @@ public final class VehicleSpeedChange extends Interaction {
         return this.newSpeed;
     }
 
-    public long getInterval() {
-        return changeInterval;
+    public long getDuration() {
+        return duration;
     }
 
     public double getAcceleration() {
@@ -126,7 +126,7 @@ public final class VehicleSpeedChange extends Interaction {
                 .append(vehicleId)
                 .append(type)
                 .append(newSpeed)
-                .append(changeInterval)
+                .append(duration)
                 .append(acceleration)
                 .toHashCode();
     }
@@ -148,7 +148,7 @@ public final class VehicleSpeedChange extends Interaction {
                 .append(this.vehicleId, other.vehicleId)
                 .append(this.type, other.type)
                 .append(this.newSpeed, other.newSpeed)
-                .append(this.changeInterval, other.changeInterval)
+                .append(this.duration, other.duration)
                 .append(this.acceleration, other.acceleration)
                 .isEquals();
     }
@@ -160,7 +160,7 @@ public final class VehicleSpeedChange extends Interaction {
                 .append("vehicleId", vehicleId)
                 .append("type", type)
                 .append("newSpeed", newSpeed)
-                .append("changeInterval", changeInterval)
+                .append("duration", duration)
                 .append("acceleration", acceleration)
                 .toString();
     }

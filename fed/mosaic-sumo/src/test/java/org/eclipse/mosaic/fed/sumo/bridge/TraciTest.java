@@ -76,8 +76,13 @@ public class TraciTest {
 
     private static CSumo createSumoConfig() {
         CSumo config = new CSumo();
-        config.subscriptions =
-                Lists.newArrayList(SUBSCRIPTION_ROAD_POSITION, SUBSCRIPTION_SIGNALS, SUBSCRIPTION_EMISSIONS, SUBSCRIPTION_LEADER, SUBSCRIPTION_TRAINS);
+        config.subscriptions = Lists.newArrayList(
+                SUBSCRIPTION_ROAD_POSITION,
+                SUBSCRIPTION_SIGNALS,
+                SUBSCRIPTION_EMISSIONS,
+                SUBSCRIPTION_LEADER,
+                SUBSCRIPTION_TRAINS
+        );
         return config;
     }
 
@@ -177,7 +182,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park)
-        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK_ON_ROADSIDE);
+        traci.getVehicleControl().stop("veh_0", "1_1_2", 200, 0, Long.MAX_VALUE, VehicleStopMode.PARK_ON_ROADSIDE);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -207,7 +212,7 @@ public class TraciTest {
         traci.getSimulationControl().simulateUntil(10 * TIME.SECOND);
 
         // RUN (park) at parking Area
-        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200, 0, Integer.MAX_VALUE, VehicleStopMode.PARK_IN_PARKING_AREA);
+        traci.getVehicleControl().stop("veh_0", "parkingArea_1_1_2_0_0", 200, 0, Long.MAX_VALUE, VehicleStopMode.PARK_IN_PARKING_AREA);
         for (int t = 11; t < 100; t++) {
             traci.getSimulationControl().simulateUntil(t * TIME.SECOND);
         }
@@ -278,7 +283,7 @@ public class TraciTest {
         assertEquals(13.5, traci.getSimulationControl().getLastKnownVehicleData("veh_0").getSpeed(), 1d);
 
         // RUN
-        traci.getVehicleControl().slowDown("veh_0", 3d, 4000 /* ms */);
+        traci.getVehicleControl().slowDown("veh_0", 3d, 4 * TIME.SECOND);
 
         // ASSERT (by checking if slow down speed is reached after given duration)
         traci.getSimulationControl().simulateUntil(9 * TIME.SECOND);

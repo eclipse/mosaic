@@ -63,7 +63,7 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
     }
 
     @Override
-    List<SpatialObject> getObjectsInRange() {
+    public List<SpatialObject> getObjectsInRange() {
         this.log.warn("Traffic Light Perception not implemented for {} only vehicles will be retrieved.", this.getClass().getSimpleName());
         return new ArrayList<>(getVehiclesInRange());
     }

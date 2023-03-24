@@ -37,7 +37,7 @@ public class LibsumoCheckRule implements TestRule {
                 if (!libsumoAvailable) {
                     throw new AssumptionViolatedException("Library 'Libsumo' is not available. Skipping tests.");
                 }
-                if (!LibSumoAmbassador.correctLibSumoVersion()) {
+                if (LibSumoAmbassador.incorrectLibSumoVersion()) {
                     throw new AssumptionViolatedException("Current SUMO version at " + getSumoExecutable("sumo") + " is not supported with LibSumo.");
                 }
                 statement.evaluate();

@@ -153,8 +153,8 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
      */
     public final boolean preProcessEvent(final Event event) {
         final Object resource = event.getResource();
-        if (osLog.isDebugEnabled()) {
-            osLog.debug("#preProcessEvent at simulation time {} with resource class {} and nice {}",
+        if (osLog.isTraceEnabled()) {
+            osLog.trace("#preProcessEvent at simulation time {} with resource class {} and nice {}",
                     TIME.format(event.getTime()), event.getResourceClassSimpleName(), event.getNice());
         }
         // failsafe
@@ -243,10 +243,17 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
             application.tearDown();
         }
         applications.clear();
+
+        if (cellModule.isEnabled()) {
+            cellModule.disable();
+        }
+        if (adhocModule.isEnabled()) {
+            adhocModule.disable();
+        }
     }
 
     protected void setUp() {
-        osLog.debug("#tearUp at simulation time {}", TIME.format(getSimulationTime()));
+        osLog.debug("#setUp at simulation time {}", TIME.format(getSimulationTime()));
         for (AbstractApplication<?> application : getApplicationsIterator(AbstractApplication.class)) {
             // create a new logger for each application and call the syscallSetUp method
             application.setUp(this, new UnitLoggerImpl(id, application.getClass().getSimpleName()));
@@ -259,7 +266,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
      * @param applicationClassNames list of application class names
      */
     public final void loadApplications(List<String> applicationClassNames) {
-
+        osLog.debug("#loadApplications {} at simulation time {}", applicationClassNames, TIME.format(getSimulationTime()));
         final ClassNameParser classNameParser = new ClassNameParser(osLog, SimulationKernel.SimulationKernel.getClassLoader());
 
         // iterate over all class names

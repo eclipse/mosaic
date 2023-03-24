@@ -65,21 +65,35 @@ public class LibSumoAmbassador extends SumoAmbassador {
 
         final String libsumoLibrary;
         if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
-            libsumoLibrary = getSumoExecutable("libsumojni.dll");
+            libsumoLibrary = getFromSumoHome("libsumojni.dll");
         } else {
-            libsumoLibrary = getSumoExecutable("liblibsumojni.so");
+            libsumoLibrary = getFromSumoHome("liblibsumojni.so");
         }
 
         if (new File(libsumoLibrary).exists()) {
+            // Workaround based on suggestions made in https://github.com/eclipse/sumo/issues/12605
+            if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
+                loadQuiet(getFromSumoHome("iconv-2.dll"));
+                loadQuiet(getFromSumoHome("intl-8.dll"));
+                loadQuiet(getFromSumoHome("proj_9_0.dll"));
+            }
+
             System.load(libsumoLibrary);
 
-            if (!correctLibSumoVersion()) {
+            if (incorrectLibSumoVersion()) {
                 throw new InternalFederateException(
                         "The loaded Libsumo library at " + libsumoLibrary + " is not compatible with this ambassador. "
                                 + "Valid versions are: " + VALID_LIBSUMO_VERSIONS);
             }
         } else {
             try {
+                // Workaround based on suggestions made in https://github.com/eclipse/sumo/issues/12605
+                if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
+                    loadLibraryQuiet("iconv-2");
+                    loadLibraryQuiet("intl-8");
+                    loadLibraryQuiet("proj_9_0");
+                }
+
                 // if no file found, try to load libsumo it directly from java.library.path
                 System.loadLibrary("libsumojni");
             } catch (Throwable e) {
@@ -101,13 +115,29 @@ public class LibSumoAmbassador extends SumoAmbassador {
         bridge = new LibSumoBridge(sumoConfig, getProgramArguments(0));
     }
 
-    public static boolean correctLibSumoVersion() {
+    private void loadQuiet(String libraryFile) {
         try {
-            Process p = new ProcessBuilder(getSumoExecutable("sumo"), "--version").start();
+            System.load(libraryFile);
+        } catch (Throwable error) {
+            // quiet
+        }
+    }
+
+    private void loadLibraryQuiet(String libraryName) {
+        try {
+            System.loadLibrary(libraryName);
+        } catch (Throwable error) {
+            // quiet
+        }
+    }
+
+    public static boolean incorrectLibSumoVersion() {
+        try {
+            Process p = new ProcessBuilder(getFromSumoHome("sumo"), "--version").start();
             String sumoOutput = Iterables.getFirst(IOUtils.readLines(p.getInputStream(), Charset.defaultCharset()), null);
-            return sumoOutput != null && sumoOutput.matches(".*(" + VALID_LIBSUMO_VERSIONS + ").*");
+            return sumoOutput == null || !sumoOutput.matches(".*(" + VALID_LIBSUMO_VERSIONS + ").*");
         } catch (IOException e) {
-            return false;
+            return true;
         }
     }
 }

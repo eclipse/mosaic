@@ -55,7 +55,7 @@ public class SumoGuiAmbassador extends SumoAmbassador {
         // SUMO needs to start the federate by itself, therefore we need to store the federate starter locally and use it later
         this.federateExecutor = new ExecutableFederateExecutor(
                 this.descriptor,
-                AbstractSumoAmbassador.getSumoExecutable("sumo-gui"),
+                AbstractSumoAmbassador.getFromSumoHome("sumo-gui"),
                 super.getProgramArguments(port)
         );
         this.startCmdPort = port;

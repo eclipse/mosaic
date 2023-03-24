@@ -27,6 +27,7 @@ import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.model.delay.GammaSpeedDelay;
 import org.eclipse.mosaic.lib.model.transmission.TransmissionResult;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.mapping.ChargingStationMapping;
 import org.eclipse.mosaic.lib.objects.mapping.RsuMapping;
@@ -61,12 +62,18 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     /**
      * Distance configurations of vehicles which have not been moved yet by the traffic simulator.
      */
-    final private HashMap<String, Double> registeredVehicles = new HashMap<>();
+    final private Map<String, Double> registeredVehicles = new HashMap<>();
 
     /**
      * Value for the radius of a single hop extracted from the configuration in the initialization.
      */
     private double singlehopRadius;
+
+    /**
+     * Stores the latest {@link VehicleUpdates} interaction, so it can be used
+     * to look up the last known position of vehicle which wants to enable its adhoc module.
+     */
+    private VehicleUpdates latestVehicleUpdates;
 
     /**
      * Construct the Ambassador.
@@ -110,7 +117,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 this.process((TrafficLightRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
                 this.process((ChargingStationRegistration) interaction);
-            }  else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(AdHocCommunicationConfiguration.TYPE_ID)) {
                 this.process((AdHocCommunicationConfiguration) interaction);
@@ -158,10 +165,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                         updated.getName(), updated.getPosition(), TIME.format(interaction.getTime()));
             }
         }
-        for (final String removedName : interaction.getRemovedNames()) {
-            removeVehicle(removedName);
-            log.info("Removed Vehicle id={} @time={}", removedName, TIME.format(interaction.getTime()));
-        }
+        latestVehicleUpdates = interaction;
     }
 
     private void process(AdHocCommunicationConfiguration interaction) {
@@ -172,9 +176,9 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         switch (configuration.getRadioMode()) {
             case OFF:
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
-                    SimulationEntities.INSTANCE.disableWifi(nodeId);
-                } else if (registeredVehicles.put(nodeId, null) != null) {
-                    log.debug("Disabled Wifi of vehicle, which was enabled before, but not yet moved.");
+                    disableNode(interaction.getTime(), nodeId);
+                } else if (registeredVehicles.remove(nodeId) != null) {
+                    log.debug("Disabled Wifi of node, which was enabled before, but not yet moved.");
                 }
                 break;
             case DUAL:
@@ -190,6 +194,10 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                     SimulationEntities.INSTANCE.enableWifi(nodeId, communicationRadius);
                 } else {
                     registeredVehicles.put(nodeId, communicationRadius);
+                    if (latestVehicleUpdates != null) {
+                        // progress the latest vehicle updates again to eventually activate the adhoc configuration
+                        process(latestVehicleUpdates);
+                    }
                 }
                 log.info("Radio configured in mode {} with communication radius {} for node id={} @time={}",
                         configuration.getRadioMode(), communicationRadius, nodeId, TIME.format(interaction.getTime()));
@@ -242,13 +250,19 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     }
 
     /**
-     * Removes a vehicle from being handled in transmissions.
+     * Removes a node from being handled in transmissions.
      *
-     * @param vehicleId the id of the vehicle to be removed
+     * @param nodeId the id of the node to be removed
      */
-    private void removeVehicle(String vehicleId) {
-        registeredVehicles.remove(vehicleId);
-        SimulationEntities.INSTANCE.removeNode(vehicleId);
+    private void disableNode(long time, String nodeId) {
+        if (UnitNameGenerator.isVehicle(nodeId)) {
+            SimulationEntities.INSTANCE.removeNode(nodeId);
+            registeredVehicles.remove(nodeId);
+            log.info("Removed Node id={} @time={}", nodeId, TIME.format(time));
+        } else {
+            SimulationEntities.INSTANCE.disableWifi(nodeId);
+            log.info("Disabled Wifi for Node id={} @time={}", nodeId, TIME.format(time));
+        }
     }
 
     /**
