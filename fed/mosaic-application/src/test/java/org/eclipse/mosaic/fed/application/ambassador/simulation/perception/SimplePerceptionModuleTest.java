@@ -103,7 +103,7 @@ public class SimplePerceptionModuleTest {
         VehicleUnit egoVehicleUnit = spy(new VehicleUnit("veh_0", mock(VehicleType.class), null));
         doReturn(egoVehicleData).when(egoVehicleUnit).getVehicleData();
         simplePerceptionModule = spy(new SimplePerceptionModule(egoVehicleUnit, null, mock(Logger.class)));
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(90d, 200d));
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(90d, 200d).build());
 
         // setup ego vehicle
         when(egoVehicleData.getHeading()).thenReturn(90d);
@@ -165,21 +165,21 @@ public class SimplePerceptionModuleTest {
 
     @Test
     public void vehicleCanBePerceived_270viewingAngle_VehicleOnDirectionVector_TrivialIndex() {
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(110, 100, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCanBePerceived_FarLeft_270viewingAngle_TrivialIndex() {
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 115, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
     public void vehicleCanBePerceived_FarRight_270viewingAngle_TrivialIndex() {
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 90, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
@@ -241,7 +241,7 @@ public class SimplePerceptionModuleTest {
     @Test
     public void vehicleCanBePerceived_FarLeft_270viewingAngle_QuadTree() {
         useQuadTree();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 115, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
@@ -249,7 +249,7 @@ public class SimplePerceptionModuleTest {
     @Test
     public void vehicleCanBePerceived_FarRight_270viewingAngle_QuadTree() {
         useQuadTree();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 90, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
@@ -311,7 +311,7 @@ public class SimplePerceptionModuleTest {
     @Test
     public void vehicleCanBePerceived_FarLeft_270viewingAngle_Grid() {
         useGrid();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 115, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
@@ -319,7 +319,7 @@ public class SimplePerceptionModuleTest {
     @Test
     public void vehicleCanBePerceived_FarRight_270viewingAngle_Grid() {
         useGrid();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(270d, 200d)); // overwrite config
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 90, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }

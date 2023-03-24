@@ -38,7 +38,7 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
         LeadingVehicleReader leadingVehicleReader = new LeadingVehicleReader();
         getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_LEADER.var, leadingVehicleReader);
         getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_FOLLOWER.var, leadingVehicleReader);
-        getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_GET_NEXT_STOPS.var, new StoppingPlaceReader());
+        getTypeBasedTraciReader().registerCompoundReader(CommandRetrieveVehicleState.VAR_NEXT_STOPS.var, new StoppingPlaceReader());
     }
 
     @Override
@@ -104,9 +104,9 @@ public class VehicleSubscriptionTraciReader extends AbstractSubscriptionTraciRea
             result.followerVehicle = (LeadFollowVehicle) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_MIN_GAP.var) {
             result.minGap = (double) varValue;
-        } else if (varId == CommandRetrieveVehicleState.VAR_GET_NEXT_STOPS.var) {
+        } else if (varId == CommandRetrieveVehicleState.VAR_NEXT_STOPS.var) {
             result.nextStops = (List<PublicTransportData.StoppingPlace>) varValue;
-        } else if (varId == CommandRetrieveVehicleState.VAR_GET_LINE.var) {
+        } else if (varId == CommandRetrieveVehicleState.VAR_LINE.var) {
             result.line = (String) varValue;
         } else if (varId == CommandRetrieveVehicleState.VAR_LENGTH.var) {
             result.length = (double) varValue;

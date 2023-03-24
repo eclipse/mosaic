@@ -57,7 +57,7 @@ public abstract class AbstractPerceptionModule
         if (configuration == null) {
             log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.",
                     DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_RANGE);
-            this.configuration = new SimplePerceptionConfiguration(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE);
+            this.configuration = new SimplePerceptionConfiguration.Builder(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE).build();
         } else {
             this.configuration = configuration;
         }

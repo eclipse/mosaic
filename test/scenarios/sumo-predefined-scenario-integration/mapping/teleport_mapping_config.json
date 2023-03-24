@@ -1,0 +1,10 @@
+{
+    "prototypes": [
+        {
+            "name": "TeleportVehicle",
+            "applications": [
+                "org.eclipse.mosaic.test.app.sumoteleport.TeleportingVehicleApp"
+            ]
+        }
+    ]
+}
