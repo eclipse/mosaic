@@ -74,9 +74,7 @@ public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> i
 
         SimplePerceptionConfiguration perceptionModuleConfiguration =
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE)
-                        .addModifier(simpleOcclusionModifier)
-                        .addModifier(distanceModifier)
-                        .addModifier(positionErrorModifier)
+                        .addModifiers(simpleOcclusionModifier, distanceModifier, positionErrorModifier)
                         .build();
         getOs().getPerceptionModule().enable(perceptionModuleConfiguration);
     }

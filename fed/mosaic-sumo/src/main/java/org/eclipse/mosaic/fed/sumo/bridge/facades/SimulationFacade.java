@@ -121,6 +121,11 @@ public class SimulationFacade {
     private final Map<String, InductionLoop> inductionLoops = new HashMap<>();
     private final Map<String, SumoVehicleState> sumoVehicles = new HashMap<>();
 
+    /**
+     * This list is used to cache teleporting vehicles. It is only filled if at least one vehicle is potentially teleporting
+     * and reset to {@code null} after each time step.
+     */
+    private List<String> currentTeleportingList;
 
     private static class SumoVehicleState {
         private final String id;
@@ -485,6 +490,8 @@ public class SimulationFacade {
             final TrafficDetectorUpdates trafficDetectorUpdates = new TrafficDetectorUpdates(time, updatedLaneAreas, updatedInductionLoops);
             final TrafficLightUpdates trafficLightUpdates = new TrafficLightUpdates(time, trafficLightGroupInfos);
 
+            currentTeleportingList = null; // reset cached teleporting list for this time step
+
             return new TraciSimulationStepResult(vehicleUpdates, trafficDetectorUpdates, trafficLightUpdates);
         } catch (CommandException e) {
             throw new InternalFederateException("Could not properly simulate step and read subscriptions", e);
@@ -513,7 +520,10 @@ public class SimulationFacade {
                 log.debug("Skip vehicle {} which is loaded but not yet simulated.", veh.id);
                 return null;
             }
-            boolean isTeleporting = getTeleportingList.execute(bridge).contains(veh.id); // we check this here to limit SUMO API calls
+            if (currentTeleportingList == null) {  // we call this only once per simulation step if at least one vehicle is teleporting
+                currentTeleportingList = getTeleportingList.execute(bridge);
+            }
+            boolean isTeleporting = currentTeleportingList.contains(veh.id);
             if (isTeleporting) {
                 /* If the vehicle is teleporting we don't stop the subscription. However, the state of the vehicle won't
                 be updated until the teleport is finished, as we cannot be sure of the behaviour during teleporting. */
