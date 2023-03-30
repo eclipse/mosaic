@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.WallProvider;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
@@ -28,8 +27,8 @@ import java.util.List;
 
 /**
  * A simple perception modifier which removes all vehicles behind walls. A list of walls in the vicinity of the
- * ego vehicle is provided by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule}
- * which implements the {@link WallProvider} interface. The check for hidden vehicles is done by finding intersection of vectors between
+ * ego vehicle is provided by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule}.
+ * The check for hidden vehicles is done by finding intersection of vectors between
  * ego and all other vehicles. and all walls in its vicinity.
  */
 public class WallOcclusionModifier implements PerceptionModifier {
@@ -42,11 +41,7 @@ public class WallOcclusionModifier implements PerceptionModifier {
             return spatialObjects;
         }
 
-        if (!(owner.getPerceptionModule() instanceof WallProvider)) {
-            return spatialObjects;
-        }
-
-        final Collection<Edge<Vector3d>> walls = ((WallProvider) owner.getPerceptionModule()).getSurroundingWalls();
+        final Collection<Edge<Vector3d>> walls = owner.getPerceptionModule().getSurroundingWalls();
         final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         final Vector3d otherPosition = new Vector3d();
 

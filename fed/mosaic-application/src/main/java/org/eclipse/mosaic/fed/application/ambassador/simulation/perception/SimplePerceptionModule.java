@@ -27,12 +27,14 @@ import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
+import org.eclipse.mosaic.lib.spatial.Edge;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -99,6 +101,11 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
                 .getTrafficObjectIndex()
                 .getTrafficLightsInRange(perceptionModel));
         return objectsInRange;
+    }
+
+    @Override
+    public Collection<Edge<Vector3d>> getSurroundingWalls() {
+        return SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getTrafficObjectIndex().getSurroundingWalls(perceptionModel);
     }
 
     /**
