@@ -263,17 +263,17 @@ public class LocalFederationManagement implements FederationManagement {
         errorLoggingThread.start();
         loggingThreads.put(handle.getId(), errorLoggingThread);
 
-        // call connectToFederateMethod of the current federate an extract
-        // possible output from the federates' output stream (e.g. port number...)
-        // note: error- and input streams were read in this class now due to conflicting stream access
-        handle.getAmbassador().connectToFederate(LOCALHOST, p.getInputStream(), p.getErrorStream());
-
         // read the federates stdout in an extra thread and add this to our logging instance
         ProcessLoggingThread outputLoggingThread = new ProcessLoggingThread(
                 federateName, p.getInputStream(), LoggerFactory.getLogger(federateName + "Output")::info
         );
         outputLoggingThread.start();
         loggingThreads.put(handle.getId(), outputLoggingThread);
+
+        // call connectToFederateMethod of the current federate an extract
+        // possible output from the federates' output stream (e.g. port number...)
+        // note: error- and input streams were read in this class now due to conflicting stream access
+        handle.getAmbassador().connectToFederate(LOCALHOST, p.getInputStream(), p.getErrorStream());
     }
 
     /**
