@@ -42,6 +42,9 @@ public class WallOcclusionModifier implements PerceptionModifier {
         }
 
         final Collection<Edge<Vector3d>> walls = owner.getPerceptionModule().getSurroundingWalls();
+        if (walls.isEmpty()) {
+            return spatialObjects;
+        }
         final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         final Vector3d otherPosition = new Vector3d();
 
