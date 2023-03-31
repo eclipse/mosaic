@@ -121,7 +121,10 @@ public class CentralPerceptionComponent {
                 }
             }
             if (routing instanceof Database) {
-                indexBuilder.withWallIndex(configuration.wallIndex, (Database) routing);
+                Database dbRouting = (Database) routing;
+                if (!dbRouting.getBuildings().isEmpty()) {
+                    indexBuilder.withWallIndex(configuration.wallIndex, (Database) routing);
+                }
             }
             trafficObjectIndex = indexBuilder.build();
 
