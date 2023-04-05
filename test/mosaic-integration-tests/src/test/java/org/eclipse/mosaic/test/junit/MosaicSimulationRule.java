@@ -40,19 +40,20 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,7 +72,8 @@ public class MosaicSimulationRule extends TemporaryFolder {
 
     protected String logLevelOverride = null;
     protected int watchdogInterval = 20;
-    protected Consumer<CScenario> scenarioConfigManipulator = c -> {};
+    protected Consumer<CScenario> scenarioConfigManipulator = c -> {
+    };
     protected List<Consumer<Path>> scenarioDirectoryManipulator = new ArrayList<>();
     protected Map<String, Consumer<CRuntime.CFederate>> federateManipulators = new HashMap<>();
 
@@ -147,7 +149,9 @@ public class MosaicSimulationRule extends TemporaryFolder {
     }
 
     protected CRuntime prepareRuntimeConfiguration() throws IOException {
-        try (InputStream resource = getClass().getResourceAsStream("/runtime.json")) {
+        try (InputStream resource = Objects.requireNonNull(getClass().getResourceAsStream("/runtime.json"),
+                "Could not find runtime.json in classpath."
+        )) {
             return new ObjectInstantiation<>(CRuntime.class).read(resource);
         } catch (InstantiationException e) {
             throw new IOException(e);
@@ -236,10 +240,10 @@ public class MosaicSimulationRule extends TemporaryFolder {
     }
 
     private String getNameOfCallingTest(String fallbackName) {
-        StackTraceElement[] strackTrace = Thread.currentThread().getStackTrace();
-        for (int i = 2; i < strackTrace.length; i++) {
-            if (!strackTrace[i].getClassName().endsWith("Rule")) {
-                return StringUtils.substringAfterLast(strackTrace[i].getClassName(), ".");
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < stackTrace.length; i++) {
+            if (!stackTrace[i].getClassName().endsWith("Rule")) {
+                return StringUtils.substringAfterLast(stackTrace[i].getClassName(), ".");
             }
         }
         return fallbackName;
@@ -255,10 +259,13 @@ public class MosaicSimulationRule extends TemporaryFolder {
     protected Path prepareLogConfiguration(Path logDirectory) throws IOException {
         FileUtils.deleteQuietly(logDirectory.toFile());
 
-        Path logConfiguration = newFile("logback.xml").toPath();
+        final Path logConfiguration = newFile("logback.xml").toPath();
 
-        try (BufferedReader resource = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/logback.xml"), Charsets.UTF_8));
-             Writer writer = new OutputStreamWriter(new FileOutputStream(logConfiguration.toFile()), StandardCharsets.UTF_8)) {
+        final InputStream logConfigurationResource = Objects.requireNonNull(getClass().getResourceAsStream("/logback.xml"),
+                "Could not find logback.xml in classpath."
+        );
+        try (BufferedReader resource = new BufferedReader(new InputStreamReader(logConfigurationResource, Charsets.UTF_8));
+             Writer writer = new OutputStreamWriter(Files.newOutputStream(logConfiguration), StandardCharsets.UTF_8)) {
             String line;
             while ((line = resource.readLine()) != null) {
                 writer.write(StringUtils.replace(line, "${logDirectory}", logDirectory.toAbsolutePath().toString()));
