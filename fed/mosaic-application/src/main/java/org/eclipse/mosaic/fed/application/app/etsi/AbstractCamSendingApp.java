@@ -103,28 +103,18 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
         );
     }
 
-    /**
-     * Schedules a new event to sample something in the minimal interval given by configuration.
-     */
-    private void sample() {
+    void checkDataAndSendCam(Event event) {
         if (!canProcessEvent()) {
             return;
         }
 
-        if (isTornDown()) {
-            return;
+        if (dataChanged()) {
+            sendCam();
         }
 
         getOperatingSystem().getEventManager().addEvent(
                 getOperatingSystem().getSimulationTime() + getConfiguration().minInterval, this::checkDataAndSendCam
         );
-    }
-
-    void checkDataAndSendCam(Event event) {
-        if (dataChanged()) {
-            sendCam();
-        }
-        sample();
     }
 
     /**
