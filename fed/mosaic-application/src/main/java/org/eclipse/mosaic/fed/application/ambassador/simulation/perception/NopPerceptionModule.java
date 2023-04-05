@@ -19,10 +19,13 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.spatial.Edge;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,24 +36,30 @@ public class NopPerceptionModule extends AbstractPerceptionModule {
 
     public NopPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
         super(owner, database, log);
-        log.debug("No vehicle index provider configured, leading to disabled perception.");
+        log.debug("No vehicle index configured, leading to disabled perception.");
     }
 
     @Override
     List<VehicleObject> getVehiclesInRange() {
-        log.debug("No vehicle index provider configured, leading to disabled perception.");
+        log.debug("No vehicle index configured, leading to disabled perception.");
         return new ArrayList<>();
     }
 
     @Override
     List<TrafficLightObject> getTrafficLightsInRange() {
-        log.debug("No vehicle index provider configured, leading to disabled perception.");
+        log.debug("No vehicle index configured, leading to disabled perception.");
         return new ArrayList<>();
     }
 
     @Override
     List<SpatialObject> getObjectsInRange() {
-        log.debug("No vehicle index provider configured, leading to disabled perception.");
+        log.debug("No vehicle index configured, leading to disabled perception.");
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Collection<Edge<Vector3d>> getSurroundingWalls() {
+        log.debug("No wall index provider configured, leading to disabled perception.");
         return new ArrayList<>();
     }
 }

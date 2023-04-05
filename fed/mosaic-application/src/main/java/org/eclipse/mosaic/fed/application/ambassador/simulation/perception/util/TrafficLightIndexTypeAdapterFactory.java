@@ -25,9 +25,9 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
 public class TrafficLightIndexTypeAdapterFactory implements TypeAdapterFactory {
-    public static class TrafficLightIndexProviderTypeAdapter extends AbstractTypeAdapterFactory<TrafficLightIndex> {
+    public static class TrafficLightIndexTypeAdapter extends AbstractTypeAdapterFactory<TrafficLightIndex> {
 
-        private TrafficLightIndexProviderTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
+        private TrafficLightIndexTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
             super(parentFactory, gson);
         }
 
@@ -37,7 +37,7 @@ public class TrafficLightIndexTypeAdapterFactory implements TypeAdapterFactory {
                 return Class.forName(TrafficLightIndex.class.getPackage().getName() + "." + type);
             } catch (ClassNotFoundException e) {
                 throw new JsonParseException(
-                        "Cannot deserialize Traffic Light Index Provider named " + type + "; Traffic Light Index Provider doesn't exist.");
+                        "Cannot deserialize Traffic Light Index named " + type + "; Traffic Light Index Provider doesn't exist.");
             }
         }
 
@@ -50,7 +50,6 @@ public class TrafficLightIndexTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        return (TypeAdapter<T>) new TrafficLightIndexTypeAdapterFactory
-                .TrafficLightIndexProviderTypeAdapter(this, gson).nullSafe();
+        return (TypeAdapter<T>) new TrafficLightIndexTypeAdapter(this, gson).nullSafe();
     }
 }
