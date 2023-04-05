@@ -263,6 +263,14 @@ public class LocalFederationManagement implements FederationManagement {
         errorLoggingThread.start();
         loggingThreads.put(handle.getId(), errorLoggingThread);
 
+        // FIXME: Omnetpp/Ns3 ambassadors must read from the input stream. As we cannot simply split the stream,
+        //        we need to call connectToFederate before starting the ProcessLoggingThread
+        //
+        // call connectToFederateMethod of the current federate an extract
+        // possible output from the federates' output stream (e.g. port number...)
+        // note: error- and input streams were read in this class now due to conflicting stream access
+        handle.getAmbassador().connectToFederate(LOCALHOST, p.getInputStream(), p.getErrorStream());
+
         // read the federates stdout in an extra thread and add this to our logging instance
         ProcessLoggingThread outputLoggingThread = new ProcessLoggingThread(
                 federateName, p.getInputStream(), LoggerFactory.getLogger(federateName + "Output")::info
@@ -270,10 +278,7 @@ public class LocalFederationManagement implements FederationManagement {
         outputLoggingThread.start();
         loggingThreads.put(handle.getId(), outputLoggingThread);
 
-        // call connectToFederateMethod of the current federate an extract
-        // possible output from the federates' output stream (e.g. port number...)
-        // note: error- and input streams were read in this class now due to conflicting stream access
-        handle.getAmbassador().connectToFederate(LOCALHOST, p.getInputStream(), p.getErrorStream());
+
     }
 
     /**
