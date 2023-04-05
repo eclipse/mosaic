@@ -53,7 +53,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
 
 
     /**
-     * This method is called by VSimRTI when the vehicle that has been equipped with this application
+     * This method is called by the Application Simulator when the vehicle that has been equipped with this application
      * enters the simulation.
      * It is the first method called of this class during a simulation.
      */
