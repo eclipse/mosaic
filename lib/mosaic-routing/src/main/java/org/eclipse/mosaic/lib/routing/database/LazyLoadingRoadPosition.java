@@ -216,14 +216,12 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
 
     @Override
     public int hashCode() {
+        // do not include lazy loading fields into hashCode generation
         return new HashCodeBuilder(17, 43)
                 .append(this.connectionId)
                 .append(this.laneIndex)
                 .append(this.lateralLanePosition)
                 .append(this.offset)
-                .append(this.previousNode)
-                .append(this.upcomingNode)
-                .append(this.connection)
                 .toHashCode();
     }
 
@@ -239,15 +237,13 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
             return false;
         }
 
+        // do not include lazy loading fields during equals calculation
         LazyLoadingRoadPosition other = (LazyLoadingRoadPosition) obj;
         return new EqualsBuilder()
                 .append(this.connectionId, other.connectionId)
                 .append(this.laneIndex, other.laneIndex)
                 .append(this.lateralLanePosition, other.lateralLanePosition)
                 .append(this.offset, other.offset)
-                .append(this.previousNode, other.previousNode)
-                .append(this.upcomingNode, other.upcomingNode)
-                .append(this.connection, other.connection)
                 .isEquals();
     }
 

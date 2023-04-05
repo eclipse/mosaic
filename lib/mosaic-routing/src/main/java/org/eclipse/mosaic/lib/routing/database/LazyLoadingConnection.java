@@ -84,6 +84,9 @@ public class LazyLoadingConnection implements IConnection {
 
     @Override
     public String getId() {
+        if (id != null) {
+            return id;
+        }
         final Connection con = getConnectionFromDatabase();
         return con != null ? con.getId() : defaultIfNull(id, "?");
     }
@@ -200,10 +203,9 @@ public class LazyLoadingConnection implements IConnection {
 
     @Override
     public int hashCode() {
+        // do not include lazy loading fields into hashCode generation
         return new HashCodeBuilder(13, 37)
-                .append(this.conStartNode)
-                .append(this.conEndNode)
-                .append(this.way)
+                .append(this.id)
                 .toHashCode();
     }
 
@@ -219,11 +221,10 @@ public class LazyLoadingConnection implements IConnection {
             return false;
         }
 
+        // do not include lazy loading fields into equals calculation
         LazyLoadingConnection other = (LazyLoadingConnection) obj;
         return new EqualsBuilder()
-                .append(this.conStartNode, other.conStartNode)
-                .append(this.conEndNode, other.conEndNode)
-                .append(this.way, other.way)
+                .append(this.id, other.id)
                 .isEquals();
     }
 
