@@ -27,6 +27,7 @@ import org.eclipse.mosaic.rti.api.parameters.FederateDescriptor;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,7 +270,10 @@ public class LocalFederationManagement implements FederationManagement {
         // call connectToFederateMethod of the current federate an extract
         // possible output from the federates' output stream (e.g. port number...)
         // note: error- and input streams were read in this class now due to conflicting stream access
-        handle.getAmbassador().connectToFederate(LOCALHOST, p.getInputStream(), p.getErrorStream());
+        handle.getAmbassador().connectToFederate(LOCALHOST,
+                new CloseShieldInputStream(p.getInputStream()), // prevent streams from closing by ambassador
+                new CloseShieldInputStream(p.getErrorStream())
+        );
 
         // read the federates stdout in an extra thread and add this to our logging instance
         ProcessLoggingThread outputLoggingThread = new ProcessLoggingThread(
@@ -277,8 +281,6 @@ public class LocalFederationManagement implements FederationManagement {
         );
         outputLoggingThread.start();
         loggingThreads.put(handle.getId(), outputLoggingThread);
-
-
     }
 
     /**
