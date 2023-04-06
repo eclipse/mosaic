@@ -216,7 +216,7 @@ public class LazyLoadingRoadPosition implements IRoadPosition {
 
     @Override
     public int hashCode() {
-        // do not include lazy loading fields into hashCode generation
+        // do not include lazy loading fields in hashCode generation
         return new HashCodeBuilder(17, 43)
                 .append(this.connectionId)
                 .append(this.laneIndex)
