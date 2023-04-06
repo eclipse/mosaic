@@ -21,19 +21,16 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.database.spatial.WallFinder;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractPerceptionModule
-        implements PerceptionModule<SimplePerceptionConfiguration>, WallProvider {
+public abstract class AbstractPerceptionModule implements PerceptionModule<SimplePerceptionConfiguration> {
 
     private static final double DEFAULT_VIEWING_ANGLE = 40;
     private static final double DEFAULT_VIEWING_RANGE = 200;
@@ -43,8 +40,6 @@ public abstract class AbstractPerceptionModule
     protected final Database database;
 
     protected SimplePerceptionConfiguration configuration;
-
-    private WallFinder wallIndex = null;
 
     AbstractPerceptionModule(PerceptionModuleOwner owner, Database database, Logger log) {
         this.owner = owner;
@@ -57,7 +52,7 @@ public abstract class AbstractPerceptionModule
         if (configuration == null) {
             log.warn("Provided perception configuration is null. Using default configuration with viewingAngle={}°, viewingRange={}m.",
                     DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_RANGE);
-            this.configuration = new SimplePerceptionConfiguration(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE);
+            this.configuration = new SimplePerceptionConfiguration.Builder(DEFAULT_VIEWING_ANGLE, DEFAULT_VIEWING_ANGLE).build();
         } else {
             this.configuration = configuration;
         }
@@ -71,25 +66,6 @@ public abstract class AbstractPerceptionModule
     @Override
     public SimplePerceptionConfiguration getConfiguration() {
         return this.configuration;
-    }
-
-    @Override
-    public Collection<Edge<Vector3d>> getSurroundingWalls() {
-        if (database == null) {
-            log.warn("No database for retrieving walls available.");
-            return Lists.newArrayList();
-        }
-
-        if (wallIndex == null) {
-            if (database.getBuildings().isEmpty()) {
-                log.warn("No buildings to retrieve walls available.");
-            }
-            wallIndex = new WallFinder(database);
-        }
-        return wallIndex.getWallsInRadius(
-                owner.getVehicleData().getProjectedPosition().toVector3d(),
-                getConfiguration().getViewingRange()
-        );
     }
 
     @Override
@@ -143,4 +119,6 @@ public abstract class AbstractPerceptionModule
         }
         return filteredList;
     }
+
+    abstract public Collection<Edge<Vector3d>> getSurroundingWalls();
 }

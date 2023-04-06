@@ -318,6 +318,7 @@ public class MosaicSimulationRule extends TemporaryFolder {
      * DO NOT commit test with having this activated.
      */
     public void activateSumoGui() {
+        watchdog(0); // when using GUI watchdog pretty much has to be disabled
         getRuntimeConfiguration().federates.stream().filter(s -> s.id.equals("sumo")).forEach(
                 s -> s.classname = SumoGuiAmbassador.class.getCanonicalName()
         );

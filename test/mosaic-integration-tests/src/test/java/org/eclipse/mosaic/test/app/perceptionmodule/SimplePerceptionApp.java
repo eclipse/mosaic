@@ -49,7 +49,7 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
 
     private void enablePerceptionModule() {
         SimplePerceptionConfiguration perceptionModuleConfiguration =
-                new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE);
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).build();
         getOs().getPerceptionModule().enable(perceptionModuleConfiguration);
     }
 
