@@ -49,9 +49,8 @@ class LazyLoadingWay implements IWay {
     private final IWay currentWay;
 
     LazyLoadingWay(Way scenarioDatabaseWay) {
+        this(null, null);
         this.scenarioDatabaseWay = scenarioDatabaseWay;
-        this.database = null;
-        this.currentWay = null;
     }
 
     LazyLoadingWay(IWay currentWay, Database database) {
@@ -66,25 +65,26 @@ class LazyLoadingWay implements IWay {
 
     @Override
     public String getType() {
-        if (scenarioDatabaseWay == null && currentWay.getType() == null) {
-            scenarioDatabaseWay = database.getWay(getId());
-        }
+        loadFromDatabaseIfNecessary();
         return scenarioDatabaseWay != null ? scenarioDatabaseWay.getType() : currentWay.getType();
     }
 
     @Override
     public double getMaxSpeedInMs() {
-        if (scenarioDatabaseWay == null) {
+        loadFromDatabaseIfNecessary();
+        return scenarioDatabaseWay != null ? scenarioDatabaseWay.getMaxSpeedInMs() : currentWay.getMaxSpeedInMs();
+    }
+
+    private void loadFromDatabaseIfNecessary() {
+        if (scenarioDatabaseWay == null && database != null) {
             scenarioDatabaseWay = database.getWay(getId());
         }
-        return scenarioDatabaseWay != null ? scenarioDatabaseWay.getMaxSpeedInMs() : currentWay.getMaxSpeedInMs();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(13, 23)
-                .append(this.currentWay)
-                .append(this.scenarioDatabaseWay)
+                .append(this.getId())
                 .toHashCode();
     }
 
@@ -102,8 +102,7 @@ class LazyLoadingWay implements IWay {
 
         LazyLoadingWay other = (LazyLoadingWay) obj;
         return new EqualsBuilder()
-                .append(this.currentWay, other.currentWay)
-                .append(this.scenarioDatabaseWay, other.scenarioDatabaseWay)
+                .append(this.getId(), other.getId())
                 .isEquals();
     }
 

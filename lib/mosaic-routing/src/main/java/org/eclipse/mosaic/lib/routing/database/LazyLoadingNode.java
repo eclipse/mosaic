@@ -68,30 +68,32 @@ public class LazyLoadingNode implements INode {
 
     @Override
     public GeoPoint getPosition() {
-        if (scenarioDatabaseNode == null && currentNode.getPosition() == null && database != null) {
-            scenarioDatabaseNode = database.getNode(getId());
-        }
-        return scenarioDatabaseNode != null ? scenarioDatabaseNode.getPosition() : null;
+        loadFromDatabaseIfNecessary();
+        return scenarioDatabaseNode != null ? scenarioDatabaseNode.getPosition() : currentNode.getPosition();
     }
 
     @Override
     public boolean hasTrafficLight() {
-        if (scenarioDatabaseNode == null && database != null) {
-            scenarioDatabaseNode = database.getNode(getId());
-        }
-        return scenarioDatabaseNode != null && scenarioDatabaseNode instanceof TrafficLightNode;
+        loadFromDatabaseIfNecessary();
+        return scenarioDatabaseNode != null ? scenarioDatabaseNode instanceof TrafficLightNode : currentNode.hasTrafficLight();
     }
 
     @Override
     public boolean isIntersection() {
-        return scenarioDatabaseNode != null && scenarioDatabaseNode.isIntersection();
+        loadFromDatabaseIfNecessary();
+        return scenarioDatabaseNode != null ? scenarioDatabaseNode.isIntersection() : currentNode.isIntersection();
+    }
+
+    private void loadFromDatabaseIfNecessary() {
+        if (scenarioDatabaseNode == null && database != null) {
+            scenarioDatabaseNode = database.getNode(getId());
+        }
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(7, 41)
-                .append(this.currentNode)
-                .append(this.scenarioDatabaseNode)
+                .append(this.getId())
                 .toHashCode();
     }
 
@@ -109,8 +111,7 @@ public class LazyLoadingNode implements INode {
 
         LazyLoadingNode other = (LazyLoadingNode) obj;
         return new EqualsBuilder()
-                .append(this.currentNode, other.currentNode)
-                .append(this.scenarioDatabaseNode, other.scenarioDatabaseNode)
+                .append(this.getId(), other.getId())
                 .isEquals();
     }
 
