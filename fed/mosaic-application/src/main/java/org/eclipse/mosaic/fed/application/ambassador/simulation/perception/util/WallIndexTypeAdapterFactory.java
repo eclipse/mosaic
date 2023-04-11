@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2023 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,7 +15,8 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallIndex;
 import org.eclipse.mosaic.lib.gson.AbstractTypeAdapterFactory;
 
 import com.google.gson.Gson;
@@ -24,20 +25,20 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
-public class VehicleIndexTypeAdapterFactory implements TypeAdapterFactory {
-    public static class VehicleIndexTypeAdapter extends AbstractTypeAdapterFactory<VehicleIndex> {
+public class WallIndexTypeAdapterFactory implements TypeAdapterFactory {
+    public static class WallIndexTypeAdapter extends AbstractTypeAdapterFactory<WallIndex> {
 
-        private VehicleIndexTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
+        private WallIndexTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
             super(parentFactory, gson);
         }
 
         @Override
         protected Class<?> fromTypeName(String type) {
             try {
-                return Class.forName(VehicleIndex.class.getPackage().getName() + "." + type);
+                return Class.forName(TrafficLightIndex.class.getPackage().getName() + "." + type);
             } catch (ClassNotFoundException e) {
                 throw new JsonParseException(
-                        "Cannot deserialize Vehicle Index named " + type + "; Vehicle Index Provider doesn't exist.");
+                        "Cannot deserialize Wall Index named " + type + "; Traffic Light Index Provider doesn't exist.");
             }
         }
 
@@ -50,6 +51,6 @@ public class VehicleIndexTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        return (TypeAdapter<T>) new VehicleIndexTypeAdapter(this, gson).nullSafe();
+        return (TypeAdapter<T>) new WallIndexTypeAdapter(this, gson).nullSafe();
     }
 }

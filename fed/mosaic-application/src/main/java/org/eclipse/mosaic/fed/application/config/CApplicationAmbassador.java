@@ -17,6 +17,8 @@ package org.eclipse.mosaic.fed.application.config;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallTree;
 import org.eclipse.mosaic.lib.geo.GeoRectangle;
 import org.eclipse.mosaic.lib.routing.config.CRouting;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
@@ -99,6 +101,11 @@ public class CApplicationAmbassador implements Serializable {
          * Backend for the spatial index providing traffic light information.
          */
         public TrafficLightIndex trafficLightIndex;
+
+        /**
+         * Backend for the spatial index providing information about building walls.
+         */
+        public WallIndex wallIndex = new WallTree();
 
         /**
          * Area defining the section of the map in which traffic lights should be held in the index.

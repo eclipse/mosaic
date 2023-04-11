@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -135,7 +136,9 @@ public class PerceptionModifierTest {
     @Test
     public void testOcclusionModifier() {
         SimpleOcclusionModifier occlusionModifier = new SimpleOcclusionModifier(3, 10);
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, occlusionModifier));
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(occlusionModifier).build()
+        );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
             printPerceivedPositions(perceivedVehicles);
@@ -146,7 +149,9 @@ public class PerceptionModifierTest {
     @Test
     public void testDistanceErrorModifier() {
         DistanceModifier distanceModifier = new DistanceModifier(rng, 0);
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, distanceModifier));
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(distanceModifier).build()
+        );
 
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
@@ -158,13 +163,15 @@ public class PerceptionModifierTest {
     @Test
     public void testPositionErrorModifier() {
         PositionErrorModifier positionErrorModifier = new PositionErrorModifier(rng, 1, 1);
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, positionErrorModifier));
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(positionErrorModifier).build()
+        );
 
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
             printPerceivedPositions(perceivedVehicles);
         }
-        assertTrue("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT == perceivedVehicles.size());
+        assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
     }
 
     @Test
@@ -175,7 +182,9 @@ public class PerceptionModifierTest {
         doReturn(surroundingWalls).when(simplePerceptionModule).getSurroundingWalls();
 
         WallOcclusionModifier occlusionModifier = new WallOcclusionModifier();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, occlusionModifier));
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(occlusionModifier).build()
+        );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
             printPerceivedPositions(perceivedVehicles);
@@ -192,7 +201,9 @@ public class PerceptionModifierTest {
     @Test
     public void testIndexedObjectsNotChanged() {
         PositionErrorModifier positionErrorModifier = new PositionErrorModifier(rng, 1, 1);
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration(VIEWING_ANGLE, VIEWING_RANGE, positionErrorModifier));
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(positionErrorModifier).build()
+        );
 
         // collect positions of perceived objects BEFORE applying modifier
         PerceptionModel godView = mock(PerceptionModel.class);

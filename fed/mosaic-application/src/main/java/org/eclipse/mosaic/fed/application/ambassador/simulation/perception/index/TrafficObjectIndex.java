@@ -20,14 +20,19 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallIndex;
+import org.eclipse.mosaic.lib.database.Database;
+import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.spatial.Edge;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -39,21 +44,26 @@ public class TrafficObjectIndex {
     private final Logger log;
     private final VehicleIndex vehicleIndex;
     private final TrafficLightIndex trafficLightIndex;
+    private final WallIndex wallIndex;
 
-    private TrafficObjectIndex(Logger log, VehicleIndex vehicleIndex, TrafficLightIndex trafficLightIndex) {
+    private TrafficObjectIndex(Logger log, VehicleIndex vehicleIndex, TrafficLightIndex trafficLightIndex, WallIndex wallIndex) {
         this.log = log;
         this.vehicleIndex = vehicleIndex;
         this.trafficLightIndex = trafficLightIndex;
+        this.wallIndex = wallIndex;
         if (vehicleIndex != null) {
             vehicleIndex.initialize();
         }
         if (trafficLightIndex != null) {
             trafficLightIndex.initialize();
         }
+        if (wallIndex != null) {
+            wallIndex.initialize();
+        }
     }
 
     protected TrafficObjectIndex(TrafficObjectIndex parent) {
-        this(parent.log, parent.vehicleIndex, parent.trafficLightIndex);
+        this(parent.log, parent.vehicleIndex, parent.trafficLightIndex, parent.wallIndex);
     }
 
     private boolean vehicleIndexProviderConfigured() {
@@ -80,7 +90,7 @@ public class TrafficObjectIndex {
      * Registers a vehicle and stores its corresponding vehicle type by name.
      * This is required to extract vehicle dimensions.
      *
-     * @param vehicleId       id of the vehicle to register
+     * @param vehicleId   id of the vehicle to register
      * @param vehicleType the vehicle type of the vehicle
      */
     public void registerVehicleType(String vehicleId, VehicleType vehicleType) {
@@ -185,10 +195,19 @@ public class TrafficObjectIndex {
         }
     }
 
+    public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
+        if (wallIndex == null) {
+            log.debug("No Wall Index defined.");
+            return new ArrayList<>();
+        }
+        return wallIndex.getSurroundingWalls(perceptionModel);
+    }
+
     public static class Builder {
         private final Logger log;
         private VehicleIndex vehicleIndex = null;
         private TrafficLightIndex trafficLightIndex = null;
+        private WallIndex wallIndex = null;
 
         public Builder(Logger log) {
             this.log = log;
@@ -204,8 +223,14 @@ public class TrafficObjectIndex {
             return this;
         }
 
+        public Builder withWallIndex(WallIndex wallIndex, Database database) {
+            this.wallIndex = wallIndex;
+            this.wallIndex.setDatabase(database);
+            return this;
+        }
+
         public TrafficObjectIndex build() {
-            return new TrafficObjectIndex(log, vehicleIndex, trafficLightIndex);
+            return new TrafficObjectIndex(log, vehicleIndex, trafficLightIndex, wallIndex);
         }
     }
 }

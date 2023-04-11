@@ -115,7 +115,10 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         refineRoadPosition();
 
         for (VehicleApplication application : getApplicationsIterator(VehicleApplication.class)) {
-            application.onVehicleUpdated(previousVehicleData, currentVehicleData);
+            application.onVehicleUpdated(
+                    previousVehicleData,
+                    Objects.requireNonNull(navigationModule.getVehicleData(), "Invalid state, vehicle data should not be null")
+            );
         }
     }
 

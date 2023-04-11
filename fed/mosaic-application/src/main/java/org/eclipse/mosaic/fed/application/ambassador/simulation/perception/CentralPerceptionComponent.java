@@ -24,11 +24,15 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
+import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
+import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.routing.Routing;
+import org.eclipse.mosaic.lib.spatial.Edge;
 import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -37,6 +41,7 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -90,10 +95,10 @@ public class CentralPerceptionComponent {
      */
     public void initialize() throws InternalFederateException {
         try {
+            Routing routing = SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting();
             // evaluate bounding box for perception
             scenarioBounds = configuration.perceptionArea == null
-                    ? SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getScenarioBounds()
-                    : configuration.perceptionArea.toCartesian();
+                    ? routing.getScenarioBounds() : configuration.perceptionArea.toCartesian();
             // see what backends are configured
             boolean vehicleIndexConfigured = configuration.vehicleIndex != null;
             boolean trafficLightIndexConfigured = configuration.trafficLightIndex != null;
@@ -113,6 +118,12 @@ public class CentralPerceptionComponent {
                 }
                 if (trafficLightIndexConfigured) {
                     indexBuilder.withTrafficLightIndex(configuration.trafficLightIndex);
+                }
+            }
+            if (routing instanceof Database) {
+                Database dbRouting = (Database) routing;
+                if (!dbRouting.getBuildings().isEmpty()) {
+                    indexBuilder.withWallIndex(configuration.wallIndex, (Database) routing);
                 }
             }
             trafficObjectIndex = indexBuilder.build();
@@ -270,6 +281,15 @@ public class CentralPerceptionComponent {
         @Override
         public int getNumberOfTrafficLights() {
             return super.getNumberOfTrafficLights();
+        }
+
+        @Override
+        public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
+            try (PerformanceMonitor.Measurement m = monitor.start("search-walls")) {
+                m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
+                        .restart();
+                return super.getSurroundingWalls(perceptionModel);
+            }
         }
     }
 }
