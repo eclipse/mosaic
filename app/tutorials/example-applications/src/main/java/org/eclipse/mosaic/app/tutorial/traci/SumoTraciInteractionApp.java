@@ -25,6 +25,8 @@ import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
+import org.apache.commons.lang3.Validate;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -131,10 +133,13 @@ public class SumoTraciInteractionApp extends AbstractApplication<VehicleOperatin
         final DataInputStream dis = new DataInputStream(bais);
 
         try {
-            byte command = dis.readByte(); // should be 0xa4 for vehicle info retrieval
-            byte variableType = dis.readByte(); // should be 0x40 for speed response
+            int response = dis.readUnsignedByte(); // should be 0xb4 for response vehicle variable
+            Validate.isTrue(response == 0xb4);
+            int command = dis.readUnsignedByte(); // should be 0x40 for speed response
+            Validate.isTrue(command == 0x40);
             String vehicleId = readString(dis); // vehicle for which the response is
-            byte returnType = dis.readByte(); // type of response, should be 0x0b for double
+            int variableType = dis.readUnsignedByte(); // type of response, should be 0x0b for double
+            Validate.isTrue(variableType == 0x0b);
             double speed = dis.readDouble(); // the actual value, speed in m/s here
 
             return new SpeedResponse(vehicleId, speed);
