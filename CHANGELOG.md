@@ -1,3 +1,17 @@
+# Changelog Eclipse MOSAIC 23.0 (April 2023)
+
+* [A+] Perceived objects provide dimension information (length, width, height).
+* [A+] The perception module can now detect traffic lights and their current states.
+* [A+] Vehicles and other units are finally able to send V2X messages during their shutdown procedure.
+* [A-] Resolved issues in perception module, e.g., when multiple apps used perception modifiers simultaneously. 
+* [T+] Improved handling of vehicles which are teleported by SUMO.
+* [M+] The RTI now detects the OS type of the local host by itself.
+* [M-] Fixed minor bugs in RTI, Logging, and JSON-Scheme files.
+* [S+] Scenario-Convert is now able to import building information to an existing scenario database.
+* [T+] Several data related to trains can now be read from SUMO.
+* [T+] Now supports SUMO 1.16.0
+* [X+] Introduced OpenDRIVE support for PHABMACS (Extended).
+
 # Changelog Eclipse MOSAIC 22.1 (October 2022)
 
 * [A+] Perception module is now working with viewing angles larger than 180 degrees.
