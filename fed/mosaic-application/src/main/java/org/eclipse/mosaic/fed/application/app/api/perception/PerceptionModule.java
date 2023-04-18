@@ -18,7 +18,10 @@ package org.eclipse.mosaic.fed.application.app.api.perception;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.spatial.Edge;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration> {
@@ -59,4 +62,11 @@ public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration>
      * @return a list of all {@link SpatialObject}s inside the perception range
      */
     <T extends SpatialObject<T>> List<T> getPerceivedObjects();
+
+    /**
+     * Call to get surrounding building walls.
+     *
+     * @return a list of all surrounding building walls in the for of {@link Edge}s
+     */
+    Collection<Edge<Vector3d>> getSurroundingWalls();
 }

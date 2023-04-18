@@ -3,8 +3,7 @@
         {
             "id": "local",
             "workingDirectory": "./tmp",
-            "address": "localhost",
-            "operatingSystem": "LINUX"
+            "address": "localhost"
         }
     ],
     "remoteHosts": [

@@ -61,6 +61,10 @@
                     "description": "The underlying data structure for the spatial index for traffic lights",
                     "$ref": "#/definitions/trafficLightIndex"
                 },
+                "wallIndex": {
+                    "description": "The underlying data structure for the spatial index for building walls",
+                    "$ref": "#/definitions/wallIndex"
+                },
                 "measurePerformance": {
                     "description": "If set to true, a PerceptionPerformance.csv is generated with detailed information about execution calls of the perception backend.",
                     "type": "boolean"
@@ -168,7 +172,7 @@
         },
         "trafficLightMap": {
             "title": "trafficLightMap",
-            "description": "Trivial spatial traffic light index using a hash map to store traffic lights.",
+            "description": "Trivial spatial index using a hash map to store traffic lights.",
             "type": "object",
             "properties": {
                 "type": {
@@ -181,7 +185,7 @@
         },
         "trafficLightTree": {
             "title": "trafficLightTree",
-            "description": "Spatial traffic light index using a kd-tree structure to store vehicles.",
+            "description": "Spatial index using a kd-tree structure to store traffic lights.",
             "type": "object",
             "properties": {
                 "type": {
@@ -192,6 +196,32 @@
             },
             "bucketSize": {
                 "description": "The maximum amount of traffic lights in one leaf before it gets split.",
+                "type": "number",
+                "minimum": 0
+            },
+            "required": [ "type" ]
+        },
+        "wallIndex": {
+            "title": "wallIndex",
+            "description": "Class providing the spatial index for the perception of building walls.",
+            "type": "object",
+            "oneOf": [
+                { "$ref": "#/definitions/wallTree" }
+            ]
+        },
+        "wallTree": {
+            "title": "wallTree",
+            "description": "Spatial index using a kd-tree structure to store building walls.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of the spatial index.",
+                    "type": "string",
+                    "enum": [ "WallTree" ]
+                }
+            },
+            "bucketSize": {
+                "description": "The maximum amount of building walls in one leaf before it gets split.",
                 "type": "number",
                 "minimum": 0
             },

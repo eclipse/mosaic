@@ -27,18 +27,18 @@ public class SendOnShutdownApp extends AbstractApplication<VehicleOperatingSyste
         getOs().getAdHocModule().enable();
 
         getOs().getAdHocModule().sendV2xMessage(new ShutdownMessage(
-                getOs().getAdHocModule().createMessageRouting().topoCast("rsu_0", 1 )
+                getOs().getAdHocModule().createMessageRouting().topoCast("rsu_0", 1)
         ));
     }
 
     @Override
     public void onShutdown() {
         getOs().getCellModule().sendV2xMessage(new ShutdownMessage(
-                getOs().getCellModule().createMessageRouting().topoCast("server_0" )
+                getOs().getCellModule().createMessageRouting().topoCast("server_0")
         ));
 
         getOs().getAdHocModule().sendV2xMessage(new ShutdownMessage(
-                getOs().getAdHocModule().createMessageRouting().topoCast("rsu_0", 1 )
+                getOs().getAdHocModule().createMessageRouting().topoCast("rsu_0", 1)
         ));
     }
 

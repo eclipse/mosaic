@@ -37,7 +37,7 @@ public class PolygonTraciReader extends AbstractTraciResultReader<List<Position>
 
     @Override
     protected List<Position> readFromStream(DataInputStream in) throws IOException {
-        int count = readByte(in);
+        int count = readUnsignedByte(in);
 
         List<Position> resultPolygon = new ArrayList<>(count);
 

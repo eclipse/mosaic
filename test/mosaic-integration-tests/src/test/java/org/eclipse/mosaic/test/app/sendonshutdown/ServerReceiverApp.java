@@ -41,7 +41,7 @@ public class ServerReceiverApp extends AbstractApplication<ServerOperatingSystem
 
     @Override
     public void onShutdown() {
-        getLog().infoSimTime(this, "Shutdown server." );
+        getLog().infoSimTime(this, "Shutdown server.");
     }
 
     @Override
