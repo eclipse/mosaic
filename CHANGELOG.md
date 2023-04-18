@@ -4,10 +4,10 @@
 * [A+] The perception module can now detect traffic lights and their current states.
 * [A+] Vehicles and other units are finally able to send V2X messages during their shutdown procedure.
 * [A-] Resolved issues in perception module, e.g., when multiple apps used perception modifiers simultaneously. 
-* [T+] Improved handling of vehicles which are teleported by SUMO.
 * [M+] The RTI now detects the OS type of the local host by itself.
 * [M-] Fixed minor bugs in RTI, Logging, and JSON-Scheme files.
 * [S+] Scenario-Convert is now able to import building information to an existing scenario database.
+* [T+] Improved handling of vehicles which are teleported by SUMO.
 * [T+] Several data related to trains can now be read from SUMO.
 * [T+] Now supports SUMO 1.16.0
 * [X+] Introduced OpenDRIVE support for PHABMACS (Extended).
