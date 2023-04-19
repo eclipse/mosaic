@@ -35,10 +35,10 @@ public class WallIndexTypeAdapterFactory implements TypeAdapterFactory {
         @Override
         protected Class<?> fromTypeName(String type) {
             try {
-                return Class.forName(TrafficLightIndex.class.getPackage().getName() + "." + type);
+                return Class.forName(WallIndex.class.getPackage().getName() + "." + type);
             } catch (ClassNotFoundException e) {
                 throw new JsonParseException(
-                        "Cannot deserialize Wall Index named " + type + "; Traffic Light Index Provider doesn't exist.");
+                        "Cannot deserialize Wall Index named " + type + "; Wall Index doesn't exist.");
             }
         }
 
