@@ -37,7 +37,7 @@ public class TrafficLightIndexTypeAdapterFactory implements TypeAdapterFactory {
                 return Class.forName(TrafficLightIndex.class.getPackage().getName() + "." + type);
             } catch (ClassNotFoundException e) {
                 throw new JsonParseException(
-                        "Cannot deserialize Traffic Light Index named " + type + "; Traffic Light Index Provider doesn't exist.");
+                        "Cannot deserialize Traffic Light Index named " + type + "; Traffic Light Index doesn't exist.");
             }
         }
 

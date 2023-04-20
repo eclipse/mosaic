@@ -37,7 +37,7 @@ public class VehicleIndexTypeAdapterFactory implements TypeAdapterFactory {
                 return Class.forName(VehicleIndex.class.getPackage().getName() + "." + type);
             } catch (ClassNotFoundException e) {
                 throw new JsonParseException(
-                        "Cannot deserialize Vehicle Index named " + type + "; Vehicle Index Provider doesn't exist.");
+                        "Cannot deserialize Vehicle Index named " + type + "; Vehicle Index doesn't exist.");
             }
         }
 
