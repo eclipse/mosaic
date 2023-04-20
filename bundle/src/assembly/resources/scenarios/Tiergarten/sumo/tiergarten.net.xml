@@ -38,7 +38,7 @@
 
 <net version="1.6" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
 
-    <location netOffset="-385769.05,-5819239.15" convBoundary="0.00,0.00,4124.17,464.03" origBoundary="385769.05,5819239.15,389893.22,5819703.18" projParameter="!"/>
+    <location netOffset="-385769.05,-5819239.15" convBoundary="0.00,0.00,4124.17,464.03" origBoundary="385769.05,5819239.15,389893.22,5819703.18" projParameter="+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
 
     <edge id=":21487142_0" function="internal">
         <lane id=":21487142_0_0" index="0" speed="13.89" length="18.83" shape="284.48,163.66 281.82,158.87 279.22,156.10 276.09,153.70 271.86,150.01"/>
