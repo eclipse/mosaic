@@ -218,7 +218,10 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         SimulationKernel.SimulationKernel.setRandomNumberGenerator(rti.createRandomNumberGenerator());
 
         // shutdown remaining simulation units within the simulation time frame
-        SimulationKernel.SimulationKernel.getEventManager().addEvent(endTime, this::shutdownSimulationUnits);
+        SimulationKernel.SimulationKernel.getEventManager()
+                .newEvent(endTime, this::shutdownSimulationUnits)
+                .withNice(EventNicenessPriorityRegister.UNIT_REMOVED)
+                .schedule();
     }
 
     private void shutdownSimulationUnits(Event event) {
@@ -322,7 +325,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             final Event event = new Event(
                     vehicleBatteryUpdates.getTime(), simulationUnit,
                     batteryData,
-                    EventNicenessPriorityRegister.batteryUpdated
+                    EventNicenessPriorityRegister.BATTERY_UPDATED
             );
             addEvent(event);
         }
@@ -413,13 +416,13 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                     addEvent(new Event(
                             vehicleSeenTrafficSignsUpdate.getTime(),
                             e -> vehicleSeenTrafficSignsUpdate.getNewSigns(vehicleId).forEach(application::onTrafficSignNoticed),
-                            EventNicenessPriorityRegister.updateSeenTrafficSign
+                            EventNicenessPriorityRegister.UPDATE_SEEN_TRAFFIC_SIGN
 
                     ));
                     addEvent(new Event(
                             vehicleSeenTrafficSignsUpdate.getTime(),
                             e -> vehicleSeenTrafficSignsUpdate.getPassedSigns(vehicleId).forEach(application::onTrafficSignInvalidated),
-                            EventNicenessPriorityRegister.updateSeenTrafficSign
+                            EventNicenessPriorityRegister.UPDATE_SEEN_TRAFFIC_SIGN
                     ));
                 }
             }
@@ -438,7 +441,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 chargingStationData.getTime(),
                 simulationUnit,
                 chargingStationData,
-                EventNicenessPriorityRegister.updateChargingStation
+                EventNicenessPriorityRegister.UPDATE_CHARGING_STATION
         );
         addEvent(event);
     }
@@ -453,7 +456,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 vehicleChargingDenial.getTime(),
                 simulationUnit,
                 vehicleChargingDenial,
-                EventNicenessPriorityRegister.chargingRejected
+                EventNicenessPriorityRegister.CHARGING_REJECTED
         );
         addEvent(event);
     }
@@ -478,7 +481,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 v2xMessageReception.getTime(),
                 simulationUnit,
                 receivedV2xMessage,
-                EventNicenessPriorityRegister.v2xMessageReception
+                EventNicenessPriorityRegister.V2X_MESSAGE_RECEPTION
         );
 
         addEvent(event);
@@ -499,7 +502,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 v2xFullMessageReception.getTime(),
                 simulationUnit,
                 receivedV2xMessage,
-                EventNicenessPriorityRegister.v2xFullMessageReception
+                EventNicenessPriorityRegister.V2X_FULL_MESSAGE_RECEPTION
         );
         addEvent(event);
     }
@@ -551,7 +554,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                         relevantUpdates.getTime(),
                         tmc,
                         relevantUpdates,
-                        EventNicenessPriorityRegister.updateTrafficDetectors
+                        EventNicenessPriorityRegister.UPDATE_TRAFFIC_DETECTORS
                 );
                 addEvent(event);
             }
@@ -603,7 +606,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final Event event = new Event(
                 v2xMessageAcknowledgement.getTime(),
                 simulationUnit, v2xMessageAcknowledgement,
-                EventNicenessPriorityRegister.v2xMessageAcknowledgement
+                EventNicenessPriorityRegister.V2X_MESSAGE_ACKNOWLEDGEMENT
         );
         addEvent(event);
     }
@@ -618,7 +621,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                         trafficLightUpdates.getTime(),
                         simulationUnit,
                         trafficLightGroupInfo,
-                        EventNicenessPriorityRegister.updateTrafficLight
+                        EventNicenessPriorityRegister.UPDATE_TRAFFIC_LIGHT
                 );
                 addEvent(event);
             }
@@ -640,7 +643,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                     vehicleData.getTime(),
                     simulationUnit,
                     vehicleData,
-                    EventNicenessPriorityRegister.vehicleAdded
+                    EventNicenessPriorityRegister.VEHICLE_ADDED
             );
             addEvent(event);
         }
@@ -657,7 +660,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                     vehicleData.getTime(),
                     simulationUnit,
                     vehicleData,
-                    EventNicenessPriorityRegister.vehicleUpdated
+                    EventNicenessPriorityRegister.VEHICLE_UPDATED
             );
             addEvent(event);
         }
@@ -672,7 +675,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 vehicleUpdates.getTime(),
                 UnitSimulator.UnitSimulator,
                 removeVehicles,
-                EventNicenessPriorityRegister.vehicleRemoved
+                EventNicenessPriorityRegister.VEHICLE_REMOVED
         );
         addEvent(event);
 
