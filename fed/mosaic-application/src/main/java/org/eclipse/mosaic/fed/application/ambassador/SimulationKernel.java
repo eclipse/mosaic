@@ -30,9 +30,17 @@ import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interactable;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.FileAppender;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -318,6 +326,21 @@ public enum SimulationKernel {
         this.eventManager = eventManager;
     }
 
+    /**
+     * Convenience method to determine the current path of the log files generated for this simulation.
+     * Returns the current working directory if no suitable appender could be found.
+     */
+    public Path getMainLogDirectory() {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        for (Logger logger : context.getLoggerList()) {
+            Appender<ILoggingEvent> appender = logger.getAppender("ApplicationLog");
+            if (appender instanceof FileAppender) {
+                FileAppender<?> fileAppender = ((FileAppender<?>) appender);
+                return new File(fileAppender.getFile()).toPath().getParent();
+            }
+        }
+        return Paths.get("");
+    }
 
     void garbageCollection() {
         if (interactable == null) {
