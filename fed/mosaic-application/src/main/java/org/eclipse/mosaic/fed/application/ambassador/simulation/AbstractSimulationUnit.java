@@ -292,10 +292,10 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
                             throw new RuntimeException(ErrorRegister.SIMULATION_UNIT_IsNotAssignableFrom.toString());
                         }
                     } else {
-                        osLog.warn("Could not check operating system of Application. Skipping check.");
+                        osLog.debug("Could not check operating system of Application. Skipping check.");
                     }
                 } catch (ClassNotFoundException e) {
-                    osLog.warn("Check for operating system of Application failed. Skipping check.", e);
+                    osLog.debug("Check for operating system of Application failed. Skipping check.", e);
                 }
             }
 

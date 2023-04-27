@@ -19,29 +19,30 @@ package org.eclipse.mosaic.fed.application.ambassador.util;
  * top = highest priority. bottom lowest priority.
  */
 public class EventNicenessPriorityRegister {
+    public final static long UNIT_REMOVED = 1;
     // vehicle
-    public final static long vehicleAdded = -99_999_900;
-    public final static long vehicleUpdated = -99_999_800;
-    public final static long vehicleRemoved = -99_999_700;
+    public final static long VEHICLE_ADDED = -99_999_900;
+    public final static long VEHICLE_UPDATED = -99_999_800;
+    public final static long VEHICLE_REMOVED = -99_999_700;
 
     // update traffic detectors
-    public final static long updateTrafficDetectors = -99_999_600;
+    public final static long UPDATE_TRAFFIC_DETECTORS = -99_999_600;
 
     // update charging station
-    public final static long updateChargingStation = -99_999_500;
+    public final static long UPDATE_CHARGING_STATION = -99_999_500;
     // update seen traffic signs
-    public final static long updateSeenTrafficSign = -99_999_450;
+    public final static long UPDATE_SEEN_TRAFFIC_SIGN = -99_999_450;
     // update traffic light
-    public final static long updateTrafficLight = -99_999_400;
+    public final static long UPDATE_TRAFFIC_LIGHT = -99_999_400;
 
 
     // v2x messages
-    public final static long v2xMessageAcknowledgement = -99_999_200;
-    public final static long v2xMessageReception = -99_999_100;
-    public final static long v2xFullMessageReception = -99_999_99;
+    public final static long V2X_MESSAGE_ACKNOWLEDGEMENT = -99_999_200;
+    public final static long V2X_MESSAGE_RECEPTION = -99_999_100;
+    public final static long V2X_FULL_MESSAGE_RECEPTION = -99_999_99;
     // charging status
-    public final static long chargingRejected = -99_999_000;
+    public final static long CHARGING_REJECTED = -99_999_000;
 
     // batteryUpdated
-    public final static long batteryUpdated = -99_998_900;
+    public final static long BATTERY_UPDATED = -99_998_900;
 }
