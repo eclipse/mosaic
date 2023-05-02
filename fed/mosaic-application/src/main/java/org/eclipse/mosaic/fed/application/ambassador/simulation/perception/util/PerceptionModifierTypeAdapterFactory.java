@@ -16,40 +16,19 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PerceptionModifier;
-import org.eclipse.mosaic.lib.gson.AbstractTypeAdapterFactory;
+import org.eclipse.mosaic.lib.util.gson.PackageSpecificTypeAdapter;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
 public class PerceptionModifierTypeAdapterFactory implements TypeAdapterFactory {
-    public static class PerceptionModifierTypeAdapter extends AbstractTypeAdapterFactory<PerceptionModifier> {
 
-        private PerceptionModifierTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
-            super(parentFactory, gson);
-        }
-
-        @Override
-        protected Class<?> fromTypeName(String type) {
-            try {
-                return Class.forName(PerceptionModifier.class.getPackage().getName() + "." + type);
-            } catch (ClassNotFoundException e) {
-                throw new JsonParseException(
-                        "Cannot deserialize PerceptionModifier named " + type + "; PerceptionModifier doesn't exist.");
-            }
-        }
-
-        @Override
-        protected String toTypeName(Class<?> typeClass) {
-            return typeClass.getSimpleName();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        return (TypeAdapter<T>) new PerceptionModifierTypeAdapter(this, gson).nullSafe();
+        return new PackageSpecificTypeAdapter<T>(this, gson)
+                .searchInPackageOfClass(PerceptionModifier.class)
+                .nullSafe();
     }
 }

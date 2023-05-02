@@ -23,7 +23,7 @@ import com.google.gson.annotations.JsonAdapter;
 
 import java.util.List;
 
-@JsonAdapter(PerceptionModifierTypeAdapterFactory.PerceptionModifierTypeAdapter.class)
+@JsonAdapter(PerceptionModifierTypeAdapterFactory.class)
 public interface PerceptionModifier {
 
     /**
