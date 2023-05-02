@@ -60,7 +60,7 @@ public class PackageSpecificTypeAdapter<T> extends AbstractTypeAdapterFactory<T>
         if (returnClass != null) {
             return returnClass;
         } else {
-            throw new JsonParseException("Cannot deserialize TraversalBasedProcessor " + type);
+            throw new JsonParseException("Unknown type name " + type);
         }
     }
 
