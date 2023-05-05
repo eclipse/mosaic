@@ -16,10 +16,9 @@
 package org.eclipse.mosaic.fed.sns.util;
 
 import org.eclipse.mosaic.fed.sns.model.AdhocTransmissionModel;
-import org.eclipse.mosaic.lib.gson.AbstractTypeAdapterFactory;
+import org.eclipse.mosaic.lib.util.gson.PackageSpecificTypeAdapter;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
@@ -29,31 +28,10 @@ import com.google.gson.reflect.TypeToken;
  */
 public final class AdhocTransmissionModelTypeAdapterFactory implements TypeAdapterFactory {
 
-    public static class AdhocTransmissionModelTypeAdapter extends AbstractTypeAdapterFactory<AdhocTransmissionModel> {
-
-        private AdhocTransmissionModelTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
-            super(parentFactory, gson);
-        }
-
-        @Override
-        protected Class<?> fromTypeName(String type) {
-            try {
-                return Class.forName(AdhocTransmissionModel.class.getPackage().getName() + "." + type);
-            } catch (ClassNotFoundException e) {
-                throw new JsonParseException(
-                        "Cannot deserialize AdhocTransmissionModel named " + type + "; AdhocTransmissionModel doesn't exist.");
-            }
-        }
-
-        @Override
-        protected String toTypeName(Class<?> typeClass) {
-            return typeClass.getSimpleName();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        return (TypeAdapter<T>) new AdhocTransmissionModelTypeAdapter(this, gson).nullSafe();
+        return new PackageSpecificTypeAdapter<T>(this, gson)
+                .searchInPackageOfClass(AdhocTransmissionModel.class)
+                .nullSafe();
     }
 }

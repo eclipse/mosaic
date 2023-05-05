@@ -17,13 +17,9 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.PerceptionModifierTypeAdapterFactory;
-
-import com.google.gson.annotations.JsonAdapter;
 
 import java.util.List;
 
-@JsonAdapter(PerceptionModifierTypeAdapterFactory.PerceptionModifierTypeAdapter.class)
 public interface PerceptionModifier {
 
     /**

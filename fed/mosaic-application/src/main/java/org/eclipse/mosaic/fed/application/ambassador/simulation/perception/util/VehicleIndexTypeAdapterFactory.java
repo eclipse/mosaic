@@ -16,40 +16,19 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
-import org.eclipse.mosaic.lib.gson.AbstractTypeAdapterFactory;
+import org.eclipse.mosaic.lib.util.gson.PackageSpecificTypeAdapter;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
 public class VehicleIndexTypeAdapterFactory implements TypeAdapterFactory {
-    public static class VehicleIndexTypeAdapter extends AbstractTypeAdapterFactory<VehicleIndex> {
 
-        private VehicleIndexTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
-            super(parentFactory, gson);
-        }
-
-        @Override
-        protected Class<?> fromTypeName(String type) {
-            try {
-                return Class.forName(VehicleIndex.class.getPackage().getName() + "." + type);
-            } catch (ClassNotFoundException e) {
-                throw new JsonParseException(
-                        "Cannot deserialize Vehicle Index named " + type + "; Vehicle Index doesn't exist.");
-            }
-        }
-
-        @Override
-        protected String toTypeName(Class<?> typeClass) {
-            return typeClass.getSimpleName();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        return (TypeAdapter<T>) new VehicleIndexTypeAdapter(this, gson).nullSafe();
+        return new PackageSpecificTypeAdapter<T>(this, gson)
+                .searchInPackageOfClass(VehicleIndex.class)
+                .nullSafe();
     }
 }
