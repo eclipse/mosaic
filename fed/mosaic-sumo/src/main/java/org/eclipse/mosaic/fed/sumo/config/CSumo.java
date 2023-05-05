@@ -35,7 +35,7 @@ public class CSumo implements Serializable {
 
     /**
      * The Interval after which positions are published.
-     * Define the size of one simulation step in sumo (minimal value: 100).
+     * Define the size of one simulation step in sumo (minimal value: 1).
      * The default value is 1000 (1s). Unit: [ms].
      */
     @JsonAdapter(TimeFieldAdapter.LegacyMilliSeconds.class)
