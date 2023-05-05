@@ -112,7 +112,7 @@
         <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
         <!-- note, when upgrading, the field LibSumoAmbassador#VALID_LIBSUMO_VERSIONS needs to be changed too -->
-        <version.libsumo>1.16.0</version.libsumo>
+        <version.libsumo>1.17.0</version.libsumo>
     </properties>
 
     <dependencies>
