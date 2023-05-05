@@ -19,13 +19,20 @@ import org.eclipse.mosaic.fed.application.app.api.OperatingSystemAccess;
 import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
 import org.eclipse.mosaic.rti.TIME;
 
+import ch.qos.logback.classic.sift.SiftingAppender;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.FileAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Iterator;
+import javax.annotation.Nullable;
 
 /**
  * Implementation of the {@link UnitLogger} interface
@@ -70,7 +77,7 @@ public class UnitLoggerImpl implements UnitLogger {
     }
 
     private void redirect(Runnable logCall) {
-        String beforeMdcPath =  MDC.get("path");
+        String beforeMdcPath = MDC.get("path");
         try {
             MDC.put("path", mdcPath);
             logCall.run();
@@ -404,5 +411,31 @@ public class UnitLoggerImpl implements UnitLogger {
         final Object[] argumentsWithTime = Arrays.copyOf(arguments, arguments.length + 1);
         argumentsWithTime[arguments.length] = TIME.format(simulationTime);
         return argumentsWithTime;
+    }
+
+    @Override
+    @Nullable
+    public Path getUnitLogDirectory() {
+        if (!(log instanceof ch.qos.logback.classic.Logger)) {
+            return null;
+        }
+        ch.qos.logback.classic.Logger logbackLog = (ch.qos.logback.classic.Logger) log;
+        Iterator<Appender<ILoggingEvent>> appenderIterator = logbackLog.iteratorForAppenders();
+        while (appenderIterator.hasNext()) {
+            Appender<ILoggingEvent> appender = appenderIterator.next();
+            if (appender instanceof FileAppender) {
+                FileAppender<?> fileAppender = ((FileAppender<?>) appender);
+                return new File(fileAppender.getFile()).getParentFile().toPath();
+            }
+            if (appender instanceof SiftingAppender) {
+                SiftingAppender siftingAppender = ((SiftingAppender) appender);
+                Appender<ILoggingEvent> delegateAppender = siftingAppender.getAppenderTracker().find(mdcPath);
+                if (delegateAppender instanceof FileAppender) {
+                    FileAppender<?> fileAppender = ((FileAppender<?>) delegateAppender);
+                    return new File(fileAppender.getFile()).getParentFile().toPath();
+                }
+            }
+        }
+        return null;
     }
 }
