@@ -42,7 +42,7 @@ public enum SumoVersion {
     SUMO_1_15_x("1.15.*", TraciVersion.API_20),
     SUMO_1_16_x("1.16.*", TraciVersion.API_20),
 
-    SUMO_1_17_x("1.16.*", TraciVersion.API_20),
+    SUMO_1_17_x("1.17.*", TraciVersion.API_20),
 
     /**
      * the lowest version supported by this client.
@@ -74,10 +74,6 @@ public enum SumoVersion {
         return sumoVersion;
     }
 
-    public TraciVersion getTraciVersion() {
-        return traciVersion;
-    }
-
     public static SumoVersion getSumoVersion(String sumoVersion) {
         for (SumoVersion version : SumoVersion.values()) {
             if (matches(sumoVersion, version.getSumoVersion())) {
@@ -85,6 +81,10 @@ public enum SumoVersion {
             }
         }
         return UNKNOWN;
+    }
+
+    public TraciVersion getTraciVersion() {
+        return traciVersion;
     }
 
     private final static Pattern VERSION_PATTERN = Pattern.compile("^SUMO v?([0-9]\\.[0-9]+)\\..*$");
