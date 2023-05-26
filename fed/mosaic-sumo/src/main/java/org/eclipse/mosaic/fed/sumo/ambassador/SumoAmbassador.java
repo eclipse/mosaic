@@ -346,7 +346,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 continue;
             }
             try {
-                // always subscribe to vehicles, that are came from SUMO and are in notYetSubscribedVehicles-list
+                // always subscribe to vehicles, that came from SUMO and are in notYetSubscribedVehicles-list
                 if (vehiclesAddedViaRouteFile.contains(vehicleId) || currentVehicleRegistration.getTime() <= time) {
                     bridge.getSimulationControl().subscribeForVehicle(vehicleId, currentVehicleRegistration.getTime(), this.getEndTime());
                     iterator.remove();
