@@ -252,8 +252,7 @@ public class VehicleData extends UnitData {
      * Returns the identifier of the lane area in which
      * the vehicle is currently driving. Might be <code>null</code>.
      */
-    public @Nullable
-    String getLaneAreaId() {
+    public @Nullable String getLaneAreaId() {
         return laneAreaId;
     }
 

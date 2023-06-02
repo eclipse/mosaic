@@ -19,6 +19,7 @@ import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class PublicTransportData {
@@ -68,7 +69,7 @@ public class PublicTransportData {
     /**
      * Class representing a vehicle stopping place.
      */
-    public static class StoppingPlace {
+    public static class StoppingPlace implements Serializable {
         /**
          * Id of the stop.
          */

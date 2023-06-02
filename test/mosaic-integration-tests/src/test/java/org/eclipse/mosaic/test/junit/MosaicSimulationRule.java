@@ -141,6 +141,18 @@ public class MosaicSimulationRule extends TemporaryFolder {
         return this;
     }
 
+    /**
+     * Debug feature: activate SUMO GUI to visualize vehicle movements.
+     * DO NOT commit test with having this activated.
+     */
+    public MosaicSimulationRule activateSumoGui() {
+        watchdog(0); // when using GUI watchdog pretty much has to be disabled
+        getRuntimeConfiguration().federates.stream().filter(s -> s.id.equals("sumo")).forEach(
+                s -> s.classname = SumoGuiAmbassador.class.getCanonicalName()
+        );
+        return this;
+    }
+
     protected CHosts prepareHostsConfiguration() throws IOException {
         Path tmpDirectory = newFolder("tmp").toPath();
         CHosts hostsConfiguration = new CHosts();
@@ -311,16 +323,5 @@ public class MosaicSimulationRule extends TemporaryFolder {
             result.exception = e;
             return result;
         }
-    }
-
-    /**
-     * Debug feature: activate SUMO GUI to visualize vehicle movements.
-     * DO NOT commit test with having this activated.
-     */
-    public void activateSumoGui() {
-        watchdog(0); // when using GUI watchdog pretty much has to be disabled
-        getRuntimeConfiguration().federates.stream().filter(s -> s.id.equals("sumo")).forEach(
-                s -> s.classname = SumoGuiAmbassador.class.getCanonicalName()
-        );
     }
 }
