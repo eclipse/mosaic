@@ -46,7 +46,7 @@ public class StoppingPlaceReader extends AbstractTraciResultReader<List<PublicTr
             stoppingPlaceBuilder.stopFlags(VehicleStopMode.fromSumoInt(readIntWithType(in)));
             stoppingPlaceBuilder.stopDuration(readDoubleWithType(in));
             stoppingPlaceBuilder.stoppedUntil(readDoubleWithType(in));
-
+            // NOTE: this doesn't contain the start position of the stopping place
             stoppingPlaces.add(stoppingPlaceBuilder.build());
         }
         return stoppingPlaces;

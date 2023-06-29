@@ -181,9 +181,11 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         List<PublicTransportData.StoppingPlace> nextStops = new ArrayList<>();
         for (TraCINextStopData stopData : stops) {
             PublicTransportData.StoppingPlace stoppingPlace = new PublicTransportData.StoppingPlace.Builder()
-                    .laneId(stopData.getLane()).endPos(stopData.getEndPos()).stoppingPlaceId(stopData.getStoppingPlaceID())
-                    .stopFlags(VehicleStopMode.fromSumoInt(stopData.getStopFlags())).stopDuration(stopData.getDuration())
-                    .stoppedUntil(stopData.getUntil()).startPos(stopData.getStartPos())
+                    .stoppingPlaceId(stopData.getStoppingPlaceID())
+                    .laneId(stopData.getLane())
+                    .startPos(stopData.getStartPos()).endPos(stopData.getEndPos())
+                    .stopFlags(VehicleStopMode.fromSumoInt(stopData.getStopFlags()))
+                    .stopDuration(stopData.getDuration()).stoppedUntil(stopData.getUntil())
                     .build();
             nextStops.add(stoppingPlace);
         }
