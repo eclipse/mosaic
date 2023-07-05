@@ -61,7 +61,7 @@ For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
 * **Java 8, 11, or 17** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk8).
-* **SUMO 1.17.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
+* **SUMO 1.18.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 
