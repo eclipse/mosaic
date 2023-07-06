@@ -135,7 +135,7 @@ public class SumoAmbassadorTest {
 
         // ASSERT
         verify(rtiMock, times(1))
-                .requestAdvanceTime(eq(0L), eq(0L), eq((byte)(FederatePriority.DEFAULT -  1)));
+                .requestAdvanceTime(eq(0L), eq(0L), eq((byte) (FederatePriority.DEFAULT - 1)));
         assertNull(traciClientBridgeMock);
     }
 
@@ -219,6 +219,33 @@ public class SumoAmbassadorTest {
 
         // RUN+ASSERT: setSpeed is FINALLY called after 5 seconds interval
         ambassador.advanceTime(5 * TIME.SECOND);
+        verify(traciClientBridgeMock.getVehicleControl()).setSpeed(eq("veh_0"), eq(10.0));
+    }
+
+    @Test
+    public void receiveMessage_VehicleSpeedChangeAtNonMultipleOfTimeStep() throws Throwable {
+        // if the adjustToSumoTimeStep doesn't get a multiple of sumoConfig.updateInterval * TIME.MILLI_SECOND, this fails
+        sendVehiclePathsAndTypes_doInitTraci();
+        long sendTime = 1100L;
+        // RUN
+        mockSimulationStepResult(0L);
+        ambassador.advanceTime(sendTime); // advancing time enough to process interaction
+        VehicleSpeedChange vehicleSpeedChange = new VehicleSpeedChange(sendTime, "veh_0", VehicleSpeedChange.VehicleSpeedChangeType.WITH_DURATION, 10, 5 * TIME.SECOND, 0);
+        ambassador.processInteraction(vehicleSpeedChange);
+        //  ASSERT
+        //  -> nothing should be called yet
+        verify(traciClientBridgeMock.getVehicleControl(), never()).setSpeed(anyString(), anyDouble());
+        verify(traciClientBridgeMock.getVehicleControl(), never()).slowDown(eq("veh_0"), eq(10.0), eq(5 * TIME.SECOND));
+        // RUN + ASSERT
+        // slow down should be called at next time step
+        ambassador.advanceTime(ambassador.sumoConfig.updateInterval * TIME.MILLI_SECOND);
+        verify(traciClientBridgeMock.getVehicleControl()).slowDown(eq("veh_0"), eq(10.0), eq(5 * TIME.SECOND));
+        // RUN
+        for (int i = 1; i <= 5; i++) {
+            ambassador.advanceTime(i * ambassador.sumoConfig.updateInterval * TIME.MILLI_SECOND);
+        }
+        // ASSERT
+        // after 5 seconds setSpeed should have been called
         verify(traciClientBridgeMock.getVehicleControl()).setSpeed(eq("veh_0"), eq(10.0));
     }
 
