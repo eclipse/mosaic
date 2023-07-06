@@ -8,7 +8,7 @@ WORKDIR /home/jenkins
 
 RUN apt-get update &&  \
     apt-get install -y --allow-unauthenticated software-properties-common && \
-    # adjust this output string to bypass potentiall caches
-    echo "Installing SUMO 1.16.0" && \
+    # adjust this output string to bypass potential caches
+    echo "Installing SUMO 1.18.0" && \
     add-apt-repository ppa:sumo/stable && \
     apt-get install -y sumo

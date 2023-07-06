@@ -42,7 +42,7 @@ Additional simulators and assessment features are provided by [Fraunhofer FOKUS]
 
 ## Related repositories
 
-* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.17.0`.
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.18.0`.
 * The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
   We currently support ns-3 version `3.36.1`. 
 * The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
