@@ -240,15 +240,15 @@ public class DatabaseRouting implements Routing {
 
         LazyLoadingConnection connection = new LazyLoadingConnection(closestEdge.getConnection());
         LazyLoadingNode previousNode = new LazyLoadingNode(closestEdge.getPreviousNode());
-        LazyLoadingNode upcommingNode = new LazyLoadingNode(closestEdge.getNextNode());
+        LazyLoadingNode upcomingNode = new LazyLoadingNode(closestEdge.getNextNode());
 
         GeoPoint startOfEdge = closestEdge.getPreviousNode().getPosition();
         GeoPoint endOfEdge = closestEdge.getNextNode().getPosition();
         GeoPoint closestPointOnEdge = GeoUtils.closestPointOnLine(location, startOfEdge, endOfEdge);
         double distanceFromStart = closestEdge.getPreviousNode().getPosition().distanceTo(closestPointOnEdge);
-        distanceFromStart = min(distanceFromStart, previousNode.getPosition().distanceTo(upcommingNode.getPosition()));
+        distanceFromStart = min(distanceFromStart, previousNode.getPosition().distanceTo(upcomingNode.getPosition()));
 
-        return new LazyLoadingRoadPosition(connection, previousNode, upcommingNode, distanceFromStart);
+        return new LazyLoadingRoadPosition(connection, previousNode, upcomingNode, distanceFromStart);
     }
 
     @Override
