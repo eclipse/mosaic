@@ -16,29 +16,33 @@
 package org.eclipse.mosaic.fed.sumo.ambassador;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+
+import org.eclipse.mosaic.rti.TIME;
 
 import org.junit.Test;
 
 public class SumoAmbassadorTimeStepAdjustmentTest {
 
-    private final static long sumoTimeStep = 10000;
+    private final static long sumoTimeStep = TIME.SECOND;
 
     @Test
     public void testEqualTimeStep() {
         // Requested time is the same as the sumo timestep. Shouldn't be changed
-        assertEquals(sumoTimeStep, AbstractSumoAmbassador.adjustToSumoTimeStep(10000, sumoTimeStep));
+        assertEquals(sumoTimeStep, AbstractSumoAmbassador.adjustToSumoTimeStep(TIME.SECOND, sumoTimeStep));
     }
 
     @Test
     public void testRoundDown() {
         // Just 2 over, should round down
-        assertEquals(sumoTimeStep, AbstractSumoAmbassador.adjustToSumoTimeStep(10002, sumoTimeStep));
+        assertEquals(sumoTimeStep, AbstractSumoAmbassador.adjustToSumoTimeStep(TIME.SECOND + 2 * TIME.MILLI_SECOND, sumoTimeStep));
     }
 
     @Test
     public void testRoundUp() {
         // Closer to the next higher value, should round up
-        assertEquals(sumoTimeStep * 2, AbstractSumoAmbassador.adjustToSumoTimeStep(19999, sumoTimeStep));
+        assertEquals(sumoTimeStep * 2, AbstractSumoAmbassador.adjustToSumoTimeStep(TIME.SECOND + 999 * TIME.MILLI_SECOND, sumoTimeStep));
     }
 
     @Test

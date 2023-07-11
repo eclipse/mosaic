@@ -863,14 +863,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             case WITH_DURATION:
                 if (vehicleSpeedChange.getDuration() > 0) {
                     // set speed smoothly with given interval
-                    final long changeSpeedTimestep = vehicleSpeedChange.getTime() + vehicleSpeedChange.getDuration();
-                    log.debug("slow down vehicle {} and schedule change speed event for timestep {} ns ",
-                            vehicleSpeedChange.getVehicleId(), changeSpeedTimestep);
+                    final long changeSpeedTimeStep = vehicleSpeedChange.getTime() + vehicleSpeedChange.getDuration();
+                    log.debug("slow down vehicle {} and schedule change speed event for time step {} ns ",
+                            vehicleSpeedChange.getVehicleId(), changeSpeedTimeStep);
                     bridge.getVehicleControl()
                             .slowDown(vehicleSpeedChange.getVehicleId(), vehicleSpeedChange.getSpeed(), vehicleSpeedChange.getDuration());
 
                     // set speed permanently after given interval (in the future) via the event scheduler
-                    long adjustedTime = adjustToSumoTimeStep(changeSpeedTimestep, sumoConfig.updateInterval);
+                    long adjustedTime = adjustToSumoTimeStep(changeSpeedTimeStep, sumoConfig.updateInterval * TIME.MILLI_SECOND);
                     eventScheduler.addEvent(new Event(adjustedTime, this, vehicleSpeedChange)
                     );
                 } else {
