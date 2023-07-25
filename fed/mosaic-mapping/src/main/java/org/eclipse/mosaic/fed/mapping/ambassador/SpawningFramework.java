@@ -46,6 +46,7 @@ import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,7 @@ public class SpawningFramework {
     private static final Logger LOG = LoggerFactory.getLogger(SpawningFramework.class);
 
     private final List<CPrototype> prototypeConfigurations = new ArrayList<>();
+    private final Map<String, List<CPrototype>> typeDistributions = new HashMap<>();
     private final Map<String, TrafficLightSpawner> tls = new HashMap<>();
     private final List<VehicleFlowGenerator> vehicleFlowGenerators = new ArrayList<>();
     private final List<RoadSideUnitSpawner> rsus = new ArrayList<>();
@@ -172,12 +174,16 @@ public class SpawningFramework {
                 }
             }
         }
+
+        if (mappingConfiguration.typeDistributions != null) {
+            SpawningFramework.this.typeDistributions.putAll(mappingConfiguration.typeDistributions);
+        }
+
         // randomize weights in type-distributions
-        if (mappingConfiguration.typeDistributions != null
-                && mappingConfiguration.config != null
+        if (mappingConfiguration.config != null
                 && mappingConfiguration.config.randomizeWeights
         ) {
-            for (List<CPrototype> prototypes : mappingConfiguration.typeDistributions.values()) {
+            for (List<CPrototype> prototypes : typeDistributions.values()) {
                 randomizeWeights(rng, prototypes);
             }
         }
@@ -424,6 +430,19 @@ public class SpawningFramework {
         }
 
         return null;
+    }
+
+    public List<CPrototype> getTypeDistributionByName(String name) {
+        if (name == null) {
+            return Lists.newArrayList();
+        }
+
+        final List<CPrototype> types = typeDistributions.get(name);
+        if (types != null) {
+            return types;
+        }
+
+        return Lists.newArrayList();
     }
 
     /**
