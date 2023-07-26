@@ -30,12 +30,6 @@
             "name": "passenger5",
             "applications": [
             ]
-        },
-        {
-            "name": "bus",
-            "applications": [
-                "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp"
-            ]
         }
     ],
     "typeDistributions": {
