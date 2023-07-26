@@ -42,5 +42,19 @@
                 "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp"
             ]
 		}
-	]
+	],
+    "typeDistributions": {
+        "bus": [
+            {
+                "applications":[
+                    "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp"
+                ],
+                "weight": 0.5
+            },
+            {
+                "applications":[],
+                "weight": 0.5
+            }
+        ]
+    }
 }
