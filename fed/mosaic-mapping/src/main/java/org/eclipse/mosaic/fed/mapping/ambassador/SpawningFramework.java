@@ -175,74 +175,22 @@ public class SpawningFramework {
             }
         }
 
+        // Store type-distributions
         if (mappingConfiguration.typeDistributions != null) {
-            SpawningFramework.this.typeDistributions.putAll(mappingConfiguration.typeDistributions);
+            typeDistributions.putAll(mappingConfiguration.typeDistributions);
         }
 
         // randomize weights in type-distributions
-        if (mappingConfiguration.config != null
-                && mappingConfiguration.config.randomizeWeights
-        ) {
+        if (mappingConfiguration.config != null && mappingConfiguration.config.randomizeWeights) {
             for (List<CPrototype> prototypes : typeDistributions.values()) {
                 randomizeWeights(rng, prototypes);
             }
         }
 
         // Vehicle Spawners
-        boolean flowNoise = mappingConfiguration.config != null && mappingConfiguration.config.randomizeFlows;
         boolean spawnersExist = false;
         if (mappingConfiguration.vehicles != null) {
-            // A remainder after one scaling is always less than 1.
-            // If after some scalings remainderSum became more than 1,
-            // we add one to maxNumberVehicles of the current vehicle spawner and subtract one from remainderSum,
-            // getting back to less than 1 value.
-            double remainderSum = 0;
-            double scaleTraffic = mappingConfiguration.config != null ? mappingConfiguration.config.scaleTraffic : 1d;
-            for (CVehicle vehicleConfiguration : mappingConfiguration.vehicles) {
-
-                //The "continue" still can be called if the spawner exists but the value of
-                // maxNumberVehicles was explicitly set to 0 in the mapping
-                //(convenient for testing of different mapping variations)
-                if (vehicleConfiguration == null
-                        || (vehicleConfiguration.maxNumberVehicles != null
-                        && vehicleConfiguration.maxNumberVehicles == 0)) {
-                    continue;
-                }
-                if (vehicleConfiguration.maxNumberVehicles == null) {
-                    vehicleConfiguration.maxNumberVehicles = Integer.MAX_VALUE;
-                }
-                spawnersExist = true;
-
-                if ((Math.abs(scaleTraffic - 1.0) > 0.0001d)) {
-                    if (vehicleConfiguration.maxNumberVehicles != Integer.MAX_VALUE) {
-                        double numberOfVehiclesScaled = vehicleConfiguration.maxNumberVehicles * scaleTraffic;
-                        remainderSum += (numberOfVehiclesScaled) - (int) numberOfVehiclesScaled;
-
-                        vehicleConfiguration.maxNumberVehicles = (int) (Math.floor(numberOfVehiclesScaled) + Math.floor(remainderSum));
-                        remainderSum -= Math.floor(remainderSum);
-                    }
-                    vehicleConfiguration.targetFlow = Math.round(vehicleConfiguration.targetFlow * scaleTraffic);
-                }
-
-                if (mappingConfiguration.typeDistributions != null) {
-                    vehicleConfiguration.types = replaceWithTypesFromPredefinedDistribution(
-                            vehicleConfiguration,
-                            mappingConfiguration.typeDistributions,
-                            rng
-                    );
-                }
-
-                if (config != null && config.adjustStartingTimes && config.start != null) {
-                    vehicleConfiguration.startingTime = vehicleConfiguration.startingTime - config.start;
-                    if (vehicleConfiguration.maxTime != null) {
-                        vehicleConfiguration.maxTime = vehicleConfiguration.maxTime - config.start;
-                    }
-                }
-
-                if (vehicleConfiguration.startingTime >= 0) {
-                    vehicleFlowGenerators.add(new VehicleFlowGenerator(vehicleConfiguration, rng, flowNoise));
-                }
-            }
+            spawnersExist = generateVehicleFlows(mappingConfiguration.vehicles, mappingConfiguration.config, rng);
         }
 
         if (mappingConfiguration.vehicles == null || !spawnersExist) {
@@ -259,6 +207,7 @@ public class SpawningFramework {
             }
         }
 
+        boolean flowNoise = mappingConfiguration.config != null && mappingConfiguration.config.randomizeFlows;
         for (OriginDestinationVehicleFlowGenerator mapper : matrices) {
             mapper.generateVehicleStreams(this, rng, flowNoise);
         }
@@ -320,9 +269,60 @@ public class SpawningFramework {
         }
     }
 
+    private boolean generateVehicleFlows(List<CVehicle> vehicles, CMappingConfiguration config, RandomNumberGenerator rng) {
+        // A remainder after one scaling is always less than 1.
+        // If after some scalings remainderSum became more than 1,
+        // we add one to maxNumberVehicles of the current vehicle spawner and subtract one from remainderSum,
+        // getting back to less than 1 value.
+        boolean spawnersExist = false;
+        double remainderSum = 0;
+        double scaleTraffic = config != null ? config.scaleTraffic : 1d;
+        for (CVehicle vehicleConfiguration : vehicles) {
 
-    private List<CPrototype> replaceWithTypesFromPredefinedDistribution(
-            CVehicle spawner, Map<String, List<CPrototype>> typeDistributions, RandomNumberGenerator rng) {
+            //The "continue" still can be called if the spawner exists but the value of
+            // maxNumberVehicles was explicitly set to 0 in the mapping
+            //(convenient for testing of different mapping variations)
+            if (vehicleConfiguration == null
+                    || (vehicleConfiguration.maxNumberVehicles != null
+                    && vehicleConfiguration.maxNumberVehicles == 0)) {
+                continue;
+            }
+            if (vehicleConfiguration.maxNumberVehicles == null) {
+                vehicleConfiguration.maxNumberVehicles = Integer.MAX_VALUE;
+            }
+            spawnersExist = true;
+
+            if ((Math.abs(scaleTraffic - 1.0) > 0.0001d)) {
+                if (vehicleConfiguration.maxNumberVehicles != Integer.MAX_VALUE) {
+                    double numberOfVehiclesScaled = vehicleConfiguration.maxNumberVehicles * scaleTraffic;
+                    remainderSum += (numberOfVehiclesScaled) - (int) numberOfVehiclesScaled;
+
+                    vehicleConfiguration.maxNumberVehicles = (int) (Math.floor(numberOfVehiclesScaled) + Math.floor(remainderSum));
+                    remainderSum -= Math.floor(remainderSum);
+                }
+                vehicleConfiguration.targetFlow = Math.round(vehicleConfiguration.targetFlow * scaleTraffic);
+            }
+
+            vehicleConfiguration.types = replaceWithTypesFromPredefinedDistribution(
+                    vehicleConfiguration, rng
+            );
+
+            if (config != null && config.adjustStartingTimes && config.start != null) {
+                vehicleConfiguration.startingTime = vehicleConfiguration.startingTime - config.start;
+                if (vehicleConfiguration.maxTime != null) {
+                    vehicleConfiguration.maxTime = vehicleConfiguration.maxTime - config.start;
+                }
+            }
+
+            if (vehicleConfiguration.startingTime >= 0) {
+                vehicleFlowGenerators.add(new VehicleFlowGenerator(vehicleConfiguration, rng, config != null && config.randomizeFlows));
+            }
+        }
+        return spawnersExist;
+    }
+
+
+    private List<CPrototype> replaceWithTypesFromPredefinedDistribution(CVehicle spawner, RandomNumberGenerator rng) {
         // return distribution given by typeDistribution
         if (spawner.typeDistribution != null) {
             return new ArrayList<>(typeDistributions.get(spawner.typeDistribution));
