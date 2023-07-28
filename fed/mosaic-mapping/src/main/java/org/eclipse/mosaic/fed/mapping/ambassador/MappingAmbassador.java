@@ -33,7 +33,9 @@ import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
@@ -56,7 +58,8 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     /**
      * Read the <code>CMappingAmbassador</code> from the configuration.
      */
-    private CMappingAmbassador mappingAmbassadorConfiguration;
+    private final CMappingAmbassador mappingAmbassadorConfiguration;
+
 
     /**
      * Pointer to save the {@link ScenarioTrafficLightRegistration} when it arrives too early.
@@ -64,6 +67,11 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     private ScenarioTrafficLightRegistration scenarioTrafficLightRegistration;
 
     private RandomNumberGenerator randomNumberGenerator;
+
+    /**
+     * Cache stochastic selectors to avoid unnecessary instantiations.
+     */
+    private final Map<String, StochasticSelector<CPrototype>> typeDistributionSelectors = new HashMap<>();
 
     /**
      * Constructor for the {@link MappingAmbassador}.
@@ -126,7 +134,12 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
 
             final List<CPrototype> typeDistribution = framework.getTypeDistributionByName(scenarioVehicle.getVehicleType().getName());
             if (!typeDistribution.isEmpty()) {
-                final CPrototype selected  = new StochasticSelector<>(typeDistribution, randomNumberGenerator).nextItem();
+                StochasticSelector<CPrototype> selector = typeDistributionSelectors.get(scenarioVehicle.getVehicleType().getName());
+                if (selector == null) {
+                    selector = new StochasticSelector<>(typeDistribution, randomNumberGenerator);
+                    typeDistributionSelectors.put(scenarioVehicle.getVehicleType().getName(), selector);
+                }
+                final CPrototype selected  = selector.nextItem();
                 sendVehicleRegistrationForScenarioVehicle(scenarioVehicle, selected.group, selected.applications);
             } else {
                 final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleType().getName());
@@ -197,6 +210,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
             // enriched with functionality)
             framework = new SpawningFramework(mappingAmbassadorConfiguration, scenarioTrafficLightRegistration, rti, randomNumberGenerator);
 
+            typeDistributionSelectors.clear();
             // Send out the VehicleTypesInitialization, publishing information
             // about the different vehicle types in the simulation
             rti.triggerInteraction(framework.generateVehicleTypesInitialization());
