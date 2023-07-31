@@ -99,7 +99,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
         try {
-            log.info("processInteraction(): " + interaction.getClass().getCanonicalName());
+            log.debug("processInteraction(): " + interaction.getTypeId());
             if (interaction.getTypeId().equals(ScenarioTrafficLightRegistration.TYPE_ID)) {
                 handleInteraction((ScenarioTrafficLightRegistration) interaction);
             } else if (interaction.getTypeId().equals(ScenarioVehicleRegistration.TYPE_ID)) {
@@ -140,7 +140,12 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                     typeDistributionSelectors.put(scenarioVehicle.getVehicleType().getName(), selector);
                 }
                 final CPrototype selected  = selector.nextItem();
-                sendVehicleRegistrationForScenarioVehicle(scenarioVehicle, selected.group, selected.applications);
+                final CPrototype predefined = framework.getPrototypeByName(selected.name);
+                sendVehicleRegistrationForScenarioVehicle(scenarioVehicle,
+                        // use group/application list from predefined type, if not defined in type distribution
+                        selected.group == null && predefined != null ? predefined.group : selected.group,
+                        selected.applications == null && predefined != null ? predefined.applications : selected.applications
+                );
             } else {
                 final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleType().getName());
                 if (prototype == null) {
