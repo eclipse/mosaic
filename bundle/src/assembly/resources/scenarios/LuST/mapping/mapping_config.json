@@ -35,12 +35,14 @@
     "typeDistributions": {
         "bus": [
             {
+                "name": "bus",
                 "applications": [
                     "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp"
                 ],
                 "weight": 0.5
             },
             {
+                "name": "bus",
                 "applications": [ ],
                 "weight": 0.5
             }
