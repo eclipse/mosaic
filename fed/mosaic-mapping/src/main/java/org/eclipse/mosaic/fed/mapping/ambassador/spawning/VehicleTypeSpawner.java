@@ -142,6 +142,7 @@ public class VehicleTypeSpawner extends UnitSpawner implements Weighted {
         this.maxSpeed = prototypeConfiguration.maxSpeed;
         this.vehicleClass = prototypeConfiguration.vehicleClass;
         this.accel = prototypeConfiguration.accel;
+        this.decel = prototypeConfiguration.decel;
         this.emergencyDecel = prototypeConfiguration.emergencyDecel;
         this.sigma = prototypeConfiguration.sigma;
         this.tau = prototypeConfiguration.tau;
