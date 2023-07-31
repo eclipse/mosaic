@@ -34,7 +34,7 @@ import java.nio.file.Paths;
  */
 public class LibSumoAmbassador extends SumoAmbassador {
 
-    private static final String VALID_LIBSUMO_VERSIONS = "1\\.1[678]\\.";
+    private static final String VALID_LIBSUMO_VERSIONS = "1\\.1[78]\\.";
 
     public LibSumoAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
