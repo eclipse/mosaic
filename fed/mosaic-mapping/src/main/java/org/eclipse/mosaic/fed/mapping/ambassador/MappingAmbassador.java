@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador;
 
+import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
 import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -32,6 +33,9 @@ import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
@@ -54,7 +58,8 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     /**
      * Read the <code>CMappingAmbassador</code> from the configuration.
      */
-    private CMappingAmbassador mappingAmbassadorConfiguration;
+    private final CMappingAmbassador mappingAmbassadorConfiguration;
+
 
     /**
      * Pointer to save the {@link ScenarioTrafficLightRegistration} when it arrives too early.
@@ -62,6 +67,11 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     private ScenarioTrafficLightRegistration scenarioTrafficLightRegistration;
 
     private RandomNumberGenerator randomNumberGenerator;
+
+    /**
+     * Cache stochastic selectors to avoid unnecessary instantiations.
+     */
+    private final Map<String, StochasticSelector<CPrototype>> typeDistributionSelectors = new HashMap<>();
 
     /**
      * Constructor for the {@link MappingAmbassador}.
@@ -89,7 +99,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
         try {
-            log.info("processInteraction(): " + interaction.getClass().getCanonicalName());
+            log.debug("processInteraction(): " + interaction.getTypeId());
             if (interaction.getTypeId().equals(ScenarioTrafficLightRegistration.TYPE_ID)) {
                 handleInteraction((ScenarioTrafficLightRegistration) interaction);
             } else if (interaction.getTypeId().equals(ScenarioVehicleRegistration.TYPE_ID)) {
@@ -121,43 +131,66 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
      */
     private void handleInteraction(ScenarioVehicleRegistration scenarioVehicle) throws InternalFederateException {
         if (framework != null) {
-            final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleType().getName());
-            if (prototype == null) {
-                log.debug(
-                        "There is no such prototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
-                        scenarioVehicle.getVehicleType().getName(),
-                        scenarioVehicle.getId()
+
+            final List<CPrototype> typeDistribution = framework.getTypeDistributionByName(scenarioVehicle.getVehicleType().getName());
+            if (!typeDistribution.isEmpty()) {
+                StochasticSelector<CPrototype> selector = typeDistributionSelectors.get(scenarioVehicle.getVehicleType().getName());
+                if (selector == null) {
+                    selector = new StochasticSelector<>(typeDistribution, randomNumberGenerator);
+                    typeDistributionSelectors.put(scenarioVehicle.getVehicleType().getName(), selector);
+                }
+                final CPrototype selected  = selector.nextItem();
+                final CPrototype predefined = framework.getPrototypeByName(selected.name);
+                sendVehicleRegistrationForScenarioVehicle(scenarioVehicle,
+                        // use group/application list from predefined type, if not defined in type distribution
+                        selected.group == null && predefined != null ? predefined.group : selected.group,
+                        selected.applications == null && predefined != null ? predefined.applications : selected.applications
                 );
-                return;
+            } else {
+                final CPrototype prototype = framework.getPrototypeByName(scenarioVehicle.getVehicleType().getName());
+                if (prototype == null) {
+                    log.debug(
+                            "There is no such prototype \"{}\" configured. No application will be mapped for vehicle \"{}\".",
+                            scenarioVehicle.getVehicleType().getName(),
+                            scenarioVehicle.getId()
+                    );
+                    return;
+                }
+
+                if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
+                    log.debug(
+                            "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
+                            scenarioVehicle.getId(),
+                            scenarioVehicle.getVehicleType().getName(),
+                            prototype.weight
+                    );
+                    return;
+                }
+                sendVehicleRegistrationForScenarioVehicle(scenarioVehicle, prototype.group, prototype.applications);
             }
 
-            if (randomNumberGenerator.nextDouble() >= ObjectUtils.defaultIfNull(prototype.weight, 1.0)) {
-                log.debug(
-                        "This scenario vehicle \"{}\" of prototype \"{}\" will not be equipped due to a weight condition of {}.",
-                        scenarioVehicle.getId(),
-                        scenarioVehicle.getVehicleType().getName(),
-                        prototype.weight
-                );
-                return;
-            }
-
-            final VehicleRegistration vehicleRegistration = new VehicleRegistration(
-                    scenarioVehicle.getTime(),
-                    scenarioVehicle.getName(),
-                    prototype.group,
-                    prototype.applications,
-                    null,
-                    scenarioVehicle.getVehicleType()
-            );
-            try {
-                log.info("Mapping Scenario Vehicle. time={}, name={}, type={}, apps={}",
-                        framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleType().getName(), prototype.applications);
-                rti.triggerInteraction(vehicleRegistration);
-            } catch (Exception e) {
-                throw new InternalFederateException(e);
-            }
         } else {
             log.warn("No mapping configuration available. Skipping {}", scenarioVehicle.getClass().getSimpleName());
+        }
+    }
+
+    private void sendVehicleRegistrationForScenarioVehicle(
+            ScenarioVehicleRegistration scenarioVehicle, String group, List<String> applications
+    ) throws InternalFederateException {
+        final VehicleRegistration vehicleRegistration = new VehicleRegistration(
+                scenarioVehicle.getTime(),
+                scenarioVehicle.getName(),
+                group,
+                applications,
+                null,
+                scenarioVehicle.getVehicleType()
+        );
+        try {
+            log.info("Mapping Scenario Vehicle. time={}, name={}, type={}, apps={}",
+                    framework.getTime(), scenarioVehicle.getName(), scenarioVehicle.getVehicleType().getName(), applications);
+            rti.triggerInteraction(vehicleRegistration);
+        } catch (Exception e) {
+            throw new InternalFederateException(e);
         }
     }
 
@@ -182,6 +215,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
             // enriched with functionality)
             framework = new SpawningFramework(mappingAmbassadorConfiguration, scenarioTrafficLightRegistration, rti, randomNumberGenerator);
 
+            typeDistributionSelectors.clear();
             // Send out the VehicleTypesInitialization, publishing information
             // about the different vehicle types in the simulation
             rti.triggerInteraction(framework.generateVehicleTypesInitialization());

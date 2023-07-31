@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.mapping.config;
 
+import org.eclipse.mosaic.fed.mapping.ambassador.weighting.Weighted;
 import org.eclipse.mosaic.lib.enums.LaneChangeMode;
 import org.eclipse.mosaic.lib.enums.SpeedMode;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
@@ -31,7 +32,7 @@ import java.util.List;
  * <p/>
  * If these values are not defined some default values might be applied depending on prototype type.
  */
-public class CPrototype {
+public class CPrototype implements Weighted {
 
     /**
      * The name of this prototype. This identifier is used to match it against
@@ -147,6 +148,10 @@ public class CPrototype {
      */
     public CParameterDeviations deviations;
 
+    @Override
+    public double getWeight() {
+        return weight;
+    }
 
     /**
      * Creates a copy of this prototype.
@@ -202,5 +207,4 @@ public class CPrototype {
                 + ", applications: " + (applications != null ? applications : "null")
                 + "]";
     }
-
 }
