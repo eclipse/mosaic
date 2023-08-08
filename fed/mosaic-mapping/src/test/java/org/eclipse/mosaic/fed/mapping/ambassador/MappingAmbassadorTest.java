@@ -300,6 +300,27 @@ public class MappingAmbassadorTest {
         Assert.assertNull(lastReceivedInteraction);
     }
 
+    @Test
+    public void initializeWithMappingFile_scenarioVehicleRegistrationWithTypeDistribution() throws Exception {
+        final MappingAmbassador ambassador = createMappingAmbassadorWithMappingFile("mapping_config.json");
+        ambassador.initialize(0, 100 * TIME.SECOND);
+
+        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
+        assertVehicleRegistration(
+                "package.appA"
+        );
+
+        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
+        assertVehicleRegistration(
+                "package.appA"
+        );
+
+        ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
+        assertVehicleRegistration(
+                "package.appB"
+        );
+    }
+
     @Before
     public void setup() throws Throwable {
         when(rtiMock.createRandomNumberGenerator()).thenReturn(new DefaultRandomNumberGenerator(989123));

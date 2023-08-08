@@ -5,6 +5,7 @@
         },
         {
             "name": "Bike",
+            "weight": 0.8,
             "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ]
         },
         {
@@ -13,10 +14,22 @@
         },
         {
             "name": "Bus",
-            "weight": 0.4,
             "applications": [ "org.eclipse.mosaic.app.tutorial.eventprocessing.sampling.HelloWorldApp" ]
         }
     ],
+    "typeDistributions": {
+        "Bus": [
+            {
+                "name": "Bus",
+                "weight": 0.4
+            },
+            {
+                "name": "Bus",
+                "weight": 0.6,
+                "applications": [ ]
+            }
+        ]
+    },
     "vehicles": [
         {
             "startingTime": "10.0 s",
