@@ -60,7 +60,7 @@ For further questions we are available via mosaic@fokus.fraunhofer.de
 For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
-* **Java 8, 11, or 17** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk8).
+* **Java 11, or 17** - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk11).
 * **SUMO 1.18.0** - Additionally, the environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
