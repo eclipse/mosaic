@@ -1,4 +1,4 @@
-FROM maven:3.6.3-adoptopenjdk-8
+FROM maven:3.6.3-adoptopenjdk-11
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER_NAME=jenkins

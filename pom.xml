@@ -81,7 +81,7 @@
     <properties>
         <mosaic.version>23.1-SNAPSHOT</mosaic.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceTarget>1.8</project.build.sourceTarget>
+        <project.build.sourceTarget>11</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
         <skip.javadoc>true</skip.javadoc>
         <version.commons-cli>1.4</version.commons-cli><!-- 1.4 is approved in CQ19371 -->
