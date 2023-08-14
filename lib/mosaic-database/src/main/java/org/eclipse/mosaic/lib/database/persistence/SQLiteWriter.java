@@ -172,7 +172,7 @@ public class SQLiteWriter {
         statement.executeUpdate("CREATE TABLE " + TABLES.NODE + " (id TEXT, lat REAL, lon REAL, ele REAL, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
         statement.executeUpdate("CREATE TABLE " + TABLES.WAY + " (id TEXT, name TEXT, type TEXT, speed REAL, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
         statement.executeUpdate("CREATE TABLE " + TABLES.WAY_CONSISTS_OF + " (way_id TEXT, node_id TEXT, sequence_number INTEGER)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION + " (id TEXT, way_id TEXT, lanes INTEGER, length FLOAT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION + " (id TEXT, way_id TEXT, lanes INTEGER, length REAL)");
         statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_CONSISTS_OF + " (connection_id TEXT, node_id TEXT, sequence_number INTEGER)");
         // turn restrictions
         statement.executeUpdate("CREATE TABLE " + TABLES.RESTRICTION + " (id TEXT, source_way_id TEXT, via_node_id TEXT, target_way_id TEXT, type TEXT)");
