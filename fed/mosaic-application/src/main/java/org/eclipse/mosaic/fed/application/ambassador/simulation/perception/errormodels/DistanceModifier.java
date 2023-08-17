@@ -51,8 +51,8 @@ public class DistanceModifier implements PerceptionModifier {
     }
 
     @Override
-    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
-        if (spatialObjects.size() == 0) {
+    public <T extends SpatialObject<T>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+        if (spatialObjects.isEmpty()) {
             return spatialObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();

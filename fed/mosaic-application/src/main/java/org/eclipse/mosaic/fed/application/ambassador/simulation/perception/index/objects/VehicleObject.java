@@ -147,7 +147,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
      */
     @Override
     public VehicleObject copy() {
-        return (VehicleObject) new VehicleObject(getId())
+        return new VehicleObject(getId())
                 .setHeading(getHeading())
                 .setSpeed(getSpeed())
                 .setEdgeAndLane(getEdgeId(), getLaneIndex())

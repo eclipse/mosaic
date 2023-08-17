@@ -28,6 +28,7 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
@@ -123,7 +124,7 @@ public class PerceptionModifierTest {
         when(egoVehicleData.getHeading()).thenReturn(90d);
         when(egoVehicleData.getProjectedPosition()).thenReturn(EGO_POSITION);
 
-        List<CartesianPoint> randomPoints = getRandomlyDistributedPointsInRange(EGO_POSITION, VIEWING_RANGE, VEHICLE_AMOUNT);
+        List<CartesianPoint> randomPoints = createRandomlyDistributedPointsInRange(EGO_POSITION, VIEWING_RANGE, VEHICLE_AMOUNT);
         if (PRINT_POSITIONS) {
             for (CartesianPoint randomPoint : randomPoints) {
                 System.out.println(randomPoint.getX() + ", " + randomPoint.getY());
@@ -224,12 +225,25 @@ public class PerceptionModifierTest {
         });
 
         // ASSERT that all modified positions differ from the positions before (or after) applying the modifier
-        for (VehicleObject object: perceivedAndAlteredObjects) {
+        for (VehicleObject object : perceivedAndAlteredObjects) {
             assertFalse(object.getPosition().isFuzzyEqual(allVehiclesInIndexPre.get(object.getId())));
         }
     }
 
-    private List<CartesianPoint> getRandomlyDistributedPointsInRange(CartesianPoint origin, double range, int amount) {
+    @Test
+    public void testBoundingBoxOcclusionModifier() {
+        BoundingBoxOcclusionModifier boundingBoxOcclusionModifier = new BoundingBoxOcclusionModifier();
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(boundingBoxOcclusionModifier).build()
+        );
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        if (PRINT_POSITIONS) {
+            printPerceivedPositions(perceivedVehicles);
+        }
+        assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
+    }
+
+    private List<CartesianPoint> createRandomlyDistributedPointsInRange(CartesianPoint origin, double range, int amount) {
         List<CartesianPoint> points = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             points.add(getRandomPointInRange(origin, range));
@@ -261,6 +275,7 @@ public class PerceptionModifierTest {
             VehicleData vehicleDataMock = mock(VehicleData.class);
             when(vehicleDataMock.getProjectedPosition()).thenReturn(position);
             when(vehicleDataMock.getName()).thenReturn(vehicleId);
+            when(vehicleDataMock.getHeading()).thenReturn(rng.nextDouble() * 360d);
             vehiclesInIndex.add(vehicleDataMock);
             trafficObjectIndex.registerVehicleType(vehicleId, vehicleType);
         }

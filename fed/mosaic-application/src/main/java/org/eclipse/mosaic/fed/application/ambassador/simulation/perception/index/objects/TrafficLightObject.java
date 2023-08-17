@@ -114,7 +114,7 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
      */
     @Override
     public TrafficLightObject copy() {
-        return (TrafficLightObject) new TrafficLightObject(getId())
+        return new TrafficLightObject(getId())
                 .setIncomingLane(getIncomingLane())
                 .setOutgoingLane(getOutgoingLane())
                 .setTrafficLightState(getTrafficLightState())

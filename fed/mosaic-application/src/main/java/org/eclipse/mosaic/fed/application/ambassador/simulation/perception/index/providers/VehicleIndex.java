@@ -77,7 +77,7 @@ public abstract class VehicleIndex implements Serializable {
     }
 
     /**
-     * Returns the amount of indexed vehicles.
+     * Returns the number of indexed vehicles.
      *
      * @return the number of vehicles
      */
