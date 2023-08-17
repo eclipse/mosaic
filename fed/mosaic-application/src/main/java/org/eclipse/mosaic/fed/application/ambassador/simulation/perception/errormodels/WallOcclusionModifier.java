@@ -36,7 +36,7 @@ public class WallOcclusionModifier implements PerceptionModifier {
     private final Vector3d intersectionResult = new Vector3d();
 
     @Override
-    public <T extends SpatialObject<T>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         if (spatialObjects.isEmpty()) {
             return spatialObjects;
         }

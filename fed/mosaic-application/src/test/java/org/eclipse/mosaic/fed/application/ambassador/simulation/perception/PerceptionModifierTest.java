@@ -232,7 +232,7 @@ public class PerceptionModifierTest {
 
     @Test
     public void testBoundingBoxOcclusionModifier() {
-        BoundingBoxOcclusionModifier boundingBoxOcclusionModifier = new BoundingBoxOcclusionModifier();
+        BoundingBoxOcclusionModifier boundingBoxOcclusionModifier = new BoundingBoxOcclusionModifier(2, 2);
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(boundingBoxOcclusionModifier).build()
         );
