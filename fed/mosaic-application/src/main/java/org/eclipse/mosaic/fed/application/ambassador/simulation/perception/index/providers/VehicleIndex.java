@@ -61,7 +61,8 @@ public abstract class VehicleIndex implements Serializable {
             vehicleObject = new VehicleObject(vehicleId)
                     .setHeading(vehicleData.getHeading())
                     .setSpeed(vehicleData.getSpeed())
-                    .setPosition(vehicleData.getProjectedPosition());
+                    .setPosition(vehicleData.getProjectedPosition())
+                    .resetBoundingBox();
             VehicleType vehicleType = registeredVehicleTypes.get(vehicleId);
             if (vehicleType != null) { // vehicles with no cached type will have (0,0,0) dimensions
                 vehicleObject.setDimensions(
@@ -156,7 +157,8 @@ public abstract class VehicleIndex implements Serializable {
                 VehicleObject vehicleObject = addOrGetVehicle(v)
                         .setHeading(v.getHeading())
                         .setSpeed(v.getSpeed())
-                        .setPosition(vehiclePosition);
+                        .setPosition(vehiclePosition)
+                        .resetBoundingBox();
                 if (v.getRoadPosition() != null) {
                     vehicleObject.setEdgeAndLane(v.getRoadPosition().getConnectionId(), v.getRoadPosition().getLaneIndex());
                 }

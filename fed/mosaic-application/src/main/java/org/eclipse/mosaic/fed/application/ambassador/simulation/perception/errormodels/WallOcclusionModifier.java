@@ -33,7 +33,16 @@ import java.util.List;
  */
 public class WallOcclusionModifier implements PerceptionModifier {
 
+    private final int requiredVisibleVehicleCorners;
     private final Vector3d intersectionResult = new Vector3d();
+
+    public WallOcclusionModifier() {
+        requiredVisibleVehicleCorners = 2;
+    }
+
+    public WallOcclusionModifier(int requiredVisibleVehicleCorners) {
+        this.requiredVisibleVehicleCorners = requiredVisibleVehicleCorners;
+    }
 
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
@@ -45,25 +54,34 @@ public class WallOcclusionModifier implements PerceptionModifier {
         if (walls.isEmpty()) {
             return spatialObjects;
         }
-        final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
-        final Vector3d otherPosition = new Vector3d();
-
         final List<T> result = new ArrayList<>();
-
-        vehicleLoop:
         for (T spatialObject : spatialObjects) {
-            spatialObject.getProjectedPosition().toVector3d(otherPosition);
-
-            for (Edge<Vector3d> wall : walls) {
-                boolean isHidden =
-                        VectorUtils.computeXZEdgeIntersectionPoint(ownerPosition, otherPosition, wall.a, wall.b, intersectionResult);
-                if (isHidden) {
-                    continue vehicleLoop;
+            List<Vector3d> pointsToEvaluate = spatialObject.getBoundingBox().getAllCorners();
+            // we say that at least half of the corners have to be visible rounding up for odd numbers
+            final int requiredVisiblePoints = (int) Math.ceil((double) pointsToEvaluate.size() / 2);
+            int numberOfPointsVisible = 0;
+            for (Vector3d point : pointsToEvaluate) {
+                boolean pointOccluded = false;
+                for (Edge<Vector3d> wall : walls) {
+                    // SpatialObjects with PointBoundingBoxes won't occlude anything, as they have no edges defined
+                    boolean isOccluded = VectorUtils.computeXZEdgeIntersectionPoint(
+                            owner.getVehicleData().getProjectedPosition().toVector3d(),
+                            point, wall.a, wall.b, intersectionResult
+                    );
+                    if (isOccluded) {
+                        pointOccluded = true;
+                        break;
+                    }
+                }
+                if (!pointOccluded) {
+                    numberOfPointsVisible++;
+                }
+                if (numberOfPointsVisible == requiredVisiblePoints) {
+                    result.add(spatialObject);
+                    break;
                 }
             }
-            result.add(spatialObject);
         }
-
         return result;
     }
 

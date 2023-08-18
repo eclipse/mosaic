@@ -17,17 +17,16 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObjectBoundingBox;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
+import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
-import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BoundingBoxOcclusionModifier implements PerceptionModifier {
 
@@ -35,40 +34,71 @@ public class BoundingBoxOcclusionModifier implements PerceptionModifier {
     /**
      * This defines how many equidistant points shall be evaluated per edge of a vehicle.
      * Note generally for the front and rear edge this will result in a higher resolution compared to the sides of the vehicle.
+     * Default: 2
      */
-    private final int pointsPerEdge;
+    private final int pointsPerSide;
 
     /**
-     * Threshold that defines how many of the points defined through {@link #pointsPerEdge} need to be visible in order for a
+     * Threshold that defines how many of the points defined through {@link #pointsPerSide} need to be visible in order for a
      * object to be treated as detected.
+     * Default: 2
      */
     private final int detectionThreshold;
 
-    public BoundingBoxOcclusionModifier(int pointsPerEdge, int detectionThreshold) {
-        this.pointsPerEdge = pointsPerEdge;
+    /**
+     * Default constructor for the {@link BoundingBoxOcclusionModifier}.
+     */
+    public BoundingBoxOcclusionModifier() {
+        this.pointsPerSide = 2;
+        this.detectionThreshold = 2;
+    }
+
+    /**
+     * Constructor for {@link BoundingBoxOcclusionModifier}, validates and sets
+     * the parameters {@link #pointsPerSide} and {@link #detectionThreshold}.
+     *
+     * @param pointsPerSide      the amount of points that will be evaluated per object (corners count towards 2 edges)
+     * @param detectionThreshold how many points have to be visible in order for an object to be treated as detected
+     */
+    public BoundingBoxOcclusionModifier(int pointsPerSide, int detectionThreshold) {
+        if (pointsPerSide < 2) {
+            throw new RuntimeException("Need at least 2 points per edge, meaning every corner will be checked for occlusion.");
+        }
+        if (detectionThreshold < 1) {
+            throw new RuntimeException("At least one point has to be checked for occlusion, else no objects will be occluded");
+        }
+        this.pointsPerSide = pointsPerSide;
         this.detectionThreshold = detectionThreshold;
     }
 
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         List<T> newObjects = new ArrayList<>();
-        Map<VehicleObject, VehicleBoundingBox> boundingBoxes = createBoundingBoxes(owner, spatialObjects);
+        // the ego object cannot occlude vision
+        List<T> occludingObjects = spatialObjects.stream()
+                .filter(object -> !object.getId().equals(owner.getId()))
+                .collect(Collectors.toList());
         for (T spatialObject : spatialObjects) {
+            if (spatialObject instanceof TrafficLightObject) { // Traffic Lights are treated to not be occluded
+                newObjects.add(spatialObject);
+                continue;
+            }
             List<Vector3d> pointsToEvaluate = createPointsToEvaluate(spatialObject);
             final int requiredVisiblePoints = pointsToEvaluate.size() == 1 ? 1 : detectionThreshold;
             int numberOfPointsVisible = 0;
             for (Vector3d point : pointsToEvaluate) {
                 boolean pointOccluded = false;
                 boundingBoxLoop:
-                for (Map.Entry<VehicleObject, VehicleBoundingBox> occludingBoundingBoxEntry : boundingBoxes.entrySet()) {
-                    if (occludingBoundingBoxEntry.getKey().getId().equals(spatialObject.getId())) {
+                for (T occludingObject : occludingObjects) {
+                    if (occludingObject.getId().equals(spatialObject.getId())) {
                         continue; // cannot be occluded by itself
                     }
-                    VehicleBoundingBox boundingBox = occludingBoundingBoxEntry.getValue();
-                    for (Edge<Vector3d> vehicleSide : boundingBox.allEdges) {
+                    SpatialObjectBoundingBox boundingBox = occludingObject.getBoundingBox();
+                    // SpatialObjects with PointBoundingBoxes won't occlude anything, as they have no edges defined
+                    for (Edge<Vector3d> side : boundingBox.getAllEdges()) {
                         boolean isOccluded = VectorUtils.computeXZEdgeIntersectionPoint(
                                 owner.getVehicleData().getProjectedPosition().toVector3d(),
-                                point, vehicleSide.a, vehicleSide.b, intersectionResult
+                                point, side.a, side.b, intersectionResult
                         );
                         if (isOccluded) {
                             pointOccluded = true;
@@ -88,91 +118,52 @@ public class BoundingBoxOcclusionModifier implements PerceptionModifier {
         return newObjects;
     }
 
-    private static <T extends SpatialObject> Map<VehicleObject, VehicleBoundingBox> createBoundingBoxes(PerceptionModuleOwner owner, List<T> spatialObjects) {
-        Map<VehicleObject, VehicleBoundingBox> boundingBoxes = new HashMap<>();
-        for (T spatialObject : spatialObjects) {
-            if (!(spatialObject instanceof VehicleObject)) { // skip non-vehicle spatial object
-                continue;
-            }
-            if (spatialObject.getId().equals(owner.getId())) { // skip calculation of own bounding box
-                continue;
-            }
-            VehicleObject currObject = (VehicleObject) spatialObject;
-            boundingBoxes.put(currObject, VehicleBoundingBox.createFromVehicleObject(currObject));
-        }
-        return boundingBoxes;
-    }
-
     /**
-     * Creates a map of all points that shall be tested for occlusion. Initially, all booleans are set to {@code false} indicating
-     * that they're NOT occluded.
-     *
+     * Creates a list of all points that shall be tested for occlusion. If {@link #pointsPerSide} is set to a value larger than 2,
+     * each side will have additional equidistant points added.
+     * Example for {@code pointsPerSide = 3} (x's are the corners which will be evaluated anyway, o's are the added points):
+     * <pre>
+     *     x-----o-----x
+     *     |           |
+     *     |           |
+     *     o           o
+     *     |           |
+     *     |           |
+     *     x-----o-----y
+     * </pre>
      * @param spatialObject a {@link SpatialObject} for which the occlusion should be evaluated
      */
     private <T extends SpatialObject> List<Vector3d> createPointsToEvaluate(T spatialObject) {
         List<Vector3d> pointsToEvaluate = new ArrayList<>();
-        if (!(spatialObject instanceof VehicleObject)) {
-            // for all objects that don't have a bounding box, just evaluate the position for occlusion
-            pointsToEvaluate.add(spatialObject);
-        } else {
-            // for vehicles evaluate the four corners
-            pointsToEvaluate.addAll(VehicleBoundingBox.createFromVehicleObject((VehicleObject) spatialObject).allCorners);
+        SpatialObjectBoundingBox boundingBox = spatialObject.getBoundingBox();
+        // if object has edges and more than 2 points per side are to be evaluated, calculate points that have to be evaluated
+        if (pointsPerSide > 2 && !boundingBox.getAllEdges().isEmpty()) {
+            for (Edge<Vector3d> edge : boundingBox.getAllEdges()) {
+                Vector3d start = edge.a;
+                if (pointNotPresent(pointsToEvaluate, start)) {
+                    pointsToEvaluate.add(start);
+                }
+                Vector3d end = edge.b;
+                if (pointNotPresent(pointsToEvaluate, end)) {
+                    pointsToEvaluate.add(end);
+                }
+                for (int i = 1; i < pointsPerSide - 1; i++) {
+                    double ratio = (double) i / (pointsPerSide + 1);
+                    double xNew = start.x + ratio * (end.x - start.x);
+                    double zNew = start.z + ratio * (end.z - start.z);
+                    Vector3d newPoint = new Vector3d(xNew, 0, zNew);
+                    if (pointNotPresent(pointsToEvaluate, newPoint)) {
+                        pointsToEvaluate.add(newPoint);
+                    }
+                }
+            }
+        } else { // else just add all corners
+            pointsToEvaluate.addAll(boundingBox.getAllCorners());
         }
         return pointsToEvaluate;
     }
 
-
-
-    /**
-     * An object representing a vehicles' bounding box.
-     * <pre>
-     *   frontRightCorner----------rightEdge----------backRightCorner
-     *                  |                             |
-     *   Heading <== frontEdge                     backEdge
-     *                  |                             |
-     *    frontLeftCorner----------leftEdge-----------backLeftCorner
-     * </pre>
-     */
-    static class VehicleBoundingBox {
-        private final List<Vector3d> allCorners;
-        private final Vector3d frontRightCorner;
-        private final Vector3d backRightCorner;
-        private final Vector3d backLeftCorner;
-        private final Vector3d frontLeftCorner;
-
-        private final List<Edge<Vector3d>> allEdges;
-        private final Edge<Vector3d> frontEdge;
-        private final Edge<Vector3d> rightEdge;
-        private final Edge<Vector3d> backEdge;
-        private final Edge<Vector3d> leftEdge;
-
-        private VehicleBoundingBox(Vector3d frontRightCorner, Vector3d backRightCorner, Vector3d backLeftCorner, Vector3d frontLeftCorner) {
-            this.frontRightCorner = frontRightCorner;
-            this.backRightCorner = backRightCorner;
-            this.backLeftCorner = backLeftCorner;
-            this.frontLeftCorner = frontLeftCorner;
-            allCorners = Lists.newArrayList(frontRightCorner, backRightCorner, backLeftCorner, frontLeftCorner);
-            frontEdge = new Edge<>(frontLeftCorner, frontRightCorner);
-            rightEdge = new Edge<>(frontRightCorner, backRightCorner);
-            backEdge = new Edge<>(backRightCorner, backLeftCorner);
-            leftEdge = new Edge<>(backLeftCorner, frontLeftCorner);
-            allEdges = Lists.newArrayList(frontEdge, rightEdge, backEdge, leftEdge);
-        }
-
-        public static VehicleBoundingBox createFromVehicleObject(VehicleObject vehicleObject) {
-            Vector3d headingVector = new Vector3d();
-            VectorUtils.getDirectionVectorFromHeading(vehicleObject.getHeading(), headingVector).norm();
-            double length = vehicleObject.getLength();
-            double halfWidth = vehicleObject.getWidth() / 2;
-            Vector3d pointA = new Vector3d(headingVector).rotateDeg(90d, VectorUtils.UP);
-            pointA = pointA.multiply(halfWidth).add(vehicleObject);
-            Vector3d pointD = new Vector3d(headingVector).rotateDeg(-90d, VectorUtils.UP);
-            pointD = pointD.multiply(halfWidth).add(vehicleObject);
-            Vector3d pointB = new Vector3d(headingVector).multiply(-1d);
-            pointB = pointB.multiply(length).add(pointA);
-            Vector3d pointC = new Vector3d(headingVector).multiply(-1d);
-            pointC = pointC.multiply(length).add(pointD);
-            return new VehicleBoundingBox(pointA, pointB, pointC, pointD);
-        }
+    private boolean pointNotPresent(List<Vector3d> points, Vector3d newPoint) {
+        return points.stream().noneMatch(vector3d -> vector3d.isFuzzyEqual(newPoint));
     }
 }

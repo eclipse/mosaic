@@ -37,6 +37,10 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
      * The outgoing lane controlled by this traffic light.
      */
     private String outgoingLane;
+    /**
+     * The bounding box of a traffic light is represented by a single point.
+     */
+    private PointBoundingBox boundingBox;
 
     public TrafficLightObject(String id) {
         super(id);
@@ -46,7 +50,15 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
     public TrafficLightObject setPosition(CartesianPoint position) {
         cartesianPosition.set(position);
         position.toVector3d(this);
+        if (boundingBox == null) {
+            boundingBox = new PointBoundingBox(this);
+        }
         return this;
+    }
+
+    @Override
+    public SpatialObjectBoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
     public String getTrafficLightGroupId() {

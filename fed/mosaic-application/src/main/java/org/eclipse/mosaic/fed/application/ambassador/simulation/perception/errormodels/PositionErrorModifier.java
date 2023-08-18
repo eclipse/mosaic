@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
@@ -85,7 +86,7 @@ public class PositionErrorModifier implements PerceptionModifier {
         double angleToNorth = ownerDirection.angle(VectorUtils.NORTH);
         spatialObjects.forEach(
                 spatialObject -> {
-                    Vector3d relativePosition = getVectorRelativeTo(ownerPosition, spatialObject.getPosition()); // get position relative to owner
+                    Vector3d relativePosition = getVectorRelativeTo(ownerPosition, spatialObject.getPosition()); // pos relative to owner
                     Vector3d adjustedVector = new Vector3d(relativePosition);
                     adjustedVector.rotate(-angleToNorth, VectorUtils.UP); // rotate vector according to orientation
                     // add lateral and longitudinal errors

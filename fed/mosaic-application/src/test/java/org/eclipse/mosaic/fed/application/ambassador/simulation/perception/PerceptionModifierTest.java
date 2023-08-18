@@ -47,6 +47,7 @@ import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.spatial.BoundingBox;
 import org.eclipse.mosaic.lib.spatial.Edge;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 
@@ -125,13 +126,11 @@ public class PerceptionModifierTest {
         when(egoVehicleData.getProjectedPosition()).thenReturn(EGO_POSITION);
 
         List<CartesianPoint> randomPoints = createRandomlyDistributedPointsInRange(EGO_POSITION, VIEWING_RANGE, VEHICLE_AMOUNT);
+        setupSpatialIndex(randomPoints.toArray(new CartesianPoint[0]));
         if (PRINT_POSITIONS) {
-            for (CartesianPoint randomPoint : randomPoints) {
-                System.out.println(randomPoint.getX() + ", " + randomPoint.getY());
-            }
+            printBoundingBoxes(getAllVehicles());
             System.out.println();
         }
-        setupSpatialIndex(randomPoints.toArray(new CartesianPoint[0]));
     }
 
     @Test
@@ -142,7 +141,7 @@ public class PerceptionModifierTest {
         );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
-            printPerceivedPositions(perceivedVehicles);
+            printBoundingBoxes(perceivedVehicles);
         }
         assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
     }
@@ -156,7 +155,7 @@ public class PerceptionModifierTest {
 
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
-            printPerceivedPositions(perceivedVehicles);
+            printBoundingBoxes(perceivedVehicles);
         }
         assertTrue("The distance filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
     }
@@ -170,7 +169,7 @@ public class PerceptionModifierTest {
 
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
-            printPerceivedPositions(perceivedVehicles);
+            printBoundingBoxes(perceivedVehicles);
         }
         assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
     }
@@ -188,7 +187,7 @@ public class PerceptionModifierTest {
         );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
-            printPerceivedPositions(perceivedVehicles);
+            printBoundingBoxes(perceivedVehicles);
         }
         assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
         // assert roughly that every perceived vehicle right of the wall is not hidden by the wall
@@ -232,13 +231,13 @@ public class PerceptionModifierTest {
 
     @Test
     public void testBoundingBoxOcclusionModifier() {
-        BoundingBoxOcclusionModifier boundingBoxOcclusionModifier = new BoundingBoxOcclusionModifier(2, 2);
+        BoundingBoxOcclusionModifier boundingBoxOcclusionModifier = new BoundingBoxOcclusionModifier();
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(boundingBoxOcclusionModifier).build()
         );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         if (PRINT_POSITIONS) {
-            printPerceivedPositions(perceivedVehicles);
+            printBoundingBoxes(perceivedVehicles);
         }
         assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
     }
@@ -282,10 +281,32 @@ public class PerceptionModifierTest {
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
     }
 
-    private void printPerceivedPositions(List<VehicleObject> perceivedVehicles) {
+    private void printBoundingBoxes(List<VehicleObject> perceivedVehicles) {
         for (VehicleObject vehicleObject : perceivedVehicles) {
-            CartesianPoint point = vehicleObject.toCartesian();
-            System.out.println(point.getX() + ", " + point.getY());
+            List<String> toPrint = new ArrayList<>();
+            toPrint.add(vehicleObject.toCartesian().getX() + "," + vehicleObject.toCartesian().getY());
+            for (Vector3d corner : vehicleObject.getBoundingBox().getAllCorners()) {
+                CartesianPoint point = corner.toCartesian();
+                toPrint.add(point.getX() + "," + point.getY());
+            }
+            System.out.println(String.join(";", toPrint));
         }
+    }
+
+    private List<VehicleObject> getAllVehicles() {
+        return trafficObjectIndex.getVehiclesInRange(new PerceptionModel() {
+            @Override
+            public boolean isInRange(SpatialObject other) {
+                return true;
+            }
+
+            @Override
+            public BoundingBox getBoundingBox() {
+                BoundingBox boundingBox = new BoundingBox();
+                boundingBox.add(CartesianPoint.xy(-200, -200).toVector3d());
+                boundingBox.add(CartesianPoint.xy(200, 200).toVector3d());
+                return boundingBox;
+            }
+        });
     }
 }

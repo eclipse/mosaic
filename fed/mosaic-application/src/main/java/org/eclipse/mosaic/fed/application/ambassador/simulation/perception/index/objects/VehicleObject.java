@@ -51,6 +51,10 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
      * The height of the vehicle. [m]
      */
     private double height;
+    /**
+     * The 2D bounding box of a vehicle from birds eye view.
+     */
+    private VehicleBoundingBox boundingBox = null;
 
     public VehicleObject(String id) {
         super(id);
@@ -115,6 +119,23 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         return height;
     }
 
+    public VehicleObject resetBoundingBox() {
+        boundingBox = null;
+        return this;
+    }
+
+    /**
+     * Returns the bounding box for a spatial object if requested.
+     * Calculation is only triggered if bounding box is requested.
+     */
+    @Override
+    public SpatialObjectBoundingBox getBoundingBox() {
+        if (boundingBox == null) {
+            boundingBox = VehicleBoundingBox.createFromVehicleObject(this);
+        }
+        return boundingBox;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,7 +173,8 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .setSpeed(getSpeed())
                 .setEdgeAndLane(getEdgeId(), getLaneIndex())
                 .setDimensions(getLength(), getWidth(), getHeight())
-                .setPosition(getProjectedPosition());
+                .setPosition(getProjectedPosition())
+                .resetBoundingBox();
 
     }
 }
