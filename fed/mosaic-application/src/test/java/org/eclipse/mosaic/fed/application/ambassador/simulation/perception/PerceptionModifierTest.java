@@ -236,11 +236,26 @@ public class PerceptionModifierTest {
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(boundingBoxOcclusionModifier).build()
         );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        // create a modifier with more point but same detection threshold -> should result in more detections
+        BoundingBoxOcclusionModifier boundingBoxOcclusionModifierCustomParams = new BoundingBoxOcclusionModifier(5, 2);
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE)
+                        .addModifier(boundingBoxOcclusionModifierCustomParams).build()
+        );
+        List<VehicleObject> perceivedVehiclesCustomModifier = simplePerceptionModule.getPerceivedVehicles();
+
         if (PRINT_POSITIONS) {
             printBoundingBoxes(perceivedVehicles);
+            printBoundingBoxes(perceivedVehiclesCustomModifier);
         }
         assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());
+        assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehiclesCustomModifier.size());
+        assertTrue(
+                "The \"stricter\" occlusion filter should remove more vehicles",
+                perceivedVehicles.size() < perceivedVehiclesCustomModifier.size()
+        );
     }
+
 
     private List<CartesianPoint> createRandomlyDistributedPointsInRange(CartesianPoint origin, double range, int amount) {
         List<CartesianPoint> points = new ArrayList<>();
