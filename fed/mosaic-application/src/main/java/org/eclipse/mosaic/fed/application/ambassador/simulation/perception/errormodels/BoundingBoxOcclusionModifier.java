@@ -67,6 +67,9 @@ public class BoundingBoxOcclusionModifier implements PerceptionModifier {
         if (detectionThreshold < 1) {
             throw new RuntimeException("At least one point has to be checked for occlusion, else no objects will be occluded");
         }
+        if (detectionThreshold > pointsPerSide * 4 - 4) {
+            throw new RuntimeException("The detection threshold exceeds the number of points evaluated per object");
+        }
         this.pointsPerSide = pointsPerSide;
         this.detectionThreshold = detectionThreshold;
     }
