@@ -39,5 +39,5 @@ final class TABLES {
      * Will no longer be written to, but used to update old versions of databases.
      */
     @Deprecated
-    static String WALL = "Wall";
+    final static String WALL = "Wall";
 }
