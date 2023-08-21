@@ -662,8 +662,7 @@ public class Database {
         public Builder addConnection(Connection connection) {
             database.connections.put(connection.getId(), connection);
 
-            //FIXME complete the description
-            //additionally, make sure dependent nodes ...
+            // additionally, make sure dependent nodes are added
             for (Node node : connection.getNodes()) {
                 node.addConnection(connection);
             }
