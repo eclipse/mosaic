@@ -116,6 +116,37 @@ public class DeterministicSelectorTest {
         assertEquals("BCABCBDBCBCBACBBCBCBABCBCBDBCBCBACBBCBCBABCBCBDBCB", s.toString());
     }
 
+
+    private String getSequenceAsString(int seed) {
+        RandomNumberGenerator _rng = new DefaultRandomNumberGenerator(seed);
+
+        List<TestWeighted<?>> values = Lists.newArrayList(
+                of("A", 0.1),
+                of("B", 0.1),
+                of("-", 0.8)
+        );
+
+        final DeterministicSelector<TestWeighted<?>> selector = new DeterministicSelector<>(values, _rng);
+
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < 20; i++) {
+            s.append(selector.nextItem().item);
+        }
+
+        return s.toString();
+    }
+
+    /**
+     * Tests if different starting values (determined by rng seed) result in different periodic sequences.
+     */
+    @Test
+    public void deterministicSelection_startValueDeterminesPeriodicSequence() {
+        assertEquals(getSequenceAsString(4096), "A---B-----A---B-----");
+        assertEquals(getSequenceAsString(4286), "B---A-----B---A-----");
+        assertEquals(getSequenceAsString(0), "-A--B------A--B-----");
+
+    }
+
     static <O> TestWeighted<O> of(O o, double weight) {
         TestWeighted<O> item = new TestWeighted<O>();
         item.item = o;

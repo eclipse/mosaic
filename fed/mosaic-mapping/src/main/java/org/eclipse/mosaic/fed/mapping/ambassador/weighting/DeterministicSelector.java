@@ -15,9 +15,13 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.weighting;
 
+import org.eclipse.mosaic.fed.mapping.ambassador.VehicleFlowGenerator;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,6 +48,9 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
         // The number of times this item has been selected
         private int selections;
 
+        // Set when item is generated the first time. Used as tie-break when two or more objects could be generated.
+        private int priority;
+
         @Override
         public double getWeight() {
             return normalizedWeight;
@@ -54,6 +61,11 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
      * Number of objects already generated.
      */
     private int totalSelections = 0;
+
+    /**
+     * Number of objects already generated without counting the same object twice
+     */
+    private int totalDistinctSelections = 0;
 
     /**
      * Constructor for {@link DeterministicSelector}.
@@ -74,6 +86,7 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
             Item<T> item = new Item<>();
             item.object = o;
             item.selections = 0;
+            item.priority = objects.size();
             return item;
         }).collect(Collectors.toList());
     }
@@ -111,14 +124,22 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
             StochasticSelector<Item<T>> firstItemSelector = init();
             selectedItem = firstItemSelector.nextItem();
         } else {
+            Comparator<Item<T>> compareBySelectionToWeightRatio = Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight());
+            Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
             // choose item which has been selected the least according to its weight
             selectedItem = items.stream()
-                    .min(Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight()))
+                    .min(compareBySelectionToWeightRatio.thenComparing(compareByPriority))
                     .orElse(null);
         }
 
         if (selectedItem == null) {
             return null;
+        }
+
+        // if this was an object we did not see before, set its priority (priority is used as tie-breaker)
+        if (selectedItem.priority > this.totalDistinctSelections) {
+            selectedItem.priority = this.totalDistinctSelections;
+            this.totalDistinctSelections++;
         }
 
         selectedItem.selections++;
