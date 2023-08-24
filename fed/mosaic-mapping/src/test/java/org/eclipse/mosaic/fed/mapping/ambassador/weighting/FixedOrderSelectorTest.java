@@ -113,7 +113,7 @@ public class FixedOrderSelectorTest {
             s.append(selector.nextItem().item);
         }
 
-        assertEquals("BCABCBDBCBCBACBBCBCBABCBCBDBCBCBACBBCBCBABCBCBDBCB", s.toString());
+        assertEquals("BCABCBDBCBCBACBBCBCBBCABCBDBCBCBACBBCBCBBCABCBDBCB", s.toString());
     }
 
 
