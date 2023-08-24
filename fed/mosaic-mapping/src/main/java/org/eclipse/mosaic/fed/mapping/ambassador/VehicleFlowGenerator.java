@@ -272,7 +272,7 @@ public class VehicleFlowGenerator {
             CVehicle vehicleConfiguration, RandomNumberGenerator randomNumberGenerator) {
         if (types.size() == 1) {
             selector = () -> Iterables.getOnlyElement(types);
-        } else if (vehicleConfiguration.fixedorder) {
+        } else if (vehicleConfiguration.fixedOrder) {
             selector = new FixedOrderSelector<>(types, randomNumberGenerator);
         } else {
             selector = new StochasticSelector<>(types, randomNumberGenerator);
@@ -393,7 +393,7 @@ public class VehicleFlowGenerator {
         LOG.debug("TimerCall Spawner. Time=" + framework.getTime() + ", nextTime=" + nextSpawnTime);
 
         // determine the type of the vehicle to spawn by use of the selector
-        // (either fixedorder or stochastic, determined in constructor)
+        // (either fixedOrder or stochastic, determined in constructor)
         VehicleTypeSpawner type = selector.nextItem();
         String name = UnitNameGenerator.nextVehicleName();
 

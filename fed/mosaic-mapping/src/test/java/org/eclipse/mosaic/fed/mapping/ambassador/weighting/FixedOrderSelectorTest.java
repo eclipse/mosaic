@@ -37,7 +37,7 @@ public class FixedOrderSelectorTest {
     }
 
     @Test
-    public void fixedorderSelection_selectItem80TimesIfWeightIs80perCent() {
+    public void fixedOrderSelection_selectItem80TimesIfWeightIs80perCent() {
         final FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0.8);
 
         int numberOfSelectedTrueObjects = selectObjectsAndCount(selector, 100);
@@ -46,7 +46,7 @@ public class FixedOrderSelectorTest {
     }
 
     @Test
-    public void fixedorderSelection_selectNoItemsWithZeroWeight() {
+    public void fixedOrderSelection_selectNoItemsWithZeroWeight() {
         final FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0);
 
         int numberOfSelectedTrueObjects = selectObjectsAndCount(selector, 100);
@@ -55,7 +55,7 @@ public class FixedOrderSelectorTest {
     }
 
     @Test
-    public void fixedorderSelection_selectItemOnlyWithFullWeight() {
+    public void fixedOrderSelection_selectItemOnlyWithFullWeight() {
         final FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(1);
 
         int numberOfSelectedTrueObjects = selectObjectsAndCount(selector, 100);
@@ -64,7 +64,7 @@ public class FixedOrderSelectorTest {
     }
 
     @Test
-    public void fixedorderSelection_fixedorderBehavior() {
+    public void fixedOrderSelection_fixedOrderBehavior() {
         FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0.8);
 
         List<Boolean> selectionOrder = new ArrayList<>();
@@ -99,7 +99,7 @@ public class FixedOrderSelectorTest {
     }
 
     @Test
-    public void fixedorderSelection_complexConfigurationWithStartIndex() {
+    public void fixedOrderSelection_complexConfigurationWithStartIndex() {
         List<TestWeighted<?>> values = Lists.newArrayList(
                 of("A", 0.1),
                 of("B", 0.5),
@@ -140,7 +140,7 @@ public class FixedOrderSelectorTest {
      * Tests if different starting values (determined by rng seed) result in different periodic sequences.
      */
     @Test
-    public void fixedorderSelection_startValueDeterminesPeriodicSequence() {
+    public void fixedOrderSelection_startValueDeterminesPeriodicSequence() {
         assertEquals(getSequenceAsString(4096), "A---B-----A---B-----");
         assertEquals(getSequenceAsString(4286), "B---A-----B---A-----");
         assertEquals(getSequenceAsString(0), "-A--B------A--B-----");

@@ -191,7 +191,7 @@ public class TiergartenMappingTest {
         assertNotNull(vehicle1);
         assertNull(vehicle1.destination);
         assertNull(vehicle1.origin);
-        assertTrue(vehicle1.fixedorder);
+        assertTrue(vehicle1.fixedOrder);
         assertNull(vehicle1.group);
         assertNull(vehicle1.lanes);
         assertEquals(vehicle1.maxNumberVehicles, (Integer) 1);
@@ -220,7 +220,7 @@ public class TiergartenMappingTest {
         assertNotNull(vehicle2);
         assertNull(vehicle2.destination);
         assertNull(vehicle2.origin);
-        assertTrue(vehicle2.fixedorder);
+        assertTrue(vehicle2.fixedOrder);
         assertNull(vehicle2.group);
         assertNull(vehicle2.lanes);
         assertEquals((Integer) 1, vehicle2.maxNumberVehicles);
@@ -249,7 +249,7 @@ public class TiergartenMappingTest {
         assertNotNull(vehicle3);
         assertNull(vehicle3.destination);
         assertNull(vehicle3.origin);
-        assertTrue(vehicle3.fixedorder);
+        assertTrue(vehicle3.fixedOrder);
         assertNull(vehicle3.group);
         assertNull(vehicle3.lanes);
         assertEquals(vehicle3.maxNumberVehicles, (Integer) 1);
@@ -278,7 +278,7 @@ public class TiergartenMappingTest {
         assertNotNull(vehicle4);
         assertNull(vehicle4.destination);
         assertNull(vehicle4.origin);
-        assertTrue(vehicle4.fixedorder);
+        assertTrue(vehicle4.fixedOrder);
         assertNull(vehicle4.group);
         assertNull(vehicle4.lanes);
         assertEquals((Integer) 1, vehicle4.maxNumberVehicles);

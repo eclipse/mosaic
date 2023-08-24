@@ -154,7 +154,7 @@ public class BarnimMappingTest {
         assertNotEquals(vehicle, null);
         assertNull(vehicle.destination);
         assertNull(vehicle.origin);
-        assertTrue(vehicle.fixedorder);
+        assertTrue(vehicle.fixedOrder);
         assertNull(vehicle.group);
         assertNull(vehicle.lanes);
         assertEquals(vehicle.maxNumberVehicles, new Integer(120));
