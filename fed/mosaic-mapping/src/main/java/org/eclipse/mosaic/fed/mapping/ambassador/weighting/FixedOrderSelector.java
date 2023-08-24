@@ -15,13 +15,9 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.weighting;
 
-import org.eclipse.mosaic.fed.mapping.ambassador.VehicleFlowGenerator;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.logging.Log;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,7 +31,7 @@ import javax.annotation.Nonnull;
  *
  * @param <T> The type of the object to be returned
  */
-public class DeterministicSelector<T extends Weighted> implements WeightedSelector<T> {
+public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<T> {
 
     private final RandomNumberGenerator randomNumberGenerator;
     private List<Item<T>> items;
@@ -68,12 +64,12 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
     private int totalDistinctSelections = 0;
 
     /**
-     * Constructor for {@link DeterministicSelector}.
+     * Constructor for {@link FixedOrderSelector}.
      *
      * @param objects       list of all types that might be selected from
      * @param randGenerator random number generator to select the first item
      */
-    public DeterministicSelector(List<T> objects, @Nonnull RandomNumberGenerator randGenerator) {
+    public FixedOrderSelector(List<T> objects, @Nonnull RandomNumberGenerator randGenerator) {
         Validate.notNull(objects, "Illegal constructor call for WeightedSelector: objects is null.");
         Validate.isTrue(!objects.isEmpty(), "Illegal constructor call for WeightedSelector: objects is empty!");
 

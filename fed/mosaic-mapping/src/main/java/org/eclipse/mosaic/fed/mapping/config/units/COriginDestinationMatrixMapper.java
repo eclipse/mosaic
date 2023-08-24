@@ -44,11 +44,11 @@ public class COriginDestinationMatrixMapper {
     public List<CPrototype> types;
 
     /**
-     * If deterministic is true the spawning-process will be exactly the same
+     * If fixedorder is true the spawning-process will be exactly the same
      * with every execution. If left false the order is different and the
-     * selected weights will be reached slower than in the deterministic mode.
+     * selected weights will be reached slower than in the fixedorder mode.
      */
-    public Boolean deterministic = true;
+    public Boolean fixedorder = true;
 
     /**
      * Values for the OD-matrix. Unit should be vehicles/hour.

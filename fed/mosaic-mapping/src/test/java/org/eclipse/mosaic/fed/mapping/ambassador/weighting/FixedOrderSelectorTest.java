@@ -27,7 +27,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeterministicSelectorTest {
+public class FixedOrderSelectorTest {
 
     private RandomNumberGenerator rng;
 
@@ -37,8 +37,8 @@ public class DeterministicSelectorTest {
     }
 
     @Test
-    public void deterministicSelection_selectItem80TimesIfWeightIs80perCent() {
-        final DeterministicSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0.8);
+    public void fixedorderSelection_selectItem80TimesIfWeightIs80perCent() {
+        final FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0.8);
 
         int numberOfSelectedTrueObjects = selectObjectsAndCount(selector, 100);
 
@@ -46,8 +46,8 @@ public class DeterministicSelectorTest {
     }
 
     @Test
-    public void deterministicSelection_selectNoItemsWithZeroWeight() {
-        final DeterministicSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0);
+    public void fixedorderSelection_selectNoItemsWithZeroWeight() {
+        final FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0);
 
         int numberOfSelectedTrueObjects = selectObjectsAndCount(selector, 100);
 
@@ -55,8 +55,8 @@ public class DeterministicSelectorTest {
     }
 
     @Test
-    public void deterministicSelection_selectItemOnlyWithFullWeight() {
-        final DeterministicSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(1);
+    public void fixedorderSelection_selectItemOnlyWithFullWeight() {
+        final FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(1);
 
         int numberOfSelectedTrueObjects = selectObjectsAndCount(selector, 100);
 
@@ -64,8 +64,8 @@ public class DeterministicSelectorTest {
     }
 
     @Test
-    public void deterministicSelection_deterministicBehavior() {
-        DeterministicSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0.8);
+    public void fixedorderSelection_fixedorderBehavior() {
+        FixedOrderSelector<TestWeighted<Boolean>> selector = createSelectorWithTwoBooleanObjects(0.8);
 
         List<Boolean> selectionOrder = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
@@ -79,7 +79,7 @@ public class DeterministicSelectorTest {
         }
     }
 
-    private int selectObjectsAndCount(final DeterministicSelector<TestWeighted<Boolean>> selector, int runs) {
+    private int selectObjectsAndCount(final FixedOrderSelector<TestWeighted<Boolean>> selector, int runs) {
         int numberOfSelectedTrueObjects = 0;
         for (int i = 0; i < runs; i++) {
             if (selector.nextItem().item) {
@@ -90,23 +90,23 @@ public class DeterministicSelectorTest {
     }
 
 
-    private DeterministicSelector<TestWeighted<Boolean>> createSelectorWithTwoBooleanObjects(double weightOfTrueObject) {
+    private FixedOrderSelector<TestWeighted<Boolean>> createSelectorWithTwoBooleanObjects(double weightOfTrueObject) {
         List<TestWeighted<Boolean>> objects = Lists.newArrayList(
                 of(true, weightOfTrueObject),
                 of(false, 1 - weightOfTrueObject)
         );
-        return new DeterministicSelector<>(objects, rng);
+        return new FixedOrderSelector<>(objects, rng);
     }
 
     @Test
-    public void deterministicSelection_complexConfigurationWithStartIndex() {
+    public void fixedorderSelection_complexConfigurationWithStartIndex() {
         List<TestWeighted<?>> values = Lists.newArrayList(
                 of("A", 0.1),
                 of("B", 0.5),
                 of("C", 0.35),
                 of("D", 0.05)
         );
-        final DeterministicSelector<TestWeighted<?>> selector = new DeterministicSelector<>(values, rng);
+        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values, rng);
 
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 50; i++) {
@@ -126,7 +126,7 @@ public class DeterministicSelectorTest {
                 of("-", 0.8)
         );
 
-        final DeterministicSelector<TestWeighted<?>> selector = new DeterministicSelector<>(values, _rng);
+        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values, _rng);
 
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 20; i++) {
@@ -140,7 +140,7 @@ public class DeterministicSelectorTest {
      * Tests if different starting values (determined by rng seed) result in different periodic sequences.
      */
     @Test
-    public void deterministicSelection_startValueDeterminesPeriodicSequence() {
+    public void fixedorderSelection_startValueDeterminesPeriodicSequence() {
         assertEquals(getSequenceAsString(4096), "A---B-----A---B-----");
         assertEquals(getSequenceAsString(4286), "B---A-----B---A-----");
         assertEquals(getSequenceAsString(0), "-A--B------A--B-----");

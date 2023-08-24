@@ -24,7 +24,7 @@ import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.SpawningMode;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.lane.HighwaySpecificLaneIndexSelector;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.lane.LaneIndexSelector;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.lane.RoundRobinLaneIndexSelector;
-import org.eclipse.mosaic.fed.mapping.ambassador.weighting.DeterministicSelector;
+import org.eclipse.mosaic.fed.mapping.ambassador.weighting.FixedOrderSelector;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.WeightedSelector;
 import org.eclipse.mosaic.fed.mapping.config.CMappingConfiguration;
@@ -272,8 +272,8 @@ public class VehicleFlowGenerator {
             CVehicle vehicleConfiguration, RandomNumberGenerator randomNumberGenerator) {
         if (types.size() == 1) {
             selector = () -> Iterables.getOnlyElement(types);
-        } else if (vehicleConfiguration.deterministic) {
-            selector = new DeterministicSelector<>(types, randomNumberGenerator);
+        } else if (vehicleConfiguration.fixedorder) {
+            selector = new FixedOrderSelector<>(types, randomNumberGenerator);
         } else {
             selector = new StochasticSelector<>(types, randomNumberGenerator);
         }
@@ -393,7 +393,7 @@ public class VehicleFlowGenerator {
         LOG.debug("TimerCall Spawner. Time=" + framework.getTime() + ", nextTime=" + nextSpawnTime);
 
         // determine the type of the vehicle to spawn by use of the selector
-        // (either deterministic or stochastic, determined in constructor)
+        // (either fixedorder or stochastic, determined in constructor)
         VehicleTypeSpawner type = selector.nextItem();
         String name = UnitNameGenerator.nextVehicleName();
 

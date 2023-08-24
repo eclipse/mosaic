@@ -333,8 +333,8 @@
                     ],
                     "default": "CONSTANT"
                 },
-                "deterministic": {
-                    "description": "Determines if selection of a vehicles type when spawning follows a deterministic or stochastic model. When set to true the spawning-process will choose exactly the same types with every execution. When set to false the order of types may be different and selected weights will be reached more slowly.",
+                "fixedorder": {
+                    "description": "Determines if selection of a vehicles type when spawning follows a fixedorder or stochastic model. When set to true the spawning-process will choose exactly the same types with every execution. When set to false the order of types may be different and selected weights will be reached more slowly.",
                     "type": "boolean",
                     "default": true
                 },
@@ -403,8 +403,8 @@
                     "type": "array",
                     "items": { "$ref": "#/definitions/prototype" }
                 },
-                "deterministic": {
-                    "description": "If deterministic is true the spawning-process will be exactly the same with every execution. If left false the order is different and the selected weights will be reached slower than in the deterministic mode.",
+                "fixedorder": {
+                    "description": "If fixedorder is true the spawning-process will be exactly the same with every execution. If left false the order is different and the selected weights will be reached slower than in the fixedorder mode.",
                     "type": "boolean",
                     "default": true
                 },

@@ -30,7 +30,7 @@ import java.util.List;
 public class OriginDestinationVehicleFlowGenerator {
     private final List<COriginDestinationMatrixMapper.COriginDestinationPoint> originDestinationPointConfigurations;
     private final List<CPrototype> prototypeConfigurations;
-    private final Boolean deterministic;
+    private final Boolean fixedorder;
 
     /**
      * Values for the OD-matrix. Unit should be vehicles/hour.
@@ -49,7 +49,7 @@ public class OriginDestinationVehicleFlowGenerator {
     OriginDestinationVehicleFlowGenerator(COriginDestinationMatrixMapper matrixMapperConfiguration) {
         this.originDestinationPointConfigurations = matrixMapperConfiguration.points;
         this.prototypeConfigurations = matrixMapperConfiguration.types;
-        this.deterministic = matrixMapperConfiguration.deterministic;
+        this.fixedorder = matrixMapperConfiguration.fixedorder;
         this.odValues = matrixMapperConfiguration.odValues;
         this.startingTime = matrixMapperConfiguration.startingTime;
         this.maxTime = matrixMapperConfiguration.maxTime;
@@ -78,7 +78,7 @@ public class OriginDestinationVehicleFlowGenerator {
                 vehicleConfiguration.destination = originDestinationPointConfigurations.get(toId).position;
                 vehicleConfiguration.targetFlow = flow;
                 vehicleConfiguration.types = prototypeConfigurations;
-                vehicleConfiguration.deterministic = deterministic;
+                vehicleConfiguration.fixedorder = fixedorder;
 
                 vehicleConfiguration.startingTime = startingTime;
                 vehicleConfiguration.maxTime = maxTime;
