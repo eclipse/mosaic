@@ -118,7 +118,7 @@ public class FixedOrderSelectorTest {
 
 
     private String getSequenceAsString(int seed) {
-        RandomNumberGenerator _rng = new DefaultRandomNumberGenerator(seed);
+        RandomNumberGenerator rng = new DefaultRandomNumberGenerator(seed);
 
         List<TestWeighted<?>> values = Lists.newArrayList(
                 of("A", 0.1),
@@ -126,7 +126,7 @@ public class FixedOrderSelectorTest {
                 of("-", 0.8)
         );
 
-        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values, _rng);
+        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values, rng);
 
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 20; i++) {
