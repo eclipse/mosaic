@@ -15,8 +15,8 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.weighting;
 
-import static org.eclipse.mosaic.fed.mapping.ambassador.weighting.DeterministicSelectorTest.TestWeighted;
-import static org.eclipse.mosaic.fed.mapping.ambassador.weighting.DeterministicSelectorTest.of;
+import static org.eclipse.mosaic.fed.mapping.ambassador.weighting.FixedOrderSelectorTest.TestWeighted;
+import static org.eclipse.mosaic.fed.mapping.ambassador.weighting.FixedOrderSelectorTest.of;
 
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;

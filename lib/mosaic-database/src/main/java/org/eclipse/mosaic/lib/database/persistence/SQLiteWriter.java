@@ -165,30 +165,30 @@ public class SQLiteWriter {
         Statement statement = sqlite.connect();
         // create tables
         // integrity
-        statement.executeUpdate("CREATE TABLE " + TABLES.PROPERTIES + " (id String UNIQUE, value TEXT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.PROPERTIES + " (id TEXT UNIQUE, value TEXT)");
         statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES + "(id, value) VALUES ('" + Database.PROPERTY_VERSION + "', '" + Database.VERSION_UNKNOWN + "')");
         statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES + "(id, value) VALUES ('" + Database.PROPERTY_IMPORT_ORIGIN + "', '')");
         // pure network
-        statement.executeUpdate("CREATE TABLE " + TABLES.NODE + " (id STRING, lat DOUBLE, lon DOUBLE, ele DOUBLE, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.WAY + " (id STRING, name TEXT, type TEXT, speed DOUBLE, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.WAY_CONSISTS_OF + " (way_id STRING, node_id STRING, sequence_number INTEGER)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION + " (id STRING, way_id STRING, lanes INTEGER, length FLOAT)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_CONSISTS_OF + " (connection_id STRING, node_id STRING, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.NODE + " (id TEXT, lat REAL, lon REAL, ele REAL, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.WAY + " (id TEXT, name TEXT, type TEXT, speed REAL, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.WAY_CONSISTS_OF + " (way_id TEXT, node_id TEXT, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION + " (id TEXT, way_id TEXT, lanes INTEGER, length REAL)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_CONSISTS_OF + " (connection_id TEXT, node_id TEXT, sequence_number INTEGER)");
         // turn restrictions
-        statement.executeUpdate("CREATE TABLE " + TABLES.RESTRICTION + " (id STRING, source_way_id STRING, via_node_id STRING, target_way_id STRING, type STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.RESTRICTION + " (id TEXT, source_way_id TEXT, via_node_id TEXT, target_way_id TEXT, type TEXT)");
         // traffic signals
-        statement.executeUpdate("CREATE TABLE " + TABLES.TRAFFIC_SIGNALS + " (id STRING, ref_node_id STRING, phases STRING, timing STRING, from_way_id STRING, via0_way_id STRING, via1_way_id STRING, to_way_id STRING, lanes_from STRING, lanes_via0 STRING, lanes_via1 STRING, lanes_to STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.TRAFFIC_SIGNALS + " (id TEXT, ref_node_id TEXT, phases TEXT, timing TEXT, from_way_id TEXT, via0_way_id TEXT, via1_way_id TEXT, to_way_id TEXT, lanes_from TEXT, lanes_via0 TEXT, lanes_via1 TEXT, lanes_to TEXT)");
         // vehicle data
-        statement.executeUpdate("CREATE TABLE " + TABLES.ROUTE + " (id STRING, sequence_number INTEGER, connection_id STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUTE + " (id TEXT, sequence_number INTEGER, connection_id TEXT)");
         // roundabouts
-        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT + " (id STRING)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT_CONSISTS_OF + " (roundabout_id STRING, node_id STRING, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT + " (id TEXT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT_CONSISTS_OF + " (roundabout_id TEXT, node_id TEXT, sequence_number INTEGER)");
         // buildings and its corners
-        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING + " (id STRING, name TEXT, height DOUBLE)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING_CONSISTS_OF + " (building_id STRING, lat DOUBLE, lon DOUBLE, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING + " (id TEXT, name TEXT, height REAL)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING_CONSISTS_OF + " (building_id TEXT, lat REAL, lon REAL, sequence_number INTEGER)");
 
         // Connection Details (like parking lots)
-        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_DETAILS + " (id STRING, connection STRING, type STRING, value STRING)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_DETAILS + " (id TEXT, connection TEXT, type TEXT, value TEXT)");
         sqlite.disconnect(statement);
     }
 
