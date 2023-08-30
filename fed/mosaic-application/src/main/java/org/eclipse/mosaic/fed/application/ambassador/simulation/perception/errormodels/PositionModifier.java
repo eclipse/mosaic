@@ -17,7 +17,6 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
@@ -33,7 +32,7 @@ import java.util.List;
  * To calculate these, all points are transformed into a coordinate system relative to the position and
  * orientation of the ego vehicle, and after error calculation re-transformed.
  */
-public class PositionErrorModifier implements PerceptionModifier {
+public class PositionModifier implements PerceptionModifier {
     /**
      * Default standard deviation for longitudinal error. (Taken from referenced source)
      */
@@ -59,7 +58,7 @@ public class PositionErrorModifier implements PerceptionModifier {
      *
      * @param rng {@link RandomNumberGenerator} to draw gaussian variables from
      */
-    public PositionErrorModifier(RandomNumberGenerator rng) {
+    public PositionModifier(RandomNumberGenerator rng) {
         this.rng = rng;
         this.longitudinalStandardDeviation = SIGMA_LON_OFFSET;
         this.lateralStandardDeviation = SIGMA_LAT_OFFSET;
@@ -72,7 +71,7 @@ public class PositionErrorModifier implements PerceptionModifier {
      * @param longitudinalStandardDeviation sigma for longitudinal error
      * @param lateralStandardDeviation      sigma for lateral error
      */
-    public PositionErrorModifier(RandomNumberGenerator rng, double longitudinalStandardDeviation, double lateralStandardDeviation) {
+    public PositionModifier(RandomNumberGenerator rng, double longitudinalStandardDeviation, double lateralStandardDeviation) {
         this.rng = rng;
         this.longitudinalStandardDeviation = longitudinalStandardDeviation;
         this.lateralStandardDeviation = lateralStandardDeviation;

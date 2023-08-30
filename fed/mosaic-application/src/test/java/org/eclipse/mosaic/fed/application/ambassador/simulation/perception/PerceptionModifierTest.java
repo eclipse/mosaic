@@ -29,8 +29,8 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceFilter;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
@@ -148,9 +148,9 @@ public class PerceptionModifierTest {
 
     @Test
     public void testDistanceErrorModifier() {
-        DistanceModifier distanceModifier = new DistanceModifier(rng, 0);
+        DistanceFilter distanceFilter = new DistanceFilter(rng, 0);
         simplePerceptionModule.enable(
-                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(distanceModifier).build()
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(distanceFilter).build()
         );
 
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
@@ -162,9 +162,9 @@ public class PerceptionModifierTest {
 
     @Test
     public void testPositionErrorModifier() {
-        PositionErrorModifier positionErrorModifier = new PositionErrorModifier(rng, 1, 1);
+        PositionModifier positionModifier = new PositionModifier(rng, 1, 1);
         simplePerceptionModule.enable(
-                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(positionErrorModifier).build()
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(positionModifier).build()
         );
 
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
@@ -200,9 +200,9 @@ public class PerceptionModifierTest {
 
     @Test
     public void testIndexedObjectsNotChanged() {
-        PositionErrorModifier positionErrorModifier = new PositionErrorModifier(rng, 1, 1);
+        PositionModifier positionModifier = new PositionModifier(rng, 1, 1);
         simplePerceptionModule.enable(
-                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(positionErrorModifier).build()
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(positionModifier).build()
         );
 
         // collect positions of perceived objects BEFORE applying modifier
