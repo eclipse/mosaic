@@ -28,11 +28,11 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusion;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
@@ -135,7 +135,7 @@ public class PerceptionModifierTest {
 
     @Test
     public void testOcclusionModifier() {
-        SimpleOcclusionModifier occlusionModifier = new SimpleOcclusionModifier(3, 10);
+        SimpleOcclusion occlusionModifier = new SimpleOcclusion(3, 10);
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(occlusionModifier).build()
         );
@@ -181,7 +181,7 @@ public class PerceptionModifierTest {
         );
         doReturn(surroundingWalls).when(simplePerceptionModule).getSurroundingWalls();
 
-        WallOcclusionModifier occlusionModifier = new WallOcclusionModifier();
+        WallOcclusion occlusionModifier = new WallOcclusion();
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(occlusionModifier).build()
         );
@@ -231,16 +231,16 @@ public class PerceptionModifierTest {
 
     @Test
     public void testBoundingBoxOcclusionModifier() {
-        BoundingBoxOcclusionModifier boundingBoxOcclusionModifier = new BoundingBoxOcclusionModifier();
+        BoundingBoxOcclusion boundingBoxOcclusion = new BoundingBoxOcclusion();
         simplePerceptionModule.enable(
-                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(boundingBoxOcclusionModifier).build()
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(boundingBoxOcclusion).build()
         );
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         // create a modifier with more point but same detection threshold -> should result in more detections
-        BoundingBoxOcclusionModifier boundingBoxOcclusionModifierCustomParams = new BoundingBoxOcclusionModifier(5, 2);
+        BoundingBoxOcclusion boundingBoxOcclusionCustomParams = new BoundingBoxOcclusion(5, 2);
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE)
-                        .addModifier(boundingBoxOcclusionModifierCustomParams).build()
+                        .addModifier(boundingBoxOcclusionCustomParams).build()
         );
         List<VehicleObject> perceivedVehiclesCustomModifier = simplePerceptionModule.getPerceivedVehicles();
 

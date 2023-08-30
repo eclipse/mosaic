@@ -19,7 +19,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.Perce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObjectBoundingBox;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
-import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.Edge;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BoundingBoxOcclusionModifier implements PerceptionModifier {
+public class BoundingBoxOcclusion implements PerceptionModifier {
 
     private final Vector3d intersectionResult = new Vector3d();
     /**
@@ -46,29 +45,30 @@ public class BoundingBoxOcclusionModifier implements PerceptionModifier {
     private final int detectionThreshold;
 
     /**
-     * Default constructor for the {@link BoundingBoxOcclusionModifier}.
+     * Default constructor for the {@link BoundingBoxOcclusion}.
+     * Uses {@link #pointsPerSide} = 2 and {@link #detectionThreshold} = 2 as default values.
      */
-    public BoundingBoxOcclusionModifier() {
+    public BoundingBoxOcclusion() {
         this.pointsPerSide = 2;
         this.detectionThreshold = 2;
     }
 
     /**
-     * Constructor for {@link BoundingBoxOcclusionModifier}, validates and sets
+     * Constructor for {@link BoundingBoxOcclusion}, validates and sets
      * the parameters {@link #pointsPerSide} and {@link #detectionThreshold}.
      *
-     * @param pointsPerSide      the amount of points that will be evaluated per object (corners count towards 2 edges)
+     * @param pointsPerSide      the number of points that will be evaluated per object side (corners count towards 2 edges)
      * @param detectionThreshold how many points have to be visible in order for an object to be treated as detected
      */
-    public BoundingBoxOcclusionModifier(int pointsPerSide, int detectionThreshold) {
+    public BoundingBoxOcclusion(int pointsPerSide, int detectionThreshold) {
         if (pointsPerSide < 2) {
-            throw new RuntimeException("Need at least 2 points per edge, meaning every corner will be checked for occlusion.");
+            throw new IllegalArgumentException("Need at least 2 points per edge, meaning every corner will be checked for occlusion.");
         }
         if (detectionThreshold < 1) {
-            throw new RuntimeException("At least one point has to be checked for occlusion, else no objects will be occluded");
+            throw new IllegalArgumentException("At least one point has to be checked for occlusion, else no objects will be occluded");
         }
         if (detectionThreshold > pointsPerSide * 4 - 4) {
-            throw new RuntimeException("The detection threshold exceeds the number of points evaluated per object");
+            throw new IllegalArgumentException("The detection threshold exceeds the number of points evaluated per object");
         }
         this.pointsPerSide = pointsPerSide;
         this.detectionThreshold = detectionThreshold;

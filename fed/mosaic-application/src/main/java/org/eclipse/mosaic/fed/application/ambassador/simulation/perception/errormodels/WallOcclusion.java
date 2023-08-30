@@ -31,16 +31,16 @@ import java.util.List;
  * The check for hidden vehicles is done by finding intersection of vectors between
  * ego and all other vehicles. and all walls in its vicinity.
  */
-public class WallOcclusionModifier implements PerceptionModifier {
+public class WallOcclusion implements PerceptionModifier {
 
     private final int requiredVisibleVehicleCorners;
     private final Vector3d intersectionResult = new Vector3d();
 
-    public WallOcclusionModifier() {
+    public WallOcclusion() {
         requiredVisibleVehicleCorners = 2;
     }
 
-    public WallOcclusionModifier(int requiredVisibleVehicleCorners) {
+    public WallOcclusion(int requiredVisibleVehicleCorners) {
         this.requiredVisibleVehicleCorners = requiredVisibleVehicleCorners;
     }
 
