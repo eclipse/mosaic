@@ -33,16 +33,7 @@ import java.util.List;
  */
 public class WallOcclusion implements PerceptionModifier {
 
-    private final int requiredVisibleVehicleCorners;
     private final Vector3d intersectionResult = new Vector3d();
-
-    public WallOcclusion() {
-        requiredVisibleVehicleCorners = 2;
-    }
-
-    public WallOcclusion(int requiredVisibleVehicleCorners) {
-        this.requiredVisibleVehicleCorners = requiredVisibleVehicleCorners;
-    }
 
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {

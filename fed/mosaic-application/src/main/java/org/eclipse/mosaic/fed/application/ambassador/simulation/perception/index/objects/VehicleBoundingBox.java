@@ -32,19 +32,20 @@ import java.util.List;
  *                  |                             |
  *    frontLeftCorner----------leftEdge-----------backLeftCorner
  * </pre>
+ * All points are in global coordinates.
  */
 public class VehicleBoundingBox implements SpatialObjectBoundingBox {
     private final List<Vector3d> allCorners;
-    private final Vector3d frontRightCorner;
-    private final Vector3d backRightCorner;
-    private final Vector3d backLeftCorner;
-    private final Vector3d frontLeftCorner;
+    public final Vector3d frontRightCorner;
+    public final Vector3d backRightCorner;
+    public final Vector3d backLeftCorner;
+    public final Vector3d frontLeftCorner;
 
     private final List<Edge<Vector3d>> allEdges;
-    private final Edge<Vector3d> frontEdge;
-    private final Edge<Vector3d> rightEdge;
-    private final Edge<Vector3d> backEdge;
-    private final Edge<Vector3d> leftEdge;
+    public final Edge<Vector3d> frontEdge;
+    public final Edge<Vector3d> rightEdge;
+    public final Edge<Vector3d> backEdge;
+    public final Edge<Vector3d> leftEdge;
 
     private VehicleBoundingBox(Vector3d frontRightCorner, Vector3d backRightCorner, Vector3d backLeftCorner, Vector3d frontLeftCorner) {
         this.frontRightCorner = frontRightCorner;
@@ -59,19 +60,39 @@ public class VehicleBoundingBox implements SpatialObjectBoundingBox {
         allEdges = Lists.newArrayList(frontEdge, rightEdge, backEdge, leftEdge);
     }
 
+    /**
+     * This method is used to generate a {@link VehicleBoundingBox}-object given its position, dimensions, and heading.
+     * Note: We assume that the position is defined in the middle of the front bumper and the heading is defined relative to
+     * this position.
+     *
+     * @param vehicleObject the {@link VehicleObject} containing its dimensions and heading
+     * @return the build {@link VehicleBoundingBox}
+     */
     public static VehicleBoundingBox createFromVehicleObject(VehicleObject vehicleObject) {
         Vector3d headingVector = new Vector3d();
         VectorUtils.getDirectionVectorFromHeading(vehicleObject.getHeading(), headingVector).norm();
         double length = vehicleObject.getLength();
         double halfWidth = vehicleObject.getWidth() / 2;
-        Vector3d pointA = new Vector3d(headingVector).rotateDeg(90d, VectorUtils.UP);
-        pointA = pointA.multiply(halfWidth).add(vehicleObject);
-        Vector3d pointD = new Vector3d(headingVector).rotateDeg(-90d, VectorUtils.UP);
-        pointD = pointD.multiply(halfWidth).add(vehicleObject);
-        Vector3d pointB = new Vector3d(headingVector).multiply(-1d);
-        pointB = pointB.multiply(length).add(pointA);
-        Vector3d pointC = new Vector3d(headingVector).multiply(-1d);
-        pointC = pointC.multiply(length).add(pointD);
+        // we get the two front corners by rotating the normalized heading vector by +/- 90° and multiplying it by half the vehicle width
+        // and then add it on the vehicle position (rotation -> translation)
+        Vector3d pointA = new Vector3d(headingVector)
+                .rotateDeg(90d, VectorUtils.UP) // rotate to 90° to the right
+                .multiply(halfWidth) // adjust the length of the vector to half the vehicles' width
+                .add(vehicleObject); // add on top of the vehicle position
+        Vector3d pointD = new Vector3d(headingVector)
+                .rotateDeg(-90d, VectorUtils.UP) // rotate to 90° to the left
+                .multiply(halfWidth) // adjust the length of the vector to half the vehicles' width
+                .add(vehicleObject); // add on top of the vehicle position
+        // similarly to the front corners, we get the back corners by rotating the heading vector by 180° (i.e., multiplying by -1)
+        // then set the appropriate length using the vehicle length and finally add it to the respective corners (rotation -> translation)
+        Vector3d pointB = new Vector3d(headingVector)
+                .multiply(-1d) // rotate heading vector by 180°
+                .multiply(length) // adjust the length of the vector to vehicle length
+                .add(pointA); // add on top of the front right corner
+        Vector3d pointC = new Vector3d(headingVector)
+                .multiply(-1d) // rotate heading vector by 180°
+                .multiply(length) // adjust the length of the vector to vehicle length
+                .add(pointD); // add on top of the front left corner
         return new VehicleBoundingBox(pointA, pointB, pointC, pointD);
     }
 
@@ -83,37 +104,5 @@ public class VehicleBoundingBox implements SpatialObjectBoundingBox {
     @Override
     public List<Edge<Vector3d>> getAllEdges() {
         return allEdges;
-    }
-
-    public Vector3d getFrontRightCorner() {
-        return frontRightCorner;
-    }
-
-    public Vector3d getBackRightCorner() {
-        return backRightCorner;
-    }
-
-    public Vector3d getBackLeftCorner() {
-        return backLeftCorner;
-    }
-
-    public Vector3d getFrontLeftCorner() {
-        return frontLeftCorner;
-    }
-
-    public Edge<Vector3d> getFrontEdge() {
-        return frontEdge;
-    }
-
-    public Edge<Vector3d> getRightEdge() {
-        return rightEdge;
-    }
-
-    public Edge<Vector3d> getBackEdge() {
-        return backEdge;
-    }
-
-    public Edge<Vector3d> getLeftEdge() {
-        return leftEdge;
     }
 }

@@ -50,14 +50,14 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
     public TrafficLightObject setPosition(CartesianPoint position) {
         cartesianPosition.set(position);
         position.toVector3d(this);
-        if (boundingBox == null) {
-            boundingBox = new PointBoundingBox(this);
-        }
         return this;
     }
 
     @Override
     public SpatialObjectBoundingBox getBoundingBox() {
+        if (boundingBox == null) {
+            boundingBox = new PointBoundingBox(this);
+        }
         return boundingBox;
     }
 

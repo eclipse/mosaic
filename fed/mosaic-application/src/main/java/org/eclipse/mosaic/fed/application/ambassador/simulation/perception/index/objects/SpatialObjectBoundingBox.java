@@ -20,15 +20,20 @@ import org.eclipse.mosaic.lib.spatial.Edge;
 
 import java.util.List;
 
+/**
+ * This interface shall be implemented by all classes representing the bounding box of a {@link SpatialObject}.
+ * All points are returned in the global coordinate system as {@link Vector3d}.
+ */
 public interface SpatialObjectBoundingBox {
 
     /**
-     * Returns all corners spanning the 2D bounding box of a {@link SpatialObject}.
+     * Returns all corners spanning the 2D bounding box of a {@link SpatialObject} as global coordinates.
      */
     List<Vector3d> getAllCorners();
 
     /**
-     * Returns all sides spanning the 2D bounding box of a {@link SpatialObject}.
+     * Returns all sides spanning the 2D bounding box of a {@link SpatialObject} as {@link Edge<Vector3d> edges} in the global
+     * coordinate system.
      */
     List<Edge<Vector3d>> getAllEdges();
 }

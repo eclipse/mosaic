@@ -81,44 +81,57 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
         List<T> occludingObjects = spatialObjects.stream()
                 .filter(object -> !object.getId().equals(owner.getId()))
                 .collect(Collectors.toList());
-        for (T spatialObject : spatialObjects) {
-            if (spatialObject instanceof TrafficLightObject) { // Traffic Lights are treated to not be occluded
-                newObjects.add(spatialObject);
+        Vector3d egoPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
+        for (T objectToEvaluate : spatialObjects) {
+            if (objectToEvaluate instanceof TrafficLightObject) { // Traffic Lights are treated to not be occluded
+                newObjects.add(objectToEvaluate);
                 continue;
             }
-            List<Vector3d> pointsToEvaluate = createPointsToEvaluate(spatialObject);
+            List<Vector3d> pointsToEvaluate = createPointsToEvaluate(objectToEvaluate);
             final int requiredVisiblePoints = pointsToEvaluate.size() == 1 ? 1 : detectionThreshold;
             int numberOfPointsVisible = 0;
             for (Vector3d point : pointsToEvaluate) {
-                boolean pointOccluded = false;
-                boundingBoxLoop:
-                for (T occludingObject : occludingObjects) {
-                    if (occludingObject.getId().equals(spatialObject.getId())) {
-                        continue; // cannot be occluded by itself
-                    }
-                    SpatialObjectBoundingBox boundingBox = occludingObject.getBoundingBox();
-                    // SpatialObjects with PointBoundingBoxes won't occlude anything, as they have no edges defined
-                    for (Edge<Vector3d> side : boundingBox.getAllEdges()) {
-                        boolean isOccluded = VectorUtils.computeXZEdgeIntersectionPoint(
-                                owner.getVehicleData().getProjectedPosition().toVector3d(),
-                                point, side.a, side.b, intersectionResult
-                        );
-                        if (isOccluded) {
-                            pointOccluded = true;
-                            break boundingBoxLoop;
-                        }
-                    }
-                }
-                if (!pointOccluded) {
+                boolean pointVisible = isVisible(egoPosition, point, objectToEvaluate.getId(), occludingObjects);
+                if (pointVisible) { // increment visible counter
                     numberOfPointsVisible++;
                 }
+                // if the required number of points is visible, we don't need to evaluate more
                 if (numberOfPointsVisible == requiredVisiblePoints) {
-                    newObjects.add(spatialObject);
+                    newObjects.add(objectToEvaluate);
                     break;
                 }
             }
         }
         return newObjects;
+    }
+
+    /**
+     * Method to evaluate whether a point is visible by any edge spanned by any other bounding box of any other vehicle.
+     *
+     * @param egoPosition      position of the ego vehicle
+     * @param pointToEvaluate  the point that should be checked for occlusion
+     * @param objectId         id that the point belongs to (required for points not to be occluded by the same vehicle)
+     * @param occludingObjects all objects that potentially occlude the vehicle
+     * @return {@code true} if the point is visible, else {@code false}
+     */
+    private <T extends SpatialObject> boolean isVisible(Vector3d egoPosition, Vector3d pointToEvaluate, String objectId, List<T> occludingObjects) {
+        for (T occludingObject : occludingObjects) {
+            if (occludingObject.getId().equals(objectId)) {
+                continue; // cannot be occluded by itself
+            }
+            SpatialObjectBoundingBox boundingBox = occludingObject.getBoundingBox();
+            // SpatialObjects with PointBoundingBoxes won't occlude anything, as they have no edges defined
+            for (Edge<Vector3d> side : boundingBox.getAllEdges()) {
+                boolean isOccluded = VectorUtils.computeXZEdgeIntersectionPoint(
+                        egoPosition,
+                        pointToEvaluate, side.a, side.b, intersectionResult
+                );
+                if (isOccluded) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -134,6 +147,7 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
      *     |           |
      *     x-----o-----y
      * </pre>
+     *
      * @param spatialObject a {@link SpatialObject} for which the occlusion should be evaluated
      */
     private <T extends SpatialObject> List<Vector3d> createPointsToEvaluate(T spatialObject) {

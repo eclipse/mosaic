@@ -64,6 +64,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
     public VehicleObject setPosition(CartesianPoint position) {
         cartesianPosition.set(position);
         position.toVector3d(this);
+        this.boundingBox = null;
         return this;
     }
 
@@ -93,6 +94,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
 
     public VehicleObject setHeading(double heading) {
         this.heading = heading;
+        this.boundingBox = null;
         return this;
     }
 
@@ -104,6 +106,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         this.length = length;
         this.width = width;
         this.height = height;
+        this.boundingBox = null;
         return this;
     }
 
@@ -117,11 +120,6 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
 
     public double getHeight() {
         return height;
-    }
-
-    public VehicleObject resetBoundingBox() {
-        boundingBox = null;
-        return this;
     }
 
     /**
@@ -173,8 +171,6 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .setSpeed(getSpeed())
                 .setEdgeAndLane(getEdgeId(), getLaneIndex())
                 .setDimensions(getLength(), getWidth(), getHeight())
-                .setPosition(getProjectedPosition())
-                .resetBoundingBox();
-
+                .setPosition(getProjectedPosition());
     }
 }

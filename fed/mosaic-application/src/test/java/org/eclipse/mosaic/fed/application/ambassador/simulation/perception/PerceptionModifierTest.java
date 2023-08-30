@@ -246,6 +246,7 @@ public class PerceptionModifierTest {
 
         if (PRINT_POSITIONS) {
             printBoundingBoxes(perceivedVehicles);
+            System.out.println();
             printBoundingBoxes(perceivedVehiclesCustomModifier);
         }
         assertTrue("The occlusion filter should remove vehicles", VEHICLE_AMOUNT > perceivedVehicles.size());

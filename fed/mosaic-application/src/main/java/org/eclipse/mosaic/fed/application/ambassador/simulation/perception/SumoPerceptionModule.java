@@ -56,7 +56,6 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
                         .setSpeed(v.getSpeed())
                         .setHeading(v.getHeading())
                         .setDimensions(v.getLength(), v.getWidth(), v.getHeight())
-                        .resetBoundingBox()
                 ).collect(Collectors.toList());
     }
 
