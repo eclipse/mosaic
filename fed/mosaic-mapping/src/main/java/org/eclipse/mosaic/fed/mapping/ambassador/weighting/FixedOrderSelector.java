@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  *
  * @param <T> The type of the object to be returned
  */
-public class DeterministicSelector<T extends Weighted> implements WeightedSelector<T> {
+public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<T> {
 
     private final RandomNumberGenerator randomNumberGenerator;
     private List<Item<T>> items;
@@ -43,6 +43,9 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
         private double normalizedWeight;
         // The number of times this item has been selected
         private int selections;
+
+        // Set when item is generated the first time. Used as tie-break when two or more objects could be generated.
+        private int priority;
 
         @Override
         public double getWeight() {
@@ -56,12 +59,17 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
     private int totalSelections = 0;
 
     /**
-     * Constructor for {@link DeterministicSelector}.
+     * Number of objects already generated without counting the same object twice
+     */
+    private int totalDistinctSelections = 0;
+
+    /**
+     * Constructor for {@link FixedOrderSelector}.
      *
      * @param objects       list of all types that might be selected from
      * @param randGenerator random number generator to select the first item
      */
-    public DeterministicSelector(List<T> objects, @Nonnull RandomNumberGenerator randGenerator) {
+    public FixedOrderSelector(List<T> objects, @Nonnull RandomNumberGenerator randGenerator) {
         Validate.notNull(objects, "Illegal constructor call for WeightedSelector: objects is null.");
         Validate.isTrue(!objects.isEmpty(), "Illegal constructor call for WeightedSelector: objects is empty!");
 
@@ -74,6 +82,7 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
             Item<T> item = new Item<>();
             item.object = o;
             item.selections = 0;
+            item.priority = objects.size();
             return item;
         }).collect(Collectors.toList());
     }
@@ -111,14 +120,22 @@ public class DeterministicSelector<T extends Weighted> implements WeightedSelect
             StochasticSelector<Item<T>> firstItemSelector = init();
             selectedItem = firstItemSelector.nextItem();
         } else {
+            Comparator<Item<T>> compareBySelectionToWeightRatio = Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight());
+            Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
             // choose item which has been selected the least according to its weight
             selectedItem = items.stream()
-                    .min(Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight()))
+                    .min(compareBySelectionToWeightRatio.thenComparing(compareByPriority))
                     .orElse(null);
         }
 
         if (selectedItem == null) {
             return null;
+        }
+
+        // if this was an object we did not see before, set its priority (priority is used as tie-breaker)
+        if (selectedItem.priority > this.totalDistinctSelections) {
+            selectedItem.priority = this.totalDistinctSelections;
+            this.totalDistinctSelections++;
         }
 
         selectedItem.selections++;
