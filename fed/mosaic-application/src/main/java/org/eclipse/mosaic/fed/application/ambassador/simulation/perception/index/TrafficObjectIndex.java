@@ -181,20 +181,6 @@ public class TrafficObjectIndex {
         }
     }
 
-    /**
-     * Returns the number of TLs in the simulation.
-     *
-     * @return the number of TLs
-     */
-    public int getNumberOfTrafficLights() {
-        if (trafficLightIndexProviderConfigured()) {
-            return trafficLightIndex.getNumberOfTrafficLights();
-        } else {
-            log.debug("No Traffic Light Index Provider configured. There are no indexed Traffic Lights.");
-            return 0;
-        }
-    }
-
     public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
         if (wallIndex == null) {
             log.debug("No Wall Index defined.");
