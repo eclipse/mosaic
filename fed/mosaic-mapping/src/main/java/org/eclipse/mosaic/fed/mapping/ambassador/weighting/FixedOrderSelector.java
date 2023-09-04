@@ -59,7 +59,7 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
     private int totalSelections = 0;
 
     /**
-     * Number of objects already generated without counting the same object twice
+     * Number of objects already generated without counting the same object twice.
      */
     private int totalDistinctSelections = 0;
 
@@ -120,7 +120,8 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
             StochasticSelector<Item<T>> firstItemSelector = init();
             selectedItem = firstItemSelector.nextItem();
         } else {
-            Comparator<Item<T>> compareBySelectionToWeightRatio = Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight());
+            Comparator<Item<T>> compareBySelectionToWeightRatio =
+                    Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight());
             Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
             // choose item which has been selected the least according to its weight
             selectedItem = items.stream()
