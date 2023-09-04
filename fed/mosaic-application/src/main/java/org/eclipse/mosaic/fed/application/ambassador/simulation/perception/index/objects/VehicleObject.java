@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.annotation.Nullable;
 
@@ -156,6 +157,20 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(width, that.width)
                 .append(height, that.height)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(speed)
+                .append(heading)
+                .append(edgeId)
+                .append(laneIndex)
+                .append(length)
+                .append(width)
+                .append(height)
+                .toHashCode();
     }
 
     /**

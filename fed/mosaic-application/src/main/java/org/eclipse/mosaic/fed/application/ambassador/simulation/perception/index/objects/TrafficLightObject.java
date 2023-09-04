@@ -19,6 +19,7 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
     /**
@@ -116,6 +117,17 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
                 .append(incomingLane, that.incomingLane)
                 .append(outgoingLane, that.outgoingLane)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(trafficLightGroupId)
+                .append(trafficLightState)
+                .append(incomingLane)
+                .append(outgoingLane)
+                .toHashCode();
     }
 
     /**
