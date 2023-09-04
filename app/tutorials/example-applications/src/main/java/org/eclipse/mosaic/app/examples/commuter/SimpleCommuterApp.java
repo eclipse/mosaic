@@ -33,6 +33,8 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.lib.util.scheduling.EventProcessor;
 import org.eclipse.mosaic.rti.TIME;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -166,6 +168,24 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
             return homePosition;
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            DriveBackEvent event = (DriveBackEvent) obj;
+            return new EqualsBuilder()
+                    .appendSuper(super.equals(obj))
+                    .append(this.currentPosition, event.currentPosition)
+                    .append(this.homePosition, event.homePosition)
+                    .isEquals();
+        }
     }
 
     /**
