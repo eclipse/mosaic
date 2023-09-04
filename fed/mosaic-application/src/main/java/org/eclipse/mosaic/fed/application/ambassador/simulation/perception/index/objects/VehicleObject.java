@@ -24,6 +24,9 @@ import javax.annotation.Nullable;
 
 public class VehicleObject extends SpatialObject<VehicleObject> {
 
+    private static final long serialVersionUID = 1L;
+
+
     /**
      * The current speed of the vehicle. [m/s]
      */
@@ -156,6 +159,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(length, that.length)
                 .append(width, that.width)
                 .append(height, that.height)
+                .append(boundingBox, that.boundingBox)
                 .isEquals();
     }
 
@@ -170,6 +174,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(length)
                 .append(width)
                 .append(height)
+                .append(boundingBox)
                 .toHashCode();
     }
 

@@ -18,13 +18,14 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * This interface shall be implemented by all classes representing the bounding box of a {@link SpatialObject}.
  * All points are returned in the global coordinate system as {@link Vector3d}.
  */
-public interface SpatialObjectBoundingBox {
+public interface SpatialObjectBoundingBox extends Serializable {
 
     /**
      * Returns all corners spanning the 2D bounding box of a {@link SpatialObject} as global coordinates.
@@ -32,7 +33,7 @@ public interface SpatialObjectBoundingBox {
     List<Vector3d> getAllCorners();
 
     /**
-     * Returns all sides spanning the 2D bounding box of a {@link SpatialObject} as {@link Edge<Vector3d> edges} in the global
+     * Returns all sides spanning the 2D bounding box of a {@link SpatialObject} as {@link Edge edges} in the global
      * coordinate system.
      */
     List<Edge<Vector3d>> getAllEdges();

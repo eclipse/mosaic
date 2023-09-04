@@ -22,6 +22,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Id of the group the individual traffic light belongs to.
      */
@@ -41,7 +44,7 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
     /**
      * The bounding box of a traffic light is represented by a single point.
      */
-    private PointBoundingBox boundingBox;
+    private transient PointBoundingBox boundingBox;
 
     public TrafficLightObject(String id) {
         super(id);
@@ -116,6 +119,7 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
                 .append(trafficLightState, that.trafficLightState)
                 .append(incomingLane, that.incomingLane)
                 .append(outgoingLane, that.outgoingLane)
+                .append(boundingBox, that.boundingBox)
                 .isEquals();
     }
 

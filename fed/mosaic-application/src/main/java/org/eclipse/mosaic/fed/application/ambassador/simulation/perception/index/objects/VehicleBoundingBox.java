@@ -20,6 +20,8 @@ import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 
@@ -35,6 +37,9 @@ import java.util.List;
  * All points are in global coordinates.
  */
 public class VehicleBoundingBox implements SpatialObjectBoundingBox {
+
+    private static final long serialVersionUID = 1L;
+
     private final List<Vector3d> allCorners;
     public final Vector3d frontRightCorner;
     public final Vector3d backRightCorner;
@@ -104,5 +109,37 @@ public class VehicleBoundingBox implements SpatialObjectBoundingBox {
     @Override
     public List<Edge<Vector3d>> getAllEdges() {
         return allEdges;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        VehicleBoundingBox that = (VehicleBoundingBox) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(frontRightCorner, that.frontRightCorner)
+                .append(backRightCorner, that.backRightCorner)
+                .append(backLeftCorner, that.backLeftCorner)
+                .append(frontLeftCorner, that.frontLeftCorner)
+                .append(allCorners, that.allCorners)
+                .append(allEdges, that.allEdges)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(allCorners)
+                .append(allEdges)
+                .toHashCode();
     }
 }

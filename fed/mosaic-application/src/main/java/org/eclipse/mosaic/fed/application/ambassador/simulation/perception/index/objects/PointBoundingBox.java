@@ -18,7 +18,9 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
-import java.util.ArrayList;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +28,8 @@ import java.util.List;
  * This bounding box can be used for objects that should be treated to have a single-point position and not span into any dimensions.
  */
 public class PointBoundingBox implements SpatialObjectBoundingBox {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * A singleton list, defining the position of a {@link SpatialObject} as the only corner.
@@ -51,4 +55,33 @@ public class PointBoundingBox implements SpatialObjectBoundingBox {
     public List<Edge<Vector3d>> getAllEdges() {
         return allEdges;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PointBoundingBox that = (PointBoundingBox) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(allCorners, that.allCorners)
+                .append(allEdges, that.allEdges)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(allCorners)
+                .append(allEdges)
+                .toHashCode();
+    }
+
 }
