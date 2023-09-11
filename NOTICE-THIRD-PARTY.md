@@ -29,12 +29,12 @@ Apache Commons IO (2.6)
  * Source: https://git-wip-us.apache.org/repos/asf?p=commons-io
 
 
-Apache Commons Lang (3.9)
+Apache Commons Lang (3.13.0)
 
- * License: Apache License, Version 2.0
- * Maven artifact: `org.apache.commons:commons-lang3:3.9`
- * Project: http://commons.apache.org/proper/commons-lang/
- * Source: https://git-wip-us.apache.org/repos/asf?p=commons-lang
+ * License: Apache-2.0
+ * Maven artifact: `org.apache.commons:commons-lang3:3.13.0`
+ * Project: https://commons.apache.org/proper/commons-lang/
+ * Source: https://gitbox.apache.org/repos/asf?p=commons-lang
 
 
 Apache Commons Logging (1.2)
@@ -117,11 +117,11 @@ Gson (2.8.6)
  * Source: https://github.com/google/gson/gson/
 
 
-Guava: Google Core Libraries for Java (28.2-jre)
+Guava: Google Core Libraries for Java (32.1.1-jre)
 
  * License: Apache License, Version 2.0
- * Maven artifact: `com.google.guava:guava:28.2-jre`
- * Project: https://github.com/google/guava/guava
+ * Maven artifact: `com.google.guava:guava:32.1.1-jre`
+ * Project: https://github.com/google/guava
  * Source: https://github.com/google/guava/guava
 
 
@@ -213,20 +213,20 @@ JSR 374 (JSON Processing) API (1.1.5)
  * Source: https://github.com/eclipse-ee4j/jsonp/jakarta.json-api
 
 
-Logback Classic Module (1.2.3)
+Logback Classic Module (1.3.8)
 
  * License: Eclipse Public License - v 1.0, GNU Lesser General Public License
- * Maven artifact: `ch.qos.logback:logback-classic:1.2.3`
+ * Maven artifact: `ch.qos.logback:logback-classic:1.3.8`
  * Project: http://logback.qos.ch/logback-classic
- * Source: https://github.com/ceki/logback/logback-classic
+ * Source: https://github.com/qos-ch/logback/logback-classic
 
 
-Logback Core Module (1.2.3)
+Logback Core Module (1.3.8)
 
  * License: Eclipse Public License - v 1.0, GNU Lesser General Public License
- * Maven artifact: `ch.qos.logback:logback-core:1.2.3`
+ * Maven artifact: `ch.qos.logback:logback-core:1.3.8`
  * Project: http://logback.qos.ch/logback-core
- * Source: https://github.com/ceki/logback/logback-core
+ * Source: https://github.com/qos-ch/logback/logback-core
 
 
 org.leadpony.justify (1.1.0)
@@ -245,27 +245,27 @@ Protocol Buffers [Core] (3.8.0)
  * Source: https://github.com/protocolbuffers/protobuf/protobuf-java
 
 
-SLF4J API Module (1.7.25)
+SLF4J API Module (2.0.9)
 
  * License: MIT License
- * Maven artifact: `org.slf4j:slf4j-api:1.7.25`
+ * Maven artifact: `org.slf4j:slf4j-api:2.0.9`
  * Project: http://www.slf4j.org
- * Source: https://github.com/qos-ch/slf4j/slf4j-api
+ * Source: https://github.com/qos-ch/slf4j/slf4j-parent/slf4j-api
 
 
-SQLite JDBC (3.20.0)
+SQLite JDBC (3.42.0.0)
 
  * License: The Apache Software License, Version 2.0
- * Maven artifact: `org.xerial:sqlite-jdbc:3.20.0`
- * Project: http://nexus.sonatype.org/oss-repository-hosting.html/sqlite-jdbc
+ * Maven artifact: `org.xerial:sqlite-jdbc:3.42.0.0`
+ * Project: https://github.com/xerial/sqlite-jdbc
  * Source: https://github.com/xerial/sqlite-jdbc
 
 
-Stax2 API (3.1.4)
+Stax2 API (4.2.1)
 
  * License: The BSD License
- * Maven artifact: `org.codehaus.woodstox:stax2-api:3.1.4`
- * Project: http://wiki.fasterxml.com/WoodstoxStax2
+ * Maven artifact: `org.codehaus.woodstox:stax2-api:4.2.1`
+ * Project: http://github.com/FasterXML/stax2-api
  * Source: https://github.com/FasterXML/stax2-api
 
 
