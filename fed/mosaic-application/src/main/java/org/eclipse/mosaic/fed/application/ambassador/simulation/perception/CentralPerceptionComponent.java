@@ -225,27 +225,24 @@ public class CentralPerceptionComponent {
 
         @Override
         public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
-            int numberOfVehicles = getNumberOfVehicles();
             try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
-                m.setProperties(numberOfVehicles, SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 return super.getVehiclesInRange(searchRange);
             }
         }
 
         @Override
         public void removeVehicles(Iterable<String> vehiclesToRemove) {
-            int numberOfVehicles = getNumberOfVehicles();
             try (PerformanceMonitor.Measurement m = monitor.start("remove-vehicle")) {
-                m.setProperties(numberOfVehicles, SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 super.removeVehicles(vehiclesToRemove);
             }
         }
 
         @Override
         public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-            int numberOfVehicles = getNumberOfVehicles();
             try (PerformanceMonitor.Measurement m = monitor.start("update-vehicle")) {
-                m.setProperties(numberOfVehicles, SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 super.updateVehicles(vehiclesToUpdate);
             }
         }
