@@ -25,13 +25,15 @@ public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d
 
     private final String id;
 
-    final MutableCartesianPoint cartesianPosition = new MutableCartesianPoint();
+    protected final MutableCartesianPoint cartesianPosition = new MutableCartesianPoint();
 
     public SpatialObject(String id) {
         this.id = id;
     }
 
     public abstract T setPosition(CartesianPoint position);
+
+    public abstract SpatialObjectBoundingBox getBoundingBox();
 
     /**
      * Sets the position of the {@link SpatialObject}.

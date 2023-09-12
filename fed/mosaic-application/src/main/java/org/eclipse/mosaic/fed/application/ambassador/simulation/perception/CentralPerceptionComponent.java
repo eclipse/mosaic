@@ -226,8 +226,7 @@ public class CentralPerceptionComponent {
         @Override
         public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
-                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
-                        .restart();
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 return super.getVehiclesInRange(searchRange);
             }
         }
@@ -235,8 +234,7 @@ public class CentralPerceptionComponent {
         @Override
         public void removeVehicles(Iterable<String> vehiclesToRemove) {
             try (PerformanceMonitor.Measurement m = monitor.start("remove-vehicle")) {
-                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
-                        .restart();
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 super.removeVehicles(vehiclesToRemove);
             }
         }
@@ -244,50 +242,31 @@ public class CentralPerceptionComponent {
         @Override
         public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
             try (PerformanceMonitor.Measurement m = monitor.start("update-vehicle")) {
-                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
-                        .restart();
+                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 super.updateVehicles(vehiclesToUpdate);
             }
         }
 
         @Override
-        public int getNumberOfVehicles() {
-            return super.getNumberOfVehicles();
-        }
-
-        @Override
         public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-traffic-light")) {
-                m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
-                        .restart();
+                m.setProperties(SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 return super.getTrafficLightsInRange(perceptionModel);
             }
         }
 
         @Override
-        public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
-            super.addTrafficLightGroup(trafficLightGroup);
-        }
-
-        @Override
         public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightsToUpdate) {
             try (PerformanceMonitor.Measurement m = monitor.start("update-traffic-light")) {
-                m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
-                        .restart();
+                m.setProperties(SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 super.updateTrafficLights(trafficLightsToUpdate);
             }
         }
 
         @Override
-        public int getNumberOfTrafficLights() {
-            return super.getNumberOfTrafficLights();
-        }
-
-        @Override
         public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
             try (PerformanceMonitor.Measurement m = monitor.start("search-walls")) {
-                m.setProperties(getNumberOfTrafficLights(), SimulationKernel.SimulationKernel.getCurrentSimulationTime())
-                        .restart();
+                m.setProperties(SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
                 return super.getSurroundingWalls(perceptionModel);
             }
         }

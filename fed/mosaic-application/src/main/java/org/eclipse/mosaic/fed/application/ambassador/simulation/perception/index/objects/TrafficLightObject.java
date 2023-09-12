@@ -19,8 +19,12 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Id of the group the individual traffic light belongs to.
      */
@@ -37,6 +41,10 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
      * The outgoing lane controlled by this traffic light.
      */
     private String outgoingLane;
+    /**
+     * The bounding box of a traffic light is represented by a single point.
+     */
+    private transient PointBoundingBox boundingBox;
 
     public TrafficLightObject(String id) {
         super(id);
@@ -47,6 +55,14 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
         cartesianPosition.set(position);
         position.toVector3d(this);
         return this;
+    }
+
+    @Override
+    public SpatialObjectBoundingBox getBoundingBox() {
+        if (boundingBox == null) {
+            boundingBox = new PointBoundingBox(this);
+        }
+        return boundingBox;
     }
 
     public String getTrafficLightGroupId() {
@@ -103,7 +119,19 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
                 .append(trafficLightState, that.trafficLightState)
                 .append(incomingLane, that.incomingLane)
                 .append(outgoingLane, that.outgoingLane)
+                .append(boundingBox, that.boundingBox)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(trafficLightGroupId)
+                .append(trafficLightState)
+                .append(incomingLane)
+                .append(outgoingLane)
+                .toHashCode();
     }
 
     /**
@@ -114,7 +142,7 @@ public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
      */
     @Override
     public TrafficLightObject copy() {
-        return (TrafficLightObject) new TrafficLightObject(getId())
+        return new TrafficLightObject(getId())
                 .setIncomingLane(getIncomingLane())
                 .setOutgoingLane(getOutgoingLane())
                 .setTrafficLightState(getTrafficLightState())

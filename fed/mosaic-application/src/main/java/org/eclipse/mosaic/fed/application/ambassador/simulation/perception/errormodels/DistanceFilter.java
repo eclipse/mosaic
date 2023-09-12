@@ -34,7 +34,7 @@ import java.util.List;
  * This modifier can also be configured using {@link #offset}, which allows adjusting the
  * stochastic component to allow for more or less perceptions.
  */
-public class DistanceModifier implements PerceptionModifier {
+public class DistanceFilter implements PerceptionModifier {
 
     private final RandomNumberGenerator rng;
 
@@ -44,7 +44,7 @@ public class DistanceModifier implements PerceptionModifier {
      */
     private final double offset;
 
-    public DistanceModifier(RandomNumberGenerator rng, double offset) {
+    public DistanceFilter(RandomNumberGenerator rng, double offset) {
         Validate.isTrue(offset >= -1 && offset <= 1, "The offset has to be between -1 and 1.");
         this.rng = rng;
         this.offset = offset;
@@ -52,7 +52,7 @@ public class DistanceModifier implements PerceptionModifier {
 
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
-        if (spatialObjects.size() == 0) {
+        if (spatialObjects.isEmpty()) {
             return spatialObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();

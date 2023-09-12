@@ -31,13 +31,12 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import com.google.gson.annotations.JsonAdapter;
 import org.slf4j.Logger;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @JsonAdapter(VehicleIndexTypeAdapterFactory.class)
-public abstract class VehicleIndex implements Serializable {
+public abstract class VehicleIndex {
 
     /**
      * Stores {@link VehicleObject}s for fast removal and position update.
@@ -77,7 +76,7 @@ public abstract class VehicleIndex implements Serializable {
     }
 
     /**
-     * Returns the amount of indexed vehicles.
+     * Returns the number of indexed vehicles.
      *
      * @return the number of vehicles
      */

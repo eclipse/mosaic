@@ -18,10 +18,14 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.annotation.Nullable;
 
 public class VehicleObject extends SpatialObject<VehicleObject> {
+
+    private static final long serialVersionUID = 1L;
+
 
     /**
      * The current speed of the vehicle. [m/s]
@@ -51,6 +55,10 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
      * The height of the vehicle. [m]
      */
     private double height;
+    /**
+     * The 2D bounding box of a vehicle from birds eye view.
+     */
+    private VehicleBoundingBox boundingBox = null;
 
     public VehicleObject(String id) {
         super(id);
@@ -60,6 +68,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
     public VehicleObject setPosition(CartesianPoint position) {
         cartesianPosition.set(position);
         position.toVector3d(this);
+        this.boundingBox = null;
         return this;
     }
 
@@ -89,6 +98,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
 
     public VehicleObject setHeading(double heading) {
         this.heading = heading;
+        this.boundingBox = null;
         return this;
     }
 
@@ -100,6 +110,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
         this.length = length;
         this.width = width;
         this.height = height;
+        this.boundingBox = null;
         return this;
     }
 
@@ -113,6 +124,18 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
 
     public double getHeight() {
         return height;
+    }
+
+    /**
+     * Returns the bounding box for a spatial object if requested.
+     * Calculation is only triggered if bounding box is requested.
+     */
+    @Override
+    public SpatialObjectBoundingBox getBoundingBox() {
+        if (boundingBox == null) {
+            boundingBox = VehicleBoundingBox.createFromVehicleObject(this);
+        }
+        return boundingBox;
     }
 
     @Override
@@ -136,7 +159,23 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(length, that.length)
                 .append(width, that.width)
                 .append(height, that.height)
+                .append(boundingBox, that.boundingBox)
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(speed)
+                .append(heading)
+                .append(edgeId)
+                .append(laneIndex)
+                .append(length)
+                .append(width)
+                .append(height)
+                .append(boundingBox)
+                .toHashCode();
     }
 
     /**
@@ -147,12 +186,11 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
      */
     @Override
     public VehicleObject copy() {
-        return (VehicleObject) new VehicleObject(getId())
+        return new VehicleObject(getId())
                 .setHeading(getHeading())
                 .setSpeed(getSpeed())
                 .setEdgeAndLane(getEdgeId(), getLaneIndex())
                 .setDimensions(getLength(), getWidth(), getHeight())
                 .setPosition(getProjectedPosition());
-
     }
 }

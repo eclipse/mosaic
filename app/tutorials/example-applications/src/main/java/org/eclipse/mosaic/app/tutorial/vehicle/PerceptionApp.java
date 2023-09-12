@@ -16,9 +16,9 @@
 package org.eclipse.mosaic.app.tutorial.vehicle;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceModifier;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionErrorModifier;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceFilter;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionModifier;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
@@ -66,15 +66,15 @@ public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> i
 
     private void enablePerceptionModule() {
         // filter to emulate occlusion
-        SimpleOcclusionModifier simpleOcclusionModifier = new SimpleOcclusionModifier(3, 5);
+        SimpleOcclusion simpleOcclusion = new SimpleOcclusion(3, 5);
         // filter to reduce perception probability based on distance to ego vehicle
-        DistanceModifier distanceModifier = new DistanceModifier(getRandom(), 0.0);
+        DistanceFilter distanceFilter = new DistanceFilter(getRandom(), 0.0);
         // filter adding noise to longitudinal and lateral
-        PositionErrorModifier positionErrorModifier = new PositionErrorModifier(getRandom());
+        PositionModifier positionModifier = new PositionModifier(getRandom());
 
         SimplePerceptionConfiguration perceptionModuleConfiguration =
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE)
-                        .addModifiers(simpleOcclusionModifier, distanceModifier, positionErrorModifier)
+                        .addModifiers(simpleOcclusion, distanceFilter, positionModifier)
                         .build();
         getOs().getPerceptionModule().enable(perceptionModuleConfiguration);
     }

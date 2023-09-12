@@ -36,7 +36,7 @@ import java.util.List;
  * Additionally, a linear function between {@link #minDetectionAngle} and {@link #maxDetectionAngle}
  * is fitted, which makes it necessary for further vehicles to have a larger "free" angle.
  */
-public class SimpleOcclusionModifier implements PerceptionModifier {
+public class SimpleOcclusion implements PerceptionModifier {
 
     /**
      * The "free" angle required by the closest vehicle. [rad]
@@ -49,12 +49,12 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
     private final double maxDetectionAngle;
 
     /**
-     * Constructor for the {@link SimpleOcclusionModifier}.
+     * Constructor for the {@link SimpleOcclusion}.
      *
      * @param minDetectionAngle the "free" angle that will be required by closest vehicles [degree]
      * @param maxDetectionAngle the "free" angle that will be required by furthest vehicles [degree]
      */
-    public SimpleOcclusionModifier(double minDetectionAngle, double maxDetectionAngle) {
+    public SimpleOcclusion(double minDetectionAngle, double maxDetectionAngle) {
         Validate.isTrue(minDetectionAngle > 0 && maxDetectionAngle >= minDetectionAngle,
                 "Angles have to be larger than 0 and maxDetectionAngle >= minDetectionAngle.");
         this.minDetectionAngle = Math.toRadians(minDetectionAngle);
@@ -63,7 +63,7 @@ public class SimpleOcclusionModifier implements PerceptionModifier {
 
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
-        if (spatialObjects.size() == 0) {
+        if (spatialObjects.isEmpty()) {
             return spatialObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();

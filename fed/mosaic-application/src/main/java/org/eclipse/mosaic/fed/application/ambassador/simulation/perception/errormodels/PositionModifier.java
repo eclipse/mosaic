@@ -32,7 +32,7 @@ import java.util.List;
  * To calculate these, all points are transformed into a coordinate system relative to the position and
  * orientation of the ego vehicle, and after error calculation re-transformed.
  */
-public class PositionErrorModifier implements PerceptionModifier {
+public class PositionModifier implements PerceptionModifier {
     /**
      * Default standard deviation for longitudinal error. (Taken from referenced source)
      */
@@ -58,7 +58,7 @@ public class PositionErrorModifier implements PerceptionModifier {
      *
      * @param rng {@link RandomNumberGenerator} to draw gaussian variables from
      */
-    public PositionErrorModifier(RandomNumberGenerator rng) {
+    public PositionModifier(RandomNumberGenerator rng) {
         this.rng = rng;
         this.longitudinalStandardDeviation = SIGMA_LON_OFFSET;
         this.lateralStandardDeviation = SIGMA_LAT_OFFSET;
@@ -71,7 +71,7 @@ public class PositionErrorModifier implements PerceptionModifier {
      * @param longitudinalStandardDeviation sigma for longitudinal error
      * @param lateralStandardDeviation      sigma for lateral error
      */
-    public PositionErrorModifier(RandomNumberGenerator rng, double longitudinalStandardDeviation, double lateralStandardDeviation) {
+    public PositionModifier(RandomNumberGenerator rng, double longitudinalStandardDeviation, double lateralStandardDeviation) {
         this.rng = rng;
         this.longitudinalStandardDeviation = longitudinalStandardDeviation;
         this.lateralStandardDeviation = lateralStandardDeviation;
@@ -85,7 +85,7 @@ public class PositionErrorModifier implements PerceptionModifier {
         double angleToNorth = ownerDirection.angle(VectorUtils.NORTH);
         spatialObjects.forEach(
                 spatialObject -> {
-                    Vector3d relativePosition = getVectorRelativeTo(ownerPosition, spatialObject.getPosition()); // get position relative to owner
+                    Vector3d relativePosition = getVectorRelativeTo(ownerPosition, spatialObject.getPosition()); // pos relative to owner
                     Vector3d adjustedVector = new Vector3d(relativePosition);
                     adjustedVector.rotate(-angleToNorth, VectorUtils.UP); // rotate vector according to orientation
                     // add lateral and longitudinal errors
