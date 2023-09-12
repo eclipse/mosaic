@@ -15,7 +15,9 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador;
 
+import org.eclipse.mosaic.fed.mapping.ambassador.weighting.FixedOrderSelector;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
+import org.eclipse.mosaic.fed.mapping.ambassador.weighting.WeightedSelector;
 import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
@@ -71,7 +73,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
     /**
      * Cache stochastic selectors to avoid unnecessary instantiations.
      */
-    private final Map<String, StochasticSelector<CPrototype>> typeDistributionSelectors = new HashMap<>();
+    private final Map<String, WeightedSelector<CPrototype>> typeDistributionSelectors = new HashMap<>();
 
     /**
      * Constructor for the {@link MappingAmbassador}.
@@ -134,9 +136,13 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
 
             final List<CPrototype> typeDistribution = framework.getTypeDistributionByName(scenarioVehicle.getVehicleType().getName());
             if (!typeDistribution.isEmpty()) {
-                StochasticSelector<CPrototype> selector = typeDistributionSelectors.get(scenarioVehicle.getVehicleType().getName());
+                WeightedSelector<CPrototype> selector = typeDistributionSelectors.get(scenarioVehicle.getVehicleType().getName());
                 if (selector == null) {
-                    selector = new StochasticSelector<>(typeDistribution, randomNumberGenerator);
+                    if (mappingAmbassadorConfiguration.config != null && mappingAmbassadorConfiguration.config.fixedOrder) {
+                        selector = new FixedOrderSelector<>(typeDistribution, randomNumberGenerator);
+                    } else {
+                        selector = new StochasticSelector<>(typeDistribution, randomNumberGenerator);
+                    }
                     typeDistributionSelectors.put(scenarioVehicle.getVehicleType().getName(), selector);
                 }
                 final CPrototype selected  = selector.nextItem();

@@ -161,13 +161,6 @@ public class CVehicle implements Comparable<CVehicle> {
     public String typeDistribution;
 
     /**
-     * Determines if selection of a vehicles type when spawning follows a fixedOrder or stochastic model.
-     * When set to true the spawning-process will choose exactly the same types with every execution.
-     * When set to false the order of types may be different and selected weights will be reached more slowly.
-     */
-    public boolean fixedOrder = true;
-
-    /**
      * The index of the connection of the route where the vehicle will start on.
      */
     public int departConnectionIndex = 0;
@@ -228,7 +221,6 @@ public class CVehicle implements Comparable<CVehicle> {
                 .append(startingTime, that.startingTime)
                 .append(targetFlow, that.targetFlow)
                 .append(departSpeed, that.departSpeed)
-                .append(fixedOrder, that.fixedOrder)
                 .append(departConnectionIndex, that.departConnectionIndex)
                 .append(pos, that.pos)
                 .append(maxTime, that.maxTime)
@@ -260,7 +252,6 @@ public class CVehicle implements Comparable<CVehicle> {
                 .append(departSpeedMode)
                 .append(types)
                 .append(typeDistribution)
-                .append(fixedOrder)
                 .append(departConnectionIndex)
                 .append(pos)
                 .append(route)

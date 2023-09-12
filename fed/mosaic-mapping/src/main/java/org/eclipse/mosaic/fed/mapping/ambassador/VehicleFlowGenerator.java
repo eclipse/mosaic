@@ -116,7 +116,7 @@ public class VehicleFlowGenerator {
      *
      * @param vehicleConfiguration vehicle spawner configuration
      */
-    public VehicleFlowGenerator(CVehicle vehicleConfiguration, @Nonnull RandomNumberGenerator randomNumberGenerator, boolean flowNoise) {
+    public VehicleFlowGenerator(CVehicle vehicleConfiguration, @Nonnull RandomNumberGenerator randomNumberGenerator, boolean flowNoise, boolean fixedOrder) {
 
         // Enforce that types are defined
         if (vehicleConfiguration.types == null || vehicleConfiguration.types.isEmpty()) {
@@ -141,7 +141,7 @@ public class VehicleFlowGenerator {
         // create SpawningMode using given definitions
         this.spawningMode = createSpawningMode(vehicleConfiguration, randomNumberGenerator, flowNoise);
         // create the selector deciding which vehicle is spawned next
-        this.selector = createSelector(vehicleConfiguration, randomNumberGenerator);
+        this.selector = createSelector(randomNumberGenerator, fixedOrder);
         // create lane index list
         this.lanes = createLanes(vehicleConfiguration);
         // create lane selector deciding which lane the next vehicle is spawned on
@@ -268,11 +268,10 @@ public class VehicleFlowGenerator {
         return newSpawningMode;
     }
 
-    private WeightedSelector<VehicleTypeSpawner> createSelector(
-            CVehicle vehicleConfiguration, RandomNumberGenerator randomNumberGenerator) {
+    private WeightedSelector<VehicleTypeSpawner> createSelector(RandomNumberGenerator randomNumberGenerator, boolean fixedOrder) {
         if (types.size() == 1) {
             selector = () -> Iterables.getOnlyElement(types);
-        } else if (vehicleConfiguration.fixedOrder) {
+        } else if (fixedOrder) {
             selector = new FixedOrderSelector<>(types, randomNumberGenerator);
         } else {
             selector = new StochasticSelector<>(types, randomNumberGenerator);

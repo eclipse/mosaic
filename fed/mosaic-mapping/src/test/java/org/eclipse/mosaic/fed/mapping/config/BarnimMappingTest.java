@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
 import org.eclipse.mosaic.fed.mapping.config.units.CVehicle;
@@ -78,13 +77,13 @@ public class BarnimMappingTest {
         assertNull(pkw.group);
         assertNull(pkw.vehicleClass);
         assertNull(pkw.applications);
-        assertEquals(pkw.accel, new Double(2.6));
-        assertEquals(pkw.decel, new Double(4.5));
-        assertEquals(pkw.length, new Double(5.0));
-        assertEquals(pkw.maxSpeed, new Double(70.0));
-        assertEquals(pkw.minGap, new Double(2.5));
-        assertEquals(pkw.sigma, new Double(0.5));
-        assertEquals(pkw.tau, new Double(1));
+        assertEquals(pkw.accel, Double.valueOf(2.6));
+        assertEquals(pkw.decel, Double.valueOf(4.5));
+        assertEquals(pkw.length, Double.valueOf(5.0));
+        assertEquals(pkw.maxSpeed, Double.valueOf(70.0));
+        assertEquals(pkw.minGap, Double.valueOf(2.5));
+        assertEquals(pkw.sigma, Double.valueOf(0.5));
+        assertEquals(pkw.tau, Double.valueOf(1));
         assertNull(pkw.weight);
 
         // CPrototype "electricPKW"
@@ -94,13 +93,13 @@ public class BarnimMappingTest {
         assertNull(electricPKW.applications);
         assertNull(electricPKW.group);
         assertEquals(electricPKW.vehicleClass, VehicleClass.ElectricVehicle);
-        assertEquals(electricPKW.accel, new Double(2.6));
-        assertEquals(electricPKW.decel, new Double(4.5));
-        assertEquals(electricPKW.length, new Double(5.0));
-        assertEquals(electricPKW.maxSpeed, new Double(40.0));
-        assertEquals(electricPKW.minGap, new Double(2.5));
-        assertEquals(electricPKW.sigma, new Double(0.5));
-        assertEquals(electricPKW.tau, new Double(1));
+        assertEquals(electricPKW.accel, Double.valueOf(2.6));
+        assertEquals(electricPKW.decel, Double.valueOf(4.5));
+        assertEquals(electricPKW.length, Double.valueOf(5.0));
+        assertEquals(electricPKW.maxSpeed, Double.valueOf(40.0));
+        assertEquals(electricPKW.minGap, Double.valueOf(2.5));
+        assertEquals(electricPKW.sigma, Double.valueOf(0.5));
+        assertEquals(electricPKW.tau, Double.valueOf(1));
         assertNull(electricPKW.weight);
 
         // CPrototype UNNAMED ("WeatherServer")
@@ -154,10 +153,9 @@ public class BarnimMappingTest {
         assertNotEquals(vehicle, null);
         assertNull(vehicle.destination);
         assertNull(vehicle.origin);
-        assertTrue(vehicle.fixedOrder);
         assertNull(vehicle.group);
         assertNull(vehicle.lanes);
-        assertEquals(vehicle.maxNumberVehicles, new Integer(120));
+        assertEquals(vehicle.maxNumberVehicles, Integer.valueOf(120));
         assertNull(vehicle.maxTime);
         assertEquals(vehicle.pos, 0);
         assertEquals(vehicle.route, "1");
@@ -182,7 +180,7 @@ public class BarnimMappingTest {
         assertNull(CPrototype1.minGap);
         assertNull(CPrototype1.sigma);
         assertNull(CPrototype1.tau);
-        assertEquals(CPrototype1.weight, new Double(0.1));
+        assertEquals(CPrototype1.weight, Double.valueOf(0.1));
         assertNotEquals(CPrototype1.applications, null);
         assertEquals(CPrototype1.applications.size(), 2);
         assertNotEquals(CPrototype1.applications.get(0), null);
@@ -200,7 +198,7 @@ public class BarnimMappingTest {
         assertNull(CPrototype2.minGap);
         assertNull(CPrototype2.sigma);
         assertNull(CPrototype2.tau);
-        assertEquals(CPrototype2.weight, new Double(0.2));
+        assertEquals(CPrototype2.weight, Double.valueOf(0.2));
         assertNotEquals(CPrototype2.applications, null);
         assertEquals(CPrototype2.applications.size(), 2);
         assertNotEquals(CPrototype2.applications.get(0), null);
@@ -218,7 +216,7 @@ public class BarnimMappingTest {
         assertNull(CPrototype3.minGap);
         assertNull(CPrototype3.sigma);
         assertNull(CPrototype3.tau);
-        assertEquals(CPrototype3.weight, new Double(0.6));
+        assertEquals(CPrototype3.weight, Double.valueOf(0.6));
         assertNotEquals(CPrototype3.applications, null);
         assertEquals(CPrototype3.applications.size(), 1);
         assertNotEquals(CPrototype3.applications.get(0), null);
@@ -234,7 +232,7 @@ public class BarnimMappingTest {
         assertNull(CPrototype4.minGap);
         assertNull(CPrototype4.sigma);
         assertNull(CPrototype4.tau);
-        assertEquals(CPrototype4.weight, new Double(0.1));
+        assertEquals(CPrototype4.weight, Double.valueOf(0.1));
         assertNotEquals(CPrototype4.applications, null);
         assertEquals(CPrototype4.applications.size(), 1);
         assertNotEquals(CPrototype4.applications.get(0), null);
