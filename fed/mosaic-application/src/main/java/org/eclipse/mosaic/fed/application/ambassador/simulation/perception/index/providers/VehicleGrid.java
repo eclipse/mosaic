@@ -27,9 +27,7 @@ import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
 import org.eclipse.mosaic.lib.spatial.Grid;
-import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 
-import com.google.gson.annotations.JsonAdapter;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -38,9 +36,7 @@ public class VehicleGrid extends VehicleIndex {
 
     private final double cellWidth;
 
-    @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
     private final double cellHeight;
-
 
     /**
      * The Grid to be used for spatial search of {@link VehicleObject}s.

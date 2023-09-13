@@ -30,6 +30,12 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * A type adapter which creates an object of a specific type based on a hidden "type" field.
+ * An implementation of this abstract class must specify which type name translates to which target class.
+ *
+ * @param <T> the base type of which objects are created during deserialization
+ */
 public abstract class AbstractTypeTypeAdapter<T> extends TypeAdapter<T> {
 
     private final static String TYPE_FIELD = "type";
@@ -44,6 +50,11 @@ public abstract class AbstractTypeTypeAdapter<T> extends TypeAdapter<T> {
         this.gson = gson;
     }
 
+    /**
+     * By default, a missing "type" field in the input JSON string leads to an error.
+     * By calling this method any proceeding deserialization processes allow this missing field by
+     * passing {@code null} to {@link #fromTypeName} instead of throwing an exception.
+     */
     protected void allowNullType() {
         this.allowNullType = true;
     }
