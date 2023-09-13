@@ -320,7 +320,7 @@ public class SpawningFramework {
                 boolean fixedOrder = config == null || config.fixedOrder;
 
                 vehicleFlowGenerators.add(
-                        new VehicleFlowGenerator(vehicleConfiguration, rng, config != null && flowNoise, fixedOrder)
+                        new VehicleFlowGenerator(vehicleConfiguration, rng, flowNoise, fixedOrder)
                 );
             }
         }
