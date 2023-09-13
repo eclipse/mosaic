@@ -57,7 +57,6 @@ public class CApplicationAmbassadorTest {
         // ASSERT
         assertNotNull(applicationAmbassadorConfiguration);  // assert that configuration is created
         assertEquals(40 * TIME.SECOND, applicationAmbassadorConfiguration.messageCacheTime);
-        assertEquals(1500L, applicationAmbassadorConfiguration.minimalPayloadLength);
         assertTrue(applicationAmbassadorConfiguration.encodePayloads);
         assertNull(applicationAmbassadorConfiguration.navigationConfiguration);
 

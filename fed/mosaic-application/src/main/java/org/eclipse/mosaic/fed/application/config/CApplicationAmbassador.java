@@ -38,11 +38,6 @@ public class CApplicationAmbassador implements Serializable {
     public long messageCacheTime = 30 * TIME.SECOND;
 
     /**
-     * The minimal size which the payload of any ETSI message (CAM, DENM, IVIM) pay should have. Unit: [bytes].
-     */
-    public int minimalPayloadLength = 200;
-
-    /**
      * If set to {@code true}, messages (e.g. CAMs, DENMs, or SPATMs) will be encoded
      * into a byte array. If set to {@code false}, only there length is stored which
      * may help to improve performance on large-scale scenarios. default: {@code true}
