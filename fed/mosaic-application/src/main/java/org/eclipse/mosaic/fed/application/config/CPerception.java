@@ -80,7 +80,7 @@ public class CPerception {
         /**
          * Class for configuring a {@link VehicleTree} index.
          */
-        static class Tree extends CVehicleIndex {
+        private static class Tree extends CVehicleIndex {
 
             public int splitSize = 20;
             public int maxDepth = 12;
@@ -94,7 +94,7 @@ public class CPerception {
         /**
          * Class for configuring a {@link VehicleGrid} index.
          */
-        static class Grid extends CVehicleIndex {
+        private static class Grid extends CVehicleIndex {
 
             @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
             public double cellWidth = 200;
@@ -112,7 +112,7 @@ public class CPerception {
         /**
          * Class for configuring a vehicle index based on SUMO context subscriptions.
          */
-        static class Sumo extends CVehicleIndex {
+        private static class Sumo extends CVehicleIndex {
             @Override
             public VehicleIndex create() {
                 return enabled ? new SumoIndex() : null;
