@@ -312,12 +312,12 @@ public class MappingAmbassadorTest {
 
         ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
         assertVehicleRegistration(
-                "package.appA"
+                "package.appB"
         );
 
         ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
         assertVehicleRegistration(
-                "package.appB"
+                "package.appA"
         );
     }
 
