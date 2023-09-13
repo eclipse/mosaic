@@ -17,11 +17,11 @@ package org.eclipse.mosaic.test;
 
 import org.junit.BeforeClass;
 
-public class PerceptionModuleMapIndexesIT extends AbstractPerceptionModuleIT {
+public class PerceptionModuleIT extends AbstractPerceptionModuleIT {
 
     @BeforeClass
     public static void runSimulation() {
-        simulationRule.federateConfigurationManipulator("application", (conf) -> conf.configuration = "application_config_trivial.json");
+        simulationRule.federateConfigurationManipulator("application", (conf) -> conf.configuration = "application_config_default.json");
         simulationResult = simulationRule.executeTestScenario("perception-module");
     }
 }

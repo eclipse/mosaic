@@ -28,7 +28,6 @@ import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.spatial.BoundingBox;
 import org.eclipse.mosaic.lib.spatial.QuadTree;
 
-import com.google.gson.annotations.Expose;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -40,22 +39,23 @@ import java.util.List;
 public class VehicleTree extends VehicleIndex {
     /**
      * The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.
-     * Filled by gson.
      */
-    @Expose()
-    public int splitSize = 20;
+    private final int splitSize;
 
     /**
      * Maximum depth of the quad tree.
-     * Filled by gson.
      */
-    @Expose()
-    public int maxDepth = 12;
+    private final int maxDepth;
 
     /**
      * The Quad-Tree to be used for spatial search of {@link VehicleObject}s.
      */
     private QuadTree<VehicleObject> vehicleTree;
+
+    public VehicleTree(int splitSize, int maxDepth) {
+        this.splitSize = splitSize;
+        this.maxDepth = maxDepth;
+    }
 
     /**
      * Configures a QuadTree as spatial index for vehicles on first use.

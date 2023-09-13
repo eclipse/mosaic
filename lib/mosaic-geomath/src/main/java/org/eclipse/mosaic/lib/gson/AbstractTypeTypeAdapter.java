@@ -30,16 +30,22 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Map;
 
-public abstract class AbstractTypeAdapterFactory<T> extends TypeAdapter<T> {
+public abstract class AbstractTypeTypeAdapter<T> extends TypeAdapter<T> {
 
     private final static String TYPE_FIELD = "type";
 
     private final Gson gson;
     private final TypeAdapterFactory parentFactory;
 
-    protected AbstractTypeAdapterFactory(TypeAdapterFactory parentFactory, Gson gson) {
+    private boolean allowNullType = false;
+
+    protected AbstractTypeTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
         this.parentFactory = parentFactory;
         this.gson = gson;
+    }
+
+    protected void allowNullType() {
+        this.allowNullType = true;
     }
 
     /**
@@ -62,10 +68,15 @@ public abstract class AbstractTypeAdapterFactory<T> extends TypeAdapter<T> {
     public T read(JsonReader in) {
         JsonElement jsonElement = Streams.parse(in);
         JsonElement typeJsonElement = jsonElement.getAsJsonObject().remove(TYPE_FIELD);
-        if (typeJsonElement == null) {
+
+        final String typeName;
+        if (typeJsonElement != null) {
+            typeName = typeJsonElement.getAsString();
+        } else if (allowNullType) {
+            typeName = null;
+        } else {
             throw new JsonParseException("cannot deserialize because it does not define a field named " + TYPE_FIELD);
         }
-        String typeName = typeJsonElement.getAsString();
 
         @SuppressWarnings("unchecked")
         TypeAdapter<T> delegate = (TypeAdapter<T>) gson.getDelegateAdapter(parentFactory, TypeToken.get(fromTypeName(typeName)));

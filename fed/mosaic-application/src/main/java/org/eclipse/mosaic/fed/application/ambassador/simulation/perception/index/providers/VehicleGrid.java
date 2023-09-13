@@ -36,16 +36,21 @@ import java.util.List;
 
 public class VehicleGrid extends VehicleIndex {
 
-    @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
-    public double cellWidth = 200;
+    private final double cellWidth;
 
     @JsonAdapter(UnitFieldAdapter.DistanceMeters.class)
-    public double cellHeight = 200;
+    private final double cellHeight;
+
 
     /**
      * The Grid to be used for spatial search of {@link VehicleObject}s.
      */
     private Grid<VehicleObject> vehicleGrid;
+
+    public VehicleGrid(double cellWidth, double cellHeight) {
+        this.cellWidth = cellWidth;
+        this.cellHeight = cellHeight;
+    }
 
     /**
      * Configures a grid as a spatial index for vehicles.

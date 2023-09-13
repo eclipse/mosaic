@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
@@ -80,7 +81,7 @@ public class NavigationModuleTest {
 
     @InjectMocks
     @Rule
-    public SimulationKernelRule kernelRule = new SimulationKernelRule(eventMngMock, null, cncMock, null);
+    public SimulationKernelRule kernelRule = new SimulationKernelRule(eventMngMock, null, cncMock, mock(CentralPerceptionComponent.class));
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
@@ -111,6 +112,8 @@ public class NavigationModuleTest {
         routeMap.put("123", new VehicleRoute("123", Collections.singletonList("edgeID"), Collections.singletonList("nodeID"), 0.0));
         when(cncMock.getRouteMap()).thenReturn(routeMap);
         when(cncMock.getTargetPositionOfRoute(ArgumentMatchers.anyString())).thenReturn(GeoPoint.latLon(30, 40));
+
+
     }
 
     @Test
