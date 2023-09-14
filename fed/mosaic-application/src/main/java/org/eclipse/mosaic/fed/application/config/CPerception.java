@@ -33,11 +33,13 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
+
 /**
  * Configuration for the perception backend used in the ApplicationSimulator
  * to determine surrounding vehicles, traffic lights, and buildings.
  */
-public class CPerception {
+public class CPerception implements Serializable {
 
     /**
      * Backend for the spatial index providing vehicle information.
@@ -65,7 +67,7 @@ public class CPerception {
      * JSON deserialization chooses from Tree, Grid, or SUMO configuration. Possible type values are: "tree", "grid", "sumo"
      */
     @JsonAdapter(CVehicleIndexTypeAdapterFactory.class)
-    public static abstract class CVehicleIndex {
+    public static abstract class CVehicleIndex implements Serializable {
 
         /**
          * Defines if the vehicle index is enabled. Default: false
@@ -113,6 +115,7 @@ public class CPerception {
          * Class for configuring a vehicle index based on SUMO context subscriptions.
          */
         private static class Sumo extends CVehicleIndex {
+
             @Override
             public VehicleIndex create() {
                 return enabled ? new SumoIndex() : null;
@@ -120,7 +123,7 @@ public class CPerception {
         }
     }
 
-    public static class CTrafficLightIndex {
+    public static class CTrafficLightIndex implements Serializable {
 
         /**
          * Defines if the traffic index is enabled. Default: false
@@ -133,7 +136,7 @@ public class CPerception {
         }
     }
 
-    public static class CWallIndex {
+    public static class CWallIndex implements Serializable {
 
         /**
          * Defines if the wall index is enabled. Default: false
