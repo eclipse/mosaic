@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -28,7 +29,9 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DimensionsModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceFilter;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.HeadingModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusion;
@@ -171,6 +174,55 @@ public class PerceptionModifierTest {
             printBoundingBoxes(perceivedVehicles);
         }
         assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
+    }
+
+    @Test
+    public void testHeadingModifier() {
+        HeadingModifier headingModifier = new HeadingModifier(rng, 10, 0);
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(headingModifier).build()
+        );
+
+        // RUN
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        if (PRINT_POSITIONS) {
+            printBoundingBoxes(perceivedVehicles);
+        }
+        assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
+
+        // ASSERT if headings differ from ground truth
+        for (VehicleObject realVehicle : getAllVehicles()) {
+            for (VehicleObject perceivedVehicle: perceivedVehicles) {
+                if (realVehicle.getId().equals(perceivedVehicle.getId())) {
+                    assertNotEquals(realVehicle.getHeading(), perceivedVehicle.getHeading(), 0.0001);
+                    // when adjusting heading the position should change too, since it currently points to the front bumper of the vehicle
+                    assertNotEquals(realVehicle.getPosition(), perceivedVehicle.getPosition());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDimensionsModifier() {
+        DimensionsModifier dimensionsModifier = new DimensionsModifier(rng, 0.0, 0.0, 1.0);
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(dimensionsModifier).build()
+        );
+
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        if (PRINT_POSITIONS) {
+            printBoundingBoxes(perceivedVehicles);
+        }
+        assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
+
+        // ASSERT if headings differ from ground truth
+        for (VehicleObject realVehicle : getAllVehicles()) {
+            for (VehicleObject perceivedVehicle: perceivedVehicles) {
+                if (realVehicle.getId().equals(perceivedVehicle.getId())) {
+                    assertNotEquals(realVehicle.getLength(), perceivedVehicle.getLength(), 0.0001);;
+                }
+            }
+        }
     }
 
     @Test
