@@ -88,28 +88,28 @@
         <version.commons-configuration2>2.5</version.commons-configuration2><!-- 2.5 is approved in CQ21803 -->
         <version.commons-io>2.6</version.commons-io><!-- 2.6 is approved in CQ16712 -->
         <version.commons-jxpath>1.3</version.commons-jxpath><!-- 1.3 is approved in CQ10790 -->
-        <version.commons-lang3>3.9</version.commons-lang3><!-- 3.9 is approved in CQ21762 -->
+        <version.commons-lang3>3.13.0</version.commons-lang3><!-- 3.9 is approved in #9820 -->
         <version.commons-logging>1.2</version.commons-logging><!-- 1.2 is approved in CQ10162 -->
         <version.commons-math3>3.6.1</version.commons-math3><!-- 3.6.1 is approved in CQ22025 -->
         <version.commons-text>1.6</version.commons-text><!-- 1.6 is approved in CQ19028 -->
         <version.findbugs-annotations>1.3.9-1</version.findbugs-annotations><!-- 1.3.9-1 is approved in CQ15081 -->
         <version.graphhopper>0.13.0</version.graphhopper><!-- 0.13.0 is approved in CQ22337 (api) and CQ22338 (core) -->
-        <version.gson>2.8.6</version.gson><!-- 2.8.6 is approved in CQ21635 -->
-        <version.guava>28.2-jre</version.guava><!-- 28.2-jre is approved in CQ21952 -->
+        <version.gson>2.10.1</version.gson><!-- 2.10.1 is approved in #6159 -->
+        <version.guava>32.1.1-jre</version.guava><!-- 28.2-jre is approved in #9229 -->
         <version.hppc>0.8.1</version.hppc><!-- 0.8.1 is approved in CQ22339 -->
         <version.jackson-xml>2.9.9</version.jackson-xml><!-- 2.9.9 is approved in CQ20701 -->
         <version.java-websocket>1.3.9</version.java-websocket><!-- 1.3.9 is approved in CQ19134 -->
         <version.janino>2.7.5</version.janino><!-- 2.7.5 is approved in CQ10307 -->
         <version.johnzon-core>1.1.13</version.johnzon-core><!-- 1.1.13 is approved in CQ22342 -->
         <version.jsch>0.1.51</version.jsch><!-- 0.1.51 is approved in CQ8378 -->
-        <version.junit>4.13</version.junit><!-- 4.13 is approved in CQ21439 -->
+        <version.junit>4.13.2</version.junit><!-- 4.13 is approved in CQ21439 -->
         <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
-        <version.logback>1.2.3</version.logback><!-- 1.2.3 is approved in CQ16622 -->
+        <version.logback>1.3.8</version.logback><!-- 1.3.8 is approved in #9459 -->
         <version.mockito>3.12.4</version.mockito><!-- approval not required, we do not ship this library -->
         <version.protobuf>3.8.0</version.protobuf><!-- 3.8.0 is approved in CQ20405 -->
-        <version.slf4j>1.7.30</version.slf4j><!-- 1.7.30 is approved in CQ21339 -->
-        <version.sqlite-jdbc>3.20.0</version.sqlite-jdbc><!-- 3.20.0 is approved in CQ14652 -->
-        <version.stax2-api>4.1</version.stax2-api><!-- 4.1 is approved in CQ17826 -->
+        <version.slf4j>2.0.9</version.slf4j><!-- 2.0.9 is approved #10372 -->
+        <version.sqlite-jdbc>3.42.0.0</version.sqlite-jdbc><!-- 3.42.0.0 is approved in #9089 -->
+        <version.stax2-api>4.2.1</version.stax2-api><!-- 4.1 is approved in #2670 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
         <!-- note, when upgrading, the field LibSumoAmbassador#VALID_LIBSUMO_VERSIONS needs to be changed too -->
         <version.libsumo>1.17.0</version.libsumo>
@@ -535,7 +535,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.10</version>
+                <configuration>
+                    <skip>${skip.coverage}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -568,28 +571,6 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.6</version>
-                    <configuration>
-                        <skip>${skip.coverage}</skip>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>report</id>
-                            <phase>prepare-package</phase>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
         </plugins>
     </build>
 
@@ -669,7 +650,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
-                        <version>1.20</version>
+                        <version>2.1.0</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>
@@ -706,7 +687,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
-                        <version>1.20</version>
+                        <version>2.1.0</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>
