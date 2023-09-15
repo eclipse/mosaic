@@ -372,7 +372,7 @@ public enum UnitSimulator implements EventProcessor {
         // if traffic light index is enabled, we need traffic light state information for all traffic lights via subscriptions
         boolean isTrafficLightIndexEnabled = SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndex != null &&
                 SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.trafficLightIndex.enabled;
-        if (!trafficLightRegistration.getMapping().hasApplication() &&  !isTrafficLightIndexEnabled) {
+        if (!trafficLightRegistration.getMapping().hasApplication() && !isTrafficLightIndexEnabled) {
             return;
         }
 

@@ -18,36 +18,43 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.math.VectorUtils;
 
 import java.util.List;
 
+/**
+ * Adjusts the dimensions of perceived {@link VehicleObject}s. Since the position
+ * of vehicles is assumed to refer to their front bumper instead of bounding box center,
+ * their position is adjusted accordingly when the length of the vehicle was changed.
+ */
 public class DimensionsModifier implements PerceptionModifier {
 
     private static final double SIGMA_WIDTH_OFFSET = 0.2; // given in m
     private static final double SIGMA_HEIGHT_OFFSET = 0.2; // given in m
     private static final double SIGMA_LENGTH_OFFSET = 0.5; // given in m
 
-    private final double heightOffset;
-    private final double widthOffset;
-    private final double lengthOffset;
+    private final double heightDeviation;
+    private final double widthDeviation;
+    private final double lengthDeviation;
 
     private final RandomNumberGenerator rng;
 
 
-    public DimensionsModifier(RandomNumberGenerator rng, double heightOffset, double widthOffset, double lengthOffset) {
+    public DimensionsModifier(RandomNumberGenerator rng, double heightDeviation, double widthDeviation, double lengthDeviation) {
         this.rng = rng;
-        this.heightOffset = heightOffset;
-        this.widthOffset = widthOffset;
-        this.lengthOffset = lengthOffset;
+        this.heightDeviation = heightDeviation;
+        this.widthDeviation = widthDeviation;
+        this.lengthDeviation = lengthDeviation;
     }
 
     public DimensionsModifier(RandomNumberGenerator rng) {
         this.rng = rng;
-        this.heightOffset = SIGMA_HEIGHT_OFFSET;
-        this.widthOffset = SIGMA_WIDTH_OFFSET;
-        this.lengthOffset = SIGMA_LENGTH_OFFSET;
+        this.heightDeviation = SIGMA_HEIGHT_OFFSET;
+        this.widthDeviation = SIGMA_WIDTH_OFFSET;
+        this.lengthDeviation = SIGMA_LENGTH_OFFSET;
     }
 
     @Override
@@ -62,10 +69,29 @@ public class DimensionsModifier implements PerceptionModifier {
     }
 
     private void adjustDimensionsOfVehicle(VehicleObject vehicleObject) {
+
+        double oldLength = vehicleObject.getLength();
+
         vehicleObject.setDimensions(
-                Math.abs(rng.nextGaussian(vehicleObject.getLength(), lengthOffset)),
-                Math.abs(rng.nextGaussian(vehicleObject.getHeight(), heightOffset)),
-                Math.abs(rng.nextGaussian(vehicleObject.getWidth(), widthOffset))
+                Math.abs(rng.nextGaussian(vehicleObject.getLength(), lengthDeviation)),
+                Math.abs(rng.nextGaussian(vehicleObject.getWidth(), widthDeviation)),
+                Math.abs(rng.nextGaussian(vehicleObject.getHeight(), heightDeviation))
+        );
+
+        double newLength = vehicleObject.getLength();
+
+        if (MathUtils.isFuzzyEqual(newLength, oldLength)) {
+            return;
+        }
+
+        // move position of vehicle based on length difference since vehicle position is assumed to refer to front bumper and we want to
+        // squeeze the length around bounding box center
+        Vector3d direction = VectorUtils.getDirectionVectorFromHeading(vehicleObject.getHeading(), new Vector3d())
+                .multiply((newLength - oldLength) / 2);
+        vehicleObject.setPosition(
+                vehicleObject.getPosition().x + direction.x,
+                vehicleObject.getPosition().y + direction.y,
+                vehicleObject.getPosition().z + direction.z
         );
     }
 

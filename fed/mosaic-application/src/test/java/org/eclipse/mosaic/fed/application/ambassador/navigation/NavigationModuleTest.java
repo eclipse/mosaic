@@ -98,7 +98,6 @@ public class NavigationModuleTest {
         navigationModule = Mockito.spy(new NavigationModule(vehicle));
         navigationModule.setVehicleData(vehicleDataMock);
 
-
         when(vehicleDataMock.getHeading()).thenReturn(45.0d);
         when(vehicleDataMock.getPosition()).thenReturn(GeoPoint.latLon(10, 10));
         when(vehicleDataMock.getRoadPosition()).thenReturn(mock(IRoadPosition.class));
@@ -112,8 +111,6 @@ public class NavigationModuleTest {
         routeMap.put("123", new VehicleRoute("123", Collections.singletonList("edgeID"), Collections.singletonList("nodeID"), 0.0));
         when(cncMock.getRouteMap()).thenReturn(routeMap);
         when(cncMock.getTargetPositionOfRoute(ArgumentMatchers.anyString())).thenReturn(GeoPoint.latLon(30, 40));
-
-
     }
 
     @Test

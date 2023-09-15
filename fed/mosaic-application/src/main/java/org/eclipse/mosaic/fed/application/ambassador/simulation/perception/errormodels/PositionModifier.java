@@ -33,6 +33,7 @@ import java.util.List;
  * orientation of the ego vehicle, and after error calculation re-transformed.
  */
 public class PositionModifier implements PerceptionModifier {
+
     /**
      * Default standard deviation for longitudinal error. (Taken from referenced source)
      */
@@ -42,10 +43,12 @@ public class PositionModifier implements PerceptionModifier {
      * Default standard deviation for lateral error. (Taken from referenced source)
      */
     private static final double SIGMA_LAT_OFFSET = 0.390; // [m]
+
     /**
      * Standard deviation for longitudinal error.
      */
     private final double longitudinalStandardDeviation;
+
     /**
      * Standard deviation for lateral error.
      */

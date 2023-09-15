@@ -18,13 +18,20 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
+import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.List;
 
-
+/**
+ * Adjusts the heading of perceived {@link VehicleObject}s. Since the position
+ * of vehicles is assumed to refer to their front bumper and instead bounding box center,
+ * their position is adjusted accordingly when the heading of the vehicle was changed.
+ */
 public class HeadingModifier implements PerceptionModifier {
 
     /**
@@ -53,6 +60,9 @@ public class HeadingModifier implements PerceptionModifier {
     }
 
     public HeadingModifier(RandomNumberGenerator rng, double headingStandardDeviation, double chanceOfWrongDirection) {
+        Validate.inclusiveBetween(0, 360, headingStandardDeviation, "Heading deviation should lie between 0 and 360");
+        Validate.inclusiveBetween(0, 1, chanceOfWrongDirection, "Wrong direction probability should lie between 0 and 1");
+
         this.rng = rng;
         this.headingStandardDeviation = headingStandardDeviation;
         this.chanceOfWrongDirection = chanceOfWrongDirection;
@@ -74,11 +84,18 @@ public class HeadingModifier implements PerceptionModifier {
         double oldHeading = vehicleObject.getHeading();
 
         if (rng.nextDouble() < chanceOfWrongDirection) {
-            vehicleObject.setHeading(rotatedVehicleHeading(vehicleObject.getHeading()));
+            vehicleObject.setHeading((vehicleObject.getHeading() + 180) % 360);
         }
         vehicleObject.setHeading(rng.nextGaussian(vehicleObject.getHeading(), headingStandardDeviation) % 360);
 
         double newHeading = vehicleObject.getHeading();
+
+        if (MathUtils.isFuzzyEqual(oldHeading, newHeading)) {
+            return;
+        }
+
+        // move position of vehicle based on heading diff since vehicle position is assumed to refer to front bumper and we want to
+        // rotate around bounding box center
 
         Vector3d oldHeadingVector = VectorUtils.getDirectionVectorFromHeading(oldHeading, new Vector3d());
         Vector3d newHeadingVector = VectorUtils.getDirectionVectorFromHeading(newHeading, new Vector3d());
