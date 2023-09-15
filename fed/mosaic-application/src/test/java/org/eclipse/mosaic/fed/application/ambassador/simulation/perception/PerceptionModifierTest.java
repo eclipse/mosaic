@@ -204,7 +204,7 @@ public class PerceptionModifierTest {
 
     @Test
     public void testDimensionsModifier() {
-        DimensionsModifier dimensionsModifier = new DimensionsModifier(rng, 0.0, 0.0, 1.0);
+         DimensionsModifier dimensionsModifier = new DimensionsModifier(rng, 1.0, 0.0, 0.0);
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(dimensionsModifier).build()
         );
@@ -219,7 +219,9 @@ public class PerceptionModifierTest {
         for (VehicleObject realVehicle : getAllVehicles()) {
             for (VehicleObject perceivedVehicle: perceivedVehicles) {
                 if (realVehicle.getId().equals(perceivedVehicle.getId())) {
-                    assertNotEquals(realVehicle.getLength(), perceivedVehicle.getLength(), 0.0001);;
+                    assertNotEquals(realVehicle.getLength(), perceivedVehicle.getLength(), 0.0001);
+                    // when adjusting length the position should change too, since it currently points to the front bumper of the vehicle
+                    assertNotEquals(realVehicle.getPosition(), perceivedVehicle.getPosition());
                 }
             }
         }

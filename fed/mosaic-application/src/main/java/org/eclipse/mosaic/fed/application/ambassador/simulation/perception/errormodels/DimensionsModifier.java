@@ -43,18 +43,18 @@ public class DimensionsModifier implements PerceptionModifier {
     private final RandomNumberGenerator rng;
 
 
-    public DimensionsModifier(RandomNumberGenerator rng, double heightDeviation, double widthDeviation, double lengthDeviation) {
+    public DimensionsModifier(RandomNumberGenerator rng,  double lengthDeviation, double widthDeviation, double heightDeviation) {
         this.rng = rng;
-        this.heightDeviation = heightDeviation;
-        this.widthDeviation = widthDeviation;
         this.lengthDeviation = lengthDeviation;
+        this.widthDeviation = widthDeviation;
+        this.heightDeviation = heightDeviation;
     }
 
     public DimensionsModifier(RandomNumberGenerator rng) {
         this.rng = rng;
-        this.heightDeviation = SIGMA_HEIGHT_OFFSET;
-        this.widthDeviation = SIGMA_WIDTH_OFFSET;
         this.lengthDeviation = SIGMA_LENGTH_OFFSET;
+        this.widthDeviation = SIGMA_WIDTH_OFFSET;
+        this.heightDeviation = SIGMA_HEIGHT_OFFSET;
     }
 
     @Override
