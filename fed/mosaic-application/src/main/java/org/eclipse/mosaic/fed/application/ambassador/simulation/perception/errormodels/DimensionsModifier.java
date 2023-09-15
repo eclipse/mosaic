@@ -59,12 +59,9 @@ public class DimensionsModifier implements PerceptionModifier {
 
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
-        final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
-
         spatialObjects.stream()
                 .filter(o -> o instanceof VehicleObject)
                 .forEach(o -> adjustDimensionsOfVehicle((VehicleObject) o));
-
         return spatialObjects;
     }
 
