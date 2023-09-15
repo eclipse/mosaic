@@ -24,7 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallTree;
 import org.eclipse.mosaic.lib.geo.GeoRectangle;
-import org.eclipse.mosaic.lib.gson.AbstractTypeTypeAdapter;
+import org.eclipse.mosaic.lib.gson.TypeFieldTypeAdapter;
 import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 
 import com.google.gson.Gson;
@@ -151,7 +151,7 @@ public class CPerception implements Serializable {
 
     static class CVehicleIndexTypeAdapterFactory implements TypeAdapterFactory {
 
-        static class CVehicleIndexTypeAdapter extends AbstractTypeTypeAdapter<CVehicleIndex> {
+        static class CVehicleIndexTypeAdapter extends TypeFieldTypeAdapter<CVehicleIndex> {
 
             protected CVehicleIndexTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
                 super(parentFactory, gson);

@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @param <T> the base type of which objects are created during deserialization
  */
-public abstract class AbstractTypeTypeAdapter<T> extends TypeAdapter<T> {
+public abstract class TypeFieldTypeAdapter<T> extends TypeAdapter<T> {
 
     private final static String TYPE_FIELD = "type";
 
@@ -45,7 +45,7 @@ public abstract class AbstractTypeTypeAdapter<T> extends TypeAdapter<T> {
 
     private boolean allowNullType = false;
 
-    protected AbstractTypeTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
+    protected TypeFieldTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
         this.parentFactory = parentFactory;
         this.gson = gson;
     }

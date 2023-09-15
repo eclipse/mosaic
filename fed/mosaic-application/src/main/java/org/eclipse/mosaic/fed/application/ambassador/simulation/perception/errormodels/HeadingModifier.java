@@ -96,7 +96,6 @@ public class HeadingModifier implements PerceptionModifier {
 
         // move position of vehicle based on heading diff since vehicle position is assumed to refer to front bumper and we want to
         // rotate around bounding box center
-
         Vector3d oldHeadingVector = VectorUtils.getDirectionVectorFromHeading(oldHeading, new Vector3d());
         Vector3d newHeadingVector = VectorUtils.getDirectionVectorFromHeading(newHeading, new Vector3d());
 
@@ -104,9 +103,5 @@ public class HeadingModifier implements PerceptionModifier {
                 .subtract(oldHeadingVector.multiply(vehicleObject.getLength() / 2))
                 .add(newHeadingVector.multiply(vehicleObject.getLength() / 2));
         vehicleObject.setPosition(newPosition.x, newPosition.y, newPosition.z);
-    }
-
-    private static double rotatedVehicleHeading(double heading) {
-        return (heading + 180.0) % 360.0;
     }
 }
