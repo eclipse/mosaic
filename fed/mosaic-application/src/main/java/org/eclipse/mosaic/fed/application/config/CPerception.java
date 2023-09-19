@@ -72,7 +72,7 @@ public class CPerception implements Serializable {
         /**
          * Defines if the vehicle index is enabled. Default: false
          */
-        public boolean enabled = false;
+        public boolean enabled = true;
 
         /**
          * Creates the specific {@link VehicleIndex} instance based on the present configuration.
