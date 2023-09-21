@@ -36,7 +36,7 @@ public class CMappingConfiguration {
      * When set to true the spawning-process will choose exactly the same types with every execution.
      * When set to false the order of types may be different and selected weights will be reached more slowly.
      */
-    public boolean fixedOrder = true;
+    public boolean fixedOrder = false;
 
     /**
      * Defines the point in time to start spawning vehicles. If not set (default),

@@ -80,9 +80,9 @@
                     "default": 1.0
                 },
                 "fixedOrder": {
-                    "description": "Determines if selection of a vehicles type when spawning follows a fixedOrder or stochastic model. When set to true the spawning-process will choose exactly the same types with every execution. When set to false the order of types may be different and selected weights will be reached more slowly.",
+                    "description": "Determines if selection of a vehicles type when spawning follows a fixedOrder or stochastic model. When set to true the spawning-process will choose exactly the same types with every execution. When set to false (default) the order of types follow a stochastic manner and will be different each time, however, selected weights may be reached more slowly.",
                     "type": "boolean",
-                    "default": true
+                    "default": false
                 },
                 "adjustStartingTimes": {
                     "description": "If set to true and if the parameter start is set, the starting times of each spawner is adjusted accordingly, so that we shouldn't wait in case that the simulation starting time and spawner starting time are widely spread out. All spawners before start will be completely ignored then.",
