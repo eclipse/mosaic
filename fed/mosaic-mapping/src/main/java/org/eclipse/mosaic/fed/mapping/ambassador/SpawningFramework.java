@@ -208,7 +208,7 @@ public class SpawningFramework {
         }
 
         boolean flowNoise = mappingConfiguration.config != null && mappingConfiguration.config.randomizeFlows;
-        boolean fixedOrder = mappingConfiguration.config == null || mappingConfiguration.config.fixedOrder;
+        boolean fixedOrder = mappingConfiguration.config != null && mappingConfiguration.config.fixedOrder;
         for (OriginDestinationVehicleFlowGenerator mapper : matrices) {
             mapper.generateVehicleStreams(this, rng, flowNoise, fixedOrder);
         }
@@ -317,7 +317,7 @@ public class SpawningFramework {
 
             if (vehicleConfiguration.startingTime >= 0) {
                 boolean flowNoise = config != null && config.randomizeFlows;
-                boolean fixedOrder = config == null || config.fixedOrder;
+                boolean fixedOrder = config != null && config.fixedOrder;
 
                 vehicleFlowGenerators.add(
                         new VehicleFlowGenerator(vehicleConfiguration, rng, flowNoise, fixedOrder)
