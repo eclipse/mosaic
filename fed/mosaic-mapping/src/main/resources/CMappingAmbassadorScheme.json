@@ -403,11 +403,6 @@
                     "type": "array",
                     "items": { "$ref": "#/definitions/prototype" }
                 },
-                "fixedOrder": {
-                    "description": "If fixedOrder is true the spawning-process will be exactly the same with every execution. If left false the order is different and the selected weights will be reached slower than in the fixedOrder mode.",
-                    "type": "boolean",
-                    "default": true
-                },
                 "odValues": {
                     "description": "Values for the OD-matrix. Unit should be vehicles/hour.",
                     "type": "array",
