@@ -79,7 +79,7 @@ public class MappingAmbassadorTest {
         assertEquals(5 * TIME.SECOND, lastTimeAdvanceGrant);
 
         ambassador.advanceTime(lastTimeAdvanceGrant);
-        assertVehicleRegistration();
+        assertVehicleRegistration("org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp");
 
         assertEquals(8 * TIME.SECOND, lastTimeAdvanceGrant);
 
@@ -312,12 +312,12 @@ public class MappingAmbassadorTest {
 
         ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
         assertVehicleRegistration(
-                "package.appB"
+                "package.appA"
         );
 
         ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("myCarDistribution")));
         assertVehicleRegistration(
-                "package.appA"
+                "package.appB"
         );
     }
 
