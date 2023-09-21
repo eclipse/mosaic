@@ -15,15 +15,12 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.weighting;
 
-import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
-
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
 /**
  * Helper class allowing the random and pseudo-random selection of multiple
@@ -32,8 +29,6 @@ import javax.annotation.Nonnull;
  * @param <T> The type of the object to be returned
  */
 public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<T> {
-
-    private final RandomNumberGenerator randomNumberGenerator;
     private List<Item<T>> items;
 
     private static class Item<T extends Weighted> implements Weighted {
@@ -67,15 +62,13 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
      * Constructor for {@link FixedOrderSelector}.
      *
      * @param objects       list of all types that might be selected from
-     * @param randGenerator random number generator to select the first item
      */
-    public FixedOrderSelector(List<T> objects, @Nonnull RandomNumberGenerator randGenerator) {
+    public FixedOrderSelector(List<T> objects) {
         Validate.notNull(objects, "Illegal constructor call for WeightedSelector: objects is null.");
         Validate.isTrue(!objects.isEmpty(), "Illegal constructor call for WeightedSelector: objects is empty!");
 
         // init with base values
         this.items = new ArrayList<>(objects.size());
-        this.randomNumberGenerator = randGenerator;
 
         // map all objects to an item so they can be weighted
         this.items = objects.stream().map((o) -> {
@@ -85,23 +78,6 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
             item.priority = objects.size();
             return item;
         }).collect(Collectors.toList());
-    }
-
-    /**
-     * This method actually initializes the Selector, called
-     * on first selection (first call of {@link #nextItem()}.
-     *
-     * @return the selector deciding which element is selected first
-     */
-    private StochasticSelector<Item<T>> init() {
-        // initialize weights with base values
-        double sumWeights = items.stream().mapToDouble((item) -> item.object.getWeight()).sum();
-        // set normalized weights, if no weights have been set, apply same weight to all items
-        items.forEach((item) -> item.normalizedWeight = sumWeights > 0 ? (item.object.getWeight() / sumWeights) : (1d / items.size()));
-
-        items = items.stream().filter(item -> item.getWeight() > 0).collect(Collectors.toList());
-
-        return new StochasticSelector<>(items, randomNumberGenerator);
     }
 
     /**
@@ -115,18 +91,11 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
     public T nextItem() {
 
         Item<T> selectedItem;
-
         if (totalSelections == 0) {
-            StochasticSelector<Item<T>> firstItemSelector = init();
-            selectedItem = firstItemSelector.nextItem();
+            items = normalizeWeights(items);
+            selectedItem = selectFirstItem();
         } else {
-            Comparator<Item<T>> compareBySelectionToWeightRatio =
-                    Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight());
-            Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
-            // choose item which has been selected the least according to its weight
-            selectedItem = items.stream()
-                    .min(compareBySelectionToWeightRatio.thenComparing(compareByPriority))
-                    .orElse(null);
+            selectedItem = selectNextItem();
         }
 
         if (selectedItem == null) {
@@ -142,5 +111,34 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
         selectedItem.selections++;
         totalSelections++;
         return selectedItem.object;
+    }
+
+    /**
+     * Normalizes the weights of all items to sum 1.
+     */
+    private List<Item<T>> normalizeWeights(List<Item<T>> items) {
+        // initialize weights with base values
+        double sumWeights = items.stream().mapToDouble((item) -> item.object.getWeight()).sum();
+        // set normalized weights, if no weights have been set, apply same weight to all items
+        items.forEach((item) -> item.normalizedWeight = sumWeights > 0 ? (item.object.getWeight() / sumWeights) : (1d / items.size()));
+
+        return items.stream().filter(item -> item.getWeight() > 0).collect(Collectors.toList());
+    }
+
+    private Item<T> selectFirstItem() {
+        Comparator<Item<T>> compareByWeight =Comparator.comparingDouble(Item::getWeight);
+        Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
+        // choose first item according to weight. if two or items have the same weight, the first item in the list will be chosen
+        return items.stream().max(compareByWeight.thenComparing(compareByPriority)).orElse(null);
+    }
+
+    private Item<T> selectNextItem() {
+        Comparator<Item<T>> compareBySelectionToWeightRatio =
+                Comparator.comparingDouble((item) -> (item.selections / (double) totalSelections) - item.getWeight());
+        Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
+        // choose item which has been selected the least according to its weight
+        return items.stream()
+                .min(compareBySelectionToWeightRatio.thenComparing(compareByPriority))
+                .orElse(null);
     }
 }

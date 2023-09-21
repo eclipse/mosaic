@@ -79,12 +79,12 @@ public class MappingAmbassadorTest {
         assertEquals(5 * TIME.SECOND, lastTimeAdvanceGrant);
 
         ambassador.advanceTime(lastTimeAdvanceGrant);
-        assertVehicleRegistration("org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp");
+        assertVehicleRegistration();
 
         assertEquals(8 * TIME.SECOND, lastTimeAdvanceGrant);
 
         ambassador.advanceTime(lastTimeAdvanceGrant);
-        assertVehicleRegistration();
+        assertVehicleRegistration("org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp");
 
         assertEquals(11 * TIME.SECOND, lastTimeAdvanceGrant);
 
@@ -197,13 +197,13 @@ public class MappingAmbassadorTest {
         assertVehicleRegistration("Car2App");
 
         ambassador.advanceTime(17 * TIME.SECOND);
-        assertVehicleRegistration("Car2App");
-
-        ambassador.advanceTime(20 * TIME.SECOND);
         assertVehicleRegistration("Car1App");
 
-        ambassador.advanceTime(23 * TIME.SECOND);
+        ambassador.advanceTime(20 * TIME.SECOND);
         assertVehicleRegistration("Car2App");
+
+        ambassador.advanceTime(23 * TIME.SECOND);
+        assertVehicleRegistration("Car1App");
 
         ambassador.advanceTime(26 * TIME.SECOND);
         assertNull(lastReceivedInteraction);

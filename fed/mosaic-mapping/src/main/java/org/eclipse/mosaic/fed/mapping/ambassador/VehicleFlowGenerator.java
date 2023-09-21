@@ -272,7 +272,7 @@ public class VehicleFlowGenerator {
         if (types.size() == 1) {
             selector = () -> Iterables.getOnlyElement(types);
         } else if (fixedOrder) {
-            selector = new FixedOrderSelector<>(types, randomNumberGenerator);
+            selector = new FixedOrderSelector<>(types);
         } else {
             selector = new StochasticSelector<>(types, randomNumberGenerator);
         }

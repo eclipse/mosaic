@@ -17,24 +17,13 @@ package org.eclipse.mosaic.fed.mapping.ambassador.weighting;
 
 import static org.junit.Assert.assertEquals;
 
-import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
-import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
-
 import com.google.common.collect.Lists;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FixedOrderSelectorTest {
-
-    private RandomNumberGenerator rng;
-
-    @Before
-    public void setup() {
-        rng = new DefaultRandomNumberGenerator(1098989123L);
-    }
 
     @Test
     public void fixedOrderSelection_selectItem80TimesIfWeightIs80perCent() {
@@ -89,62 +78,59 @@ public class FixedOrderSelectorTest {
         return numberOfSelectedTrueObjects;
     }
 
-
     private FixedOrderSelector<TestWeighted<Boolean>> createSelectorWithTwoBooleanObjects(double weightOfTrueObject) {
         List<TestWeighted<Boolean>> objects = Lists.newArrayList(
                 of(true, weightOfTrueObject),
                 of(false, 1 - weightOfTrueObject)
         );
-        return new FixedOrderSelector<>(objects, rng);
+        return new FixedOrderSelector<>(objects);
     }
 
     @Test
-    public void fixedOrderSelection_complexConfigurationWithStartIndex() {
+    public void fixedOrderSelection_differentWeights_sequenceInWeightOrder() {
         List<TestWeighted<?>> values = Lists.newArrayList(
                 of("A", 0.1),
                 of("B", 0.5),
                 of("C", 0.35),
                 of("D", 0.05)
         );
-        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values, rng);
-
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < 50; i++) {
-            s.append(selector.nextItem().item);
-        }
-
-        assertEquals("BCABCBDBCBCBACBBCBCBBCABCBDBCBCBACBBCBCBBCABCBDBCB", s.toString());
+        assertEquals("BCABCBDBCBCBACBBCBCBBCABCBDBCBCBACBBCBCBBCABCBDBCB", selectViaFixOrderAsString(values, 50));
     }
 
-
-    private String getSequenceAsString(int seed) {
-        RandomNumberGenerator rng = new DefaultRandomNumberGenerator(seed);
-
-        List<TestWeighted<?>> values = Lists.newArrayList(
-                of("A", 0.1),
-                of("B", 0.1),
-                of("-", 0.8)
-        );
-
-        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values, rng);
-
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < 20; i++) {
-            s.append(selector.nextItem().item);
-        }
-
-        return s.toString();
-    }
-
-    /**
-     * Tests if different starting values (determined by rng seed) result in different periodic sequences.
-     */
     @Test
-    public void fixedOrderSelection_startValueDeterminesPeriodicSequence() {
-        assertEquals(getSequenceAsString(4096), "A---B-----A---B-----");
-        assertEquals(getSequenceAsString(4286), "B---A-----B---A-----");
-        assertEquals(getSequenceAsString(0), "-A--B------A--B-----");
+    public void fixedOrderSelection_equalWeights_sequenceInDefinedOrder() {
+        List<TestWeighted<?>> values = Lists.newArrayList(
+                of("A", 1),
+                of("B", 1),
+                of("C", 1),
+                of("-", 1)
+        );
+        assertEquals("ABC-ABC-ABC-ABC-ABC-", selectViaFixOrderAsString(values));
+    }
 
+    @Test
+    public void fixedOrderSelection_equalAndDifferentWeights_sequenceInDefinedOrderThenByWeight() {
+        List<TestWeighted<?>> values = Lists.newArrayList(
+                of("A", 0.4),
+                of("B", 0.4),
+                of("-", 0.2)
+        );
+        assertEquals("AB-ABAB-ABAB-ABAB-AB", selectViaFixOrderAsString(values));
+    }
+
+    private String selectViaFixOrderAsString(List<TestWeighted<?>> values) {
+        return selectViaFixOrderAsString(values, 20);
+    }
+
+    private String selectViaFixOrderAsString(List<TestWeighted<?>> values, int selections) {
+
+        final FixedOrderSelector<TestWeighted<?>> selector = new FixedOrderSelector<>(values);
+
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < selections; i++) {
+            s.append(selector.nextItem().item);
+        }
+        return s.toString();
     }
 
     static <O> TestWeighted<O> of(O o, double weight) {

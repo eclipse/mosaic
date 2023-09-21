@@ -139,7 +139,7 @@ public class MappingAmbassador extends AbstractFederateAmbassador {
                 WeightedSelector<CPrototype> selector = typeDistributionSelectors.get(scenarioVehicle.getVehicleType().getName());
                 if (selector == null) {
                     if (mappingAmbassadorConfiguration.config == null || mappingAmbassadorConfiguration.config.fixedOrder) {
-                        selector = new FixedOrderSelector<>(typeDistribution, randomNumberGenerator);
+                        selector = new FixedOrderSelector<>(typeDistribution);
                     } else {
                         selector = new StochasticSelector<>(typeDistribution, randomNumberGenerator);
                     }
