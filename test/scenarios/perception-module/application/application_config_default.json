@@ -1,13 +1,13 @@
 {
     "perceptionConfiguration": {
         "vehicleIndex": {
-            "type": "VehicleMap"
+            "enabled": true
         },
         "trafficLightIndex": {
-            "type": "TrafficLightMap"
+            "enabled": true
         },
         "wallIndex": {
-            "type": "WallTree"
+            "enabled": true
         }
     }
 }

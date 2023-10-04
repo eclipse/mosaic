@@ -362,8 +362,8 @@ public class UnitSimulatorTest {
 
         TrafficLightRegistration trafficLightRegistration = InteractionTestHelper.createTrafficLightRegistration("tl_0", 0, false);
         sim.registerTrafficLight(trafficLightRegistration);
-        assertEquals(0, sim.getAllUnits().size());
         assertEquals(0, sim.getTrafficLights().size());
+        assertEquals(0, sim.getAllUnits().size());
     }
 
     /**

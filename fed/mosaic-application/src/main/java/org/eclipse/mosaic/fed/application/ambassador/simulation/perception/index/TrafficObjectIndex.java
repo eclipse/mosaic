@@ -15,12 +15,16 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.WallIndex;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -187,6 +191,13 @@ public class TrafficObjectIndex {
             return new ArrayList<>();
         }
         return wallIndex.getSurroundingWalls(perceptionModel);
+    }
+
+    public PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(VehicleUnit vehicleUnit, Database database, Logger osLog) {
+        if (vehicleIndex != null) {
+            return vehicleIndex.createPerceptionModule(vehicleUnit, database, log);
+        }
+        return new NopPerceptionModule(vehicleUnit, database, log);
     }
 
     public static class Builder {

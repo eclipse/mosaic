@@ -16,16 +16,12 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.WallIndexTypeAdapterFactory;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
-import com.google.gson.annotations.JsonAdapter;
-
 import java.util.Collection;
 
-@JsonAdapter(WallIndexTypeAdapterFactory.class)
 public abstract class WallIndex {
 
     private Database database = null;

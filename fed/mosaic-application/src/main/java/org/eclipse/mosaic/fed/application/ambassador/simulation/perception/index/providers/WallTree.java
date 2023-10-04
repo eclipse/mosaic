@@ -24,21 +24,20 @@ import org.eclipse.mosaic.lib.spatial.KdTree;
 import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
-import com.google.gson.annotations.Expose;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class WallTree extends WallIndex {
 
-    @Expose
-    public int bucketSize = 20;
+    private final int bucketSize;
 
     private KdTree<Edge<Vector3d>> wallTree;
     private SpatialTreeTraverser.InRadius<Edge<Vector3d>> wallTraverser;
 
+    public WallTree(int bucketSize) {
+        this.bucketSize = bucketSize;
+    }
 
     @Override
     public void initialize() {

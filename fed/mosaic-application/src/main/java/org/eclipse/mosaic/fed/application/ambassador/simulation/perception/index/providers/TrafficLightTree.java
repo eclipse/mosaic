@@ -21,8 +21,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.lib.spatial.KdTree;
 import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
-import com.google.gson.annotations.Expose;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,12 +30,15 @@ import java.util.stream.Collectors;
  */
 public class TrafficLightTree extends TrafficLightIndex {
 
-    @Expose
-    public int bucketSize = 20;
+    private final int bucketSize;
 
     private KdTree<TrafficLightObject> trafficLightTree;
 
     private SpatialTreeTraverser.InRadius<TrafficLightObject> treeTraverser;
+
+    public TrafficLightTree(int bucketSize) {
+        this.bucketSize = bucketSize;
+    }
 
     @Override
     public void initialize() {
