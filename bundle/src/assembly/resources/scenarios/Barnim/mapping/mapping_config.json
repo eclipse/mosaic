@@ -1,4 +1,7 @@
 {
+    "config": {
+        "fixedOrder": true
+    },
     "prototypes": [
         {
             "name": "Car",

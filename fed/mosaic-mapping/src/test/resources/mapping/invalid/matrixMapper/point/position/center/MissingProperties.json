@@ -11,7 +11,6 @@
                 }
             ],
             "types": [ ],
-            "fixedOrder": true,
             "odValues": [ [ 0, 1 ], [ 2, 3 ] ]
         }
     ]
