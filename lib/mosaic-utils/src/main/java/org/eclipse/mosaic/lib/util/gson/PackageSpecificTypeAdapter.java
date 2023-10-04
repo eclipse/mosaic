@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.lib.util.gson;
 
- import org.eclipse.mosaic.lib.gson.TypeFieldTypeAdapter;
+import org.eclipse.mosaic.lib.gson.TypeFieldTypeAdapter;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
