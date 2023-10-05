@@ -61,7 +61,7 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
     /**
      * Constructor for {@link FixedOrderSelector}.
      *
-     * @param objects       list of all types that might be selected from
+     * @param objects list of all types that might be selected from
      */
     public FixedOrderSelector(List<T> objects) {
         Validate.notNull(objects, "Illegal constructor call for WeightedSelector: objects is null.");
@@ -126,7 +126,7 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
     }
 
     private Item<T> selectFirstItem() {
-        Comparator<Item<T>> compareByWeight =Comparator.comparingDouble(Item::getWeight);
+        Comparator<Item<T>> compareByWeight = Comparator.comparingDouble(Item::getWeight);
         Comparator<Item<T>> compareByPriority = Comparator.comparingInt((item) -> item.priority);
         // choose first item according to weight. if two or items have the same weight, the first item in the list will be chosen
         return items.stream().max(compareByWeight.thenComparing(compareByPriority)).orElse(null);

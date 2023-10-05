@@ -35,12 +35,12 @@ import java.util.List;
 public class HeadingModifier implements PerceptionModifier {
 
     /**
-     * Default standard deviation for heading error
+     * Default standard deviation for heading error.
      */
     private static final double SIGMA_HEADING_OFFSET = 4; // given in degree
 
     /**
-     * Default chance of the car being perceived heading in the complete other direction (180° error)
+     * Default chance of the car being perceived heading in the complete other direction (180° error).
      */
     private static final double DEFAULT_CHANCE_WRONG_DIR = 0.01;
 

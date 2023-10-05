@@ -115,6 +115,7 @@ public class VehicleFlowGenerator {
      * Constructor for {@link VehicleFlowGenerator} using one vehicle type configuration.
      *
      * @param vehicleConfiguration vehicle spawner configuration
+     * @throws IllegalArgumentException if vehicleConfiguration does not provide any types to select from
      */
     public VehicleFlowGenerator(CVehicle vehicleConfiguration, @Nonnull RandomNumberGenerator randomNumberGenerator, boolean flowNoise, boolean fixedOrder) {
 
@@ -395,7 +396,6 @@ public class VehicleFlowGenerator {
         // (either fixedOrder or stochastic, determined in constructor)
         VehicleTypeSpawner type = selector.nextItem();
         String name = UnitNameGenerator.nextVehicleName();
-
 
         createVehicle(framework, name, group, laneSelector.nextLane(type), type);
 
