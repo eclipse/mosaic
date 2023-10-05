@@ -80,7 +80,7 @@
                     "default": 1.0
                 },
                 "fixedOrder": {
-                    "description": "Determines if selection of a vehicles type when spawning follows a fixedOrder or stochastic model. When set to true the spawning-process will choose exactly the same types with every execution. When set to false (default) the order of types follow a stochastic manner and will be different each time, however, selected weights may be reached more slowly.",
+                    "description": "Determines if the type selection of a spawning vehicle follows a fixed order or stochastic model. When set to true the spawning-process will choose exactly the same type order with every execution. When set to false (default) the order of types follows a stochastic manner and will be different each time depending on the set random seed, however, selected weights may be reached more slowly.",
                     "type": "boolean",
                     "default": false
                 },
