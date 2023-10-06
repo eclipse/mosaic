@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <output id="websocket" enabled="true" loader="org.eclipse.mosaic.fed.output.generator.websocket.WebsocketVisualizerLoader">
+        <synchronized>true</synchronized>
+        <port>46587</port>
+        <subscriptions>
+            <subscription id="VehicleUpdates" enabled="true"/>
+            <subscription id="V2xMessageReception" enabled="true"/>
+            <subscription id="V2xMessageTransmission" enabled="true"/>
+            <subscription id="VehicleRegistration" enabled="true"/>
+            <subscription id="RsuRegistration" enabled="true"/>
+        </subscriptions>
+    </output>
+</configuration>
