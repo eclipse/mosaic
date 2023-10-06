@@ -5,7 +5,7 @@
 
     <groupId>org.eclipse.mosaic</groupId>
     <artifactId>mosaic-parent</artifactId>
-    <version>23.1-SNAPSHOT</version>
+    <version>23.1</version>
     <packaging>pom</packaging>
 
     <name>Eclipse MOSAIC Parent</name>
@@ -79,7 +79,7 @@
     </modules>
 
     <properties>
-        <mosaic.version>23.1-SNAPSHOT</mosaic.version>
+        <mosaic.version>23.1</mosaic.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceTarget>11</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
@@ -112,7 +112,7 @@
         <version.stax2-api>4.2.1</version.stax2-api><!-- 4.1 is approved in #2670 -->
         <version.woodstox-core>5.1.0</version.woodstox-core><!-- 5.1.0 is approved in CQ17827 -->
         <!-- note, when upgrading, the field LibSumoAmbassador#VALID_LIBSUMO_VERSIONS needs to be changed too -->
-        <version.libsumo>1.17.0</version.libsumo>
+        <version.libsumo>1.18.0</version.libsumo>
     </properties>
 
     <dependencies>

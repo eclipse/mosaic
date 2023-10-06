@@ -59,6 +59,8 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
      *
      * @param pointsPerSide      the number of points that will be evaluated per object side (corners count towards 2 edges)
      * @param detectionThreshold how many points have to be visible in order for an object to be treated as detected
+     *
+     * @throws IllegalArgumentException if pointsPerSide or detectionThreshold is configured wrongly
      */
     public BoundingBoxOcclusion(int pointsPerSide, int detectionThreshold) {
         if (pointsPerSide < 2) {

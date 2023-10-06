@@ -81,10 +81,12 @@ public class VehicleFlowGenerator {
     private final GeoCircle destination;
     private final OriginDestinationPair odInfo;
     private final String group;
+
     /**
      * The speed at which the vehicle will depart. Only used by SUMO so far.
      */
     private double departSpeed;
+
     /**
      * The depart speed mode, where depending on the value, the depart speed behaves as follows.
      *
@@ -101,10 +103,12 @@ public class VehicleFlowGenerator {
      * Reference to the selector which will select the next vehicle type to be used.
      */
     private WeightedSelector<VehicleTypeSpawner> selector;
+
     /**
      * Running variable to determine when the next vehicle has to be spawned.
      */
     private long nextSpawnTime = -1;
+
     /**
      * Max number of vehicles that should be spawned in this flow.
      * Value of 1 means an individual vehicle, Integer.MAX_VALUE means an endless flow.
@@ -115,6 +119,8 @@ public class VehicleFlowGenerator {
      * Constructor for {@link VehicleFlowGenerator} using one vehicle type configuration.
      *
      * @param vehicleConfiguration vehicle spawner configuration
+     *
+     * @throws IllegalArgumentException if vehicleConfiguration does not provide any types to select from
      */
     public VehicleFlowGenerator(CVehicle vehicleConfiguration, @Nonnull RandomNumberGenerator randomNumberGenerator, boolean flowNoise, boolean fixedOrder) {
 
@@ -180,6 +186,7 @@ public class VehicleFlowGenerator {
      * @param vehicleConfiguration  the vehicle configuration containing necessary information to determine the {@link SpawningMode}
      * @param randomNumberGenerator the {@link RandomNumberGenerator} to be used, for example to introduce flowNoise
      * @param flowNoise             whether flow noise should be introduced
+     *
      * @return the created {@link SpawningMode}
      */
     private SpawningMode createSpawningMode(
@@ -348,6 +355,7 @@ public class VehicleFlowGenerator {
      *
      * @param framework the {@link SpawningFramework} handling the time advance
      * @return true if there is no more vehicles to spawn or max time reached, thus the vehicle spawner can be removed
+     *
      * @throws InternalFederateException thrown if time advance couldn't be completed successfully
      */
     boolean timeAdvance(SpawningFramework framework) throws InternalFederateException {
@@ -395,7 +403,6 @@ public class VehicleFlowGenerator {
         // (either fixedOrder or stochastic, determined in constructor)
         VehicleTypeSpawner type = selector.nextItem();
         String name = UnitNameGenerator.nextVehicleName();
-
 
         createVehicle(framework, name, group, laneSelector.nextLane(type), type);
 

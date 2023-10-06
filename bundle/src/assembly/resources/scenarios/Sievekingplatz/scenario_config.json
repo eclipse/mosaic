@@ -5,8 +5,8 @@
         "randomSeed": 212323853,
         "projection": {
             "centerCoordinates": {
-                "latitude": 52.63,
-                "longitude": 13.56
+                "latitude": 53.56,
+                "longitude": 9.98
             },
             "cartesianOffset": {
                 "x": -563984.16,
@@ -30,6 +30,7 @@
         "sns": false,
         "ns3": false,
         "omnetpp": false,
+        "output": true,
         "sumo": true
     }
 }
