@@ -23,6 +23,7 @@ import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ServerSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.Spawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficLightSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficManagementCenterSpawner;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.VehicleTypeSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.WeightedSelector;
 import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
@@ -406,6 +407,8 @@ public class SpawningFramework {
     VehicleTypesInitialization generateVehicleTypesInitialization() {
         HashMap<String, VehicleType> types = new HashMap<>();
 
+        // TODO maybe find a better solution, this is just a first test to see if anything breaks
+        prototypeConfigurations.forEach(p -> types.put(p.name, new VehicleTypeSpawner(p).convertType()));
         vehicleFlowGenerators.forEach((spawner -> spawner.collectVehicleTypes(types)));
 
         return new VehicleTypesInitialization(0, types);
