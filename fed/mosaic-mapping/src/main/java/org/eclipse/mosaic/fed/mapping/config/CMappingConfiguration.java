@@ -32,6 +32,13 @@ public class CMappingConfiguration {
     public double scaleTraffic = 1.0;
 
     /**
+     * Determines if selection of a vehicles type when spawning follows a fixedOrder or stochastic model.
+     * When set to true the spawning-process will choose exactly the same types with every execution.
+     * When set to false the order of types may be different and selected weights will be reached more slowly.
+     */
+    public boolean fixedOrder = false;
+
+    /**
      * Defines the point in time to start spawning vehicles. If not set (default),
      * all vehicles will be spawned according to the vehicles configuration. [s]
      */

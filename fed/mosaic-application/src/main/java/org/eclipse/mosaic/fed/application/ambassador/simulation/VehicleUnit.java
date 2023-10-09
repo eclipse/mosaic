@@ -85,12 +85,13 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
                     .getCentralNavigationComponent().getRouting()).getScenarioDatabase();
         }
 
-        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex != null) {
-            perceptionModule = SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.vehicleIndex
-                    .createPerceptionModule(this, database, getOsLog());
+        if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getTrafficObjectIndex() != null) {
+            perceptionModule = SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                    .getTrafficObjectIndex().createPerceptionModule(this, database, getOsLog());
         } else {
             perceptionModule = new NopPerceptionModule(this, database, getOsLog());
         }
+
     }
 
     @Override

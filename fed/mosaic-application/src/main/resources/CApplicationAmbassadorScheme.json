@@ -65,10 +65,6 @@
                     "description": "The underlying data structure for the spatial index for building walls",
                     "$ref": "#/definitions/wallIndex"
                 },
-                "measurePerformance": {
-                    "description": "If set to true, a PerceptionPerformance.csv is generated with detailed information about execution calls of the perception backend.",
-                    "type": "boolean"
-                },
                 "perceptionArea": {
                     "description": "Area used to define the bounds of the perception index. Useful if only part of your scenario needs to evaluate perception.",
                     "$ref": "#/definitions/geoRectangle"
@@ -80,34 +76,53 @@
             "description": "Class providing the spatial index for the perception of vehicles.",
             "type": "object",
             "oneOf": [
-                { "$ref": "#/definitions/vehicleMap" },
                 { "$ref": "#/definitions/vehicleTree" },
                 { "$ref": "#/definitions/vehicleGrid" },
                 { "$ref": "#/definitions/sumoIndex" }
             ]
         },
-        "vehicleMap": {
-            "title": "vehicleMap",
-            "description": "Trivial spatial vehicle index using a hash map to store vehicles.",
+        "vehicleTree": {
+            "title": "vehicleTree",
+            "description": "Spatial vehicle index using a quad tree structure to store vehicles.",
             "type": "object",
             "properties": {
+                "enabled": {
+                    "description": "Defines, if the vehicle index is enabled.",
+                    "default": false,
+                    "type": "boolean"
+                },
                 "type": {
                     "description": "The type of the spatial index.",
                     "type": "string",
-                    "enum": [ "VehicleMap" ]
+                    "enum": [ "tree" ]
+                },
+                "splitSize": {
+                    "description": "The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.",
+                    "type": "number",
+                    "minimum": 0
+                },
+                "maxDepth": {
+                    "description": "Maximum depth of the quad tree.",
+                    "type": "number",
+                    "minimum": 0
                 }
             },
-            "required": [ "type" ]
+            "additionalProperties": false
         },
         "vehicleGrid": {
             "title": "vehicleGrid",
             "description": "Spatial vehicle index using a grid structure to store vehicles.",
             "type": "object",
             "properties": {
+                "enabled": {
+                    "description": "Defines, if the vehicle index is enabled.",
+                    "default": false,
+                    "type": "boolean"
+                },
                 "type": {
                     "description": "The type of the spatial index.",
                     "type": "string",
-                    "enum": [ "VehicleGrid" ]
+                    "enum": [ "grid" ]
                 },
                 "cellWidth": {
                     "description": "Width of a grid cell. [m]",
@@ -124,108 +139,63 @@
                     ]
                 }
             },
-            "required": [ "type" ]
-        },
-        "vehicleTree": {
-            "title": "vehicleTree",
-            "description": "Spatial vehicle index using a quad tree structure to store vehicles.",
-            "type": "object",
-            "properties": {
-                "type": {
-                    "description": "The type of the spatial index.",
-                    "type": "string",
-                    "enum": [ "VehicleTree" ]
-                },
-                "splitSize": {
-                    "description": "The maximum amount of vehicles in one leaf before it gets split into four sub-leaves.",
-                    "type": "number",
-                    "minimum": 0
-                },
-                "maxDepth": {
-                    "description": "Maximum depth of the quad tree.",
-                    "type": "number",
-                    "minimum": 0
-                }
-            },
-            "required": [ "type" ]
+            "required": [ "type" ],
+            "additionalProperties": false
         },
         "sumoIndex": {
             "title": "sumoIndex",
             "description": "Class setting the index provider to use SUMO's built-in functions (see  context subscription)",
             "type": "object",
             "properties": {
+                "enabled": {
+                    "description": "Defines, if the vehicle index is enabled.",
+                    "default": false,
+                    "type": "boolean"
+                },
                 "type": {
                     "description": "The type of the spatial index.",
                     "type": "string",
-                    "enum": [ "SumoIndex" ]
+                    "enum": [ "sumo" ]
                 }
-            }
+            },
+            "required": [ "type" ],
+            "additionalProperties": false
         },
         "trafficLightIndex": {
             "title": "trafficLightIndex",
             "description": "Class providing the spatial index for the perception of traffic lights.",
             "type": "object",
-            "oneOf": [
-                { "$ref": "#/definitions/trafficLightMap" },
-                { "$ref": "#/definitions/trafficLightTree" }
-            ]
-        },
-        "trafficLightMap": {
-            "title": "trafficLightMap",
-            "description": "Trivial spatial index using a hash map to store traffic lights.",
-            "type": "object",
             "properties": {
-                "type": {
-                    "description": "The type of the spatial index.",
-                    "type": "string",
-                    "enum": [ "TrafficLightMap" ]
+                "enabled": {
+                    "description": "Defines, if the traffic light index is enabled.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "bucketSize": {
+                    "description": "The maximum amount of traffic lights in one leaf before it gets split.",
+                    "type": "number",
+                    "minimum": 0
                 }
             },
-            "required": [ "type" ]
-        },
-        "trafficLightTree": {
-            "title": "trafficLightTree",
-            "description": "Spatial index using a kd-tree structure to store traffic lights.",
-            "type": "object",
-            "properties": {
-                "type": {
-                    "description": "The type of the spatial index.",
-                    "type": "string",
-                    "enum": [ "TrafficLightTree" ]
-                }
-            },
-            "bucketSize": {
-                "description": "The maximum amount of traffic lights in one leaf before it gets split.",
-                "type": "number",
-                "minimum": 0
-            },
-            "required": [ "type" ]
+            "additionalProperties": false
         },
         "wallIndex": {
             "title": "wallIndex",
             "description": "Class providing the spatial index for the perception of building walls.",
             "type": "object",
-            "oneOf": [
-                { "$ref": "#/definitions/wallTree" }
-            ]
-        },
-        "wallTree": {
-            "title": "wallTree",
-            "description": "Spatial index using a kd-tree structure to store building walls.",
-            "type": "object",
             "properties": {
-                "type": {
-                    "description": "The type of the spatial index.",
-                    "type": "string",
-                    "enum": [ "WallTree" ]
+                "enabled": {
+                    "description": "Defines, if the wall index is enabled.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "bucketSize": {
+                    "description": "The maximum amount of building walls in one leaf before it gets split.",
+                    "type": "number",
+                    "minimum": 0
                 }
             },
-            "bucketSize": {
-                "description": "The maximum amount of building walls in one leaf before it gets split.",
-                "type": "number",
-                "minimum": 0
-            },
-            "required": [ "type" ]
+            "additionalProperties": false
         },
         "geoPoint": {
             "title": "geoPoint",

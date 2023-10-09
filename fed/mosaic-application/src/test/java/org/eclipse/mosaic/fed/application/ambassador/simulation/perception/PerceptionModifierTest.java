@@ -17,8 +17,8 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -29,14 +29,16 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DimensionsModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceFilter;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.HeadingModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.PositionModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.SimpleOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.WallOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
@@ -111,7 +113,7 @@ public class PerceptionModifierTest {
         when(vehicleType.getWidth()).thenReturn(2.5d);
         when(vehicleType.getHeight()).thenReturn(10d);
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock(Logger.class))
-                .withVehicleIndex(new VehicleMap())
+                .withVehicleIndex(new VehicleTree(20, 12))
                 .build();
         // setup cpc
         when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
@@ -175,6 +177,57 @@ public class PerceptionModifierTest {
     }
 
     @Test
+    public void testHeadingModifier() {
+        HeadingModifier headingModifier = new HeadingModifier(rng, 10, 0);
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(headingModifier).build()
+        );
+
+        // RUN
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        if (PRINT_POSITIONS) {
+            printBoundingBoxes(perceivedVehicles);
+        }
+        assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
+
+        // ASSERT if headings differ from ground truth
+        for (VehicleObject realVehicle : getAllVehicles()) {
+            for (VehicleObject perceivedVehicle: perceivedVehicles) {
+                if (realVehicle.getId().equals(perceivedVehicle.getId())) {
+                    assertNotEquals(realVehicle.getHeading(), perceivedVehicle.getHeading(), 0.0001);
+                    // when adjusting heading the position should change too, since it currently points to the front bumper of the vehicle
+                    assertNotEquals(realVehicle.getPosition(), perceivedVehicle.getPosition());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDimensionsModifier() {
+         DimensionsModifier dimensionsModifier = new DimensionsModifier(rng, 1.0, 0.0, 0.0);
+        simplePerceptionModule.enable(
+                new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(dimensionsModifier).build()
+        );
+
+        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
+        if (PRINT_POSITIONS) {
+            printBoundingBoxes(perceivedVehicles);
+        }
+        assertEquals("The position error filter shouldn't remove vehicles", VEHICLE_AMOUNT, perceivedVehicles.size());
+
+        // ASSERT if headings differ from ground truth
+        for (VehicleObject realVehicle : getAllVehicles()) {
+            for (VehicleObject perceivedVehicle: perceivedVehicles) {
+                if (realVehicle.getId().equals(perceivedVehicle.getId())) {
+                    assertNotEquals(realVehicle.getLength(), perceivedVehicle.getLength(), 0.0001);
+                    // when adjusting length the position should change too, since it currently points to the front bumper of the vehicle
+                    assertNotEquals(realVehicle.getPosition(), perceivedVehicle.getPosition());
+                }
+            }
+        }
+    }
+
+    @Test
     public void testWallOcclusionModifier() {
         List<Edge<Vector3d>> surroundingWalls = Lists.newArrayList(
                 new Edge<>(CartesianPoint.xy(10, 10).toVector3d(), CartesianPoint.xy(10, -10).toVector3d())
@@ -206,16 +259,14 @@ public class PerceptionModifierTest {
         );
 
         // collect positions of perceived objects BEFORE applying modifier
-        PerceptionModel godView = mock(PerceptionModel.class);
-        when(godView.isInRange(isA(SpatialObject.class))).thenReturn(true);
-        Map<String, Vector3d> allVehiclesInIndexPre = trafficObjectIndex.getVehiclesInRange(godView)
+        Map<String, Vector3d> allVehiclesInIndexPre = getAllVehicles()
                 .stream().collect(Collectors.toMap(VehicleObject::getId, v -> new Vector3d(v.getPosition())));
 
         // RUN perceived objects and modify positions
         List<VehicleObject> perceivedAndAlteredObjects = simplePerceptionModule.getPerceivedVehicles();
 
         // collect positions of perceived objects AFTER applying modifier
-        Map<String, Vector3d> allVehiclesInIndexPost = trafficObjectIndex.getVehiclesInRange(godView)
+        Map<String, Vector3d> allVehiclesInIndexPost = getAllVehicles()
                 .stream().collect(Collectors.toMap(VehicleObject::getId, v -> new Vector3d(v.getPosition())));
 
         // ASSERT that all positions in the index are still the same as before applying modifier

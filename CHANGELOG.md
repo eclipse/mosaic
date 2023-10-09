@@ -1,3 +1,18 @@
+# Changelog Eclipse MOSAIC 23.1 (October 2023)
+
+* [M+] MOSAIC now requires at least Java 11 Runtime Environment to be executed.
+* [M+] Improved MOSAIC Tutorials on eclipse.dev/mosaic and related applications.
+* [A+] Perception Module leaves experimental phase and is now available per default.
+* [A+] New perception modifiers model occlusion based on bounding boxes, and errors on heading and dimension of perceived objects.
+* [A+] The application API was extended to get access to the unit's logging directory (e.g. for data export).
+* [M+] Mapping of vehicle applications now follows a stochastic distribution per default instead of a repeating pattern (configurable).
+* [M-] Fixed that vehicle deceleration values were omitted in specific configuration setups.
+* [S+] Import of SUMO net files in Scenario-Convert supports almost any projection now (only UTM was supported).
+* [S-] Fixed database type affinities to make scenario-database more robust.
+* [T+] Vehicles defined in integrated SUMO scenarios can now be mapped with complex application distributions.
+* [T+] Now supports SUMO 1.18.0
+* [X+] Path handling in Simulation-Runner is more robust now.
+
 # Changelog Eclipse MOSAIC 23.0 (April 2023)
 
 * [A+] Perceived objects provide dimension information (length, width, height).

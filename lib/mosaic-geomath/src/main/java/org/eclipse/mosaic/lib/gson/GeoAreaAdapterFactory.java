@@ -27,7 +27,7 @@ import com.google.gson.reflect.TypeToken;
 
 public final class GeoAreaAdapterFactory implements TypeAdapterFactory {
 
-    public static class GeoAreaAdapter extends AbstractTypeAdapterFactory<GeoArea> {
+    public static class GeoAreaAdapter extends TypeFieldTypeAdapter<GeoArea> {
 
         private final static String TYPE_RECTANGLE = "rectangle";
         private final static String TYPE_CIRCLE = "circle";

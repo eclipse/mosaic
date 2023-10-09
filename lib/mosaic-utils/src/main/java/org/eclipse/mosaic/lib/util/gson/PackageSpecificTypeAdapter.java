@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.lib.util.gson;
 
-import org.eclipse.mosaic.lib.gson.AbstractTypeAdapterFactory;
+import org.eclipse.mosaic.lib.gson.TypeFieldTypeAdapter;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -32,7 +32,7 @@ import java.util.List;
  * with simple class names only, a search space of possible packages need to be defined, which
  * are used to resolve the actual class.
  */
-public final class PackageSpecificTypeAdapter<T> extends AbstractTypeAdapterFactory<T> {
+public final class PackageSpecificTypeAdapter<T> extends TypeFieldTypeAdapter<T> {
 
     /**
      * Holds all package names which are used to search for suitable classes to instantiate based on the given type name.

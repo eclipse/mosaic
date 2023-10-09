@@ -17,33 +17,20 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
-import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
+import org.eclipse.mosaic.fed.application.config.CPerception;
 import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
-import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
-import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.routing.Routing;
-import org.eclipse.mosaic.lib.spatial.Edge;
-import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The {@link CentralPerceptionComponent} is responsible for keeping a spatial index of all vehicles,
@@ -57,7 +44,7 @@ public class CentralPerceptionComponent {
     /**
      * Configuration containing parameters for setting up the spatial indexes.
      */
-    private final CApplicationAmbassador.CPerception configuration;
+    private final CPerception configuration;
 
     /**
      * The spatial index used to store and find objects by their positions.
@@ -84,7 +71,7 @@ public class CentralPerceptionComponent {
      */
     private boolean updateTrafficLightIndex = false;
 
-    public CentralPerceptionComponent(CApplicationAmbassador.CPerception perceptionConfiguration) {
+    public CentralPerceptionComponent(CPerception perceptionConfiguration) {
         this.configuration = Validate.notNull(perceptionConfiguration, "perceptionConfiguration must not be null");
     }
 
@@ -99,38 +86,21 @@ public class CentralPerceptionComponent {
             // evaluate bounding box for perception
             scenarioBounds = configuration.perceptionArea == null
                     ? routing.getScenarioBounds() : configuration.perceptionArea.toCartesian();
-            // see what backends are configured
-            boolean vehicleIndexConfigured = configuration.vehicleIndex != null;
-            boolean trafficLightIndexConfigured = configuration.trafficLightIndex != null;
 
             TrafficObjectIndex.Builder indexBuilder = new TrafficObjectIndex.Builder(LOG);
-            if (scenarioBounds.getArea() <= 0) {
-                LOG.warn("The bounding area of the scenario could not be determined. Defaulting to low performance spatial index.");
-                if (vehicleIndexConfigured) { // if configured default to map index
-                    indexBuilder.withVehicleIndex(new VehicleMap());
-                }
-                if (trafficLightIndexConfigured) { // if configured default to map index
-                    indexBuilder.withTrafficLightIndex(new TrafficLightMap());
-                }
-            } else {
-                if (vehicleIndexConfigured) {
-                    indexBuilder.withVehicleIndex(configuration.vehicleIndex);
-                }
-                if (trafficLightIndexConfigured) {
-                    indexBuilder.withTrafficLightIndex(configuration.trafficLightIndex);
-                }
+            if (configuration.vehicleIndex != null) {
+                indexBuilder.withVehicleIndex(configuration.vehicleIndex.create());
+            }
+            if (configuration.trafficLightIndex != null) {
+                indexBuilder.withTrafficLightIndex(configuration.trafficLightIndex.create());
             }
             if (routing instanceof Database) {
                 Database dbRouting = (Database) routing;
-                if (!dbRouting.getBuildings().isEmpty()) {
-                    indexBuilder.withWallIndex(configuration.wallIndex, (Database) routing);
+                if (!dbRouting.getBuildings().isEmpty() && configuration.wallIndex != null) {
+                    indexBuilder.withWallIndex(configuration.wallIndex.create(), (Database) routing);
                 }
             }
             trafficObjectIndex = indexBuilder.build();
-
-            if (configuration.measurePerformance) {
-                trafficObjectIndex = new MonitoringTrafficObjectIndexProvider(trafficObjectIndex, PerformanceMonitor.getInstance());
-            }
         } catch (Exception e) {
             throw new InternalFederateException("Couldn't initialize CentralPerceptionComponent", e);
         }
@@ -212,63 +182,4 @@ public class CentralPerceptionComponent {
         updateTrafficLightIndex = true;
     }
 
-    /**
-     * Wrapper class to measure atomic calls of update, search and remove of the used spatial index.
-     */
-    static class MonitoringTrafficObjectIndexProvider extends TrafficObjectIndex {
-        private final PerformanceMonitor monitor;
-
-        MonitoringTrafficObjectIndexProvider(TrafficObjectIndex parent, PerformanceMonitor monitor) {
-            super(parent);
-            this.monitor = monitor;
-        }
-
-        @Override
-        public List<VehicleObject> getVehiclesInRange(PerceptionModel searchRange) {
-            try (PerformanceMonitor.Measurement m = monitor.start("search-vehicle")) {
-                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
-                return super.getVehiclesInRange(searchRange);
-            }
-        }
-
-        @Override
-        public void removeVehicles(Iterable<String> vehiclesToRemove) {
-            try (PerformanceMonitor.Measurement m = monitor.start("remove-vehicle")) {
-                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
-                super.removeVehicles(vehiclesToRemove);
-            }
-        }
-
-        @Override
-        public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-            try (PerformanceMonitor.Measurement m = monitor.start("update-vehicle")) {
-                m.setProperties(getNumberOfVehicles(), SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
-                super.updateVehicles(vehiclesToUpdate);
-            }
-        }
-
-        @Override
-        public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
-            try (PerformanceMonitor.Measurement m = monitor.start("search-traffic-light")) {
-                m.setProperties(SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
-                return super.getTrafficLightsInRange(perceptionModel);
-            }
-        }
-
-        @Override
-        public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightsToUpdate) {
-            try (PerformanceMonitor.Measurement m = monitor.start("update-traffic-light")) {
-                m.setProperties(SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
-                super.updateTrafficLights(trafficLightsToUpdate);
-            }
-        }
-
-        @Override
-        public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
-            try (PerformanceMonitor.Measurement m = monitor.start("search-walls")) {
-                m.setProperties(SimulationKernel.SimulationKernel.getCurrentSimulationTime()).restart();
-                return super.getSurroundingWalls(perceptionModel);
-            }
-        }
-    }
 }

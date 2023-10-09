@@ -129,8 +129,7 @@ public abstract class AbstractApplication<OS extends OperatingSystem> implements
     /**
      * This method logs and returns the state of the application.
      *
-     * @return {@code true} if the application was set up and is not torn
-     * down. Otherwise, it returns {@code false}.
+     * @return {@code true} if the application was set up and is not torn down. Otherwise, it returns {@code false}.
      */
     public final boolean isValidStateAndLog() {
         if (!isSetUp) {

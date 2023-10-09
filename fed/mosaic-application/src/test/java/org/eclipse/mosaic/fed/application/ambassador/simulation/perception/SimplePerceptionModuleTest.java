@@ -27,10 +27,8 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigatio
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleGrid;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleMap;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
@@ -51,23 +49,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(Parameterized.class)
 public class SimplePerceptionModuleTest {
 
+    private final String vehicleIndexType;
     private final EventManager eventManagerMock = mock(EventManager.class);
     private final CentralPerceptionComponent cpcMock = mock(CentralPerceptionComponent.class);
     private final CentralNavigationComponent cncMock = mock(CentralNavigationComponent.class);
+
 
     @Rule
     public MockitoRule initRule = MockitoJUnit.rule();
@@ -87,6 +89,17 @@ public class SimplePerceptionModuleTest {
 
     private SimplePerceptionModule simplePerceptionModule;
 
+    public SimplePerceptionModuleTest(String vehicleIndexType) {
+        this.vehicleIndexType = vehicleIndexType;
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"grid"}, {"tree"}
+        });
+    }
+
     @Before
     public void setup() {
         when(cpcMock.getScenarioBounds())
@@ -94,8 +107,11 @@ public class SimplePerceptionModuleTest {
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock((Logger.class)))
-                .withVehicleIndex(new VehicleMap())
-                .withTrafficLightIndex(new TrafficLightMap())
+                .withVehicleIndex(
+                        vehicleIndexType.equals("tree") ? new VehicleTree(20, 12) :
+                        vehicleIndexType.equals("grid") ? new VehicleGrid(5, 5) : null
+                )
+                .withTrafficLightIndex(new TrafficLightTree(20))
                 .build();
         // setup cpc
         when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
@@ -111,89 +127,13 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
-    public void vehicleCanBePerceived_TrivialIndex() {
+    public void vehicleCanBePerceived() {
         setupVehicles(new MutableCartesianPoint(110, 100, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCanBePerceived_includesDimensions_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(110, 100, 0));
-        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
-        assertEquals(1, perceivedVehicles.size());
-        VehicleObject perceivedVehicle = perceivedVehicles.get(0);
-        assertEquals(5d, perceivedVehicle.getLength(), 0.01);
-        assertEquals(2.5d, perceivedVehicle.getWidth(), 0.01);
-        assertEquals(10d, perceivedVehicle.getHeight(), 0.01);
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_outOfRange_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(310, 100, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_OnLeftBoundVector_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(110, 110, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_OnLeftBoundVector_OppositeDirection_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(90, 90, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_OnRightBoundVector_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(110, 90, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_tooFarLeft_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_tooFarRight_TrivialIndex() {
-        setupVehicles(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_270viewingAngle_VehicleOnDirectionVector_TrivialIndex() {
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
-        setupVehicles(new MutableCartesianPoint(110, 100, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_FarLeft_270viewingAngle_TrivialIndex() {
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
-        setupVehicles(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_FarRight_270viewingAngle_TrivialIndex() {
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
-        setupVehicles(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_QuadTree() {
-        useQuadTree();
-        setupVehicles(new MutableCartesianPoint(110, 100, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_includesDimensions_QuadTree() {
-        useQuadTree();
+    public void vehicleCanBePerceived_includesDimensions() {
         setupVehicles(new MutableCartesianPoint(110, 100, 0));
         List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
         assertEquals(1, perceivedVehicles.size());
@@ -204,137 +144,51 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
-    public void vehicleCannotBePerceived_outOfRange_QuadTree() {
-        useQuadTree();
+    public void vehicleCannotBePerceived_outOfRange() {
         setupVehicles(new MutableCartesianPoint(310, 100, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCanBePerceived_OnLeftBoundVector_QuadTree() {
-        useQuadTree();
+    public void vehicleCanBePerceived_OnLeftBoundVector() {
         setupVehicles(new MutableCartesianPoint(110, 110, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCanBePerceived_OnRightBoundVector_QuadTree() {
-        useQuadTree();
+    public void vehicleCanBePerceived_OnRightBoundVector() {
         setupVehicles(new MutableCartesianPoint(110, 90, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCannotBePerceived_tooFarLeft_QuadTree() {
-        useQuadTree();
+    public void vehicleCannotBePerceived_tooFarLeft() {
         setupVehicles(new MutableCartesianPoint(105, 115, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCannotBePerceived_tooFarRight_QuadTree() {
-        useQuadTree();
+    public void vehicleCannotBePerceived_tooFarRight() {
         setupVehicles(new MutableCartesianPoint(105, 90, 0));
         assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCanBePerceived_FarLeft_270viewingAngle_QuadTree() {
-        useQuadTree();
+    public void vehicleCanBePerceived_FarLeft_270viewingAngle() {
         simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 115, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCanBePerceived_FarRight_270viewingAngle_QuadTree() {
-        useQuadTree();
+    public void vehicleCanBePerceived_FarRight_270viewingAngle() {
         simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
         setupVehicles(new MutableCartesianPoint(105, 90, 0));
         assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
     }
 
     @Test
-    public void vehicleCanBePerceived_Grid() {
-        useGrid();
-        setupVehicles(new MutableCartesianPoint(110, 100, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_includesDimensions_Grid() {
-        useQuadTree();
-        setupVehicles(new MutableCartesianPoint(110, 100, 0));
-        List<VehicleObject> perceivedVehicles = simplePerceptionModule.getPerceivedVehicles();
-        assertEquals(1, perceivedVehicles.size());
-        VehicleObject perceivedVehicle = perceivedVehicles.get(0);
-        assertEquals(5d, perceivedVehicle.getLength(), 0.01);
-        assertEquals(2.5d, perceivedVehicle.getWidth(), 0.01);
-        assertEquals(10d, perceivedVehicle.getHeight(), 0.01);
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_outOfRange_Grid() {
-        useGrid();
-        setupVehicles(new MutableCartesianPoint(310, 100, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_OnLeftBoundVector_Grid() {
-        useGrid();
-        setupVehicles(new MutableCartesianPoint(110, 110, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_OnRightBoundVector_Grid() {
-        useGrid();
-        setupVehicles(new MutableCartesianPoint(110, 90, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_tooFarLeft_Grid() {
-        useGrid();
-        setupVehicles(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCannotBePerceived_tooFarRight_Grid() {
-        useGrid();
-        setupVehicles(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(0, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_FarLeft_270viewingAngle_Grid() {
-        useGrid();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
-        setupVehicles(new MutableCartesianPoint(105, 115, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void vehicleCanBePerceived_FarRight_270viewingAngle_Grid() {
-        useGrid();
-        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(270d, 200d).build()); // overwrite config
-        setupVehicles(new MutableCartesianPoint(105, 90, 0));
-        assertEquals(1, simplePerceptionModule.getPerceivedVehicles().size());
-    }
-
-    @Test
-    public void trafficLightsCanBePerceived_TrivialIndex() {
-        setupTrafficLights(new MutableCartesianPoint(110, 100, 0));
-
-        assertEquals(1, simplePerceptionModule.getTrafficLightsInRange().size());
-        assertEquals(TrafficLightState.GREEN, simplePerceptionModule.getTrafficLightsInRange().get(0).getTrafficLightState());
-    }
-
-    @Test
-    public void trafficLightsCanBePerceived_TrafficLightTree() {
-        useTlTree();
+    public void trafficLightsCanBePerceived() {
         setupTrafficLights(new MutableCartesianPoint(110, 100, 0));
         trafficObjectIndex.updateTrafficLights(mock(Map.class)); // update needs to be called to initialize tree
 
@@ -378,34 +232,5 @@ public class SimplePerceptionModuleTest {
         }
         TrafficLightGroup trafficLightGroup = new TrafficLightGroup("tls", trafficLightProgramsMocks, trafficLightMocks);
         trafficObjectIndex.addTrafficLightGroup(trafficLightGroup);
-    }
-
-    private void useQuadTree() {
-        VehicleTree vehicleTree = new VehicleTree();
-        vehicleTree.splitSize = 20;
-        vehicleTree.maxDepth = 12;
-        trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
-                .withVehicleIndex(vehicleTree)
-                .build();
-        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
-    }
-
-    private void useGrid() {
-        VehicleGrid vehicleGrid = new VehicleGrid();
-        vehicleGrid.cellHeight = 5;
-        vehicleGrid.cellWidth = 5;
-        trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
-                .withVehicleIndex(vehicleGrid)
-                .build();
-        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
-    }
-
-    private void useTlTree() {
-        TrafficLightTree trafficLightTree = new TrafficLightTree();
-        trafficObjectIndex = new TrafficObjectIndex.Builder((mock(Logger.class)))
-                .withTrafficLightIndex(trafficLightTree)
-                .build();
-
-        when(cpcMock.getTrafficObjectIndex()).thenReturn(trafficObjectIndex);
     }
 }

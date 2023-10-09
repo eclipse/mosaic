@@ -30,8 +30,6 @@ import java.util.List;
 public class OriginDestinationVehicleFlowGenerator {
     private final List<COriginDestinationMatrixMapper.COriginDestinationPoint> originDestinationPointConfigurations;
     private final List<CPrototype> prototypeConfigurations;
-    private final Boolean fixedOrder;
-
     /**
      * Values for the OD-matrix. Unit should be vehicles/hour.
      */
@@ -49,7 +47,6 @@ public class OriginDestinationVehicleFlowGenerator {
     OriginDestinationVehicleFlowGenerator(COriginDestinationMatrixMapper matrixMapperConfiguration) {
         this.originDestinationPointConfigurations = matrixMapperConfiguration.points;
         this.prototypeConfigurations = matrixMapperConfiguration.types;
-        this.fixedOrder = matrixMapperConfiguration.fixedOrder;
         this.odValues = matrixMapperConfiguration.odValues;
         this.startingTime = matrixMapperConfiguration.startingTime;
         this.maxTime = matrixMapperConfiguration.maxTime;
@@ -64,7 +61,7 @@ public class OriginDestinationVehicleFlowGenerator {
      * @param randomNumberGenerator {@link RandomNumberGenerator} used for flow noise
      * @param flowNoise             flag if the stream should be affected by noise
      */
-    void generateVehicleStreams(SpawningFramework framework, RandomNumberGenerator randomNumberGenerator, boolean flowNoise) {
+    void generateVehicleStreams(SpawningFramework framework, RandomNumberGenerator randomNumberGenerator, boolean flowNoise, boolean fixedOrder) {
         for (int fromId = 0; fromId < originDestinationPointConfigurations.size(); fromId++) {
             for (int toId = 0; toId < originDestinationPointConfigurations.size(); toId++) {
 
@@ -78,7 +75,6 @@ public class OriginDestinationVehicleFlowGenerator {
                 vehicleConfiguration.destination = originDestinationPointConfigurations.get(toId).position;
                 vehicleConfiguration.targetFlow = flow;
                 vehicleConfiguration.types = prototypeConfigurations;
-                vehicleConfiguration.fixedOrder = fixedOrder;
 
                 vehicleConfiguration.startingTime = startingTime;
                 vehicleConfiguration.maxTime = maxTime;
@@ -86,7 +82,7 @@ public class OriginDestinationVehicleFlowGenerator {
                 vehicleConfiguration.departSpeedMode = departureSpeedMode;
                 // Assuming, if we only have set a flow, that we want to have an unlimited number of vehicles
 
-                framework.addVehicleStream(new VehicleFlowGenerator(vehicleConfiguration, randomNumberGenerator, flowNoise));
+                framework.addVehicleStream(new VehicleFlowGenerator(vehicleConfiguration, randomNumberGenerator, flowNoise, fixedOrder));
             }
         }
     }

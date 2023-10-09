@@ -19,18 +19,14 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.TrafficObjectIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.TrafficLightObject;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.util.TrafficLightIndexTypeAdapterFactory;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
-
-import com.google.gson.annotations.JsonAdapter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JsonAdapter(TrafficLightIndexTypeAdapterFactory.class)
 public abstract class TrafficLightIndex {
 
     /**

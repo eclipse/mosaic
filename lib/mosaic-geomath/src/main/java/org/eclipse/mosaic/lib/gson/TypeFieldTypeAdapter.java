@@ -30,16 +30,33 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Map;
 
-public abstract class AbstractTypeAdapterFactory<T> extends TypeAdapter<T> {
+/**
+ * A type adapter which creates an object of a specific type based on a hidden "type" field.
+ * An implementation of this abstract class must specify which type name translates to which target class.
+ *
+ * @param <T> the base type of which objects are created during deserialization
+ */
+public abstract class TypeFieldTypeAdapter<T> extends TypeAdapter<T> {
 
     private final static String TYPE_FIELD = "type";
 
     private final Gson gson;
     private final TypeAdapterFactory parentFactory;
 
-    protected AbstractTypeAdapterFactory(TypeAdapterFactory parentFactory, Gson gson) {
+    private boolean allowNullType = false;
+
+    protected TypeFieldTypeAdapter(TypeAdapterFactory parentFactory, Gson gson) {
         this.parentFactory = parentFactory;
         this.gson = gson;
+    }
+
+    /**
+     * By default, a missing "type" field in the input JSON string leads to an error.
+     * By calling this method any proceeding deserialization processes allow this missing field by
+     * passing {@code null} to {@link #fromTypeName} instead of throwing an exception.
+     */
+    protected void allowNullType() {
+        this.allowNullType = true;
     }
 
     /**
@@ -62,10 +79,15 @@ public abstract class AbstractTypeAdapterFactory<T> extends TypeAdapter<T> {
     public T read(JsonReader in) {
         JsonElement jsonElement = Streams.parse(in);
         JsonElement typeJsonElement = jsonElement.getAsJsonObject().remove(TYPE_FIELD);
-        if (typeJsonElement == null) {
+
+        final String typeName;
+        if (typeJsonElement != null) {
+            typeName = typeJsonElement.getAsString();
+        } else if (allowNullType) {
+            typeName = null;
+        } else {
             throw new JsonParseException("cannot deserialize because it does not define a field named " + TYPE_FIELD);
         }
-        String typeName = typeJsonElement.getAsString();
 
         @SuppressWarnings("unchecked")
         TypeAdapter<T> delegate = (TypeAdapter<T>) gson.getDelegateAdapter(parentFactory, TypeToken.get(fromTypeName(typeName)));
