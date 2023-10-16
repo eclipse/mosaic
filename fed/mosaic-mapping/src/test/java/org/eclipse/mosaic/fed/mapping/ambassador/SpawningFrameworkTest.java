@@ -17,7 +17,6 @@ package org.eclipse.mosaic.fed.mapping.ambassador;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -90,7 +89,7 @@ public class SpawningFrameworkTest {
         //ASSERT
         VehicleTypesInitialization vehicleTypesInitialization = spawningFramework.generateVehicleTypesInitialization();
         assertNotNull(vehicleTypesInitialization);
-        assertTrue(vehicleTypesInitialization.getTypes().isEmpty());
+        assertEquals(vehicleTypesInitialization.getTypes().size(), framework.prototypes.size());
     }
 
     @Test
@@ -106,7 +105,7 @@ public class SpawningFrameworkTest {
         //ASSERT
         VehicleTypesInitialization vehicleTypesInitialization = spawningFramework.generateVehicleTypesInitialization();
         assertNotNull(vehicleTypesInitialization);
-        assertEquals(1, vehicleTypesInitialization.getTypes().size());
+        assertEquals(2, vehicleTypesInitialization.getTypes().size());
 
         VehicleType type = vehicleTypesInitialization.getTypes().get("prototype1");
         assertEquals("prototype1", type.getName());
