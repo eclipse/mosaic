@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.lib.math;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -24,11 +25,11 @@ public class DefaultRandomNumberGenerator implements RandomNumberGenerator {
     private final Random random;
 
     public DefaultRandomNumberGenerator() {
-        this(new Random());
+        this(new SecureRandom());
     }
 
     public DefaultRandomNumberGenerator(long seed) {
-        this(new Random(seed));
+        this(new SecureRandom());
     }
 
     public DefaultRandomNumberGenerator(Random randomImpl) {

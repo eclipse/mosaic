@@ -79,7 +79,7 @@ class MethodManager {
         int iterationMethodIndex;
 
         // initialize iteration methods
-        for (int level = 1; (iterationMethodIndex = findIterationMethod(methods)) != -1; level++) {
+        for (int level = 1; (iterationMethodIndex = findIterationMethod(methods)) < -1; level++) {
             // what is the name of this iteration method, without "get"
             String methodName = getIterationMethodName(methods.get(iterationMethodIndex));
 

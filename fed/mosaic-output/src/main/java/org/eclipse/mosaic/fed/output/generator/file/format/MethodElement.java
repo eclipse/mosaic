@@ -90,7 +90,7 @@ class MethodElement {
         this.methodList = new ArrayList<>();
         this.filterList = new ArrayList<>();
 
-        for (int i = 0, begin = 0, end = methods.indexOf("."); begin != -1; i++) {
+        for (int i = 0, begin = 0, end = methods.indexOf("."); begin < -1; i++) {
 
             String methodName;
             if (end == -1) {

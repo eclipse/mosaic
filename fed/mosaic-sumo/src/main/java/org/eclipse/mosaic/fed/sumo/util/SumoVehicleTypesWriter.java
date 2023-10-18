@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -140,6 +142,26 @@ public class SumoVehicleTypesWriter {
     private Document initializeDocument() {
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            String FEATURE = null;
+            try {
+                FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+                documentBuilderFactory.setFeature(FEATURE, false);
+
+                FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+                documentBuilderFactory.setFeature(FEATURE, false);
+
+                FEATURE = "http://xml.org/sax/features/external-general-entities";
+                documentBuilderFactory.setFeature(FEATURE, false);
+
+                documentBuilderFactory.setXIncludeAware(false);
+                documentBuilderFactory.setExpandEntityReferences(false);
+
+                documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+            } catch (ParserConfigurationException e) {
+                throw new IllegalStateException("The feature '"
+                        + FEATURE + "' is not supported by your XML processor.", e);
+            }
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
             // set meta tags
@@ -273,6 +295,9 @@ public class SumoVehicleTypesWriter {
     private void writeXmlFile(File file, Document document) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.toString());
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
