@@ -119,7 +119,7 @@ public class Grid<T> {
     public boolean addItem(T item) {
         synchronized (tmpIndexA) {
             CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), new CellIndex());
-            CellIndex oldCellIndex = items.put(new ItemKey<>(adapter.getItemHash(item), item), newCellIndex);
+            CellIndex oldCellIndex = items.put(getItemKey(item), newCellIndex);
             if (oldCellIndex != null) {
                 getGridCell(oldCellIndex).remove(item);
                 return false;
@@ -146,7 +146,7 @@ public class Grid<T> {
 
     public void removeItem(T item) {
         synchronized (tmpIndexA) {
-            CellIndex cellIndex = items.remove(new ItemKey<>(adapter.getItemHash(item), item));
+            CellIndex cellIndex = items.remove(getItemKey(item));
             if (cellIndex != null) {
                 getGridCell(cellIndex).remove(item);
             }
@@ -166,6 +166,10 @@ public class Grid<T> {
 
     private GridCell<T> getGridCell(int col, int row) {
         return grid.get(col).get(row);
+    }
+
+    private ItemKey<T> getItemKey(T item) {
+        return new ItemKey<>(adapter.getItemHash(item), item);
     }
 
     private static class GridCell<T> extends ArrayList<T> {
