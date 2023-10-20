@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -37,7 +38,7 @@ public class Grid<T> {
     private final double maxZ;
 
     private final List<List<GridCell<T>>> grid;
-    private final Map<T, CellIndex> items = new HashMap<>();
+    private final Map<ItemKey<T>, CellIndex> items = new HashMap<>();
 
     private final CellIndex tmpIndexA = new CellIndex();
     private final CellIndex tmpIndexB = new CellIndex();
@@ -118,7 +119,7 @@ public class Grid<T> {
     public boolean addItem(T item) {
         synchronized (tmpIndexA) {
             CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), new CellIndex());
-            CellIndex oldCellIndex = items.put(item, newCellIndex);
+            CellIndex oldCellIndex = items.put(new ItemKey<>(adapter.getItemHash(item), item), newCellIndex);
             if (oldCellIndex != null) {
                 getGridCell(oldCellIndex).remove(item);
                 return false;
@@ -130,22 +131,22 @@ public class Grid<T> {
 
     public void updateGrid() {
         synchronized (tmpIndexA) {
-            items.forEach((item, currentIndex) -> {
-                CellIndex newCellIndex = toCellIndex(adapter.getCenterX(item), adapter.getCenterZ(item), tmpIndexA);
+            items.forEach((key, currentIndex) -> {
+                CellIndex newCellIndex = toCellIndex(adapter.getCenterX(key.item), adapter.getCenterZ(key.item), tmpIndexA);
                 if (newCellIndex.isEqualTo(currentIndex)) {
                     // no index change -> do nothing
                     return;
                 }
-                getGridCell(currentIndex).remove(item);
+                getGridCell(currentIndex).remove(key.item);
                 currentIndex.set(newCellIndex);
-                getGridCell(currentIndex).add(item);
+                getGridCell(currentIndex).add(key.item);
             });
         }
     }
 
     public void removeItem(T item) {
         synchronized (tmpIndexA) {
-            CellIndex cellIndex = items.remove(item);
+            CellIndex cellIndex = items.remove(new ItemKey<>(adapter.getItemHash(item), item));
             if (cellIndex != null) {
                 getGridCell(cellIndex).remove(item);
             }
@@ -184,6 +185,33 @@ public class Grid<T> {
 
         public boolean isEqualTo(CellIndex other) {
             return other != null && this.row == other.row && this.col == other.col;
+        }
+    }
+
+    private static class ItemKey<T> {
+
+        private final T item;
+        private final Integer hash;
+
+        public ItemKey(Integer hash, T item) {
+            this.hash = hash;
+            this.item = item;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            return Objects.equals(((ItemKey<?>) o).hash, this.hash);
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
         }
     }
 }

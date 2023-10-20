@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -29,6 +30,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.VehicleObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.TrafficLightTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleGrid;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.providers.VehicleTree;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
@@ -61,6 +63,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
 public class SimplePerceptionModuleTest {
@@ -106,11 +109,20 @@ public class SimplePerceptionModuleTest {
                 .thenReturn(new CartesianRectangle(new MutableCartesianPoint(100, 90, 0), new MutableCartesianPoint(310, 115, 0)));
         SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
 
+        VehicleIndex vehicleIndex;
+        switch (vehicleIndexType) {
+            case "tree":
+                vehicleIndex = new VehicleTree(20, 12);
+                break;
+            case "grid":
+                vehicleIndex = new VehicleGrid(5, 5);
+                break;
+            default:
+                vehicleIndex = null;
+        }
+
         trafficObjectIndex = new TrafficObjectIndex.Builder(mock((Logger.class)))
-                .withVehicleIndex(
-                        vehicleIndexType.equals("tree") ? new VehicleTree(20, 12) :
-                        vehicleIndexType.equals("grid") ? new VehicleGrid(5, 5) : null
-                )
+                .withVehicleIndex(vehicleIndex)
                 .withTrafficLightIndex(new TrafficLightTree(20))
                 .build();
         // setup cpc
@@ -188,6 +200,33 @@ public class SimplePerceptionModuleTest {
     }
 
     @Test
+    public void vehicleCanBeRemoved() {
+        simplePerceptionModule.enable(new SimplePerceptionConfiguration.Builder(360d, 1000d).build());
+        List<VehicleData> addedVehicles = setupVehicles(
+                new MutableCartesianPoint(105, 90, 0),
+                new MutableCartesianPoint(105, 90, 0),
+                new MutableCartesianPoint(105, 90, 0)
+        );
+        // assert all vehicles have been added
+        assertEquals(3, trafficObjectIndex.getNumberOfVehicles());
+        assertEquals(3, simplePerceptionModule.getPerceivedVehicles().size());
+        // modify vehicle objects
+        List<VehicleData> adjustedVehicles = addedVehicles.stream()
+                .map(vehicleData ->
+                        new VehicleData.Builder(vehicleData.getTime(), vehicleData.getName())
+                                .copyFrom(vehicleData)
+                                .movement(1d, 1d, 1d) // adjust vehicles
+                                .create())
+                .collect(Collectors.toList());
+        trafficObjectIndex.updateVehicles(adjustedVehicles);
+        // try to remove vehicles
+        trafficObjectIndex.removeVehicles(addedVehicles.stream().map(VehicleData::getName).collect(Collectors.toList()));
+        // assert vehicles have been properly removed
+        assertEquals(0, trafficObjectIndex.getNumberOfVehicles());
+        assertTrue(simplePerceptionModule.getPerceivedVehicles().isEmpty());
+    }
+
+    @Test
     public void trafficLightsCanBePerceived() {
         setupTrafficLights(new MutableCartesianPoint(110, 100, 0));
         trafficObjectIndex.updateTrafficLights(mock(Map.class)); // update needs to be called to initialize tree
@@ -196,7 +235,7 @@ public class SimplePerceptionModuleTest {
         assertEquals(TrafficLightState.GREEN, simplePerceptionModule.getTrafficLightsInRange().get(0).getTrafficLightState());
     }
 
-    private void setupVehicles(CartesianPoint... positions) {
+    private List<VehicleData> setupVehicles(CartesianPoint... positions) {
         List<VehicleData> vehiclesInIndex = new ArrayList<>();
         int i = 1;
         for (CartesianPoint position : positions) {
@@ -213,6 +252,7 @@ public class SimplePerceptionModuleTest {
             trafficObjectIndex.registerVehicleType(vehicleName, vehicleType);
         }
         trafficObjectIndex.updateVehicles(vehiclesInIndex);
+        return vehiclesInIndex;
     }
 
     private void setupTrafficLights(CartesianPoint... positions) {

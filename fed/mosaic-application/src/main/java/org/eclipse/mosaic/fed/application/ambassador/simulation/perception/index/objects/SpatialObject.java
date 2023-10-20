@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.geo.MutableCartesianPoint;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d {
 
@@ -89,8 +90,11 @@ public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d
 
     @Override
     public int hashCode() {
-        // use id as hashcode to store only one VehicleObject per vehicle id in perception index (e.q. quadtree)
-        return this.id.hashCode();
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(cartesianPosition)
+                .toHashCode();
     }
 
     /**

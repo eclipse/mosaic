@@ -58,7 +58,7 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
     /**
      * The 2D bounding box of a vehicle from birds eye view.
      */
-    private VehicleBoundingBox boundingBox = null;
+    private transient VehicleBoundingBox boundingBox = null;
 
     public VehicleObject(String id) {
         super(id);
@@ -159,7 +159,6 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(length, that.length)
                 .append(width, that.width)
                 .append(height, that.height)
-                .append(boundingBox, that.boundingBox)
                 .isEquals();
     }
 
@@ -174,7 +173,6 @@ public class VehicleObject extends SpatialObject<VehicleObject> {
                 .append(length)
                 .append(width)
                 .append(height)
-                .append(boundingBox)
                 .toHashCode();
     }
 
