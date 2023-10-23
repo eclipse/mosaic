@@ -19,6 +19,11 @@ import org.eclipse.mosaic.lib.geo.Area;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 public interface SpatialItemAdapter<T> {
+
+    default int getItemHash(T item) {
+        return item.hashCode();
+    }
+
     double getMinX(T item);
 
     double getMinY(T item);
@@ -65,6 +70,7 @@ public interface SpatialItemAdapter<T> {
     }
 
     class PointAdapter<T extends Vector3d> implements SpatialItemAdapter<T> {
+
         @Override
         public double getMinX(T item) {
             return item.x;

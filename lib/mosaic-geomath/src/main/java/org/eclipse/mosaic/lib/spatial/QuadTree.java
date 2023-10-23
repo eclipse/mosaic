@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.spatial;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class QuadTree<T> {
 
     private final TreeNode root;
 
-    private final Map<T, ObjectAndNode> objects = new HashMap<>();
+    private final Map<Integer, ObjectAndNode> objects = new HashMap<>();
     private final SpatialItemAdapter<T> adapter;
 
     /**
@@ -164,14 +163,10 @@ public class QuadTree<T> {
         return root.objectsCount;
     }
 
-    public Collection<T> getAllObjects() {
-        return objects.keySet();
-    }
-
     public boolean addItem(T item) {
         ObjectAndNode oan = new ObjectAndNode(item);
         if (root.isInBounds(oan.objectPos)) {
-            objects.put(item, oan);
+            objects.put(adapter.getItemHash(item), oan);
             root.addObjectNode(oan);
             return true;
         }
@@ -179,7 +174,7 @@ public class QuadTree<T> {
     }
 
     public void removeObject(T object) {
-        ObjectAndNode oan = objects.remove(object);
+        ObjectAndNode oan = objects.remove(adapter.getItemHash(object));
         if (oan != null) {
             root.removeObjectNode(oan);
         }
