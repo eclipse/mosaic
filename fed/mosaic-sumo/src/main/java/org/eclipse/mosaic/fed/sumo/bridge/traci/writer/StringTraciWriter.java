@@ -31,18 +31,20 @@ public class StringTraciWriter extends AbstractTraciParameterWriter<String> {
 
     @Override
     public int getVariableLength(String argument) {
-        return getLength() + argument.length();
+        return getLength() + argument.getBytes(StandardCharsets.UTF_8).length;
     }
 
     @Override
     public void write(DataOutputStream out) throws IOException {
-        out.writeInt(value.length());
-        out.write(value.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+        out.writeInt(bytes.length);
+        out.write(bytes);
     }
 
     @Override
     public void writeVariableArgument(DataOutputStream out, String argument) throws IOException {
-        out.writeInt(argument.length());
-        out.write(argument.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = argument.getBytes(StandardCharsets.UTF_8);
+        out.writeInt(bytes.length);
+        out.write(bytes);
     }
 }
