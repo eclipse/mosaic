@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,10 +197,10 @@ public class ObjectInstantiation<T> {
     private T createWithDefaultDefaultConstructor() throws InstantiationException {
         debug("Try to instantiate using the default constructor.");
         try {
-            T obj = clazz.newInstance();
+            T obj = clazz.getDeclaredConstructor().newInstance();
             debug("Object instantiated using the default constructor.");
             return obj;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 
             throw new InstantiationException(e.getMessage());
         }
