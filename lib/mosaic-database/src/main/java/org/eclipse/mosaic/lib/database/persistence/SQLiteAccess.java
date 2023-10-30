@@ -130,7 +130,6 @@ class SQLiteAccess {
     protected Result executeStatement(String statementString) throws SQLException {
         ResultSet resultSet;
 
-
         Statement statement = connect();
         statement.execute(statementString);
 
