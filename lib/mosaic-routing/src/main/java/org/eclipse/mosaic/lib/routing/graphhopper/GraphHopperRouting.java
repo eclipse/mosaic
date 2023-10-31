@@ -20,32 +20,36 @@ import org.eclipse.mosaic.lib.database.DatabaseUtils;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
-import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.AlternativeRoutesRoutingAlgorithm;
-import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.DijkstraCamvitChoiceRouting;
-import org.eclipse.mosaic.lib.routing.graphhopper.extended.ExtendedGraphHopper;
+import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.RoutingAlgorithmFactory;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.DatabaseGraphLoader;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.graphhopper.GraphHopper;
+import com.graphhopper.config.Profile;
 import com.graphhopper.routing.Path;
-import com.graphhopper.routing.QueryGraph;
-import com.graphhopper.routing.util.BikeFlagEncoder;
-import com.graphhopper.routing.util.CarFlagEncoder;
-import com.graphhopper.routing.util.DefaultEdgeFilter;
+import com.graphhopper.routing.RoutingAlgorithm;
+import com.graphhopper.routing.ev.BooleanEncodedValue;
+import com.graphhopper.routing.querygraph.QueryGraph;
+import com.graphhopper.routing.querygraph.VirtualEdgeIteratorState;
+import com.graphhopper.routing.util.AccessFilter;
 import com.graphhopper.routing.util.EdgeFilter;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.FlagEncoder;
-import com.graphhopper.routing.weighting.TurnWeighting;
-import com.graphhopper.storage.TurnCostExtension;
-import com.graphhopper.storage.index.QueryResult;
+import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.storage.Graph;
+import com.graphhopper.storage.NodeAccess;
+import com.graphhopper.storage.index.Snap;
 import com.graphhopper.util.DistanceCalc;
 import com.graphhopper.util.DistancePlaneProjection;
 import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.PMap;
+import com.graphhopper.util.Parameters;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +63,17 @@ import java.util.List;
 import java.util.Set;
 
 public class GraphHopperRouting {
+
+    public static final Profile PROFILE_CAR = new Profile("car").setVehicle("car").setTurnCosts(true);
+
+    public static final Profile PROFILE_BIKE = new Profile("bike").setVehicle("bike").setTurnCosts(false);
+
+    public static final List<Profile> PROFILES = new ArrayList<>();
+
+    static {
+        PROFILES.add(PROFILE_CAR);
+        PROFILES.add(PROFILE_BIKE);
+    }
 
     /**
      * If the distance of the query position to the closest node is lower than this
@@ -88,6 +103,7 @@ public class GraphHopperRouting {
 
     private GraphhopperToDatabaseMapper graphMapper;
     private Database db;
+    private VehicleEncodingManager encoding;
 
     public GraphHopperRouting loadGraphFromDatabase(Database db) {
         this.db = db;
@@ -95,13 +111,9 @@ public class GraphHopperRouting {
         //initialize reader and mapper for database import into graphhopper
         GraphLoader reader = new DatabaseGraphLoader(db);
         graphMapper = new GraphhopperToDatabaseMapper();
+        encoding = new VehicleEncodingManager(PROFILES);
 
-        ghApi = new ExtendedGraphHopper(reader, graphMapper).forDesktop();
-        //we only need a encoder for speed,flag and turn costs for cars
-        ghApi.setEncodingManager(EncodingManager.create(
-                new CarFlagEncoder(5, 5, 127),
-                new BikeFlagEncoder(4, 2, 0)
-        ));
+        ghApi = new ExtendedGraphHopper(encoding, reader, graphMapper);
 
         //load graph from database
         ghApi.importOrLoad();
@@ -114,14 +126,22 @@ public class GraphHopperRouting {
             throw new IllegalStateException("Load database at first");
         }
 
-        final FlagEncoder flagEncoder;
+        final Profile profile;
         if (routingRequest.getRoutingParameters().getVehicleClass() == VehicleClass.Bicycle) {
-            flagEncoder = ghApi.getEncodingManager().getEncoder("bike");
+            profile = PROFILE_BIKE;
         } else {
-            flagEncoder = ghApi.getEncodingManager().getEncoder("car");
+            profile = PROFILE_CAR;
         }
 
-        final GraphHopperWeighting graphhopperWeighting = new GraphHopperWeighting(flagEncoder, graphMapper);
+        final VehicleEncoding vehicleEncoding = encoding.getVehicleEncoding(profile.getVehicle());
+
+        final TurnCostsProvider turnCostProvider = new TurnCostsProvider(vehicleEncoding, ghApi.getBaseGraph().getTurnCostStorage());
+
+        if (!routingRequest.getRoutingParameters().isConsiderTurnCosts()) {
+            turnCostProvider.disableTurnCosts();
+        }
+
+        final GraphHopperWeighting graphhopperWeighting = new GraphHopperWeighting(vehicleEncoding, encoding.wayType(), turnCostProvider, graphMapper);
 
         // if there is no cost function given (initial routes), use the default
         if (routingRequest.getRoutingParameters().getRoutingCostFunction() == null) {
@@ -133,41 +153,33 @@ public class GraphHopperRouting {
         final RoutingPosition source = routingRequest.getSource();
         final RoutingPosition target = routingRequest.getTarget();
 
-        final QueryResult querySource = createQueryForSource(source, flagEncoder);
-        final QueryResult queryTarget = createQueryForTarget(target, flagEncoder);
+        final Snap snapSource = createQueryForSource(source, vehicleEncoding.access());
+        final Snap snapTarget = createQueryForTarget(target, vehicleEncoding.access());
 
-        if (querySource.getClosestEdge() == null || queryTarget.getClosestEdge() == null) {
+        if (snapSource.getClosestEdge() == null || snapTarget.getClosestEdge() == null) {
             log.warn("Could not find a route from {} to {}", routingRequest.getSource(), routingRequest.getTarget());
             return Lists.newArrayList();
         }
 
-        final QueryGraph queryGraph = new QueryGraph(ghApi.getGraphHopperStorage());
-        queryGraph.lookup(querySource, queryTarget);
+        final QueryGraph queryGraph = QueryGraph.create(ghApi.getBaseGraph(), snapSource, snapTarget);
 
-        final TurnWeighting weighting = new TurnWeightingOptional(
-                graphhopperWeighting, (TurnCostExtension) queryGraph.getExtension(),
-                routingRequest.getRoutingParameters().isConsiderTurnCosts(),
-                routingRequest.getRoutingParameters().getRestrictionCosts()
+        final PMap hints = new PMap()
+                .putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, routingRequest.getRoutingParameters().getNumAlternativeRoutes() + 1);
+
+        final Weighting weighting = queryGraph.wrapWeighting(
+                graphhopperWeighting
         );
 
-        // create algorithm
-        final AlternativeRoutesRoutingAlgorithm algo = new DijkstraCamvitChoiceRouting(queryGraph, weighting);
-        algo.setRequestAlternatives(routingRequest.getRoutingParameters().getNumAlternativeRoutes());
+        final RoutingAlgorithm algo = RoutingAlgorithmFactory.DEFAULT.createAlgorithm(queryGraph, weighting, hints);
 
-        final List<Path> paths = new ArrayList<>();
-
-        // Calculates all paths and returns the best one
-        paths.add(algo.calcPath(querySource.getClosestNode(), queryTarget.getClosestNode()));
-
-        //add alternative paths to path set
-        paths.addAll(algo.getAlternativePaths());
+        final List<Path> paths = algo.calcPaths(snapSource.getClosestNode(), snapTarget.getClosestNode());
 
         final Set<String> duplicateSet = new HashSet<>();
         final List<CandidateRoute> result = new ArrayList<>();
 
         // convert paths to routes
         for (final Path path : paths) {
-            final CandidateRoute route = convertPath(path, queryGraph, querySource, queryTarget, target);
+            final CandidateRoute route = convertPath(queryGraph, path, target);
             if (route != null
                     && !route.getConnectionIds().isEmpty()
                     && checkForDuplicate(route, duplicateSet)
@@ -180,55 +192,56 @@ public class GraphHopperRouting {
         return result;
     }
 
-    private QueryResult createQueryForTarget(RoutingPosition target, FlagEncoder flagEncoder) {
-        final EdgeFilter toEdgeFilter = createEdgeFilterForRoutingPosition(target, flagEncoder);
-        QueryResult queryTarget = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
+    private Snap createQueryForTarget(RoutingPosition target, BooleanEncodedValue accessEnc) {
+        final EdgeFilter toEdgeFilter = createEdgeFilterForRoutingPosition(target, accessEnc);
+        Snap queryTarget = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
         if (target.getConnectionId() != null) {
-            return fixQueryResultIfNoClosestEdgeFound(queryTarget, target, flagEncoder);
+            return fixQueryResultIfNoClosestEdgeFound(queryTarget, target, accessEnc);
         } else {
             return fixQueryResultIfSnappedPointIsCloseToTowerNode(queryTarget, target);
         }
     }
 
-    private QueryResult createQueryForSource(RoutingPosition source, FlagEncoder flagEncoder) {
-        final EdgeFilter fromEdgeFilter = createEdgeFilterForRoutingPosition(source, flagEncoder);
-        QueryResult querySource = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
+    private Snap createQueryForSource(RoutingPosition source, BooleanEncodedValue accessEnc) {
+        final EdgeFilter fromEdgeFilter = createEdgeFilterForRoutingPosition(source, accessEnc);
+        Snap querySource = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
         if (source.getConnectionId() != null) {
             querySource = fixQueryResultIfSnappedPointIsTowerNode(querySource, source, fromEdgeFilter);
-            return fixQueryResultIfNoClosestEdgeFound(querySource, source, flagEncoder);
+            return fixQueryResultIfNoClosestEdgeFound(querySource, source, accessEnc);
         } else {
             return fixQueryResultIfSnappedPointIsCloseToTowerNode(querySource, source);
         }
     }
 
-    private QueryResult fixQueryResultIfSnappedPointIsCloseToTowerNode(QueryResult queryResult, RoutingPosition target) {
-        if (queryResult.getSnappedPosition() == QueryResult.Position.TOWER || target.getConnectionId() != null) {
+    private Snap fixQueryResultIfSnappedPointIsCloseToTowerNode(Snap queryResult, RoutingPosition target) {
+        if (queryResult.getSnappedPosition() == Snap.Position.TOWER || target.getConnectionId() != null) {
             return queryResult;
         }
         Node closestNode = graphMapper.toNode(queryResult.getClosestNode());
         /* If the query result is snapped to an edge, but the matched node is very close to the query, than we use the actual closest node
          * as the target of the route.*/
         if (closestNode != null && target.getPosition().distanceTo(closestNode.getPosition()) < TARGET_NODE_QUERY_DISTANCE) {
-            queryResult.setSnappedPosition(QueryResult.Position.TOWER);
+            queryResult.setSnappedPosition(Snap.Position.TOWER);
         }
         return queryResult;
     }
 
-    private QueryResult fixQueryResultIfNoClosestEdgeFound(QueryResult queryResult, RoutingPosition routingPosition, FlagEncoder flagEncoder) {
+    private Snap fixQueryResultIfNoClosestEdgeFound(Snap queryResult, RoutingPosition routingPosition, BooleanEncodedValue accessEnc) {
         if (queryResult.getClosestEdge() == null) {
             log.warn("Wrong routing request: The from-connection {} does not fit with the given position {}", routingPosition.getConnectionId(), routingPosition.getPosition());
+
             return ghApi.getLocationIndex().findClosest(
-                    routingPosition.getPosition().getLatitude(), routingPosition.getPosition().getLongitude(), DefaultEdgeFilter.allEdges(flagEncoder)
+                    routingPosition.getPosition().getLatitude(), routingPosition.getPosition().getLongitude(), AccessFilter.allEdges(accessEnc)
             );
         }
         return queryResult;
     }
 
-    private QueryResult fixQueryResultIfSnappedPointIsTowerNode(QueryResult queryResult, RoutingPosition routingPosition, EdgeFilter fromEdgeFilter) {
+    private Snap fixQueryResultIfSnappedPointIsTowerNode(Snap queryResult, RoutingPosition routingPosition, EdgeFilter fromEdgeFilter) {
         /* If the requested position is in front or behind the edge it is mapped either on the start or end of the edge (one of the tower nodes).
          * As a result, the resulting route can bypass turn restrictions in very rare cases. To avoid this, we choose an alternative
          * node based on the queried connection.*/
-        if (queryResult.getSnappedPosition() == QueryResult.Position.TOWER) {
+        if (queryResult.getSnappedPosition() == Snap.Position.TOWER) {
             // use the node before target node (index -2) as the alternative query node to find a QueryResult _on_ the connection.
             Node alternativeQueryNode = DatabaseUtils.getNodeByIndex(db.getConnection(routingPosition.getConnectionId()), -2);
             if (alternativeQueryNode != null) {
@@ -252,18 +265,18 @@ public class GraphHopperRouting {
         return duplicateSet.add(nodeIdList);
     }
 
-    private EdgeFilter createEdgeFilterForRoutingPosition(final RoutingPosition position, final FlagEncoder flagEncoder) {
+    private EdgeFilter createEdgeFilterForRoutingPosition(final RoutingPosition position, final BooleanEncodedValue accessEnc) {
         if (position.getConnectionId() == null) {
-            return DefaultEdgeFilter.allEdges(flagEncoder);
+            return AccessFilter.allEdges(accessEnc);
         }
         final int forcedEdge = graphMapper.fromConnection(db.getConnection(position.getConnectionId()));
         if (forcedEdge < 0) {
-            return DefaultEdgeFilter.allEdges(flagEncoder);
+            return AccessFilter.allEdges(accessEnc);
         }
         return edgeState -> edgeState.getEdge() == forcedEdge;
     }
 
-    private CandidateRoute convertPath(Path newPath, QueryGraph queryGraph, QueryResult source, QueryResult target, RoutingPosition targetPosition) {
+    private CandidateRoute convertPath(Graph graph, Path newPath, RoutingPosition targetPosition) {
         PointList pointList = newPath.calcPoints();
         GHPoint pathTarget = Iterables.getLast(pointList);
         GHPoint origTarget = new GHPoint(targetPosition.getPosition().getLatitude(), targetPosition.getPosition().getLongitude());
@@ -278,26 +291,20 @@ public class GraphHopperRouting {
 
         List<String> pathConnections = new ArrayList<>();
 
-        while (edgesIt.hasNext()) {
-            EdgeIteratorState ghEdge = edgesIt.next();
+        double offsetFromSource = 0;
+        int lastNode = -1;
+        Connection lastConnection = null;
+        NodeAccess nodes = graph.getNodeAccess();
 
-            /*
-             * If the requested source or target point is in the middle of the road, an artificial node
-             * (and artificial edges) is created in the QueryGraph. As a consequence, the first
-             * and/or last edge of the route might be such virtual edge. We use the queried source
-             * and target to extract the original edge where the requested points have been matched on.
-             */
-            if (queryGraph.isVirtualEdge(ghEdge.getEdge())) {
-                if (pathConnections.isEmpty() && queryGraph.isVirtualNode(source.getClosestNode())) {
-                    ghEdge = queryGraph.getOriginalEdgeFromVirtNode(source.getClosestNode());
-                } else if (!edgesIt.hasNext() && queryGraph.isVirtualNode(target.getClosestNode())) {
-                    ghEdge = queryGraph.getOriginalEdgeFromVirtNode(target.getClosestNode());
-                } else {
-                    continue;
-                }
+        while (edgesIt.hasNext()) {
+            EdgeIteratorState origEdge = edgesIt.next();
+            EdgeIteratorState currEdge = origEdge;
+
+            if (currEdge instanceof VirtualEdgeIteratorState) {
+                currEdge = ghApi.getBaseGraph().getEdgeIteratorStateForKey(((VirtualEdgeIteratorState) origEdge).getOriginalEdgeKey());
             }
 
-            Connection con = graphMapper.toConnection(ghEdge.getEdge());
+            Connection con = graphMapper.toConnection(currEdge.getEdge());
             if (con != null) {
                 /*
                  * In some cases, virtual edges are created at the target even though they are only some
@@ -311,7 +318,13 @@ public class GraphHopperRouting {
                     continue;
                 }
 
+                if (pathConnections.isEmpty()) {
+                    offsetFromSource = calcOffset(con, origEdge.getBaseNode(), nodes);
+                }
+
                 pathConnections.add(con.getId());
+                lastNode = origEdge.getAdjNode();
+                lastConnection = con;
 
                 if (Double.isInfinite(newPath.getWeight())) {
                     log.warn(
@@ -320,11 +333,40 @@ public class GraphHopperRouting {
                     return null;
                 }
             } else {
-                log.debug(String.format("A connection could be resolved by internal ID %d.", ghEdge.getEdge()));
+                log.debug(String.format("A connection could be resolved by internal ID %d.", origEdge.getEdge()));
             }
         }
 
-        return new CandidateRoute(pathConnections, newPath.getDistance(), newPath.getTime() / (double) 1000);
+        double offsetToTarget = 0;
+        if (lastConnection != null) {
+            offsetToTarget = lastConnection.getLength() - calcOffset(lastConnection, lastNode, nodes);
+        }
+
+        return new CandidateRoute(
+                pathConnections,
+                newPath.getDistance(),
+                newPath.getTime() / 1000.0,
+                offsetFromSource,
+                offsetToTarget
+        );
+    }
+
+    private double calcOffset(Connection con, int node, NodeAccess nodes) {
+        GeoPoint onConnection = GeoPoint.latLon(nodes.getLat(node), nodes.getLon(node));
+        double offset = 0;
+        Node prev = null;
+        for (Node curr : con.getNodes()) {
+            if (prev != null) {
+                double distancePrevToCurr = prev.getPosition().distanceTo(curr.getPosition());
+                double distancePrevToNode = prev.getPosition().distanceTo(onConnection);
+                if (distancePrevToNode < distancePrevToCurr) {
+                    return Math.max(con.getLength(), offset + distancePrevToNode);
+                }
+                offset += distancePrevToCurr;
+            }
+            prev = curr;
+        }
+        return con.getLength();
     }
 
     private boolean checkRouteOnRequiredSourceConnection(CandidateRoute route, RoutingPosition source) {

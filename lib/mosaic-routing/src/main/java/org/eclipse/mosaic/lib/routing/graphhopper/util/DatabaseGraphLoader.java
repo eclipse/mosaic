@@ -13,24 +13,28 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.lib.routing.graphhopper;
+package org.eclipse.mosaic.lib.routing.graphhopper.util;
 
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.DatabaseUtils;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.road.Way;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostAnalyzer;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
+import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
+import org.eclipse.mosaic.lib.routing.graphhopper.GraphLoader;
+import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
+import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncodingManager;
 
 import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.FlagEncoder;
-import com.graphhopper.storage.GraphHopperStorage;
+import com.graphhopper.routing.ev.EdgeIntAccess;
+import com.graphhopper.routing.util.DefaultVehicleTagParserFactory;
+import com.graphhopper.routing.util.VehicleTagParsers;
+import com.graphhopper.routing.util.parsers.TagParser;
+import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.IntsRef;
-import com.graphhopper.storage.TurnCostExtension;
+import com.graphhopper.storage.TurnCostStorage;
 import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.PMap;
 import com.graphhopper.util.PointList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,28 +51,33 @@ public class DatabaseGraphLoader implements GraphLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseGraphLoader.class);
 
-    private GraphHopperStorage graphStorage;
-    private EncodingManager encodingManager;
-    private FlagEncoder flagEncoder;
+    private final Database database;
+    private final List<TagParser> wayParsers = new ArrayList<>();
+    private BaseGraph graphStorage;
+    private VehicleEncodingManager encodingManager;
     private GraphhopperToDatabaseMapper graphMapper;
-    private TurnCostExtension turnCostStorage;
-    private Database database;
+    private TurnCostStorage turnCostStorage;
+    private EdgeIntAccess edgeAccess;
 
     public DatabaseGraphLoader(Database database) {
         this.database = database;
     }
 
     @Override
-    public void initialize(GraphHopperStorage graph,
-                           EncodingManager encodingManager, GraphhopperToDatabaseMapper mapper) {
+    public void initialize(BaseGraph graph,
+                           VehicleEncodingManager encodingManager, GraphhopperToDatabaseMapper mapper) {
         this.graphStorage = graph;
         this.graphMapper = mapper;
         this.encodingManager = encodingManager;
-        this.flagEncoder = encodingManager.getEncoder("CAR");
-        if (graph.getExtension() instanceof TurnCostExtension) {
-            turnCostStorage = (TurnCostExtension) (graph).getExtension();
-        } else {
-            throw new IllegalStateException("Graph must store turn costs by using TurnCostStorage.");
+        this.turnCostStorage = graph.getTurnCostStorage();
+
+        wayParsers.clear();
+
+        for (String vehicle : encodingManager.getAllProfileVehicles()) {
+            VehicleTagParsers parsers = new DefaultVehicleTagParserFactory()
+                    .createParsers(encodingManager.getEncodingManager(), vehicle, new PMap());
+            wayParsers.add(parsers.getAccessParser());
+            wayParsers.add(parsers.getSpeedParser());
         }
     }
 
@@ -82,6 +91,9 @@ public class DatabaseGraphLoader implements GraphLoader {
         final Set<Node> mainGraph = searchForMainGraph();
 
         graphStorage.create(Math.max(mainGraph.size() / 30, 100));
+        edgeAccess = graphStorage.createEdgeIntAccess();
+
+        WayTypeEncoder wayTypeEncoder = encodingManager.wayType();
 
         // add nodes and connections
         for (Connection con : database.getConnections()) {
@@ -106,23 +118,18 @@ public class DatabaseGraphLoader implements GraphLoader {
                 nodeIndex++;
             }
 
-            IntsRef flags = createFlags(encodingManager, way);
+            EdgeIteratorState edgeIt = graphStorage.edge(graphMapper.fromNode(from), graphMapper.fromNode(to))
+                    .setDistance(con.getLength())
+                    .setWayGeometry(getWayGeometry(from, to, con.getNodes()));
+            handleWayTags(edgeIt.getEdge(), way);
 
-            if (flags != null) {
-                EdgeIteratorState edgeIt = graphStorage.edge(
-                        graphMapper.fromNode(from),
-                        graphMapper.fromNode(to)).setDistance(con.getLength()).setFlags(flags);
+            wayTypeEncoder.setWay(way, con.getLanes(), edgeIt.getEdge(), edgeAccess);
 
-                graphMapper.setConnection(con, edgeIt.getEdge());
-
-                edgeIt.setWayGeometry(getWayGeometry(from, to, con.getNodes()));
-                edgeIt.setAdditionalField(
-                        WayTypeEncoder.encode(way.getType(), way.getNumberOfLanesForward(), 0));
-            } else {
-                LOG.warn("Connection on (way={}, type={}) is not accessible by any vehicle type"
-                        + " and will therefore be ignored during routing.", way.getId(), way.getType());
-            }
+            graphMapper.setConnection(con, edgeIt.getEdge());
         }
+
+        VehicleEncoding car = encodingManager.getVehicleEncoding(GraphHopperRouting.PROFILE_CAR.getVehicle());
+        VehicleEncoding bike = encodingManager.getVehicleEncoding(GraphHopperRouting.PROFILE_BIKE.getVehicle());
 
         // add turn restrictions
         for (Connection conFrom : database.getConnections()) {
@@ -154,21 +161,25 @@ public class DatabaseGraphLoader implements GraphLoader {
                     // if end node is connected with an connection, which is not
                     // accessible from incoming connection, then add turn
                     // restriction
-                    turnCostStorage.addTurnInfo(ghConFrom, ghNodeVia, ghConTo,
-                            flagEncoder.getTurnFlags(true, 0));
+                    turnCostStorage.set(
+                            car.turnRestriction(), ghConFrom, ghNodeVia, ghConTo, true
+                    );
+                    turnCostStorage.set(
+                            bike.turnRestriction(), ghConFrom, ghNodeVia, ghConTo, true
+                    );
                 } else if (isUTurn) {
                     // avoid (high costs) u-turns on same road, that is if from and to node
-                    // of first connection are the same nodes as of second
-                    // connection
-                    turnCostStorage.addTurnInfo(ghConFrom, ghNodeVia, ghConTo,
-                            flagEncoder.getTurnFlags(false, endsAtJunction ? 120 : 90));
+                    // of first connection are the same nodes as of second connection
+                    // note, only for cars, bikes can easily turn
+                    turnCostStorage.set(
+                            car.turnCost(), ghConFrom, ghNodeVia, ghConTo, endsAtJunction ? 120 : 90
+                    );
                 }
             }
         }
 
         // analyze turn costs
-        new TurnCostAnalyzer().createTurnCostsForCars(graphStorage,
-                encodingManager.getEncoder("CAR"));
+        new TurnCostAnalyzer(graphStorage, wayTypeEncoder).createTurnCostsForVehicle(car);
 
         if (graphStorage.getNodes() == 0) {
             throw new IllegalStateException(
@@ -209,23 +220,17 @@ public class DatabaseGraphLoader implements GraphLoader {
         graphMapper.setNode(node, nodeIndex);
     }
 
-    /**
-     * Rebuild an OSMway to get internal edge properties as flags.
-     *
-     * @param encoding Encoder parameter.
-     * @param way      Way for which to create flags.
-     */
-    private IntsRef createFlags(EncodingManager encoding, Way way) {
+    private void handleWayTags(int edgeId, Way way) {
+        IntsRef relationFlags = IntsRef.EMPTY;
+
         ReaderWay osmWay = new ReaderWay(0);
         osmWay.setTag("highway", way.getType());
         osmWay.setTag("maxspeed", String.valueOf((int) way.getMaxSpeedInKmh()));
         osmWay.setTag("oneway", "yes");
 
-        EncodingManager.AcceptWay aw = new EncodingManager.AcceptWay();
-        if (encoding.acceptWay(osmWay, aw)) {
-            return encoding.handleWayTags(osmWay, aw, 0);
+        for (TagParser parser : wayParsers) {
+            parser.handleWayTags(edgeId, edgeAccess, osmWay, relationFlags);
         }
-        return null;
     }
 
     /**
@@ -237,7 +242,7 @@ public class DatabaseGraphLoader implements GraphLoader {
      * @return List of points representing the geometry.
      */
     private PointList getWayGeometry(Node from, Node to, List<Node> wayNodeList) {
-        PointList points = new PointList(1000, true);
+        PointList points = new PointList(1000, false);
 
         boolean between = false;
         boolean reverse = true;
@@ -256,8 +261,7 @@ public class DatabaseGraphLoader implements GraphLoader {
                 if (between) {
                     points.add(
                             wayNode.getPosition().getLatitude(),
-                            wayNode.getPosition().getLongitude(),
-                            wayNode.getPosition().getAltitude()
+                            wayNode.getPosition().getLongitude()
                     );
                 }
             } else {

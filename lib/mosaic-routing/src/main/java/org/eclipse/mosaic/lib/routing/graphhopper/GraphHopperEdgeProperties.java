@@ -20,10 +20,11 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.routing.EdgeProperties;
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
 
 import com.google.common.collect.Iterables;
-import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.FetchMode;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Optional;
@@ -32,16 +33,18 @@ import java.util.Optional;
  * Provides properties from the current {@link EdgeIteratorState} or
  * its belonging {@link Connection} to be used by an {@link RoutingCostFunction}.
  */
-class GraphHopperEdgeProperties implements EdgeProperties {
+public class GraphHopperEdgeProperties implements EdgeProperties {
 
-    private final FlagEncoder flagEncoder;
+    private final VehicleEncoding encoding;
+    private final WayTypeEncoder wayTypeEncoder;
     private final GraphhopperToDatabaseMapper graphMapper;
 
     private EdgeIteratorState currentEdgeIterator;
     private boolean reverseRequests;
 
-    GraphHopperEdgeProperties(FlagEncoder encoder, GraphhopperToDatabaseMapper graphMapper) {
-        this.flagEncoder = encoder;
+    GraphHopperEdgeProperties(VehicleEncoding encoding, WayTypeEncoder wayTypeEncoder, GraphhopperToDatabaseMapper graphMapper) {
+        this.encoding = encoding;
+        this.wayTypeEncoder = wayTypeEncoder;
         this.graphMapper = graphMapper;
     }
 
@@ -55,8 +58,10 @@ class GraphHopperEdgeProperties implements EdgeProperties {
     public double getSpeed() {
         Validate.notNull(currentEdgeIterator, "Edge iterator is null");
         return (reverseRequests
-                ? currentEdgeIterator.getReverse(flagEncoder.getAverageSpeedEnc())
-                : currentEdgeIterator.get(flagEncoder.getAverageSpeedEnc())) / 3.6d;
+                ? currentEdgeIterator.getReverse(encoding.speed())
+                : currentEdgeIterator.get(encoding.speed())
+        ) / 3.6d;
+        //TODO check if / 3.6 is correct
     }
 
     @Override
@@ -69,8 +74,8 @@ class GraphHopperEdgeProperties implements EdgeProperties {
     public Iterable<GeoPoint> getGeometry() {
         Validate.notNull(currentEdgeIterator, "Edge iterator is null");
         return Iterables.transform(
-                currentEdgeIterator.fetchWayGeometry(3), // 3 = fetch all pillar nodes inclusive the base and adjacent tower node
-                ghPoint3D -> GeoPoint.latLon(ghPoint3D.getLat(), ghPoint3D.getLon(), ghPoint3D.getElevation())
+                currentEdgeIterator.fetchWayGeometry(FetchMode.ALL), // 3 = fetch all pillar nodes inclusive the base and adjacent tower node
+                ghPoint3D -> GeoPoint.latLon(ghPoint3D.getLat(), ghPoint3D.getLon(), ghPoint3D.getEle())
         );
     }
 
@@ -82,6 +87,10 @@ class GraphHopperEdgeProperties implements EdgeProperties {
     @Override
     public String getWayType() {
         return getConnection().map(con -> con.getWay().getType()).orElse(null);
+    }
+
+    public int getWayTypeEncoded() {
+        return currentEdgeIterator.get(wayTypeEncoder);
     }
 
     private Optional<Connection> getConnection() {

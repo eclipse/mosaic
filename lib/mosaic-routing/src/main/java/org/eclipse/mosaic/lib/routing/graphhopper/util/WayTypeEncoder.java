@@ -15,13 +15,19 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper.util;
 
+import org.eclipse.mosaic.lib.database.road.Way;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.graphhopper.routing.ev.EdgeIntAccess;
+import com.graphhopper.routing.ev.IntEncodedValueImpl;
 
 import java.util.Set;
 
-public class WayTypeEncoder {
+public class WayTypeEncoder extends IntEncodedValueImpl {
+
+    public final static String KEY = "waytype";
 
     private static final BiMap<String, Integer> wayTypeIntMap = HashBiMap.create();
     private static final Set<String> highwayTypes = Sets.newHashSet(
@@ -40,14 +46,14 @@ public class WayTypeEncoder {
             "cycleway"
     );
 
-    private static final int HIGHWAY = 1 << 31;
-    private static final int RESIDENTIAL = 1 << 30;
-    private static final int TUNNEL = 1 << 29;
-    private static final int TOLL = 1 << 28;
-    private static final int BAD_ROAD = 1 << 27;
-    private static final int ONE_LANE = 1 << 26;
-    private static final int MAIN_ROAD = 1 << 25;
-    private static final int CYCLEWAY = 1 << 24;
+    private static final int HIGHWAY = 1 << 15;
+    private static final int RESIDENTIAL = 1 << 14;
+    private static final int TUNNEL = 1 << 13;
+    private static final int TOLL = 1 << 12;
+    private static final int BAD_ROAD = 1 << 11;
+    private static final int ONE_LANE = 1 << 10;
+    private static final int MAIN_ROAD = 1 << 9;
+    private static final int CYCLEWAY = 1 << 8;
     private static final int TYPE_MASK = 0x03FFFFFF;
 
     static {
@@ -75,6 +81,14 @@ public class WayTypeEncoder {
         wayTypeIntMap.put("track", 25);
     }
 
+    private WayTypeEncoder() {
+        super(KEY,  31, false);
+    }
+
+    public static WayTypeEncoder create() {
+        return new WayTypeEncoder();
+    }
+
     public static String decode(int type) {
         String result = wayTypeIntMap.inverse().get(type & TYPE_MASK);
         if (result != null) {
@@ -83,26 +97,27 @@ public class WayTypeEncoder {
         return "unknown";
     }
 
-    public static int encode(String wayType, int numberLanes, int additionalFlags) {
+    public static int encode(String wayType, int numberLanes) {
+        int flags = 0;
         if (highwayTypes.contains(wayType)) {
-            additionalFlags |= HIGHWAY;
+            flags |= HIGHWAY;
         }
         if (residentialTypes.contains(wayType)) {
-            additionalFlags |= RESIDENTIAL;
+            flags |= RESIDENTIAL;
         }
         if (numberLanes == 1 && !oneLaneIgnoreTypes.contains(wayType)) {
-            additionalFlags |= ONE_LANE;
+            flags |= ONE_LANE;
         }
         if (mainroadTypes.contains(wayType)) {
-            additionalFlags |= MAIN_ROAD;
+            flags |= MAIN_ROAD;
         }
         if (cyclewayTypes.contains(wayType)) {
-            additionalFlags |= CYCLEWAY;
+            flags |= CYCLEWAY;
         }
 
         Integer result = wayTypeIntMap.get(wayType);
         if (result != null) {
-            return result | additionalFlags;
+            return result | flags;
         }
         return 0;
     }
@@ -145,4 +160,7 @@ public class WayTypeEncoder {
         return typeB + 4 < typeA;
     }
 
+    public void setWay(Way way, int lanes, int edge, EdgeIntAccess access) {
+        setInt(false, edge, access, encode(way.getType(), lanes));
+    }
 }

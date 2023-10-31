@@ -216,7 +216,7 @@ public class DatabaseRouting implements Routing {
             length += con.getLength();
             time += con.getLength() / con.getMaxSpeedInMs();
         }
-        return new CandidateRoute(route.getConnectionIds(), length, time);
+        return new CandidateRoute(route.getConnectionIds(), length, time, 0, Double.POSITIVE_INFINITY);
     }
 
     private Edge findClosestEdge(GeoPoint location) {

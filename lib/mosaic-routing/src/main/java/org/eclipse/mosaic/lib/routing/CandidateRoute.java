@@ -27,10 +27,20 @@ public class CandidateRoute {
     private final double length;
     private final double time;
 
+    private final double offsetToTarget;
+
+    private final double offsetFromSource;
+
     public CandidateRoute(List<String> connectionIds, double length, double time) {
+        this(connectionIds, length, time, 0, 0);
+    }
+
+    public CandidateRoute(List<String> connectionIds, double length, double time, double offsetFromSource, double offsetToTarget) {
         this.connectionIds = connectionIds;
         this.length = length;
         this.time = time;
+        this.offsetFromSource = offsetFromSource;
+        this.offsetToTarget = offsetToTarget;
     }
 
     public List<String> getConnectionIds() {
@@ -43,5 +53,13 @@ public class CandidateRoute {
 
     public double getTime() {
         return time;
+    }
+
+    public double getOffsetFromSource() {
+        return offsetFromSource;
+    }
+
+    public double getOffsetToTarget() {
+        return offsetToTarget;
     }
 }

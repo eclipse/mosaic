@@ -8,7 +8,9 @@
             "maxSpeed": 70.0,
             "minGap": 2.5,
             "sigma": 0.5,
-            "tau": 1
+            "tau": 1,
+            "group": "Unequipped",
+            "applications": []
         },
         {
             "name": "electricPKW",
@@ -34,17 +36,8 @@
             "route": "1",
             "types": [
                 {
-                    "applications": [ "org.eclipse.mosaic.app.tutorials.barnim.WeatherWarningApp" ],
                     "name": "PKW",
-                    "weight": 0.2
-                },
-                {
-                    "name": "PKW",
-                    "weight": 0.7
-                },
-                {
-                    "name": "electricPKW",
-                    "weight": 0.1
+                    "applications": []
                 }
             ]
         }

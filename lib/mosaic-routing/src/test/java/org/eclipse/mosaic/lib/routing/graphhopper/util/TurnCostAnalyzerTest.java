@@ -19,43 +19,43 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
 
-import com.graphhopper.routing.util.CarFlagEncoder;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.TurnCostEncoder;
-import com.graphhopper.storage.TurnCostExtension;
+import com.graphhopper.routing.ev.BooleanEncodedValue;
+import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.storage.TurnCostStorage;
 import org.junit.Rule;
 import org.junit.Test;
 
 public class TurnCostAnalyzerTest {
 
-    private EncodingManager encManager = EncodingManager.create(new CarFlagEncoder(5, 5, 127));
-
     @Rule
-    public TestGraphRule testGraph = new TestGraphRule(encManager);
+    public TestGraphRule testGraph = new TestGraphRule();
 
     @Test
     public void turnCostsCalculation() {
         //run
-        new TurnCostAnalyzer().createTurnCostsForCars(testGraph.getGraph(), encManager.getEncoder("CAR"));
+        new TurnCostAnalyzer(testGraph.getGraph(), testGraph.getEncodingManager().wayType())
+                .createTurnCostsForVehicle(testGraph.getEncodingManager().getVehicleEncoding("car"));
 
         //assert
-        assertEquals(4d, getTurnCosts(1, 0, 0), 0.4d); //4 seconds for 90deg right turn
+        assertEquals(3d, getTurnCosts(1, 0, 0), 0.4d); //3 seconds for 90deg right turn
 
-        assertEquals(2d, getTurnCosts(2, 2, 6), 0.4d); //2 seconds for a slight 45deg right turn
+        assertEquals(1d, getTurnCosts(2, 2, 6), 0.4d); //1 seconds for a slight 25deg right turn
 
-        assertEquals(6d, getTurnCosts(0, 1, 4), 0.4d); //6 seconds for a hard 120deg right turn
+        assertEquals(4d, getTurnCosts(0, 1, 4), 0.4d); //4 seconds for a hard 120deg right turn
 
-        assertEquals(23d, getTurnCosts(0, 0, 1), 0.4d); //23 seconds for a 90deg left turn
+        assertEquals(21d, getTurnCosts(0, 0, 1), 0.4d); //21 seconds for a 90deg left turn
 
     }
 
     private double getTurnCosts(int fromEdge, int viaNode, int toEdge) {
-        TurnCostEncoder enc = (TurnCostEncoder) (encManager.getEncoder("CAR"));
-        TurnCostExtension tcS = testGraph.getTurnCostStorage();
-        long flags = tcS.getTurnCostFlags(fromEdge, viaNode, toEdge);
-        if (enc.isTurnRestricted(flags)) {
+        TurnCostStorage tc = testGraph.getGraph().getTurnCostStorage();
+        BooleanEncodedValue turnRestrictionsEnc = testGraph.getEncodingManager().getVehicleEncoding("car").turnRestriction();
+        DecimalEncodedValue turnCostsEnc = testGraph.getEncodingManager().getVehicleEncoding("car").turnCost();
+
+        boolean isRestricted = tc.get(turnRestrictionsEnc, fromEdge, viaNode, toEdge);
+        if (isRestricted) {
             return Double.MAX_VALUE;
         }
-        return enc.getTurnCost(flags);
+        return tc.get(turnCostsEnc, fromEdge, viaNode, toEdge);
     }
 }

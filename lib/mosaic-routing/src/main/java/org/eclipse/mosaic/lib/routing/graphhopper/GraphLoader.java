@@ -17,8 +17,7 @@ package org.eclipse.mosaic.lib.routing.graphhopper;
 
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
 
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.storage.GraphHopperStorage;
+import com.graphhopper.storage.BaseGraph;
 
 /**
  * Encapsulates the import procedure of a MOSAIC scenario database into a GraphHopper readable GraphStorage.
@@ -29,7 +28,7 @@ public interface GraphLoader {
      * Initializes the import process.
      *
      */
-    void initialize(GraphHopperStorage graph, EncodingManager encodingManager, GraphhopperToDatabaseMapper mapper);
+    void initialize(BaseGraph graph, VehicleEncodingManager encodingManager, GraphhopperToDatabaseMapper mapper);
 
     /**
      * Creates a graph.
