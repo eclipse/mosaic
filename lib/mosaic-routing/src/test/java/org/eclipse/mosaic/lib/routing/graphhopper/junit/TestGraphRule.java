@@ -126,9 +126,9 @@ public class TestGraphRule extends ExternalResource implements GraphLoader {
         AllEdgesIterator it = graph.getAllEdges();
         while (it.next()) {
             it.set(enc.access(), true);
-            it.set(enc.speed(), 50 / 3.6);
+            it.set(enc.speed(), 50);
             it.setReverse(enc.access(), true);
-            it.setReverse(enc.speed(), 50 / 3.6);
+            it.setReverse(enc.speed(), 50);
         }
     }
 

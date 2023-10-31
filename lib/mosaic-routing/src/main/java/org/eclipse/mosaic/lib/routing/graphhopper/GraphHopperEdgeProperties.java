@@ -57,11 +57,9 @@ public class GraphHopperEdgeProperties implements EdgeProperties {
     @Override
     public double getSpeed() {
         Validate.notNull(currentEdgeIterator, "Edge iterator is null");
-        return (reverseRequests
-                ? currentEdgeIterator.getReverse(encoding.speed())
-                : currentEdgeIterator.get(encoding.speed())
-        ) / 3.6d;
-        //TODO check if / 3.6 is correct
+        return reverseRequests
+                ? currentEdgeIterator.getReverse(encoding.speed()) / 3.6
+                : currentEdgeIterator.get(encoding.speed()) / 3.6;
     }
 
     @Override

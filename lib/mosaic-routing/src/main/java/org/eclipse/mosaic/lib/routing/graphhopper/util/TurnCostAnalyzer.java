@@ -141,8 +141,8 @@ public class TurnCostAnalyzer {
         double alpha = (bearingViaTo - (bearingFromVia) + 360) % 360;
 
         //get length and max speed of edges
-        double v1 = incomingEdge.get(encoding.speed());
-        double v2 = outgoingEdge.get(encoding.speed());
+        double v1 = incomingEdge.get(encoding.speed()) / 3.6;
+        double v2 = outgoingEdge.get(encoding.speed()) / 3.6;
         double l1 = incomingEdge.getDistance();
         double l2 = outgoingEdge.getDistance();
 

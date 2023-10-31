@@ -47,7 +47,7 @@ public class GraphHopperWeightingTest {
         double weight = w.calcEdgeWeight(it, false);
         double turnWeight = w.calcTurnWeight(1, 0, 0);
 
-        assertEquals(distance / enc.speed().getMaxStorableDecimal(), weight, 0.1d);
+        assertEquals(distance / enc.speed().getMaxStorableDecimal() * 3.6, weight, 0.1d);
         assertEquals(0, turnWeight, 0.1d);
     }
 
@@ -109,7 +109,7 @@ public class GraphHopperWeightingTest {
         double weight = w.calcEdgeWeight(it, false);
         double turnWeight = w.calcTurnWeight(1, 0, 0);
 
-        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal(), weight, 0.1d);
+        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal() * 3.6, weight, 0.1d);
         assertEquals(10, turnWeight, 0.1d);
     }
 
@@ -151,7 +151,7 @@ public class GraphHopperWeightingTest {
         double weight = w.calcEdgeWeight(it, false);
         double turnWeight = w.calcTurnWeight(1, 0, 0);
 
-        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal(), weight, 0.1d);
+        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal() * 3.6, weight, 0.1d);
         assertEquals(Double.POSITIVE_INFINITY, turnWeight, 0.1d);
     }
 
