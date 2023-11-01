@@ -111,7 +111,7 @@ public class DockerRun {
                 Class<?> systemClass = Class.forName("com.sun.security.auth.module.UnixSystem");
                 Method getUid = systemClass.getDeclaredMethod("getUid");
                 Method getGid = systemClass.getDeclaredMethod("getGid");
-                Object system = systemClass.newInstance();
+                Object system = systemClass.getDeclaredConstructor().newInstance();
                 user = String.format("%d:%d", (Long) getUid.invoke(system), (Long) getGid.invoke(system));
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 LOG.warn("Cannot fetch user id and group id. User will not be set.");

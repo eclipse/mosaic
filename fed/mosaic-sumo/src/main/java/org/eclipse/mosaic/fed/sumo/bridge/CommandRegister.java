@@ -12,8 +12,8 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
-package org.eclipse.mosaic.fed.sumo.bridge;
 
+package org.eclipse.mosaic.fed.sumo.bridge;
 
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 
@@ -58,7 +58,7 @@ public class CommandRegister {
                     try {
                         command = implementationClass.getDeclaredConstructor(Bridge.class).newInstance(bridge);
                     } catch (Exception e2) {
-                        command = implementationClass.newInstance();
+                        command = implementationClass.getDeclaredConstructor().newInstance();
                     }
                 }
                 register(commandClass, command);

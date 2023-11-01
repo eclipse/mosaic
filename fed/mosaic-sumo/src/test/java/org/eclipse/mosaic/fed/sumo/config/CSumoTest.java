@@ -43,7 +43,7 @@ public class CSumoTest {
         CSumo sumoConfiguration = getSumoConfiguration(validConfig);
         // ASSERT
         assertNotNull(sumoConfiguration);  // assert that configuration is created
-        assertEquals(new Long(200L), sumoConfiguration.updateInterval);
+        assertEquals(Long.valueOf(200L), sumoConfiguration.updateInterval);
         assertEquals("placeholder.sumocfg", sumoConfiguration.sumoConfigurationFile);
         assertEquals(Boolean.TRUE, sumoConfiguration.exitOnInsertionError);
         assertEquals(" --time-to-teleport 10  --seed 200000", sumoConfiguration.additionalSumoParameters);
