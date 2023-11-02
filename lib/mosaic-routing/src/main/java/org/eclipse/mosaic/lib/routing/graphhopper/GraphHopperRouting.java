@@ -70,6 +70,23 @@ public class GraphHopperRouting {
 
     public static final List<Profile> PROFILES = new ArrayList<>();
 
+    /**
+     * The minimum number of alternatives to calculate when alternative routes have been requested.
+     * GraphHopper often returns equal routes, and by calculating more than required we can
+     * reduce the result to match the requested number of alternatives.
+     */
+    private static final int NUM_ALTERNATIVE_PATHS = 5;
+
+    /**
+     * Alternative routes may share a maximum of 70% of roads of the best route.
+     */
+    public static final double ALTERNATIVE_ROUTES_MAX_SHARE = 0.7;
+
+    /**
+     * Alternative routes may cost a maximum of 40% more than the best route.
+     */
+    public static final double ALTERNATIVE_ROUTES_MAX_WEIGHT = 1.4;
+
     static {
         PROFILES.add(PROFILE_CAR);
         PROFILES.add(PROFILE_BIKE);
@@ -163,8 +180,14 @@ public class GraphHopperRouting {
 
         final QueryGraph queryGraph = QueryGraph.create(ghApi.getBaseGraph(), snapSource, snapTarget);
 
-        final PMap hints = new PMap()
-                .putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, routingRequest.getRoutingParameters().getNumAlternativeRoutes() + 1);
+        final int numberOfAlternatives = routingRequest.getRoutingParameters().getNumAlternativeRoutes();
+        final PMap hints = new PMap();
+        if (numberOfAlternatives > 0) {
+            // We calculate more alternative routes than required, since GraphHopper often seem to return equal alternatives
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, Math.max(numberOfAlternatives, NUM_ALTERNATIVE_PATHS) + 1);
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_SHARE, ALTERNATIVE_ROUTES_MAX_SHARE);
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_WEIGHT, ALTERNATIVE_ROUTES_MAX_WEIGHT);
+        }
 
         final Weighting weighting = queryGraph.wrapWeighting(
                 graphhopperWeighting
@@ -179,6 +202,9 @@ public class GraphHopperRouting {
 
         // convert paths to routes
         for (final Path path : paths) {
+            if (result.size() > numberOfAlternatives) {
+                break;
+            }
             final CandidateRoute route = convertPath(queryGraph, path, target);
             if (route != null
                     && !route.getConnectionIds().isEmpty()
@@ -278,6 +304,9 @@ public class GraphHopperRouting {
 
     private CandidateRoute convertPath(Graph graph, Path newPath, RoutingPosition targetPosition) {
         PointList pointList = newPath.calcPoints();
+        if (pointList.isEmpty()) {
+            return null;
+        }
         GHPoint pathTarget = Iterables.getLast(pointList);
         GHPoint origTarget = new GHPoint(targetPosition.getPosition().getLatitude(), targetPosition.getPosition().getLongitude());
         double distanceToOriginalTarget = distanceCalculation.calcDist(pathTarget.lat, pathTarget.lon, origTarget.lat, origTarget.lon);
