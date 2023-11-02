@@ -73,7 +73,6 @@ class ExtendedGraphHopper extends GraphHopper {
     public GraphHopper importOrLoad() {
         fullyLoaded = false;
 
-        prepareEncodingManager();
         setBaseGraph(new BaseGraph
                 .Builder(getEncodingManager())
                 .setDir(new RAMDirectory())
