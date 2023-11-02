@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper.algorithm;
 
+import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
+
 import com.graphhopper.routing.AStarBidirection;
 import com.graphhopper.routing.AlternativeRoute;
 import com.graphhopper.routing.RoutingAlgorithm;
@@ -31,9 +33,10 @@ public interface RoutingAlgorithmFactory {
 
     RoutingAlgorithmFactory DEFAULT = (graph, weighting, hints) -> {
         if (hints.getInt(Parameters.Algorithms.AltRoute.MAX_PATHS, 1) > 1) {
-            hints.putObject("alternative_route.max_share_factor", 0.5)
-                    .putObject("alternative_route.max_weight_factor", 2)
-                    .putObject("alternative_route.max_exploration_factor", 1.3);
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_SHARE, GraphHopperRouting.ALTERNATIVE_ROUTES_MAX_SHARE);
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_WEIGHT, GraphHopperRouting.ALTERNATIVE_ROUTES_MAX_WEIGHT);
+            hints.putObject("alternative_route.max_exploration_factor", GraphHopperRouting.ALTERNATIVE_ROUTES_EXPLORATION_FACTOR);
+            hints.putObject("alternative_route.min_plateau_factor", GraphHopperRouting.ALTERNATIVE_ROUTES_PLATEAU_FACTOR);
             return new AlternativeRoute(graph, weighting, TraversalMode.EDGE_BASED, hints);
         } else {
             return new AStarBidirection(graph, weighting, TraversalMode.EDGE_BASED);

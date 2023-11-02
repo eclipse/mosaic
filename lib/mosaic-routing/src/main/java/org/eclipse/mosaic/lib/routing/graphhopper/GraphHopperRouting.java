@@ -181,10 +181,6 @@ public class GraphHopperRouting {
         if (numberOfAlternatives > 0) {
             // We calculate more alternative routes than required, since GraphHopper often seem to return equal alternatives
             algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, Math.max(numberOfAlternatives, NUM_ALTERNATIVE_PATHS) + 1);
-            algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_SHARE, ALTERNATIVE_ROUTES_MAX_SHARE);
-            algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_WEIGHT, ALTERNATIVE_ROUTES_MAX_WEIGHT);
-            algoHints.putObject("alternative_route.max_exploration_factor", ALTERNATIVE_ROUTES_EXPLORATION_FACTOR);
-            algoHints.putObject("alternative_route.min_plateau_factor", ALTERNATIVE_ROUTES_PLATEAU_FACTOR);
         }
 
         final RoutingAlgorithm algo = RoutingAlgorithmFactory.DEFAULT.createAlgorithm(
