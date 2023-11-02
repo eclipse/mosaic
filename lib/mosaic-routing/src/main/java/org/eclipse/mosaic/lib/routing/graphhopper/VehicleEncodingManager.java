@@ -18,8 +18,10 @@ package org.eclipse.mosaic.lib.routing.graphhopper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
 
 import com.graphhopper.config.Profile;
+import com.graphhopper.routing.ev.Subnetwork;
 import com.graphhopper.routing.util.EncodingManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,23 +40,30 @@ public class VehicleEncodingManager {
     private final EncodingManager encodingManager;
 
     private final Map<String, VehicleEncoding> vehicleEncodings = new HashMap<>();
+    private final List<Profile> profiles;
 
     public VehicleEncodingManager(List<Profile> profiles) {
         this.waytypeEncoder = WayTypeEncoder.create();
+        this.profiles = new ArrayList<>(profiles);
 
         EncodingManager.Builder builder = new EncodingManager.Builder().add(waytypeEncoder);
-        for (Profile profile : profiles) {
+        for (Profile profile : this.profiles) {
             final VehicleEncoding encoding = new VehicleEncoding(profile);
             vehicleEncodings.put(profile.getVehicle(), encoding);
-            builder.add(encoding.access());
-            builder.add(encoding.speed());
+            builder.add(encoding.access())
+                    .add(encoding.speed())
+                    .addTurnCostEncodedValue(encoding.turnRestriction())
+                    .addTurnCostEncodedValue(encoding.turnCost())
+                    .add(Subnetwork.create(profile.getName()));
             if (encoding.priority() != null) {
                 builder.add(encoding.priority());
             }
-            builder.addTurnCostEncodedValue(encoding.turnRestriction());
-            builder.addTurnCostEncodedValue(encoding.turnCost());
         }
-        encodingManager = builder.build();
+        this.encodingManager = builder.build();
+    }
+
+    public List<Profile> getAllProfiles() {
+        return Collections.unmodifiableList(profiles);
     }
 
     /**

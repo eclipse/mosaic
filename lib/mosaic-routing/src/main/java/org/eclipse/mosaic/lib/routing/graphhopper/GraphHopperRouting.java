@@ -22,13 +22,11 @@ import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
-import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.RoutingAlgorithmFactory;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.DatabaseGraphLoader;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -70,6 +68,11 @@ public class GraphHopperRouting {
 
     public static final List<Profile> PROFILES = new ArrayList<>();
 
+    static {
+        PROFILES.add(PROFILE_CAR);
+        PROFILES.add(PROFILE_BIKE);
+    }
+
     /**
      * The minimum number of alternatives to calculate when alternative routes have been requested.
      * GraphHopper often returns equal routes, and by calculating more than required we can
@@ -87,10 +90,15 @@ public class GraphHopperRouting {
      */
     public static final double ALTERNATIVE_ROUTES_MAX_WEIGHT = 1.4;
 
-    static {
-        PROFILES.add(PROFILE_CAR);
-        PROFILES.add(PROFILE_BIKE);
-    }
+    /**
+     * Increases the changes to find more alternatives.
+     */
+    public static final double ALTERNATIVE_ROUTES_EXPLORATION_FACTOR = 1.3;
+
+    /**
+     * Specifies the minimum plateau portion of every alternative path that is required.
+     */
+    public static final double ALTERNATIVE_ROUTES_PLATEAU_FACTOR = 0.1;
 
     /**
      * If the distance of the query position to the closest node is lower than this
@@ -104,7 +112,7 @@ public class GraphHopperRouting {
      * the found route, another connection is added on which the target
      * point is matched on.
      */
-    public static double TARGET_REQUEST_CONNECTION_THRESHOLD = 5d;
+    public static final double TARGET_REQUEST_CONNECTION_THRESHOLD = 5d;
 
     /**
      * Sometimes edges are dead ends. In these cases routing fails and invalid
@@ -131,10 +139,7 @@ public class GraphHopperRouting {
         encoding = new VehicleEncodingManager(PROFILES);
 
         ghApi = new ExtendedGraphHopper(encoding, reader, graphMapper);
-
-        //load graph from database
         ghApi.importOrLoad();
-
         return this;
     }
 
@@ -149,23 +154,14 @@ public class GraphHopperRouting {
         } else {
             profile = PROFILE_CAR;
         }
-
         final VehicleEncoding vehicleEncoding = encoding.getVehicleEncoding(profile.getVehicle());
 
-        final TurnCostsProvider turnCostProvider = new TurnCostsProvider(vehicleEncoding, ghApi.getBaseGraph().getTurnCostStorage());
+        final PMap weightingHints = new PMap()
+                .putObject(ExtendedGraphHopper.WEIGHTING_TURN_COSTS, routingRequest.getRoutingParameters().isConsiderTurnCosts())
+                .putObject(ExtendedGraphHopper.WEIGHTING_COST_FUNCTION, routingRequest.getRoutingParameters().getRoutingCostFunction())
+                .putObject(ExtendedGraphHopper.WEIGHTING_GRAPH_MAPPER, graphMapper);
 
-        if (!routingRequest.getRoutingParameters().isConsiderTurnCosts()) {
-            turnCostProvider.disableTurnCosts();
-        }
-
-        final GraphHopperWeighting graphhopperWeighting = new GraphHopperWeighting(vehicleEncoding, encoding.wayType(), turnCostProvider, graphMapper);
-
-        // if there is no cost function given (initial routes), use the default
-        if (routingRequest.getRoutingParameters().getRoutingCostFunction() == null) {
-            graphhopperWeighting.setRoutingCostFunction(RoutingCostFunction.Default);
-        } else {
-            graphhopperWeighting.setRoutingCostFunction(routingRequest.getRoutingParameters().getRoutingCostFunction());
-        }
+        final Weighting weighting = ghApi.createWeighting(profile, weightingHints);
 
         final RoutingPosition source = routingRequest.getSource();
         final RoutingPosition target = routingRequest.getTarget();
@@ -181,19 +177,19 @@ public class GraphHopperRouting {
         final QueryGraph queryGraph = QueryGraph.create(ghApi.getBaseGraph(), snapSource, snapTarget);
 
         final int numberOfAlternatives = routingRequest.getRoutingParameters().getNumAlternativeRoutes();
-        final PMap hints = new PMap();
+        final PMap algoHints = new PMap();
         if (numberOfAlternatives > 0) {
             // We calculate more alternative routes than required, since GraphHopper often seem to return equal alternatives
-            hints.putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, Math.max(numberOfAlternatives, NUM_ALTERNATIVE_PATHS) + 1);
-            hints.putObject(Parameters.Algorithms.AltRoute.MAX_SHARE, ALTERNATIVE_ROUTES_MAX_SHARE);
-            hints.putObject(Parameters.Algorithms.AltRoute.MAX_WEIGHT, ALTERNATIVE_ROUTES_MAX_WEIGHT);
+            algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, Math.max(numberOfAlternatives, NUM_ALTERNATIVE_PATHS) + 1);
+            algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_SHARE, ALTERNATIVE_ROUTES_MAX_SHARE);
+            algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_WEIGHT, ALTERNATIVE_ROUTES_MAX_WEIGHT);
+            algoHints.putObject("alternative_route.max_exploration_factor", ALTERNATIVE_ROUTES_EXPLORATION_FACTOR);
+            algoHints.putObject("alternative_route.min_plateau_factor", ALTERNATIVE_ROUTES_PLATEAU_FACTOR);
         }
 
-        final Weighting weighting = queryGraph.wrapWeighting(
-                graphhopperWeighting
+        final RoutingAlgorithm algo = RoutingAlgorithmFactory.DEFAULT.createAlgorithm(
+                queryGraph, queryGraph.wrapWeighting(weighting), algoHints
         );
-
-        final RoutingAlgorithm algo = RoutingAlgorithmFactory.DEFAULT.createAlgorithm(queryGraph, weighting, hints);
 
         final List<Path> paths = algo.calcPaths(snapSource.getClosestNode(), snapTarget.getClosestNode());
 

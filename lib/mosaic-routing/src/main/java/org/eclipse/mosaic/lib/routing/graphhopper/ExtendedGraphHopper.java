@@ -15,22 +15,38 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper;
 
+import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
+import com.graphhopper.config.Profile;
+import com.graphhopper.routing.WeightingFactory;
+import com.graphhopper.routing.ev.Subnetwork;
+import com.graphhopper.routing.subnetwork.PrepareRoutingSubnetworks;
 import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.RAMDirectory;
+import com.graphhopper.util.Helper;
+import com.graphhopper.util.PMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An extension of GraphHopper which is able to import map data from the MOSAIC scenario database.
  * Routing functionality is implemented {@link org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting}.
  */
 class ExtendedGraphHopper extends GraphHopper {
+
+    static final String WEIGHTING_TURN_COSTS = "weighting.turnCosts";
+    static final String WEIGHTING_COST_FUNCTION = "weighting.costFunction";
+    static final String WEIGHTING_GRAPH_MAPPER = "weighting.graphMapper";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -44,6 +60,8 @@ class ExtendedGraphHopper extends GraphHopper {
         this.graphLoader = graphLoader;
         this.mapper = mapper;
         this.encodingManager = encoding;
+
+        setProfiles(encoding.getAllProfiles());
     }
 
     @Override
@@ -54,6 +72,8 @@ class ExtendedGraphHopper extends GraphHopper {
     @Override
     public GraphHopper importOrLoad() {
         fullyLoaded = false;
+
+        prepareEncodingManager();
         setBaseGraph(new BaseGraph
                 .Builder(getEncodingManager())
                 .setDir(new RAMDirectory())
@@ -62,9 +82,26 @@ class ExtendedGraphHopper extends GraphHopper {
                 .setSegmentSize(-1)
                 .build()
         );
+
         importDB(getGraphHopperLocation());
         fullyLoaded = true;
         return this;
+    }
+
+    @Override
+    protected WeightingFactory createWeightingFactory() {
+        return (profile, hints, b) -> {
+            final VehicleEncoding vehicleEncoding = encodingManager.getVehicleEncoding(profile.getVehicle());
+
+            final TurnCostsProvider turnCostProvider = new TurnCostsProvider(vehicleEncoding, getBaseGraph().getTurnCostStorage());
+            if (!hints.getBool(WEIGHTING_TURN_COSTS, false)) {
+                turnCostProvider.disableTurnCosts();
+            }
+            final GraphhopperToDatabaseMapper graphMapper = hints.getObject(WEIGHTING_GRAPH_MAPPER, null);
+            final RoutingCostFunction costFunction = hints.getObject(WEIGHTING_COST_FUNCTION, RoutingCostFunction.Default);
+            return new GraphHopperWeighting(vehicleEncoding, encodingManager.wayType(), turnCostProvider, graphMapper)
+                    .setRoutingCostFunction(costFunction);
+        };
     }
 
     private void importDB(String ignore) {
@@ -85,7 +122,7 @@ class ExtendedGraphHopper extends GraphHopper {
         try {
             cleanUp();
         } catch (Exception e) {
-            logger.warn("Could not clean up routing graph, skipping. Routing might not work as expected!");
+            logger.warn("Could not clean up routing graph, skipping. Routing might not work as expected!", e);
         }
         getBaseGraph().flush();
     }
@@ -98,6 +135,28 @@ class ExtendedGraphHopper extends GraphHopper {
     @Override
     public GHResponse route(GHRequest request) {
         throw new UnsupportedOperationException("Routing Logic is implemented in GraphHopperRouting.");
+    }
+
+    /* the following code has been copied and adjusted from original GraphHopper repository.
+    * This was necessary, since `encodingManager` in `GraphHopper` is private, cannot be set from outside, and is used directly
+    * in `buildSubnetworkRemovalJobs`. */
+    @Override
+    protected void cleanUp() {
+        PrepareRoutingSubnetworks preparation = new PrepareRoutingSubnetworks(getBaseGraph(), buildSubnetworkRemovalJobs());
+        preparation.setMinNetworkSize(200);
+        preparation.setThreads(1);
+        preparation.doWork();
+        logger.info("nodes: " + Helper.nf(getBaseGraph().getNodes()) + ", edges: " + Helper.nf(getBaseGraph().getEdges()));
+    }
+
+    private List<PrepareRoutingSubnetworks.PrepareJob> buildSubnetworkRemovalJobs() {
+        List<PrepareRoutingSubnetworks.PrepareJob> jobs = new ArrayList<>();
+        for (Profile profile : getProfiles()) {
+            Weighting weighting = createWeighting(profile, new PMap());
+            // here we use `getEncodingManager()` instead of `encodingManager`, making this code work
+            jobs.add(new PrepareRoutingSubnetworks.PrepareJob(getEncodingManager().getBooleanEncodedValue(Subnetwork.key(profile.getName())), weighting));
+        }
+        return jobs;
     }
 
 }
