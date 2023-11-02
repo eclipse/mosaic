@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -66,12 +67,9 @@ public class GraphHopperRouting {
 
     public static final Profile PROFILE_BIKE = new Profile("bike").setVehicle("bike").setTurnCosts(false);
 
-    public static final List<Profile> PROFILES = new ArrayList<>();
-
-    static {
-        PROFILES.add(PROFILE_CAR);
-        PROFILES.add(PROFILE_BIKE);
-    }
+    public static final List<Profile> PROFILES = Collections.unmodifiableList(Lists.newArrayList(
+            PROFILE_CAR, PROFILE_BIKE
+    ));
 
     /**
      * The minimum number of alternatives to calculate when alternative routes have been requested.
