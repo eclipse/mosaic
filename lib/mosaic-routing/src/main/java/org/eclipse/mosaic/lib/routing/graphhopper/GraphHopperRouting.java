@@ -375,6 +375,11 @@ public class GraphHopperRouting {
             EdgeIteratorState origEdge = edgesIt.next();
             EdgeIteratorState currEdge = origEdge;
 
+            /*
+             * If the requested source or target point is in the middle of the road, an artificial node
+             * (and artificial edges) is created in the QueryGraph. As a consequence, the first
+             * and/or last edge of the route might be such virtual edge, which must be converted to its original edge.
+             */
             if (currEdge instanceof VirtualEdgeIteratorState) {
                 currEdge = graph.getEdgeIteratorStateForKey(((VirtualEdgeIteratorState) origEdge).getOriginalEdgeKey());
             }
