@@ -57,8 +57,7 @@ public class CharlottenburgRoutingTest {
 
         database = Database.loadFromFile(dbFileCopy);
 
-        routing = new GraphHopperRouting();
-        routing.loadGraphFromDatabase(database);
+        routing = new GraphHopperRouting(database);
     }
 
     @Test

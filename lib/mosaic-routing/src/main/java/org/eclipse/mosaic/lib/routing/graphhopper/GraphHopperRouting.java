@@ -22,26 +22,32 @@ import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
+import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.RoutingAlgorithmFactory;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.DatabaseGraphLoader;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.graphhopper.GraphHopper;
 import com.graphhopper.config.Profile;
 import com.graphhopper.routing.Path;
 import com.graphhopper.routing.RoutingAlgorithm;
 import com.graphhopper.routing.ev.BooleanEncodedValue;
 import com.graphhopper.routing.querygraph.QueryGraph;
 import com.graphhopper.routing.querygraph.VirtualEdgeIteratorState;
+import com.graphhopper.routing.subnetwork.PrepareRoutingSubnetworks;
 import com.graphhopper.routing.util.AccessFilter;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.NodeAccess;
+import com.graphhopper.storage.RAMDirectory;
+import com.graphhopper.storage.index.LocationIndex;
+import com.graphhopper.storage.index.LocationIndexTree;
 import com.graphhopper.storage.index.Snap;
 import com.graphhopper.util.DistanceCalc;
 import com.graphhopper.util.DistancePlaneProjection;
@@ -50,6 +56,7 @@ import com.graphhopper.util.PMap;
 import com.graphhopper.util.Parameters;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +69,9 @@ import java.util.List;
 import java.util.Set;
 
 public class GraphHopperRouting {
+
+
+    private static final Logger LOG = LoggerFactory.getLogger(GraphHopperRouting.class);
 
     public static final Profile PROFILE_CAR = new Profile("car").setVehicle("car").setTurnCosts(true);
 
@@ -119,30 +129,68 @@ public class GraphHopperRouting {
      */
     private static final double MAX_DISTANCE_TO_TARGET = 500d;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private GraphHopper ghApi;
     private final DistanceCalc distanceCalculation = new DistancePlaneProjection();
 
-    private GraphhopperToDatabaseMapper graphMapper;
-    private Database db;
-    private VehicleEncodingManager encoding;
+    private final GraphhopperToDatabaseMapper graphMapper;
+    private final Database db;
+    private final VehicleEncodingManager encoding;
+    private final BaseGraph graph;
+    private final LocationIndex locationIndex;
 
-    public GraphHopperRouting loadGraphFromDatabase(Database db) {
+    public GraphHopperRouting(Database db) {
         this.db = db;
 
-        //initialize reader and mapper for database import into graphhopper
-        GraphLoader reader = new DatabaseGraphLoader(db);
         graphMapper = new GraphhopperToDatabaseMapper();
         encoding = new VehicleEncodingManager(PROFILES);
 
-        ghApi = new ExtendedGraphHopper(encoding, reader, graphMapper);
-        ghApi.importOrLoad();
-        return this;
+        graph = createGraphFromDatabase(db);
+        locationIndex = createLocationIndex();
+        cleanUpGraph();
+
+        graph.flush();
+    }
+
+    private BaseGraph createGraphFromDatabase(Database db) {
+        final BaseGraph graph = new BaseGraph
+                .Builder(encoding.getEncodingManager())
+                .setDir(new RAMDirectory())
+                .set3D(false)
+                .withTurnCosts(encoding.getEncodingManager().needsTurnCostsSupport())
+                .setSegmentSize(-1)
+                .build();
+
+        final GraphLoader reader = new DatabaseGraphLoader(db);
+        reader.initialize(graph, encoding, graphMapper);
+        reader.loadGraph();
+        LOG.info("nodes: {}, edges: {}", graph.getNodes(), graph.getEdges());
+        return graph;
+    }
+
+    private LocationIndex createLocationIndex() {
+        return new LocationIndexTree(graph, graph.getDirectory())
+                .setMinResolutionInMeter(300)
+                .setMaxRegionSearch(4)
+                .prepareIndex();
+    }
+
+    protected void cleanUpGraph() {
+        new PrepareRoutingSubnetworks(graph, buildSubnetworkRemovalJobs())
+                .setMinNetworkSize(200)
+                .setThreads(1)
+                .doWork();
+    }
+
+    private List<PrepareRoutingSubnetworks.PrepareJob> buildSubnetworkRemovalJobs() {
+        List<PrepareRoutingSubnetworks.PrepareJob> jobs = new ArrayList<>();
+        for (Profile profile : encoding.getAllProfiles()) {
+            Weighting weighting = createWeighting(profile, RoutingCostFunction.Fastest, false);
+            jobs.add(new PrepareRoutingSubnetworks.PrepareJob(encoding.getVehicleEncoding(profile.getVehicle()).subnetwork(), weighting));
+        }
+        return jobs;
     }
 
     public List<CandidateRoute> findRoutes(RoutingRequest routingRequest) {
-        if (ghApi == null) {
+        if (graph == null) {
             throw new IllegalStateException("Load database at first");
         }
 
@@ -154,13 +202,6 @@ public class GraphHopperRouting {
         }
         final VehicleEncoding vehicleEncoding = encoding.getVehicleEncoding(profile.getVehicle());
 
-        final PMap weightingHints = new PMap()
-                .putObject(ExtendedGraphHopper.WEIGHTING_TURN_COSTS, routingRequest.getRoutingParameters().isConsiderTurnCosts())
-                .putObject(ExtendedGraphHopper.WEIGHTING_COST_FUNCTION, routingRequest.getRoutingParameters().getRoutingCostFunction())
-                .putObject(ExtendedGraphHopper.WEIGHTING_GRAPH_MAPPER, graphMapper);
-
-        final Weighting weighting = ghApi.createWeighting(profile, weightingHints);
-
         final RoutingPosition source = routingRequest.getSource();
         final RoutingPosition target = routingRequest.getTarget();
 
@@ -168,11 +209,11 @@ public class GraphHopperRouting {
         final Snap snapTarget = createQueryForTarget(target, vehicleEncoding.access());
 
         if (snapSource.getClosestEdge() == null || snapTarget.getClosestEdge() == null) {
-            log.warn("Could not find a route from {} to {}", routingRequest.getSource(), routingRequest.getTarget());
+            LOG.warn("Could not find a route from {} to {}", routingRequest.getSource(), routingRequest.getTarget());
             return Lists.newArrayList();
         }
 
-        final QueryGraph queryGraph = QueryGraph.create(ghApi.getBaseGraph(), snapSource, snapTarget);
+        final QueryGraph queryGraph = QueryGraph.create(graph, snapSource, snapTarget);
 
         final int numberOfAlternatives = routingRequest.getRoutingParameters().getNumAlternativeRoutes();
         final PMap algoHints = new PMap();
@@ -180,6 +221,11 @@ public class GraphHopperRouting {
             // We calculate more alternative routes than required, since GraphHopper often seem to return equal alternatives
             algoHints.putObject(Parameters.Algorithms.AltRoute.MAX_PATHS, Math.max(numberOfAlternatives, NUM_ALTERNATIVE_PATHS) + 1);
         }
+
+        final Weighting weighting = createWeighting(profile,
+                routingRequest.getRoutingParameters().getRoutingCostFunction(),
+                routingRequest.getRoutingParameters().isConsiderTurnCosts()
+        );
 
         final RoutingAlgorithm algo = RoutingAlgorithmFactory.DEFAULT.createAlgorithm(
                 queryGraph, queryGraph.wrapWeighting(weighting), algoHints
@@ -201,16 +247,26 @@ public class GraphHopperRouting {
                     && checkForDuplicate(route, duplicateSet)
                     && checkRouteOnRequiredSourceConnection(route, source)) {
                 result.add(route);
-            } else if (route != null && log.isDebugEnabled()) {
-                log.debug("Path is invalid and will be ignored [" + StringUtils.join(route.getConnectionIds(), ",") + "]");
+            } else if (route != null && LOG.isDebugEnabled()) {
+                LOG.debug("Path is invalid and will be ignored [" + StringUtils.join(route.getConnectionIds(), ",") + "]");
             }
         }
         return result;
     }
 
+    private Weighting createWeighting(Profile profile, RoutingCostFunction costFunction, boolean withTurnCosts) {
+        final VehicleEncoding vehicleEncoding = encoding.getVehicleEncoding(profile.getVehicle());
+        final TurnCostsProvider turnCostProvider = new TurnCostsProvider(vehicleEncoding, graph.getTurnCostStorage());
+        if (!withTurnCosts) {
+            turnCostProvider.disableTurnCosts();
+        }
+        return new GraphHopperWeighting(vehicleEncoding, encoding.wayType(), turnCostProvider, graphMapper)
+                .setRoutingCostFunction(ObjectUtils.defaultIfNull(costFunction, RoutingCostFunction.Default));
+    }
+
     private Snap createQueryForTarget(RoutingPosition target, BooleanEncodedValue accessEnc) {
         final EdgeFilter toEdgeFilter = createEdgeFilterForRoutingPosition(target, accessEnc);
-        Snap queryTarget = ghApi.getLocationIndex().findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
+        Snap queryTarget = locationIndex.findClosest(target.getPosition().getLatitude(), target.getPosition().getLongitude(), toEdgeFilter);
         if (target.getConnectionId() != null) {
             return fixQueryResultIfNoClosestEdgeFound(queryTarget, target, accessEnc);
         } else {
@@ -220,7 +276,7 @@ public class GraphHopperRouting {
 
     private Snap createQueryForSource(RoutingPosition source, BooleanEncodedValue accessEnc) {
         final EdgeFilter fromEdgeFilter = createEdgeFilterForRoutingPosition(source, accessEnc);
-        Snap querySource = ghApi.getLocationIndex().findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
+        Snap querySource = locationIndex.findClosest(source.getPosition().getLatitude(), source.getPosition().getLongitude(), fromEdgeFilter);
         if (source.getConnectionId() != null) {
             querySource = fixQueryResultIfSnappedPointIsTowerNode(querySource, source, fromEdgeFilter);
             return fixQueryResultIfNoClosestEdgeFound(querySource, source, accessEnc);
@@ -244,9 +300,9 @@ public class GraphHopperRouting {
 
     private Snap fixQueryResultIfNoClosestEdgeFound(Snap queryResult, RoutingPosition routingPosition, BooleanEncodedValue accessEnc) {
         if (queryResult.getClosestEdge() == null) {
-            log.warn("Wrong routing request: The from-connection {} does not fit with the given position {}", routingPosition.getConnectionId(), routingPosition.getPosition());
+            LOG.warn("Wrong routing request: The from-connection {} does not fit with the given position {}", routingPosition.getConnectionId(), routingPosition.getPosition());
 
-            return ghApi.getLocationIndex().findClosest(
+            return locationIndex.findClosest(
                     routingPosition.getPosition().getLatitude(), routingPosition.getPosition().getLongitude(), AccessFilter.allEdges(accessEnc)
             );
         }
@@ -261,7 +317,7 @@ public class GraphHopperRouting {
             // use the node before target node (index -2) as the alternative query node to find a QueryResult _on_ the connection.
             Node alternativeQueryNode = DatabaseUtils.getNodeByIndex(db.getConnection(routingPosition.getConnectionId()), -2);
             if (alternativeQueryNode != null) {
-                return ghApi.getLocationIndex().findClosest(
+                return locationIndex.findClosest(
                         alternativeQueryNode.getPosition().getLatitude(), alternativeQueryNode.getPosition().getLongitude(), fromEdgeFilter
                 );
             }
@@ -320,7 +376,7 @@ public class GraphHopperRouting {
             EdgeIteratorState currEdge = origEdge;
 
             if (currEdge instanceof VirtualEdgeIteratorState) {
-                currEdge = ghApi.getBaseGraph().getEdgeIteratorStateForKey(((VirtualEdgeIteratorState) origEdge).getOriginalEdgeKey());
+                currEdge = graph.getEdgeIteratorStateForKey(((VirtualEdgeIteratorState) origEdge).getOriginalEdgeKey());
             }
 
             Connection con = graphMapper.toConnection(currEdge.getEdge());
@@ -346,13 +402,13 @@ public class GraphHopperRouting {
                 lastConnection = con;
 
                 if (Double.isInfinite(newPath.getWeight())) {
-                    log.warn(
+                    LOG.warn(
                             "Something went wrong during path search: The found route has infinite weight. Maybe there's a turn restriction or unconnected "
                                     + "sub-graphs in the network. Route will be ignored.");
                     return null;
                 }
             } else {
-                log.debug(String.format("A connection could be resolved by internal ID %d.", origEdge.getEdge()));
+                LOG.debug(String.format("A connection could be resolved by internal ID %d.", origEdge.getEdge()));
             }
         }
 
@@ -394,5 +450,4 @@ public class GraphHopperRouting {
         }
         return true;
     }
-
 }

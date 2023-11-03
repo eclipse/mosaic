@@ -18,6 +18,7 @@ package org.eclipse.mosaic.lib.routing.graphhopper;
 import com.graphhopper.config.Profile;
 import com.graphhopper.routing.ev.BooleanEncodedValue;
 import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.routing.ev.Subnetwork;
 import com.graphhopper.routing.ev.TurnCost;
 import com.graphhopper.routing.ev.TurnRestriction;
 import com.graphhopper.routing.util.DefaultVehicleEncodedValuesFactory;
@@ -31,6 +32,7 @@ public class VehicleEncoding {
     private final BooleanEncodedValue turnRestrictionEnc;
     private final DecimalEncodedValue turnCostEnc;
     private final DecimalEncodedValue priorityEnc;
+    private final BooleanEncodedValue subnetworkEnc;
 
     VehicleEncoding(Profile profile) {
         VehicleEncodedValues vehicle = new DefaultVehicleEncodedValuesFactory()
@@ -40,6 +42,7 @@ public class VehicleEncoding {
         this.priorityEnc = vehicle.getPriorityEnc();
         this.turnRestrictionEnc = TurnRestriction.create(profile.getVehicle());
         this.turnCostEnc = TurnCost.create(profile.getVehicle(), 255);
+        this.subnetworkEnc = Subnetwork.create(profile.getVehicle());
     }
 
     public BooleanEncodedValue access() {
@@ -60,5 +63,9 @@ public class VehicleEncoding {
 
     public DecimalEncodedValue turnCost() {
         return turnCostEnc;
+    }
+
+    public BooleanEncodedValue subnetwork() {
+        return subnetworkEnc;
     }
 }

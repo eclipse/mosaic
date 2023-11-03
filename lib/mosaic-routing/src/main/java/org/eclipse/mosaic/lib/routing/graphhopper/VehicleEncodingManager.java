@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.routing.graphhopper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
 
 import com.graphhopper.config.Profile;
-import com.graphhopper.routing.ev.Subnetwork;
 import com.graphhopper.routing.util.EncodingManager;
 
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class VehicleEncodingManager {
                     .add(encoding.speed())
                     .addTurnCostEncodedValue(encoding.turnRestriction())
                     .addTurnCostEncodedValue(encoding.turnCost())
-                    .add(Subnetwork.create(profile.getName()));
+                    .add(encoding.subnetwork());
             if (encoding.priority() != null) {
                 builder.add(encoding.priority());
             }
