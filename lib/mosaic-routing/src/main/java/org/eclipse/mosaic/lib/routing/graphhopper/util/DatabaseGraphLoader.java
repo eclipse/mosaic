@@ -21,9 +21,6 @@ import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.database.road.Way;
 import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
-import org.eclipse.mosaic.lib.routing.graphhopper.GraphLoader;
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncodingManager;
 
 import com.graphhopper.reader.ReaderWay;
 import com.graphhopper.routing.ev.EdgeIntAccess;
@@ -47,7 +44,7 @@ import java.util.Set;
 /**
  * Loads the content of a MOSAIC scenario database into a graphhopper graph.
  */
-public class DatabaseGraphLoader implements GraphLoader {
+public class DatabaseGraphLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseGraphLoader.class);
 
@@ -63,9 +60,10 @@ public class DatabaseGraphLoader implements GraphLoader {
         this.database = database;
     }
 
-    @Override
     public void initialize(BaseGraph graph,
-                           VehicleEncodingManager encodingManager, GraphhopperToDatabaseMapper mapper) {
+                           VehicleEncodingManager encodingManager,
+                           GraphhopperToDatabaseMapper mapper
+    ) {
         this.graphStorage = graph;
         this.graphMapper = mapper;
         this.encodingManager = encodingManager;
@@ -81,7 +79,6 @@ public class DatabaseGraphLoader implements GraphLoader {
         }
     }
 
-    @Override
     public void loadGraph() {
 
         int nodeIndex = 0;

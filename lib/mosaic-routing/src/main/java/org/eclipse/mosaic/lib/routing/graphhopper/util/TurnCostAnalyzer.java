@@ -17,7 +17,6 @@ package org.eclipse.mosaic.lib.routing.graphhopper.util;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoUtils;
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
 
 import com.graphhopper.routing.util.AccessFilter;
 import com.graphhopper.storage.BaseGraph;

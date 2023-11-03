@@ -15,8 +15,6 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper.util;
 
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
-
 import com.graphhopper.routing.ev.BooleanEncodedValue;
 import com.graphhopper.routing.ev.DecimalEncodedValue;
 import com.graphhopper.routing.weighting.TurnCostProvider;

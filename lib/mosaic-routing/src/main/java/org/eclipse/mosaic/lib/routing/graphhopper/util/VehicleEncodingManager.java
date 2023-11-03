@@ -13,9 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.lib.routing.graphhopper;
-
-import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
+package org.eclipse.mosaic.lib.routing.graphhopper.util;
 
 import com.graphhopper.config.Profile;
 import com.graphhopper.routing.util.EncodingManager;

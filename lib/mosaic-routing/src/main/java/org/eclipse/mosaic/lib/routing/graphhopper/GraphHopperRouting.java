@@ -29,6 +29,8 @@ import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.RoutingAlgorithmFact
 import org.eclipse.mosaic.lib.routing.graphhopper.util.DatabaseGraphLoader;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncodingManager;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -159,7 +161,7 @@ public class GraphHopperRouting {
                 .setSegmentSize(-1)
                 .build();
 
-        final GraphLoader reader = new DatabaseGraphLoader(db);
+        final DatabaseGraphLoader reader = new DatabaseGraphLoader(db);
         reader.initialize(graph, encoding, graphMapper);
         reader.loadGraph();
         LOG.info("nodes: {}, edges: {}", graph.getNodes(), graph.getEdges());

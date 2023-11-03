@@ -20,6 +20,7 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.routing.EdgeProperties;
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
 
 import com.google.common.collect.Iterables;

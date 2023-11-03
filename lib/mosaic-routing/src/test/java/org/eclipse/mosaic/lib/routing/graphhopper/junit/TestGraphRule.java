@@ -16,19 +16,17 @@
 package org.eclipse.mosaic.lib.routing.graphhopper.junit;
 
 import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
-import org.eclipse.mosaic.lib.routing.graphhopper.GraphLoader;
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncodingManager;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncodingManager;
 
 import com.graphhopper.routing.util.AllEdgesIterator;
 import com.graphhopper.storage.BaseGraph;
 import org.junit.rules.ExternalResource;
 
-public class TestGraphRule extends ExternalResource implements GraphLoader {
+public class TestGraphRule extends ExternalResource {
 
     private BaseGraph graph;
-    private VehicleEncodingManager encodingManager;
+    private final VehicleEncodingManager encodingManager;
 
     private final boolean emptyGraph;
 
@@ -67,18 +65,6 @@ public class TestGraphRule extends ExternalResource implements GraphLoader {
 
     public BaseGraph getGraph() {
         return graph;
-    }
-
-    @Override
-    public void initialize(BaseGraph graph, VehicleEncodingManager encodingManager, GraphhopperToDatabaseMapper mapper) {
-        this.graph = graph;
-        this.encodingManager = encodingManager;
-    }
-
-    @Override
-    public void loadGraph() {
-        graph.create(25);
-        createTestGraph();
     }
 
     private void createTestGraph() {

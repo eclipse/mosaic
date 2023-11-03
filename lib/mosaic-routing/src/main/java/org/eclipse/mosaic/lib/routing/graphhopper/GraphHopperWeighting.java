@@ -17,6 +17,7 @@ package org.eclipse.mosaic.lib.routing.graphhopper;
 
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
 
 import com.graphhopper.routing.weighting.AbstractWeighting;

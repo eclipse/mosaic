@@ -21,8 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.database.Database;
-import org.eclipse.mosaic.lib.routing.graphhopper.GraphLoader;
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
 
 import com.graphhopper.routing.ev.DecimalEncodedValue;
@@ -67,7 +65,7 @@ public class DatabaseGraphLoaderTest {
 
         Database database = Database.loadFromFile(testDb);
 
-        GraphLoader reader = new DatabaseGraphLoader(database);
+        DatabaseGraphLoader reader = new DatabaseGraphLoader(database);
         GraphhopperToDatabaseMapper mapper = new GraphhopperToDatabaseMapper();
         BaseGraph g = testGraph.getGraph();
         TurnCostStorage tcStorage = testGraph.getGraph().getTurnCostStorage();

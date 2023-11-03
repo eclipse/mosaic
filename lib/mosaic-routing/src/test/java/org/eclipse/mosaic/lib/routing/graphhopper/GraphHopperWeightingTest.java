@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.util.EdgeExplorer;

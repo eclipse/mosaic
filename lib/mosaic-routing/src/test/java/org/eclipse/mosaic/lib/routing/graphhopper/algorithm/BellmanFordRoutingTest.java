@@ -17,10 +17,10 @@ package org.eclipse.mosaic.lib.routing.graphhopper.algorithm;
 
 import static org.junit.Assert.assertEquals;
 
-import org.eclipse.mosaic.lib.routing.graphhopper.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GHListHelper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 
 import com.graphhopper.routing.Path;
 import com.graphhopper.routing.weighting.FastestWeighting;
