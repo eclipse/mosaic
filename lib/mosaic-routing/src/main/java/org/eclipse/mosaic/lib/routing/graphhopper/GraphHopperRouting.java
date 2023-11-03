@@ -93,22 +93,22 @@ public class GraphHopperRouting {
     /**
      * Alternative routes may share a maximum of 70% of roads of the best route.
      */
-    public static final double ALTERNATIVE_ROUTES_MAX_SHARE = 0.7;
+    public static double ALTERNATIVE_ROUTES_MAX_SHARE = 0.7;
 
     /**
      * Alternative routes may cost a maximum of 40% more than the best route.
      */
-    public static final double ALTERNATIVE_ROUTES_MAX_WEIGHT = 1.4;
+    public static double ALTERNATIVE_ROUTES_MAX_WEIGHT = 1.4;
 
     /**
      * Increases the changes to find more alternatives.
      */
-    public static final double ALTERNATIVE_ROUTES_EXPLORATION_FACTOR = 1.3;
+    public static double ALTERNATIVE_ROUTES_EXPLORATION_FACTOR = 1.3;
 
     /**
      * Specifies the minimum plateau portion of every alternative path that is required.
      */
-    public static final double ALTERNATIVE_ROUTES_PLATEAU_FACTOR = 0.1;
+    public static double ALTERNATIVE_ROUTES_PLATEAU_FACTOR = 0.1;
 
     /**
      * If the distance of the query position to the closest node is lower than this
