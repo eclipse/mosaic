@@ -29,6 +29,14 @@ The project is a Maven based multi-module project and has its child modules orga
   * `lib` - MOSAIC Libraries: mathematics, spatial, routing, utilities, communication models, and data exchange
   * `fed` - MOSAIC Ambassadors/Federates: simulators and couplings which integrate simulation models to Eclipse MOSAIC
 
+## Attribution
+
+If you use our simulation framework for your own research, we would be glad if the following reference is included in any published work for which Eclipse MOSAIC has been used:
+
+> K. Schrab, M. Neubauer, R. Protzmann, I. Radusch, S. Manganiaris, P. Lytrivis, A. J. Amditis
+_**“Modeling an ITS Management Solution for Mixed Highway Traffic with Eclipse MOSAIC."**_
+IEEE Transactions on Intelligent Transportation Systems, pp. 1 - 11, Print ISSN: 1524-9050, Electronic ISSN: 1558-0016, DOI: 10.1109/TITS.2022.3204174
+
 ## Documentation
 
 View our website at **[eclipse.org/mosaic](https://eclipse.org/mosaic)** for detailed documentation and many tutorials to get started with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
