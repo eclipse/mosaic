@@ -16,6 +16,10 @@
 package org.eclipse.mosaic.fed.cell.config;
 
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
+import org.eclipse.mosaic.lib.util.gson.DataFieldAdapter;
+import org.eclipse.mosaic.rti.DATA;
+
+import com.google.gson.annotations.JsonAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,12 @@ import java.util.List;
  * Provides general configuration for the ambassador, such as paths to the regions and network configuration files.
  */
 public final class CCell {
+
+    /**
+     * Configuration of header sizes added to all messages before
+     * simulating packet transmission.
+     */
+    public final CHeaderLengths headerLengths = new CHeaderLengths();
 
     /**
      * Interval (in seconds) in which the bandwidth is aggregated.
@@ -82,5 +92,30 @@ public final class CCell {
          * The application class.
          */
         public String applicationClass = "*";
+    }
+
+    public static class CHeaderLengths {
+
+        /**
+         * The size of ID header added to all messages.
+         */
+        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
+        public long ipHeader = 20 * DATA.BYTE;
+
+        /**
+         * The size of TCP header added to all messages which use
+         * {@link org.eclipse.mosaic.lib.enums.ProtocolType#TCP}
+         * for transmission.
+         */
+        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
+        public long tcpHeader = 20 * DATA.BYTE;
+
+        /**
+         * The size of UDP headers added to all messages which use
+         * {@link org.eclipse.mosaic.lib.enums.ProtocolType#UDP}
+         * for transmission.
+         */
+        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
+        public long udpHeader = 2 * DATA.BYTE;
     }
 }

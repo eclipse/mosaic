@@ -15,8 +15,10 @@
 
 package org.eclipse.mosaic.fed.cell.utility;
 
+import org.eclipse.mosaic.fed.cell.config.CCell;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
+import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.v2x.MessageStreamRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
@@ -133,8 +135,19 @@ public final class CapacityUtility {
      * @param msg V2X message.
      * @return The length of the V2X message.
      */
-    public static long getMessageLength(V2xMessage msg) {
-        return msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
+    public static long getMessageLengthWithHeaders(V2xMessage msg) {
+        final CCell.CHeaderLengths headerLengths = ConfigurationData.INSTANCE.getCellConfig().headerLengths;
+        switch (msg.getRouting().getDestination().getProtocolType()) {
+            case UDP:
+                return headerLengths.ipHeader
+                        + headerLengths.udpHeader
+                        + msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
+            case TCP:
+            default:
+                return headerLengths.ipHeader
+                        + headerLengths.tcpHeader
+                        + msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
+        }
     }
 
     /**
