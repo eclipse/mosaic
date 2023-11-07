@@ -196,7 +196,7 @@ public class StreamProcessor {
      * @return Bandwidth for the data packets.
      */
     private long calculateNeededBandwidthPacket(Input input, Result result, long coreDelayInNs, int prPlAttempts) {
-        long messageSize = CapacityUtility.getMessageLengthWithHeaders(input.v2xMessage);
+        long messageSize = CapacityUtility.getMessageLengthWithHeaders(input.v2xMessage, input.nodeId);
         long neededBandwidth = prPlAttempts * CapacityUtility.calculateNeededCapacity(messageSize, coreDelayInNs) * DATA.BIT;
 
         // When the bandwidth is sufficient go on and send the packet

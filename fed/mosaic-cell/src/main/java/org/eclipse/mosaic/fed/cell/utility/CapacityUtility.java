@@ -19,6 +19,7 @@ import org.eclipse.mosaic.fed.cell.config.CCell;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
 import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
+import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.v2x.MessageStreamRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
@@ -135,16 +136,25 @@ public final class CapacityUtility {
      * @param msg V2X message.
      * @return The length of the V2X message.
      */
-    public static long getMessageLengthWithHeaders(V2xMessage msg) {
+    public static long getMessageLengthWithHeaders(V2xMessage msg, String senderOrReceiver) {
         final CCell.CHeaderLengths headerLengths = ConfigurationData.INSTANCE.getCellConfig().headerLengths;
+        final long linkLayerHeader;
+        if (UnitNameGenerator.isServer(senderOrReceiver) || UnitNameGenerator.isTmc(senderOrReceiver)) {
+            // let's assume everything is connected via cellular link, except servers and tmcs which are connected with the backbone
+            linkLayerHeader = headerLengths.ethernetHeader;
+        } else {
+            linkLayerHeader = headerLengths.cellularHeader;
+        }
         switch (msg.getRouting().getDestination().getProtocolType()) {
             case UDP:
-                return headerLengths.ipHeader
+                return linkLayerHeader
+                        + headerLengths.ipHeader
                         + headerLengths.udpHeader
                         + msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
             case TCP:
             default:
-                return headerLengths.ipHeader
+                return linkLayerHeader
+                        + headerLengths.ipHeader
                         + headerLengths.tcpHeader
                         + msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
         }

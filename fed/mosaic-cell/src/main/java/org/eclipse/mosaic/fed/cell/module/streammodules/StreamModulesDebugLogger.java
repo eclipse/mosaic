@@ -60,7 +60,7 @@ class StreamModulesDebugLogger {
         }
 
         long delayInNs = (messageEndTime - input.getMessageStartTime());
-        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage());
+        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage(), input.getNodeId());
         int msgId = input.getV2xMessage().getId();
         final String senderId = input.getV2xMessage().getRouting().getSource().getSourceName();
         if (input.getMode().isUplink()) {
@@ -106,7 +106,7 @@ class StreamModulesDebugLogger {
         }
 
         long delayInNs = (result.getMessageEndTime() - input.getMessageStartTime());
-        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage());
+        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage(), input.getNodeId());
         int msgId = input.getV2xMessage().getId();
         if (input.getMode().isUplink()) {
             log.debug(" msg-{} IS deliverable via {} in region \"{}\" "
@@ -157,7 +157,7 @@ class StreamModulesDebugLogger {
      */
     private static void logUnsuccessfulSendingWithoutNodeConfig(Logger log, StreamProcessor.Input input, StreamProcessor.Result result) {
         long delayInNs = (result.getMessageEndTime() - input.getMessageStartTime());
-        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage());
+        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage(), input.getNodeId());
         int msgId = input.getV2xMessage().getId();
         if (input.getMode().isUplink()) {
             log.debug(" msg-{} is not sendable via {} in region \"{}\" due to {}"
@@ -188,7 +188,7 @@ class StreamModulesDebugLogger {
      */
     private static void logUnsuccessfulSendingWithNodeConfig(Logger log, StreamProcessor.Input input, StreamProcessor.Result result) {
         long delayInNs = (result.getMessageEndTime() - input.getMessageStartTime());
-        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage());
+        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage(), input.getNodeId());
         int msgId = input.getV2xMessage().getId();
         if (input.getMode().isUplink()) {
             log.debug(" msg-{} is not sendable via {} in region \"{}\" due to {}"
@@ -225,7 +225,7 @@ class StreamModulesDebugLogger {
         }
 
         long delayInNs = (result.getMessageEndTime() - input.getMessageStartTime());
-        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage());
+        long msgLenInBit = CapacityUtility.getMessageLengthWithHeaders(input.getV2xMessage(), input.getNodeId());
         int msgId = input.getV2xMessage().getId();
         if (input.getMode().isUplink()) {
             log.debug(" msg-{} IS NOT deliverable via {} in region \"{}\" "
