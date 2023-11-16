@@ -35,7 +35,7 @@ public class VehicleAdd
      */
     @SuppressWarnings("WeakerAccess")
     public VehicleAdd() {
-        super(TraciVersion.HIGHEST);
+        super(TraciVersion.API_20);
 
         write()
                 .command(CommandChangeVehicleValue.COMMAND)
