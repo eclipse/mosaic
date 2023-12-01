@@ -21,6 +21,7 @@ public enum TraciVersion {
     API_18(18),
     API_19(19),
     API_20(20),
+    API_21(21),
 
     /**
      * the lowest version supported by this client.
@@ -30,7 +31,7 @@ public enum TraciVersion {
     /**
      * the highest version supported by this client.
      */
-    HIGHEST(API_20.getApiVersion());
+    HIGHEST(API_21.getApiVersion());
 
     private final int apiVersion;
 

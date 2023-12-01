@@ -644,6 +644,9 @@
                 <file>
                     <exists>LICENSE</exists>
                 </file>
+                <property>
+                    <name>parent.dir</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -680,7 +683,10 @@
             <activation>
                 <file>
                     <missing>LICENSE</missing>
-                </file>
+                </file>                     
+                <property>
+                    <name>parent.dir</name>
+                </property>
             </activation>
             <build>
                 <plugins>
