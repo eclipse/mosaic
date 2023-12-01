@@ -98,17 +98,17 @@ public final class CCell {
 
         /**
          * The size of all headers of the ethernet link layer (used only for server nodes).
-         * E.g. Ethernet + MAC Header = ~ 38 bytes
+         * E.g. Ethernet + MAC + PHY Header = ~ 38 bytes
          */
         @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
         public long ethernetHeader = 38 * DATA.BYTE;
 
         /**
          * The size of all headers of the cellular link layer.<br>
-         * For example, for LTE we estimate ~20 bytes (PDCP (6 bytes) + RLC (4 bytes) + MAC (10 bytes))
+         * For example, for LTE we estimate ~20 bytes (PDCP (6 bytes) + RLC (4 bytes) + MAC (10 bytes) + PHY (6 bytes))
          */
         @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
-        public long cellularHeader = 20 * DATA.BYTE;
+        public long cellularHeader = 26 * DATA.BYTE;
 
         /**
          * The size of IP header added to all messages.

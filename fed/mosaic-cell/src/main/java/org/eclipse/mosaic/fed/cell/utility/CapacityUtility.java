@@ -15,11 +15,13 @@
 
 package org.eclipse.mosaic.fed.cell.utility;
 
+import static org.eclipse.mosaic.lib.objects.UnitNameGenerator.isServer;
+import static org.eclipse.mosaic.lib.objects.UnitNameGenerator.isTmc;
+
 import org.eclipse.mosaic.fed.cell.config.CCell;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
 import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
-import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.v2x.MessageStreamRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
@@ -139,7 +141,7 @@ public final class CapacityUtility {
     public static long getMessageLengthWithHeaders(V2xMessage msg, String senderOrReceiver) {
         final CCell.CHeaderLengths headerLengths = ConfigurationData.INSTANCE.getCellConfig().headerLengths;
         final long linkLayerHeader;
-        if (UnitNameGenerator.isServer(senderOrReceiver) || UnitNameGenerator.isTmc(senderOrReceiver)) {
+        if (senderOrReceiver != null && (isServer(senderOrReceiver) || isTmc(senderOrReceiver))) {
             // let's assume everything is connected via cellular link, except servers and tmcs which are connected with the backbone
             linkLayerHeader = headerLengths.ethernetHeader;
         } else {
