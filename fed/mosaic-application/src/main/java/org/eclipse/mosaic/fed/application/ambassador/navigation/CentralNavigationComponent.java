@@ -128,8 +128,10 @@ public class CentralNavigationComponent {
             this.log.info("CNC - Navigation-System initialized");
 
             try {
-                var routeMap = routing.getRoutesFromDatabaseForMessage();
-                SimulationKernel.SimulationKernel.getRoutes().putAll(routeMap);
+                final Map<String, VehicleRoute> routeMap = routing.getRoutesFromDatabaseForMessage();
+                for (var routeEntry: routeMap.entrySet()) {
+                    SimulationKernel.SimulationKernel.registerRoute(routeEntry.getKey(), routeEntry.getValue());
+                }
 
                 // generate VehicleRoutesInitialization to inform other simulators
                 VehicleRoutesInitialization interaction = new VehicleRoutesInitialization(0, routeMap);
@@ -330,7 +332,7 @@ public class CentralNavigationComponent {
         try {
             this.rtiAmbassador.triggerInteraction(interaction);
             // store route in local map
-            getAllRoutes().put(newRoute.getId(), newRoute);
+            SimulationKernel.SimulationKernel.registerRoute(newRoute.getId(), newRoute);
         } catch (IllegalValueException e) {
             throw new InternalFederateException(e);
         }

@@ -24,7 +24,7 @@ public class VehicleDeparture implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public enum DepartureSpeedMode {
-        /* the vehicle departs with the speed given in the mapping definiton of the spawner */
+        /* the vehicle departs with the speed given in the mapping definition of the spawner */
         PRECISE,
         /* the vehicle departs with a random speed */
         RANDOM,
@@ -139,8 +139,8 @@ public class VehicleDeparture implements Serializable {
         private int departureConnectionIndex;
         private double departurePos;
         private double departureSpeed;
-        private DepartureSpeedMode departureSpeedMode;
-        private LaneSelectionMode laneSelectionMode;
+        private DepartureSpeedMode departureSpeedMode = DepartureSpeedMode.MAXIMUM;
+        private LaneSelectionMode laneSelectionMode = LaneSelectionMode.DEFAULT;
 
         public Builder(String routeId) {
             this.routeId = routeId;

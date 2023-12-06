@@ -23,7 +23,6 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -139,12 +138,12 @@ public class Event implements Comparable<Event> {
 
         this.time = time;
 
-        Validate.isTrue(processors.size() > 0, "The processor list must contain at minimum one processor.");
+        Validate.isTrue(!processors.isEmpty(), "The processor list must contain at minimum one processor.");
         for (EventProcessor processor : processors) {
             Objects.requireNonNull(processor, "All event processors must not be null.");
         }
 
-        this.processors = Collections.unmodifiableList(new ArrayList<>(processors));
+        this.processors = List.copyOf(processors);
         this.resource = resource;
         this.nice = nice;
     }

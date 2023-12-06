@@ -687,8 +687,8 @@ public class ApplicationAmbassadorTest {
         ambassador.processInteraction(vehicleRoutesInitialization);
 
         // ASSERT: vehicles routes have been propagated
-        assertEquals(routes.get("0"), SimulationKernel.SimulationKernel.getRoutesView().get("0"));
-        assertEquals(routes.get("1"), SimulationKernel.SimulationKernel.getRoutesView().get("1"));
+        assertEquals(routes.get("0"), SimulationKernel.SimulationKernel.getRoutes().get("0"));
+        assertEquals(routes.get("1"), SimulationKernel.SimulationKernel.getRoutes().get("1"));
 
         // finish simulation
         ambassador.processTimeAdvanceGrant(recentAdvanceTime);
