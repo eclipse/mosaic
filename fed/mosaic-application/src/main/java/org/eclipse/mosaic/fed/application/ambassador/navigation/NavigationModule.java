@@ -123,6 +123,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
                     "NavigationModule#switchRoute: Could not switch to candidate route[{}]",
                     StringUtils.join(newRoute.getConnectionIds(), ",")
             );
+            belongingUnit.getOsLog().error("Reason", e);
             return false;
         }
     }
