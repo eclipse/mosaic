@@ -196,7 +196,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     private Collection<CandidateRoute> retrieveAllValidExistingRoutesToTargetHelper(RoutingPosition targetPosition) {
         CentralNavigationComponent centNavComp = SimulationKernel.SimulationKernel.getCentralNavigationComponent();
         ArrayList<CandidateRoute> candidateRoutes = new ArrayList<>();
-        for (Map.Entry<String, VehicleRoute> entry : centNavComp.getRouteMap().entrySet()) {
+        for (Map.Entry<String, VehicleRoute> entry : centNavComp.getAllRoutes().entrySet()) {
             VehicleRoute route = entry.getValue();
             if (targetQuery(targetPosition, route, centNavComp.getTargetPositionOfRoute(route.getId())) && onRouteQuery(route)) {
                 // length and time are no valid values at this point

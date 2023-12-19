@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -148,7 +147,12 @@ public class CentralNavigationComponent {
         }
     }
 
-    private Map<String, VehicleRoute> getAllRoutes() {
+    /**
+     * Returns an unmodifiable view of all routes known to the {@link SimulationKernel}.
+     *
+     * @return unmodifiable view of all routes known to the {@link SimulationKernel}
+     */
+    public Map<String, VehicleRoute> getAllRoutes() {
         return SimulationKernel.SimulationKernel.getRoutes();
     }
 
@@ -503,15 +507,6 @@ public class CentralNavigationComponent {
         }
 
         return null;
-    }
-
-    /**
-     * Returns an unmodifiable view of {@link #getAllRoutes()}.
-     *
-     * @return unmodifiable view of {@link #getAllRoutes()}
-     */
-    Map<String, VehicleRoute> getRouteMap() {
-        return Collections.unmodifiableMap(getAllRoutes());
     }
 
     /**
