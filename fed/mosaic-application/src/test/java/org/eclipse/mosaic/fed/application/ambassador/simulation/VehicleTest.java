@@ -179,13 +179,13 @@ public class VehicleTest {
 
         final V2xMessage message = ((V2xMessageTransmission) interaction).getMessage();
         Assert.assertEquals("Cam", message.getSimpleClassName());
-        Assert.assertEquals(98, message.getPayLoad().getActualLength());
-        Assert.assertEquals(200, message.getPayLoad().getMinimalLength());
+        Assert.assertEquals(98, message.getPayload().getActualLength());
+        Assert.assertEquals(200, message.getPayload().getMinimalLength());
 
         final V2xMessage concreteMsg = SimulationKernel.SimulationKernel.getV2xMessageCache().getItem(message.getId());
         Assert.assertTrue(concreteMsg instanceof Cam);
-        Assert.assertEquals(98, concreteMsg.getPayLoad().getActualLength());
-        Assert.assertEquals(200, concreteMsg.getPayLoad().getMinimalLength());
+        Assert.assertEquals(98, concreteMsg.getPayload().getActualLength());
+        Assert.assertEquals(200, concreteMsg.getPayload().getMinimalLength());
 
         Assert.assertEquals(expectedPosition, ((Cam) concreteMsg).getPosition());
 

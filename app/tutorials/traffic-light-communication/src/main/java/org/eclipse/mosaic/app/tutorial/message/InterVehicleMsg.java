@@ -48,7 +48,7 @@ public final class InterVehicleMsg extends V2xMessage {
 
     @Nonnull
     @Override
-    public EncodedPayload getPayLoad() {
+    public EncodedPayload getPayload() {
         return payload;
     }
 

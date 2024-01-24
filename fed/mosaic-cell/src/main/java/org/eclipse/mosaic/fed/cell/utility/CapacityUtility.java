@@ -134,7 +134,7 @@ public final class CapacityUtility {
      * @return The length of the V2X message.
      */
     public static long getMessageLength(V2xMessage msg) {
-        return msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
+        return msg.getPayload().getEffectiveLength() * DATA.BYTE;
     }
 
     /**

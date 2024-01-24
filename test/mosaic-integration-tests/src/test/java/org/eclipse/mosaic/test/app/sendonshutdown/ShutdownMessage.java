@@ -29,7 +29,7 @@ public class ShutdownMessage extends V2xMessage {
 
     @Nonnull
     @Override
-    public EncodedPayload getPayLoad() {
+    public EncodedPayload getPayload() {
         return new EncodedPayload(8);
     }
 }

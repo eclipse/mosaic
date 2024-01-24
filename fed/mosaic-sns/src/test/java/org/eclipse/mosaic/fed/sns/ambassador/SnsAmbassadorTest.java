@@ -199,7 +199,7 @@ public class SnsAmbassadorTest {
         V2xMessage v2xMessage = new V2xMessage(routing) {
             @Nonnull
             @Override
-            public EncodedPayload getPayLoad() {
+            public EncodedPayload getPayload() {
                 return new EncodedPayload(0);
             }
         };
