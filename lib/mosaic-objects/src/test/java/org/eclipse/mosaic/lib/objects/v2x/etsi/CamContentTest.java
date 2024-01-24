@@ -57,7 +57,7 @@ public class CamContentTest {
         byte[] userTaggedValue = "this is a test".getBytes(StandardCharsets.UTF_8);
 
         Cam cam = new Cam(mock(MessageRouting.class), new CamContent(4 * TIME.SECOND, awarenessData, "veh_1", position, userTaggedValue), 200);
-        EncodedPayload encodedMessage = cam.getPayLoad();
+        EncodedPayload encodedMessage = cam.getPayload();
 
         //PRE-ASSERT
         assertNotNull(encodedMessage.getBytes());

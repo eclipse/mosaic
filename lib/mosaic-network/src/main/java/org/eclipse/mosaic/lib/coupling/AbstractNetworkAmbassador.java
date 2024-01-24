@@ -568,7 +568,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                     interaction.getTime(),
                     sourceId,
                     interaction.getMessage().getId(),
-                    interaction.getMessage().getPayLoad().getEffectiveLength(),
+                    interaction.getMessage().getPayload().getEffectiveLength(),
                     dac
             );
             if (CMD.SUCCESS != ack) {

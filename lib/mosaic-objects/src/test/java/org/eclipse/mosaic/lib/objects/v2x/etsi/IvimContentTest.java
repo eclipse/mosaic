@@ -59,7 +59,7 @@ public class IvimContentTest {
         IvimContent ivimContent = new IvimContent(4 * TIME.SECOND)
                 .addSegment(segment);
         Ivim ivim = new Ivim(mock(MessageRouting.class), ivimContent, 200);
-        EncodedPayload encodedMessage = ivim.getPayLoad();
+        EncodedPayload encodedMessage = ivim.getPayload();
 
         //PRE-ASSERT
         assertTrue(encodedMessage.getBytes().length > 0);
