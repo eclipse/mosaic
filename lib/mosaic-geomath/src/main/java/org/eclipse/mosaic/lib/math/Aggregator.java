@@ -27,6 +27,10 @@ public class Aggregator {
     }
 
     public Aggregator add(double value) {
+        if (Double.isNaN(value)) {
+            return this;
+        }
+
         min = Math.min(min, value);
         max = Math.max(max, value);
         sum += value;

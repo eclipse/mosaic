@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador.navigation;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -122,6 +123,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
                     "NavigationModule#switchRoute: Could not switch to candidate route[{}]",
                     StringUtils.join(newRoute.getConnectionIds(), ",")
             );
+            belongingUnit.getOsLog().error("Reason", e);
             return false;
         }
     }
@@ -194,7 +196,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     private Collection<CandidateRoute> retrieveAllValidExistingRoutesToTargetHelper(RoutingPosition targetPosition) {
         CentralNavigationComponent centNavComp = SimulationKernel.SimulationKernel.getCentralNavigationComponent();
         ArrayList<CandidateRoute> candidateRoutes = new ArrayList<>();
-        for (Map.Entry<String, VehicleRoute> entry : centNavComp.getRouteMap().entrySet()) {
+        for (Map.Entry<String, VehicleRoute> entry : centNavComp.getAllRoutes().entrySet()) {
             VehicleRoute route = entry.getValue();
             if (targetQuery(targetPosition, route, centNavComp.getTargetPositionOfRoute(route.getId())) && onRouteQuery(route)) {
                 // length and time are no valid values at this point
@@ -268,6 +270,11 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     @Override
     public INode getNode(String nodeId) {
         return SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getNode(nodeId);
+    }
+
+    @Override
+    public IConnection getConnection(String connectionId) {
+        return SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().getConnection(connectionId);
     }
 
     @Override

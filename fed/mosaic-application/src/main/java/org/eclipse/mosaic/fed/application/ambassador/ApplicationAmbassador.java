@@ -336,11 +336,13 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final VehicleRoutesInitialization vehicleRoutesInitialization) {
-        SimulationKernel.SimulationKernel.getRoutes().putAll(vehicleRoutesInitialization.getRoutes());
+        for (var routeEntry : vehicleRoutesInitialization.getRoutes().entrySet()) {
+            SimulationKernel.SimulationKernel.registerRoute(routeEntry.getKey(), routeEntry.getValue());
+        }
     }
 
     private void process(final VehicleRouteRegistration vehicleRouteRegistration) {
-        SimulationKernel.SimulationKernel.getRoutes().put(vehicleRouteRegistration.getRoute().getId(), vehicleRouteRegistration.getRoute());
+        SimulationKernel.SimulationKernel.registerRoute(vehicleRouteRegistration.getRoute().getId(), vehicleRouteRegistration.getRoute());
     }
 
     private void process(final RsuRegistration rsuRegistration) {

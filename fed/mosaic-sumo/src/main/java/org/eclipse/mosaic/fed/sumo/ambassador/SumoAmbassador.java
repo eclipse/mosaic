@@ -301,11 +301,13 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
                     bridge.getSimulationControl().addVehicle(vehicleId, routeId, vehicleType, laneId, departPos, departSpeed);
 
-                    applyChangesInVehicleTypeForVehicle(
-                            vehicleId,
-                            vehicleRegistration.getMapping().getVehicleType(),
-                            cachedVehicleTypesInitialization.getTypes().get(vehicleType)
-                    );
+                    final VehicleType cachedType = cachedVehicleTypesInitialization.getTypes().get(vehicleType);
+                    if (cachedType != null) {
+                        applyChangesInVehicleTypeForVehicle(vehicleId, vehicleRegistration.getMapping().getVehicleType(), cachedType);
+                    } else {
+                        log.warn("Unknown vehicle type {}. Ensure that a suitable vType is configured in the SUMO configuration.", vehicleType);
+                    }
+
                     if (externalVehicleState != null) {
                         externalVehicleState.setAdded(true);
                     }
@@ -359,7 +361,6 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 iterator.remove();
             }
         }
-
     }
 
     private void applyChangesInVehicleTypeForVehicle(String vehicleId, VehicleType actualVehicleType, VehicleType baseVehicleType) throws InternalFederateException {

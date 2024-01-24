@@ -48,7 +48,7 @@ public class SumoVehicle extends AbstractApplication<VehicleOperatingSystem> imp
     public void onShutdown() {
         getLog().infoSimTime(this, "Shutdown: I'm a vehicle defined in SUMO route file.");
         getLog().infoSimTime(this, "{} routes are known to the SimulationKernel.",
-                SimulationKernel.SimulationKernel.getRoutesView().size());
+                SimulationKernel.SimulationKernel.getRoutes().size());
     }
 
     @Override

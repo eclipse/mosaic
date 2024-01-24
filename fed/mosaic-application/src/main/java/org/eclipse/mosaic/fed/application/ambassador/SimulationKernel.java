@@ -36,6 +36,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -270,17 +271,17 @@ public enum SimulationKernel {
      */
     @Nonnull
     public Map<String, VehicleRoute> getRoutes() {
-        return routes;
+        return Collections.unmodifiableMap(routes);
     }
 
     /**
-     * Returns a view for the {@link #routes}.
+     * Registers a new route to the simulation kernel.
      *
-     * @return a view for the {@link #routes}.
+     * @param id the id of the route
+     * @param route the {@link VehicleRoute} to register
      */
-    @Nonnull
-    public Map<String, VehicleRoute> getRoutesView() {
-        return routesView;
+    public void registerRoute(String id, VehicleRoute route) {
+        routes.put(id, Validate.notNull(route, "The given route must not be null."));
     }
 
     /**
