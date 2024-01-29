@@ -15,11 +15,15 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper;
 
+import static java.util.Objects.requireNonNull;
+
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.DatabaseUtils;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.geo.GeoUtils;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
@@ -167,11 +171,11 @@ public class GraphHopperRouting {
 
         // convert paths to routes
         for (final Path path : paths) {
-            final CandidateRoute route = convertPath(path, queryGraph, querySource, queryTarget, target);
+            final CandidateRoute route = convertPath(path, queryGraph, querySource, queryTarget, source, target);
             if (route != null
                     && !route.getConnectionIds().isEmpty()
-                    && checkForDuplicate(route, duplicateSet)
-                    && checkRouteOnRequiredSourceConnection(route, source)) {
+                    && checkRouteOnRequiredSourceConnection(route, source)
+                    && checkForDuplicate(route, duplicateSet)) {
                 result.add(route);
             } else if (route != null && log.isDebugEnabled()) {
                 log.debug("Path is invalid and will be ignored [" + StringUtils.join(route.getConnectionIds(), ",") + "]");
@@ -225,19 +229,24 @@ public class GraphHopperRouting {
     }
 
     private QueryResult fixQueryResultIfSnappedPointIsTowerNode(QueryResult queryResult, RoutingPosition routingPosition, EdgeFilter fromEdgeFilter) {
+        if (queryResult.getSnappedPosition() != QueryResult.Position.TOWER) {
+            return queryResult;
+        }
         /* If the requested position is in front or behind the edge it is mapped either on the start or end of the edge (one of the tower nodes).
          * As a result, the resulting route can bypass turn restrictions in very rare cases. To avoid this, we choose an alternative
-         * node based on the queried connection.*/
-        if (queryResult.getSnappedPosition() == QueryResult.Position.TOWER) {
-            // use the node before target node (index -2) as the alternative query node to find a QueryResult _on_ the connection.
-            Node alternativeQueryNode = DatabaseUtils.getNodeByIndex(db.getConnection(routingPosition.getConnectionId()), -2);
-            if (alternativeQueryNode != null) {
-                return ghApi.getLocationIndex().findClosest(
-                        alternativeQueryNode.getPosition().getLatitude(), alternativeQueryNode.getPosition().getLongitude(), fromEdgeFilter
-                );
-            }
+         * position which is located somewhere _on_ the queried connection.*/
+        final Connection queryConnection = db.getConnection(routingPosition.getConnectionId());
+        final GeoPoint alternativeQueryPosition;
+        if (queryConnection.getNodes().size() > 2) {
+            alternativeQueryPosition = requireNonNull(DatabaseUtils.getNodeByIndex(queryConnection, -2)).getPosition();
+        } else {
+            alternativeQueryPosition = GeoUtils.getPointBetween(
+                    queryConnection.getFrom().getPosition(), queryConnection.getTo().getPosition()
+            );
         }
-        return queryResult;
+        return ghApi.getLocationIndex().findClosest(
+                alternativeQueryPosition.getLatitude(), alternativeQueryPosition.getLongitude(), fromEdgeFilter
+        );
     }
 
     /**
@@ -263,8 +272,11 @@ public class GraphHopperRouting {
         return edgeState -> edgeState.getEdge() == forcedEdge;
     }
 
-    private CandidateRoute convertPath(Path newPath, QueryGraph queryGraph, QueryResult source, QueryResult target, RoutingPosition targetPosition) {
+    private CandidateRoute convertPath(Path newPath, QueryGraph queryGraph, QueryResult source, QueryResult target, RoutingPosition sourcePosition, RoutingPosition targetPosition) {
         PointList pointList = newPath.calcPoints();
+        if (pointList.isEmpty()) {
+            return null;
+        }
         GHPoint pathTarget = Iterables.getLast(pointList);
         GHPoint origTarget = new GHPoint(targetPosition.getPosition().getLatitude(), targetPosition.getPosition().getLongitude());
         double distanceToOriginalTarget = distanceCalculation.calcDist(pathTarget.lat, pathTarget.lon, origTarget.lat, origTarget.lon);
@@ -323,8 +335,26 @@ public class GraphHopperRouting {
                 log.debug(String.format("A connection could be resolved by internal ID %d.", ghEdge.getEdge()));
             }
         }
-
+        fixFirstConnectionOfPathIfNotAsQueried(sourcePosition, pathConnections);
         return new CandidateRoute(pathConnections, newPath.getDistance(), newPath.getTime() / (double) 1000);
+    }
+
+    /**
+     * In some very rare cases, if a source connection is given, the path returned by GraphHopper omits this first connection
+     * and continues on the subsequent one. As a workaround, this code checks if the outgoing connections of the queried source connection
+     * contains the first connection of the calculated path, and then adds the source connection to the beginning of the new path.
+     */
+    private void fixFirstConnectionOfPathIfNotAsQueried(RoutingPosition sourcePosition, List<String> pathConnections) {
+        String firstConnectionId = Iterables.getFirst(pathConnections, null);
+        if (sourcePosition.getConnectionId() != null && firstConnectionId != null
+                && !sourcePosition.getConnectionId().equals(firstConnectionId)
+        ) {
+            Connection sourceConnection = db.getConnection(sourcePosition.getConnectionId());
+            Connection firstConnection = db.getConnection(firstConnectionId);
+            if (sourceConnection.getOutgoingConnections().contains(firstConnection)) {
+                pathConnections.add(0, sourceConnection.getId());
+            }
+        }
     }
 
     private boolean checkRouteOnRequiredSourceConnection(CandidateRoute route, RoutingPosition source) {

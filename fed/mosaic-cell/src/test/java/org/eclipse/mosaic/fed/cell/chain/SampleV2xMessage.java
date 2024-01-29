@@ -35,7 +35,7 @@ public class SampleV2xMessage extends V2xMessage {
 
     @Nonnull
     @Override
-    public EncodedPayload getPayLoad() {
+    public EncodedPayload getPayload() {
         return payload;
     }
 }

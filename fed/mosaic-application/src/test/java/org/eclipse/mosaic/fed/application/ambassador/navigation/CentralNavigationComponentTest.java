@@ -22,9 +22,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -35,8 +37,9 @@ import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
-import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.road.IConnection;
+import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
@@ -46,7 +49,6 @@ import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.config.CRouting;
-import org.eclipse.mosaic.lib.routing.database.LazyLoadingNode;
 import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
@@ -59,7 +61,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -132,11 +133,10 @@ public class CentralNavigationComponentTest {
     public void getTargetPositionOfRoute() throws InternalFederateException {
         //PREPARE
         cnc.initialize(rtiAmbassadorMock);
-        when(routingMock.getNode(Mockito.eq("1"))).thenReturn(new LazyLoadingNode(new Node("1", GeoPoint.lonLat(1, 1))));
-        when(routingMock.getNode(Mockito.eq("2"))).thenReturn(new LazyLoadingNode(new Node("2", GeoPoint.lonLat(2, 2))));
-        when(routingMock.getNode(Mockito.eq("3"))).thenReturn(new LazyLoadingNode(new Node("3", GeoPoint.lonLat(3, 3))));
-        when(routingMock.getNode(Mockito.eq("4"))).thenReturn(new LazyLoadingNode(new Node("4", GeoPoint.lonLat(4, 4))));
-
+        doReturn(createConnectionMock(GeoPoint.lonLat(1, 1))).when(routingMock).getConnection(eq("1_1_2_1"));
+        doReturn(createConnectionMock(GeoPoint.lonLat(2, 2))).when(routingMock).getConnection(eq("3_2_5_2"));
+        doReturn(createConnectionMock(GeoPoint.lonLat(3, 3))).when(routingMock).getConnection(eq("2_2_4_2"));
+        doReturn(createConnectionMock(GeoPoint.lonLat(4, 4))).when(routingMock).getConnection(eq("2_2_4_3"));
 
         // RUN + ASSERT (Last node of route "0" = 4)
         final GeoPoint gpEndOf0 = cnc.getTargetPositionOfRoute("0");
@@ -153,6 +153,13 @@ public class CentralNavigationComponentTest {
         // RUN + ASSERT (Route "2" yet unknown)
         final GeoPoint gpEndOf2 = cnc.getTargetPositionOfRoute("2");
         assertNull(gpEndOf2);
+    }
+
+    private IConnection createConnectionMock(GeoPoint endPoint) {
+        IConnection connection = mock(IConnection.class);
+        when(connection.getEndNode()).thenReturn(mock(INode.class));
+        when(connection.getEndNode().getPosition()).thenReturn(endPoint);
+        return connection;
     }
 
     @Test

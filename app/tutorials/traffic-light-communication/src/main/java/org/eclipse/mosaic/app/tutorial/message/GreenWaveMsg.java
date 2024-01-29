@@ -38,7 +38,7 @@ public final class GreenWaveMsg extends V2xMessage {
 
     @Nonnull
     @Override
-    public EncodedPayload getPayLoad() {
+    public EncodedPayload getPayload() {
         return payload;
     }
 

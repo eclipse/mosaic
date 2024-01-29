@@ -152,7 +152,7 @@ public final class CapacityUtility {
                 return linkLayerHeader
                         + headerLengths.ipHeader
                         + headerLengths.udpHeader
-                        + msg.getPayLoad().getEffectiveLength() * DATA.BYTE;
+                        + msg.getPayload().getEffectiveLength() * DATA.BYTE;
             case TCP:
             default:
                 return linkLayerHeader

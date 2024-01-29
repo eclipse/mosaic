@@ -118,10 +118,10 @@ public class DatabaseRouting implements Routing {
     }
 
     @Override
-    public IConnection getConnection(String nodeId) {
-        Connection c = scenarioDatabase.getConnection(nodeId);
+    public IConnection getConnection(String connectionId) {
+        Connection c = scenarioDatabase.getConnection(connectionId);
         if (c == null) {
-            throw new IllegalArgumentException(String.format("No such (%s) connetion existing.", nodeId));
+            throw new IllegalArgumentException(String.format("No such (%s) connection existing.", connectionId));
         }
         return new LazyLoadingConnection(c);
     }

@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador.navigation;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.routing.RoutingParameters;
@@ -44,6 +45,14 @@ public interface IRoutingModule {
      * @return The node object identified by the given nodeId.
      */
     INode getNode(String nodeId);
+
+    /**
+     * Returns data for the specified connection id.
+     *
+     * @param connection the id of the node
+     * @return the {@link IConnection} containing data for the specified connection id.
+     */
+    IConnection getConnection(String connection);
 
     /**
      * Returns the node object, which is closest to the given {@link GeoPoint}.

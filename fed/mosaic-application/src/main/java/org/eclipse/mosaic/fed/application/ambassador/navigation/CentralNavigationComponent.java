@@ -52,8 +52,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -84,11 +82,6 @@ public class CentralNavigationComponent {
      * The IRoutingApi.
      */
     private Routing routing;
-
-    /**
-     * Map storing all known route IDs with the belonging route.
-     */
-    private Map<String, VehicleRoute> routeMap = new HashMap<>();
 
     /**
      * The configuration for routingAPI.
@@ -134,7 +127,10 @@ public class CentralNavigationComponent {
             this.log.info("CNC - Navigation-System initialized");
 
             try {
-                routeMap = routing.getRoutesFromDatabaseForMessage();
+                final Map<String, VehicleRoute> routeMap = routing.getRoutesFromDatabaseForMessage();
+                for (var routeEntry: routeMap.entrySet()) {
+                    SimulationKernel.SimulationKernel.registerRoute(routeEntry.getKey(), routeEntry.getValue());
+                }
 
                 // generate VehicleRoutesInitialization to inform other simulators
                 VehicleRoutesInitialization interaction = new VehicleRoutesInitialization(0, routeMap);
@@ -149,6 +145,15 @@ public class CentralNavigationComponent {
             log.error("Exception", ex);
             throw ex;
         }
+    }
+
+    /**
+     * Returns an unmodifiable view of all routes known to the {@link SimulationKernel}.
+     *
+     * @return unmodifiable view of all routes known to the {@link SimulationKernel}
+     */
+    public Map<String, VehicleRoute> getAllRoutes() {
+        return SimulationKernel.SimulationKernel.getRoutes();
     }
 
     Routing createFromType(String type) throws InternalFederateException {
@@ -202,8 +207,8 @@ public class CentralNavigationComponent {
             // — first check if already a route exists
             //  — generate a complete route with an ID and propagate it
             VehicleRoute knownRoute = null;
-            for (VehicleRoute route : routeMap.values()) {
-                newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getConnectionIds(), routeMap.get(route.getId()).getConnectionIds());
+            for (VehicleRoute route : getAllRoutes().values()) {
+                newRouteOnOriginalRoute = isNewRouteOnOriginalRoute(rawRoute.getConnectionIds(), getAllRoutes().get(route.getId()).getConnectionIds());
                 if (newRouteOnOriginalRoute) {
                     knownRoute = route;
                     break;
@@ -261,9 +266,9 @@ public class CentralNavigationComponent {
      * @return {@link GeoPoint}-target of the given route, {@code null} if route doesn't exist.
      */
     GeoPoint getTargetPositionOfRoute(String routeId) {
-        if (routeMap.containsKey(routeId)) {
-            String lastNodeId = Iterables.getLast(routeMap.get(routeId).getNodeIds(), null);
-            return getPositionOfNode(lastNodeId);
+        if (getAllRoutes().containsKey(routeId)) {
+            String lastConnectionId = Iterables.getLast(getAllRoutes().get(routeId).getConnectionIds(), null);
+            return routing.getConnection(lastConnectionId).getEndNode().getPosition();
         } else {
             return null;
         }
@@ -276,9 +281,9 @@ public class CentralNavigationComponent {
      * @return {@link GeoPoint}-target of the given route, {@code null} if route doesn't exist.
      */
     public GeoPoint getSourcePositionOfRoute(String routeId) {
-        if (routeMap.containsKey(routeId)) {
-            String firstNodeId = Iterables.getFirst(routeMap.get(routeId).getNodeIds(), null);
-            return getPositionOfNode(firstNodeId);
+        if (getAllRoutes().containsKey(routeId)) {
+            String firstConnectionId = Iterables.getFirst(getAllRoutes().get(routeId).getConnectionIds(), null);
+            return routing.getConnection(firstConnectionId).getStartNode().getPosition();
         } else {
             return null;
         }
@@ -321,7 +326,7 @@ public class CentralNavigationComponent {
      * @throws InternalFederateException If the {@link Interaction} could not be send.
      */
     private void propagateRoute(VehicleRoute newRoute, long time) throws InternalFederateException {
-        if (routeMap.containsKey(newRoute.getId())) {
+        if (getAllRoutes().containsKey(newRoute.getId())) {
             throw new InternalFederateException(
                     String.format("Route %s is already known but is tried to be propagated, which is not allowed.", newRoute.getId())
             );
@@ -331,7 +336,7 @@ public class CentralNavigationComponent {
         try {
             this.rtiAmbassador.triggerInteraction(interaction);
             // store route in local map
-            routeMap.put(newRoute.getId(), newRoute);
+            SimulationKernel.SimulationKernel.registerRoute(newRoute.getId(), newRoute);
         } catch (IllegalValueException e) {
             throw new InternalFederateException(e);
         }
@@ -385,7 +390,7 @@ public class CentralNavigationComponent {
             // check if best route, matches one of the existing routes and if so choose that existing route
             if (response.getBestRoute() != null) {
                 VehicleRoute route = null;
-                for (VehicleRoute existingRoute : routeMap.values()) {
+                for (VehicleRoute existingRoute : getAllRoutes().values()) {
                     if (isNewRouteOnOriginalRoute(response.getBestRoute().getConnectionIds(), existingRoute.getConnectionIds())) {
                         route = existingRoute;
                         break;
@@ -456,7 +461,7 @@ public class CentralNavigationComponent {
         if (finalNode == null) {
             throw new IllegalArgumentException("finalNode is null.");
         }
-        List<String> currentRouteNodes = routeMap.get(routeId).getNodeIds();
+        List<String> currentRouteNodes = getAllRoutes().get(routeId).getNodeIds();
 
         if (!currentRouteNodes.contains(finalNode)) {
             return Double.POSITIVE_INFINITY;
@@ -485,7 +490,7 @@ public class CentralNavigationComponent {
      * @return A node if a valid one is found, otherwise {@code null}.
      */
     INode getNextNodeOnRoute(String routeId, IRoadPosition roadPosition, Predicate<INode> nodeCondition) {
-        VehicleRoute currentRoute = routeMap.get(routeId);
+        VehicleRoute currentRoute = getAllRoutes().get(routeId);
 
         int indexOfUpcomingNode = currentRoute.getNodeIds().indexOf(roadPosition.getUpcomingNode().getId());
         // check if there is an upcoming node
@@ -502,15 +507,6 @@ public class CentralNavigationComponent {
         }
 
         return null;
-    }
-
-    /**
-     * Returns an unmodifiable view of {@link #routeMap}.
-     *
-     * @return unmodifiable view of {@link #routeMap}
-     */
-    Map<String, VehicleRoute> getRouteMap() {
-        return Collections.unmodifiableMap(routeMap);
     }
 
     /**
