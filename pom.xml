@@ -501,6 +501,7 @@
                             <header>${parent.dir}/legal/templates/license-header-2021.txt</header>
                             <header>${parent.dir}/legal/templates/license-header-2022.txt</header>
                             <header>${parent.dir}/legal/templates/license-header-2023.txt</header>
+                            <header>${parent.dir}/legal/templates/license-header-2024.txt</header>
                         </validHeaders>
                         <headerDefinitions>
                         </headerDefinitions>
@@ -684,6 +685,9 @@
                 <file>
                     <exists>LICENSE</exists>
                 </file>
+                <property>
+                    <name>parent.dir</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -720,7 +724,10 @@
             <activation>
                 <file>
                     <missing>LICENSE</missing>
-                </file>
+                </file>                     
+                <property>
+                    <name>parent.dir</name>
+                </property>
             </activation>
             <build>
                 <plugins>

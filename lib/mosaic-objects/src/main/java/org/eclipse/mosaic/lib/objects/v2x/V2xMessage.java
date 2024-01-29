@@ -81,7 +81,7 @@ public abstract class V2xMessage implements Serializable, Identifiable {
      * @return the {@link EncodedPayload} of this message
      */
     @Nonnull
-    public abstract EncodedPayload getPayLoad();
+    public abstract EncodedPayload getPayload();
     
     /**
      * Returns the globally unique id of this message.
@@ -172,7 +172,7 @@ public abstract class V2xMessage implements Serializable, Identifiable {
 
         @Nonnull
         @Override
-        public EncodedPayload getPayLoad() {
+        public EncodedPayload getPayload() {
             return EncodedPayload.EMPTY_PAYLOAD;
         }
     }

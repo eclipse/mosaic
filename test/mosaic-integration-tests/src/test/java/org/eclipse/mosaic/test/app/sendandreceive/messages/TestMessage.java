@@ -88,7 +88,7 @@ public class TestMessage extends V2xMessage {
 
     @Override
     @Nonnull
-    public EncodedPayload getPayLoad() {
+    public EncodedPayload getPayload() {
         return payload;
     }
 

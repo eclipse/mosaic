@@ -57,7 +57,7 @@ public class DenmContentTest {
                 new DenmContent(4 * TIME.SECOND, position, "1_1_2_0", SensorType.POSITION, 4, 5f, 6f, position, eventArea, "test"),
                 200);
 
-        EncodedPayload encodedMessage = denm.getPayLoad();
+        EncodedPayload encodedMessage = denm.getPayload();
 
         //PRE-ASSERT
         assertTrue(encodedMessage.getBytes().length > 0);
@@ -83,7 +83,7 @@ public class DenmContentTest {
                 new DenmContent(4 * TIME.SECOND, position, "1_1_2_0", SensorType.POSITION, 4, 5f, 6f, null, null, null),
                 200);
 
-        EncodedPayload encodedMessage2 = denm2.getPayLoad();
+        EncodedPayload encodedMessage2 = denm2.getPayload();
 
         //RUN
         DenmContent decodedDENM2 = (DenmContent) encodedMessage2.decodePayload();

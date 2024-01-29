@@ -109,7 +109,7 @@ public class NavigationModuleTest {
         }).when(cncMock).findRoutes(isA(RoutingRequest.class));
         HashMap<String, VehicleRoute> routeMap = new HashMap<>();
         routeMap.put("123", new VehicleRoute("123", Collections.singletonList("edgeID"), Collections.singletonList("nodeID"), 0.0));
-        when(cncMock.getRouteMap()).thenReturn(routeMap);
+        when(cncMock.getAllRoutes()).thenReturn(routeMap);
         when(cncMock.getTargetPositionOfRoute(ArgumentMatchers.anyString())).thenReturn(GeoPoint.latLon(30, 40));
     }
 
