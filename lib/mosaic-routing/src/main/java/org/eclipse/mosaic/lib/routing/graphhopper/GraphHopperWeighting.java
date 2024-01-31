@@ -66,9 +66,9 @@ public class GraphHopperWeighting extends AbstractWeighting {
         synchronized (edgePropertiesState) {
             edgePropertiesState.setCurrentEdgeIterator(edge, reverse);
             if (routingCostFunction == null) {
-                return (edge.getDistance() / edgePropertiesState.getSpeed()) * 3.6;
+                return (edge.getDistance() / edgePropertiesState.getSpeed());
             } else {
-                return routingCostFunction.calculateCosts(edgePropertiesState) * 3.6;
+                return routingCostFunction.calculateCosts(edgePropertiesState);
             }
         }
     }
