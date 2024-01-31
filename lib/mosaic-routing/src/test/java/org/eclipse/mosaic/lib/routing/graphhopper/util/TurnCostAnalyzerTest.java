@@ -37,13 +37,13 @@ public class TurnCostAnalyzerTest {
                 .createTurnCostsForVehicle(testGraph.getEncodingManager().getVehicleEncoding("car"));
 
         //assert
-        assertEquals(3d, getTurnCosts(1, 0, 0), 0.4d); //3 seconds for 90deg right turn
+        assertEquals(4d, getTurnCosts(1, 0, 0), 0.4d); //4 seconds for 90deg right turn
 
-        assertEquals(1d, getTurnCosts(2, 2, 6), 0.4d); //1 seconds for a slight 25deg right turn
+        assertEquals(2d, getTurnCosts(2, 2, 6), 0.4d); //2 seconds for a slight 25deg right turn
 
-        assertEquals(4d, getTurnCosts(0, 1, 4), 0.4d); //4 seconds for a hard 120deg right turn
+        assertEquals(6d, getTurnCosts(0, 1, 4), 0.4d); //6 seconds for a hard 120deg right turn
 
-        assertEquals(21d, getTurnCosts(0, 0, 1), 0.4d); //21 seconds for a 90deg left turn
+        assertEquals(23d, getTurnCosts(0, 0, 1), 0.4d); //23 seconds for a 90deg left turn
 
     }
 
