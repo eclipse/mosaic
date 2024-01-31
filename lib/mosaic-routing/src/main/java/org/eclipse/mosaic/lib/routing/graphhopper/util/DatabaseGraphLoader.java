@@ -222,7 +222,7 @@ public class DatabaseGraphLoader {
 
         ReaderWay osmWay = new ReaderWay(0);
         osmWay.setTag("highway", way.getType());
-        osmWay.setTag("maxspeed", String.valueOf((int) way.getMaxSpeedInKmh()));
+        osmWay.setTag("maxspeed", String.valueOf((int) Math.round(way.getMaxSpeedInKmh())));
         osmWay.setTag("oneway", "yes");
 
         for (TagParser parser : wayParsers) {
