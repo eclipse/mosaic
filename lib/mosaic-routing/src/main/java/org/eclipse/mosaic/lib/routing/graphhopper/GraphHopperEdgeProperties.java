@@ -73,7 +73,7 @@ public class GraphHopperEdgeProperties implements EdgeProperties {
     public Iterable<GeoPoint> getGeometry() {
         Validate.notNull(currentEdgeIterator, "Edge iterator is null");
         return Iterables.transform(
-                currentEdgeIterator.fetchWayGeometry(FetchMode.ALL), // 3 = fetch all pillar nodes inclusive the base and adjacent tower node
+                currentEdgeIterator.fetchWayGeometry(FetchMode.ALL), // fetches all pillar nodes inclusive the base and adjacent tower node
                 ghPoint3D -> GeoPoint.latLon(ghPoint3D.getLat(), ghPoint3D.getLon(), ghPoint3D.getEle())
         );
     }
@@ -85,7 +85,7 @@ public class GraphHopperEdgeProperties implements EdgeProperties {
 
     @Override
     public String getWayType() {
-        return getConnection().map(con -> con.getWay().getType()).orElse(null);
+        return WayTypeEncoder.decode(getWayTypeEncoded());
     }
 
     public int getWayTypeEncoded() {

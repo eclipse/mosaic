@@ -159,7 +159,7 @@ public class GraphHopperRouting {
         final BaseGraph graph = new BaseGraph
                 .Builder(encoding.getEncodingManager())
                 .setDir(new RAMDirectory())
-                .set3D(false)
+                .set3D(true)
                 .withTurnCosts(encoding.getEncodingManager().needsTurnCostsSupport())
                 .setSegmentSize(-1)
                 .build();

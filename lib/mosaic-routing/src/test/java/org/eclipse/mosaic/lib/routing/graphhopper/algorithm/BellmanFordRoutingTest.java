@@ -58,7 +58,7 @@ public class BellmanFordRoutingTest {
         Weighting w = new FastestWeighting(enc.access(), enc.speed(), new TurnCostsProvider(enc, g.getTurnCostStorage()));
 
         //add expensive turn at (0-1)->(1,5)
-        g.getTurnCostStorage().set(enc.turnCost(), 0, 1, 3, 200);
+        g.getTurnCostStorage().set(enc.turnCost(), 0, 1, 3, 124);
 
         //run
         Path p = new BellmanFordRouting(g, w, new PMap()).calcPath(0, 10);

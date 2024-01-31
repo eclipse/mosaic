@@ -40,7 +40,7 @@ public class GraphHopperWeighting extends AbstractWeighting {
     public GraphHopperWeighting(VehicleEncoding vehicleEncoding, WayTypeEncoder wayTypeEncoder, TurnCostProvider turnCostProvider, GraphhopperToDatabaseMapper graphMapper) {
         super(vehicleEncoding.access(), vehicleEncoding.speed(), turnCostProvider);
         this.edgePropertiesState = new GraphHopperEdgeProperties(vehicleEncoding, wayTypeEncoder, graphMapper);
-        this.maxSpeed = speedEnc.getMaxOrMaxStorableDecimal() / 3.6;
+        this.maxSpeed = speedEnc.getMaxOrMaxStorableDecimal() / 3.6; // getMaxOrMaxStorableDecimal returns the speed in km/h
     }
 
     public GraphHopperWeighting setRoutingCostFunction(RoutingCostFunction routingCostFunction) {
@@ -66,7 +66,7 @@ public class GraphHopperWeighting extends AbstractWeighting {
         synchronized (edgePropertiesState) {
             edgePropertiesState.setCurrentEdgeIterator(edge, reverse);
             if (routingCostFunction == null) {
-                return (edge.getDistance() / edgePropertiesState.getSpeed());
+                return edge.getDistance() / edgePropertiesState.getSpeed();
             } else {
                 return routingCostFunction.calculateCosts(edgePropertiesState);
             }

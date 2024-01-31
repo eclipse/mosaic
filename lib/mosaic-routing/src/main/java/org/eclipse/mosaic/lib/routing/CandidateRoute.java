@@ -23,13 +23,33 @@ import java.util.List;
  */
 public class CandidateRoute {
 
+    /**
+     * The list of connections forming this route.
+     */
     private final List<String> connectionIds;
+
+    /**
+     * The length of this route.
+     */
     private final double length;
+
+    /**
+     * The approximated driving time on this route.
+     */
     private final double time;
 
+    /**
+     * The distance in meters from the start node of the first connection in the connectionIds list, to
+     * the point the source query was issued.
+     */
+    private final double offsetFromSource;
+
+    /**
+     * The distance in meters from the point the target query was issued, until the end node of the
+     * final connection in the connectionIds list.
+     */
     private final double offsetToTarget;
 
-    private final double offsetFromSource;
 
     public CandidateRoute(List<String> connectionIds, double length, double time) {
         this(connectionIds, length, time, 0, 0);

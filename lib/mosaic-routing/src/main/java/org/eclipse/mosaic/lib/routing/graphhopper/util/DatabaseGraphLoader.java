@@ -239,7 +239,7 @@ public class DatabaseGraphLoader {
      * @return List of points representing the geometry.
      */
     private PointList getWayGeometry(Node from, Node to, List<Node> wayNodeList) {
-        PointList points = new PointList(1000, false);
+        PointList points = new PointList(1000, true);
 
         boolean between = false;
         boolean reverse = true;
@@ -258,7 +258,8 @@ public class DatabaseGraphLoader {
                 if (between) {
                     points.add(
                             wayNode.getPosition().getLatitude(),
-                            wayNode.getPosition().getLongitude()
+                            wayNode.getPosition().getLongitude(),
+                            wayNode.getPosition().getAltitude()
                     );
                 }
             } else {
