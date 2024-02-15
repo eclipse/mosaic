@@ -133,7 +133,9 @@ public final class CapacityUtility {
     }
 
     /**
-     * Helper-function to get the effective message length in bits.
+     * Helper-function to get the effective message length in bits. For each message, a header is assumed
+     * to be present according to the protocol type (UDP or TCP) and the link layer (ethernet for servers, or cellular for mobile devices).
+     * According to our definition, we measure / simulate the message data size on the Link Layer (MAC Layer).
      *
      * @param msg V2X message.
      * @return The length of the V2X message.

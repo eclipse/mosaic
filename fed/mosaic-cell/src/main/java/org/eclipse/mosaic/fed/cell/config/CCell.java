@@ -98,22 +98,23 @@ public final class CCell {
 
         /**
          * The size of all headers of the ethernet link layer (used only for server nodes).
-         * E.g. Ethernet + MAC + PHY Header = ~ 38 bytes
+         * E.g. Ethernet (6 Bytes) + MAC Header (12 Bytes) = ~ 18 bytes
          */
-        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
-        public long ethernetHeader = 38 * DATA.BYTE;
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long ethernetHeader = 18 * DATA.BYTE;
 
         /**
          * The size of all headers of the cellular link layer.<br>
-         * For example, for LTE we estimate ~20 bytes (PDCP (6 bytes) + RLC (4 bytes) + MAC (10 bytes) + PHY (6 bytes))
+         * For example, for 5G we estimate ~18 bytes: SDAP(1 Bytes) + PDCP (3 bytes) + RLC (4 bytes) + MAC (10 bytes)
          */
-        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
-        public long cellularHeader = 26 * DATA.BYTE;
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long cellularHeader = 18 * DATA.BYTE;
 
         /**
          * The size of IP header added to all messages.
+         * In the default configuration we assume IPv4 (20 bytes)
          */
-        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
+        @JsonAdapter(DataFieldAdapter.Size.class)
         public long ipHeader = 20 * DATA.BYTE;
 
         /**
@@ -121,7 +122,7 @@ public final class CCell {
          * {@link org.eclipse.mosaic.lib.enums.ProtocolType#TCP}
          * for transmission.
          */
-        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
+        @JsonAdapter(DataFieldAdapter.Size.class)
         public long tcpHeader = 20 * DATA.BYTE;
 
         /**
@@ -129,7 +130,7 @@ public final class CCell {
          * {@link org.eclipse.mosaic.lib.enums.ProtocolType#UDP}
          * for transmission.
          */
-        @JsonAdapter(DataFieldAdapter.SizeQuiet.class)
+        @JsonAdapter(DataFieldAdapter.Size.class)
         public long udpHeader = 8 * DATA.BYTE;
     }
 }

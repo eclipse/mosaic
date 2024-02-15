@@ -36,6 +36,22 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Adapter for JSON fields which translates values as string representatives to
+ * actual long values representing the number of bits, e.g.
+ * <br>for size: "10 Bytes" -> 80, "2kbit" -> 2000
+ * <br>for bandwidth: "10 MBps km/h" -> 80000000, "5 kbps" -> 5000
+ * <br><br>
+ * Note: using "b" or "B" is a difference, as former stands for bits and later for bytes.
+ * <br><br>
+ * Usage:
+ * <pre>
+ *
+ *  &#64;JsonAdapter(DataFieldAdapter.Size.class)
+ *  public long size;
+ *
+ * </pre>
+ */
 public class DataFieldAdapter extends TypeAdapter<Long> {
 
     private static final Logger log = LoggerFactory.getLogger(DataFieldAdapter.class);
@@ -148,7 +164,6 @@ public class DataFieldAdapter extends TypeAdapter<Long> {
             return multiplier;
         }
     }
-
 
     public static class Bandwidth implements TypeAdapterFactory {
 
