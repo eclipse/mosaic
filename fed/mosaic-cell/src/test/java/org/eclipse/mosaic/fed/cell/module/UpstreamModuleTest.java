@@ -87,7 +87,7 @@ public class UpstreamModuleTest {
     private static final long HEADER_UDP = 8 * DATA.BYTE;
     private static final long HEADER_IP = 20 * DATA.BYTE;
     private static final long HEADER_TCP = 20 * DATA.BYTE;
-    private static final long HEADER_CELLULAR = 26 * DATA.BYTE;
+    private static final long HEADER_CELLULAR = 18 * DATA.BYTE;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -167,7 +167,7 @@ public class UpstreamModuleTest {
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2560 * DATA.BIT, 2560 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
 
         // RUN
@@ -177,13 +177,13 @@ public class UpstreamModuleTest {
         assertEquals(0, rtiInteractionsSent.size());
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
-        checkNotifyOnFinishMessage(notifyOnFinishMessage, 2560 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
+        checkNotifyOnFinishMessage(notifyOnFinishMessage, 2240 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
 
         CellModuleMessage resultMessage = cellModuleMessages.get(1);
-        checkResultMessage(resultMessage, 2560 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
+        checkResultMessage(resultMessage, 2240 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
 
         assertEquals(0L, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
-        assertEquals((21000 - 2560) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
+        assertEquals((21000 - 2240) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class UpstreamModuleTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
 
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2560 * DATA.BIT, 2560 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 3000 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 3000 * DATA.BIT;
@@ -207,13 +207,13 @@ public class UpstreamModuleTest {
         assertEquals(0, rtiInteractionsSent.size());
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
-        checkNotifyOnFinishMessage(notifyOnFinishMessage, 2560 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
+        checkNotifyOnFinishMessage(notifyOnFinishMessage, 2240 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
 
         CellModuleMessage resultMessage = cellModuleMessages.get(1);
-        checkResultMessage(resultMessage, 2560 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
+        checkResultMessage(resultMessage, 2240 * DATA.BIT, 10 * TIME.SECOND, (long) (10.2 * TIME.SECOND));
 
         assertEquals(0L, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
-        assertEquals((3000 - 2560) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
+        assertEquals((3000 - 2240) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
     @Test
@@ -222,10 +222,10 @@ public class UpstreamModuleTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
 
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2560 * DATA.BIT, 2560 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 1280 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 1280 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = 1120 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.maxCapacity = 1120 * DATA.BIT;
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
@@ -237,12 +237,12 @@ public class UpstreamModuleTest {
         assertEquals(0, rtiInteractionsSent.size());
         assertEquals(2, cellModuleMessages.size());
         CellModuleMessage notifyOnFinishMessage = cellModuleMessages.get(0);
-        checkNotifyOnFinishMessage(notifyOnFinishMessage, 1280, 10 * TIME.SECOND, (long) (10.4 * TIME.SECOND));
+        checkNotifyOnFinishMessage(notifyOnFinishMessage, 1120, 10 * TIME.SECOND, (long) (10.4 * TIME.SECOND));
 
         CellModuleMessage resultMessage = cellModuleMessages.get(1);
-        checkResultMessage(resultMessage, 1280, 10 * TIME.SECOND, (long) (10.4 * TIME.SECOND));
+        checkResultMessage(resultMessage, 1120, 10 * TIME.SECOND, (long) (10.4 * TIME.SECOND));
 
-        assertEquals((2560 - 1280) * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
+        assertEquals((2240 - 1120) * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableUplinkBitrate());
         assertEquals(0L, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity);
     }
 
@@ -345,11 +345,11 @@ public class UpstreamModuleTest {
 
         // actual message length = 10 + UDP + IP + CELLULAR = 64 Bytes = 512 Bit
         long expectedBandwidth = 1000 * DATA.BIT;
-        checkNotifyOnFinishMessage(notifyOnFinishMessage, expectedBandwidth, 10 * TIME.SECOND, (long) (10.512 * TIME.SECOND));
+        checkNotifyOnFinishMessage(notifyOnFinishMessage, expectedBandwidth, 10 * TIME.SECOND, (long) (10.448 * TIME.SECOND));
 
         CellModuleMessage resultMessage = cellModuleMessages.get(1);
         checkResultMessage(resultMessage, expectedBandwidth, 10 * TIME.SECOND,
-                (long) (10.512 * TIME.SECOND));
+                (long) (10.448 * TIME.SECOND));
 
         assertEquals(
                 (Long.MAX_VALUE - expectedBandwidth) * DATA.BIT,
