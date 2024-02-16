@@ -89,6 +89,8 @@ public class CellConfigurationRule extends TemporaryFolder {
             File cellConfigFile = copyToFile(cellConfigPath, targetFolder);
             cellConfig = ConfigurationReader.importCellConfig(cellConfigFile.getAbsolutePath());
             ConfigurationData.INSTANCE.setCellConfig(cellConfig);
+        } else {
+            ConfigurationData.INSTANCE.setCellConfig(new CCell());
         }
 
         if (regionConfigPath != null) {

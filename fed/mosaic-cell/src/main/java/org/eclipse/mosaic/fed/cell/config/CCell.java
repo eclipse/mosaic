@@ -16,6 +16,10 @@
 package org.eclipse.mosaic.fed.cell.config;
 
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
+import org.eclipse.mosaic.lib.util.gson.DataFieldAdapter;
+import org.eclipse.mosaic.rti.DATA;
+
+import com.google.gson.annotations.JsonAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,12 @@ import java.util.List;
  * Provides general configuration for the ambassador, such as paths to the regions and network configuration files.
  */
 public final class CCell {
+
+    /**
+     * Configuration of header sizes added to all messages before
+     * simulating packet transmission.
+     */
+    public final CHeaderLengths headerLengths = new CHeaderLengths();
 
     /**
      * Interval (in seconds) in which the bandwidth is aggregated.
@@ -82,5 +92,45 @@ public final class CCell {
          * The application class.
          */
         public String applicationClass = "*";
+    }
+
+    public static class CHeaderLengths {
+
+        /**
+         * The size of all headers of the ethernet link layer (used only for server nodes).
+         * E.g. Ethernet (6 Bytes) + MAC Header (12 Bytes) = ~ 18 bytes
+         */
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long ethernetHeader = 18 * DATA.BYTE;
+
+        /**
+         * The size of all headers of the cellular link layer.<br>
+         * For example, for 5G we estimate ~18 bytes: SDAP(1 Bytes) + PDCP (3 bytes) + RLC (4 bytes) + MAC (10 bytes)
+         */
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long cellularHeader = 18 * DATA.BYTE;
+
+        /**
+         * The size of IP header added to all messages.
+         * In the default configuration we assume IPv4 (20 bytes)
+         */
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long ipHeader = 20 * DATA.BYTE;
+
+        /**
+         * The size of TCP header added to all messages which use
+         * {@link org.eclipse.mosaic.lib.enums.ProtocolType#TCP}
+         * for transmission.
+         */
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long tcpHeader = 20 * DATA.BYTE;
+
+        /**
+         * The size of UDP headers added to all messages which use
+         * {@link org.eclipse.mosaic.lib.enums.ProtocolType#UDP}
+         * for transmission.
+         */
+        @JsonAdapter(DataFieldAdapter.Size.class)
+        public long udpHeader = 8 * DATA.BYTE;
     }
 }
