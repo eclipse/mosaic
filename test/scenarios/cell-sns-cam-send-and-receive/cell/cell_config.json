@@ -5,7 +5,7 @@
         "udpHeader": "8 Bytes",
         "tcpHeader": "20 Bytes",
         "ipHeader": "20 Bytes",
-        "cellularHeader": "26 Bytes",
-        "ethernetHeader": "38 Bytes"
+        "cellularHeader": "18 Bytes",
+        "ethernetHeader": "18 Bytes"
     }
 }
