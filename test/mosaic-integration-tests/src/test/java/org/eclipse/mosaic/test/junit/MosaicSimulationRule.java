@@ -33,7 +33,6 @@ import org.eclipse.mosaic.starter.config.CScenario;
 import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.commons.compiler.util.Producer;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +59,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class MosaicSimulationRule extends TemporaryFolder {
 
@@ -312,9 +312,9 @@ public class MosaicSimulationRule extends TemporaryFolder {
      * @return the object the given {@link Callable} produced if the timeout has not been exceeded.
      * @throws AssertionError if the timeout has exceeded.
      */
-    private MosaicSimulation.SimulationResult timeout(Producer<MosaicSimulation.SimulationResult> execution) {
+    private MosaicSimulation.SimulationResult timeout(Supplier<MosaicSimulation.SimulationResult> execution) {
         ExecutorService executor = Executors.newCachedThreadPool();
-        Future<MosaicSimulation.SimulationResult> future = executor.submit(() -> (MosaicSimulation.SimulationResult) execution.produce());
+        Future<MosaicSimulation.SimulationResult> future = executor.submit(execution::get);
         try {
             return future.get(this.timeout, TimeUnit.NANOSECONDS);
         } catch (Throwable e) {
