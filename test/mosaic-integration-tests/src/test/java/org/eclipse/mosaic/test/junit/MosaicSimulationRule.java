@@ -33,7 +33,7 @@ import org.eclipse.mosaic.starter.config.CScenario;
 import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.janino.util.Producer;
+import org.codehaus.commons.compiler.util.Producer;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

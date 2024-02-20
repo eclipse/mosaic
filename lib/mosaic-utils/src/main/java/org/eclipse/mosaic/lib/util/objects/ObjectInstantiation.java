@@ -15,12 +15,14 @@
 
 package org.eclipse.mosaic.lib.util.objects;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.api.ProblemHandler;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -34,10 +36,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import javax.annotation.Nonnull;
-import javax.json.stream.JsonParser;
 
 /**
  * Instantiate Java objects using a file contains a JSON encoded object.
@@ -221,18 +222,15 @@ public class ObjectInstantiation<T> {
     }
 
     private void validateFile(InputStream input, InputStream schemaInput) throws InstantiationException {
-        final JsonValidationService service = JsonValidationService.newInstance();
-        final JsonSchema schema = service.readSchema(schemaInput);
-
-        final List<String> problems = new ArrayList<>();
-        final ProblemHandler handler = service.createProblemPrinter(problems::add);
-
-        try (JsonParser parser = service.createParser(input, schema, handler)) {
-            while (parser.hasNext()) {
-                parser.next();
-                // ignore, we let GSON do the parsing later.
-            }
+        final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+        final JsonSchema jsonSchema = factory.getSchema(schemaInput);
+        final Collection<ValidationMessage> problems;
+        try {
+            problems = new HashSet<>(jsonSchema.validate(new ObjectMapper().readTree(input)));
+        } catch (IOException e) {
+            throw new InstantiationException("The input JSON is not valid: " + e.getMessage());
         }
+
         if (!problems.isEmpty()) {
             StringBuilder errorMessage = new StringBuilder();
             problems.forEach((p) -> {

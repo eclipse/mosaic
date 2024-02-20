@@ -47,19 +47,8 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.leadpony.justify</groupId>
-            <artifactId>justify</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.ibm.icu</groupId>
-                    <artifactId>icu4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.johnzon</groupId>
-            <artifactId>johnzon-core</artifactId>
-            <scope>compile</scope>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
         </dependency>
 
     </dependencies>
