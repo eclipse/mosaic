@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.util.objects;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
-import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -26,8 +25,6 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -41,10 +38,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import javax.annotation.Nonnull;
 
 /**
@@ -232,7 +226,7 @@ public class ObjectInstantiation<T> {
             if (json instanceof MissingNode) {
                 return;
             }
-            problems = new HashSet<>(jsonSchema.validate(json));
+            problems = jsonSchema.validate(json);
         } catch (IOException e) {
             throw new InstantiationException("The input JSON is not valid: " + e.getMessage());
         }
