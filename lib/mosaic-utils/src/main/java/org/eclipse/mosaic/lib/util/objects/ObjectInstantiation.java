@@ -39,6 +39,7 @@ import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 
 /**
@@ -218,26 +219,29 @@ public class ObjectInstantiation<T> {
     }
 
     private void validateFile(InputStream input, InputStream schemaInput) throws InstantiationException {
-        final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-        final JsonSchema jsonSchema = factory.getSchema(schemaInput);
-        final Collection<ValidationMessage> problems;
+        final Locale defaultLocale = Locale.getDefault();
         try {
+            Locale.setDefault(Locale.ENGLISH);
+            final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+            final JsonSchema jsonSchema = factory.getSchema(schemaInput);
             final JsonNode json = new ObjectMapper().readTree(input);
             if (json instanceof MissingNode) {
                 return;
             }
-            problems = jsonSchema.validate(json);
+
+            final Collection<ValidationMessage> problems = jsonSchema.validate(json);
+            if (!problems.isEmpty()) {
+                StringBuilder errorMessage = new StringBuilder();
+                problems.forEach((p) -> {
+                    errorMessage.append(p.getMessage());
+                    errorMessage.append(NEWLINE);
+                });
+                throw new InstantiationException("The " + clazz.getSimpleName() + " config is not valid: " + errorMessage);
+            }
         } catch (IOException e) {
             throw new InstantiationException("The input JSON is not valid: " + e.getMessage());
-        }
-
-        if (!problems.isEmpty()) {
-            StringBuilder errorMessage = new StringBuilder();
-            problems.forEach((p) -> {
-                errorMessage.append(p);
-                errorMessage.append(NEWLINE);
-            });
-            throw new InstantiationException("The " + clazz.getSimpleName() + " config is not valid: " + errorMessage);
+        } finally {
+            Locale.setDefault(defaultLocale);
         }
     }
 

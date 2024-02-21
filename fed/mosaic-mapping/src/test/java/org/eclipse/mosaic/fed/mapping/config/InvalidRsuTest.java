@@ -42,7 +42,7 @@ public class InvalidRsuTest {
                     "/mapping/invalid/rsu/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/rsus/0] The object must have a property whose name is \"position\""));
+            assertTrue(e.getMessage().contains("$.rsus[0]: required property 'position' not found"));
         }
         assertNull(mapping);
     }
