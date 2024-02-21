@@ -24,7 +24,9 @@ import org.eclipse.mosaic.starter.cli.MosaicParameters;
 import org.eclipse.mosaic.starter.config.CRuntime;
 import org.eclipse.mosaic.starter.config.CScenario;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import com.networknt.schema.JsonValidator;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -96,6 +98,8 @@ public class MosaicStarter {
 
         final Path scenarioConfigurationFile = findScenarioConfigurationFile(params);
         final Path scenarioDirectory = extractScenarioDirectory(scenarioConfigurationFile);
+
+        disableLoggingOfJsonValidation();
 
         final Path runtimeConfigurationFile = params.runtimeConfiguration != null ? Paths.get(params.runtimeConfiguration) : RUNTIME_CONFIG;
         final CRuntime runtimeConfiguration = loadRuntimeConfiguration(runtimeConfigurationFile);
@@ -189,6 +193,14 @@ public class MosaicStarter {
             throw new ExecutionException();
         }
         return parent;
+    }
+
+    /**
+     * Disables logging of JSON Schema Validation. This is required for any JSON loading (e.g. CRuntime), before configuring logback with
+     * a logback.xml.
+     */
+    private void disableLoggingOfJsonValidation() {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(JsonValidator.class.getPackageName())).setLevel(Level.OFF);
     }
 
     protected CHosts loadHostsConfiguration(Path hostConfigurationFile) {
