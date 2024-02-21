@@ -15,7 +15,10 @@
 
 package org.eclipse.mosaic.lib.util.objects;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -23,6 +26,8 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -36,7 +41,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import javax.annotation.Nonnull;
 
@@ -167,14 +174,10 @@ public class ObjectInstantiation<T> {
     }
 
     private T handleParserResult(T obj) throws InstantiationException {
-        if (obj != null) {
-            debug("File has been loaded into the destination object.");
-        } else {
-            obj = createWithDefaultDefaultConstructor();
-            if (obj == null) {
-                throw new InstantiationException("Could not read or instantiate the object.");
-            }
+        if (obj == null) {
+            return createWithDefaultDefaultConstructor();
         }
+        debug("File has been loaded into the destination object.");
         return obj;
     }
 
@@ -202,7 +205,6 @@ public class ObjectInstantiation<T> {
             debug("Object instantiated using the default constructor.");
             return obj;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-
             throw new InstantiationException(e.getMessage());
         }
     }
@@ -226,7 +228,11 @@ public class ObjectInstantiation<T> {
         final JsonSchema jsonSchema = factory.getSchema(schemaInput);
         final Collection<ValidationMessage> problems;
         try {
-            problems = new HashSet<>(jsonSchema.validate(new ObjectMapper().readTree(input)));
+            final JsonNode json = new ObjectMapper().readTree(input);
+            if (json instanceof MissingNode) {
+                return;
+            }
+            problems = new HashSet<>(jsonSchema.validate(json));
         } catch (IOException e) {
             throw new InstantiationException("The input JSON is not valid: " + e.getMessage());
         }
