@@ -101,7 +101,6 @@
         <version.hppc>0.8.1</version.hppc><!-- 0.8.1 is approved in CQ22339 -->
         <version.java-websocket>1.3.9</version.java-websocket><!-- 1.3.9 is approved in CQ19134 -->
         <version.janino>3.1.11</version.janino><!-- 3.1.11 is approved in #13292 and #13293  -->
-        <version.johnzon-core>1.1.13</version.johnzon-core><!-- 1.1.13 is approved in CQ22342 -->
         <version.jsch>0.2.16</version.jsch><!-- 0.2.16 is approved in #8468 -->
         <version.junit>4.13.2</version.junit><!-- 4.13 is approved in CQ21439 -->
         <version.justify>1.1.0</version.justify><!-- 1.1.0 is approved in CQ22341 -->
