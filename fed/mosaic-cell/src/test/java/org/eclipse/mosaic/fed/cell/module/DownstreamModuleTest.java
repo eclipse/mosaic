@@ -84,6 +84,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class DownstreamModuleTest {
 
+    private static final long HEADER_UDP = 8 * DATA.BYTE;
+    private static final long HEADER_IP = 20 * DATA.BYTE;
+    private static final long HEADER_TCP = 20 * DATA.BYTE;
+    private static final long HEADER_CELLULAR = 18 * DATA.BYTE;
+
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -178,7 +183,7 @@ public class DownstreamModuleTest {
         assertEquals(3, rtiV2xReceptionsSent.size());
         assertEquals(1, cellModuleMessages.size());
         long endTime = 10 * TIME.SECOND + DELAY_VALUE_IN_MS;
-        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 1600 * DATA.BIT, 10 * TIME.SECOND, endTime);
+        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 8960 * DATA.BIT, 10 * TIME.SECOND, endTime);
         for (int i = 0; i < receivers.length; i++) {
             testRtiV2xMessages(i, receivers[i], endTime, sampleV2XMessage.getId());
             assertEquals(
@@ -187,7 +192,7 @@ public class DownstreamModuleTest {
             );
         }
 
-        assertEquals((42000 - 1600) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals((42000 - 8960) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
     @Test
@@ -201,7 +206,7 @@ public class DownstreamModuleTest {
         for (String receiver : receivers) {
             CNetworkProperties region = RegionUtility.getRegionForNode(receiver);
             receiverMap.put(region, receiver);
-            CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 400 * DATA.BIT, 400 * DATA.BIT);
+            CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 10000 * DATA.BIT, 10000 * DATA.BIT);
             SimulationData.INSTANCE.setCellConfigurationOfNode(receiver, cellConfiguration);
         }
 
@@ -215,21 +220,21 @@ public class DownstreamModuleTest {
         assertEquals(3, rtiV2xReceptionsSent.size());
         assertEquals(1, cellModuleMessages.size());
         long endTime = 10 * TIME.SECOND + DELAY_VALUE_IN_MS;
-        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 1600 * DATA.BIT, 10 * TIME.SECOND, endTime);
+        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 8960 * DATA.BIT, 10 * TIME.SECOND, endTime);
         for (int i = 0; i < receivers.length; i++) {
             testRtiV2xMessages(i, receivers[i], endTime, sampleV2XMessage.getId());
-            assertEquals(400 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receivers[i]).getAvailableDownlinkBitrate());
+            assertEquals(10000 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receivers[i]).getAvailableDownlinkBitrate());
         }
 
-        assertEquals((42000 - 1600) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals((42000 - 8960) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
     @Test
     public void testProcessMessage_regularMessageMulticast_NodeLimitedRegionLimited() throws Exception {
         // SETUP
         // UDP
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 200 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 200 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1120 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1120 * DATA.BIT;
 
         routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
@@ -238,7 +243,7 @@ public class DownstreamModuleTest {
         for (String receiver : receivers) {
             CNetworkProperties region = RegionUtility.getRegionForNode(receiver);
             receiverMap.put(region, receiver);
-            CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 400 * DATA.BIT, 400 * DATA.BIT);
+            CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 2240 * DATA.BIT, 2240 * DATA.BIT);
             SimulationData.INSTANCE.setCellConfigurationOfNode(receiver, cellConfiguration);
         }
 
@@ -251,14 +256,14 @@ public class DownstreamModuleTest {
         assertEquals(3, rtiInteractionsSent.size());
         assertEquals(3, rtiV2xReceptionsSent.size());
         assertEquals(1, cellModuleMessages.size());
-        //120 bps remain, since not the full capacity is usable for the Multicast
+        //640 bps of capacity remain, since only 50% of the full capacity is usable for the Multicast
         long endTime = 10 * TIME.SECOND + 800 * TIME.MILLI_SECOND;
-        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 100 * DATA.BIT, 10 * TIME.SECOND, endTime);
-        assertEquals(100 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 560 * DATA.BIT, 10 * TIME.SECOND, endTime);
+        assertEquals(560 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
 
         for (int i = 0; i < receivers.length; i++) {
             testRtiV2xMessages(i, receivers[i], endTime, sampleV2XMessage.getId());
-            assertEquals(400 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receivers[i]).getAvailableDownlinkBitrate());
+            assertEquals(2240 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receivers[i]).getAvailableDownlinkBitrate());
         }
     }
 
@@ -269,8 +274,8 @@ public class DownstreamModuleTest {
         // Moritzplatz
         GeoPoint moritzplatzKreuzberg = GeoPoint.lonLat(13.423233032226562, 52.50007194840628);
 
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 200 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 200 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1120 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1120 * DATA.BIT;
 
         routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
@@ -280,7 +285,7 @@ public class DownstreamModuleTest {
         for (String receiver : receivers) {
             CNetworkProperties region = RegionUtility.getRegionForNode(receiver);
             receiverMap.put(region, receiver);
-            CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 400 * DATA.BIT, 400 * DATA.BIT);
+            CellConfiguration cellConfiguration = new CellConfiguration(receiver, true, 2240 * DATA.BIT, 2240 * DATA.BIT);
             SimulationData.INSTANCE.setCellConfigurationOfNode(receiver, cellConfiguration);
         }
 
@@ -300,7 +305,7 @@ public class DownstreamModuleTest {
         //120 bps remain, since not the full capacity is usable for the Multicast
         containsNotifyOnFinishMessage(
                 "kreuzberg",
-                800 * DATA.BIT,
+                4480 * DATA.BIT,
                 startTime, endTimeKreuzberg,
                 TransmissionMode.DownlinkMulticast,
                 null,
@@ -308,7 +313,7 @@ public class DownstreamModuleTest {
         );
         containsNotifyOnFinishMessage(
                 GLOBAL_NETWORK_ID,
-                100 * DATA.BIT,
+                560 * DATA.BIT,
                 startTime,
                 endTimeGlobaleRegion,
                 TransmissionMode.DownlinkMulticast,
@@ -316,14 +321,14 @@ public class DownstreamModuleTest {
                 sampleV2XMessage
         );
 
-        assertEquals(100 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals(560 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
 
         for (int i = 1; i < receivers.length; i++) {
-            assertEquals(400 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receivers[i]).getAvailableDownlinkBitrate());
+            assertEquals(2240 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receivers[i]).getAvailableDownlinkBitrate());
         }
-        containsRtiV2xMessages("veh_0", startTime, endTimeGlobaleRegion, sampleV2XMessage.getId(), 100 * DATA.BIT);
-        containsRtiV2xMessages("veh_1", startTime, endTimeGlobaleRegion, sampleV2XMessage.getId(), 100 * DATA.BIT);
-        containsRtiV2xMessages("veh_2", startTime, endTimeKreuzberg, sampleV2XMessage.getId(), 800 * DATA.BIT);
+        containsRtiV2xMessages("veh_0", startTime, endTimeGlobaleRegion, sampleV2XMessage.getId(), 560 * DATA.BIT);
+        containsRtiV2xMessages("veh_1", startTime, endTimeGlobaleRegion, sampleV2XMessage.getId(), 560 * DATA.BIT);
+        containsRtiV2xMessages("veh_2", startTime, endTimeKreuzberg, sampleV2XMessage.getId(), 4480 * DATA.BIT);
     }
 
     @Test
@@ -335,7 +340,7 @@ public class DownstreamModuleTest {
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
 
-        CellConfiguration cellConfiguration = new CellConfiguration(receiverName, true, 400 * DATA.BIT, 400 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration(receiverName, true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode(receiverName, cellConfiguration);
 
         // RUN
@@ -346,11 +351,11 @@ public class DownstreamModuleTest {
         assertEquals(1, rtiV2xReceptionsSent.size());
         assertEquals(1, cellModuleMessages.size());
         long endTime = 10 * TIME.SECOND + 200 * TIME.MILLI_SECOND;
-        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 400 * DATA.BIT, 10 * TIME.SECOND, endTime);
+        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 2240 * DATA.BIT, 10 * TIME.SECOND, endTime);
         testRtiV2xMessages(0, receiverName, endTime, sampleV2XMessage.getId());
 
         assertEquals(0L, SimulationData.INSTANCE.getCellConfigurationOfNode(receiverName).getAvailableDownlinkBitrate());
-        assertEquals((42000 - 400) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals((42000 - 2240) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
     @Test
@@ -362,10 +367,10 @@ public class DownstreamModuleTest {
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
 
-        CellConfiguration cellConfiguration = new CellConfiguration(receiverName, true, 400 * DATA.BIT, 400 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration(receiverName, true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode(receiverName, cellConfiguration);
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 600 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 600 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 3360 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 3360 * DATA.BIT;
 
         // RUN
         downstreamModule.processEvent(event);
@@ -375,11 +380,11 @@ public class DownstreamModuleTest {
         assertEquals(1, rtiV2xReceptionsSent.size());
         assertEquals(1, cellModuleMessages.size());
         long endTime = 10 * TIME.SECOND + 200 * TIME.MILLI_SECOND;
-        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 400 * DATA.BIT, 10 * TIME.SECOND, endTime);
+        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 2240 * DATA.BIT, 10 * TIME.SECOND, endTime);
         testRtiV2xMessages(0, receiverName, endTime, sampleV2XMessage.getId());
 
         assertEquals(0, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableDownlinkBitrate());
-        assertEquals((600 - 400) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals((3360 - 2240) * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
     @Test
@@ -391,10 +396,10 @@ public class DownstreamModuleTest {
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
 
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400 * DATA.BIT, 400 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 200 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 200 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1120 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1120 * DATA.BIT;
 
         // RUN
         downstreamModule.processEvent(event);
@@ -404,10 +409,10 @@ public class DownstreamModuleTest {
         assertEquals(1, rtiV2xReceptionsSent.size());
         assertEquals(1, cellModuleMessages.size());
         long endTime = 10 * TIME.SECOND + 400 * TIME.MILLI_SECOND;
-        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 200, 10 * TIME.SECOND, endTime);
+        checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, 1120, 10 * TIME.SECOND, endTime);
         testRtiV2xMessages(0, receiverName, endTime, sampleV2XMessage.getId());
 
-        assertEquals((400 - 200) * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableDownlinkBitrate());
+        assertEquals((2240 - 1120) * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0").getAvailableDownlinkBitrate());
         assertEquals(0L, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
@@ -424,9 +429,9 @@ public class DownstreamModuleTest {
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
 
-        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400 * DATA.BIT, 400 * DATA.BIT);
+        CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 400 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode(receiverName, cellConfiguration);
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 600 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 3360 * DATA.BIT;
 
         // RUN
         downstreamModule.processEvent(event);
@@ -439,8 +444,8 @@ public class DownstreamModuleTest {
         List<NegativeAckReason> nackReasons = Collections.singletonList(NegativeAckReason.CHANNEL_CAPACITY_EXCEEDED);
         testRtiAckMessages(0, nackReasons, sampleV2XMessage);
 
-        assertEquals(400 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receiverName).getAvailableDownlinkBitrate());
-        assertEquals(600 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals(2240 * DATA.BIT, SimulationData.INSTANCE.getCellConfigurationOfNode(receiverName).getAvailableDownlinkBitrate());
+        assertEquals(3360 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
     @Test
@@ -462,7 +467,8 @@ public class DownstreamModuleTest {
         assertEquals(1, rtiV2xReceptionsSent.size());
         testRtiV2xMessages(0, receiverName, endTime, sampleV2XMessage.getId());
 
-        long expectedBandwidthInBps = (long) (messageLength / (DELAY_VALUE_IN_MS / (double) TIME.SECOND));
+        long actualMessageLength = messageLength + HEADER_UDP + HEADER_IP + HEADER_CELLULAR;
+        long expectedBandwidthInBps = (long) (actualMessageLength / (DELAY_VALUE_IN_MS / (double) TIME.SECOND));
 
         assertEquals(1, cellModuleMessages.size());
         checkNotifyOnFinishMessage(0, GLOBAL_NETWORK_ID, expectedBandwidthInBps, 10 * TIME.SECOND, endTime);
@@ -501,9 +507,9 @@ public class DownstreamModuleTest {
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
 
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 200 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 200 * DATA.BIT;
-        long expectedBandwidthInBps = 200 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1120 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1120 * DATA.BIT;
+        long expectedBandwidthInBps = 1120 * DATA.BIT;
         long endTime = (long) (10.4 * TIME.SECOND);
 
         // RUN
@@ -542,7 +548,8 @@ public class DownstreamModuleTest {
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.unicast.transmission.lossProbability = 2d;
         double delayInS = ((ConstantDelay) ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.unicast.delay).delay
                 / (double) TIME.SECOND;
-        long expectedBandwidth = (long) (messageLength / delayInS);
+        long actualMessageLength = messageLength + HEADER_TCP + HEADER_IP + HEADER_CELLULAR;
+        long expectedBandwidth = (long) (actualMessageLength / delayInS);
         long endTime = 10 * TIME.SECOND + DELAY_VALUE_IN_MS;
 
         // RUN
@@ -578,7 +585,8 @@ public class DownstreamModuleTest {
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.unicast.transmission.lossProbability = 2d;
         ConstantDelay delay = (ConstantDelay) ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.unicast.delay;
         double delayValue = (double) delay.delay / TIME.MILLI_SECOND;
-        long expectedBandwidth = (long) (messageLength / ((delayValue / (double) TIME.MICRO_SECOND)));
+        long actualMessageLength = messageLength + HEADER_UDP + HEADER_IP + HEADER_CELLULAR;
+        long expectedBandwidth = (long) (actualMessageLength / ((delayValue / (double) TIME.MICRO_SECOND)));
 
         // RUN
         downstreamModule.processEvent(event);
@@ -644,8 +652,8 @@ public class DownstreamModuleTest {
 
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode(receiverName);
         cellConfiguration.consumeDownlink(Long.MAX_VALUE * DATA.BIT);
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 200 * DATA.BIT;
-        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 200 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1140 * DATA.BIT;
+        ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1140 * DATA.BIT;
 
         // RUN
         downstreamModule.processEvent(event);
@@ -659,7 +667,7 @@ public class DownstreamModuleTest {
         testRtiAckMessages(0, nackReasons, sampleV2XMessage);
 
         assertEquals(0L, SimulationData.INSTANCE.getCellConfigurationOfNode(receiverName).getAvailableDownlinkBitrate());
-        assertEquals(200 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
+        assertEquals(1140 * DATA.BIT, ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity);
     }
 
     @Test
