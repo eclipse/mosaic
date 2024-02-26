@@ -20,14 +20,12 @@ import org.eclipse.mosaic.fed.cell.config.gson.RegionsNamingStrategy;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.util.ConfigurationReader;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.geo.GeoPolygon;
 import org.eclipse.mosaic.lib.model.delay.GammaRandomDelay;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 
@@ -35,14 +33,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonWriter;
 
 /**
- * Helper that modifies a region.json config file and writes it back to the source file.
+ * Helper that configures a GammaRandomDelay in a region.json file and writes it back to the source file.
  */
-public class RegionsConfigUtility {
+public class RegionsConfigGammaDelayUtility {
     public static CRegion getRegionsConfig(String regionConfigurationPath) {
         CRegion regionConfig = null;
         try {
@@ -58,8 +53,8 @@ public class RegionsConfigUtility {
      * Sets all transmission delays (uplink, downlink.multicst, downlink.unicast) to 'GammaRandomDelay'.
      *
      * @param cRegion The region configuration object
-     * @param minDelay The minimum delay value (ms)
-     * @param expDelay The expected delay value (ms)
+     * @param minDelay The minimum delay value (ns)
+     * @param expDelay The expected delay value (ns)
      */
     public static void setGammaRandomDelay(CRegion cRegion, long minDelay, long expDelay) {
         GammaRandomDelay delay = new GammaRandomDelay();
@@ -97,7 +92,7 @@ public class RegionsConfigUtility {
 
     public static void main(String[] args) {
         if (args.length != 3) {
-            System.out.println("Usage: RegionsConfigUtility <path-to-regions.json> <minDelay> <expDelay>");
+            System.out.println("Usage: RegionsConfigUtility <path-to-regions.json> <minDelay (ns)> <expDelay (ns)>");
         }
 
         String regionConfigurationPath = args[0];
