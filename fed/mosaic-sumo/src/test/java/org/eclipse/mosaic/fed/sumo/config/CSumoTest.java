@@ -69,7 +69,6 @@ public class CSumoTest {
             getSumoConfiguration(invalidConfig);
             fail("Expected InstantiationException");
         } catch (InstantiationException instantiationException) {
-            System.out.println(instantiationException.getMessage());
             // ASSERT
             assertThat(
                     instantiationException.getMessage(),
