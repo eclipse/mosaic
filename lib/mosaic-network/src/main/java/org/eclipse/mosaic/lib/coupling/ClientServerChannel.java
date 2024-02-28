@@ -472,7 +472,7 @@ public class ClientServerChannel {
             radioConfig1.setReceivingMessages(false);                                     //!!Semantic in Java: true -> only routing
             radioConfig1.setIpAddress(inet4ToInt(configuration.getConf0().getNewIP()));   //Semantic in federates: false -> only routing
             radioConfig1.setSubnetAddress(inet4ToInt(configuration.getConf0().getNewSubnet()));
-            radioConfig1.setTransmissionPower((int) configuration.getConf0().getNewPower());
+            radioConfig1.setTransmissionPower(configuration.getConf0().getNewPower());
             radioConfig1.setPrimaryRadioChannel(translateChannel(configuration.getConf0().getChannel0()));
             if (configuration.getConf0().getMode() == InterfaceConfiguration.MultiChannelMode.ALTERNATING) {
                 radioConfig1.setSecondaryRadioChannel(translateChannel(configuration.getConf0().getChannel1()));
@@ -487,7 +487,7 @@ public class ClientServerChannel {
             radioConfig2.setReceivingMessages(false); //!!Semantic in Java: true -> only routing
             radioConfig2.setIpAddress(inet4ToInt(configuration.getConf1().getNewIP()));   //Semantic in federates: false -> only routing
             radioConfig2.setSubnetAddress(inet4ToInt(configuration.getConf1().getNewSubnet()));
-            radioConfig2.setTransmissionPower((int) configuration.getConf1().getNewPower());
+            radioConfig2.setTransmissionPower(configuration.getConf1().getNewPower());
             radioConfig2.setPrimaryRadioChannel(translateChannel(configuration.getConf1().getChannel0()));
             if (configuration.getConf1().getMode() == InterfaceConfiguration.MultiChannelMode.ALTERNATING) {
                 radioConfig2.setSecondaryRadioChannel(translateChannel(configuration.getConf1().getChannel1()));

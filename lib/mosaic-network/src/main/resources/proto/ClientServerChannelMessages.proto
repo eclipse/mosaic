@@ -101,7 +101,7 @@ message ConfigureRadioMessage {
 		required bool receiving_messages = 1; //Determines whether the radio receives messages or only routes
 		required uint32 ip_address = 2;
 		required uint32 subnet_address = 3;
-		required uint32 transmission_power = 4;
+		required double transmission_power = 4;
 		enum RadioMode {
 			SINGLE_CHANNEL = 1;
 			DUAL_CHANNEL = 2;
