@@ -47,7 +47,7 @@ required_programs=( unzip tar bison flex protoc gcc python )
 required_libraries=( "libprotobuf-dev >= 3.7.0" "libxml2-dev" )
 
 #omnet_federate_url="https://github.com/mosaic-addons/omnetpp-federate/archive/refs/tags/23.1.zip"
-omnet_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/heads/main.zip"
+omnet_federate_url="https://github.com/mosaic-addons/omnetpp-federate/archive/refs/heads/main.zip"
 omnet_src_url="https://github.com/omnetpp/omnetpp/releases/download/omnetpp-5.5.1/omnetpp-5.5.1-src-linux.tgz"
 inet_src_url="https://github.com/inet-framework/inet/releases/download/v4.1.1/inet-4.1.1-src.tgz"
 
@@ -715,7 +715,7 @@ configure_inet() {
   cd "${inet_src_dir}"
 
   # Patch inet feature tool if python >= 3.0.0
-  python_version_current="$(python3 --version 2>&1)"
+  python_version_current="$(python --version 2>&1)"
   python_version_3="Python 3."
   if [[ "$python_version_current" == "$python_version_3"* ]]; then
     sed -i -e "s|raw_input|input|" ./bin/inet_featuretool
