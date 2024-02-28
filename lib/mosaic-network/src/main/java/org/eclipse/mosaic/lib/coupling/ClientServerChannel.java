@@ -378,6 +378,7 @@ public class ClientServerChannel {
     }
 
     // @param channelId the channelID               //TODO:make enum from
+
     /**
      * Write send message header to stream.
      * Not used in eWorld visualizer.
@@ -406,7 +407,7 @@ public class ClientServerChannel {
                 //builder for rectangular addresses
                 rectangleAddress.setIpAddress(buffer.getInt()); //write the ip address as flat integer into the builder
                 //convert coordinates etc.
-                CartesianRectangle projectedRectangle = ((GeoRectangle)dac.getGeoArea()).toCartesian();
+                CartesianRectangle projectedRectangle = ((GeoRectangle) dac.getGeoArea()).toCartesian();
                 //write the coordinates of the area into the builder
                 rectangleAddress.setAX(projectedRectangle.getA().getX());
                 rectangleAddress.setAY(projectedRectangle.getA().getY());
@@ -418,7 +419,7 @@ public class ClientServerChannel {
                 SendMessageMessage.GeoCircleAddress.Builder circleAddress = SendMessageMessage.GeoCircleAddress.newBuilder();
                 circleAddress.setIpAddress(buffer.getInt());
 
-                CartesianCircle projectedCircle = ((GeoCircle)dac.getGeoArea()).toCartesian();
+                CartesianCircle projectedCircle = ((GeoCircle) dac.getGeoArea()).toCartesian();
                 //write area into the address object
                 circleAddress.setCenterX(projectedCircle.getCenter().getX());
                 circleAddress.setCenterY(projectedCircle.getCenter().getY());
@@ -428,7 +429,7 @@ public class ClientServerChannel {
             } else {
                 throw new IllegalArgumentException("Addressing does support GeoCircle and GeoRectangle only.");
             }
-        } else if (dac.getTimeToLive() > -1){  //Topocast addresses
+        } else if (dac.getTimeToLive() > -1) {  //Topocast addresses
             SendMessageMessage.TopoAddress.Builder topoAddress = SendMessageMessage.TopoAddress.newBuilder();
             topoAddress.setIpAddress(buffer.getInt());  //Add IP as flat int
             topoAddress.setTtl(dac.getTimeToLive());    //add time to live
@@ -471,7 +472,7 @@ public class ClientServerChannel {
             radioConfig1.setReceivingMessages(false);                                     //!!Semantic in Java: true -> only routing
             radioConfig1.setIpAddress(inet4ToInt(configuration.getConf0().getNewIP()));   //Semantic in federates: false -> only routing
             radioConfig1.setSubnetAddress(inet4ToInt(configuration.getConf0().getNewSubnet()));
-            radioConfig1.setTransmissionPower(configuration.getConf0().getNewPower());
+            radioConfig1.setTransmissionPower((int) configuration.getConf0().getNewPower());
             radioConfig1.setPrimaryRadioChannel(translateChannel(configuration.getConf0().getChannel0()));
             if (configuration.getConf0().getMode() == InterfaceConfiguration.MultiChannelMode.ALTERNATING) {
                 radioConfig1.setSecondaryRadioChannel(translateChannel(configuration.getConf0().getChannel1()));
@@ -486,7 +487,7 @@ public class ClientServerChannel {
             radioConfig2.setReceivingMessages(false); //!!Semantic in Java: true -> only routing
             radioConfig2.setIpAddress(inet4ToInt(configuration.getConf1().getNewIP()));   //Semantic in federates: false -> only routing
             radioConfig2.setSubnetAddress(inet4ToInt(configuration.getConf1().getNewSubnet()));
-            radioConfig2.setTransmissionPower(configuration.getConf1().getNewPower());
+            radioConfig2.setTransmissionPower((int) configuration.getConf1().getNewPower());
             radioConfig2.setPrimaryRadioChannel(translateChannel(configuration.getConf1().getChannel0()));
             if (configuration.getConf1().getMode() == InterfaceConfiguration.MultiChannelMode.ALTERNATING) {
                 radioConfig2.setSecondaryRadioChannel(translateChannel(configuration.getConf1().getChannel1()));
