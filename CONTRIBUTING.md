@@ -139,7 +139,7 @@ Each Java file must include the following license header at the top of each file
  
 ```java
 /*
- * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2024 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
