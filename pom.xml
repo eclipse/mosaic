@@ -629,16 +629,13 @@
                 <file>
                     <exists>LICENSE</exists>
                 </file>
-                <property>
-                    <name>parent.dir</name>
-                </property>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
-                        <version>2.1.0</version>
+                        <version>2.4.0</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>
@@ -654,7 +651,7 @@
                                     <sortArtifactByName>true</sortArtifactByName>
                                     <thirdPartyFilename>NOTICE-THIRD-PARTY.md</thirdPartyFilename>
                                     <fileTemplate>${parent.dir}/legal/templates/third-party-file.ftl</fileTemplate>
-                                    <licenseMerges>${parent.dir}/legal/templates/licenses-merges-file</licenseMerges>
+                                    <licenseMergesUrl>file:///${parent.dir}/legal/templates/licenses-merge-file</licenseMergesUrl>
                                     <missingFile>${parent.dir}/legal/templates/missing-licenses.properties</missingFile>
                                 </configuration>
                             </execution>
@@ -669,16 +666,13 @@
                 <file>
                     <missing>LICENSE</missing>
                 </file>
-                <property>
-                    <name>parent.dir</name>
-                </property>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
-                        <version>2.1.0</version>
+                        <version>2.4.0</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>
@@ -695,7 +689,7 @@
                                     <sortArtifactByName>true</sortArtifactByName>
                                     <thirdPartyFilename>NOTICE-THIRD-PARTY.md</thirdPartyFilename>
                                     <fileTemplate>${parent.dir}/legal/templates/third-party-file.ftl</fileTemplate>
-                                    <licenseMerges>${parent.dir}/legal/templates/licenses-merges-file</licenseMerges>
+                                    <licenseMergesUrl>file:///${parent.dir}/legal/templates/licenses-merge-file</licenseMergesUrl>
                                     <missingFile>${parent.dir}/legal/templates/missing-licenses.properties</missingFile>
                                 </configuration>
                             </execution>
