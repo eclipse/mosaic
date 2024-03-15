@@ -2,7 +2,7 @@
 
 This content is produced and maintained by the Eclipse MOSAIC project.
 
- * Project home: https://projects.eclipse.org/projects/technology.mosaic
+ * Project home: https://projects.eclipse.org/projects/automotive.mosaic
 
 ## Trademarks
 
