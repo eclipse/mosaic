@@ -739,7 +739,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("VehicleLaneChange failed: unsupported lane change mode.");
                     return;
             }
-            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), targetLaneId, vehicleLaneChange.getDuration());
+            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), Math.max(0, targetLaneId), vehicleLaneChange.getDuration());
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());

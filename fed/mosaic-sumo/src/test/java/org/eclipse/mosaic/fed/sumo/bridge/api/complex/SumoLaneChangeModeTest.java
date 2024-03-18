@@ -90,12 +90,13 @@ public class SumoLaneChangeModeTest {
 
     @Test
     public void testTranslateFromEnum() {
-        assertEquals(1622, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.DEFAULT).getAsInteger());
-        assertEquals(514, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.OFF).getAsInteger());
-        assertEquals(1042, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.AGGRESSIVE).getAsInteger());
-        assertEquals(1622, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.COOPERATIVE).getAsInteger());
-        assertEquals(1942, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.CAUTIOUS).getAsInteger());
-        assertEquals(1686, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.PASSIVE).getAsInteger());
+        assertEquals(1621, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.DEFAULT).getAsInteger());
+        assertEquals(512, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.OFF).getAsInteger());
+        assertEquals(513, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.FOLLOW_ROUTE).getAsInteger());
+        assertEquals(1041, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.AGGRESSIVE).getAsInteger());
+        assertEquals(1621, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.COOPERATIVE).getAsInteger());
+        assertEquals(1877, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.CAUTIOUS).getAsInteger());
+        assertEquals(1621, SumoLaneChangeMode.translateFromEnum(LaneChangeMode.PASSIVE).getAsInteger());
     }
 
 }
