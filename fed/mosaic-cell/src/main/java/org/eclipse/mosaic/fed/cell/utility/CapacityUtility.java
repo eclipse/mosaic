@@ -15,8 +15,13 @@
 
 package org.eclipse.mosaic.fed.cell.utility;
 
+import static org.eclipse.mosaic.lib.objects.UnitNameGenerator.isServer;
+import static org.eclipse.mosaic.lib.objects.UnitNameGenerator.isTmc;
+
+import org.eclipse.mosaic.fed.cell.config.CCell;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.TransmissionMode;
+import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.v2x.MessageStreamRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
@@ -128,13 +133,35 @@ public final class CapacityUtility {
     }
 
     /**
-     * Helper-function to get the effective message length in bits.
+     * Helper-function to get the effective message length in bits. For each message, a header is assumed
+     * to be present according to the protocol type (UDP or TCP) and the link layer (ethernet for servers, or cellular for mobile devices).
+     * According to our definition, we measure / simulate the message data size on the Link Layer (MAC Layer).
      *
      * @param msg V2X message.
      * @return The length of the V2X message.
      */
-    public static long getMessageLength(V2xMessage msg) {
-        return msg.getPayload().getEffectiveLength() * DATA.BYTE;
+    public static long getMessageLengthWithHeaders(V2xMessage msg, String senderOrReceiver) {
+        final CCell.CHeaderLengths headerLengths = ConfigurationData.INSTANCE.getCellConfig().headerLengths;
+        final long linkLayerHeader;
+        if (senderOrReceiver != null && (isServer(senderOrReceiver) || isTmc(senderOrReceiver))) {
+            // let's assume everything is connected via cellular link, except servers and tmcs which are connected with the backbone
+            linkLayerHeader = headerLengths.ethernetHeader;
+        } else {
+            linkLayerHeader = headerLengths.cellularHeader;
+        }
+        switch (msg.getRouting().getDestination().getProtocolType()) {
+            case UDP:
+                return linkLayerHeader
+                        + headerLengths.ipHeader
+                        + headerLengths.udpHeader
+                        + msg.getPayload().getEffectiveLength() * DATA.BYTE;
+            case TCP:
+            default:
+                return linkLayerHeader
+                        + headerLengths.ipHeader
+                        + headerLengths.tcpHeader
+                        + msg.getPayload().getEffectiveLength() * DATA.BYTE;
+        }
     }
 
     /**
