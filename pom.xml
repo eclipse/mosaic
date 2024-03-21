@@ -286,6 +286,11 @@
             <!-- PURPOSE: Required by JSON Schema Validation -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${version.jackson}</version>
             </dependency>
@@ -335,6 +340,14 @@
                     <exclusion>
                         <groupId>org.apache.xmlgraphics</groupId>
                         <artifactId>xmlgraphics-commons</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.dataformat</groupId>
+                        <artifactId>jackson-dataformat-xml</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

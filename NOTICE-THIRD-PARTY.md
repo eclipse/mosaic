@@ -93,20 +93,20 @@ FindBugs-jsr305 (3.0.2)
  * Source: https://code.google.com/p/jsr-305/
 
 
-GraphHopper API (0.13.0)
+GraphHopper Core (8.0)
 
  * License: Apache-2.0
- * Maven artifact: `com.graphhopper:graphhopper-api:0.13.0`
- * Project: https://www.graphhopper.com/graphhopper-api
- * Source: https://github.com/graphhopper/graphhopper/graphhopper-api
-
-
-GraphHopper Core (0.13.0)
-
- * License: Apache-2.0
- * Maven artifact: `com.graphhopper:graphhopper-core:0.13.0`
+ * Maven artifact: `com.graphhopper:graphhopper-core:8.0`
  * Project: https://www.graphhopper.com/graphhopper-core
  * Source: https://github.com/graphhopper/graphhopper/graphhopper-core
+
+
+GraphHopper Web API (8.0)
+
+ * License: Apache-2.0
+ * Maven artifact: `com.graphhopper:graphhopper-web-api:8.0`
+ * Project: https://www.graphhopper.com/graphhopper-web-api
+ * Source: https://github.com/graphhopper/graphhopper/graphhopper-web-api
 
 
 Gson (2.10.1)
@@ -165,6 +165,14 @@ jackson-databind (2.16.1)
  * Source: https://github.com/FasterXML/jackson-databind
 
 
+Jackson-datatype-jts (2.14)
+
+ * License: Apache-2.0
+ * Maven artifact: `com.graphhopper.external:jackson-datatype-jts:2.14`
+ * Project: https://github.com/bedatadriven/jackson-datatype-jts/
+ * Source: scm:git:https://github.com/bedatadriven/jackson-datatype-jts
+
+
 janino (3.1.11)
 
  * License: BSD-3-Clause
@@ -211,6 +219,14 @@ Logback Core Module (1.5.0)
  * Maven artifact: `ch.qos.logback:logback-core:1.5.0`
  * Project: http://logback.qos.ch/logback-core
  * Source: https://github.com/qos-ch/logback/logback-core
+
+
+org.locationtech.jts:jts-core (1.19.0)
+
+ * License: BSD-3-Clause (Eclipse Distribution License), Eclipse Public License, Version 2.0
+ * Maven artifact: `org.locationtech.jts:jts-core:1.19.0`
+ * Project: https://www.locationtech.org/projects/technology.jts/jts-modules/jts-core
+ * Source: https://github.com/locationtech/jts/jts-modules/jts-core
 
 
 Protocol Buffers [Core] (3.23.2)
