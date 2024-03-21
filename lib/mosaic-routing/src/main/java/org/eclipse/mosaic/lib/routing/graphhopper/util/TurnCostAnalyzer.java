@@ -18,13 +18,13 @@ package org.eclipse.mosaic.lib.routing.graphhopper.util;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoUtils;
 
-import com.graphhopper.routing.util.DefaultEdgeFilter;
-import com.graphhopper.routing.util.FlagEncoder;
+import com.graphhopper.routing.util.AccessFilter;
+import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.Graph;
-import com.graphhopper.storage.GraphHopperStorage;
-import com.graphhopper.storage.TurnCostExtension;
+import com.graphhopper.storage.TurnCostStorage;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
+import com.graphhopper.util.FetchMode;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 
@@ -55,11 +55,15 @@ public class TurnCostAnalyzer {
      * TODO make depend on road type
      */
     private double minCurveRadius;
+    private final WayTypeEncoder waytypeEncoder;
+    private final BaseGraph graph;
 
     /**
      * Crates a new {@link TurnCostAnalyzer} with default calculation properties.
      */
-    public TurnCostAnalyzer() {
+    public TurnCostAnalyzer(BaseGraph graph, WayTypeEncoder waytypeEncoder) {
+        this.graph = graph;
+        this.waytypeEncoder = waytypeEncoder;
         /*
          * Mean acceleration and deceleration for cars
          * (according to [Maurya et al: "Acceleration-Deceleration Behaviour of Various Vehicle Types", 2016]).
@@ -69,21 +73,14 @@ public class TurnCostAnalyzer {
         minCurveRadius = 20;
     }
 
-    public void createTurnCostsForCars(GraphHopperStorage graph, FlagEncoder flagEncoder) {
-        EdgeExplorer outEdgeExplorer = graph.createEdgeExplorer(DefaultEdgeFilter.outEdges(flagEncoder));
-        EdgeExplorer inEdgeExplorer = graph.createEdgeExplorer(DefaultEdgeFilter.inEdges(flagEncoder));
 
-        final TurnCostExtension tcStorage;
-        if (graph.getExtension() instanceof TurnCostExtension) {
-            tcStorage = (TurnCostExtension) graph.getExtension();
 
-            if (!tcStorage.isRequireEdgeField()) {
-                throw new IllegalStateException(
-                        "Graph does not support storing additional edge fields");
-            }
-        } else {
-            throw new IllegalStateException("Graph does not support storing of turn costs");
-        }
+    public void createTurnCostsForVehicle(VehicleEncoding encoding) {
+
+        EdgeExplorer outEdgeExplorer = graph.createEdgeExplorer(AccessFilter.allEdges(encoding.access()));
+        EdgeExplorer inEdgeExplorer = graph.createEdgeExplorer(AccessFilter.allEdges(encoding.access()));
+
+        TurnCostStorage tcStorage = graph.getTurnCostStorage();
 
         for (int n = 0; n < graph.getNodes(); n++) {
             EdgeIterator inEdgeIt = inEdgeExplorer.setBaseNode(n);
@@ -91,14 +88,13 @@ public class TurnCostAnalyzer {
                 EdgeIterator outEdgeIt = outEdgeExplorer.setBaseNode(n);
                 while (outEdgeIt.next()) {
                     if (inEdgeIt.getEdge() != outEdgeIt.getEdge()) {
-                        long existingTurnCosts = tcStorage.getTurnCostFlags(inEdgeIt.getEdge(), n,
-                                outEdgeIt.getEdge());
+                        boolean alreadyRestricted = tcStorage.get(encoding.turnRestriction(), inEdgeIt.getEdge(), n, outEdgeIt.getEdge());
+                        double existingCosts = tcStorage.get(encoding.turnCost(), inEdgeIt.getEdge(), n, outEdgeIt.getEdge());
                         //if turn is already restricted, than we do not need to consider turn costs
-                        if (!flagEncoder.isTurnRestricted(existingTurnCosts)) {
-                            double c = calculateTurnCosts(graph, flagEncoder, inEdgeIt, n, outEdgeIt);
+                        if (!alreadyRestricted) {
+                            double c = calculateTurnCosts(encoding, inEdgeIt, n, outEdgeIt) + existingCosts;
                             if (c > 0.00001) {
-                                long turnFlags = flagEncoder.getTurnFlags(false, Math.ceil(c));
-                                tcStorage.addTurnInfo(inEdgeIt.getEdge(), n, outEdgeIt.getEdge(), turnFlags);
+                                tcStorage.set(encoding.turnCost(), inEdgeIt.getEdge(), n, outEdgeIt.getEdge(), Math.ceil(c));
                             }
                         }
                     }
@@ -114,29 +110,25 @@ public class TurnCostAnalyzer {
      * into geometric points. Further parameter for the calculating are the angle between incoming and outgoing edge,
      * the length and the maximum speed of the edge.
      *
-     * @param graph        Graph fot which to calculate the turn costs
-     * @param flagEncoder  Encoding the flag
      * @param incomingEdge Incoming edge
      * @param node         ID of the node
      * @param outgoingEdge Outgoing edge
      * @return Calculated turn cost
      */
-    private double calculateTurnCosts(GraphHopperStorage graph, FlagEncoder flagEncoder, EdgeIterator incomingEdge, int node,
-                                      EdgeIterator outgoingEdge) {
+    private double calculateTurnCosts(VehicleEncoding encoding, EdgeIterator incomingEdge, int node, EdgeIterator outgoingEdge) {
         //determining way types
 
-        int incomingWayType = incomingEdge.getAdditionalField();
-        int outgoingWayType = outgoingEdge.getAdditionalField();
+        int incomingWayType = incomingEdge.get(waytypeEncoder);
+        int outgoingWayType = outgoingEdge.get(waytypeEncoder);
 
         //we ignore turn costs, as soon as we are on highways
         if (WayTypeEncoder.isHighway(incomingWayType) && WayTypeEncoder.isHighway(outgoingWayType)) {
             return 0;
         }
 
-        //use way geometry to calculate 
+        //use way geometry to calculate
         final GHPoint pointFrom = getSecondLastPointOfEdge(graph, incomingEdge);
-        final GHPoint pointVia = new GHPoint(graph.getNodeAccess().getLatitude(node),
-                graph.getNodeAccess().getLongitude(node));
+        final GHPoint pointVia = new GHPoint(graph.getNodeAccess().getLat(node), graph.getNodeAccess().getLon(node));
         final GHPoint pointTo = getSecondPointOfEdge(graph, outgoingEdge);
 
         //calculate angle between incoming/outgoing edge using bearing of from-via and via-to
@@ -148,8 +140,8 @@ public class TurnCostAnalyzer {
         double alpha = (bearingViaTo - (bearingFromVia) + 360) % 360;
 
         //get length and max speed of edges
-        double v1 = incomingEdge.get(flagEncoder.getAverageSpeedEnc()) / 3.6;
-        double v2 = outgoingEdge.get(flagEncoder.getAverageSpeedEnc()) / 3.6;
+        double v1 = incomingEdge.get(encoding.speed()) / 3.6;
+        double v2 = outgoingEdge.get(encoding.speed()) / 3.6;
         double l1 = incomingEdge.getDistance();
         double l2 = outgoingEdge.getDistance();
 
@@ -166,12 +158,12 @@ public class TurnCostAnalyzer {
             //else, the maximum turn speed depends on the angle between incoming and outgoing edge
         } else {
             if (isLeftTurn || isRightTurn) {
-                //when turning, the max speed on the outgoing edge also depends on its length (i.e., if the 
+                //when turning, the max speed on the outgoing edge also depends on its length (i.e., if the
                 //outgoing edge is very short, we don't need to accelerate till max speed)
                 v2 = Math.min(v2, MAX_A * Math.sqrt((2 * l2) / MAX_A));
             }
 
-            //adjusting angle: tangens only gives positive values in [0,180] 
+            //adjusting angle: tangens only gives positive values in [0,180]
             if (alpha > 180) {
                 alpha = 360 - alpha;
             }
@@ -209,13 +201,13 @@ public class TurnCostAnalyzer {
      * @return the second last coordinate of an edge.
      */
     private GHPoint getSecondLastPointOfEdge(Graph graph, EdgeIterator edge) {
-        PointList geom = edge.fetchWayGeometry(GEOMETRY_FETCH_MODE_PILLAR_NODES_ONLY);
-        if (geom.getSize() == 0) {
-            return new GHPoint(graph.getNodeAccess().getLatitude(edge.getAdjNode()),
-                    graph.getNodeAccess().getLongitude(edge.getAdjNode()));
+        PointList geom = edge.fetchWayGeometry(FetchMode.PILLAR_ONLY);
+        if (geom.isEmpty()) {
+            return new GHPoint(graph.getNodeAccess().getLat(edge.getAdjNode()),
+                    graph.getNodeAccess().getLon(edge.getAdjNode()));
         }
-        int index = geom.getSize() - 1;
-        return new GHPoint(geom.getLatitude(index), geom.getLongitude(index));
+        int index = geom.size() - 1;
+        return new GHPoint(geom.getLat(index), geom.getLon(index));
     }
 
     /**
@@ -225,12 +217,12 @@ public class TurnCostAnalyzer {
      * @return the second coordinate of an edge.
      */
     private GHPoint getSecondPointOfEdge(Graph graph, EdgeIterator edge) {
-        PointList geom = edge.fetchWayGeometry(GEOMETRY_FETCH_MODE_PILLAR_NODES_ONLY);
-        if (geom.getSize() == 0) {
-            return new GHPoint(graph.getNodeAccess().getLatitude(edge.getAdjNode()),
-                    graph.getNodeAccess().getLongitude(edge.getAdjNode()));
+        PointList geom = edge.fetchWayGeometry(FetchMode.PILLAR_ONLY);
+        if (geom.isEmpty()) {
+            return new GHPoint(graph.getNodeAccess().getLat(edge.getAdjNode()),
+                    graph.getNodeAccess().getLon(edge.getAdjNode()));
         }
-        return new GHPoint(geom.getLatitude(0), geom.getLongitude(0));
+        return new GHPoint(geom.getLat(0), geom.getLon(0));
     }
 
 }
