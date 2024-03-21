@@ -15,48 +15,40 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper.junit;
 
-import org.eclipse.mosaic.lib.routing.graphhopper.GraphLoader;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncodingManager;
 
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.storage.GraphHopperStorage;
-import com.graphhopper.storage.RAMDirectory;
-import com.graphhopper.storage.TurnCostExtension;
+import com.graphhopper.routing.util.AllEdgesIterator;
+import com.graphhopper.storage.BaseGraph;
 import org.junit.rules.ExternalResource;
 
-public class TestGraphRule extends ExternalResource implements GraphLoader {
+public class TestGraphRule extends ExternalResource {
 
-    private GraphHopperStorage graph;
-    private EncodingManager encodingManager;
+    private BaseGraph graph;
+    private final VehicleEncodingManager encodingManager;
 
-    private TurnCostExtension turnCostStorage;
-    private boolean emptyGraph;
+    private final boolean emptyGraph;
 
-    public TestGraphRule(EncodingManager encodingManager) {
-        this(encodingManager, false);
+    public TestGraphRule() {
+        this(false);
     }
 
-    public TestGraphRule(EncodingManager encodingManager, boolean emptyGraph) {
-        this.encodingManager = encodingManager;
+    public TestGraphRule(boolean emptyGraph) {
+        this.encodingManager = new VehicleEncodingManager(GraphHopperRouting.PROFILES);
         this.emptyGraph = emptyGraph;
+    }
+
+    public VehicleEncodingManager getEncodingManager() {
+        return encodingManager;
     }
 
     @Override
     protected void before() throws Throwable {
-        turnCostStorage = new TurnCostExtension() {
-            @Override
-            public boolean isRequireEdgeField() {
-                return true;
-            }
 
-            @Override
-            public int getDefaultEdgeFieldValue() {
-                return 0;
-            }
-        };
-
-        final RAMDirectory dir = new RAMDirectory();
-        graph = new GraphHopperStorage(dir, encodingManager, true, turnCostStorage);
+        graph = new BaseGraph.Builder(encodingManager.getEncodingManager())
+                .withTurnCosts(true)
+                .build();
 
         if (!emptyGraph) {
             graph = graph.create(100);
@@ -69,28 +61,10 @@ public class TestGraphRule extends ExternalResource implements GraphLoader {
     protected void after() {
         graph.close();
         graph = null;
-        turnCostStorage = null;
     }
 
-    public GraphHopperStorage getGraph() {
+    public BaseGraph getGraph() {
         return graph;
-    }
-
-    public TurnCostExtension getTurnCostStorage() {
-        return turnCostStorage;
-    }
-
-    @Override
-    public void initialize(GraphHopperStorage graph, EncodingManager encodingManager, GraphhopperToDatabaseMapper mapper) {
-        this.graph = graph;
-        this.turnCostStorage = (TurnCostExtension) graph.getExtension();
-        this.encodingManager = encodingManager;
-    }
-
-    @Override
-    public void loadGraph() {
-        graph.create(25);
-        createTestGraph();
     }
 
     private void createTestGraph() {
@@ -109,28 +83,39 @@ public class TestGraphRule extends ExternalResource implements GraphLoader {
         graph.getNodeAccess().setNode(12, 0.01, 0.04, 0); //M
         graph.getNodeAccess().setNode(13, 0.02, 0.04, 0); //N
 
-        graph.edge(0, 1, 1000, true); //0
-        graph.edge(0, 4, 1000, true); //1
-        graph.edge(1, 2, 1000, true); //2
-        graph.edge(1, 5, 1000, true); //3
-        graph.edge(1, 7, 2500, true); //4
-        graph.edge(2, 3, 1000, true); //5
-        graph.edge(2, 6, 1600, true); //6
-        graph.edge(3, 6, 1000, true); //7
-        graph.edge(4, 7, 1000, true); //8
-        graph.edge(5, 6, 2000, true); //9
-        graph.edge(5, 7, 1600, true); //10
-        graph.edge(5, 10, 3000, true); //11
-        graph.edge(6, 10, 2000, true); //12
-        graph.edge(7, 8, 1000, true); //13
-        graph.edge(7, 9, 1500, true); //14
-        graph.edge(8, 11, 1000, true); //15
-        graph.edge(9, 10, 2000, true); //16
-        graph.edge(9, 11, 1500, true); //17
-        graph.edge(9, 13, 1500, true); //18
-        graph.edge(10, 13, 1500, true); //19
-        graph.edge(11, 12, 1000, true); //20
-        graph.edge(12, 13, 1000, true); //21
+
+        graph.edge(0, 1).setDistance(1000); //0
+        graph.edge(0, 4).setDistance(1000); //1
+        graph.edge(1, 2).setDistance(1000); //2
+        graph.edge(1, 5).setDistance(1000); //3
+        graph.edge(1, 7).setDistance(2500); //4
+        graph.edge(2, 3).setDistance(1000); //5
+        graph.edge(2, 6).setDistance(1600); //6
+        graph.edge(3, 6).setDistance(1000); //7
+        graph.edge(4, 7).setDistance(1000); //8
+        graph.edge(5, 6).setDistance(2000); //9
+        graph.edge(5, 7).setDistance(1600); //10
+        graph.edge(5, 10).setDistance(3000); //11
+        graph.edge(6, 10).setDistance(2000); //12
+        graph.edge(7, 8).setDistance(1000); //13
+        graph.edge(7, 9).setDistance(1500); //14
+        graph.edge(8, 11).setDistance(1000); //15
+        graph.edge(9, 10).setDistance(2000); //16
+        graph.edge(9, 11).setDistance(1500); //17
+        graph.edge(9, 13).setDistance(1500); //18
+        graph.edge(10, 13).setDistance(1500); //19
+        graph.edge(11, 12).setDistance(1000); //20
+        graph.edge(12, 13).setDistance(1000); //21
+
+
+        VehicleEncoding enc = encodingManager.getVehicleEncoding("car");
+        AllEdgesIterator it = graph.getAllEdges();
+        while (it.next()) {
+            it.set(enc.access(), true);
+            it.set(enc.speed(), 60);
+            it.setReverse(enc.access(), true);
+            it.setReverse(enc.speed(), 60);
+        }
     }
 
 }

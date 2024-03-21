@@ -20,14 +20,16 @@ import com.carrotsearch.hppc.IntObjectMap;
 import com.carrotsearch.hppc.cursors.IntObjectCursor;
 import com.graphhopper.routing.AbstractRoutingAlgorithm;
 import com.graphhopper.routing.Path;
-import com.graphhopper.routing.util.DefaultEdgeFilter;
+import com.graphhopper.routing.PathExtractor;
+import com.graphhopper.routing.SPTEntry;
 import com.graphhopper.routing.util.TraversalMode;
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.storage.Graph;
-import com.graphhopper.storage.SPTEntry;
 import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.GHUtility;
+import com.graphhopper.util.PMap;
 
 /**
  * Implementation of the Bellman-Ford algorithm which supports negative edge costs.
@@ -39,16 +41,13 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
     private final IntObjectMap<SPTEntry> edgeEntries = new IntObjectHashMap<>();
     private final IntObjectMap<SPTEntry> nodeEntries = new IntObjectHashMap<>();
 
-    private SPTEntry toNode = null;
-    private boolean finished = false;
-
     /**
      * Creates a new {@link BellmanFordRouting} object based on the {@link AbstractRoutingAlgorithm}.
      *
      * @param graph     specifies the graph where this algorithm will run on.
      * @param weighting set the used weight calculation (e.g. fastest, shortest).
      */
-    public BellmanFordRouting(Graph graph, Weighting weighting) {
+    public BellmanFordRouting(Graph graph, Weighting weighting, PMap hints) {
         super(graph, weighting, TraversalMode.EDGE_BASED);
     }
 
@@ -61,12 +60,9 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
      */
     @Override
     public Path calcPath(int from, int to) {
-        finished = false;
-
         edgeEntries.clear();
         nodeEntries.clear();
-        toNode = null;
-
+    
         determineAllEdges();
         createStartCondition(from);
 
@@ -83,9 +79,11 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
             throw new IllegalStateException("There's a cycle with negative weights.");
         }
 
-        toNode = nodeEntries.get(to);
-        finished = true;
-        return extractPath();
+        SPTEntry toNode = nodeEntries.get(to);
+        if (toNode != null) {
+            return PathExtractor.extractPath(graph, weighting, toNode);
+        }
+        return null;
     }
 
     /**
@@ -110,7 +108,7 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
                 continue;
             }
 
-            tmpWeight = this.weighting.calcWeight(edgeIt, false, u.edge) + u.weight;
+            tmpWeight = GHUtility.calcWeightWithTurnWeight(weighting, edgeIt, false, u.edge) + u.weight;
 
             if (tmpWeight < edge.weight) {
                 edge.weight = tmpWeight;
@@ -127,12 +125,12 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
     }
 
     private void determineAllEdges() {
-        final EdgeExplorer edgeExplorer = graph.createEdgeExplorer(DefaultEdgeFilter.outEdges(flagEncoder));
+        final EdgeExplorer edgeExplorer = graph.createEdgeExplorer();
 
         for (int node = 0; node < graph.getNodes(); node++) {
             EdgeIterator edgeIt = edgeExplorer.setBaseNode(node);
             while (edgeIt.next()) {
-                SPTEntry entry = new SPTEntry(edgeIt.getEdge(), edgeIt.getAdjNode(), Double.POSITIVE_INFINITY);
+                SPTEntry entry = new SPTEntry(edgeIt.getEdge(), edgeIt.getAdjNode(), Double.POSITIVE_INFINITY, null);
                 int id = traversalMode.createTraversalId(edgeIt, false);
                 edgeEntries.put(id, entry);
                 nodeEntries.put(edgeIt.getAdjNode(), entry);
@@ -141,24 +139,11 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
     }
 
     private void createStartCondition(int from) {
-        nodeEntries.put(from, new SPTEntry(EdgeIterator.NO_EDGE, from, 0));
+        nodeEntries.put(from, new SPTEntry(from, 0));
     }
 
     @Override
     public int getVisitedNodes() {
         return this.graph.getNodes();
-    }
-
-    @Override
-    protected boolean finished() {
-        return finished;
-    }
-
-    @Override
-    protected Path extractPath() {
-        if (toNode != null) {
-            return new Path(this.graph, this.weighting).setWeight(toNode.weight).setSPTEntry(toNode).extract();
-        }
-        return null;
     }
 }

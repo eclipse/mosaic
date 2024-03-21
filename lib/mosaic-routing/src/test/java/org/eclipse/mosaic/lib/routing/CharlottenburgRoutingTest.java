@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2024 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,21 +13,19 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.lib.routing.graphhopper;
+package org.eclipse.mosaic.lib.routing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
-import org.eclipse.mosaic.lib.database.road.Node;
+import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
-import org.eclipse.mosaic.lib.routing.CandidateRoute;
-import org.eclipse.mosaic.lib.routing.RoutingParameters;
-import org.eclipse.mosaic.lib.routing.RoutingPosition;
-import org.eclipse.mosaic.lib.routing.RoutingRequest;
+import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,15 +34,17 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-public class GraphHopperRoutingTest {
+/**
+ * Test routing with a real world map (Charlottenburg extract from BeST scenario).
+ */
+public class CharlottenburgRoutingTest {
 
     @Rule
     public GeoProjectionRule transformationRule = new GeoProjectionRule(GeoPoint.latLon(52, 13));
 
-    private final static String dbFile = "/tiergarten.db";
+    private final static String dbFile = "/charlottenburg.db";
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -54,7 +54,7 @@ public class GraphHopperRoutingTest {
 
     @Before
     public void setUp() throws IOException {
-        final File dbFileCopy = folder.newFile("tiergarten.db");
+        final File dbFileCopy = folder.newFile("charlottenburg.db");
 
         FileUtils.copyInputStreamToFile(getClass().getResourceAsStream(dbFile), dbFileCopy);
 
@@ -65,31 +65,23 @@ public class GraphHopperRoutingTest {
 
     @Test
     public void findPaths_27537749_to_252864802() {
-        Node startNode = database.getNode("27537749");
-        Node endNode = database.getNode("252864802");
         List<CandidateRoute> result = routing
-                .findRoutes(new RoutingRequest(new RoutingPosition(startNode.getPosition()), new RoutingPosition(endNode.getPosition()), new RoutingParameters()));
+                .findRoutes(new RoutingRequest(
+                        new RoutingPosition(GeoPoint.latLon(52.504185, 13.323964), null, "-440300111"),
+                        new RoutingPosition(database.getNode("26761203").getPosition()),
+                        new RoutingParameters()
+                                .vehicleClass(VehicleClass.Car)
+                                .alternativeRoutes(1)
+                                .costFunction(RoutingCostFunction.Fastest)
+                ));
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(Arrays.asList("4609243_27537749_252864801", "4609243_252864801_252864802"), result.get(0).getConnectionIds());
+        assertEquals(2, result.size());
         assertValidRoute(result.get(0));
-    }
-
-    @Test
-    public void generatePaths_twoConnectionsWithSameStartEndNode() {
-        Node startNode = database.getNode("21487169");
-        Node endNode = database.getNode("415838100");
-
-        List<CandidateRoute> result = routing.findRoutes(
-                new RoutingRequest(new RoutingPosition(startNode.getPosition())
-                        , new RoutingPosition(endNode.getPosition())
-                        , new RoutingParameters().alternativeRoutes(0))
-
-        );
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(Arrays.asList("4400154_21487169_21677261", "32935480_21677261_21668930", "32935480_21668930_27537748", "4609242_27537748_27537747", "4609241_27537747_26704447", "4609241_26704447_423839225", "4609241_423839225_408194196", "36337926_408194196_408194192", "36337926_408194192_428788320", "36337926_428788320_415838100"), result.get(0).getConnectionIds());
-        assertValidRoute(result.get(0));
+        assertValidRoute(result.get(1));
+        assertEquals(Lists.newArrayList("-440300111", "4381160#2", "832017303", "823947542#0", "110008909#2", "547450789#0", "4402682#8", "4490390#2", "-25418285#1", "4500153"),
+                result.get(0).getConnectionIds());
+        assertEquals(Lists.newArrayList("-440300111", "4381160#2", "832017303", "823947542#0", "110008909#2", "547450789#0", "490351849#0", "490351848#0", "4492013#2", "25418287#6", "318889281#0", "4371002#2", "-4437136#0"),
+                result.get(1).getConnectionIds());
     }
 
     private void assertValidRoute(CandidateRoute candidateRoute) {

@@ -15,16 +15,33 @@
 
 package org.eclipse.mosaic.lib.routing.graphhopper.algorithm;
 
+import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
+
+import com.graphhopper.routing.AStarBidirection;
+import com.graphhopper.routing.AlternativeRoute;
 import com.graphhopper.routing.RoutingAlgorithm;
+import com.graphhopper.routing.util.TraversalMode;
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.storage.Graph;
+import com.graphhopper.util.PMap;
+import com.graphhopper.util.Parameters;
 
 /**
  * Factory to instantiate the routing algorithm to be used.
  */
 public interface RoutingAlgorithmFactory {
 
-    RoutingAlgorithmFactory CHOICE_ROUTING_DIJKSTRA = DijkstraCamvitChoiceRouting::new;
+    RoutingAlgorithmFactory DEFAULT = (graph, weighting, hints) -> {
+        if (hints.getInt(Parameters.Algorithms.AltRoute.MAX_PATHS, 1) > 1) {
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_SHARE, GraphHopperRouting.ALTERNATIVE_ROUTES_MAX_SHARE);
+            hints.putObject(Parameters.Algorithms.AltRoute.MAX_WEIGHT, GraphHopperRouting.ALTERNATIVE_ROUTES_MAX_WEIGHT);
+            hints.putObject("alternative_route.max_exploration_factor", GraphHopperRouting.ALTERNATIVE_ROUTES_EXPLORATION_FACTOR);
+            hints.putObject("alternative_route.min_plateau_factor", GraphHopperRouting.ALTERNATIVE_ROUTES_PLATEAU_FACTOR);
+            return new AlternativeRoute(graph, weighting, TraversalMode.EDGE_BASED, hints);
+        } else {
+            return new AStarBidirection(graph, weighting, TraversalMode.EDGE_BASED);
+        }
+    };
 
     RoutingAlgorithmFactory BELLMAN_FORD = BellmanFordRouting::new;
 
@@ -32,10 +49,10 @@ public interface RoutingAlgorithmFactory {
      * Creates a {@link RoutingAlgorithm} instance for calculating routes based
      * on the given {@link Graph} and {@link Weighting} function.
      *
-     * @param graph the {@link Graph} containing the network to find routes in
+     * @param graph     the {@link Graph} containing the network to find routes in
      * @param weighting the cost function
      * @return the {@link RoutingAlgorithm}
      */
-    RoutingAlgorithm createAlgorithm(Graph graph, Weighting weighting);
+    RoutingAlgorithm createAlgorithm(Graph graph, Weighting weighting, PMap hints);
 
 }
