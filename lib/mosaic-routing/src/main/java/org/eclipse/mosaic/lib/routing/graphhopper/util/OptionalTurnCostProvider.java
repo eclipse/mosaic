@@ -21,7 +21,7 @@ import com.graphhopper.routing.weighting.TurnCostProvider;
 import com.graphhopper.storage.TurnCostStorage;
 import com.graphhopper.util.EdgeIterator;
 
-public class TurnCostsProvider implements TurnCostProvider {
+public class OptionalTurnCostProvider implements TurnCostProvider {
 
     private final BooleanEncodedValue turnRestrictionsEnc;
     private final DecimalEncodedValue turnCostsEnc;
@@ -29,7 +29,7 @@ public class TurnCostsProvider implements TurnCostProvider {
 
     private boolean turnCostsEnabled = true;
 
-    public TurnCostsProvider(VehicleEncoding encoding, TurnCostStorage turnCostStorage) {
+    public OptionalTurnCostProvider(VehicleEncoding encoding, TurnCostStorage turnCostStorage) {
         if (turnCostStorage == null) {
             throw new IllegalArgumentException("No storage set to calculate turn weight");
         }
@@ -38,6 +38,9 @@ public class TurnCostsProvider implements TurnCostProvider {
         this.turnCostStorage = turnCostStorage;
     }
 
+    /**
+     * Disables consideration of turn costs. Only turn restrictions are checked.
+     */
     public TurnCostProvider disableTurnCosts() {
         this.turnCostsEnabled = false;
         return this;

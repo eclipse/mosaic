@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.OptionalTurnCostProvider;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 
 import com.graphhopper.routing.weighting.Weighting;
@@ -37,7 +37,7 @@ public class GraphHopperWeightingTest {
     public void fastest_noTurnCosts() {
         VehicleEncoding enc = testGraph.getEncodingManager().getVehicleEncoding("car");
 
-        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new TurnCostsProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
+        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new OptionalTurnCostProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
                 .setRoutingCostFunction(RoutingCostFunction.Fastest);
 
         EdgeExplorer expl = testGraph.getGraph().createEdgeExplorer();
@@ -56,7 +56,7 @@ public class GraphHopperWeightingTest {
     public void shortest_noTurnCosts() {
         VehicleEncoding enc = testGraph.getEncodingManager().getVehicleEncoding("car");
 
-        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new TurnCostsProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
+        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new OptionalTurnCostProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
                 .setRoutingCostFunction(RoutingCostFunction.Shortest);
 
         EdgeExplorer expl = testGraph.getGraph().createEdgeExplorer();
@@ -78,7 +78,7 @@ public class GraphHopperWeightingTest {
 
         testGraph.getGraph().getTurnCostStorage().set(enc.turnCost(), 1, 0, 0, 10.0);
 
-        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new TurnCostsProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
+        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new OptionalTurnCostProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
                 .setRoutingCostFunction(RoutingCostFunction.Shortest);
 
         EdgeExplorer expl = testGraph.getGraph().createEdgeExplorer();
@@ -99,7 +99,7 @@ public class GraphHopperWeightingTest {
 
         testGraph.getGraph().getTurnCostStorage().set(enc.turnCost(), 1, 0, 0, 10.0);
 
-        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new TurnCostsProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
+        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new OptionalTurnCostProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
                 .setRoutingCostFunction(RoutingCostFunction.Fastest);
 
         EdgeExplorer expl = testGraph.getGraph().createEdgeExplorer();
@@ -120,7 +120,7 @@ public class GraphHopperWeightingTest {
 
         testGraph.getGraph().getTurnCostStorage().set(enc.turnRestriction(), 1, 0, 0, true);
 
-        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new TurnCostsProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
+        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new OptionalTurnCostProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
                 .setRoutingCostFunction(RoutingCostFunction.Shortest);
 
         EdgeExplorer expl = testGraph.getGraph().createEdgeExplorer();
@@ -141,7 +141,7 @@ public class GraphHopperWeightingTest {
 
         testGraph.getGraph().getTurnCostStorage().set(enc.turnRestriction(), 1, 0, 0, true);
 
-        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new TurnCostsProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
+        Weighting w = new GraphHopperWeighting(enc, testGraph.getEncodingManager().wayType(), new OptionalTurnCostProvider(enc, testGraph.getGraph().getTurnCostStorage()), null)
                 .setRoutingCostFunction(RoutingCostFunction.Fastest);
 
         EdgeExplorer expl = testGraph.getGraph().createEdgeExplorer();

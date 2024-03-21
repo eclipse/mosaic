@@ -25,6 +25,16 @@ import com.graphhopper.routing.util.DefaultVehicleEncodedValuesFactory;
 import com.graphhopper.routing.util.VehicleEncodedValues;
 import com.graphhopper.util.PMap;
 
+/**
+ * Collection of all {@link com.graphhopper.routing.ev.EncodedValue} implementations
+ * required for a vehicle to function within the GraphHopper context. This includes:
+ * - "access" - If a vehicle can drive on an edge.<br>
+ * - "speed" - The speed limit for the vehicle on the edge.<br>
+ * - "priority" - Encode how to prioritize a road type to another.<br>
+ * - "subnetwork" - Encode if an edge belongs to a subnetwork<br>
+ * - "turnRestriction" / "turnCost" - encoding of costs for a turn from on edge to another.<br>
+ * These encoders take care of storing and reading properties on edges.
+ */
 public class VehicleEncoding {
 
     private final BooleanEncodedValue accessEnc;

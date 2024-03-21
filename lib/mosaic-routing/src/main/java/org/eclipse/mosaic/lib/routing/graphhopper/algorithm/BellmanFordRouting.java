@@ -62,8 +62,7 @@ public class BellmanFordRouting extends AbstractRoutingAlgorithm {
     public Path calcPath(int from, int to) {
         edgeEntries.clear();
         nodeEntries.clear();
-
-
+    
         determineAllEdges();
         createStartCondition(from);
 

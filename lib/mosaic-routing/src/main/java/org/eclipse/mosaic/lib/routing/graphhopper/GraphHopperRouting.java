@@ -31,7 +31,7 @@ import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.graphhopper.algorithm.RoutingAlgorithmFactory;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.DatabaseGraphLoader;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.OptionalTurnCostProvider;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncodingManager;
 
@@ -262,7 +262,7 @@ public class GraphHopperRouting {
 
     private Weighting createWeighting(Profile profile, RoutingCostFunction costFunction, boolean withTurnCosts) {
         final VehicleEncoding vehicleEncoding = encoding.getVehicleEncoding(profile.getVehicle());
-        final TurnCostsProvider turnCostProvider = new TurnCostsProvider(vehicleEncoding, graph.getTurnCostStorage());
+        final OptionalTurnCostProvider turnCostProvider = new OptionalTurnCostProvider(vehicleEncoding, graph.getTurnCostStorage());
         if (!withTurnCosts) {
             turnCostProvider.disableTurnCosts();
         }

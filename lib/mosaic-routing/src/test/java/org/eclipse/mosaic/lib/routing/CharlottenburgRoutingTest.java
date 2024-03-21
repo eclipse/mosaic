@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2024 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,6 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Test routing with a real world map (Charlottenburg extract from BeST scenario).
+ */
 public class CharlottenburgRoutingTest {
 
     @Rule

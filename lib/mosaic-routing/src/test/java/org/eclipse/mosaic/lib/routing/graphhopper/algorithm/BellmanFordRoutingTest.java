@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GHListHelper;
-import org.eclipse.mosaic.lib.routing.graphhopper.util.TurnCostsProvider;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.OptionalTurnCostProvider;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 
 import com.graphhopper.routing.Path;
@@ -55,7 +55,7 @@ public class BellmanFordRoutingTest {
     public void calculateFastestPath_turnCosts() {
         BaseGraph g = testGraph.getGraph();
         VehicleEncoding enc = testGraph.getEncodingManager().getVehicleEncoding("car");
-        Weighting w = new FastestWeighting(enc.access(), enc.speed(), new TurnCostsProvider(enc, g.getTurnCostStorage()));
+        Weighting w = new FastestWeighting(enc.access(), enc.speed(), new OptionalTurnCostProvider(enc, g.getTurnCostStorage()));
 
         //add expensive turn at (0-1)->(1,5)
         g.getTurnCostStorage().set(enc.turnCost(), 0, 1, 3, 124);

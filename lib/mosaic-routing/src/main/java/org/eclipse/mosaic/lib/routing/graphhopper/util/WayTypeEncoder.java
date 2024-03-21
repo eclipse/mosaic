@@ -25,6 +25,11 @@ import com.graphhopper.routing.ev.IntEncodedValueImpl;
 
 import java.util.Set;
 
+/**
+ * Stores additional properties on an edge to describe the way-type of an edge.
+ * It does so by encoding the way-type, and some boolean flags based on this
+ * way-type, within one integer field by using bit-masking.
+ */
 public class WayTypeEncoder extends IntEncodedValueImpl {
 
     public final static String KEY = "waytype";
@@ -54,7 +59,12 @@ public class WayTypeEncoder extends IntEncodedValueImpl {
     private static final int ONE_LANE = 1 << 10;
     private static final int MAIN_ROAD = 1 << 9;
     private static final int CYCLEWAY = 1 << 8;
-    private static final int TYPE_MASK = 0x03FFFFFF;
+
+    /*
+     * Store the type as integer in the first 1 byte (max value = 255)
+     * The rest of the integer bits is used to store the property flags, e.g. HIGHWAY, RESIDENTIAL.
+     */
+    private static final int TYPE_MASK = 0x00FF;
 
     static {
         // autobahn
@@ -79,6 +89,8 @@ public class WayTypeEncoder extends IntEncodedValueImpl {
         wayTypeIntMap.put("service", 27);
         wayTypeIntMap.put("road", 26);
         wayTypeIntMap.put("track", 25);
+        // any other roads
+        wayTypeIntMap.put("cycleway", 10);
     }
 
     private WayTypeEncoder() {
