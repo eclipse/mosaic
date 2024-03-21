@@ -61,6 +61,7 @@ import com.graphhopper.util.PMap;
 import com.graphhopper.util.Parameters;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -73,8 +74,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings(value = "MS_SHOULD_BE_FINAL", justification = "Static fields kept public and adjustable for user customization")
 public class GraphHopperRouting {
-
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphHopperRouting.class);
 
