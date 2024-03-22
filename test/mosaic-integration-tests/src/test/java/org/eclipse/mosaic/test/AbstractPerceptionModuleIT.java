@@ -55,4 +55,5 @@ public abstract class AbstractPerceptionModuleIT {
         // perceived vehicles repeat their route 10 times resulting in 11 perceptions
         LogAssert.contains(simulationRule, PERCEPTION_VEHICLE_LOG, ".*Traffic Light switched 11 times\\..*");
     }
+
 }

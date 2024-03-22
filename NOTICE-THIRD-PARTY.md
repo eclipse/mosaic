@@ -93,20 +93,20 @@ FindBugs-jsr305 (3.0.2)
  * Source: https://code.google.com/p/jsr-305/
 
 
-GraphHopper API (0.13.0)
-
- * License: Apache License, Version 2.0
- * Maven artifact: `com.graphhopper:graphhopper-api:0.13.0`
- * Project: https://www.graphhopper.com/graphhopper-api
- * Source: https://github.com/graphhopper/graphhopper/graphhopper-api
-
-
-GraphHopper Core (0.13.0)
+GraphHopper Core (8.0)
 
  * License: The Apache Software License, Version 2.0
- * Maven artifact: `com.graphhopper:graphhopper-core:0.13.0`
+ * Maven artifact: `com.graphhopper:graphhopper-core:8.0`
  * Project: https://www.graphhopper.com/graphhopper-core
  * Source: https://github.com/graphhopper/graphhopper/graphhopper-core
+
+
+GraphHopper Web API (8.0)
+
+ * License: Apache License, Version 2.0
+ * Maven artifact: `com.graphhopper:graphhopper-web-api:8.0`
+ * Project: https://www.graphhopper.com/graphhopper-web-api
+ * Source: https://github.com/graphhopper/graphhopper/graphhopper-web-api
 
 
 Gson (2.10.1)
@@ -133,44 +133,44 @@ HPPC Collections (0.8.1)
  * Source: https://github.com/carrotsearch/hppc/hppc
 
 
-Jackson module: JAXB Annotations (2.9.9)
+Jackson-annotations (2.15.0)
 
  * License: The Apache Software License, Version 2.0
- * Maven artifact: `com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.9.9`
- * Project: https://github.com/FasterXML/jackson-modules-base
- * Source: https://github.com/FasterXML/jackson-modules-base/jackson-module-jaxb-annotations
-
-
-Jackson-annotations (2.9.0)
-
- * License: The Apache Software License, Version 2.0
- * Maven artifact: `com.fasterxml.jackson.core:jackson-annotations:2.9.0`
- * Project: http://github.com/FasterXML/jackson
+ * Maven artifact: `com.fasterxml.jackson.core:jackson-annotations:2.15.0`
+ * Project: https://github.com/FasterXML/jackson
  * Source: https://github.com/FasterXML/jackson-annotations
 
 
-Jackson-core (2.9.9)
+Jackson-core (2.15.0)
 
  * License: The Apache Software License, Version 2.0
- * Maven artifact: `com.fasterxml.jackson.core:jackson-core:2.9.9`
+ * Maven artifact: `com.fasterxml.jackson.core:jackson-core:2.15.0`
  * Project: https://github.com/FasterXML/jackson-core
  * Source: https://github.com/FasterXML/jackson-core
 
 
-jackson-databind (2.9.9)
+jackson-databind (2.15.0)
 
  * License: The Apache Software License, Version 2.0
- * Maven artifact: `com.fasterxml.jackson.core:jackson-databind:2.9.9`
- * Project: http://github.com/FasterXML/jackson
+ * Maven artifact: `com.fasterxml.jackson.core:jackson-databind:2.15.0`
+ * Project: https://github.com/FasterXML/jackson
  * Source: https://github.com/FasterXML/jackson-databind
 
 
-Jackson-dataformat-XML (2.9.9)
+Jackson-dataformat-XML (2.15.0)
 
  * License: The Apache Software License, Version 2.0
- * Maven artifact: `com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.9`
- * Project: http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding
+ * Maven artifact: `com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0`
+ * Project: https://github.com/FasterXML/jackson-dataformat-xml
  * Source: https://github.com/FasterXML/jackson-dataformat-xml
+
+
+Jackson-datatype-jts (2.14)
+
+ * License: The Apache Software License, Version 2.0
+ * Maven artifact: `com.graphhopper.external:jackson-datatype-jts:2.14`
+ * Project: https://github.com/bedatadriven/jackson-datatype-jts/
+ * Source: scm:git:https://github.com/bedatadriven/jackson-datatype-jts
 
 
 Janino (2.7.5)
@@ -237,6 +237,14 @@ org.leadpony.justify (1.1.0)
  * Source: https://github.com/leadpony/justify
 
 
+org.locationtech.jts:jts-core (1.19.0)
+
+ * License: Eclipse Distribution License - v 1.0, Eclipse Public License, Version 2.0
+ * Maven artifact: `org.locationtech.jts:jts-core:1.19.0`
+ * Project: https://www.locationtech.org/projects/technology.jts/jts-modules/jts-core
+ * Source: https://github.com/locationtech/jts/jts-modules/jts-core
+
+
 Protocol Buffers [Core] (3.8.0)
 
  * License: 3-Clause BSD License
@@ -269,10 +277,10 @@ Stax2 API (4.2.1)
  * Source: https://github.com/FasterXML/stax2-api
 
 
-Woodstox (5.1.0)
+Woodstox (6.5.1)
 
  * License: The Apache License, Version 2.0
- * Maven artifact: `com.fasterxml.woodstox:woodstox-core:5.1.0`
+ * Maven artifact: `com.fasterxml.woodstox:woodstox-core:6.5.1`
  * Project: https://github.com/FasterXML/woodstox
  * Source: https://github.com/FasterXML/woodstox
 

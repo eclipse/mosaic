@@ -229,7 +229,7 @@ public class DatabaseRoutingTest {
         //ASSERT
         assertEquals(0, response.getAlternativeRoutes().size());
         assertNotNull(response.getBestRoute());
-        assertEquals(15.672, response.getBestRoute().getTime(), 0.1d);
+        assertEquals(15.237, response.getBestRoute().getTime(), 0.1d);
         assertEquals(304.74, response.getBestRoute().getLength(), 0.1d);
         assertEquals(Arrays.asList("32909782_26704482_26785753", "25185001_26785753_26704584"),
                 response.getBestRoute().getConnectionIds());

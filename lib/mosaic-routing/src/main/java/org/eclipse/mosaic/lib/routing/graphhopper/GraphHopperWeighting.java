@@ -17,9 +17,11 @@ package org.eclipse.mosaic.lib.routing.graphhopper;
 
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
+import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
 
-import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.weighting.AbstractWeighting;
+import com.graphhopper.routing.weighting.TurnCostProvider;
 import com.graphhopper.util.EdgeIteratorState;
 
 /**
@@ -35,10 +37,15 @@ public class GraphHopperWeighting extends AbstractWeighting {
 
     private RoutingCostFunction routingCostFunction;
 
-    public GraphHopperWeighting(FlagEncoder encoder, GraphhopperToDatabaseMapper graphMapper) {
-        super(encoder);
-        this.edgePropertiesState = new GraphHopperEdgeProperties(encoder, graphMapper);
-        this.maxSpeed = encoder.getMaxSpeed() / 3.6; // getMaxSpeed returns the speed in km/h
+    public GraphHopperWeighting(VehicleEncoding vehicleEncoding, WayTypeEncoder wayTypeEncoder, TurnCostProvider turnCostProvider, GraphhopperToDatabaseMapper graphMapper) {
+        super(vehicleEncoding.access(), vehicleEncoding.speed(), turnCostProvider);
+        this.edgePropertiesState = new GraphHopperEdgeProperties(vehicleEncoding, wayTypeEncoder, graphMapper);
+        this.maxSpeed = speedEnc.getMaxOrMaxStorableDecimal() / 3.6; // getMaxOrMaxStorableDecimal returns the speed in km/h
+    }
+
+    public GraphHopperWeighting setRoutingCostFunction(RoutingCostFunction routingCostFunction) {
+        this.routingCostFunction = routingCostFunction;
+        return this;
     }
 
     @Override
@@ -47,7 +54,15 @@ public class GraphHopperWeighting extends AbstractWeighting {
     }
 
     @Override
-    public double calcWeight(EdgeIteratorState edge, boolean reverse, int prevOrNextEdgeId) {
+    public double calcTurnWeight(int inEdge, int viaNode, int outEdge) {
+        return super.calcTurnWeight(inEdge, viaNode, outEdge);
+    }
+
+    @Override
+    public double calcEdgeWeight(EdgeIteratorState edge, boolean reverse) {
+        if (reverse ? !edge.getReverse(accessEnc) : !edge.get(accessEnc)) {
+            return Double.POSITIVE_INFINITY;
+        }
         synchronized (edgePropertiesState) {
             edgePropertiesState.setCurrentEdgeIterator(edge, reverse);
             if (routingCostFunction == null) {
@@ -60,14 +75,10 @@ public class GraphHopperWeighting extends AbstractWeighting {
 
     public String getName() {
         if (routingCostFunction == null) {
-            return "null|" + flagEncoder;
+            return "fastest";
         } else {
-            return routingCostFunction.getCostFunctionName().toLowerCase() + "|" + flagEncoder;
+            return routingCostFunction.getCostFunctionName().toLowerCase();
         }
-    }
-
-    public void setRoutingCostFunction(RoutingCostFunction routingCostFunction) {
-        this.routingCostFunction = routingCostFunction;
     }
 
 }

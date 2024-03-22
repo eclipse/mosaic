@@ -86,8 +86,7 @@ public class DatabaseRouting implements Routing {
         }
 
         //creates an implementation of IRoutingGraph according to the configuration
-        this.routing = new GraphHopperRouting()
-                .loadGraphFromDatabase(scenarioDatabase);
+        this.routing = new GraphHopperRouting(scenarioDatabase);
 
         this.routeManager = new RouteManager(this.scenarioDatabase);
     }
