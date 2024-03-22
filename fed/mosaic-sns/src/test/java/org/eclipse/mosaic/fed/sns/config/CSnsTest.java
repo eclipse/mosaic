@@ -95,7 +95,7 @@ public class CSnsTest {
             fail("Expected InstantiationException");
         } catch (JsonParseException | InstantiationException e) {
             String message = e.getMessage();
-            assertThat(message, startsWith("The CSns config is not valid: Exactly one of the following sets of problems must be resolved"));
+            assertThat(message, startsWith("The CSns config is not valid: $.singlehopDelay: should be valid to one and only one schema, but 0 are valid"));
         }
     }
 

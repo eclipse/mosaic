@@ -40,7 +40,7 @@ public class InvalidCPrototypeTest {
                     "/mapping/invalid/prototype/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/prototypes/0] The object must have a property whose name is \"name\""));
+            assertTrue(e.getMessage().contains("$.prototypes[0]: required property 'name' not found"));
         }
         assertNull(mapping);
     }

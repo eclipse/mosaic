@@ -1,0 +1,8 @@
+<configuration>
+
+    <logger name="com.networknt.schema" additivity="false" level="OFF"/>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

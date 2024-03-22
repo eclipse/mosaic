@@ -73,8 +73,7 @@ public class CSumoTest {
             assertThat(
                     instantiationException.getMessage(),
                     startsWith(
-                            "The CSumo config is not valid: [7,31][/additionalVehicleTypeParameters/car/carFollowModel]"
-                                + " The value must be of string type, but actual type is integer."
+                            "The CSumo config is not valid: $.additionalVehicleTypeParameters.car.carFollowModel: integer found, string expected"
                     )
             );  // checking that proper Exception is thrown
         }

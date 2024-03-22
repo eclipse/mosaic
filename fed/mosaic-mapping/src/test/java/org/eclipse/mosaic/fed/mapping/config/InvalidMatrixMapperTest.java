@@ -41,8 +41,8 @@ public class InvalidMatrixMapperTest {
                     "/mapping/invalid/matrixMapper/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/matrixMappers/0] The object must have a property whose name is \"points\""));
-            assertTrue(e.getMessage().contains("[/matrixMappers/0] The object must have a property whose name is \"odValues\""));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0]: required property 'points' not found"));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0]: required property 'odValues' not found"));
         }
         assertNull(mapping);
     }
@@ -61,8 +61,8 @@ public class InvalidMatrixMapperTest {
                     "/mapping/invalid/matrixMapper/point/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/matrixMappers/0/points/0] The object must have a property whose name is \"name\""));
-            assertTrue(e.getMessage().contains("[/matrixMappers/0/points/0] The object must have a property whose name is \"position\""));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0].points[0]: required property 'name' not found"));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0].points[0]: required property 'position' not found"));
         }
         assertNull(mapping);
     }
@@ -81,8 +81,8 @@ public class InvalidMatrixMapperTest {
                     "/mapping/invalid/matrixMapper/point/position/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/matrixMappers/0/points/0/position] The object must have a property whose name is \"radius\""));
-            assertTrue(e.getMessage().contains("[/matrixMappers/0/points/0/position] The object must have a property whose name is \"center\""));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0].points[0].position: required property 'radius' not found"));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0].points[0].position: required property 'center' not found"));
         }
         assertNull(mapping);
     }
@@ -101,8 +101,9 @@ public class InvalidMatrixMapperTest {
                     "/mapping/invalid/matrixMapper/point/position/center/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/matrixMappers/0/points/0/position/center] The object must have a property whose name is \"longitude\""));
-            assertTrue(e.getMessage().contains("[/matrixMappers/0/points/0/position/center] The object must have a property whose name is \"latitude\""));
+            e.printStackTrace();
+            assertTrue(e.getMessage().contains("$.matrixMappers[0].points[0].position.center: required property 'longitude' not found"));
+            assertTrue(e.getMessage().contains("$.matrixMappers[0].points[0].position.center: required property 'latitude' not found"));
         }
         assertNull(mapping);
     }

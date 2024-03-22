@@ -15,12 +15,16 @@
 
 package org.eclipse.mosaic.lib.util.objects;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.api.ProblemHandler;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -34,10 +38,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Locale;
 import javax.annotation.Nonnull;
-import javax.json.stream.JsonParser;
 
 /**
  * Instantiate Java objects using a file contains a JSON encoded object.
@@ -166,14 +169,10 @@ public class ObjectInstantiation<T> {
     }
 
     private T handleParserResult(T obj) throws InstantiationException {
-        if (obj != null) {
-            debug("File has been loaded into the destination object.");
-        } else {
-            obj = createWithDefaultDefaultConstructor();
-            if (obj == null) {
-                throw new InstantiationException("Could not read or instantiate the object.");
-            }
+        if (obj == null) {
+            return createWithDefaultDefaultConstructor();
         }
+        debug("File has been loaded into the destination object.");
         return obj;
     }
 
@@ -201,7 +200,6 @@ public class ObjectInstantiation<T> {
             debug("Object instantiated using the default constructor.");
             return obj;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-
             throw new InstantiationException(e.getMessage());
         }
     }
@@ -221,25 +219,29 @@ public class ObjectInstantiation<T> {
     }
 
     private void validateFile(InputStream input, InputStream schemaInput) throws InstantiationException {
-        final JsonValidationService service = JsonValidationService.newInstance();
-        final JsonSchema schema = service.readSchema(schemaInput);
-
-        final List<String> problems = new ArrayList<>();
-        final ProblemHandler handler = service.createProblemPrinter(problems::add);
-
-        try (JsonParser parser = service.createParser(input, schema, handler)) {
-            while (parser.hasNext()) {
-                parser.next();
-                // ignore, we let GSON do the parsing later.
+        final Locale defaultLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.ENGLISH);
+            final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+            final JsonSchema jsonSchema = factory.getSchema(schemaInput);
+            final JsonNode json = new ObjectMapper().readTree(input);
+            if (json instanceof MissingNode) {
+                return;
             }
-        }
-        if (!problems.isEmpty()) {
-            StringBuilder errorMessage = new StringBuilder();
-            problems.forEach((p) -> {
-                errorMessage.append(p);
-                errorMessage.append(NEWLINE);
-            });
-            throw new InstantiationException("The " + clazz.getSimpleName() + " config is not valid: " + errorMessage);
+
+            final Collection<ValidationMessage> problems = jsonSchema.validate(json);
+            if (!problems.isEmpty()) {
+                StringBuilder errorMessage = new StringBuilder();
+                problems.forEach((p) -> {
+                    errorMessage.append(p.getMessage());
+                    errorMessage.append(NEWLINE);
+                });
+                throw new InstantiationException("The " + clazz.getSimpleName() + " config is not valid: " + errorMessage);
+            }
+        } catch (IOException e) {
+            throw new InstantiationException("The input JSON is not valid: " + e.getMessage());
+        } finally {
+            Locale.setDefault(defaultLocale);
         }
     }
 

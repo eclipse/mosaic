@@ -1,33 +1,12 @@
-Apache-2.0|The Apache Software License, Version 2.0
-Apache-2.0|Apache License, Version 2.0
-Apache-2.0|Apache Public License 2.0
-Apache-2.0|The Apache License, Version 2.0
-Apache-2.0|Apache License 2.0
-Apache-2.0|Apache 2
-Apache-2.0|Apache 2.0
-Apache-2.0|ASL 2.0
-Apache-2.0|ASL, version 2
-Apache-2.0|Apache
-Apache-2.0|the Apache License, ASL Version 2.0
-Apache-2.0|APL2
-EDl-1.0|Eclipse Distribution License - v 1.0
-EPL-1.0|Eclipse Public License - v 1.0
-EPL-1.0|Eclipse Public License 1.0
-EPL-1.0|Eclipse Public License - Version 1.0
-EPL-2.0|Eclipse Public License - Version 2.0
-EPL-2.0|Eclipse Public License - v 2.0
-BSD-3-Clause|BSD-style
-BSD-3-Clause|BSD
-BSD-3-Clause|BSD 3-clause
-BSD-3-Clause|BSD 3-Clause
-BSD-3-Clause|New BSD License
-BSD-3-Clause|The BSD 3-Clause License
-BSD-2-Clause|BSD 2-Clause License
-GPL-2.0|GNU General Public License (GPL), version 2, with the Classpath exception
-GPL-2.0|GPL v2
-LGPL-2.1|GNU Lesser General Public License
-MIT|MIT license
-MIT|MIT License
-MIT|The MIT License
-CC0|Public Domain, per Creative Commons CC0
-MPL-2.0|Mozilla Public License, Version 2.0
+Apache-2.0|The Apache License, Version 2.0|Apache License|Apache License Version 2|Apache License Version 2.0|Apache Software License - Version 2.0|Apache 2.0 License|Apache License 2.0|ASL|Apache 2|Apache 2.0|the Apache License, ASL Version 2.0|The Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|ASF 2.0|Apache License v2.0|Apache V2
+BSD-2-Clause|Two-clause BSD-style license
+BSD-3-Clause|BSD|The BSD 3-Clause License|The BSD License|Modified BSD License|New BSD License|New BSD license|BSD License|BSD license|BSD licence|BSD New|The New BSD License|BSD 3-Clause|BSD 3-clause|3-Clause BSD License|Revised BSD
+BSD-3-Clause (Eclipse Distribution License)|Eclipse Distribution License 1.0|Eclipse Distribution License - v 1.0
+CDDL|CDDL+GPL|CDDL+GPL License|CDDL + GPLv2 with classpath exception|CDDL/GPLv2+CE|CDDL License|CDDL 1.0|CDDL 1.1|COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0|Common Development and Distribution License (CDDL) v1.0
+EPL-1.0|Eclipse Public License - v 1.0|Eclipse Public License 1.0|Eclipse Public License - Version 1.0|Eclipse Public License
+EPL-2.0|Eclipse Public License - v 2.0|Eclipse Public License 2.0|Eclipse Public License - Version 2.0
+GPL-2.0-with-classpath-exception|GPL2 w/ CPE|GPLv2+CE|GNU General Public Library|GNU General Public License, version 2 with the GNU Classpath Exception|GPLv2 license, includes the CLASSPATH exception
+GPL-2.0-or-later|GNU General Public License, version 2 or later
+LGPL-2.1|LGPL 2.1|LGPL, version 2.1|GNU Library or Lesser General Public License (LGPL) V2.1|GNU Lesser General Public License (LGPL), Version 2.1|GNU Lesser General Public License, Version 2.1|GNU Lesser General Public License|GNU Lesser General Public Licence|GNU Lesser Public License|GNU Lesser General Public License, Version 2.1, February 1999
+MIT|MIT License|MIT license|The MIT License|The MIT License(MIT)
+Zlib

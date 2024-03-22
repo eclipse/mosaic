@@ -209,6 +209,8 @@
                 <appender-ref ref="PerformanceLog"/>
             </logger>
 
+            <logger name="com.networknt.schema" additivity="false" level="OFF"/>
+
             <!-- All other stuff, which was not logged by other loggers before goes
                 to stdout and MOSAIC.log -->
             <root level="INFO">

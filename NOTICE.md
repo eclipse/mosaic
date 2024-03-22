@@ -2,7 +2,7 @@
 
 This content is produced and maintained by the Eclipse MOSAIC project.
 
- * Project home: https://projects.eclipse.org/projects/technology.mosaic
+ * Project home: https://projects.eclipse.org/projects/automotive.mosaic
 
 ## Trademarks
 
@@ -11,7 +11,7 @@ Eclipse, and the Eclipse Logo are registered trademarks of the Eclipse Foundatio
 
 ## Copyright
 
-* Copyright 2020-2023 Fraunhofer FOKUS
+* Copyright 2020-2024 Fraunhofer FOKUS
 
 All rights reserved. All content is the property of the respective authors or their employers.
 For more information regarding authorship of content, please consult the listed source code repository logs.

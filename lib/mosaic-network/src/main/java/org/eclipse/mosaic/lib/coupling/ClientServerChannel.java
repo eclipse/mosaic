@@ -378,6 +378,7 @@ public class ClientServerChannel {
     }
 
     // @param channelId the channelID               //TODO:make enum from
+
     /**
      * Write send message header to stream.
      * Not used in eWorld visualizer.
@@ -406,7 +407,7 @@ public class ClientServerChannel {
                 //builder for rectangular addresses
                 rectangleAddress.setIpAddress(buffer.getInt()); //write the ip address as flat integer into the builder
                 //convert coordinates etc.
-                CartesianRectangle projectedRectangle = ((GeoRectangle)dac.getGeoArea()).toCartesian();
+                CartesianRectangle projectedRectangle = ((GeoRectangle) dac.getGeoArea()).toCartesian();
                 //write the coordinates of the area into the builder
                 rectangleAddress.setAX(projectedRectangle.getA().getX());
                 rectangleAddress.setAY(projectedRectangle.getA().getY());
@@ -418,7 +419,7 @@ public class ClientServerChannel {
                 SendMessageMessage.GeoCircleAddress.Builder circleAddress = SendMessageMessage.GeoCircleAddress.newBuilder();
                 circleAddress.setIpAddress(buffer.getInt());
 
-                CartesianCircle projectedCircle = ((GeoCircle)dac.getGeoArea()).toCartesian();
+                CartesianCircle projectedCircle = ((GeoCircle) dac.getGeoArea()).toCartesian();
                 //write area into the address object
                 circleAddress.setCenterX(projectedCircle.getCenter().getX());
                 circleAddress.setCenterY(projectedCircle.getCenter().getY());
@@ -428,7 +429,7 @@ public class ClientServerChannel {
             } else {
                 throw new IllegalArgumentException("Addressing does support GeoCircle and GeoRectangle only.");
             }
-        } else if (dac.getTimeToLive() > -1){  //Topocast addresses
+        } else if (dac.getTimeToLive() > -1) {  //Topocast addresses
             SendMessageMessage.TopoAddress.Builder topoAddress = SendMessageMessage.TopoAddress.newBuilder();
             topoAddress.setIpAddress(buffer.getInt());  //Add IP as flat int
             topoAddress.setTtl(dac.getTimeToLive());    //add time to live

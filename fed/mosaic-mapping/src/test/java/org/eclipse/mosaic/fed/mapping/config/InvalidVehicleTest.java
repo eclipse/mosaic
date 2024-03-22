@@ -41,7 +41,7 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("Exactly one of the following sets of problems must be resolved."));
+            assertTrue(e.getMessage().contains("$.vehicles[0]: should be valid to one and only one schema, but 0 are valid"));
         }
         assertNull(mapping);
     }
@@ -57,7 +57,7 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/type/EmptyTypes.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/vehicles/0/types] The array must have at least 1 element(s), but actual number is 0."));
+            assertTrue(e.getMessage().contains("$.vehicles[0].types: expected at least 1 items but found 0"));
         }
         assertNull(mapping);
     }
@@ -75,7 +75,7 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/type/EmptyTypesItem.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/vehicles/0/types/0] The object must have a property whose name is \"name\""));
+            assertTrue(e.getMessage().contains("$.vehicles[0].types[0]: required property 'name' not found"));
         }
         assertNull(mapping);
     }
@@ -94,9 +94,9 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/origin/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/vehicles/0/origin] The object must have a property whose name is \"radius\""));
-            assertTrue(e.getMessage().contains("[/vehicles/0/origin] The object must have a property whose name is \"center\""));
-            assertTrue(e.getMessage().contains("Exactly one of the following sets of problems must be resolved."));
+            assertTrue(e.getMessage().contains("$.vehicles[0].origin: required property 'radius' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0].origin: required property 'center' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0]: should be valid to one and only one schema, but 0 are valid"));
         }
         assertNull(mapping);
     }
@@ -115,9 +115,9 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/origin/center/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/vehicles/0/origin/center] The object must have a property whose name is \"longitude\""));
-            assertTrue(e.getMessage().contains("[/vehicles/0/origin/center] The object must have a property whose name is \"latitude\""));
-            assertTrue(e.getMessage().contains("Exactly one of the following sets of problems must be resolved."));
+            assertTrue(e.getMessage().contains("$.vehicles[0].origin.center: required property 'longitude' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0].origin.center: required property 'latitude' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0]: should be valid to one and only one schema, but 0 are valid"));
         }
         assertNull(mapping);
     }
@@ -136,9 +136,9 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/destination/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/vehicles/0/destination] The object must have a property whose name is \"radius\""));
-            assertTrue(e.getMessage().contains("[/vehicles/0/destination] The object must have a property whose name is \"center\""));
-            assertTrue(e.getMessage().contains("Exactly one of the following sets of problems must be resolved."));
+            assertTrue(e.getMessage().contains("$.vehicles[0].destination: required property 'radius' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0].destination: required property 'center' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0]: should be valid to one and only one schema, but 0 are valid"));
         }
         assertNull(mapping);
     }
@@ -157,9 +157,10 @@ public class InvalidVehicleTest {
                     "/mapping/invalid/vehicle/destination/center/MissingProperties.json"
             ));
         } catch (InstantiationException e) {
-            assertTrue(e.getMessage().contains("[/vehicles/0/destination/center] The object must have a property whose name is \"longitude\""));
-            assertTrue(e.getMessage().contains("[/vehicles/0/destination/center] The object must have a property whose name is \"latitude\""));
-            assertTrue(e.getMessage().contains("Exactly one of the following sets of problems must be resolved."));
+            e.printStackTrace();
+            assertTrue(e.getMessage().contains("$.vehicles[0].destination.center: required property 'longitude' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0].destination.center: required property 'latitude' not found"));
+            assertTrue(e.getMessage().contains("$.vehicles[0]: should be valid to one and only one schema, but 0 are valid"));
         }
         assertNull(mapping);
     }

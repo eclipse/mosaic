@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:jammy
 
 LABEL \
     description="Docker image containing the MOSAIC adapted OMNeT++ federate" \
@@ -14,10 +14,10 @@ RUN \
     libprotobuf-dev \
     protobuf-compiler \
     libxml2-dev \
-    python \
+    python3 \
+    python-is-python3 \
     unzip \
-    wget \
-    zlib1g-dev
+    wget
 
 WORKDIR /home/mosaic/bin/fed/omnetpp
 

@@ -140,7 +140,7 @@ public class CEnvironmentTest {
             // ASSERT
             assertThat(
                     instantiationException.getMessage(),
-                    startsWith("The CEnvironment config is not valid: [21,9][/events/0] The object must have a property whose name is \"time\".")
+                    startsWith("The CEnvironment config is not valid: $.events[0]: required property 'time' not found")
             );  // checking that proper Exception is thrown
         }
     }
