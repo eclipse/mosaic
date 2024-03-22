@@ -52,13 +52,14 @@ public class RealtimeSynchronisation {
     public void sync(long timestamp) {
 
         if (realtimeFactor > 0d && realNanoTimeLastSync > 0) {
-            long realTimeSinceLastSync = System.nanoTime() - realNanoTimeLastSync;
+            // Consider real time difference of 1s at maximum, to prevent "catching up" behavior when pausing a simulator on purpose
+            long realTimeSinceLastSync = Math.min(TIME.SECOND, System.nanoTime() - realNanoTimeLastSync);
             long simTimeSinceLastSync = timestamp - simNanoTimeLastSync;
 
             // Conversion from simulation to wanted realtime according to the given realtime factor 
             long realTimeSinceLastSyncWanted = (long) (simTimeSinceLastSync * (1 / realtimeFactor));
 
-            // The real nano seconds we now have to wait to fulfill the requirement above
+            // The real nanoseconds we now have to wait to fulfill the requirement above
             long nanoTimeToWait = realTimeSinceLastSyncWanted - realTimeSinceLastSync + waitOffset;
 
             // The actual waiting

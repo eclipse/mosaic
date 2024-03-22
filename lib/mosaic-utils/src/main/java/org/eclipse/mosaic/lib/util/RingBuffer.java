@@ -103,6 +103,7 @@ public class RingBuffer<T> implements Iterable<T> {
     }
 
     public void clear() {
+        Arrays.fill(elements, null);
         ringMode = false;
         head = 0;
     }

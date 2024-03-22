@@ -38,11 +38,15 @@ public class SumoLaneChangeMode {
         switch (laneChangeMode) {
             case OFF:
                 mode.setSublaneChanges(false, false);
-                mode.setStrategicChanges(true, true);
                 mode.setRespectOtherDrivers(RESPECT_SPEED_GAPS_OF_OTHER_DRIVERS_ADAPT_SPEED);
                 break;
             // For strategic lane changes (change lanes to continue the route),
             // we always let SUMO overwrite requested lane changes (overrideTraci = true)
+            case FOLLOW_ROUTE:
+                mode.setSublaneChanges(false, false);
+                mode.setStrategicChanges(true, true);
+                mode.setRespectOtherDrivers(RESPECT_SPEED_GAPS_OF_OTHER_DRIVERS_ADAPT_SPEED);
+                break;
             case AGGRESSIVE:
                 mode.setStrategicChanges(true, true);
                 mode.setSpeedChanges(true, false);
@@ -51,16 +55,10 @@ public class SumoLaneChangeMode {
                 mode.setStrategicChanges(true, true);
                 mode.setCooperativeChanges(true, false);
                 mode.setSpeedChanges(true, false);
-                mode.setRightDriveChanges(true, true);
+                mode.setRightDriveChanges(true, false);
                 mode.setRespectOtherDrivers(RESPECT_SPEED_GAPS_OF_OTHER_DRIVERS_DO_NOT_ADAPT_SPEED);
                 break;
             case PASSIVE:
-                mode.setStrategicChanges(true, true);
-                mode.setCooperativeChanges(true, false);
-                mode.setSpeedChanges(true, false);
-                mode.setRightDriveChanges(true, true);
-                mode.setRespectOtherDrivers(RESPECT_SPEED_GAPS_OF_OTHER_DRIVERS_ADAPT_SPEED);
-                break;
             case COOPERATIVE:
             case DEFAULT:
                 mode.setStrategicChanges(true, true);
