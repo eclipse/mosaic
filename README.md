@@ -1,5 +1,5 @@
-<a href="https://eclipse.org/mosaic#gh-light-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg#gh-light-mode-only"></p></a>
-<a href="https://eclipse.org/mosaic#gh-dark-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-negativ.svg#gh-dark-mode-only"></p></a>
+<a href="https://eclipse.dev/mosaic#gh-light-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-positiv.svg#gh-light-mode-only"></p></a>
+<a href="https://eclipse.dev/mosaic#gh-dark-mode-only"><p align="center"><img width="50%" src="https://raw.githubusercontent.com/eclipse/mosaic.website/main/static/img/logos/mosaic/EclipseMOSAIC-Logo-RGB-negativ.svg#gh-dark-mode-only"></p></a>
 
 # Eclipse MOSAIC Essentials - <br> The Simulation Suite for Connected and Automated Mobility
 
@@ -7,10 +7,10 @@
 ![Made with java](https://img.shields.io/badge/Made%20with-Java-1f425f.svg) 
 ![Size](https://img.shields.io/github/repo-size/eclipse/mosaic.svg) <br>
 [![Build](https://github.com/eclipse/mosaic/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/eclipse/mosaic/actions?query=branch%3Amain+workflow%3A%22Java+CI+with+Maven%22)
-[![Jenkins Build](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.eclipse.org%2Fmosaic%2Fjob%2Fmosaic%2Fjob%2Fmain&label=Jenkins%20build)](https://ci.eclipse.org/mosaic/job/mosaic/)
+[![Jenkins Build](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.eclipse.dev%2Fmosaic%2Fjob%2Fmosaic%2Fjob%2Fmain&label=Jenkins%20build)](https://ci.eclipse.dev/mosaic/job/mosaic/)
 
 
-[**Eclipse MOSAIC**](https://eclipse.org/mosaic) is a multi-scale simulation framework in the field of smart and connected mobility.
+[**Eclipse MOSAIC**](https://eclipse.dev/mosaic) is a multi-scale simulation framework in the field of smart and connected mobility.
 It allows coupling simulators from various domains towards a comprehensive simulation tool. 
 Data exchange and time management is implemented by the Runtime Infrastructure (RTI), which is the heart of MOSAIC. Simulation models
 are coupled to the RTI using HLA inspired interfaces; Each simulator is wrapped into a "Federate" object which is linked to an "Ambassador"
@@ -39,7 +39,7 @@ IEEE Transactions on Intelligent Transportation Systems, pp. 1 - 11, Print ISSN:
 
 ## Documentation
 
-View our website at **[eclipse.org/mosaic](https://eclipse.org/mosaic)** for detailed documentation and many tutorials to get started with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
+View our website at **[eclipse.dev/mosaic](https://eclipse.dev/mosaic)** for detailed documentation and many tutorials to get started with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
 
 ## The Essential edition of Eclipse MOSAIC
 
@@ -94,7 +94,7 @@ Besides, the simulation can also be started in your IDE using the main method in
 
 ## License
 
-Eclipse MOSAIC is licensed under the [Eclipse Public License Version 2](https://eclipse.org/legal/epl-v20.html).
+Eclipse MOSAIC is licensed under the [Eclipse Public License Version 2](https://eclipse.dev/legal/epl-v20.html).
 
 ## Contributing
 
