@@ -5,7 +5,7 @@
 
     <groupId>org.eclipse.mosaic</groupId>
     <artifactId>mosaic-parent</artifactId>
-    <version>24.0-SNAPSHOT</version>
+    <version>24.0</version>
     <packaging>pom</packaging>
 
     <name>Eclipse MOSAIC Parent</name>
@@ -79,7 +79,7 @@
     </modules>
 
     <properties>
-        <mosaic.version>24.0-SNAPSHOT</mosaic.version>
+        <mosaic.version>24.0</mosaic.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceTarget>11</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
