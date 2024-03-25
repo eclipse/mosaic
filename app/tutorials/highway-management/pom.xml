@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>24.0-SNAPSHOT</version>
+        <version>24.0</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -14,7 +14,7 @@
     <artifactId>highway-management</artifactId>
     <packaging>jar</packaging>
 
-    <name> Highway Management Application for Highway Tutorial</name>
+    <name>Eclipse MOSAIC Highway Management Application for Highway Tutorial</name>
     <description>Simple application which interacts with highway infrastructure.</description>
 
     <properties>

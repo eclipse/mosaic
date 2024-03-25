@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>24.0-SNAPSHOT</version>
+        <version>24.0</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -14,7 +14,7 @@
     <artifactId>traffic-light-communication</artifactId>
     <packaging>jar</packaging>
 
-    <name>Traffic Light Application for Tiergarten Tutorial</name>
+    <name>Eclipse MOSAIC Traffic Light Application for Tiergarten Tutorial</name>
     <description>Simple application that communicates with traffic signals.</description>
 
     <properties>

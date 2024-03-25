@@ -1,3 +1,16 @@
+# Changelog Eclipse MOSAIC 24.0 (March 2024)
+
+* [A-] Renamed API method getPayLoad() to getPayload(). Needs migration of all V2xMessage extensions.
+* [A+] Upgraded the integrated routing engine GraphHopper, enabling improved calculation of alternative routes.
+* [A+] Route calculation and handling is much more robust now.
+* [C+] Cellular simulator now models headers on top of payloads based on underlying protocols.
+* [M-] Upgraded several dependencies to most recent versions.
+* [T+] Lane change mode OFF now completely disables lane-changing. New mode `FOLLOW_ROUTE` disables lane changing except for route following purposes.
+* [T-] Vehicle ids from existing SUMO scenarios can now be named using UTF-8 characters, such as Arabic, Chinese, Hebrew, and other.
+* [T+] Now support SUMO 1.19.0
+* [X+] New parking ambassador allows to put standing vehicles into the world which are synchronized with other simulators, such as SUMO (Extended).
+* [X+] Major upgrade of visualization in Phabmacs and MOSAIC 3D visualizer by using new graphics engine KOOL (Extended).
+
 # Changelog Eclipse MOSAIC 23.1 (October 2023)
 
 * [M+] MOSAIC now requires at least Java 11 Runtime Environment to be executed.

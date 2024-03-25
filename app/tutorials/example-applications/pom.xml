@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.mosaic</groupId>
         <artifactId>mosaic-parent</artifactId>
-        <version>24.0-SNAPSHOT</version>
+        <version>24.0</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -14,7 +14,7 @@
     <artifactId>example-applications</artifactId>
     <packaging>jar</packaging>
 
-    <name>Collection of Example Applications</name>
+    <name>Eclipse MOSAIC Collection of Example Applications</name>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
