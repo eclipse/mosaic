@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.lib.objects.v2x;
 
+import org.eclipse.mosaic.lib.objects.DuplicatableMessage;
 import org.eclipse.mosaic.lib.objects.ToDataOutput;
 import org.eclipse.mosaic.lib.util.ClassUtils;
 
@@ -23,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * This {@link V2xMessage} implementation can be used for simple message exchange between entities.
  */
-public final class GenericV2xMessage extends V2xMessage {
+public final class GenericV2xMessage extends V2xMessage implements DuplicatableMessage {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,6 +64,12 @@ public final class GenericV2xMessage extends V2xMessage {
         this.payload = new EncodedPayload(messagePayload, minimalMessageSize);
     }
 
+    public GenericV2xMessage(GenericV2xMessage message) {
+        super(message.getRouting());
+        this.messageType = message.getMessageType();
+        this.payload = message.getPayload();
+    }
+
 
     @Override
     @Nonnull
@@ -80,6 +87,10 @@ public final class GenericV2xMessage extends V2xMessage {
         return "GenericV2xMessage{"
                 + "classSimpleName=" + messageType
                 + ", encodedPayload=" + payload + '}';
+    }
+
+    public GenericV2xMessage duplicate(MessageRouting routing) {
+        return new GenericV2xMessage(routing, messageType, payload.getEffectiveLength());
     }
 
 }
