@@ -36,6 +36,7 @@ import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
+import org.eclipse.mosaic.interactions.environment.LidarUpdates;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -306,6 +307,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((VehicleTypesInitialization) interaction);
             } else if (interaction.getTypeId().startsWith(ApplicationInteraction.TYPE_ID)) {
                 this.process((ApplicationInteraction) interaction);
+            } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
+                log.info("LIDAR UPDATES RECEIVED!!!!!!");
             } else {
                 log.warn("Unknown interaction received with time {} : {}", TIME.format(interaction.getTime()), interaction.getTypeId());
             }
