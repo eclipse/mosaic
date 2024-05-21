@@ -62,6 +62,7 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
+import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.lib.util.scheduling.DefaultEventScheduler;
@@ -308,7 +309,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             } else if (interaction.getTypeId().startsWith(ApplicationInteraction.TYPE_ID)) {
                 this.process((ApplicationInteraction) interaction);
             } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
-                log.info("LIDAR UPDATES RECEIVED!!!!!!");
+                this.process((LidarUpdates) interaction);
             } else {
                 log.warn("Unknown interaction received with time {} : {}", TIME.format(interaction.getTime()), interaction.getTypeId());
             }
@@ -693,6 +694,19 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 vehicleUpdates.getTime(),
                 e -> SimulationKernel.SimulationKernel.garbageCollection());
         addEvent(triggerGarbageCollection);
+    }
+
+    private void process(final LidarUpdates lidarUpdates) {
+        for (LidarData data :lidarUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(data.getName());
+            final Event event = new Event(
+                    data.getTime(),
+                    simulationUnit,
+                    data,
+                    EventNicenessPriorityRegister.VEHICLE_ADDED
+            );
+            addEvent(event);
+        }
     }
 
     private void addVehicleIfNotYetAdded(long time, String unitName) {

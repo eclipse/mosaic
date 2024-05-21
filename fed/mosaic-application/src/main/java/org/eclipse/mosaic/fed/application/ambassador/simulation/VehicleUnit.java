@@ -45,6 +45,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -123,6 +124,12 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
     }
 
+    private void updateLidarInfo(final LidarData currentLidarData) {
+        for (VehicleApplication application : getApplicationsIterator(VehicleApplication.class)) {
+            application.onLidarUpdated(currentLidarData);
+        }
+    }
+
     @Override
     public void processEvent(@Nonnull final Event event) throws Exception {
         // never remove the preProcessEvent call!
@@ -154,6 +161,10 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
         if (resource instanceof BatteryData) {
             throw new RuntimeException(ErrorRegister.VEHICLE_NotElectric.toString());
+        }
+        if (resource instanceof LidarData) {
+            updateLidarInfo((LidarData) resource);
+            return true;
         }
         return false;
     }
