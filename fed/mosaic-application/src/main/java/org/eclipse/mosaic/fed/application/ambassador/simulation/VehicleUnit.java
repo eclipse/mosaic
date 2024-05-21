@@ -24,6 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ca
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
+import org.eclipse.mosaic.fed.application.app.api.LidarApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
@@ -125,7 +126,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     private void updateLidarInfo(final LidarData currentLidarData) {
-        for (VehicleApplication application : getApplicationsIterator(VehicleApplication.class)) {
+        for (LidarApplication application : getApplicationsIterator(LidarApplication.class)) {
             application.onLidarUpdated(currentLidarData);
         }
     }

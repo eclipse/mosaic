@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.application.app.api;
 
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
-import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,7 +33,4 @@ public interface VehicleApplication extends Application {
      * @param updatedVehicleData  the updated state of the vehicle
      */
     void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData);
-    //TODO create new method onLidarUpdated here, that every application has to implement??
-
-    void onLidarUpdated(@Nonnull LidarData updatedLidarData);
 }
