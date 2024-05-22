@@ -300,6 +300,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TrafficLightUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
+                this.process((LidarUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
                 this.process((VehicleBatteryUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
@@ -308,8 +310,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((VehicleTypesInitialization) interaction);
             } else if (interaction.getTypeId().startsWith(ApplicationInteraction.TYPE_ID)) {
                 this.process((ApplicationInteraction) interaction);
-            } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
-                this.process((LidarUpdates) interaction);
             } else {
                 log.warn("Unknown interaction received with time {} : {}", TIME.format(interaction.getTime()), interaction.getTypeId());
             }
@@ -703,7 +703,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                     data.getTime(),
                     simulationUnit,
                     data,
-                    EventNicenessPriorityRegister.VEHICLE_ADDED
+                    EventNicenessPriorityRegister.LIDAR_UPDATED
             );
             addEvent(event);
         }

@@ -15,27 +15,27 @@
 
 package org.eclipse.mosaic.lib.objects.vehicle.sensor;
 
-import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.UnitData;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.gson.PolymorphismTypeAdapterFactory;
 
 import com.google.gson.annotations.JsonAdapter;
 
-public class LidarData extends UnitData {
-
+public class LidarData  {
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final Object lidarData;
+
+    private final long time;
+    private final String name;
     /**
-     * Creates a new {@link UnitData}.
+     * Creates a new {@link LidarData}.
      *
-     * @param time     time of the last update
-     * @param name     name of the unit
-     * @param position position of the unit
+     * @param time      time of the last update
+     * @param name      name of the unit
+     * @param lidarData Object that contains the LidarFrame data
      */
-    public LidarData(long time, String name, GeoPoint position, Object additionalData) {
-        super(time, name, position);
-        this.lidarData = additionalData;
+    public LidarData(long time, String name, Object lidarData) {
+        this.lidarData = lidarData;
+        this.time = time;
+        this.name = name;
     }
 
     /**
@@ -47,13 +47,21 @@ public class LidarData extends UnitData {
         return lidarData;
     }
 
+    public long getTime() {
+        return time;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
     /**
-     * A builder for creating {@link VehicleData} objects without using the monstrous constructor.
+     * A builder for creating {@link LidarData} objects
      */
     public static class Builder {
         private final long time;
         private final String name;
-        private GeoPoint geoPos;
         private Object lidarData;
 
         /**
@@ -62,11 +70,6 @@ public class LidarData extends UnitData {
         public Builder(long time, String name) {
             this.time = time;
             this.name = name;
-        }
-
-        public LidarData.Builder geoPos(GeoPoint geoPos) {
-            this.geoPos = geoPos;
-            return this;
         }
 
         /**
@@ -82,7 +85,7 @@ public class LidarData extends UnitData {
          */
         public LidarData create() {
             return new LidarData(
-                    time, name, geoPos,lidarData);
+                    time, name,lidarData);
         }
     }
 }

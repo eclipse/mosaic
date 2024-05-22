@@ -19,6 +19,6 @@ import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 
 import javax.annotation.Nonnull;
 
-public interface LidarApplication extends VehicleApplication {
+public interface LidarApplication extends Application {
     void onLidarUpdated(@Nonnull LidarData updatedLidarData);
 }
