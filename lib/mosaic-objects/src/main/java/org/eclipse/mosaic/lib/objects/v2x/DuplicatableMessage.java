@@ -13,13 +13,11 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.lib.objects;
-
-import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
+package org.eclipse.mosaic.lib.objects.v2x;
 
 /**
- * Creates a copy of the message
- * @param <MessageT>
+ * A message that can duplicate itself.
+ * @param <T> a class that extends {@link org.eclipse.mosaic.lib.objects.v2x.V2xMessage}
  */
 public interface DuplicatableMessage<T extends DuplicatableMessage<T>> {
 

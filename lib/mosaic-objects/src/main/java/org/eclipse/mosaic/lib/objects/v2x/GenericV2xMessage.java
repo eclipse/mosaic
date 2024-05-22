@@ -15,7 +15,6 @@
 
 package org.eclipse.mosaic.lib.objects.v2x;
 
-import org.eclipse.mosaic.lib.objects.DuplicatableMessage;
 import org.eclipse.mosaic.lib.objects.ToDataOutput;
 import org.eclipse.mosaic.lib.util.ClassUtils;
 
@@ -64,12 +63,6 @@ public final class GenericV2xMessage extends V2xMessage implements DuplicatableM
         this.payload = new EncodedPayload(messagePayload, minimalMessageSize);
     }
 
-    public GenericV2xMessage(GenericV2xMessage message) {
-        super(message.getRouting());
-        this.messageType = message.getMessageType();
-        this.payload = message.getPayload();
-    }
-
 
     @Override
     @Nonnull
@@ -89,6 +82,7 @@ public final class GenericV2xMessage extends V2xMessage implements DuplicatableM
                 + ", encodedPayload=" + payload + '}';
     }
 
+    @Override
     public GenericV2xMessage duplicate(MessageRouting routing) {
         return new GenericV2xMessage(routing, messageType, payload.getEffectiveLength());
     }
