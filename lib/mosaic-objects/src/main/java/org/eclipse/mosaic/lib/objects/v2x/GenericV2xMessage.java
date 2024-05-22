@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 /**
  * This {@link V2xMessage} implementation can be used for simple message exchange between entities.
  */
-public final class GenericV2xMessage extends V2xMessage implements DuplicatableMessage {
+public final class GenericV2xMessage extends V2xMessage implements DuplicatableMessage<GenericV2xMessage> {
 
     private static final long serialVersionUID = 1L;
 

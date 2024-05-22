@@ -19,7 +19,7 @@ package org.eclipse.mosaic.lib.objects.v2x;
  * A message that can duplicate itself.
  * @param <T> a class that extends {@link org.eclipse.mosaic.lib.objects.v2x.V2xMessage}
  */
-public interface DuplicatableMessage<T extends DuplicatableMessage<T>> {
+public interface DuplicatableMessage<T extends V2xMessage> {
 
     /**
      * Creates a copy of the V2xMessage.
