@@ -17,7 +17,6 @@ package org.eclipse.mosaic.interactions.environment;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.lib.objects.UnitData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -99,7 +98,7 @@ public class LidarUpdates extends Interaction {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("updated", updated.stream().map(UnitData::getName).collect(Collectors.joining(",")))
+                .append("updated", updated.stream().map(LidarData::getName).collect(Collectors.joining(",")))
                 .toString();
     }
 

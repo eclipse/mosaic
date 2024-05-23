@@ -44,15 +44,15 @@ public class LidarData  {
      * implemented in a way to add this additional data.
      */
     public Object getLidarData() {
-        return lidarData;
+        return this.lidarData;
     }
 
     public long getTime() {
-        return time;
+        return this.time;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
 
