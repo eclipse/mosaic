@@ -19,7 +19,9 @@ import org.eclipse.mosaic.lib.util.gson.PolymorphismTypeAdapterFactory;
 
 import com.google.gson.annotations.JsonAdapter;
 
-public class LidarData  {
+import java.io.Serializable;
+
+public class LidarData implements Serializable {
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
     private final Object lidarData;
 
