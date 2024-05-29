@@ -17,7 +17,6 @@ package org.eclipse.mosaic.interactions.environment;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.rti.api.Interaction;
 
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LidarUpdates extends Interaction {
-    //TODO what is this?
     private static final long serialVersionUID = 1L;
 
     /**
@@ -44,7 +42,7 @@ public class LidarUpdates extends Interaction {
 
 
     /**
-     * List of {@link VehicleData} identifying vehicles with updated positions.
+     * List of {@link LidarData} containing LiDAR data from the simulator.
      */
     private final List<LidarData> updated;
 
@@ -57,10 +55,6 @@ public class LidarUpdates extends Interaction {
 
     public List<LidarData> getUpdated() {
         return this.updated;
-    }
-
-    public long getNextUpdate() {
-        return this.nextUpdate;
     }
 
     public void setNextUpdate(long nextUpdate) {

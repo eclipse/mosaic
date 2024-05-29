@@ -41,9 +41,8 @@ public class LidarData implements Serializable {
     }
 
     /**
-     * Returns additional vehicle data produced by the traffic or vehicle simulator.
-     * Can be of any arbitrary type, and is <code>null</code> if the producer has not been
-     * implemented in a way to add this additional data.
+     * Returns lidar data produced by the traffic or vehicle simulator.
+     * Should be of type LidarFrame.
      */
     public Object getLidarData() {
         return this.lidarData;
