@@ -154,7 +154,7 @@
                      value="Type name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="MemberName">
-            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
+            <property name="format" value="(^[a-z]([a-zA-Z0-9]*)?$)|^x$|^y$|^z$"/>
             <message key="name.invalidPattern"
                      value="Member name ''{0}'' must match pattern ''{1}''."/>
         </module>
@@ -175,7 +175,7 @@
         </module>
         <module name="LocalVariableName">
             <property name="tokens" value="VARIABLE_DEF"/>
-            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <property name="format" value="(^[a-z]([a-zA-Z0-9]*)?$)|^x$|^y$|^z$"/>
             <message key="name.invalidPattern"
                      value="Local variable name ''{0}'' must match pattern ''{1}''."/>
         </module>
@@ -273,7 +273,7 @@
             <property name="scope" value="public"/>
             <property name="minLineCount" value="3"/>
             <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="ignoreMethodNamesRegex" value="^get.*$|^with.*$|^set.*$|^is.*$|"/>
+            <property name="ignoreMethodNamesRegex" value="^get.*$|^with.*$|^set.*$|^is.*$|^add.*$"/>
         </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>

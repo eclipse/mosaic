@@ -34,6 +34,9 @@ public class BoundingBox {
         return isEmpty;
     }
 
+    /**
+     * Resets the {@link BoundingBox}, by setting all fields to their default values.
+     */
     public void clear() {
         min.set(0.0);
         max.set(0.0);
@@ -74,11 +77,21 @@ public class BoundingBox {
         }
     }
 
+    /**
+     * Adds a {@link Vector3d} to the {@link BoundingBox} and updates total bounds.
+     *
+     * @param point a single {@link Vector3d}
+     */
     public void add(Vector3d point) {
         addPoint(point);
         updateSizeAndCenter();
     }
 
+    /**
+     * Adds an arbitrary amount of {@link Vector3d Vector3ds} to the {@link BoundingBox} and updates total bounds.
+     *
+     * @param points an arbitrary amount of {@link Vector3d Vector3ds}
+     */
     public void add(Vector3d... points) {
         for (Vector3d point : points) {
             addPoint(point);
@@ -86,6 +99,11 @@ public class BoundingBox {
         updateSizeAndCenter();
     }
 
+    /**
+     * Adds a list of {@link Vector3d Vector3ds} to the {@link BoundingBox} and updates total bounds.
+     *
+     * @param points a list of {@link Vector3d Vector3ds}
+     */
     public void add(List<? extends Vector3d> points) {
         for (Vector3d point : points) {
             addPoint(point);
@@ -126,13 +144,15 @@ public class BoundingBox {
         return distanceSqrToPoint(pt.x, pt.y, pt.z);
     }
 
+
+    /**
+     * Calculates the squared distance to a given point defined by x, y, and z coordinates.
+     */
     public double distanceSqrToPoint(double px, double py, double pz) {
         if (contains(px, py, pz)) {
             return 0;
         }
-
-        double x = 0.0, y = 0.0, z = 0.0;
-
+        double x = 0.0;
         double tmp = px - min.x;
         if (tmp < 0) {
             // px < minX
@@ -144,7 +164,7 @@ public class BoundingBox {
                 x = tmp;
             }
         }
-
+        double y = 0.0;
         tmp = py - min.y;
         if (tmp < 0) {
             // py < minY
@@ -156,7 +176,7 @@ public class BoundingBox {
                 y = tmp;
             }
         }
-
+        double z = 0.0;
         tmp = pz - min.z;
         if (tmp < 0) {
             // pz < minZ
@@ -168,10 +188,12 @@ public class BoundingBox {
                 z = tmp;
             }
         }
-
         return x * x + y * y + z * z;
     }
 
+    /**
+     * Calculates the distance a {@link Ray} travels until it hits a bounding box.
+     */
     public double hitDistance(Ray r) {
         double sqr = hitDistanceSqr(r);
         if (sqr != Double.MAX_VALUE) {
@@ -181,8 +203,17 @@ public class BoundingBox {
         return Double.MAX_VALUE;
     }
 
+    /**
+     * Calculates the squared distance a {@link Ray} travels until it hits a bounding box.
+     */
     public double hitDistanceSqr(Ray r) {
-        double tmin, tmax, tymin, tymax, tzmin, tzmax, div;
+        double tMin;
+        double tMax;
+        double tyMin;
+        double tyMax;
+        double tzMin;
+        double tzMax;
+        double div;
 
         if (contains(r.origin)) {
             return 0.0;
@@ -190,57 +221,57 @@ public class BoundingBox {
 
         div = 1.0 / r.direction.x;
         if (div >= 0.0) {
-            tmin = (min.x - r.origin.x) * div;
-            tmax = (max.x - r.origin.x) * div;
+            tMin = (min.x - r.origin.x) * div;
+            tMax = (max.x - r.origin.x) * div;
         } else {
-            tmin = (max.x - r.origin.x) * div;
-            tmax = (min.x - r.origin.x) * div;
+            tMin = (max.x - r.origin.x) * div;
+            tMax = (min.x - r.origin.x) * div;
         }
 
         div = 1.0 / r.direction.y;
         if (div >= 0.0) {
-            tymin = (min.y - r.origin.y) * div;
-            tymax = (max.y - r.origin.y) * div;
+            tyMin = (min.y - r.origin.y) * div;
+            tyMax = (max.y - r.origin.y) * div;
         } else {
-            tymin = (max.y - r.origin.y) * div;
-            tymax = (min.y - r.origin.y) * div;
+            tyMin = (max.y - r.origin.y) * div;
+            tyMax = (min.y - r.origin.y) * div;
         }
 
-        if ((tmin > tymax) || (tymin > tmax)) {
+        if ((tMin > tyMax) || (tyMin > tMax)) {
             // no intersection
             return Double.MAX_VALUE;
         }
-        if (tymin > tmin) {
-            tmin = tymin;
+        if (tyMin > tMin) {
+            tMin = tyMin;
         }
-        if (tymax < tmax) {
-            tmax = tymax;
+        if (tyMax < tMax) {
+            tMax = tyMax;
         }
 
         div = 1.0 / r.direction.z;
         if (div >= 0.0) {
-            tzmin = (min.z - r.origin.z) * div;
-            tzmax = (max.z - r.origin.z) * div;
+            tzMin = (min.z - r.origin.z) * div;
+            tzMax = (max.z - r.origin.z) * div;
         } else {
-            tzmin = (max.z - r.origin.z) * div;
-            tzmax = (min.z - r.origin.z) * div;
+            tzMin = (max.z - r.origin.z) * div;
+            tzMax = (min.z - r.origin.z) * div;
         }
 
-        if ((tmin > tzmax) || (tzmin > tmax)) {
+        if (tMin > tzMax || tzMin > tMax) {
             // no intersection
             return Double.MAX_VALUE;
         }
-        if (tzmin > tmin) {
-            tmin = tzmin;
+        if (tzMin > tMin) {
+            tMin = tzMin;
         }
 
-        if (tmin > 0) {
+        if (tMin > 0) {
             // hit! calculate square distance between ray origin and hit point
-            double comp = r.direction.x * tmin;
+            double comp = r.direction.x * tMin;
             double dist = comp * comp;
-            comp = r.direction.y * tmin;
+            comp = r.direction.y * tMin;
             dist += comp * comp;
-            comp = r.direction.z * tmin;
+            comp = r.direction.z * tMin;
             dist += comp * comp;
             return dist;
         } else {
