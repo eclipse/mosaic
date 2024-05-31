@@ -145,7 +145,7 @@ public class Wgs84Projection extends GeoProjection {
      * Lat and Long are in decimal degrees
      * Written by Chuck Gantz- chuck.gantz@globalstar.com
      */
-    @SuppressWarnings("checkstyle:LocalVariableName")
+    @SuppressWarnings("checkstyle:localvariablename")
     @Override
     public MutableUtmPoint geographicToUtm(GeoPoint geoPoint, MutableUtmPoint result) {
         double latRad = Math.toRadians(geoPoint.getLatitude());
@@ -214,7 +214,7 @@ public class Wgs84Projection extends GeoProjection {
         return zoneNumber;
     }
 
-    @SuppressWarnings("checkstyle:LocalVariableName")
+    @SuppressWarnings("checkstyle:localvariablename")
     @Override
     public MutableGeoPoint utmToGeographic(UtmPoint utmPoint, MutableGeoPoint result) {
         // remove 500,000 meter offset for longitude
