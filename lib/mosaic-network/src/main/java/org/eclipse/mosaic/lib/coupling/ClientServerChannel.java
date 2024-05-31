@@ -630,7 +630,7 @@ public class ClientServerChannel {
             case SCH6:
                 return ClientServerChannelProtos.RadioChannel.PROTO_SCH6;
             default:
-                throw new RuntimeException("Channel " + channel.toString() + " does not exist in MOSAIC");
+                throw new RuntimeException("Channel " + channel + " does not exist in MOSAIC");
         }
     }
 
