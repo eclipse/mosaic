@@ -22,6 +22,7 @@
 
     <property name="fileExtensions" value="java, properties, xml"/>
 
+    <module name="SuppressWarnings"/>
     <module name="SuppressionFilter">
         <property name="file" value="${config_loc}/checkstyle-excludes.xml" />
     </module>
