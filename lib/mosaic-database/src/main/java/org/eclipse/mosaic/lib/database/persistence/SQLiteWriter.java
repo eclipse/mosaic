@@ -54,6 +54,9 @@ public class SQLiteWriter {
      */
     final MosaicVersion stable;
 
+    /**
+     * Constructor for the {@link SQLiteWriter} reading the properties to retrieve the stable database version.
+     */
     public SQLiteWriter() {
         // determine stable version to check against
         try (InputStream propertiesStream = this.getClass().getResourceAsStream("/database.properties")) {
@@ -94,32 +97,36 @@ public class SQLiteWriter {
         if (goSave) {
             try {
                 Statement statement = sqlite.connect();
-                log.debug("setting version and properties...");
-                saveProperties(database);
-                log.info("Saving {} nodes...", database.getNodes().size());
-                saveNodes(database);
-                log.info("Saving {} ways...", database.getWays().size());
-                saveWays(database);
-                saveWayNodes(database);
-                log.info("Saving {} connections...", database.getConnections().size());
-                saveConnections(database);
-                saveConnectionNodes(database);
-                log.info("Saving {} restrictions...", database.getRestrictions().size());
-                saveRestrictions(database);
-                log.info("Saving {} routes...", database.getRoutes().size());
-                saveRoutes(database);
-                log.info("Saving {} roundabouts...", database.getRoundabouts().size());
-                saveRoundabouts(database);
-                log.info("Saving {} buildings...", database.getBuildings().size());
-                saveBuildings(database);
-                log.info("Create Indices");
-                createIndices();
-                log.info("Database saved");
+                executeSaves(database);
                 sqlite.disconnect(statement);
             } catch (SQLException sqle) {
                 log.error("error while trying to write database content: {}", sqle.getMessage());
             }
         }
+    }
+
+    private void executeSaves(@Nonnull Database database) throws SQLException {
+        log.debug("setting version and properties...");
+        saveProperties(database);
+        log.info("Saving {} nodes...", database.getNodes().size());
+        saveNodes(database);
+        log.info("Saving {} ways...", database.getWays().size());
+        saveWays(database);
+        saveWayNodes(database);
+        log.info("Saving {} connections...", database.getConnections().size());
+        saveConnections(database);
+        saveConnectionNodes(database);
+        log.info("Saving {} restrictions...", database.getRestrictions().size());
+        saveRestrictions(database);
+        log.info("Saving {} routes...", database.getRoutes().size());
+        saveRoutes(database);
+        log.info("Saving {} roundabouts...", database.getRoundabouts().size());
+        saveRoundabouts(database);
+        log.info("Saving {} buildings...", database.getBuildings().size());
+        saveBuildings(database);
+        log.info("Create Indices");
+        createIndices();
+        log.info("Database saved");
     }
 
 
@@ -166,26 +173,39 @@ public class SQLiteWriter {
         // create tables
         // integrity
         statement.executeUpdate("CREATE TABLE " + TABLES.PROPERTIES + " (id TEXT UNIQUE, value TEXT)");
-        statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES + "(id, value) VALUES ('" + Database.PROPERTY_VERSION + "', '" + Database.VERSION_UNKNOWN + "')");
-        statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES + "(id, value) VALUES ('" + Database.PROPERTY_IMPORT_ORIGIN + "', '')");
+        statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES
+                + "(id, value) VALUES ('" + Database.PROPERTY_VERSION + "', '" + Database.VERSION_UNKNOWN + "')");
+        statement.executeUpdate("INSERT INTO " + TABLES.PROPERTIES
+                + "(id, value) VALUES ('" + Database.PROPERTY_IMPORT_ORIGIN + "', '')");
         // pure network
-        statement.executeUpdate("CREATE TABLE " + TABLES.NODE + " (id TEXT, lat REAL, lon REAL, ele REAL, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.WAY + " (id TEXT, name TEXT, type TEXT, speed REAL, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.WAY_CONSISTS_OF + " (way_id TEXT, node_id TEXT, sequence_number INTEGER)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION + " (id TEXT, way_id TEXT, lanes INTEGER, length REAL)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_CONSISTS_OF + " (connection_id TEXT, node_id TEXT, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.NODE
+                + " (id TEXT, lat REAL, lon REAL, ele REAL, is_traffic_light BOOLEAN, is_intersection BOOLEAN, is_generated BOOLEAN)");
+        statement.executeUpdate("CREATE TABLE "
+                + TABLES.WAY + " (id TEXT, name TEXT, type TEXT, speed REAL, lanesForward INTEGER, lanesBackward INTEGER, oneway BOOLEAN)");
+        statement.executeUpdate("CREATE TABLE "
+                + TABLES.WAY_CONSISTS_OF + " (way_id TEXT, node_id TEXT, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE "
+                + TABLES.CONNECTION + " (id TEXT, way_id TEXT, lanes INTEGER, length REAL)");
+        statement.executeUpdate("CREATE TABLE "
+                + TABLES.CONNECTION_CONSISTS_OF + " (connection_id TEXT, node_id TEXT, sequence_number INTEGER)");
         // turn restrictions
-        statement.executeUpdate("CREATE TABLE " + TABLES.RESTRICTION + " (id TEXT, source_way_id TEXT, via_node_id TEXT, target_way_id TEXT, type TEXT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.RESTRICTION
+                + " (id TEXT, source_way_id TEXT, via_node_id TEXT, target_way_id TEXT, type TEXT)");
         // traffic signals
-        statement.executeUpdate("CREATE TABLE " + TABLES.TRAFFIC_SIGNALS + " (id TEXT, ref_node_id TEXT, phases TEXT, timing TEXT, from_way_id TEXT, via0_way_id TEXT, via1_way_id TEXT, to_way_id TEXT, lanes_from TEXT, lanes_via0 TEXT, lanes_via1 TEXT, lanes_to TEXT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.TRAFFIC_SIGNALS
+                + " (id TEXT, ref_node_id TEXT, phases TEXT, timing TEXT, from_way_id TEXT, via0_way_id TEXT, via1_way_id TEXT,"
+                + " to_way_id TEXT, lanes_from TEXT, lanes_via0 TEXT, lanes_via1 TEXT, lanes_to TEXT)");
         // vehicle data
-        statement.executeUpdate("CREATE TABLE " + TABLES.ROUTE + " (id TEXT, sequence_number INTEGER, connection_id TEXT)");
+        statement.executeUpdate("CREATE TABLE " + TABLES.ROUTE
+                + " (id TEXT, sequence_number INTEGER, connection_id TEXT)");
         // roundabouts
         statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT + " (id TEXT)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.ROUNDABOUT_CONSISTS_OF + " (roundabout_id TEXT, node_id TEXT, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE "
+                + TABLES.ROUNDABOUT_CONSISTS_OF + " (roundabout_id TEXT, node_id TEXT, sequence_number INTEGER)");
         // buildings and its corners
         statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING + " (id TEXT, name TEXT, height REAL)");
-        statement.executeUpdate("CREATE TABLE " + TABLES.BUILDING_CONSISTS_OF + " (building_id TEXT, lat REAL, lon REAL, sequence_number INTEGER)");
+        statement.executeUpdate("CREATE TABLE "
+                + TABLES.BUILDING_CONSISTS_OF + " (building_id TEXT, lat REAL, lon REAL, sequence_number INTEGER)");
 
         // Connection Details (like parking lots)
         statement.executeUpdate("CREATE TABLE " + TABLES.CONNECTION_DETAILS + " (id TEXT, connection TEXT, type TEXT, value TEXT)");
@@ -241,22 +261,26 @@ public class SQLiteWriter {
         String statement = "INSERT INTO " + TABLES.NODE + "(" + columns + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Node node : database.getNodes()) {
-                prep.setString(1, node.getId());
-                prep.setDouble(2, node.getPosition().getLongitude());
-                prep.setDouble(3, node.getPosition().getLatitude());
-                prep.setDouble(4, node.getPosition().getAltitude());
-                prep.setBoolean(5, node.getClass().equals(TrafficLightNode.class));
-                prep.setBoolean(6, node.isIntersection());
-                prep.setBoolean(7, node.isGenerated());
-                prep.executeUpdate();
-            }
-            sqlite.getConnection().commit();
+            batchSaveNodes(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist nodes: {}", sqle.getMessage());
         }
+    }
+
+    private void batchSaveNodes(Database database, PreparedStatement prep) throws SQLException {
+        sqlite.getConnection().setAutoCommit(false);
+        for (Node node : database.getNodes()) {
+            prep.setString(1, node.getId());
+            prep.setDouble(2, node.getPosition().getLongitude());
+            prep.setDouble(3, node.getPosition().getLatitude());
+            prep.setDouble(4, node.getPosition().getAltitude());
+            prep.setBoolean(5, node.getClass().equals(TrafficLightNode.class));
+            prep.setBoolean(6, node.isIntersection());
+            prep.setBoolean(7, node.isGenerated());
+            prep.executeUpdate();
+        }
+        sqlite.getConnection().commit();
     }
 
     /**
@@ -270,22 +294,26 @@ public class SQLiteWriter {
         String statement = "INSERT INTO " + TABLES.WAY + "(" + columns + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Way way : database.getWays()) {
-                prep.setString(1, way.getId());
-                prep.setString(2, way.getName());
-                prep.setString(3, way.getType());
-                prep.setDouble(4, way.getMaxSpeedInMs());
-                prep.setInt(5, way.getNumberOfLanesForward());
-                prep.setInt(6, way.getNumberOfLanesBackward());
-                prep.setBoolean(7, way.isOneway());
-                prep.executeUpdate();
-            }
-            sqlite.getConnection().commit();
+            batchSaveWays(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist ways: {}", sqle.getMessage());
         }
+    }
+
+    private void batchSaveWays(Database database, PreparedStatement prep) throws SQLException {
+        sqlite.getConnection().setAutoCommit(false);
+        for (Way way : database.getWays()) {
+            prep.setString(1, way.getId());
+            prep.setString(2, way.getName());
+            prep.setString(3, way.getType());
+            prep.setDouble(4, way.getMaxSpeedInMs());
+            prep.setInt(5, way.getNumberOfLanesForward());
+            prep.setInt(6, way.getNumberOfLanesBackward());
+            prep.setBoolean(7, way.isOneway());
+            prep.executeUpdate();
+        }
+        sqlite.getConnection().commit();
     }
 
     /**
@@ -341,26 +369,30 @@ public class SQLiteWriter {
     private void saveWayNodes(Database database) {
         String columns = "way_id, node_id, sequence_number";
         String statement = "INSERT INTO " + TABLES.WAY_CONSISTS_OF + "(" + columns + ") VALUES (?, ?, ?)";
-        int sequenceNumber;
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Way way : database.getWays()) {
-                sequenceNumber = 0;
-                for (Node node : way.getNodes()) {
-                    prep.setString(1, way.getId());
-                    prep.setString(2, node.getId());
-                    prep.setInt(3, sequenceNumber);
-                    prep.executeUpdate();
-                    sequenceNumber++;
-                }
-            }
-            sqlite.getConnection().commit();
+            batchSaveWayNodes(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist ways <--> node relations: {}",
                     sqle.getMessage());
         }
+    }
+
+    private void batchSaveWayNodes(Database database, PreparedStatement prep) throws SQLException {
+        int sequenceNumber;
+        sqlite.getConnection().setAutoCommit(false);
+        for (Way way : database.getWays()) {
+            sequenceNumber = 0;
+            for (Node node : way.getNodes()) {
+                prep.setString(1, way.getId());
+                prep.setString(2, node.getId());
+                prep.setInt(3, sequenceNumber);
+                prep.executeUpdate();
+                sequenceNumber++;
+            }
+        }
+        sqlite.getConnection().commit();
     }
 
     /**
@@ -374,19 +406,23 @@ public class SQLiteWriter {
         String statement = "INSERT INTO " + TABLES.CONNECTION + "(" + columns + ") VALUES (?, ?, ?, ?)";
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Connection connection : database.getConnections()) {
-                prep.setString(1, connection.getId());
-                prep.setString(2, connection.getWay().getId());
-                prep.setInt(3, connection.getLanes());
-                prep.setDouble(4, connection.getLength());
-                prep.executeUpdate();
-            }
-            sqlite.getConnection().commit();
+            batchSaveConnections(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist connections: {}", sqle.getMessage());
         }
+    }
+
+    private void batchSaveConnections(Database database, PreparedStatement prep) throws SQLException {
+        sqlite.getConnection().setAutoCommit(false);
+        for (Connection connection : database.getConnections()) {
+            prep.setString(1, connection.getId());
+            prep.setString(2, connection.getWay().getId());
+            prep.setInt(3, connection.getLanes());
+            prep.setDouble(4, connection.getLength());
+            prep.executeUpdate();
+        }
+        sqlite.getConnection().commit();
     }
 
     /**
@@ -398,26 +434,30 @@ public class SQLiteWriter {
     private void saveConnectionNodes(Database database) {
         String columns = "connection_id, node_id, sequence_number";
         String statement = "INSERT INTO " + TABLES.CONNECTION_CONSISTS_OF + "(" + columns + ") VALUES (?, ?, ?)";
-        int sequenceNumber;
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Connection connection : database.getConnections()) {
-                sequenceNumber = 0;
-                for (Node node : connection.getNodes()) {
-                    prep.setString(1, connection.getId());
-                    prep.setString(2, node.getId());
-                    prep.setInt(3, sequenceNumber);
-                    prep.executeUpdate();
-                    sequenceNumber++;
-                }
-            }
-            sqlite.getConnection().commit();
+            batchSaveConnectionNoes(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist connection <--> node relations: {}",
                     sqle.getMessage());
         }
+    }
+
+    private void batchSaveConnectionNoes(Database database, PreparedStatement prep) throws SQLException {
+        int sequenceNumber;
+        sqlite.getConnection().setAutoCommit(false);
+        for (Connection connection : database.getConnections()) {
+            sequenceNumber = 0;
+            for (Node node : connection.getNodes()) {
+                prep.setString(1, connection.getId());
+                prep.setString(2, node.getId());
+                prep.setInt(3, sequenceNumber);
+                prep.executeUpdate();
+                sequenceNumber++;
+            }
+        }
+        sqlite.getConnection().commit();
     }
 
     /**
@@ -431,20 +471,24 @@ public class SQLiteWriter {
 
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Restriction restriction : database.getRestrictions()) {
-                prep.setString(1, restriction.getId());
-                prep.setString(2, restriction.getSource().getId());
-                prep.setString(3, restriction.getVia().getId());
-                prep.setString(4, restriction.getTarget().getId());
-                prep.setString(5, restriction.getType().name());
-                prep.executeUpdate();
-            }
-            sqlite.getConnection().commit();
+            batchSaveRestrictions(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist restriction; {}", sqle.getMessage());
         }
+    }
+
+    private void batchSaveRestrictions(Database database, PreparedStatement prep) throws SQLException {
+        sqlite.getConnection().setAutoCommit(false);
+        for (Restriction restriction : database.getRestrictions()) {
+            prep.setString(1, restriction.getId());
+            prep.setString(2, restriction.getSource().getId());
+            prep.setString(3, restriction.getVia().getId());
+            prep.setString(4, restriction.getTarget().getId());
+            prep.setString(5, restriction.getType().name());
+            prep.executeUpdate();
+        }
+        sqlite.getConnection().commit();
     }
 
     /**
@@ -475,7 +519,8 @@ public class SQLiteWriter {
         }
 
         // Store corner list of building in database
-        final String cornerStatement = "INSERT INTO " + TABLES.BUILDING_CONSISTS_OF + "(building_id, lat, lon, sequence_number) VALUES (?, ?, ?, ?)";
+        final String cornerStatement = "INSERT INTO " + TABLES.BUILDING_CONSISTS_OF
+                + "(building_id, lat, lon, sequence_number) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(cornerStatement)) {
             final boolean autoCommit = sqlite.getConnection().getAutoCommit();
@@ -507,26 +552,30 @@ public class SQLiteWriter {
     private void saveRoutes(Database database) {
         String columns = "id, sequence_number, connection_id";
         String statement = "INSERT INTO " + TABLES.ROUTE + "(" + columns + ") VALUES (?, ?, ?)";
-        int sequenceNumber;
         try (PreparedStatement prep = sqlite.getConnection().prepareStatement(statement)) {
             boolean autoCommit = sqlite.getConnection().getAutoCommit();
-            sqlite.getConnection().setAutoCommit(false);
-            for (Route route : database.getRoutes()) {
-                sequenceNumber = 0;
-                for (Connection connection : route.getConnections()) {
-                    prep.setString(1, route.getId());
-                    prep.setInt(2, sequenceNumber);
-                    prep.setString(3, connection.getId());
-
-                    prep.executeUpdate();
-                    sequenceNumber++;
-                }
-            }
-            sqlite.getConnection().commit();
+            batchSaveRoutes(database, prep);
             sqlite.getConnection().setAutoCommit(autoCommit);
         } catch (SQLException sqle) {
             log.error("error while trying to persist routes: {}", sqle.getMessage());
         }
+    }
+
+    private void batchSaveRoutes(Database database, PreparedStatement prep) throws SQLException {
+        int sequenceNumber;
+        sqlite.getConnection().setAutoCommit(false);
+        for (Route route : database.getRoutes()) {
+            sequenceNumber = 0;
+            for (Connection connection : route.getConnections()) {
+                prep.setString(1, route.getId());
+                prep.setInt(2, sequenceNumber);
+                prep.setString(3, connection.getId());
+
+                prep.executeUpdate();
+                sequenceNumber++;
+            }
+        }
+        sqlite.getConnection().commit();
     }
 
 }
