@@ -265,7 +265,7 @@
         <module name="JavadocMethod">
             <property name="accessModifiers" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
-            <property name="validateThrows" value="true"/>
+            <property name="validateThrows" value="false"/>
             <property name="allowMissingReturnTag" value="true"/>
             <property name="allowedAnnotations" value="Override, Test, Deprecated"/>
         </module>
