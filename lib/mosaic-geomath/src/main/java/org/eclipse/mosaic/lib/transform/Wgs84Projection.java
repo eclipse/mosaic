@@ -148,16 +148,14 @@ public class Wgs84Projection extends GeoProjection {
     @SuppressWarnings("checkstyle:LocalVariableName")
     @Override
     public MutableUtmPoint geographicToUtm(GeoPoint geoPoint, MutableUtmPoint result) {
+        double latRad = Math.toRadians(geoPoint.getLatitude());
         // Make sure the longitude is between -180.00 .. 179.9
         double longTemp = (geoPoint.getLongitude() + 180) - (int) ((geoPoint.getLongitude() + 180) / 360) * 360 - 180;
-
-        double latRad = Math.toRadians(geoPoint.getLatitude());
         double longRad = Math.toRadians(longTemp);
-        double longOriginRad;
         int zoneNumber = extractZoneNumber(geoPoint, longTemp);
 
         double longOrigin = (zoneNumber - 1) * 6 - 180 + 3;  //+3 puts origin in middle of zone
-        longOriginRad = Math.toRadians(longOrigin);
+        double longOriginRad = Math.toRadians(longOrigin);
 
         double eccSquared = ellipsoid.eccentricitySquared;
         double eccToTheFourth = eccSquared * eccSquared;
@@ -249,7 +247,8 @@ public class Wgs84Projection extends GeoProjection {
         double R1 = a * (1 - eccSquared) / Math.pow(a1, 1.5);
         double D = x / (N1 * K_0);
 
-        double lat = phi1Rad - (N1 * Math.tan(phi1Rad) / R1) * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * D * D * D * D / 24
+        double lat = phi1Rad - (N1 * Math.tan(phi1Rad) / R1)
+                * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * D * D * D * D / 24
                 + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared - 3 * C1 * C1) * D * D * D * D * D * D / 720);
         double resultLatitude = Math.toDegrees(lat);
 

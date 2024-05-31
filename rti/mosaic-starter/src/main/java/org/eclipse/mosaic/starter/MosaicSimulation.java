@@ -34,6 +34,7 @@ import org.eclipse.mosaic.rti.api.InteractionManagement;
 import org.eclipse.mosaic.rti.api.MosaicVersion;
 import org.eclipse.mosaic.rti.api.TimeManagement;
 import org.eclipse.mosaic.rti.api.WatchDog;
+import org.eclipse.mosaic.rti.api.federatestarter.DockerFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.api.parameters.FederateDescriptor;
 import org.eclipse.mosaic.rti.api.parameters.FederatePriority;
@@ -220,7 +221,7 @@ public class MosaicSimulation {
 
     protected void printMosaicVersion() {
         LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME).info("Running Eclipse MOSAIC {} on Java JRE v{} ({})",
-                MosaicVersion.get().toString(),
+                MosaicVersion.get(),
                 System.getProperty("java.version"),
                 System.getProperty("java.vendor")
         );
@@ -382,9 +383,9 @@ public class MosaicSimulation {
 
             if (StringUtils.isNotEmpty(federate.dockerImage)) {
                 final String container = federate.id + '-' + simulationId;
-                descriptor.setFederateExecutor(
-                        descriptor.getAmbassador().createDockerFederateExecutor(federate.dockerImage, host.operatingSystem).setContainerName(container)
-                );
+                DockerFederateExecutor dockerFederateExecutor = descriptor.getAmbassador()
+                        .createDockerFederateExecutor(federate.dockerImage, host.operatingSystem).setContainerName(container);
+                descriptor.setFederateExecutor(dockerFederateExecutor);
             } else {
                 int port = federate.port;
                 if (port == 0) {
@@ -490,7 +491,6 @@ public class MosaicSimulation {
             logDirectory = Paths.get(logDirectoryValue);
         }
 
-
         // actually apply directory to context and init configuration
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator jc = new JoranConfigurator();
@@ -571,7 +571,6 @@ public class MosaicSimulation {
      *
      * @param logbackConfigPath logback configuration from which the logDirectory property is read from
      * @return path to the log directory as String
-     * @throws Exception in case the log directory could not be read
      */
     private String readLogFolderFromLogback(Path logbackConfigPath) {
 
