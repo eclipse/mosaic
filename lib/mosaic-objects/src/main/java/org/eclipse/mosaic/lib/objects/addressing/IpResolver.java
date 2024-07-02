@@ -128,6 +128,8 @@ public final class IpResolver implements Serializable {
     }
 
     /**
+     * Method to look up an {@link Inet4Address} for a given MOSAIC-style host name.
+     *
      * @param hostname the units ID veh_0; rsu_1; tl_2; cs_3 etc.
      * @return the hosts Inet4Address if it is registered or null if not
      */
@@ -138,6 +140,7 @@ public final class IpResolver implements Serializable {
     }
 
     /**
+     * Method to look up a MOSAIC-style host name for a given {@link Inet4Address}.
      * @param address the Inet4Address to lookup
      * @return name of the host belonging to the given address or null if none found
      */

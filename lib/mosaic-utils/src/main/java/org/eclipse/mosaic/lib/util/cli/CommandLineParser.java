@@ -74,12 +74,13 @@ public class CommandLineParser<T> {
 
         Map<String, OptionGroup> optionGroups = new HashMap<>();
 
-        // build Options out of declared fields of parameter object
+        // build Options out of declared fields of the parameter object
         for (Field field : FieldUtils.getAllFields(parameterClass)) {
             if (field.isAnnotationPresent(CommandLineOption.class)) {
                 final CommandLineOption cliAnnotation = field.getAnnotation(CommandLineOption.class);
 
-                final Option option = new Option(StringUtils.defaultIfBlank(cliAnnotation.shortOption(), null), cliAnnotation.description());
+                final Option option =
+                        new Option(StringUtils.defaultIfBlank(cliAnnotation.shortOption(), null), cliAnnotation.description());
                 option.setLongOpt(cliAnnotation.longOption());
                 if (StringUtils.isNotEmpty(cliAnnotation.argName())) {
                     option.setArgs(1);
@@ -158,7 +159,7 @@ public class CommandLineParser<T> {
     private List<String> filterSystemProperties(String[] args) {
         final List<String> argumentsToParse = new ArrayList<>();
 
-        for (String arg: args) {
+        for (String arg : args) {
             if (arg.startsWith("-D") && arg.contains("=")) {
                 String[] systemProperty = arg.substring(2).split("=");
                 System.setProperty(systemProperty[0], systemProperty[1]);
@@ -172,6 +173,9 @@ public class CommandLineParser<T> {
     /**
      * Transforms the object, which holds the parameter values into a list of arguments, which can be
      * used to start MOSAIC processes with valid arguments.
+     *
+     * @throws UnsupportedOperationException if parameter is not in the list of supported arguments
+     * @throws RuntimeException              if parameter could not be parsed
      */
     public final List<String> transformToArguments(final T parameters) {
         final List<String> arguments = new LinkedList<>();
@@ -195,7 +199,9 @@ public class CommandLineParser<T> {
                         arguments.add(((File) field.get(parameters)).getAbsolutePath());
                     }
                 } else {
-                    throw new UnsupportedOperationException(String.format("Could not transform %s to argument. Unsupported type.", field.getName()));
+                    throw new UnsupportedOperationException(
+                            String.format("Could not transform %s to argument. Unsupported type.", field.getName())
+                    );
                 }
 
             }
@@ -205,6 +211,11 @@ public class CommandLineParser<T> {
         return arguments;
     }
 
+    /**
+     * Prints the help.
+     *
+     * @param printWriter writer to output help to
+     */
     public void printHelp(PrintWriter printWriter) {
         HelpFormatter helpFormatter = new HelpFormatter();
 
@@ -225,12 +236,20 @@ public class CommandLineParser<T> {
     }
 
     /**
-     * @return all options declared in the parameter object this parser has been initialized with
+     * This method provides all options declared in the parameter object this parser has been initialized with.
      */
     public final Options getOptions() {
         return this.options;
     }
 
+    /**
+     * This method is used to define a usage hint for the respective {@link CommandLineParser}.
+     *
+     * @param usageHint the hint to be set
+     * @param header    header for the hint
+     * @param footer    footer for the hint
+     * @return the object to chain further methods
+     */
     public CommandLineParser<T> usageHint(String usageHint, String header, String footer) {
         this.header = ObjectUtils.defaultIfNull(header, this.header);
         this.footer = ObjectUtils.defaultIfNull(footer, this.footer);

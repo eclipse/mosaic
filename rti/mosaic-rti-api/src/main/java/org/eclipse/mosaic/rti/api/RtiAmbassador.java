@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 
 /**
  * This interface is offered to each <code>FederateAmbassador</code> to allow
- * communication to the RTI. Therefore the RTI has to implement this interface.
+ * communication to the RTI. Therefore, the RTI has to implement this interface.
  */
 public interface RtiAmbassador extends Interactable {
 
@@ -56,8 +56,8 @@ public interface RtiAmbassador extends Interactable {
     void requestAdvanceTime(long time, long lookahead, byte priority) throws IllegalValueException;
 
     /**
-     * @return
-     * @throws IllegalValueException
+     * Provides the timestamp of them next scheduled event. [ns]
+     * @throws IllegalValueException if
      */
     long getNextEventTimestamp() throws IllegalValueException;
 
@@ -77,7 +77,7 @@ public interface RtiAmbassador extends Interactable {
     RandomNumberGenerator createRandomNumberGenerator();
 
     /**
-     * Provides the monitor instance to log specific events, such as begin of
+     * Provides the monitor instance to log specific events, such as the start of
      * the simulation or event triggers.
      *
      * @return the monitor instance to log specific events

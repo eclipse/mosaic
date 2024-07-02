@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.bridge;
 
 
@@ -45,6 +46,12 @@ public class LibSumoBridge implements Bridge {
     private final RouteFacade routeControl;
     private final PoiFacade poiControl;
 
+    /**
+     * Constructor for the {@link LibSumoBridge}, initializing simulation and facades based on configuration.
+     *
+     * @param sumoConfiguration the MOSAIC internal {@link CSumo SUMO configuration}
+     * @param parameters        the program arguments for starting the simulation
+     */
     public LibSumoBridge(CSumo sumoConfiguration, List<String> parameters) {
 
         Simulation.load(new StringVector(parameters));

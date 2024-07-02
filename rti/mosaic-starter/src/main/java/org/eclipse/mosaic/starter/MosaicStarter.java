@@ -146,7 +146,7 @@ public class MosaicStarter {
     }
 
     protected void printVersionAndCopyrightInfo() {
-        System.out.println("Eclipse MOSAIC [Version " + MosaicVersion.get().toString() + "]");
+        System.out.println("Eclipse MOSAIC [Version " + MosaicVersion.get() + "]");
         System.out.println("Copyright (c) 2024 Fraunhofer FOKUS and others. All rights reserved.");
         System.out.println("License EPL-2.0: Eclipse Public License Version 2 [https://eclipse.org/legal/epl-v20.html].");
         System.out.println();
@@ -220,6 +220,7 @@ public class MosaicStarter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T loadJsonConfiguration(Path configurationFile, T defaultObject) {
         try (InputStream inputStream = loadResource(configurationFile)) {
             return new ObjectInstantiation<>((Class<T>) defaultObject.getClass()).read(inputStream);
@@ -274,7 +275,7 @@ public class MosaicStarter {
         try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, StandardCharsets.UTF_8))) {
             cli.printHelp(writer);
         }
-        String usage = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+        String usage = baos.toString(StandardCharsets.UTF_8);
         System.out.format("Invalid command line arguments: %s%n%s", error, usage);
     }
 

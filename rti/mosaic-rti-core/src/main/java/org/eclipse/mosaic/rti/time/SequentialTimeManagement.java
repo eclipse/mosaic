@@ -34,8 +34,9 @@ public class SequentialTimeManagement extends AbstractTimeManagement {
     /**
      * Creates a new instance of the sequential time management.
      *
-     * @param federation    reference to the <code>ComponentFactory</code> to access simulation components
-     * @param componentParameters parameters specifically for this {@link TimeManagement, e.g. the target realtime factor for the simulation.
+     * @param federation          reference to the <code>ComponentFactory</code> to access simulation components
+     * @param componentParameters parameters specifically for this {@link TimeManagement},
+     *                            e.g., the target realtime factor for the simulation.
      */
     public SequentialTimeManagement(ComponentProvider federation, MosaicComponentParameters componentParameters) {
         super(federation, componentParameters);
@@ -54,7 +55,6 @@ public class SequentialTimeManagement extends AbstractTimeManagement {
         federation.getMonitor().onBeginSimulation(federation.getFederationManagement(), this, 1);
 
         this.prepareSimulationRun();
-
 
         final PerformanceCalculator performanceCalculator = new PerformanceCalculator();
         final RealtimeSynchronisation realtimeSync = new RealtimeSynchronisation(realtimeBrake);

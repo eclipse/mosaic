@@ -24,7 +24,6 @@ import java.util.Collections;
 /**
  * This class implements the QuickHull algorithm to compute the convex hull from a set of points.
  * FIXME: For now the algorithm is 2D and considers only the X- and Z-coordinates. Modified version
- * from http://read.pudn.com/downloads50/sourcecode/graph/172533/QuickHull.java__.htm
  */
 public class QuickHull2d {
     private ArrayList<Line> hullEdges;
@@ -81,15 +80,13 @@ public class QuickHull2d {
 
     private void quickHull(Line ab, int l, int r) {
         if (l <= r) {
-            int i, s1, s2, pivot;
-            double maxDist = 0.0;
-            double dist;
-            Vector3d P, q;
             Vector3d a = ab.p1;
             Vector3d b = ab.p2;
-            Line aP, Pb;
-
-            pivot = l;
+            Vector3d q;
+            int pivot = l;
+            double dist;
+            double maxDist = 0.0;
+            int i;
             for (i = l; i <= r; i++) {
                 q = points.get(i);
                 aq.set(a, q);
@@ -101,18 +98,18 @@ public class QuickHull2d {
             }
 
             Collections.swap(points, l, pivot);
-            P = points.get(l);
+            Vector3d P = points.get(l);
 
-            aP = new Line(a, P);
-            Pb = new Line(P, b);
+            Line aP = new Line(a, P);
+            Line Pb = new Line(P, b);
 
             hullEdges.add(aP);
             hullEdges.add(Pb);
             hullEdges.remove(ab);
 
             i = l + 1;
-            s1 = l;
-            s2 = r + 1;
+            int s1 = l;
+            int s2 = r + 1;
 
             while (i < s2) {
                 q = points.get(i);
@@ -131,17 +128,15 @@ public class QuickHull2d {
     }
 
     private void computeConvexHull() {
-        Vector3d a, b, q;
-        double minX, maxX, x;
-        int i, j, iLeft, iRight, iLower, iUpper;
-        Line ab, ba;
-
         hullEdges = new ArrayList<>();
-
-        // find the left and right extrema. These define the chord that separates the upper and
-        // lower sets
-        minX = maxX = points.get(0).x;
-        iLeft = iRight = 0;
+        // find the left and right extrema. These define the chord that separates the upper and lower sets
+        Vector3d q;
+        double x;
+        double minX = points.get(0).x;
+        double maxX = points.get(0).x;
+        int iLeft = 0;
+        int iRight = 0;
+        int i;
         for (i = 1; i < points.size(); i++) {
             q = points.get(i);
             x = q.x;
@@ -161,17 +156,12 @@ public class QuickHull2d {
         if (iLeft == 0) {
             iLeft = iRight;
         }
+        Vector3d a = points.get(0);
+        Vector3d b = points.get(iLeft);
 
-        a = points.get(0);
-        b = points.get(iLeft);
-
-        ab = new Line(a, b);
-        ba = new Line(b, a);
-
-        iUpper = 0;
-        iLower = points.size();
+        int iUpper = 0;
+        int iLower = points.size();
         i = 1;
-
         while (i < iLower) {
             q = points.get(i);
             if (ccw(b, a, q) < 0.0) {
@@ -183,6 +173,8 @@ public class QuickHull2d {
             }
         }
 
+        Line ab = new Line(a, b);
+        Line ba = new Line(b, a);
         hullEdges.add(ab);
         hullEdges.add(ba);
 
@@ -194,6 +186,7 @@ public class QuickHull2d {
         Line curEdge = hullEdges.get(0);
         Line nextEdge;
         orderedEdges[0] = curEdge;
+        int j;
         for (i = 1; i < hullSize; i++) {
             for (j = 1; j < hullSize; j++) {
                 nextEdge = hullEdges.get(j);

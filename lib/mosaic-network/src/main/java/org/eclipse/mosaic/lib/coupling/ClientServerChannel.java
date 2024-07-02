@@ -128,6 +128,7 @@ public class ClientServerChannel {
 
     /**
      * Allowed address types.
+     * FIXME: Is this still needed?
      */
     public static final class ADDRESSTYPE {
 
@@ -163,7 +164,7 @@ public class ClientServerChannel {
     final private OutputStream out;
 
     /**
-     * Logger
+     * Logger (not yet used).
      *///TODO: implement usage
     final private Logger log;
 
@@ -206,8 +207,6 @@ public class ClientServerChannel {
 
     /**
      * Closes the channel.
-     *
-     * @throws java.io.IOException
      */
     public void close() throws IOException {
         this.socket.close();
@@ -223,10 +222,10 @@ public class ClientServerChannel {
 
     /**
      * Reads a message from the incoming channel.
+     * TODO: ChannelID (and length) not yet treated
      *
      * @return The read message.
-     * @throws java.io.IOException
-     */ //TODO: ChannelID (and length) not yet treated
+     */
     public ReceiveMessageContainer readMessage(IdTransformer<Integer, String> idTransformer) throws IOException {
         ReceiveMessage receiveMessage = this.readMessage();
         V2xReceiverInformation recInfo = new V2xReceiverInformation(receiveMessage.getTime()).signalStrength(receiveMessage.getRssi());
@@ -241,7 +240,6 @@ public class ClientServerChannel {
      * Reads a port from the incoming stream.
      *
      * @return the read port as int
-     * @throws java.io.IOException
      */
     public int readPortBody() throws IOException {
         PortExchange portExchange = Validate.notNull(PortExchange.parseDelimitedFrom(in), "Could not read port.");
@@ -252,7 +250,6 @@ public class ClientServerChannel {
      * Reads a time from the incoming stream.
      *
      * @return the read time as long
-     * @throws java.io.IOException
      */
     public long readTimeBody() throws IOException {
         TimeMessage timeMessage = Validate.notNull(TimeMessage.parseDelimitedFrom(in), "Could not read time.");
@@ -260,15 +257,13 @@ public class ClientServerChannel {
     }
 
     /**
-     * Reads a single command from the input stream
-     * blocking
+     * Reads a single command from the input stream blocking.
      *
      * @return the read command
-     * @throws java.io.IOException
      */
     public int readCommand() throws IOException {
         CommandMessage commandMessage = Validate.notNull(CommandMessage.parseDelimitedFrom(in), "Could not read command.");
-        return ProtobufCMDToCMD(commandMessage.getCommandType());
+        return protobufCmdToCmd(commandMessage.getCommandType());
     }
 
     //####################################################################
@@ -281,7 +276,6 @@ public class ClientServerChannel {
      * @param startTime the first point in time simulated by the simulator
      * @param endTime   the last timestep simulated by the simulator
      * @return command returned by the federate
-     * @throws IOException Communication error.
      */
     public int writeInitBody(long startTime, long endTime) throws IOException {
         writeCommand(CMD.INIT);                                     //Announce INIT message
@@ -297,7 +291,6 @@ public class ClientServerChannel {
      * @param time  time at which the node is added
      * @param nodes a list of ids and positions
      * @return command returned by the federate
-     * @throws IOException Communication error.
      */
     public int writeAddNodeMessage(long time, List<NodeDataContainer> nodes) throws IOException {
         writeCommand(CMD.UPDATE_NODE);                                  //Announce UPDATE_NODE message
@@ -318,7 +311,6 @@ public class ClientServerChannel {
      * @param time the time at which he RSU is added
      * @param rsus list of ids and positions
      * @return command returned by the federate
-     * @throws IOException Communication error.
      */
     public int writeAddRsuNodeMessage(long time, List<NodeDataContainer> rsus) throws IOException {
         writeCommand(CMD.UPDATE_NODE);
@@ -340,7 +332,6 @@ public class ClientServerChannel {
      * @param time  time at which the positions are updated
      * @param nodes a list of ids and positions
      * @return command returned by the federate
-     * @throws IOException Communication error.
      */
     public int writeUpdatePositionsMessage(long time, List<NodeDataContainer> nodes) throws IOException {
         writeCommand(CMD.UPDATE_NODE);
@@ -361,7 +352,6 @@ public class ClientServerChannel {
      * @param time time at which the nodes are removed
      * @param ids  list of IDs to remove
      * @return command returned by the federate
-     * @throws IOException Communication error.
      */
     public int writeRemoveNodesMessage(long time, List<Integer> ids) throws IOException {
         writeCommand(CMD.UPDATE_NODE);
@@ -377,7 +367,7 @@ public class ClientServerChannel {
         return readCommand();
     }
 
-    // @param channelId the channelID               //TODO:make enum from
+    // @param channelId the channelID               //TODO: make enum from
 
     /**
      * Write send message header to stream.
@@ -389,13 +379,17 @@ public class ClientServerChannel {
      * @param msgLength length of the message
      * @param dac       DestinationAddressContainer with the destination address of the sender and additional information
      * @return command returned by the federate
-     * @throws IOException Communication error.
      */
     public int writeSendMessage(long time, int srcNodeId,
                                 int msgId, long msgLength, DestinationAddressContainer dac) throws IOException {
         writeCommand(CMD.MSG_SEND);
-        SendMessageMessage.Builder sendMess = SendMessageMessage.newBuilder();  //Add message details to the builder
-        sendMess.setTime(time).setNodeId(srcNodeId).setChannelId(translateChannel(dac.getAdhocChannelId())).setMessageId(msgId).setLength(msgLength);
+        //Add message details to the builder
+        SendMessageMessage.Builder sendMess = SendMessageMessage.newBuilder()
+                .setTime(time)
+                .setNodeId(srcNodeId)
+                .setChannelId(translateChannel(dac.getAdhocChannelId()))
+                .setMessageId(msgId)
+                .setLength(msgLength);
 
         ByteBuffer buffer = ByteBuffer.allocate(Long.SIZE);
         buffer.put(dac.getAddress().getIPv4Address().getAddress()); //make an int32 out of the byte array
@@ -448,7 +442,6 @@ public class ClientServerChannel {
      * @param externalId    the external (federate-internal) ID of the node
      * @param configuration the actual configuration
      * @return command returned by the federate
-     * @throws IOException
      */
     public int writeConfigMessage(long time, int msgID, int externalId, AdHocConfiguration configuration) throws IOException {
         writeCommand(CMD.CONF_RADIO);
@@ -467,7 +460,8 @@ public class ClientServerChannel {
             default:
                 throw new RuntimeException("Illegal number of radios in configuration: " + configuration.getRadioMode().toString());
         }
-        if (configuration.getRadioMode() == AdHocConfiguration.RadioMode.SINGLE || configuration.getRadioMode() == AdHocConfiguration.RadioMode.DUAL) {
+        if (configuration.getRadioMode() == AdHocConfiguration.RadioMode.SINGLE
+                || configuration.getRadioMode() == AdHocConfiguration.RadioMode.DUAL) {
             ConfigureRadioMessage.RadioConfiguration.Builder radioConfig1 = ConfigureRadioMessage.RadioConfiguration.newBuilder();
             radioConfig1.setReceivingMessages(false);                                     //!!Semantic in Java: true -> only routing
             radioConfig1.setIpAddress(inet4ToInt(configuration.getConf0().getNewIP()));   //Semantic in federates: false -> only routing
@@ -505,7 +499,6 @@ public class ClientServerChannel {
      * Command: advance time.
      *
      * @param time point in time up to which advance is granted
-     * @throws IOException Communication error.
      */
     public void writeAdvanceTimeMessage(long time) throws IOException {
         writeCommand(CMD.ADVANCE_TIME);
@@ -521,12 +514,12 @@ public class ClientServerChannel {
      * @throws IOException Communication error.
      */
     public void writeCommand(int cmd) throws IOException {
-        CommandType protobufCMD = cmdToProtobufCMD(cmd);
-        if (protobufCMD == CommandType.UNDEF) {
+        CommandType protobufCmd = cmdToProtobufCmd(cmd);
+        if (protobufCmd == CommandType.UNDEF) {
             return;
         }
         CommandMessage.Builder commandMessage = CommandMessage.newBuilder();
-        commandMessage.setCommandType(protobufCMD);
+        commandMessage.setCommandType(protobufCmd);
         commandMessage.build().writeDelimitedTo(out);
     }
 
@@ -548,8 +541,8 @@ public class ClientServerChannel {
         return buffer.getInt();
     }
 
-    private int ProtobufCMDToCMD(CommandType protoCMD) {
-        switch (protoCMD) {
+    private int protobufCmdToCmd(CommandType protoCmd) {
+        switch (protoCmd) {
             case INIT:
                 return CMD.INIT;
             case SHUT_DOWN:
@@ -581,7 +574,7 @@ public class ClientServerChannel {
         }
     }
 
-    private CommandType cmdToProtobufCMD(int cmd) {
+    private CommandType cmdToProtobufCmd(int cmd) {
         switch (cmd) {
             case CMD.INIT:
                 return CommandType.INIT;
@@ -637,7 +630,7 @@ public class ClientServerChannel {
             case SCH6:
                 return ClientServerChannelProtos.RadioChannel.PROTO_SCH6;
             default:
-                throw new RuntimeException("Channel " + channel.toString() + " does not exist in MOSAIC");
+                throw new RuntimeException("Channel " + channel + " does not exist in MOSAIC");
         }
     }
 

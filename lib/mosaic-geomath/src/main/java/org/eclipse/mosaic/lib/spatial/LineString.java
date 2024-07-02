@@ -36,7 +36,8 @@ public abstract class LineString<T extends Vector3d> extends ArrayList<T> implem
     }
 
     public static class Vecs extends LineString<Vector3d> {
-        public Vecs() { }
+        public Vecs() {
+        }
 
         public Vecs(List<? extends Vector3d> copyFrom) {
             super(copyFrom);
@@ -52,7 +53,8 @@ public abstract class LineString<T extends Vector3d> extends ArrayList<T> implem
         }
     }
 
-    public LineString() { }
+    public LineString() {
+    }
 
     public LineString(List<? extends T> copyFrom) {
         super(copyFrom);
@@ -131,6 +133,7 @@ public abstract class LineString<T extends Vector3d> extends ArrayList<T> implem
 
     /**
      * Moves the first point along {@link #getStartDirection(Vector3d)} by the given distance.
+     *
      * @param len Distance to move the first point by.
      */
     public void extendStart(double len) {
@@ -139,6 +142,7 @@ public abstract class LineString<T extends Vector3d> extends ArrayList<T> implem
 
     /**
      * Moves the last point along {@link #getEndDirection(Vector3d)} by the given distance.
+     *
      * @param len Distance to move the last point by.
      */
     public void extendEnd(double len) {

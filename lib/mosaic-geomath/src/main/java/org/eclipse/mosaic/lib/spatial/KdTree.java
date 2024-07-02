@@ -24,6 +24,10 @@ import java.util.List;
 public class KdTree<T> extends SpatialTree<T> {
     private final KdNode root;
 
+    private final Comparator<T> xCmp = Comparator.comparingDouble(itemAdapter::getCenterX);
+    private final Comparator<T> yCmp = Comparator.comparingDouble(itemAdapter::getCenterY);
+    private final Comparator<T> zCmp = Comparator.comparingDouble(itemAdapter::getCenterZ);
+
     public KdTree(SpatialItemAdapter<T> itemAdapter, List<T> items) {
         this(itemAdapter, items, 20);
     }
@@ -41,6 +45,7 @@ public class KdTree<T> extends SpatialTree<T> {
     private class KdNode extends Node {
         private List<Node> children = null;
         private List<T> items = null;
+
 
         KdNode(List<T> items, int bucketSz, int depth) {
             super(depth);
@@ -64,8 +69,8 @@ public class KdTree<T> extends SpatialTree<T> {
                     right.add(items.get(i));
                 }
                 children = new ArrayList<>();
-                children.add(new KdNode(left, bucketSz, depth+1));
-                children.add(new KdNode(right, bucketSz, depth+1));
+                children.add(new KdNode(left, bucketSz, depth + 1));
+                children.add(new KdNode(right, bucketSz, depth + 1));
             }
         }
 
@@ -94,8 +99,4 @@ public class KdTree<T> extends SpatialTree<T> {
             return items;
         }
     }
-
-    private final Comparator<T> xCmp = Comparator.comparingDouble(itemAdapter::getCenterX);
-    private final Comparator<T> yCmp = Comparator.comparingDouble(itemAdapter::getCenterY);
-    private final Comparator<T> zCmp = Comparator.comparingDouble(itemAdapter::getCenterZ);
 }

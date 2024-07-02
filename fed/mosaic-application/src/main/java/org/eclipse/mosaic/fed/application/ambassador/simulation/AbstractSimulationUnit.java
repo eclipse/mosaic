@@ -150,6 +150,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
      *
      * @param event the event to process.
      * @return true if this method has processed the given event
+     * @throws RuntimeException if {@link Event} could not be properly handled by the processor
      */
     public final boolean preProcessEvent(final Event event) {
         final Object resource = event.getResource();
@@ -499,10 +500,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
     @Override
     public final File getConfigurationPath() {
         return SimulationKernel.SimulationKernel.getConfigurationPath();
-    }
-
-    public boolean canProcessEvent() {
-        return true;
     }
 
     @Override
