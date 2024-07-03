@@ -590,12 +590,12 @@
                 to specify the checkstyle-version. report plugins do not allow to change versions of plugin dependencies.-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.3.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.30</version>
+                        <version>10.15.0</version>
                     </dependency>
                 </dependencies>
                 <configuration>
