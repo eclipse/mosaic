@@ -126,7 +126,7 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
                     // create a new instance of the generator loader
                     loader = loaderClass.getDeclaredConstructor().newInstance();
 
-                    loader.initialize(generatorXmlConfiguration, ambassadorParameter.configuration.getParentFile());
+                    loader.initialize(rti, generatorXmlConfiguration, ambassadorParameter.configuration.getParentFile());
                 } catch (InternalFederateException e) {
                     throw e;
                 } catch (Exception e) {
