@@ -30,7 +30,6 @@ import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.ComponentProvider;
 import org.eclipse.mosaic.rti.api.FederateAmbassador;
 import org.eclipse.mosaic.rti.api.FederationManagement;
-import org.eclipse.mosaic.rti.api.InteractionManagement;
 import org.eclipse.mosaic.rti.api.MosaicVersion;
 import org.eclipse.mosaic.rti.api.TimeManagement;
 import org.eclipse.mosaic.rti.api.WatchDog;
@@ -184,12 +183,14 @@ public class MosaicSimulation {
 
             initializeSingletons(scenarioConfiguration);
 
+            federation = createFederation(simParams);
+
             final List<FederateDescriptor> federates = loadFederates(
                     scenarioDirectory,
                     scenarioConfiguration
             );
+            addFederates(federation, federates);
 
-            federation = createFederation(simParams, federates);
 
             federation.getTimeManagement().runSimulation();
 
@@ -210,6 +211,14 @@ public class MosaicSimulation {
             simulationResult.exception = e;
         }
         return simulationResult;
+    }
+
+    private void addFederates(ComponentProvider federation, List<FederateDescriptor> federates) throws Exception {
+        for (FederateDescriptor descriptor : federates) {
+            federation.getFederationManagement().addFederate(descriptor);
+            federation.getInteractionManagement().subscribeInteractions(descriptor.getId(), descriptor.getInteractions());
+            federation.getTimeManagement().updateWatchDog();
+        }
     }
 
     private void initializeSingletons(CScenario scenarioConfiguration) {
@@ -428,11 +437,9 @@ public class MosaicSimulation {
      * Creates a federation based on the given parameters.
      *
      * @param simulationParams the simulation parameters
-     * @param federates        list of federate descriptors
      * @return a fully initialized {@link ComponentProvider} instance ready for simulation
-     * @throws Exception if something went wrong during initalization of any federate
      */
-    private ComponentProvider createFederation(final MosaicComponentParameters simulationParams, final List<FederateDescriptor> federates) throws Exception {
+    private ComponentProvider createFederation(final MosaicComponentParameters simulationParams) {
         final ComponentProvider componentProvider = componentProviderFactory.createComponentProvider(simulationParams);
 
         FederationManagement federation = componentProvider.getFederationManagement();
@@ -448,15 +455,6 @@ public class MosaicSimulation {
         if (externalWatchdogPort > 0) {
             log.debug("External watchdog port: " + externalWatchdogPort);
             time.startExternalWatchDog(federationId, externalWatchdogPort);
-        }
-
-        final InteractionManagement inter = componentProvider.getInteractionManagement();
-
-        // add federates
-        for (FederateDescriptor descriptor : federates) {
-            federation.addFederate(descriptor);
-            inter.subscribeInteractions(descriptor.getId(), descriptor.getInteractions());
-            time.updateWatchDog();
         }
         return componentProvider;
     }

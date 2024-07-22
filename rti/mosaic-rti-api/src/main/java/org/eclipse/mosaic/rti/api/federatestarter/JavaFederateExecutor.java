@@ -37,13 +37,19 @@ public class JavaFederateExecutor implements FederateExecutor {
     private final String mainClass;
     private final String programArguments;
     private final FederateDescriptor handle;
+    private final List<String> vmArgs;
 
     private ExecutableFederateExecutor delegateExecFederateStarter = null;
 
     public JavaFederateExecutor(FederateDescriptor handle, String mainClass, String programArguments) {
+        this(handle, mainClass, programArguments, Lists.newArrayList());
+    }
+
+    public JavaFederateExecutor(FederateDescriptor handle, String mainClass, String programArguments, List<String> vmArgs) {
         this.mainClass = mainClass;
         this.programArguments = programArguments;
         this.handle = handle;
+        this.vmArgs = vmArgs;
     }
 
     @Override
@@ -55,7 +61,7 @@ public class JavaFederateExecutor implements FederateExecutor {
         final String fileSeparator = File.separator;
         final String pathSeparator = File.pathSeparator;
 
-        final String classPath = createClasspath(workingDir, fileSeparator, pathSeparator);
+        final String classPath = createClasspath(fileSeparator, pathSeparator);
 
         String currentJrePath = SystemUtils.getJavaHome().getPath();
         StringBuilder cmdBuilder = new StringBuilder();
@@ -70,6 +76,8 @@ public class JavaFederateExecutor implements FederateExecutor {
         if (StringUtils.isNotBlank(handle.getJavaFederateParameters().getCustomJavaArgument())) {
             args.addAll(Arrays.asList(handle.getJavaFederateParameters().getCustomJavaArgument().split(" ")));
         }
+
+        args.addAll(vmArgs);
 
         args.add("-cp");
         args.add(classPath);
@@ -101,11 +109,10 @@ public class JavaFederateExecutor implements FederateExecutor {
             throw new FederateStarterException("Federate has been already started");
         }
 
-        final File workingDir = handle.getBinariesDir();
         final String sep = File.separator;
         final String fileSep = host.operatingSystem == CLocalHost.OperatingSystem.WINDOWS ? ";" : ":";
 
-        List<String> args = Lists.newArrayList("-cp", createClasspath(workingDir, sep, fileSep), mainClass);
+        List<String> args = Lists.newArrayList("-cp", createClasspath(sep, fileSep), mainClass);
         args.addAll(Arrays.asList(programArguments.split(" ")));
 
         delegateExecFederateStarter = new ExecutableFederateExecutor(this.handle, "java", args);
@@ -125,38 +132,15 @@ public class JavaFederateExecutor implements FederateExecutor {
         }
     }
 
-    private String createClasspath(File workingDir, String fileSeparator, String pathSeparator) {
-        String jarName;
-        final StringBuilder classPath = new StringBuilder(".");
+    private String createClasspath(String fileSeparator, String pathSeparator) {
+        final StringBuilder classPath = new StringBuilder();
+        classPath.append("./*");
+        classPath.append(pathSeparator).append("lib/*");
         for (String classpathEntry : handle.getJavaFederateParameters().getJavaClasspathEntries()) {
             classPath.append(pathSeparator);
             classPath.append(classpathEntry);
         }
-
-        // find java jar which should be started
-        File[] files = workingDir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.getName().contains(".jar")) {
-                    jarName = file.getName();
-                    classPath.append(pathSeparator);
-                    classPath.append(jarName);
-                } else if (file.isDirectory() && file.getName().equals("lib")) { // find libs and add them to the class path
-                    File[] libFiles = file.listFiles();
-                    if (libFiles != null) {
-                        for (File libFile : libFiles) {
-                            if (libFile.getName().contains(".jar")) {
-                                classPath.append(pathSeparator);
-                                classPath.append("lib");
-                                classPath.append(fileSeparator);
-                                classPath.append(libFile.getName());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return classPath.toString();
+        return classPath.toString().replaceAll("//", fileSeparator);
     }
 
 
