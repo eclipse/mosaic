@@ -37,6 +37,9 @@ public class AStar<T extends AStar.Node<T, P>, P extends Point<P>> {
     private final Map<Node<T, P>, CostNode> openListNodes = new HashMap<>();
     private final Set<Node<T, P>> closedList = new HashSet<>();
 
+    /**
+     * Generates a route from FROM-Node to TO-Node using the A-Star algorithm.
+     */
     public List<T> route(Node<T, P> from, Node<T, P> to) {
         CostNode destinationNode = null;
         closedList.clear();
@@ -113,11 +116,11 @@ public class AStar<T extends AStar.Node<T, P>, P extends Point<P>> {
 
     private class CostNode implements Comparable<CostNode> {
         /**
-         * cost of the cheapest path from start to node
+         * Cost of the cheapest path from start to node.
          */
         private double costs;
         /**
-         * best guess of total cost of path from start to destination if it goes through node
+         * Best guess of total cost of path from start to destination if it goes through node.
          */
         private double estimate;
 
@@ -152,7 +155,7 @@ public class AStar<T extends AStar.Node<T, P>, P extends Point<P>> {
 
         /**
          * Returns the exact cost between adjacent network nodes.
-         * <p>
+         * <p/>
          * Costs are typically based on distance: traveling from one node to another is cheap if the nodes are
          * very close and expensive if they are far apart. However there might be other factors influencing the
          * cost: e.g. travel speed, road capacity, etc.
@@ -163,11 +166,11 @@ public class AStar<T extends AStar.Node<T, P>, P extends Point<P>> {
 
         /**
          * Returns the estimated cost in order to reach the final destination node from this node.
-         * <p>
+         * <p/>
          * The estimated cost must be lower or equal to the exact cost. If the returned value is higher than the final
          * exact cost would be this node might be excluded from the routing graph before the exact cost is known
          * and a potentially more expensive route might win.
-         * <p>
+         * <p/>
          * Typically, the cost is estimated by using the straight line distance between this node and the destination
          * node. However, care must be taken if exact costs between nodes do not only depend on distance but consider
          * other factors (travel speed, ...) as well.

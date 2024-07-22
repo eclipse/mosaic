@@ -46,6 +46,7 @@ public class VehicleReferenceUtils {
     public static GeoPoint fromCenterToFrontBumper(GeoPoint pos, double heading, double length) {
         return fromCenterToFrontBumper(pos.toVector3d(), heading, length).toGeo();
     }
+
     /**
      * Moves the position reference of a vehicle from the center of the front bumper to its bounding box center.
      */

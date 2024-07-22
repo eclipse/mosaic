@@ -44,6 +44,7 @@ public enum SumoVersion {
     SUMO_1_17_x("1.17.*", TraciVersion.API_20),
     SUMO_1_18_x("1.18.*", TraciVersion.API_20),
     SUMO_1_19_x("1.19.*", TraciVersion.API_21),
+    SUMO_1_20_x("1.20.*", TraciVersion.API_21),
 
     /**
      * the lowest version supported by this client.
@@ -53,7 +54,7 @@ public enum SumoVersion {
     /**
      * the highest version supported by this client.
      */
-    HIGHEST(SUMO_1_19_x.sumoVersion, SUMO_1_19_x.traciVersion);
+    HIGHEST(SUMO_1_20_x.sumoVersion, SUMO_1_20_x.traciVersion);
 
     private final String sumoVersion;
     private final TraciVersion traciVersion;

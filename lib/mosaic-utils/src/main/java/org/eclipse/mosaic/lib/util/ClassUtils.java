@@ -66,6 +66,7 @@ public class ClassUtils {
 
     /**
      * Add a URL to the system class loader.
+     * @throws IllegalStateException
      */
     public static void addUrlToClassloader(File jar) throws Exception {
         ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();

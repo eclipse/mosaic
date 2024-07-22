@@ -106,8 +106,11 @@ public class LazyGeoProjection extends GeoProjection {
 
     public interface ProjectionFactory {
         GeoProjection initializeFromGeo(GeoPoint origin);
+
         GeoProjection initializeFromUtm(UtmPoint origin);
+
         GeoProjection initializeFromCartesian(CartesianPoint origin);
+
         GeoProjection initializeFromVector3d(Vector3d origin);
     }
 
@@ -133,9 +136,9 @@ public class LazyGeoProjection extends GeoProjection {
         }
 
         private GeoProjection failInitialization() {
-            throw new IllegalStateException("Cannot initialize LazyGeoProjection from a local coordinate! " +
-                    "LazyGeoProjection was used to translate a local coordinate to global coordinate before " +
-                    "a global origin was set.");
+            throw new IllegalStateException("Cannot initialize LazyGeoProjection from a local coordinate! "
+                    + "LazyGeoProjection was used to translate a local coordinate to global coordinate before "
+                    + "a global origin was set.");
         }
     }
 
