@@ -134,8 +134,9 @@ public class JavaFederateExecutor implements FederateExecutor {
 
     private String createClasspath(String fileSeparator, String pathSeparator) {
         final StringBuilder classPath = new StringBuilder();
-        classPath.append("./*");
-        classPath.append(pathSeparator).append("lib/*");
+        classPath.append("."); // access to root directory
+        classPath.append(pathSeparator).append("./*"); // includes all jars in root directory
+        classPath.append(pathSeparator).append("lib/*"); //  includes all jars in lib directory
         for (String classpathEntry : handle.getJavaFederateParameters().getJavaClasspathEntries()) {
             classPath.append(pathSeparator);
             classPath.append(classpathEntry);
