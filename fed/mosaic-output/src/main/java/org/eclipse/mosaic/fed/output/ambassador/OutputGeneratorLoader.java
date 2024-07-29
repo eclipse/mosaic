@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.fed.output.ambassador;
 
+import org.eclipse.mosaic.rti.api.RtiAmbassador;
+
 import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -30,6 +32,7 @@ import java.util.Collection;
 public abstract class OutputGeneratorLoader {
 
     private String id;
+    private RtiAmbassador rti;
     private int updateInterval;
     private long handleStartTime;
     private long handleEndTime;
@@ -40,10 +43,12 @@ public abstract class OutputGeneratorLoader {
      * this method is called just after a new instance of a derived output generator config was created.
      * subclasses should call this method at first, and then proceed with reading custom parameters from the configuration
      *
+     * @param rti                    the {@link RtiAmbassador} of the federation
      * @param config                 output generator configuration
      * @param configurationDirectory output generator configuration directory path
      */
-    public void initialize(HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
+    public void initialize(RtiAmbassador rti, HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
+        this.rti = rti;
         this.id = ConfigHelper.getId(config);
         this.updateInterval = ConfigHelper.getUpdateInterval(config);
         this.handleStartTime = ConfigHelper.getHandleStartTime(config);
@@ -60,6 +65,15 @@ public abstract class OutputGeneratorLoader {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * Returns the {@link RtiAmbassador} of the federation for additional interaction with RTI.
+     *
+     * @return the {@link RtiAmbassador} of the federation.
+     */
+    protected RtiAmbassador getRti() {
+        return rti;
     }
 
     /**
