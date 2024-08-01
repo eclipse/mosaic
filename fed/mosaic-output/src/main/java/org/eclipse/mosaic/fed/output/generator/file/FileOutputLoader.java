@@ -23,6 +23,7 @@ import org.eclipse.mosaic.fed.output.generator.file.write.Write;
 import org.eclipse.mosaic.fed.output.generator.file.write.WriteByFile;
 import org.eclipse.mosaic.fed.output.generator.file.write.WriteByFileCompress;
 import org.eclipse.mosaic.fed.output.generator.file.write.WriteByLog;
+import org.eclipse.mosaic.rti.api.RtiAmbassador;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -146,8 +147,8 @@ public class FileOutputLoader extends OutputGeneratorLoader {
     }
 
     @Override
-    public void initialize(HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
-        super.initialize(config, configurationDirectory);
+    public void initialize(RtiAmbassador rti, HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
+        super.initialize(rti, config, configurationDirectory);
         try {
             this.writer = this.getWrite(config);
             this.interactionFormatter = this.createInteractionFormatter(config);
