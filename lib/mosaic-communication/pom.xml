@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-communication</artifactId>
     <name>Eclipse MOSAIC Communication Models</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

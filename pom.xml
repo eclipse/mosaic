@@ -10,6 +10,7 @@
 
     <name>Eclipse MOSAIC Parent</name>
     <description>Parent Module Descriptor for Eclipse MOSAIC</description>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <inceptionYear>2020</inceptionYear>
     <organization>
