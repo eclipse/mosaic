@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 
 /**
  * The federation handle is the description of a federate. If a federate is to
- * join a federation, it must be described using a instance of this class.
+ * join a federation, it must be described using an instance of this class.
  */
 public class FederateDescriptor {
 
@@ -44,13 +44,13 @@ public class FederateDescriptor {
     private final FederateAmbassador ambassador;
 
     /**
-     * Flag signalizing whether to deploy and undeploy the federate (e.g. an external executable) in the
+     * Flag signalizing whether to deploy and undeploy the federate (e.g., an external executable) in the
      * working directory before starting it.
      */
     private boolean deployAndUndeploy = false;
 
     /**
-     * Flag signalizing whether to start/stop the federate external component (e.g. an external executable).
+     * Flag signalizing whether to start/stop the federate external component (e.g., an external executable).
      */
     private boolean startAndStop = false;
 
@@ -61,7 +61,7 @@ public class FederateDescriptor {
     private CLocalHost host = null;
 
     /**
-     * The the directly where the external component for the federate (e.g. the external executable, libraries and its resources)
+     * The directory where the external component for the federate (e.g., the external executable, libraries and its resources)
      * can be found.
      */
     private File binariesDir = null;
@@ -86,7 +86,7 @@ public class FederateDescriptor {
      * The priority assigned to the ambassador/federate. The lower the value,
      * the higher the priority of this ambassador/federate. Federates with an
      * higher priority receive interactions with the same time stamp earlier.
-     *
+     * <p/>
      * {@link FederatePriority#HIGHEST} is highest / best priority
      */
     private final byte priority;
