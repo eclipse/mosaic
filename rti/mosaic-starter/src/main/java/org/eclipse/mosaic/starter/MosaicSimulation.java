@@ -191,7 +191,6 @@ public class MosaicSimulation {
             );
             addFederates(federation, federates);
 
-
             federation.getTimeManagement().runSimulation();
 
             stopFederation(federation);
@@ -211,14 +210,6 @@ public class MosaicSimulation {
             simulationResult.exception = e;
         }
         return simulationResult;
-    }
-
-    private void addFederates(ComponentProvider federation, List<FederateDescriptor> federates) throws Exception {
-        for (FederateDescriptor descriptor : federates) {
-            federation.getFederationManagement().addFederate(descriptor);
-            federation.getInteractionManagement().subscribeInteractions(descriptor.getId(), descriptor.getInteractions());
-            federation.getTimeManagement().updateWatchDog();
-        }
     }
 
     private void initializeSingletons(CScenario scenarioConfiguration) {
@@ -457,6 +448,17 @@ public class MosaicSimulation {
             time.startExternalWatchDog(federationId, externalWatchdogPort);
         }
         return componentProvider;
+    }
+
+    /**
+     * Adds the list of {@link FederateDescriptor}s to the given federation.
+     */
+    private void addFederates(ComponentProvider federation, List<FederateDescriptor> federates) throws Exception {
+        for (FederateDescriptor descriptor : federates) {
+            federation.getFederationManagement().addFederate(descriptor);
+            federation.getInteractionManagement().subscribeInteractions(descriptor.getId(), descriptor.getInteractions());
+            federation.getTimeManagement().updateWatchDog();
+        }
     }
 
     private void stopFederation(ComponentProvider federation) {
