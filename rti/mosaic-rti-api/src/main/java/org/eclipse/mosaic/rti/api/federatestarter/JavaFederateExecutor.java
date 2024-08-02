@@ -109,7 +109,7 @@ public class JavaFederateExecutor implements FederateExecutor {
             throw new FederateStarterException("Federate has been already started");
         }
 
-        final String fileSeparator = File.separator;
+        final String fileSeparator = host.operatingSystem == CLocalHost.OperatingSystem.WINDOWS ? "\\" : "/";
         final String pathSeparator = host.operatingSystem == CLocalHost.OperatingSystem.WINDOWS ? ";" : ":";
 
         List<String> args = Lists.newArrayList("-cp", createClasspath(fileSeparator, pathSeparator), mainClass);
