@@ -28,7 +28,7 @@
     <scm>
         <connection>scm:git:git@github.com:eclipse/mosaic.git</connection>
         <developerConnection>scm:git:git@github.com:eclipse/mosaic.git</developerConnection>
-        <url>git@github.com:eclipse/mosaic.git</url>
+        <url>https://github.com/eclipse/mosaic/tree/main</url>
     </scm>
 
     <distributionManagement>
