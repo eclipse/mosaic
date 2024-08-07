@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-ns3</artifactId>
     <name>Eclipse MOSAIC NS3 Ambassador</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

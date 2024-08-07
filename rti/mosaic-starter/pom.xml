@@ -13,6 +13,7 @@
     <artifactId>mosaic-starter</artifactId>
 
     <name>Eclipse MOSAIC Starter</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

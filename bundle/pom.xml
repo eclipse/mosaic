@@ -12,6 +12,7 @@
 
     <artifactId>bundle</artifactId>
     <name>Eclipse MOSAIC Distribution Bundle</name>
+    <url>https://github.com/eclipse/mosaic</url>
     <packaging>pom</packaging>
 
     <properties>

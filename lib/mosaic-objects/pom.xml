@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-objects</artifactId>
     <name>Eclipse MOSAIC Objects</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>
