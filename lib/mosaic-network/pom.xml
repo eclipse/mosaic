@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-network</artifactId>
     <name>Eclipse MOSAIC Network Additionals</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

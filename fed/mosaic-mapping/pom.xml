@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-mapping</artifactId>
     <name>Eclipse MOSAIC Entity Mapping</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

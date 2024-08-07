@@ -62,6 +62,7 @@ public class WatchDogThread extends Thread implements WatchDog {
     @SuppressWarnings(value = "DM_EXIT", justification = "That's the purpose of the Watchdog")
     @Override
     public void run() {
+        updateCurrentTime();
         while (watching) {
             try {
                 Thread.sleep(1000L);

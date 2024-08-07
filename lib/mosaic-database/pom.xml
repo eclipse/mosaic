@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-database</artifactId>
     <name>Eclipse MOSAIC Scenario Database</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>
