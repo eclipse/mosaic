@@ -138,14 +138,15 @@ public abstract class PointCloud implements Serializable {
      */
     public static class Point extends Vector3d {
 
+        private static final long serialVersionUID = 1L;
+
         private final byte hitType;
         private final float distance;
 
         /**
-         *
          * @param endPoint the coordinates of the point cloud
          * @param distance the distance to the origin of the point cloud
-         * @param hitType the type of hit object represented by this point. 0 = no hit
+         * @param hitType  the type of hit object represented by this point. 0 = no hit
          */
         public Point(Vector3d endPoint, float distance, byte hitType) {
             x = endPoint.x;
@@ -175,9 +176,34 @@ public abstract class PointCloud implements Serializable {
         public float getDistance() {
             return distance;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Point other = (Point) o;
+            return super.equals(other) &&
+                    this.hitType == other.hitType &&
+                    Float.compare(this.distance, other.distance) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + Byte.hashCode(hitType);
+            result = 31 * result + Float.hashCode(distance);
+            return result;
+        }
     }
 
     public static class Absolute extends PointCloud {
+
+        private static final long serialVersionUID = 1L;
+
         private transient List<Point> absoluteEndPointsWithHit = null;
         private transient List<Point> relativeEndPoints = null;
         private transient List<Point> relativeEndPointsWithHit = null;
@@ -233,6 +259,9 @@ public abstract class PointCloud implements Serializable {
     }
 
     public static class Relative extends PointCloud {
+
+        private static final long serialVersionUID = 1L;
+
         private transient List<Point> relativeEndPointsWithHit = null;
         private transient List<Point> absoluteEndPoints = null;
         private transient List<Point> absoluteEndPointsWithHit = null;

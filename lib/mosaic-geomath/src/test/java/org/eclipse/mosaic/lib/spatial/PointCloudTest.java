@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.spatial;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 
@@ -74,10 +73,7 @@ public class PointCloudTest {
             @Override
             public boolean matches(Object actualValue) {
                 if (actualValue instanceof Vector3d) {
-                    Vector3d actual = (Vector3d) actualValue;
-                    return MathUtils.isFuzzyEqual(base.x, actual.x) &&
-                            MathUtils.isFuzzyEqual(base.y, actual.y) &&
-                            MathUtils.isFuzzyEqual(base.z, actual.z);
+                    return base.isFuzzyEqual((Vector3d) actualValue);
                 }
                 return super.matches(actualValue);
             }
