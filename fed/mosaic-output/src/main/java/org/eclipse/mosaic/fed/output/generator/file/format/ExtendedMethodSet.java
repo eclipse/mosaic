@@ -46,8 +46,8 @@ public class ExtendedMethodSet {
         return message.getSimpleClassName();
     }
 
-    static public Object getPayload(V2xMessageReception interaction) {
-        return Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId())).getPayload();
+    static public V2xMessage getMessage(V2xMessageReception interaction) {
+        return Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
     }
 
     static public Object getType(V2xMessageTransmission interaction) {
