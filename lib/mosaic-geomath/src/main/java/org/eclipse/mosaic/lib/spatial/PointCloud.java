@@ -41,48 +41,25 @@ public abstract class PointCloud implements Serializable {
 
     private final Vector3d reference;
     private final RotationMatrix rotation;
-    private final long timestamp;
-    private final double minRange;
-    private final double maxRange;
+    private final long creationTime;
 
     protected final List<Point> points;
 
-    protected PointCloud(RotationMatrix rotation, Vector3d reference, List<Point> points,
-                         long timestamp, double minRange, double maxRange) {
-        this.rotation = rotation;
+    protected PointCloud(long creationTime, Vector3d reference, RotationMatrix rotation, List<Point> points) {
+        this.creationTime = creationTime;
         this.reference = reference;
+        this.rotation = rotation;
         this.points = points;
-        this.timestamp = timestamp;
-        this.minRange = minRange;
-        this.maxRange = maxRange;
     }
 
     /**
-     * Relative coordinates mean the use of a cartesian coordinate system with its origin (0,0,0) at
-     * the {@link PointCloud}'s reference, returned by {@link #getReference()}. In addition, the
-     * coordinate system is rotated. See {@link #getRotation()} for details.
+     * Returns the simulation time when the {@link PointCloud} was created.
      *
-     * @return end points of all rays of this {@link PointCloud} in relative coordinates
-     * @see #getReference() origin of ray / translation of coordinates
-     * @see #getRotation() rotation of coordinates
+     * @return time in nanoseconds
      */
-    public abstract List<Point> getRelativeEndPoints();
-
-
-    /**
-     * @return end points of all rays of this {@link PointCloud} that hit something in relative coordinates
-     */
-    public abstract List<Point> getRelativeEndPointsWithHit();
-
-    /**
-     * @return end points of all rays of this {@link PointCloud} in absolute coordinates
-     */
-    public abstract List<Point> getAbsoluteEndPoints();
-
-    /**
-     * @return end points of all rays of this {@link PointCloud} that hit something in absolute coordinates
-     */
-    public abstract List<Point> getAbsoluteEndPointsWithHit();
+    public long getCreationTime() {
+        return creationTime;
+    }
 
     /**
      * A {@link PointCloud} is represented by a constant origin and their end points
@@ -99,7 +76,7 @@ public abstract class PointCloud implements Serializable {
     /**
      * Ray end points in relative coordinates of this point cloud are translated and rotated end points in
      * absolute coordinates.
-     * <p>
+     * <p/>
      * Let o be the ray origin in absolute coordinates, let R be the rotation matrix. Thus, the transformation
      * of relative coordinates r into absolute coordinates a is
      * <code>a = R * r + o</code>
@@ -112,25 +89,47 @@ public abstract class PointCloud implements Serializable {
     }
 
     /**
-     * @return simulation time of {@link PointCloud}
+     * Returns all end points of all rays of this {@link PointCloud} that hit something in relative coordinates.
+     * Relative coordinates mean the use of a cartesian coordinate system with its origin (0,0,0) at
+     * the {@link PointCloud}'s reference, returned by {@link #getReference()}. In addition, the
+     * coordinate system is rotated. See {@link #getRotation()} for details.
+     *
+     * @return end points of all rays of this {@link PointCloud} in relative coordinates
+     * @see #getReference() origin of ray / translation of coordinates
+     * @see #getRotation() rotation of coordinates
      */
-    public long getTimestamp() {
-        return timestamp;
-    }
+    public abstract List<Point> getRelativeEndPoints();
+
 
     /**
-     * @return sensor's minimum detectable range in distance units of Phabmacs
+     * Returns all end points of all rays of this {@link PointCloud} that hit something in relative coordinates.
+     * Relative coordinates mean the use of a cartesian coordinate system with its origin (0,0,0) at
+     * the {@link PointCloud}'s reference, returned by {@link #getReference()}. In addition, the
+     * coordinate system is rotated. See {@link #getRotation()} for details.
+     *
+     * @return end points of all rays of this {@link PointCloud} in relative coordinates
+     * @see #getReference() origin of ray / translation of coordinates
+     * @see #getRotation() rotation of coordinates
      */
-    public double getMinRange() {
-        return minRange;
-    }
+    public abstract List<Point> getRelativeEndPointsWithHit();
 
     /**
-     * @return sensor's maximum detectable range in distance units of Phabmacs
+     * Returns all end points of all rays of this {@link PointCloud} in absolute coordinates.
+     * Absolute coordinates represent world coordinates, and have {@link #getReference()} and {@link #getRotation()}
+     * already applied.
+     *
+     * @return a list of points in absolute coordinates
      */
-    public double getMaxRange() {
-        return maxRange;
-    }
+    public abstract List<Point> getAbsoluteEndPoints();
+
+    /**
+     * Returns all end points of all rays of this {@link PointCloud} that hit something in absolute coordinates.
+     * Absolute coordinates represent world coordinates, and have {@link #getReference()} and {@link #getRotation()}
+     * already applied.
+     *
+     * @return a list of points in absolute coordinates
+     */
+    public abstract List<Point> getAbsoluteEndPointsWithHit();
 
     /**
      * A {@link Point} of the point cloud consists of its coordinates, an identifier
@@ -186,9 +185,9 @@ public abstract class PointCloud implements Serializable {
                 return false;
             }
             Point other = (Point) o;
-            return super.equals(other) &&
-                    this.hitType == other.hitType &&
-                    Float.compare(this.distance, other.distance) == 0;
+            return super.equals(other)
+                    && this.hitType == other.hitType
+                    && Float.compare(this.distance, other.distance) == 0;
         }
 
         @Override
@@ -208,9 +207,11 @@ public abstract class PointCloud implements Serializable {
         private transient List<Point> relativeEndPoints = null;
         private transient List<Point> relativeEndPointsWithHit = null;
 
-        public Absolute(RotationMatrix rotation, Vector3d reference, List<Point> absoluteEndPoints,
-                        long timestamp, double minRange, double maxRange) {
-            super(rotation, reference, absoluteEndPoints, timestamp, minRange, maxRange);
+        /**
+         * Creates a point cloud with the list of points being in absolute coordinates.
+         */
+        public Absolute(long creationTime, Vector3d reference, RotationMatrix rotation, List<Point> absoluteEndPoints) {
+            super(creationTime, reference, rotation, absoluteEndPoints);
         }
 
         @Override
@@ -266,9 +267,11 @@ public abstract class PointCloud implements Serializable {
         private transient List<Point> absoluteEndPoints = null;
         private transient List<Point> absoluteEndPointsWithHit = null;
 
-        public Relative(RotationMatrix rotation, Vector3d reference, List<Point> relativeEndPoints,
-                        long timestamp, double minRange, double maxRange) {
-            super(rotation, reference, relativeEndPoints, timestamp, minRange, maxRange);
+        /**
+         * Creates a point cloud with the list of points being in relative coordinates.
+         */
+        public Relative(long creationTime, Vector3d reference, RotationMatrix rotation, List<Point> absoluteEndPoints) {
+            super(creationTime, reference, rotation, absoluteEndPoints);
         }
 
         @Override
