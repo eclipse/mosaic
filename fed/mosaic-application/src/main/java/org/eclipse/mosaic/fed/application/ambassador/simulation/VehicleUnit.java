@@ -24,6 +24,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ca
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
+import org.eclipse.mosaic.fed.application.app.api.LidarApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
@@ -45,6 +46,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -123,6 +125,12 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
     }
 
+    private void updateLidarInfo(final LidarData currentLidarData) {
+        for (LidarApplication application : getApplicationsIterator(LidarApplication.class)) {
+            application.onLidarUpdated(currentLidarData);
+        }
+    }
+
     @Override
     public void processEvent(@Nonnull final Event event) throws Exception {
         // never remove the preProcessEvent call!
@@ -154,6 +162,10 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
         if (resource instanceof BatteryData) {
             throw new RuntimeException(ErrorRegister.VEHICLE_NotElectric.toString());
+        }
+        if (resource instanceof LidarData) {
+            updateLidarInfo((LidarData) resource);
+            return true;
         }
         return false;
     }
