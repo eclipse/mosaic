@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-docker</artifactId>
     <name>Eclipse MOSAIC Docker Client</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

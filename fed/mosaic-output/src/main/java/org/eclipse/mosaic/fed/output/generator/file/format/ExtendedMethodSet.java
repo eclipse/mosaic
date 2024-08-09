@@ -38,6 +38,14 @@ public class ExtendedMethodSet {
         V2X_MESSAGES.put(message.getId(), message);
     }
 
+    static public Object getType(V2xMessageTransmission interaction) {
+        V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
+        if (message instanceof GenericV2xMessage) {
+            return ((GenericV2xMessage) message).getMessageType();
+        }
+        return message.getSimpleClassName();
+    }
+
     static public Object getType(V2xMessageReception interaction) {
         V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
         if (message instanceof GenericV2xMessage) {
@@ -46,12 +54,8 @@ public class ExtendedMethodSet {
         return message.getSimpleClassName();
     }
 
-    static public Object getType(V2xMessageTransmission interaction) {
-        V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
-        if (message instanceof GenericV2xMessage) {
-            return ((GenericV2xMessage) message).getMessageType();
-        }
-        return message.getSimpleClassName();
+    static public V2xMessage getMessage(V2xMessageReception interaction) {
+        return Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
     }
 
     static public Object getTimeInSec(Interaction interaction) {

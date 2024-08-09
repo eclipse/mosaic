@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-rti-api</artifactId>
     <name>Eclipse MOSAIC Runtime Infrastructure API</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

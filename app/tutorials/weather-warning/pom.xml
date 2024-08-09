@@ -16,6 +16,7 @@
 
     <name>Eclipse MOSAIC Weather Warning Application for Barnim Tutorial</name>
     <description>Simple application that reacts on environment events.</description>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>

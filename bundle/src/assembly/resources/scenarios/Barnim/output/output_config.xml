@@ -51,6 +51,7 @@
                     <entry>MessageId</entry>
                     <entry>ReceiverName</entry>
                     <entry>ReceiverInformation.ReceiveSignalStrength</entry>
+                    <entry>Message.Payload.EffectiveLength</entry>
                 </entries>
             </subscription>
             <subscription id="V2xMessageTransmission">
@@ -66,6 +67,7 @@
                     <entry>Message.Routing.Destination.Type</entry>
                     <entry>Message.Routing.Destination.Address.IPv4Address</entry>
                     <entry>Message.Routing.Destination.AdhocChannelId</entry>
+                    <entry>Message.Payload.EffectiveLength</entry>
                 </entries>
             </subscription>
             <subscription id="VehicleRegistration" enabled="true">

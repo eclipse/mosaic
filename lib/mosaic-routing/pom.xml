@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-routing</artifactId>
     <name>Eclipse MOSAIC Vehicle Routing</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

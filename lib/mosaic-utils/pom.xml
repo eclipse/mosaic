@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-utils</artifactId>
     <name>Eclipse MOSAIC Utilities</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>
