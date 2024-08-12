@@ -34,9 +34,9 @@ public class PointCloudTest {
         PointCloud.Point p1 = new PointCloud.Point(new Vector3d(4.0, 5.0, 0.0), 0f, (byte) 0);
         PointCloud.Point p2 = new PointCloud.Point(new Vector3d(-1.0, 2.0, 4.0), 0f, (byte) 1);
 
-        PointCloud pc = new PointCloud.Relative(0,
+        PointCloud pc = new PointCloud(0,
                 new Vector3d(3, 1, 0), new RotationMatrix().rotate(90, VectorUtils.UP),
-                List.of(p1, p2)
+                List.of(p1, p2), PointCloud.PointReference.RELATIVE
         );
 
         // RUN
@@ -54,9 +54,9 @@ public class PointCloudTest {
         PointCloud.Point p1 = new PointCloud.Point(new Vector3d(4.0, 5.0, 0.0), 0f, (byte) 0);
         PointCloud.Point p2 = new PointCloud.Point(new Vector3d(-1.0, 2.0, 4.0), 0f, (byte) 1);
 
-        PointCloud pc = new PointCloud.Absolute(0,
+        PointCloud pc = new PointCloud(0,
                 new Vector3d(3, 1, 0), new RotationMatrix().rotate(90, VectorUtils.UP),
-                List.of(p1, p2)
+                List.of(p1, p2), PointCloud.PointReference.ABSOLUTE
         );
 
         // RUN

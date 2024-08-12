@@ -29,27 +29,65 @@ import java.util.stream.Collectors;
  * in absolute world coordinates.</li>
  * <li>A rotation matrix used to translate relative end points of the point cloud to absolute coordinates.</li>
  * <li>A list of points (x,y,z, hit type, distance to origin) forming this point cloud.</li>
- * <li>Use {@link Relative} to create a point cloud by a given list of points in relative coordinates.
- *     When {@link #getAbsoluteEndPoints} is called on such object, a coordinate transformation is done (and cached).</li>
- * <li>Use {@link Absolute} to create a point cloud by a given list of points in absolute coordinates.
- *     When {@link #getRelativeEndPoints()} is called on such object, a coordinate transformation is done (and cached).</li>
+ * <li>Use one of the given {@link PointReference} formats to declare the reference frame of the given point lists. If
+ *     they are already in absolute world coordinates, use {@link PointReference#ABSOLUTE}. If the reference frame of the
+ *     points are {@link #origin} and  {@link #orientation}, then use {@link PointReference#RELATIVE}.
  * </ul>
+ * When calling the methods {@link #getRelativeEndPoints()} or {@link #getAbsoluteEndPoints()}, a transformation of the stored points
+ * may be executed (and cached for re-use). E.g., if the point cloud is constructed using absolute coordinates
+ * (i.e. {@link PointReference#ABSOLUTE}), a call of {@link #getAbsoluteEndPoints()} will return the stored point list as-is, whereas
+ * a call of {@link #getRelativeEndPoints()} will transform the stored points to relative coordinates (relatively to  {@link #origin} and
+ * {@link #orientation}).
  */
-public abstract class PointCloud implements Serializable {
+public final class PointCloud implements Serializable {
+
+    private static final Predicate<Point> POINTS_ALL = p -> true;
+    private static final Predicate<Point> POINTS_WITH_HITS = Point::hasHit;
+
+    public enum PointReference {
+        ABSOLUTE(Transformation::absoluteToRelative, Transformation::noTransformation),
+        RELATIVE(Transformation::noTransformation, Transformation::relativeToAbsolute);
+
+        PointReference(Transformation toRelative, Transformation toAbsolute) {
+            this.toRelative = toRelative;
+            this.toAbsolute = toAbsolute;
+        }
+
+        private final Transformation toRelative;
+        private final Transformation toAbsolute;
+    }
 
     private static final long serialVersionUID = 1L;
 
-    private final Vector3d reference;
-    private final RotationMatrix rotation;
+    private final Vector3d origin;
+    private final RotationMatrix orientation;
     private final long creationTime;
 
-    protected final List<Point> points;
+    private final PointReference pointsReference;
+    private final List<Point> points;
 
-    protected PointCloud(long creationTime, Vector3d reference, RotationMatrix rotation, List<Point> points) {
+    private transient List<Point> absoluteEndPoints = null;
+    private transient List<Point> absoluteEndPointsWithHit = null;
+    private transient List<Point> relativeEndPoints = null;
+    private transient List<Point> relativeEndPointsWithHit = null;
+
+    /**
+     * Creates a new PointCloud based on a list of {@link Point}s. The points may be given (and then stored) either in absolute
+     * world coordinates, or relative coordinates compared to the given origin and orientation field. The reference frame  of the points
+     * in the given {@link Point} list must be declared by using {@link PointReference#ABSOLUTE} or {@link PointReference#RELATIVE}.
+     *
+     * @param creationTime the creation time of the point cloud in nanoseconds
+     * @param origin the origin point of the point cloud in world coordinates
+     * @param orientation the orientation of the point cloud
+     * @param points a list of points, containing point coordinates in either absolute or relative format
+     * @param pointsReference the reference format of the coordinates of the points (absolute world coordinates, relative coordinates)
+     */
+    public PointCloud(long creationTime, Vector3d origin, RotationMatrix orientation, List<Point> points, PointReference pointsReference) {
         this.creationTime = creationTime;
-        this.reference = reference;
-        this.rotation = rotation;
+        this.origin = origin;
+        this.orientation = orientation;
         this.points = points;
+        this.pointsReference = pointsReference;
     }
 
     /**
@@ -62,74 +100,94 @@ public abstract class PointCloud implements Serializable {
     }
 
     /**
-     * A {@link PointCloud} is represented by a constant origin and their end points
-     * returned by {@link #getRelativeEndPoints()} and {@link #getAbsoluteEndPoints()}
-     * Relative coordinates are translated and rotated absolute coordinates.
+     * Returns the origin point of this point cloud in absolute world coordinates.
+     * Points returned by {@link #getRelativeEndPoints} are relative to this origin.
      *
      * @return origin of the rays forming this point cloud in absolute coordinates
-     * @see #getRotation()
+     * @see #getOrientation()
      */
-    public Vector3d getReference() {
-        return reference;
+    public Vector3d getOrigin() {
+        return origin;
     }
 
     /**
-     * Ray end points in relative coordinates of this point cloud are translated and rotated end points in
-     * absolute coordinates.
+     * Returns the orientation of the point cloud as {@link RotationMatrix}. Points returned by {@link #getRelativeEndPoints} are relative
+     * to {@link #getOrigin()} and this orientation matrix. Points returned by {@link #getAbsoluteEndPoints()} are translated and rotated
+     * using {@link #getOrigin()} and this orientation matrix
      * <p/>
      * Let o be the ray origin in absolute coordinates, let R be the rotation matrix. Thus, the transformation
      * of relative coordinates r into absolute coordinates a is
      * <code>a = R * r + o</code>
      *
      * @return rotation matrix R
-     * @see #getReference() returns <code>o</code>
+     * @see #getOrigin() returns <code>o</code>
      */
-    public RotationMatrix getRotation() {
-        return rotation;
+    public RotationMatrix getOrientation() {
+        return orientation;
     }
 
     /**
      * Returns all end points of all rays of this {@link PointCloud} that hit something in relative coordinates.
-     * Relative coordinates mean the use of a cartesian coordinate system with its origin (0,0,0) at
-     * the {@link PointCloud}'s reference, returned by {@link #getReference()}. In addition, the
-     * coordinate system is rotated. See {@link #getRotation()} for details.
+     * Relative coordinates mean the use of a cartesian coordinate system with its origin at
+     * the {@link PointCloud}'s origin, returned by {@link #getOrigin()}. In addition, the
+     * coordinate system is rotated. See {@link #getOrientation()} for details.
      *
      * @return end points of all rays of this {@link PointCloud} in relative coordinates
-     * @see #getReference() origin of ray / translation of coordinates
-     * @see #getRotation() rotation of coordinates
+     * @see #getOrigin() origin of ray / translation of coordinates
+     * @see #getOrientation() rotation of coordinates
      */
-    public abstract List<Point> getRelativeEndPoints();
+    public List<Point> getRelativeEndPoints() {
+        if (relativeEndPoints == null) {
+            relativeEndPoints = pointsReference.toRelative.transform(this, POINTS_ALL);
+        }
+        return relativeEndPoints;
+    }
 
 
     /**
      * Returns all end points of all rays of this {@link PointCloud} that hit something in relative coordinates.
      * Relative coordinates mean the use of a cartesian coordinate system with its origin (0,0,0) at
-     * the {@link PointCloud}'s reference, returned by {@link #getReference()}. In addition, the
-     * coordinate system is rotated. See {@link #getRotation()} for details.
+     * the {@link PointCloud}'s origin, returned by {@link #getOrigin()}. In addition, the
+     * coordinate system is rotated. See {@link #getOrientation()} for details.
      *
      * @return end points of all rays of this {@link PointCloud} in relative coordinates
-     * @see #getReference() origin of ray / translation of coordinates
-     * @see #getRotation() rotation of coordinates
+     * @see #getOrigin() origin of ray / translation of coordinates
+     * @see #getOrientation() rotation of coordinates
      */
-    public abstract List<Point> getRelativeEndPointsWithHit();
+    public List<Point> getRelativeEndPointsWithHit() {
+        if (relativeEndPointsWithHit == null) {
+            relativeEndPointsWithHit = pointsReference.toRelative.transform(this, POINTS_WITH_HITS);
+        }
+        return relativeEndPointsWithHit;
+    }
 
     /**
      * Returns all end points of all rays of this {@link PointCloud} in absolute coordinates.
-     * Absolute coordinates represent world coordinates, and have {@link #getReference()} and {@link #getRotation()}
+     * Absolute coordinates represent world coordinates, and have {@link #getOrigin()} and {@link #getOrientation()}
      * already applied.
      *
      * @return a list of points in absolute coordinates
      */
-    public abstract List<Point> getAbsoluteEndPoints();
+    public List<Point> getAbsoluteEndPoints() {
+        if (absoluteEndPoints == null) {
+            absoluteEndPoints = pointsReference.toAbsolute.transform(this, POINTS_ALL);
+        }
+        return absoluteEndPoints;
+    }
 
     /**
      * Returns all end points of all rays of this {@link PointCloud} that hit something in absolute coordinates.
-     * Absolute coordinates represent world coordinates, and have {@link #getReference()} and {@link #getRotation()}
+     * Absolute coordinates represent world coordinates, and have {@link #getOrigin()} and {@link #getOrientation()}
      * already applied.
      *
      * @return a list of points in absolute coordinates
      */
-    public abstract List<Point> getAbsoluteEndPointsWithHit();
+    public List<Point> getAbsoluteEndPointsWithHit() {
+        if (absoluteEndPointsWithHit == null) {
+            absoluteEndPointsWithHit = pointsReference.toAbsolute.transform(this, POINTS_WITH_HITS);
+        }
+        return absoluteEndPointsWithHit;
+    }
 
     /**
      * A {@link Point} of the point cloud consists of its coordinates, an identifier
@@ -199,122 +257,30 @@ public abstract class PointCloud implements Serializable {
         }
     }
 
-    public static class Absolute extends PointCloud {
+    private interface Transformation {
 
-        private static final long serialVersionUID = 1L;
+        List<Point> transform(PointCloud pointCloud, Predicate<Point> filter);
 
-        private transient List<Point> absoluteEndPointsWithHit = null;
-        private transient List<Point> relativeEndPoints = null;
-        private transient List<Point> relativeEndPointsWithHit = null;
-
-        /**
-         * Creates a point cloud with the list of points being in absolute coordinates.
-         */
-        public Absolute(long creationTime, Vector3d reference, RotationMatrix rotation, List<Point> absoluteEndPoints) {
-            super(creationTime, reference, rotation, absoluteEndPoints);
-        }
-
-        @Override
-        public List<Point> getAbsoluteEndPoints() {
-            return points;
-        }
-
-        @Override
-        public List<Point> getAbsoluteEndPointsWithHit() {
-            if (absoluteEndPointsWithHit == null) {
-                absoluteEndPointsWithHit = getAbsoluteEndPoints().stream().filter(Point::hasHit).collect(Collectors.toList());
-            }
-            return absoluteEndPointsWithHit;
-        }
-
-        @Override
-        public List<Point> getRelativeEndPoints() {
-            if (relativeEndPoints == null) {
-                relativeEndPoints = absoluteToRelative(points, p -> true);
-            }
-            return relativeEndPoints;
-        }
-
-        @Override
-        public List<Point> getRelativeEndPointsWithHit() {
-            if (relativeEndPointsWithHit == null) {
-                relativeEndPointsWithHit = absoluteToRelative(points, Point::hasHit);
-            }
-            return relativeEndPointsWithHit;
-        }
-
-        /**
-         * Transforms list of {@link Point}s in absolute coordinates to relative coordinates.         *
-         *
-         * @param absoluteEndPoints end points in absolute coordinates
-         * @return end points in relative coordinates
-         */
-        private List<Point> absoluteToRelative(List<Point> absoluteEndPoints, Predicate<Point> filter) {
-            Matrix3d inv = getRotation().transpose(new Matrix3d());
-            return absoluteEndPoints
-                    .stream()
+        private static List<Point> relativeToAbsolute(PointCloud pointCloud, Predicate<Point> filter) {
+            return pointCloud.points.stream()
                     .filter(filter)
-                    .map(point -> (Point) inv.multiply(point.subtract(getReference(), new Point(point, point.getDistance(), point.getHitType()))))
+                    .map(point -> (Point) pointCloud.orientation.multiply(new Point(point, point.getDistance(), point.getHitType())).add(pointCloud.origin))
+                    .collect(Collectors.toList());
+        }
+
+        private static List<Point> absoluteToRelative(PointCloud pointCloud, Predicate<Point> filter) {
+            Matrix3d inv = pointCloud.orientation.transpose(new Matrix3d());
+            return pointCloud.points.stream()
+                    .filter(filter)
+                    .map(point -> (Point) inv.multiply(point.subtract(pointCloud.origin, new Point(point, point.getDistance(), point.getHitType()))))
+                    .collect(Collectors.toList());
+        }
+
+        private static List<Point> noTransformation(PointCloud pointCloud, Predicate<Point> filter) {
+            return filter == POINTS_ALL ? pointCloud.points : pointCloud.points.stream()
+                    .filter(filter)
                     .collect(Collectors.toList());
         }
     }
 
-    public static class Relative extends PointCloud {
-
-        private static final long serialVersionUID = 1L;
-
-        private transient List<Point> relativeEndPointsWithHit = null;
-        private transient List<Point> absoluteEndPoints = null;
-        private transient List<Point> absoluteEndPointsWithHit = null;
-
-        /**
-         * Creates a point cloud with the list of points being in relative coordinates.
-         */
-        public Relative(long creationTime, Vector3d reference, RotationMatrix rotation, List<Point> absoluteEndPoints) {
-            super(creationTime, reference, rotation, absoluteEndPoints);
-        }
-
-        @Override
-        public List<Point> getAbsoluteEndPoints() {
-            if (absoluteEndPoints == null) {
-                absoluteEndPoints = relativeToAbsolute(points, p -> true);
-            }
-            return absoluteEndPoints;
-        }
-
-        @Override
-        public List<Point> getAbsoluteEndPointsWithHit() {
-            if (absoluteEndPointsWithHit == null) {
-                absoluteEndPointsWithHit = relativeToAbsolute(points, Point::hasHit);
-            }
-            return absoluteEndPointsWithHit;
-        }
-
-        @Override
-        public List<Point> getRelativeEndPoints() {
-            return points;
-        }
-
-        @Override
-        public List<Point> getRelativeEndPointsWithHit() {
-            if (relativeEndPointsWithHit == null) {
-                relativeEndPointsWithHit = getRelativeEndPoints().stream().filter(Point::hasHit).collect(Collectors.toList());
-            }
-            return relativeEndPointsWithHit;
-        }
-
-        /**
-         * Transforms list of {@link Point}s in relative coordinates to absolute coordinates.
-         *
-         * @param relativeEndpoints end points in relative coordinates
-         * @return end points in absolute coordinates
-         */
-        private List<Point> relativeToAbsolute(List<Point> relativeEndpoints, Predicate<Point> filter) {
-            return relativeEndpoints
-                    .stream()
-                    .filter(filter)
-                    .map(point -> (Point) getRotation().multiply(new Point(point, point.getDistance(), point.getHitType())).add(getReference()))
-                    .collect(Collectors.toList());
-        }
-    }
 }
