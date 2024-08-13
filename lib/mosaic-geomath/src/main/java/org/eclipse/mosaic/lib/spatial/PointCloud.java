@@ -73,7 +73,7 @@ public final class PointCloud implements Serializable {
 
     /**
      * Creates a new PointCloud based on a list of {@link Point}s. The points may be given (and then stored) either in absolute
-     * world coordinates, or relative coordinates compared to the given origin and orientation field. The reference frame  of the points
+     * world coordinates, or relative coordinates compared to the given origin and orientation field. The reference frame of the points
      * in the given {@link Point} list must be declared by using {@link PointReference#ABSOLUTE} or {@link PointReference#RELATIVE}.
      *
      * @param creationTime the creation time of the point cloud in nanoseconds
@@ -189,6 +189,19 @@ public final class PointCloud implements Serializable {
         return absoluteEndPointsWithHit;
     }
 
+
+    /**
+     * Returns the type of reference frame the points are stored in this point cloud internally. The usage of
+     * {@link #getAbsoluteEndPoints()} and {@link #getRelativeEndPoints()} is independent of the value returned
+     * by this method, as transformation is already done internally if necessary. Therefore, it should
+     * usually not be required to use this method, except for (de)serialization use-cases.
+     *
+     * @return the {@link PointReference} type of the points stored in the point cloud.
+     */
+    public PointReference getReferenceFormat() {
+        return pointsReference;
+    }
+
     /**
      * A {@link Point} of the point cloud consists of its coordinates, an identifier
      * of the type of object the point has hit, and the distance to the point cloud origin.
@@ -282,5 +295,4 @@ public final class PointCloud implements Serializable {
                     .collect(Collectors.toList());
         }
     }
-
 }
