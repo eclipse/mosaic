@@ -17,13 +17,18 @@ package org.eclipse.mosaic.fed.output.ambassador;
 
 import static org.mockito.Mockito.spy;
 
-import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
-import org.eclipse.mosaic.fed.output.ambassador.OutputGeneratorLoader;
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 
 /**
  * An extension of {@link OutputGeneratorLoader} for testing purposes.
  */
 public class TestOutputGeneratorLoader extends OutputGeneratorLoader {
+
+    @Override
+    protected void configure(HierarchicalConfiguration<ImmutableNode> config) {
+        // nothing to do
+    }
 
     @Override
     public AbstractOutputGenerator createOutputGenerator() {
