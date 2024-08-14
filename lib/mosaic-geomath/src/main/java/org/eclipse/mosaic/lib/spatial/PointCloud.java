@@ -214,6 +214,9 @@ public final class PointCloud implements Serializable {
         private final float distance;
 
         /**
+         * Creates a new point to add to a {@link PointCloud} by specifying the distance
+         * to origin and the type of hit object (encoded in byte) next to the location of the point.
+         *
          * @param endPoint the coordinates of the point cloud
          * @param distance the distance to the origin of the point cloud
          * @param hitType  the type of hit object represented by this point. 0 = no hit
@@ -227,21 +230,21 @@ public final class PointCloud implements Serializable {
         }
 
         /**
-         * @return true if the ray generating this {@link Point} has hit an object
+         * Returns true if the ray generating this {@link Point} has hit an object.
          */
         public boolean hasHit() {
             return hitType != 0;
         }
 
         /**
-         * @return the type of the object the ray generating this point has hit. (0 = no hit)
+         * Returns the type of the object the ray generating this point has hit. (0 = no hit)
          */
         public byte getHitType() {
             return hitType;
         }
 
         /**
-         * @return the distance to the origin of point cloud this point belongs to
+         * Returns the distance to the origin of point cloud this point belongs to.
          */
         public float getDistance() {
             return distance;
