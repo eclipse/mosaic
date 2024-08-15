@@ -17,8 +17,10 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
 import static java.lang.Integer.min;
 
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
 import org.eclipse.mosaic.interactions.communication.AdHocCommunicationConfiguration;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.communication.InterfaceConfiguration;
@@ -141,6 +143,10 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
      * @return the created builder for further configuration
      */
     public AdHocMessageRoutingBuilder createMessageRouting() {
-        return new AdHocMessageRoutingBuilder(this.getOwner().getId(), this.getOwner().getPosition());
+        if (!(getOwner() instanceof Locatable)) {
+            throw new UnsupportedOperationException("Cannot send message from senders without a location.");
+        }
+        GeoPoint position = ((Locatable) getOwner()).getPosition();
+        return new AdHocMessageRoutingBuilder(this.getOwner().getId(), position);
     }
 }

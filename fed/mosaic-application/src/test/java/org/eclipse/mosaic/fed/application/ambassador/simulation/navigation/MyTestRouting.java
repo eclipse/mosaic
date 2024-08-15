@@ -13,17 +13,10 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.navigation;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.navigation;
 
-/**
- * Interface to implement if a class navigation module should be the owner of a {@link NavigationModule}.
- */
-public interface INavigationModuleOwner {
+import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
 
-    /**
-     * Returns the navigation module of the vehicle.
-     *
-     * @return the navigation module of the vehicle.
-     */
-    INavigationModule getNavigationModule();
+public class MyTestRouting extends NoRouting {
+    // empty implementation to test CentralNavigationComponent#createFromType()
 }

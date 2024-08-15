@@ -20,6 +20,7 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AbstractCommunicationModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CommunicationModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassNameParser;
@@ -60,6 +61,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
@@ -72,7 +74,7 @@ import javax.annotation.Nonnull;
  * It supplies all functionality for loading applications, communication with the RTI
  * and the processing of events, etc.
  */
-public abstract class AbstractSimulationUnit implements EventProcessor, OperatingSystem {
+public abstract class AbstractSimulationUnit implements EventProcessor, OperatingSystem, CommunicationModuleOwner {
 
     /**
      * Id (name) which indicates the unit.
@@ -99,7 +101,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
     /**
      * Environment sensor data.
      */
-    private final HashMap<SensorType, EnvironmentEvent> environmentEvents = new HashMap<>();
+    private final Map<SensorType, EnvironmentEvent> environmentEvents = new HashMap<>();
 
     private final AdHocModule adhocModule;
 
@@ -213,8 +215,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         return SimulationKernel.SimulationKernel.getCurrentSimulationTime();
     }
 
-
-    @Override
     public GeoPoint getInitialPosition() {
         return initialPosition;
     }
@@ -466,12 +466,10 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         return tmp;
     }
 
-    @Override
     public AdHocModule getAdHocModule() {
         return this.adhocModule;
     }
 
-    @Override
     public final CellModule getCellModule() {
         return this.cellModule;
     }

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLoggerImpl;
-import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.config.CEtsi;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -60,7 +60,7 @@ public class EtsiApplicationTest {
 
     private CEtsi etsiConfiguration;
 
-    private AbstractCamSendingApp<OperatingSystem> app;
+    private AbstractCamSendingApp<VehicleOperatingSystem> app;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -68,7 +68,7 @@ public class EtsiApplicationTest {
     private final EventManager eventManagerMock = this::captureEvent;
 
     @Mock
-    public OperatingSystem osMock;
+    public VehicleOperatingSystem osMock;
 
     @Mock
     public AdHocModule adHocModuleMock;
@@ -83,7 +83,7 @@ public class EtsiApplicationTest {
 
     @Before
     public void setup() throws NoSuchFieldException {
-        app = spy(new AbstractCamSendingApp<OperatingSystem>() {
+        app = spy(new AbstractCamSendingApp<VehicleOperatingSystem>() {
             @Override
             public Data generateEtsiData() {
                 Data newTestData = new Data();

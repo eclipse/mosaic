@@ -15,8 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
-import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
-import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
 import org.eclipse.mosaic.interactions.communication.CellularCommunicationConfiguration;
 import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
@@ -40,7 +39,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
      */
     private final static long DEFAULT_CAM_GEO_RADIUS = 300;
 
-    public CellModule(OperatingSystem owner, Logger log) {
+    public CellModule(CommunicationModuleOwner owner, Logger log) {
         super(owner, log);
     }
 
@@ -119,7 +118,10 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
         if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
             routing = createMessageRouting().topoCast(camConfiguration.getTopocastReceiver());
         } else {
-            final GeoCircle destination = new GeoCircle(owner.getPosition(), camConfiguration.getGeoRadius());
+            if (!(getOwner() instanceof Locatable)) {
+                throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
+            }
+            final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
             if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_GEOCAST)) {
                 routing = createMessageRouting().geoBroadcastBasedOnUnicast(destination);
             } else {
@@ -155,7 +157,9 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
      * @return the created builder for further configuration
      */
     public CellMessageRoutingBuilder createMessageRouting() {
-        GeoPoint position = getOwner() instanceof ServerOperatingSystem ? null : getOwner().getPosition();
+        GeoPoint position = getOwner() instanceof Locatable
+                ? ((Locatable) getOwner()).getPosition()
+                : null;
         return new CellMessageRoutingBuilder(getOwner().getId(), position);
     }
 }

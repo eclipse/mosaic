@@ -15,14 +15,11 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CellModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CommunicationModuleOwner;
 import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.lib.enums.SensorType;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 import org.eclipse.mosaic.rti.TIME;
+import org.eclipse.mosaic.rti.api.Interaction;
 
 import java.io.File;
 import java.util.List;
@@ -31,7 +28,7 @@ import java.util.List;
  * This interface describes all necessary functionality for units to be
  * simulated.
  */
-public interface OperatingSystem extends CommunicationModuleOwner {
+public interface OperatingSystem {
 
     /**
      * Returns the path to the application simulator configuration directory.
@@ -55,6 +52,13 @@ public interface OperatingSystem extends CommunicationModuleOwner {
     String getId();
 
     /**
+     * Get the group of this simulation unit, defined in the mapping.
+     *
+     * @return the group of this simulation unit.
+     */
+    String getGroup();
+
+    /**
      * Returns the simulation time. Unit: [ns].
      *
      * @return the simulation time. Unit: [ns].
@@ -74,22 +78,12 @@ public interface OperatingSystem extends CommunicationModuleOwner {
     }
 
     /**
-     * This data element provides an absolute geographical longitude and latitude in a WGS84
-     * coordinate system with a granularity of 1/8 micro degrees. Compliant to SAE J2735
-     * DE_Longitude.
+     * Returns The state of the supplied sensor.
      *
-     * @return the position.
+     * @param type The {@link SensorType} type to use.
+     * @return Strength of the measured environment sensor data.
      */
-    GeoPoint getInitialPosition();
-
-    /**
-     * This data element provides an absolute geographical longitude and latitude in a WGS84
-     * coordinate system with a granularity of 1/8 micro degrees. Compliant to SAE J2735
-     * DE_Longitude.
-     *
-     * @return the position.
-     */
-    GeoPoint getPosition();
+    int getStateOfEnvironmentSensor(SensorType type);
 
     /**
      * Send a log tuple for the ITEF visualizer.
@@ -97,6 +91,7 @@ public interface OperatingSystem extends CommunicationModuleOwner {
      * @param logTupleId log tuple identifier
      * @param values     list of values to be logged
      */
+    @Deprecated
     void sendItefLogTuple(long logTupleId, int... values);
 
     /**
@@ -109,26 +104,11 @@ public interface OperatingSystem extends CommunicationModuleOwner {
     String sendSumoTraciRequest(byte[] command);
 
     /**
-     * Returns The state of the supplied sensor.
+     * Sends the given {@link Interaction} to the runtime infrastructure.
      *
-     * @param type The {@link SensorType} type to use.
-     * @return Strength of the measured environment sensor data.
+     * @param interaction the {@link Interaction} to be send
      */
-    int getStateOfEnvironmentSensor(SensorType type);
-
-    /**
-     * Returns the cellular communication module of this unit.
-     *
-     * @return the {@link CellModule} of this unit.
-     */
-    CellModule getCellModule();
-
-    /**
-     * Returns the ad-hoc communication module of this unit.
-     *
-     * @return the {@link AdHocModule} of this unit.
-     */
-    AdHocModule getAdHocModule();
+    void sendInteractionToRti(Interaction interaction);
 
     /**
      * Get the list of all applications running on this simulation unit.
@@ -143,11 +123,4 @@ public interface OperatingSystem extends CommunicationModuleOwner {
      * @return the list containing all applications.
      */
     <A extends Application> Iterable<A> getApplicationsIterator(Class<A> applicationClass);
-
-    /**
-     * Get the group of this simulation unit, defined in the mapping.
-     *
-     * @return the group of this simulation unit.
-     */
-    String getGroup();
 }

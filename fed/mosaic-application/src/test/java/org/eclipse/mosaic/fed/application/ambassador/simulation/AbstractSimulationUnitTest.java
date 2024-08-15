@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
-import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;

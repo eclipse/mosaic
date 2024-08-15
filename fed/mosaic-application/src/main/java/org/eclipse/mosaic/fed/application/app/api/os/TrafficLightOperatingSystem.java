@@ -17,6 +17,9 @@ package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.AdHocCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.CellCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
@@ -35,7 +38,8 @@ import java.util.List;
  * than processing of a not specific event in an application which doesn't happen inside of {@link AbstractApplication#onStartup()} method
  * and therefore is called *before* the event is processed in an application using this OS.
  */
-public interface TrafficLightOperatingSystem extends OperatingSystem {
+public interface TrafficLightOperatingSystem
+        extends OperatingSystem, Locatable, CellCommunicative, AdHocCommunicative {
 
     /**
      * Returns all traffic light programs that are registered for a traffic light group using this operating system.
@@ -59,7 +63,7 @@ public interface TrafficLightOperatingSystem extends OperatingSystem {
     TrafficLightProgramPhase getCurrentPhase();
 
     /**
-     * Returns all traffic lights a traffic light group using this operating system consist of
+     * Returns all traffic lights a traffic light group using this operating system.
      *
      * @return all traffic lights within a traffic light group
      */
@@ -73,7 +77,7 @@ public interface TrafficLightOperatingSystem extends OperatingSystem {
      * @param trafficLightProgramId id of the traffic light program to look into
      * @param trafficLightId        id of a traffic light
      * @return a sequence of states for a certain traffic light within a traffic light program with given id
-     * or a sequence of states for the current program.
+     *         or a sequence of states for the current program.
      */
     Collection<TrafficLightState> getSignalSequence(String trafficLightProgramId, int trafficLightId);
 

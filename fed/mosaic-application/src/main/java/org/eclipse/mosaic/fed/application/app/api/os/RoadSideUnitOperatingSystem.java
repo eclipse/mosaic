@@ -15,19 +15,16 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
-import org.eclipse.mosaic.fed.application.ambassador.navigation.IRoutingModule;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.AdHocCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.CellCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Routable;
 
 /**
  * This interface extends the basic {@link OperatingSystem} and
- * is implemented by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit}
- * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.RoadSideUnit}.
+ * is implemented by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.RoadSideUnit}.
  */
-public interface RoadSideUnitOperatingSystem extends OperatingSystem {
+public interface RoadSideUnitOperatingSystem
+        extends OperatingSystem, Locatable, Routable, CellCommunicative, AdHocCommunicative {
 
-    /**
-     * Gives access to a routing facility for calculating routes through the road network.
-     *
-     * @return the {@link IRoutingModule}
-     */
-    IRoutingModule getRoutingModule();
 }
