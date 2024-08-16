@@ -17,20 +17,16 @@ package org.eclipse.mosaic.fed.output.generator.websocket;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.OutputGeneratorLoader;
-import org.eclipse.mosaic.rti.api.RtiAmbassador;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
-
-import java.io.File;
 
 public class WebsocketVisualizerLoader extends OutputGeneratorLoader {
 
     private int port;
 
     @Override
-    public void initialize(RtiAmbassador rti, HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
-        super.initialize(rti, config, configurationDirectory);
+    public void configure(HierarchicalConfiguration<ImmutableNode> config) {
         port = config.getInt("port");
     }
 
