@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-geomath</artifactId>
     <name>Eclipse MOSAIC Geomath</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

@@ -12,6 +12,7 @@
 
     <artifactId>mosaic-interactions</artifactId>
     <name>Eclipse MOSAIC Interactions</name>
+    <url>https://github.com/eclipse/mosaic</url>
 
     <dependencies>
         <dependency>

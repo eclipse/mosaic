@@ -15,15 +15,16 @@
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
  -->
 
-<module name = "Checker">
+<module name="Checker">
     <property name="charset" value="UTF-8"/>
 
     <property name="severity" value="warning"/>
 
     <property name="fileExtensions" value="java, properties, xml"/>
 
+    <module name="SuppressWarningsFilter"/>
     <module name="SuppressionFilter">
-        <property name="file" value="${config_loc}/checkstyle-excludes.xml" />
+        <property name="file" value="${config_loc}/checkstyle-excludes.xml"/>
     </module>
 
     <!-- Excludes all 'module-info.java' files              -->
@@ -44,14 +45,15 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="^\s*\*\s*@author" />
-        <property name="minimum" value="0" />
-        <property name="maximum" value="0" />
-        <property name="message" value="Javadoc has illegal ''author'' tag." />
-        <property name="fileExtensions" value="java" />
+        <property name="format" value="^\s*\*\s*@author"/>
+        <property name="minimum" value="0"/>
+        <property name="maximum" value="0"/>
+        <property name="message" value="Javadoc has illegal ''author'' tag."/>
+        <property name="fileExtensions" value="java"/>
     </module>
 
     <module name="TreeWalker">
+        <module name="SuppressWarningsHolder"/>
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
@@ -154,7 +156,7 @@
                      value="Type name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="MemberName">
-            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
+            <property name="format" value="(^[a-z]([a-zA-Z0-9]*)?$)|^x$|^y$|^z$"/>
             <message key="name.invalidPattern"
                      value="Member name ''{0}'' must match pattern ''{1}''."/>
         </module>
@@ -175,7 +177,7 @@
         </module>
         <module name="LocalVariableName">
             <property name="tokens" value="VARIABLE_DEF"/>
-            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <property name="format" value="(^[a-z]([a-zA-Z0-9]*)?$)|^x$|^y$|^z$"/>
             <message key="name.invalidPattern"
                      value="Local variable name ''{0}'' must match pattern ''{1}''."/>
         </module>
@@ -216,7 +218,7 @@
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
             <property name="allowedAbbreviationLength" value="1"/>
-            <property name="allowedAbbreviations" value="CAM,IVIM,SPATM,DENM" />
+            <property name="allowedAbbreviations" value="CAM,IVIM,SPATM,DENM,SQL,CMD"/>
         </module>
         <module name="OverloadMethodsDeclarationOrder"/>
         <module name="VariableDeclarationUsageDistance"/>
@@ -263,9 +265,9 @@
                       value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
         </module>
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
+            <property name="accessModifiers" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
-            <property name="validateThrows" value="true"/>
+            <property name="validateThrows" value="false"/>
             <property name="allowMissingReturnTag" value="true"/>
             <property name="allowedAnnotations" value="Override, Test, Deprecated"/>
         </module>
@@ -273,7 +275,7 @@
             <property name="scope" value="public"/>
             <property name="minLineCount" value="3"/>
             <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="ignoreMethodNamesRegex" value="^get.*$|^with.*$|^set.*$|^is.*$|"/>
+            <property name="ignoreMethodNamesRegex" value="^get.*$|^with.*$|^set.*$|^is.*$|^add.*$"/>
         </module>
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>

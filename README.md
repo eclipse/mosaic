@@ -41,16 +41,16 @@ IEEE Transactions on Intelligent Transportation Systems, pp. 1 - 11, Print ISSN:
 
 View our website at **[eclipse.dev/mosaic](https://eclipse.dev/mosaic)** for detailed documentation and many tutorials to get started with Eclipse MOSAIC. For a quick start on building and running the code in this repository, just jump to the bottom section of this README file.
 
-## The Essential edition of Eclipse MOSAIC
+## The Essential Edition of Eclipse MOSAIC
 
-This repository contains the *Essential* edition of Eclipse MOSAIC, that is, the runtime infrastructure, 
+This repository contains the *Essential* edition of Eclipse MOSAIC, which includes the runtime infrastructure, 
 the core libraries, and various implementations of simulators or couplings to existing ones. All features 
 included in this version of Eclipse MOSAIC are sufficient for most use-cases in the field of smart and connected mobility.
 Additional simulators and assessment features are provided by [Fraunhofer FOKUS](https://www.fokus.fraunhofer.de/go/asct) on a commercial basis.
 
-## Related repositories
+## Related Repositories
 
-* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.18.0`.
+* [Eclipse SUMO](https://github.com/eclipse/sumo) is coupled directly using the TraCI interface. We recommend using the SUMO release `1.20.0`.
 * The coupling to [ns-3](https://www.nsnam.org) is realized by a federate implementation which can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/ns3-federate). 
   We currently support ns-3 version `3.36.1`. 
 * The coupling to [OMNeT++](https://omnetpp.org) is implemented in a very similar manner. The corresponding federate implementation can be found [in our MOSAIC Addons repository](https://github.com/mosaic-addons/omnetpp-federate). 
@@ -69,7 +69,7 @@ For a successful build you need the following software to be installed:
 
 * **Maven 3.1.x** or higher.
 * **Java 11**, 17, or 21 - We recommend using the [Adoptium OpenJDK (aka Eclipse Temurin)](https://adoptium.net/?variant=openjdk11).
-* **SUMO 1.19.0** - Older versions > 1.2.0 are most probably supported, but not tested. The environment variable `SUMO_HOME` should be configured properly.
+* **SUMO 1.20.0** - Older versions > 1.2.0 are most probably supported, but not tested. The environment variable `SUMO_HOME` should be configured properly.
 
 ## Build
 

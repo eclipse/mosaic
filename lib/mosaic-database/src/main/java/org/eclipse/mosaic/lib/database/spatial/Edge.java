@@ -68,7 +68,8 @@ public class Edge {
         return nextNode;
     }
 
-    public static class InRadius<V extends Vector3d, E extends org.eclipse.mosaic.lib.spatial.Edge<V>> extends SpatialTreeTraverser.InRadius<E> {
+    public static class InRadius<V extends Vector3d, E extends org.eclipse.mosaic.lib.spatial.Edge<V>>
+            extends SpatialTreeTraverser.InRadius<E> {
         @Override
         protected double getCenterDistanceSqr(E item, SpatialTree<E> tree) {
             return item.getNearestPointOnEdge(center).distanceSqrTo(center);
