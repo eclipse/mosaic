@@ -40,25 +40,6 @@ public abstract class OutputGeneratorLoader {
     private File configurationDirectory;
 
     /**
-     * this method is called just after a new instance of a derived output generator config was created.
-     * subclasses should call this method at first, and then proceed with reading custom parameters from the configuration
-     *
-     * @param rti                    the {@link RtiAmbassador} of the federation
-     * @param config                 output generator configuration
-     * @param configurationDirectory output generator configuration directory path
-     */
-    public void initialize(RtiAmbassador rti, HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
-        this.rti = rti;
-        this.id = ConfigHelper.getId(config);
-        this.updateInterval = ConfigHelper.getUpdateInterval(config);
-        this.handleStartTime = ConfigHelper.getHandleStartTime(config);
-        this.handleEndTime = ConfigHelper.getHandleEndTime(config);
-        this.interactionTypes = ConfigHelper.getSubscriptions(config);
-        this.configurationDirectory = configurationDirectory;
-    }
-
-
-    /**
      * Returns the output generator identifier.
      *
      * @return output generator identifier
@@ -122,7 +103,35 @@ public abstract class OutputGeneratorLoader {
     }
 
     /**
-     * Factory method for creating actual output generator.
+     * this method is called just after a new instance of a derived output generator config was created.
+     *
+     * @param rti                    the {@link RtiAmbassador} of the federation
+     * @param config                 output generator configuration
+     * @param configurationDirectory output generator configuration directory path
+     */
+    public final void initialize(RtiAmbassador rti, HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
+        this.rti = rti;
+        this.id = ConfigHelper.getId(config);
+        this.updateInterval = ConfigHelper.getUpdateInterval(config);
+        this.handleStartTime = ConfigHelper.getHandleStartTime(config);
+        this.handleEndTime = ConfigHelper.getHandleEndTime(config);
+        this.interactionTypes = ConfigHelper.getSubscriptions(config);
+        this.configurationDirectory = configurationDirectory;
+
+        configure(config);
+    }
+
+    /**
+     * Subclasses implement this method to read additional custom configuration from the
+     * given {@link HierarchicalConfiguration} tree.
+     *
+     * @param config the configuration tree for the output generator
+     */
+    protected abstract void configure(HierarchicalConfiguration<ImmutableNode> config);
+
+    /**
+     * Factory method for creating actual output generator based on the previously
+     * read configuration ({@link #configure}).
      *
      * @return the actual output generator
      */
