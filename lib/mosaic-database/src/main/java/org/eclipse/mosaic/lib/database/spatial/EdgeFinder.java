@@ -30,7 +30,6 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Edge Finder searches for the closest edge to a specified geo location.
@@ -80,7 +79,6 @@ public class EdgeFinder {
             if (result == null || result.isEmpty()) {
                 return null;
             }
-
             EdgeWrapper edgeWrapper0 = result.get(0);
             EdgeWrapper edgeWrapper1 = result.get(1);
             Connection connection0 = edgeWrapper0.edge.getConnection();
@@ -92,16 +90,16 @@ public class EdgeFinder {
                 Vector3d direction0 = connection0.getTo().getPosition().toVector3d().subtract(origin0, new Vector3d());
                 Vector3d origin1 = connection1.getFrom().getPosition().toVector3d();
                 Vector3d direction1 = connection1.getTo().getPosition().toVector3d().subtract(origin1, new Vector3d());
+                List<Edge> resultEdges = new ArrayList<>();
                 if (!VectorUtils.isLeftOfLine(locationVector, origin0, direction0)) {
                     // if location is right of first connection, return first one
-                    return Lists.newArrayList(edgeWrapper0.edge);
-                } else if (!VectorUtils.isLeftOfLine(locationVector, origin1, direction1)) {
-                    // if location is right of second connection, return second one
-                    return Lists.newArrayList(edgeWrapper1.edge);
-                } else {
-                    // TODO: this should probably be the first if-clause and the dot product should be checked with a fuzzy-equals to zero
-                    return result.stream().map(wrapper -> wrapper.edge).collect(Collectors.toList());
+                    resultEdges.add(edgeWrapper0.edge);
                 }
+                if (!VectorUtils.isLeftOfLine(locationVector, origin1, direction1)) {
+                    // if location is right of second connection, return second one
+                    resultEdges.add(edgeWrapper1.edge);
+                }
+                return resultEdges;
             } else {
                 return Lists.newArrayList(edgeWrapper0.edge);
             }
