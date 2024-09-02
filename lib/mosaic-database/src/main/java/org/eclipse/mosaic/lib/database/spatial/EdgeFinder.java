@@ -20,22 +20,31 @@ import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.KdTree;
 import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
+import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Edge Finder searches for the closest edge to a specified geo location.
  */
 public class EdgeFinder {
 
+    /**
+     * In order to handle cases were adjacent edges use the same FROM- and TO-Nodes,
+     * we return the two nearest edges, which allows more concrete handling in later applications.
+     */
+    private static final int K_EDGES = 2;
+
     private final KdTree<EdgeWrapper> edgeIndex;
-    private final SpatialTreeTraverser.Nearest<EdgeWrapper> edgeSearch;
+    private final SpatialTreeTraverser.KNearest<EdgeWrapper> edgeSearch;
 
     /**
      * Constructs a new edgeFinder object with the specified database.
@@ -43,7 +52,7 @@ public class EdgeFinder {
      * @param database Database which contains all connections.
      */
     public EdgeFinder(Database database) {
-        List<EdgeWrapper> items =  new ArrayList<>();
+        List<EdgeWrapper> items = new ArrayList<>();
 
         for (Connection con : database.getConnections()) {
             for (int i = 0; i < con.getNodes().size() - 1; i++) {
@@ -53,7 +62,7 @@ public class EdgeFinder {
             }
         }
         edgeIndex = new KdTree<>(new SpatialItemAdapter.EdgeAdapter<>(), items);
-        edgeSearch = new org.eclipse.mosaic.lib.database.spatial.Edge.Nearest<>();
+        edgeSearch = new org.eclipse.mosaic.lib.database.spatial.Edge.KNearest<>();
     }
 
     /**
@@ -61,16 +70,41 @@ public class EdgeFinder {
      *
      * @return Closest edge to the given location.
      */
-    public Edge findClosestEdge(GeoPoint location) {
+    public List<Edge> findClosestEdge(GeoPoint location) {
         synchronized (edgeSearch) {
-            edgeSearch.setup(location.toVector3d());
+            Vector3d locationVector = location.toVector3d();
+            edgeSearch.setup(locationVector, K_EDGES);
             edgeSearch.traverse(edgeIndex);
 
-            EdgeWrapper result = edgeSearch.getNearest();
-            if (result == null) {
+            List<EdgeWrapper> result = edgeSearch.getKNearest();
+            if (result == null || result.isEmpty()) {
                 return null;
             }
-            return result.edge;
+
+            EdgeWrapper edgeWrapper0 = result.get(0);
+            EdgeWrapper edgeWrapper1 = result.get(1);
+            Connection connection0 = edgeWrapper0.edge.getConnection();
+            Connection connection1 = edgeWrapper1.edge.getConnection();
+            // check if roads are adjacent
+            if (connection0.getFrom() == connection1.getTo() && connection0.getTo() == connection1.getFrom()
+                    && connection0.getNodes().size() == connection1.getNodes().size()) {
+                Vector3d origin0 = connection0.getFrom().getPosition().toVector3d();
+                Vector3d direction0 = connection0.getTo().getPosition().toVector3d().subtract(origin0, new Vector3d());
+                Vector3d origin1 = connection1.getFrom().getPosition().toVector3d();
+                Vector3d direction1 = connection1.getTo().getPosition().toVector3d().subtract(origin1, new Vector3d());
+                if (!VectorUtils.isLeftOfLine(locationVector, origin0, direction0)) {
+                    // if location is right of first connection, return first one
+                    return Lists.newArrayList(edgeWrapper0.edge);
+                } else if (!VectorUtils.isLeftOfLine(locationVector, origin1, direction1)) {
+                    // if location is right of second connection, return second one
+                    return Lists.newArrayList(edgeWrapper1.edge);
+                } else {
+                    // TODO: this should probably be the first if-clause and the dot product should be checked with a fuzzy-equals to zero
+                    return result.stream().map(wrapper -> wrapper.edge).collect(Collectors.toList());
+                }
+            } else {
+                return Lists.newArrayList(edgeWrapper0.edge);
+            }
         }
     }
 
