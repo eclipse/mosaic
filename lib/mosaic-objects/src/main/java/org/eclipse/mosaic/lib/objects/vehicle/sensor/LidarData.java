@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.lib.objects.vehicle.sensor;
 
+import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.lib.util.gson.PolymorphismTypeAdapterFactory;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -23,7 +24,7 @@ import java.io.Serializable;
 
 public class LidarData implements Serializable {
     @JsonAdapter(PolymorphismTypeAdapterFactory.class)
-    private final Object lidarData;
+    private final PointCloud lidarData;
 
     private final long time;
     private final String name;
@@ -34,7 +35,7 @@ public class LidarData implements Serializable {
      * @param name      name of the unit
      * @param lidarData Object that contains the LidarFrame data
      */
-    public LidarData(long time, String name, Object lidarData) {
+    public LidarData(long time, String name, PointCloud lidarData) {
         this.lidarData = lidarData;
         this.time = time;
         this.name = name;
@@ -63,7 +64,7 @@ public class LidarData implements Serializable {
     public static class Builder {
         private final long time;
         private final String name;
-        private Object lidarData;
+        private PointCloud lidarData;
 
         /**
          * Init the builder with the current simulation time [ns] and name of the vehicle.
@@ -76,7 +77,7 @@ public class LidarData implements Serializable {
         /**
          * Set position related values for the vehicle info.
          */
-        public LidarData.Builder lidarData(Object lidarData) {
+        public LidarData.Builder lidarData(PointCloud lidarData) {
             this.lidarData = lidarData;
             return this;
         }
@@ -86,7 +87,7 @@ public class LidarData implements Serializable {
          */
         public LidarData create() {
             return new LidarData(
-                    time, name,lidarData);
+                    time, name, lidarData);
         }
     }
 }
