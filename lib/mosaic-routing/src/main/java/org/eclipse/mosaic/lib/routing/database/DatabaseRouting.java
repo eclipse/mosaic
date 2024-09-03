@@ -218,21 +218,21 @@ public class DatabaseRouting implements Routing {
         return new CandidateRoute(route.getConnectionIds(), length, time);
     }
 
-    private List<Edge> findClosestEdge(GeoPoint location) {
+    private List<Edge> findClosestEdges(GeoPoint location) {
         if (edgeFinder == null) {
             edgeFinder = new EdgeFinder(scenarioDatabase);
         }
-        return edgeFinder.findClosestEdge(location);
+        return edgeFinder.findClosestEdges(location);
     }
 
     /**
-     * Searches for the closest edge to the geo location.
+     * Searches for the closest {@link IRoadPosition} to a given geo location.
      *
      * @return Closest edge to the given location.
      */
     @Override
     public IRoadPosition findClosestRoadPosition(GeoPoint location) {
-        List<Edge> closestEdges = findClosestEdge(location);
+        List<Edge> closestEdges = findClosestEdges(location);
         if (closestEdges == null || closestEdges.isEmpty()) {
             return null;
         }

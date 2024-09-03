@@ -42,7 +42,7 @@ public class EdgeFinderTest {
     public GeoProjectionRule projectionRule = new GeoProjectionRule(GeoPoint.latLon(52, 13));
 
     @Test
-    public void findClosestEdge() {
+    public void findClosestEdges() {
         // SETUP
         Database db = Database.loadFromFile(rule.get("tiergarten.db"));
         assertFalse(db.getConnections().isEmpty());
@@ -50,7 +50,7 @@ public class EdgeFinderTest {
         final EdgeFinder edgeFinder = new EdgeFinder(db);
 
         // RUN
-        Edge edge = Iterables.getOnlyElement(edgeFinder.findClosestEdge(GeoPoint.latLon(52.51303, 13.32743)));
+        Edge edge = Iterables.getOnlyElement(edgeFinder.findClosestEdges(GeoPoint.latLon(52.51303, 13.32743)));
 
         // ASSERT
         assertEquals("36337926_408194196_408194192", edge.getConnection().getId());
@@ -59,7 +59,7 @@ public class EdgeFinderTest {
     }
 
     @Test
-    public void findClosestEdge2() {
+    public void findClosestEdges2() {
         // SETUP
         Database db = Database.loadFromFile(rule2.get("edgeFinderTest.db"));
         assertFalse(db.getConnections().isEmpty());
@@ -67,13 +67,29 @@ public class EdgeFinderTest {
         final EdgeFinder edgeFinder = new EdgeFinder(db);
 
         // RUN
-        List<Edge> edgesWest = edgeFinder.findClosestEdge(GeoPoint.latLon(0.0, 10.510506));
-        List<Edge> edgesEast = edgeFinder.findClosestEdge(GeoPoint.latLon(0.0, 10.511805));
+        List<Edge> edgesWest = edgeFinder.findClosestEdges(GeoPoint.latLon(0.0, 10.510506));
+        List<Edge> edgesEast = edgeFinder.findClosestEdges(GeoPoint.latLon(0.0, 10.511805));
         Edge edgeWest = Iterables.getOnlyElement(edgesWest);
         Edge edgeEast = Iterables.getOnlyElement(edgesEast);
         // ASSERT
         assertEquals("E0", edgeEast.getConnection().getId());
         assertEquals("-E0", edgeWest.getConnection().getId());
+    }
+
+    @Test
+    public void findClosestEdge() {
+        // SETUP
+        Database db = Database.loadFromFile(rule2.get("edgeFinderTest.db"));
+        assertFalse(db.getConnections().isEmpty());
+
+        final EdgeFinder edgeFinder = new EdgeFinder(db);
+
+        // RUN
+        Edge edgeUpwards = edgeFinder.findClosestEdge(GeoPoint.latLon(0.0, 10.510506), 0d);
+        Edge edgeDownwards = edgeFinder.findClosestEdge(GeoPoint.latLon(0.0, 10.511805), 180d);
+        // ASSERT
+        assertEquals("E0", edgeUpwards.getConnection().getId());
+        assertEquals("-E0", edgeDownwards.getConnection().getId());
     }
 
 }

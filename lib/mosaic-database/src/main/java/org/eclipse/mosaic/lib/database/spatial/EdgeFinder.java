@@ -19,6 +19,7 @@ import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.database.road.Connection;
 import org.eclipse.mosaic.lib.database.road.Node;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.KdTree;
@@ -65,11 +66,82 @@ public class EdgeFinder {
     }
 
     /**
-     * Searches for the closest edge to the geo location.
+     * Searches for the closest edge given a location and a heading.
+     * If two adjacent edges overlap, the heading will be used as a similarity measure.
      *
-     * @return Closest edge to the given location.
+     * @param location the location to find the closest edge to
+     * @param heading  used as a measure of similarity
+     * @return the closest edge to the given location considering the heading
      */
-    public List<Edge> findClosestEdge(GeoPoint location) {
+    public Edge findClosestEdge(GeoPoint location, double heading) {
+        List<EdgeWrapper> result = findKNearestEdgeWrappers(location, K_EDGES);
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+        if (result.size() == 1) {
+            return result.get(0).edge;
+        }
+        Edge bestMatch = null;
+        for (EdgeWrapper contestant : result) {
+            if (bestMatch == null
+                    || MathUtils.angleDif(getHeadingOfEdge(bestMatch), heading)
+                    > MathUtils.angleDif(getHeadingOfEdge(contestant.edge), heading)) {
+                bestMatch = contestant.edge;
+            } else {
+                getHeadingOfEdge(bestMatch);
+            }
+        }
+        return bestMatch;
+    }
+
+    private double getHeadingOfEdge(Edge bestMatch) {
+        return VectorUtils.getHeadingFromDirection(bestMatch.getNextNode().getPosition().toVector3d()
+                .subtract(bestMatch.getPreviousNode().getPosition().toVector3d(), new Vector3d())
+        );
+    }
+
+    /**
+     * Searches for the two closest edges to the geo location.
+     * The number of searched edges can be configured using {@link #K_EDGES}.
+     *
+     * @param location the location to find the closest edge to
+     * @return The two closest edges to the given location.
+     */
+    public List<Edge> findClosestEdges(GeoPoint location) {
+        List<EdgeWrapper> result = findKNearestEdgeWrappers(location, K_EDGES);
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+        if (result.size() == 1) {
+            return Lists.newArrayList(result.get(0).edge);
+        }
+        Edge edge0 = result.get(0).edge;
+        Edge edge1 = result.get(1).edge;
+        // check if roads are adjacent
+        if (edge0.getPreviousNode() == edge1.getNextNode() && edge0.getNextNode() == edge1.getPreviousNode()
+                && edge0.getConnection().getNodes().size() == edge1.getConnection().getNodes().size()) {
+            final Vector3d locationVector = location.toVector3d();
+            final Vector3d origin0 = edge0.getPreviousNode().getPosition().toVector3d();
+            final Vector3d direction0 = edge0.getNextNode().getPosition().toVector3d().subtract(origin0, new Vector3d());
+            final Vector3d origin1 = edge1.getPreviousNode().getPosition().toVector3d();
+            final Vector3d direction1 = edge1.getNextNode().getPosition().toVector3d().subtract(origin1, new Vector3d());
+            List<Edge> resultEdges = new ArrayList<>();
+            if (!VectorUtils.isLeftOfLine(locationVector, origin0, direction0)) {
+                // if location is right of first connection, return first one
+                resultEdges.add(edge0);
+            }
+            if (!VectorUtils.isLeftOfLine(locationVector, origin1, direction1)) {
+                // if location is right of second connection, return second one
+                resultEdges.add(edge1);
+            }
+            return resultEdges;
+        } else {
+            return Lists.newArrayList(edge0);
+        }
+
+    }
+
+    private List<EdgeWrapper> findKNearestEdgeWrappers(GeoPoint location, int k) {
         synchronized (edgeSearch) {
             Vector3d locationVector = location.toVector3d();
             edgeSearch.setup(locationVector, K_EDGES);
@@ -79,30 +151,10 @@ public class EdgeFinder {
             if (result == null || result.isEmpty()) {
                 return null;
             }
-            EdgeWrapper edgeWrapper0 = result.get(0);
-            EdgeWrapper edgeWrapper1 = result.get(1);
-            Connection connection0 = edgeWrapper0.edge.getConnection();
-            Connection connection1 = edgeWrapper1.edge.getConnection();
-            // check if roads are adjacent
-            if (connection0.getFrom() == connection1.getTo() && connection0.getTo() == connection1.getFrom()
-                    && connection0.getNodes().size() == connection1.getNodes().size()) {
-                Vector3d origin0 = connection0.getFrom().getPosition().toVector3d();
-                Vector3d direction0 = connection0.getTo().getPosition().toVector3d().subtract(origin0, new Vector3d());
-                Vector3d origin1 = connection1.getFrom().getPosition().toVector3d();
-                Vector3d direction1 = connection1.getTo().getPosition().toVector3d().subtract(origin1, new Vector3d());
-                List<Edge> resultEdges = new ArrayList<>();
-                if (!VectorUtils.isLeftOfLine(locationVector, origin0, direction0)) {
-                    // if location is right of first connection, return first one
-                    resultEdges.add(edgeWrapper0.edge);
-                }
-                if (!VectorUtils.isLeftOfLine(locationVector, origin1, direction1)) {
-                    // if location is right of second connection, return second one
-                    resultEdges.add(edgeWrapper1.edge);
-                }
-                return resultEdges;
-            } else {
-                return Lists.newArrayList(edgeWrapper0.edge);
+            if (result.size() == 1) {
+                return Lists.newArrayList(result.get(0));
             }
+            return result;
         }
     }
 
