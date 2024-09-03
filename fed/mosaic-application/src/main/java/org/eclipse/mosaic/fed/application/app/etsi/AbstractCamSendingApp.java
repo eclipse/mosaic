@@ -50,11 +50,11 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem & AdHocCo
     /**
      * Constructor with a configuration class and a configuration filename.
      *
-     * @param configClazz    Configuration class defining ETSI specific parameter.
+     * @param configClass    Configuration class defining ETSI specific parameter.
      * @param configFileName Configuration filename.
      */
-    protected AbstractCamSendingApp(Class<? extends CEtsi> configClazz, String configFileName) {
-        super(configClazz, configFileName);
+    protected AbstractCamSendingApp(Class<? extends CEtsi> configClass, String configFileName) {
+        super(configClass, configFileName);
     }
 
 

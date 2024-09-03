@@ -24,7 +24,6 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.communication.AdHocConfiguration;
 import org.eclipse.mosaic.lib.objects.communication.InterfaceConfiguration;
-import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 
 import org.slf4j.Logger;
@@ -117,9 +116,7 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
             log.warn("sendCAM: Ad hoc communication disabled (!adhocModule.isEnabled()).");
             return null;
         }
-
-        final MessageRouting routing = createMessageRouting().topoBroadCast();
-        return super.sendCam(routing);
+        return super.sendCam(createMessageRouting().topoBroadCast());
     }
 
     @Override
@@ -147,6 +144,6 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
             throw new UnsupportedOperationException("Cannot send message from senders without a location.");
         }
         GeoPoint position = ((Locatable) getOwner()).getPosition();
-        return new AdHocMessageRoutingBuilder(this.getOwner().getId(), position);
+        return new AdHocMessageRoutingBuilder(getOwner().getId(), position);
     }
 }
