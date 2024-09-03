@@ -15,15 +15,12 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
-import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
-import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
 import org.eclipse.mosaic.interactions.communication.CellularCommunicationConfiguration;
-import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.addressing.CellMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
-import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 
 import org.slf4j.Logger;
@@ -40,7 +37,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
      */
     private final static long DEFAULT_CAM_GEO_RADIUS = 300;
 
-    public CellModule(OperatingSystem owner, Logger log) {
+    public CellModule(CommunicationModuleOwner owner, Logger log) {
         super(owner, log);
     }
 
@@ -110,23 +107,44 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             log.warn("sendCAM: Cell communication disabled (!cellModule.isEnabled()).");
             return null;
         }
+
         if (configuration == null || configuration.getCamConfiguration() == null) {
             log.warn("sendCAM: No camConfiguration with addressingMode and geoRadius given.");
             return null;
         }
+
         CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
-        final MessageRouting routing;
-        if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_TOPOCAST)) {
-            routing = createMessageRouting().topoCast(camConfiguration.getTopocastReceiver());
-        } else {
-            final GeoCircle destination = new GeoCircle(owner.getPosition(), camConfiguration.getGeoRadius());
-            if (camConfiguration.getAddressingMode().equals(DestinationType.CELL_GEOCAST)) {
-                routing = createMessageRouting().geoBroadcastBasedOnUnicast(destination);
-            } else {
-                routing = createMessageRouting().geoBroadcastMbms(destination);
-            }
+        switch (camConfiguration.getAddressingMode()) {
+            case CELL_TOPOCAST:
+                return sendCamViaTopocast(camConfiguration);
+            case CELL_GEOCAST:
+                return sendCamViaGeoBroadcast(camConfiguration);
+            case CELL_GEOCAST_MBMS:
+                return sendCamViaGeoBroadcastMbms(camConfiguration);
+            default:
+                log.warn("sendCam: Unsupported addressing mode {}.", camConfiguration.getAddressingMode());
+                return null;
         }
-        return super.sendCam(routing);
+    }
+
+    private Integer sendCamViaTopocast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
+        return super.sendCam(createMessageRouting().topoCast(camConfiguration.getTopocastReceiver()));
+    }
+
+    private Integer sendCamViaGeoBroadcast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
+        if (!(getOwner() instanceof Locatable)) {
+            throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
+        }
+        final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
+        return super.sendCam(createMessageRouting().geoBroadcastBasedOnUnicast(destination));
+    }
+
+    private Integer sendCamViaGeoBroadcastMbms(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
+        if (!(getOwner() instanceof Locatable)) {
+            throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
+        }
+        final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
+        return super.sendCam(createMessageRouting().geoBroadcastMbms(destination));
     }
 
     /**
@@ -155,7 +173,9 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
      * @return the created builder for further configuration
      */
     public CellMessageRoutingBuilder createMessageRouting() {
-        GeoPoint position = getOwner() instanceof ServerOperatingSystem ? null : getOwner().getPosition();
+        GeoPoint position = getOwner() instanceof Locatable
+                ? ((Locatable) getOwner()).getPosition()
+                : null;
         return new CellMessageRoutingBuilder(getOwner().getId(), position);
     }
 }

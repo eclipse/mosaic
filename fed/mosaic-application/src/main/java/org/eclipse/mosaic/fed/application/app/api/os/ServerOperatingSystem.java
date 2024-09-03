@@ -15,18 +15,14 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
-import org.eclipse.mosaic.fed.application.ambassador.navigation.IRoutingModule;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.CellCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Routable;
 
 /**
  * Note: This interface is empty for now and currently only functions as a marker-interface. Future extensions
  * might add features.
  */
-public interface ServerOperatingSystem extends OperatingSystem {
+public interface ServerOperatingSystem
+        extends OperatingSystem, Routable, CellCommunicative {
 
-    /**
-     * Gives access to a routing facility for calculating routes through the road network.
-     *
-     * @return the {@link IRoutingModule}
-     */
-    IRoutingModule getRoutingModule();
 }

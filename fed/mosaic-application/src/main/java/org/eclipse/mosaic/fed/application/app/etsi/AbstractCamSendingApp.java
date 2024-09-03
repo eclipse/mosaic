@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.application.app.etsi;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
 import org.eclipse.mosaic.fed.application.app.ConfigurableApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.AdHocCommunicative;
 import org.eclipse.mosaic.fed.application.config.CEtsi;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
@@ -34,7 +35,7 @@ import org.eclipse.mosaic.rti.DATA;
  * @see RoadSideUnitCamSendingApp
  * @see TrafficLightCamSendingApp
  */
-public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends ConfigurableApplication<CEtsi, OS> {
+public abstract class AbstractCamSendingApp<OS extends OperatingSystem & AdHocCommunicative> extends ConfigurableApplication<CEtsi, OS> {
 
     private Data data;
 
@@ -49,12 +50,13 @@ public abstract class AbstractCamSendingApp<OS extends OperatingSystem> extends 
     /**
      * Constructor with a configuration class and a configuration filename.
      *
-     * @param configClazz    Configuration class defining ETSI specific parameter.
+     * @param configClass    Configuration class defining ETSI specific parameter.
      * @param configFileName Configuration filename.
      */
-    protected AbstractCamSendingApp(Class<? extends CEtsi> configClazz, String configFileName) {
-        super(configClazz, configFileName);
+    protected AbstractCamSendingApp(Class<? extends CEtsi> configClass, String configFileName) {
+        super(configClass, configFileName);
     }
+
 
     /**
      * Abstract method generating a {@link Data}-object from

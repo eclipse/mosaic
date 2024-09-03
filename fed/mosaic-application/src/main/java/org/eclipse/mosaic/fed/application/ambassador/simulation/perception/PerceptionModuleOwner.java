@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Fraunhofer FOKUS and others. All rights reserved.
+ * Copyright (c) 2024 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,11 +15,11 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
-import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Perceptive;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.api.Interaction;
 
-public interface PerceptionModuleOwner {
+public interface PerceptionModuleOwner extends Perceptive {
 
     String getId();
 
@@ -30,13 +30,8 @@ public interface PerceptionModuleOwner {
     /**
      * Sends the given {@link Interaction} to the runtime infrastructure.
      *
-     * @param interaction the {@link Interaction} to be send
+     * @param interaction the {@link Interaction} to be sent
      */
     void sendInteractionToRti(Interaction interaction);
-
-    /**
-     * Returns the perception module of this unit.
-     */
-    PerceptionModule<SimplePerceptionConfiguration> getPerceptionModule();
 
 }
