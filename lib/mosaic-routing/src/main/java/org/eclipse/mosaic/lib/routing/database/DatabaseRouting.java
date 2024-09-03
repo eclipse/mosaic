@@ -225,6 +225,13 @@ public class DatabaseRouting implements Routing {
         return edgeFinder.findClosestEdges(location);
     }
 
+    private Edge findClosestEdge(GeoPoint location, double heading) {
+        if (edgeFinder == null) {
+            edgeFinder = new EdgeFinder(scenarioDatabase);
+        }
+        return edgeFinder.findClosestEdge(location, heading);
+    }
+
     /**
      * Searches for the closest {@link IRoadPosition} to a given geo location.
      *
@@ -240,7 +247,19 @@ public class DatabaseRouting implements Routing {
             log.info("findClosestRoadPosition returned more than one edge, returning first result.");
         }
         Edge closestEdge = closestEdges.get(0);
-        LazyLoadingConnection connection = new LazyLoadingConnection(closestEdge.getConnection());
+        return redefineRoadPosition(location, closestEdge);
+    }
+
+    @Override
+    public IRoadPosition findClosestRoadPosition(GeoPoint point, double heading) {
+        Edge closestEdge = findClosestEdge(point, heading);
+        if (closestEdge == null) {
+            return null;
+        }
+        return redefineRoadPosition(point, closestEdge);
+    }
+
+    private static LazyLoadingRoadPosition redefineRoadPosition(GeoPoint location, Edge closestEdge) {
         LazyLoadingNode previousNode = new LazyLoadingNode(closestEdge.getPreviousNode());
         LazyLoadingNode upcomingNode = new LazyLoadingNode(closestEdge.getNextNode());
 
@@ -250,7 +269,9 @@ public class DatabaseRouting implements Routing {
         double distanceFromStart = closestEdge.getPreviousNode().getPosition().distanceTo(closestPointOnEdge);
         distanceFromStart = min(distanceFromStart, previousNode.getPosition().distanceTo(upcomingNode.getPosition()));
 
-        return new LazyLoadingRoadPosition(connection, previousNode, upcomingNode, distanceFromStart);
+        return new LazyLoadingRoadPosition(
+                new LazyLoadingConnection(closestEdge.getConnection()), previousNode, upcomingNode, distanceFromStart
+        );
     }
 
     @Override
