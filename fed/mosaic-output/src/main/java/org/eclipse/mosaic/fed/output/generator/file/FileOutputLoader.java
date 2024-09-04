@@ -23,7 +23,6 @@ import org.eclipse.mosaic.fed.output.generator.file.write.Write;
 import org.eclipse.mosaic.fed.output.generator.file.write.WriteByFile;
 import org.eclipse.mosaic.fed.output.generator.file.write.WriteByFileCompress;
 import org.eclipse.mosaic.fed.output.generator.file.write.WriteByLog;
-import org.eclipse.mosaic.rti.api.RtiAmbassador;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -70,6 +69,17 @@ public class FileOutputLoader extends OutputGeneratorLoader {
 
     public InteractionFormatter getInteractionFormatter() {
         return this.interactionFormatter;
+    }
+
+    @Override
+    public void configure(HierarchicalConfiguration<ImmutableNode> config) {
+        try {
+            this.writer = this.getWrite(config);
+            this.interactionFormatter = this.createInteractionFormatter(config);
+        } catch (Exception e) {
+            log.error("Exception", e);
+            throw new RuntimeException("Caused by OutputGenerator " + getId(), e);
+        }
     }
 
     private InteractionFormatter createInteractionFormatter(HierarchicalConfiguration<ImmutableNode> sub)
@@ -144,18 +154,6 @@ public class FileOutputLoader extends OutputGeneratorLoader {
                 throw new IllegalArgumentException("No such write method '" + write + "'");
         }
         return ret;
-    }
-
-    @Override
-    public void initialize(RtiAmbassador rti, HierarchicalConfiguration<ImmutableNode> config, File configurationDirectory) throws Exception {
-        super.initialize(rti, config, configurationDirectory);
-        try {
-            this.writer = this.getWrite(config);
-            this.interactionFormatter = this.createInteractionFormatter(config);
-        } catch (Exception e) {
-            log.error("Exception", e);
-            throw new Exception("Caused by OutputGenerator " + getId(), e);
-        }
     }
 
     @Override
