@@ -16,12 +16,10 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
-import org.eclipse.mosaic.fed.application.ambassador.navigation.IRoutingModule;
-import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.IRoutingModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.mapping.ServerMapping;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -55,18 +53,8 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
     }
 
     @Override
-    public GeoPoint getPosition() {
-        throw new UnsupportedOperationException("Servers aren't mapped to a location.");
-    }
-
-    @Override
     public CamBuilder assembleCamMessage(CamBuilder camBuilder) {
         throw new UnsupportedOperationException("Servers can't send CAMs.");
-    }
-
-    @Override
-    public AdHocModule getAdHocModule() {
-        throw new UnsupportedOperationException("Servers can't access AdHoc functionality.");
     }
 
     @Override

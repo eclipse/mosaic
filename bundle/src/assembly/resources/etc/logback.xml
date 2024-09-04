@@ -159,7 +159,7 @@
                 <appender-ref ref="CellLog"/>
             </logger>
 
-            <logger name="org.eclipse.mosaic.fed.application.ambassador.navigation" additivity="false" level="INFO">
+            <logger name="org.eclipse.mosaic.fed.application.ambassador.simulation.navigation" additivity="false" level="INFO">
                 <appender-ref ref="NavigationLog"/>
             </logger>
             <logger name="org.eclipse.mosaic.lib.routing" additivity="false" level="INFO">

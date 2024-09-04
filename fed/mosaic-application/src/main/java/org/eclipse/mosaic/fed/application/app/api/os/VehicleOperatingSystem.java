@@ -15,9 +15,12 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os;
 
-import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.AdHocCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.CellCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Navigable;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Perceptive;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation.SensorType;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
@@ -33,7 +36,7 @@ import javax.annotation.Nullable;
  * {@link org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit}.
  */
 public interface VehicleOperatingSystem
-        extends OperatingSystem, INavigationModuleOwner, PerceptionModuleOwner {
+        extends OperatingSystem, Locatable, Navigable, Perceptive, CellCommunicative, AdHocCommunicative {
 
     /**
      * Returns the current vehicle data state.
