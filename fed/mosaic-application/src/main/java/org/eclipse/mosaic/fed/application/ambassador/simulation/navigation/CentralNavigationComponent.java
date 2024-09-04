@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.navigation;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.navigation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ApplicationAmbassador;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;

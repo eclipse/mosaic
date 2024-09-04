@@ -26,8 +26,8 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
-import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.BoundingBoxOcclusion;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DimensionsModifier;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.errormodels.DistanceFilter;

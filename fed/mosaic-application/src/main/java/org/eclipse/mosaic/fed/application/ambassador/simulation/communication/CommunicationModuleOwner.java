@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.communication;
 
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Cam;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -28,13 +27,6 @@ import org.eclipse.mosaic.rti.api.Interaction;
 public interface CommunicationModuleOwner {
 
     String getId();
-
-    /**
-     * Returns the current position as a {@link GeoPoint}.
-     *
-     * @return the current position.
-     */
-    GeoPoint getPosition();
 
     long getSimulationTime();
 

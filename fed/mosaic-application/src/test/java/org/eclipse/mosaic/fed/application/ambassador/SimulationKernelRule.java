@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador;
 
-import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
