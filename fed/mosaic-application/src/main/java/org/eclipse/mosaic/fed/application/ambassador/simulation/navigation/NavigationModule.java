@@ -286,4 +286,9 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     public IRoadPosition getClosestRoadPosition(GeoPoint geoPoint) {
         return SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().findClosestRoadPosition(geoPoint);
     }
+
+    @Override
+    public IRoadPosition getClosestRoadPosition(GeoPoint geoPoint, double heading) {
+        return SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().findClosestRoadPosition(geoPoint, heading);
+    }
 }

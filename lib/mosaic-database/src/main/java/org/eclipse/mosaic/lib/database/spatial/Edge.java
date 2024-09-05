@@ -83,4 +83,11 @@ public class Edge {
         }
     }
 
+    static class KNearest<V extends Vector3d, E extends org.eclipse.mosaic.lib.spatial.Edge<V>> extends SpatialTreeTraverser.KNearest<E> {
+        @Override
+        protected double getCenterDistanceSqr(E item, SpatialTree<E> tree) {
+            return item.getNearestPointOnEdge(center).distanceSqrTo(center);
+        }
+    }
+
 }

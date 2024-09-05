@@ -24,7 +24,9 @@ import org.eclipse.mosaic.lib.geo.Polygon;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public abstract class SpatialTreeTraverser<T> {
 
@@ -162,6 +164,64 @@ public abstract class SpatialTreeTraverser<T> {
                     nearest = item;
                     distanceSqr = dSqr;
                 }
+            }
+        }
+    }
+
+    public static class KNearest<T> extends CenterDistanceBased<T> {
+        private int k;
+        private PriorityQueue<Neighbor<T>> maxHeap;
+
+        public KNearest<T> setup(Vector3d center, int k) {
+            setCenter(center);
+            this.k = k;
+            this.maxHeap = new PriorityQueue<>(Comparator.comparingDouble(neighbor -> -neighbor.distance));
+            return this;
+        }
+
+        public List<T> getKNearest() {
+            List<T> result = new ArrayList<>();
+            while (!maxHeap.isEmpty()) {
+                result.add(maxHeap.poll().item);
+            }
+            return result;
+        }
+
+        @Override
+        protected void traverseChildren(SpatialTree<T>.Node node, SpatialTree<T> tree) {
+            List<SpatialTree<T>.Node> children = node.getChildren();
+            for (int i = 0; i < children.size(); i++) {
+                SpatialTree<T>.Node child = children.get(i);
+                traverseNode(child, tree);
+
+                if (maxHeap.size() < k || child.getBounds().distanceSqrToPoint(center) < maxHeap.peek().distance) {
+                    traverseNode(child, tree);
+                }
+            }
+        }
+
+        @Override
+        protected void traverseLeaf(SpatialTree<T>.Node node, SpatialTree<T> tree) {
+            List<T> items = node.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                T item = items.get(i);
+                double distance = getCenterDistanceSqr(item, tree);
+                if (maxHeap.size() < k) {
+                    maxHeap.add(new Neighbor<>(item, distance));
+                } else if (distance < maxHeap.peek().distance) {
+                    maxHeap.poll();
+                    maxHeap.add(new Neighbor<>(item, distance));
+                }
+            }
+        }
+
+        private static class Neighbor<T> {
+            T item;
+            double distance;
+
+            Neighbor(T item, double distance) {
+                this.item = item;
+                this.distance = distance;
             }
         }
     }

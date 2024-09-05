@@ -210,7 +210,7 @@ public class DatabaseRouting implements Routing {
     public CandidateRoute approximateCostsForCandidateRoute(CandidateRoute route, String lastNodeId) {
         double length = 0;
         double time = 0;
-        for (String connectionId: route.getConnectionIds()) {
+        for (String connectionId : route.getConnectionIds()) {
             Connection con = getScenarioDatabase().getConnection(connectionId);
             length += con.getLength();
             time += con.getLength() / con.getMaxSpeedInMs();
@@ -218,26 +218,48 @@ public class DatabaseRouting implements Routing {
         return new CandidateRoute(route.getConnectionIds(), length, time);
     }
 
-    private Edge findClosestEdge(GeoPoint location) {
+    private List<Edge> findClosestEdges(GeoPoint location) {
         if (edgeFinder == null) {
             edgeFinder = new EdgeFinder(scenarioDatabase);
         }
-        return edgeFinder.findClosestEdge(location);
+        return edgeFinder.findClosestEdges(location);
+    }
+
+    private Edge findClosestEdge(GeoPoint location, double heading) {
+        if (edgeFinder == null) {
+            edgeFinder = new EdgeFinder(scenarioDatabase);
+        }
+        return edgeFinder.findClosestEdge(location, heading);
     }
 
     /**
-     * Searches for the closest edge to the geo location.
+     * Searches for the closest {@link IRoadPosition} to a given geo location.
      *
      * @return Closest edge to the given location.
      */
     @Override
     public IRoadPosition findClosestRoadPosition(GeoPoint location) {
-        Edge closestEdge = findClosestEdge(location);
+        List<Edge> closestEdges = findClosestEdges(location);
+        if (closestEdges == null || closestEdges.isEmpty()) {
+            return null;
+        }
+        if (closestEdges.size() > 1) {
+            log.info("findClosestRoadPosition returned more than one edge, returning first result.");
+        }
+        Edge closestEdge = closestEdges.get(0);
+        return redefineRoadPosition(location, closestEdge);
+    }
+
+    @Override
+    public IRoadPosition findClosestRoadPosition(GeoPoint point, double heading) {
+        Edge closestEdge = findClosestEdge(point, heading);
         if (closestEdge == null) {
             return null;
         }
+        return redefineRoadPosition(point, closestEdge);
+    }
 
-        LazyLoadingConnection connection = new LazyLoadingConnection(closestEdge.getConnection());
+    private static LazyLoadingRoadPosition redefineRoadPosition(GeoPoint location, Edge closestEdge) {
         LazyLoadingNode previousNode = new LazyLoadingNode(closestEdge.getPreviousNode());
         LazyLoadingNode upcomingNode = new LazyLoadingNode(closestEdge.getNextNode());
 
@@ -247,7 +269,9 @@ public class DatabaseRouting implements Routing {
         double distanceFromStart = closestEdge.getPreviousNode().getPosition().distanceTo(closestPointOnEdge);
         distanceFromStart = min(distanceFromStart, previousNode.getPosition().distanceTo(upcomingNode.getPosition()));
 
-        return new LazyLoadingRoadPosition(connection, previousNode, upcomingNode, distanceFromStart);
+        return new LazyLoadingRoadPosition(
+                new LazyLoadingConnection(closestEdge.getConnection()), previousNode, upcomingNode, distanceFromStart
+        );
     }
 
     @Override

@@ -65,7 +65,7 @@ public class DatabaseRoutingTest {
 
     private final static String dbFile = "/tiergarten.db";
 
-    private DatabaseRouting routingAPIScenarioDatabase;
+    private DatabaseRouting databaseRouting;
     private CRouting configuration;
 
     private File cfgDir;
@@ -81,7 +81,7 @@ public class DatabaseRoutingTest {
         FileUtils.copyInputStreamToFile(getClass().getResourceAsStream(dbFile), dbFileCopy);
 
         configuration = new CRouting();
-        routingAPIScenarioDatabase = new DatabaseRouting();
+        databaseRouting = new DatabaseRouting();
 
     }
 
@@ -91,10 +91,10 @@ public class DatabaseRoutingTest {
         configuration.source = null;
 
         //RUN
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         //ASSERT
-        assertEquals(1, routingAPIScenarioDatabase.getRoutesFromDatabaseForMessage().size());
+        assertEquals(1, databaseRouting.getRoutesFromDatabaseForMessage().size());
     }
 
     @Test
@@ -103,10 +103,10 @@ public class DatabaseRoutingTest {
         configuration.source = "tiergarten.db";
 
         //RUN
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         //ASSERT
-        assertEquals(1, routingAPIScenarioDatabase.getRoutesFromDatabaseForMessage().size());
+        assertEquals(1, databaseRouting.getRoutesFromDatabaseForMessage().size());
     }
 
     @Test(expected = InternalFederateException.class)
@@ -115,29 +115,30 @@ public class DatabaseRoutingTest {
         configuration.source = "tiergarten_not_found.db";
 
         //RUN -> Throw error
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
     }
 
     @Test
     public void getRoutesFromDatabaseForMessage_routesCorrectlyLoaded() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
         final String routeID = "0";
 
         //RUN
-        Map<String, VehicleRoute> routes = routingAPIScenarioDatabase.getRoutesFromDatabaseForMessage();
+        Map<String, VehicleRoute> routes = databaseRouting.getRoutesFromDatabaseForMessage();
 
         //ASSERT
         assertEquals(1, routes.size());
         assertNotNull(routes.get(routeID));
-        assertEquals(Arrays.asList("26704482", "26938219", "26938220", "26785753", "26785752", "21487147", "26704584", "26938208", "26938209",
-                "21487146", "281787666", "281787664", "21487168", "26938204", "251150126", "21487167", "272365223", "428788319", "272256206",
-                "408194194", "26738489", "313006383", "423839224", "26704448", "27537750", "27537749", "252864801", "265786533", "252864802",
-                "341364279", "248919692", "82654385", "27011308", "341364277", "341364270", "27011305", "540312558", "281787656", "281787657",
-                "21487170", "27011237", "27423744", "27011241", "299080425", "26703663", "299080426", "21487176", "21487175", "197687090",
-                "342813080", "27011231", "21487174", "27011842", "27011256", "26873451", "406585016", "414959615", "82654384", "564738832",
-                "249734328", "26873453", "152533555", "417709064", "391498256", "26873454"),
+        assertEquals(Arrays.asList("26704482", "26938219", "26938220", "26785753", "26785752", "21487147", "26704584", "26938208",
+                        "26938209", "21487146", "281787666", "281787664", "21487168", "26938204", "251150126", "21487167", "272365223",
+                        "428788319", "272256206", "408194194", "26738489", "313006383", "423839224", "26704448", "27537750", "27537749",
+                        "252864801", "265786533", "252864802", "341364279", "248919692", "82654385", "27011308", "341364277", "341364270",
+                        "27011305", "540312558", "281787656", "281787657", "21487170", "27011237", "27423744", "27011241", "299080425",
+                        "26703663", "299080426", "21487176", "21487175", "197687090", "342813080", "27011231", "21487174", "27011842",
+                        "27011256", "26873451", "406585016", "414959615", "82654384", "564738832", "249734328", "26873453", "152533555",
+                        "417709064", "391498256", "26873454"),
                 routes.get(routeID).getNodeIds());
     }
 
@@ -145,10 +146,10 @@ public class DatabaseRoutingTest {
     public void getMaxSpeedOfConnection() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         //RUN
-        double speed = routingAPIScenarioDatabase.getMaxSpeedOfConnection("32909782_26704482_26785753");
+        double speed = databaseRouting.getMaxSpeedOfConnection("32909782_26704482_26785753");
 
         //ASSERT
         assertEquals(22.222, speed, 0.001d);
@@ -158,10 +159,10 @@ public class DatabaseRoutingTest {
     public void getMaxSpeedOfConnection_noSuchConnection_noException() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         //RUN
-        double speed = routingAPIScenarioDatabase.getMaxSpeedOfConnection("32909782_26704482_0");
+        double speed = databaseRouting.getMaxSpeedOfConnection("32909782_26704482_0");
 
         //ASSERT
         assertEquals(0, speed, 0.001d);
@@ -171,10 +172,10 @@ public class DatabaseRoutingTest {
     public void getPositionOfNode() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         //RUN
-        GeoPoint gp = routingAPIScenarioDatabase.getNode("21487171").getPosition();
+        GeoPoint gp = databaseRouting.getNode("21487171").getPosition();
 
         //ASSERT
         assertEquals(52.515, gp.getLatitude(), 0.001d);
@@ -182,21 +183,22 @@ public class DatabaseRoutingTest {
     }
 
     @Test
-    public void createRouteForRTI() throws InternalFederateException, IllegalRouteException {
+    public void createRouteForRti() throws InternalFederateException, IllegalRouteException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         final CandidateRoute candidateRoute = new CandidateRoute(
-                Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749", "4609243_27537749_252864801", "4609243_252864801_252864802"), 0, 0);
+                Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749",
+                        "4609243_27537749_252864801", "4609243_252864801_252864802"), 0, 0);
         //RUN
-        final VehicleRoute route = routingAPIScenarioDatabase.createRouteForRTI(candidateRoute);
+        final VehicleRoute route = databaseRouting.createRouteForRTI(candidateRoute);
 
         //ASSERT
         assertEquals(376.4d, route.getLength(), 0.1d);
         assertEquals(candidateRoute.getConnectionIds(), route.getConnectionIds());
         assertEquals(Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750",
-                "4609244_27537750_27537749", "4609243_27537749_252864801", "4609243_252864801_252864802"),
+                        "4609244_27537750_27537749", "4609243_27537749_252864801", "4609243_252864801_252864802"),
                 route.getConnectionIds());
     }
 
@@ -204,27 +206,29 @@ public class DatabaseRoutingTest {
     public void createRouteForRTI_falseCandidateRoute() throws InternalFederateException, IllegalRouteException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         final CandidateRoute candidateRoute = new CandidateRoute(
                 Arrays.asList("4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749", /* "4609243_27537749_252864801", */ "4609243_252864801_252864802"), 0, 0);
         //RUN (throw error)
-        routingAPIScenarioDatabase.createRouteForRTI(candidateRoute);
+        databaseRouting.createRouteForRTI(candidateRoute);
     }
 
     @Test
     public void findRoutes() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
-        final RoutingParameters routingParameters = new RoutingParameters().alternativeRoutes(0).costFunction(RoutingCostFunction.Shortest);
-        final GeoPoint start = routingAPIScenarioDatabase.getNode("26704482").getPosition();
-        final GeoPoint target = routingAPIScenarioDatabase.getNode("26704584").getPosition();
+        final RoutingParameters routingParameters = new RoutingParameters()
+                .alternativeRoutes(0)
+                .costFunction(RoutingCostFunction.Shortest);
+        final GeoPoint start = databaseRouting.getNode("26704482").getPosition();
+        final GeoPoint target = databaseRouting.getNode("26704584").getPosition();
         final RoutingRequest request = new RoutingRequest(new RoutingPosition(start), new RoutingPosition(target), routingParameters);
 
         //RUN 
-        final RoutingResponse response = routingAPIScenarioDatabase.findRoutes(request);
+        final RoutingResponse response = databaseRouting.findRoutes(request);
 
         //ASSERT
         assertEquals(0, response.getAlternativeRoutes().size());
@@ -239,15 +243,14 @@ public class DatabaseRoutingTest {
     public void getPositionOfNode_noSuchNode() throws InternalFederateException {
         //PREPARE
         configuration.source = "tiergarten.db";
-        routingAPIScenarioDatabase.initialize(configuration, cfgDir);
+        databaseRouting.initialize(configuration, cfgDir);
 
         //RUN -> throw error
-        routingAPIScenarioDatabase.getNode("1234").getPosition();
+        databaseRouting.getNode("1234").getPosition();
     }
 
     @Test
-    public void testApproximateCostsForCandidateRoute() throws Exception {
-
+    public void testApproximateCostsForCandidateRoute() {
         Node node0 = new Node("0", GeoPoint.lonLat(0.0, 0.0)); //node on route but vehicle already passed it
         Node node1 = new Node("1", GeoPoint.lonLat(1.0, 1.0));
         Node node2 = new Node("2", GeoPoint.lonLat(2.0, 2.0)); //node on Route but no intersection
@@ -268,7 +271,6 @@ public class DatabaseRoutingTest {
         node1ToNode3.addNode(node1);
         node1ToNode3.addNode(node3);
 
-
         Connection node3ToNode4 = new Connection("3-4", someWay);
         node3ToNode4.setLength(8.0);
         node3ToNode4.addNode(node3);
@@ -279,7 +281,7 @@ public class DatabaseRoutingTest {
         node3.addConnection(node3ToNode4);
         node4.addConnection(node3ToNode4);
 
-        DatabaseRouting spyRSDB = Mockito.spy(routingAPIScenarioDatabase);
+        DatabaseRouting spyRSDB = Mockito.spy(databaseRouting);
         Mockito.doReturn(dbMock).when(spyRSDB).getScenarioDatabase();
 
         Mockito.when(dbMock.getConnection("0-1")).thenReturn(node0ToNode1);
