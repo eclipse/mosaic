@@ -82,7 +82,7 @@
     <properties>
         <mosaic.version>25.0-SNAPSHOT</mosaic.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceTarget>11</project.build.sourceTarget>
+        <project.build.sourceTarget>17</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
         <skip.javadoc>true</skip.javadoc>
         <version.commons-cli>1.6.0</version.commons-cli><!-- 1.6. is approved in #11339 -->
