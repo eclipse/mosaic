@@ -32,7 +32,7 @@ spec:
         cpu: "1"
       requests:
         memory: "2Gi"
-        cpu: "1"    
+        cpu: "1"
   volumes:
   - name: "settings-security-xml"
     secret:
