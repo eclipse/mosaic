@@ -53,13 +53,13 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
 
     @Override
     protected boolean handleEventResource(Object resource, long eventType) {
-        if (resource instanceof BatteryData) {
-            updateBatteryData((BatteryData) resource);
+        if (resource instanceof BatteryData data) {
+            updateBatteryData(data);
             return true;
         }
 
-        if (resource instanceof VehicleChargingDenial) {
-            onVehicleChargingDenial((VehicleChargingDenial) resource);
+        if (resource instanceof VehicleChargingDenial chargingDenial) {
+            onVehicleChargingDenial(chargingDenial);
             return true;
         }
 

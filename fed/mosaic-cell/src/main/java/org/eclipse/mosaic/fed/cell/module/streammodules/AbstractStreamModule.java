@@ -77,8 +77,8 @@ public abstract class AbstractStreamModule extends CellModule {
                     .startTime(input.getMessageStartTime())
                     .resource(streamResult);
 
-            if (input.getV2xMessage().getRouting() instanceof MessageStreamRouting) {
-                long streamDuration = ((MessageStreamRouting) input.getV2xMessage().getRouting()).getStreamingDuration();
+            if (input.getV2xMessage().getRouting() instanceof MessageStreamRouting messageStreamRouting) {
+                long streamDuration = messageStreamRouting.getStreamingDuration();
                 notifyMessageBuilder.endTime(result.getMessageEndTime() + streamDuration);
             } else {
                 notifyMessageBuilder.endTime(result.getMessageEndTime());
@@ -127,10 +127,9 @@ public abstract class AbstractStreamModule extends CellModule {
                     TIME.format(result.getEndTime()),
                     result.getEmittingModule());
         }
-        if (result.getResource() != null && !(result.getResource() instanceof StreamResult)) {
+        if (!(result.getResource() instanceof StreamResult streamResult)) {
             throw new RuntimeException("Tried to free bandwidth but the resource of the result message was not a StreamResultMessage");
         }
-        StreamResult streamResult = result.getResource();
         TransmissionMode mode = streamResult.getMode();
         freeBandwidthForNode(streamResult.getInvolvedNode(), streamResult.getConsumedBandwidth(), mode);
         CNetworkProperties region = RegionUtility.getRegionByName(streamResult.getRegionId());

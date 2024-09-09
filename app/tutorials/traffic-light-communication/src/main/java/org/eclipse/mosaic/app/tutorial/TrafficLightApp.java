@@ -67,19 +67,19 @@ public final class TrafficLightApp extends AbstractApplication<TrafficLightOpera
 
     @Override
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
-        if (!(receivedV2xMessage.getMessage() instanceof GreenWaveMsg)) {
+        if (!(receivedV2xMessage.getMessage() instanceof GreenWaveMsg greenWaveMsg)) {
             return;
         }
         getLog().infoSimTime(this, "Received GreenWaveMsg");
 
-        if (!((GreenWaveMsg) receivedV2xMessage.getMessage()).getMessage().equals(SECRET)) {
+        if (!greenWaveMsg.getMessage().equals(SECRET)) {
             return;
         }
         getLog().infoSimTime(this, "Received correct passphrase: {}", SECRET);
 
-        Validate.notNull(receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition(),
+        Validate.notNull(greenWaveMsg.getRouting().getSource().getSourcePosition(),
                 "The source position of the sender cannot be null");
-        if (!(receivedV2xMessage.getMessage().getRouting().getSource().getSourcePosition()
+        if (!(greenWaveMsg.getRouting().getSource().getSourcePosition()
                 .distanceTo(getOs().getPosition()) <= MIN_DISTANCE)) {
             getLog().infoSimTime(this, "Vehicle that sent message is too far away.");
             return;

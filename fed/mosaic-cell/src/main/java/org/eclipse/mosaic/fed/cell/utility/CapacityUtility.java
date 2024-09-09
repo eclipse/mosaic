@@ -236,10 +236,9 @@ public final class CapacityUtility {
      * @return Bandwidth for the streaming in [bit/s].
      */
     public static long getStreamingBandwidth(V2xMessage v2xMessage) {
-        if (v2xMessage == null || !(v2xMessage.getRouting() instanceof MessageStreamRouting)) {
+        if (!(v2xMessage.getRouting() instanceof MessageStreamRouting routing)) {
             return 0;
         }
-        MessageStreamRouting routing = (MessageStreamRouting) v2xMessage.getRouting();
         return routing.getStreamingBandwidth();
     }
 }

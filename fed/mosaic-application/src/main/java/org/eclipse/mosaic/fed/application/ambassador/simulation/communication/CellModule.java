@@ -132,18 +132,18 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     }
 
     private Integer sendCamViaGeoBroadcast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
-        if (!(getOwner() instanceof Locatable)) {
+        if (!(getOwner() instanceof Locatable locatable)) {
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
-        final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
+        final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
         return super.sendCam(createMessageRouting().geoBroadcastBasedOnUnicast(destination));
     }
 
     private Integer sendCamViaGeoBroadcastMbms(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
-        if (!(getOwner() instanceof Locatable)) {
+        if (!(getOwner() instanceof Locatable locatable)) {
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
-        final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
+        final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
         return super.sendCam(createMessageRouting().geoBroadcastMbms(destination));
     }
 

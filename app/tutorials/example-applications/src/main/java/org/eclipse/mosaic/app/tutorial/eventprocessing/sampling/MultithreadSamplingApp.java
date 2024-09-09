@@ -67,9 +67,7 @@ public class MultithreadSamplingApp extends AbstractApplication<VehicleOperating
     @Override
     public void processEvent(final Event event) throws Exception {
         Object resource = event.getResource();
-        if (resource instanceof String) {
-            String command = (String) resource;
-
+        if (resource instanceof String command) {
             switch (command) {
                 case "start":
                     startThread();

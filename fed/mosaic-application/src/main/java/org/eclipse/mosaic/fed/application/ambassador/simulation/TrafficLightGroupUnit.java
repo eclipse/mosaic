@@ -102,8 +102,8 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
             throw new RuntimeException(ErrorRegister.TRAFFIC_LIGHT_NoEventResource.toString());
         }
 
-        if (resource instanceof TrafficLightGroupInfo) {
-            onTrafficLightUpdate((TrafficLightGroupInfo) resource);
+        if (resource instanceof TrafficLightGroupInfo data) {
+            onTrafficLightUpdate(data);
         } else {
             getOsLog().error("Unknown event resource: {}", event);
             throw new RuntimeException(ErrorRegister.TRAFFIC_LIGHT_UnknownEvent.toString());

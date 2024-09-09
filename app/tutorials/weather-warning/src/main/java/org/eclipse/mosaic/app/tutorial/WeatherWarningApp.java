@@ -103,7 +103,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         final V2xMessage msg = receivedV2xMessage.getMessage();
 
         // Only DEN Messages are handled
-        if (!(msg instanceof Denm)) {
+        if (!(msg instanceof Denm denm)) {
             getLog().infoSimTime(this, "Ignoring message of type: {}", msg.getSimpleClassName());
             return;
         }
@@ -113,7 +113,6 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             getLog().infoSimTime(this, "Received message from cell from WeatherServer");
         }
 
-        final Denm denm = (Denm) msg;
         getLog().infoSimTime(this, "Processing DEN message");
 
         getLog().debug("Handle Environment Warning Message. Processing...");

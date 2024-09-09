@@ -416,22 +416,18 @@ public class UnitLoggerImpl implements UnitLogger {
     @Override
     @Nullable
     public Path getUnitLogDirectory() {
-        if (!(log instanceof ch.qos.logback.classic.Logger)) {
+        if (!(log instanceof ch.qos.logback.classic.Logger logbackLog)) {
             return null;
         }
-        ch.qos.logback.classic.Logger logbackLog = (ch.qos.logback.classic.Logger) log;
         Iterator<Appender<ILoggingEvent>> appenderIterator = logbackLog.iteratorForAppenders();
         while (appenderIterator.hasNext()) {
             Appender<ILoggingEvent> appender = appenderIterator.next();
-            if (appender instanceof FileAppender) {
-                FileAppender<?> fileAppender = ((FileAppender<?>) appender);
+            if (appender instanceof FileAppender<?> fileAppender) {
                 return new File(fileAppender.getFile()).getParentFile().toPath();
             }
-            if (appender instanceof SiftingAppender) {
-                SiftingAppender siftingAppender = ((SiftingAppender) appender);
+            if (appender instanceof SiftingAppender siftingAppender) {
                 Appender<ILoggingEvent> delegateAppender = siftingAppender.getAppenderTracker().find(mdcPath);
-                if (delegateAppender instanceof FileAppender) {
-                    FileAppender<?> fileAppender = ((FileAppender<?>) delegateAppender);
+                if (delegateAppender instanceof FileAppender<?> fileAppender) {
                     return new File(fileAppender.getFile()).getParentFile().toPath();
                 }
             }

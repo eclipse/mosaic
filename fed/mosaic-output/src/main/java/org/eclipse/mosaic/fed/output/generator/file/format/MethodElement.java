@@ -185,8 +185,8 @@ class MethodElement {
             Method m = methodList.get(metcnt - 1);
 
             Type retType = m.getGenericReturnType();
-            if (retType instanceof ParameterizedType) {
-                Type[] type = ((ParameterizedType) retType).getActualTypeArguments();
+            if (retType instanceof ParameterizedType parameterizedType) {
+                Type[] type = parameterizedType.getActualTypeArguments();
 
                 if (type.length == 1) {
                     return (Class<?>) type[0];

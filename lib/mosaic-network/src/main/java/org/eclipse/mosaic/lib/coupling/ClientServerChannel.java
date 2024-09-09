@@ -396,12 +396,12 @@ public class ClientServerChannel {
         buffer.position(0);
 
         if (dac.isGeocast()) { //Geocasts
-            if (dac.getGeoArea() instanceof GeoRectangle) {   //Rectangular area
+            if (dac.getGeoArea() instanceof GeoRectangle geoRectangle) {   //Rectangular area
                 SendMessageMessage.GeoRectangleAddress.Builder rectangleAddress = SendMessageMessage.GeoRectangleAddress.newBuilder();
                 //builder for rectangular addresses
                 rectangleAddress.setIpAddress(buffer.getInt()); //write the ip address as flat integer into the builder
                 //convert coordinates etc.
-                CartesianRectangle projectedRectangle = ((GeoRectangle) dac.getGeoArea()).toCartesian();
+                CartesianRectangle projectedRectangle = geoRectangle.toCartesian();
                 //write the coordinates of the area into the builder
                 rectangleAddress.setAX(projectedRectangle.getA().getX());
                 rectangleAddress.setAY(projectedRectangle.getA().getY());
@@ -409,11 +409,11 @@ public class ClientServerChannel {
                 rectangleAddress.setBY(projectedRectangle.getB().getY());
                 //add address to the message
                 sendMess.setRectangleAddress(rectangleAddress);
-            } else if (dac.getGeoArea() instanceof GeoCircle) {
+            } else if (dac.getGeoArea() instanceof GeoCircle geoCircle) {
                 SendMessageMessage.GeoCircleAddress.Builder circleAddress = SendMessageMessage.GeoCircleAddress.newBuilder();
                 circleAddress.setIpAddress(buffer.getInt());
 
-                CartesianCircle projectedCircle = ((GeoCircle) dac.getGeoArea()).toCartesian();
+                CartesianCircle projectedCircle = geoCircle.toCartesian();
                 //write area into the address object
                 circleAddress.setCenterX(projectedCircle.getCenter().getX());
                 circleAddress.setCenterY(projectedCircle.getCenter().getY());

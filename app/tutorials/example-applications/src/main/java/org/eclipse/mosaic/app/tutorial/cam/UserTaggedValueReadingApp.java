@@ -55,11 +55,11 @@ public class UserTaggedValueReadingApp extends AbstractApplication<VehicleOperat
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         V2xMessage msg = receivedV2xMessage.getMessage();
 
-        if (msg instanceof Cam) {
+        if (msg instanceof Cam cam) {
             try {
                 getLog().infoSimTime(this, "CAM message arrived, userTaggedValue: {}",
                         CamSendingApp.DEFAULT_OBJECT_SERIALIZATION
-                                .fromBytes(((Cam) msg).getUserTaggedValue(), this.getClass().getClassLoader())
+                                .fromBytes(cam.getUserTaggedValue(), this.getClass().getClassLoader())
                 );
             } catch (IOException | ClassNotFoundException e) {
                 getLog().error("An error occurred", e);

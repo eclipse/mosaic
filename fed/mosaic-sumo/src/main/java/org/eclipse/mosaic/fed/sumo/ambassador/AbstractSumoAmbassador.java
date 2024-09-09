@@ -648,7 +648,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      */
     private synchronized void receiveInteraction(SumoTraciRequest sumoTraciRequest) throws InternalFederateException {
         try {
-            if (bridge instanceof TraciClientBridge) {
+            if (bridge instanceof TraciClientBridge traci) {
                 log.info(
                         "{} at simulation time {}: " + "length=\"{}\", id=\"{}\" data={}",
                         SUMO_TRACI_BYTE_ARRAY_MESSAGE,
@@ -658,8 +658,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         sumoTraciRequest.getCommand()
                 );
 
-                SumoTraciResult sumoTraciResult =
-                        ((TraciClientBridge) bridge).writeByteArrayMessage(sumoTraciRequest.getRequestId(), sumoTraciRequest.getCommand());
+                SumoTraciResult sumoTraciResult = traci.writeByteArrayMessage(sumoTraciRequest.getRequestId(), sumoTraciRequest.getCommand());
                 rti.triggerInteraction(new SumoTraciResponse(sumoTraciRequest.getTime(), sumoTraciResult));
             } else {
                 log.warn("SumoTraciRequests are not supported.");
@@ -1091,10 +1090,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     }
 
     private void receiveInteraction(TrafficSignRegistration trafficSignRegistration) throws InternalFederateException {
-        if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignSpeed) {
-            trafficSignManager.addSpeedSign((TrafficSignSpeed) trafficSignRegistration.getTrafficSign());
-        } else if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignLaneAssignment) {
-            trafficSignManager.addLaneAssignmentSign((TrafficSignLaneAssignment) trafficSignRegistration.getTrafficSign());
+        if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignSpeed trafficSign) {
+            trafficSignManager.addSpeedSign(trafficSign);
+        } else if (trafficSignRegistration.getTrafficSign() instanceof TrafficSignLaneAssignment trafficSign) {
+            trafficSignManager.addLaneAssignmentSign(trafficSign);
         }
     }
 
@@ -1152,10 +1151,9 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
     @Override
     public void processEvent(Event event) throws Exception {
-        if (event.getResource() instanceof VehicleSpeedChange) {
-            VehicleSpeedChange cs = (VehicleSpeedChange) event.getResource();
-            log.debug("Change the speed of vehicle {} at {} ns ", cs.getVehicleId(), event.getTime());
-            bridge.getVehicleControl().setSpeed(cs.getVehicleId(), cs.getSpeed());
+        if (event.getResource() instanceof VehicleSpeedChange speedChange) {
+            log.debug("Change the speed of vehicle {} at {} ns ", speedChange.getVehicleId(), event.getTime());
+            bridge.getVehicleControl().setSpeed(speedChange.getVehicleId(), speedChange.getSpeed());
         }
     }
 

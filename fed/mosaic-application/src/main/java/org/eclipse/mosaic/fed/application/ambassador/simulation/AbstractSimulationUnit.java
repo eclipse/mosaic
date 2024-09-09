@@ -165,12 +165,11 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
             return false;
         }
 
-        if (event instanceof InterceptedEvent) {
-            /*
-             * This should be an intercepted event from an application of this simulation unit.
-             * The operating system intercept all events from the applications and can watch into the events and maybe forward the event.
-             */
-            final InterceptedEvent interceptedEvent = (InterceptedEvent) event;
+        /*
+         * This should be an intercepted event from an application of this simulation unit.
+         * The operating system intercept all events from the applications and can watch into the events and maybe forward the event.
+         */
+        if (event instanceof InterceptedEvent interceptedEvent) {
             // cast the resource of the intercepted event, it must be an event
             final Event originalEvent = interceptedEvent.getOriginalEvent();
             if (osLog.isTraceEnabled()) {
@@ -198,11 +197,11 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
             return true;
         } else {
-            if (resource instanceof ReceivedV2xMessage) {
-                processReceivedV2xMessage((ReceivedV2xMessage) resource);
+            if (resource instanceof ReceivedV2xMessage receivedMessage) {
+                processReceivedV2xMessage(receivedMessage);
                 return true;
-            } else if (resource instanceof V2xMessageAcknowledgement) {
-                processV2xMessageAcknowledgement((V2xMessageAcknowledgement) resource);
+            } else if (resource instanceof V2xMessageAcknowledgement v2xAck) {
+                processV2xMessageAcknowledgement(v2xAck);
                 return true;
             } else {
                 return false;
@@ -284,8 +283,8 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
                 try {
                     // check if defined operating system is matching
                     Type mySuperclass = newApplication.getClass().getGenericSuperclass();
-                    if (mySuperclass instanceof ParameterizedType) {
-                        Type[] typeArgs = ((ParameterizedType) mySuperclass).getActualTypeArguments();
+                    if (mySuperclass instanceof ParameterizedType parameterizedType) {
+                        Type[] typeArgs = parameterizedType.getActualTypeArguments();
                         Type type = typeArgs[typeArgs.length - 1];
                         boolean typeAssignableFromOs = Class.forName(StringUtils.substringAfter(type.toString(), "interface").trim())
                                 .isAssignableFrom(operatingSystemCheck);
