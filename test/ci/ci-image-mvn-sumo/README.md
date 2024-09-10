@@ -5,14 +5,14 @@ builds and to provide a SUMO executable for integration tests.
 
 The `Dockerfile` is kept very simple, which is sufficient for now. SUMO devs push pre-compiled executable to 
 https://launchpad.net/~sumo/+archive/ubuntu/stable . The dockerfile grabs the latest stable one and installs it on top
-of the `maven:3.6.3-adoptopenjdk-8` image. As a consequence we cannot define a specific version to be installed, but rather
+of the `maven:3.9.9-eclipse-temurin-17` image. As a consequence we cannot define a specific version to be installed, but rather
 build and tag the docker image with the latest SUMO version. This image should be built whenever a new major version of SUMO is released
 and available in the PPA.
 
 ```shell script
-docker build . -t eclipsemosaic/mosaic-ci:jdk11-sumo-1.20.0
+docker build . -t eclipsemosaic/mosaic-ci:jdk17-sumo-1.20.0
 docker login
-docker push eclipsemosaic/mosaic-ci:jdk11-sumo-1.20.0
+docker push eclipsemosaic/mosaic-ci:jdk17-sumo-1.20.0
 ```  
 
 Afterwards, the image should be available here: https://hub.docker.com/r/eclipsemosaic/mosaic-ci/tags
