@@ -99,8 +99,8 @@ public class SumoTraciInteractionApp extends AbstractApplication<VehicleOperatin
             getLog().infoSimTime(
                     this,
                     "Received TraCI message from Sumo. Speed of vehicle {} is {} m/s",
-                    speedResponse,
-                    speedResponse.speed
+                    speedResponse.vehicleId(),
+                    speedResponse.speed()
             );
         }
     }
