@@ -113,10 +113,12 @@ public class Restriction {
                 if (found) {
                     // way found in multiple incoming connections,
                     // this means we do not end here (which is a requirement from OSM)!
-                    String error = "the 'from' way ({}) referenced in this restriction does "
-                            + "not seem to start or end at the 'via' node ({}), "
-                            + "please check OSM input "
-                            + "(see http://wiki.openstreetmap.org/wiki/Relation:restriction#cite_note-waysplit-2)";
+                    String error = """
+                            the 'from' way ({}) referenced in this restriction does
+                            not seem to start or end at the 'via' node ({}), "
+                            please check OSM input "
+                            (see http://wiki.openstreetmap.org/wiki/Relation:restriction#cite_note-waysplit-2)
+                            """;
                     log.error(error, source.getId(), via.getId());
                     return;
                 } else {
