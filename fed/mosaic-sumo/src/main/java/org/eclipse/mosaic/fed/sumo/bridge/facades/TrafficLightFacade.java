@@ -244,8 +244,8 @@ public class TrafficLightFacade {
             int phaseId = 0;
             List<TrafficLightProgramPhase> phases = new ArrayList<>();
             for (SumoTrafficLightLogic.Phase phaseLogic : programDefinition.getPhases()) {
-                List<TrafficLightState> states = TrafficLightStateDecoder.createStateListFromEncodedString(phaseLogic.getPhaseDef());
-                phases.add(new TrafficLightProgramPhase(phaseId, (long) phaseLogic.getDuration() * 1000, states));
+                List<TrafficLightState> states = TrafficLightStateDecoder.createStateListFromEncodedString(phaseLogic.phaseDef());
+                phases.add(new TrafficLightProgramPhase(phaseId, (long) phaseLogic.durationMs() * 1000, states));
                 phaseId++;
             }
             TrafficLightProgram program =

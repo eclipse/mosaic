@@ -52,7 +52,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 /**
  * Abstraction of Ambassador->Federate Byte Protocol
@@ -586,30 +585,8 @@ public class ClientServerChannel {
         };
     }
 
-    public static class NodeDataContainer {
-        public final int id;
-        public final CartesianPoint pos;
+    record NodeDataContainer(int id, CartesianPoint pos) {}
 
-        public NodeDataContainer(int id, CartesianPoint pos) {
-            this.id = id;
-            this.pos = pos;
-        }
-    }
+    record ReceiveMessageContainer(long time, String receiverName, int msgId, V2xReceiverInformation receiverInformation) {}
 
-    public static class ReceiveMessageContainer {
-
-        public final long time;
-        public final String receiverName;
-        public final int msgId;
-        public final V2xReceiverInformation receiverInformation;
-
-        public ReceiveMessageContainer(final long time, @Nonnull final String receiverName, final int msgId,
-                                       @Nonnull final V2xReceiverInformation receiverInformation) {
-
-            this.time = time;
-            this.receiverName = receiverName;
-            this.msgId = msgId;
-            this.receiverInformation = receiverInformation;
-        }
-    }
 }

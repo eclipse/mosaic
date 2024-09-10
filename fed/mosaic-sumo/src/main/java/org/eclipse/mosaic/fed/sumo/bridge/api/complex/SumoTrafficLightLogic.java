@@ -71,22 +71,5 @@ public class SumoTrafficLightLogic extends AbstractSubscriptionResult {
     /**
      * A helper class represents the switch phases of the traffic light.
      */
-    public static class Phase {
-
-        private final int durationMs;
-        private final String phaseDef;
-
-        public Phase(int durationMs, String phaseDef) {
-            this.durationMs = durationMs;
-            this.phaseDef = phaseDef;
-        }
-
-        public int getDuration() {
-            return durationMs;
-        }
-
-        public String getPhaseDef() {
-            return phaseDef;
-        }
-    }
+    public record Phase(int durationMs, String phaseDef) {}
 }

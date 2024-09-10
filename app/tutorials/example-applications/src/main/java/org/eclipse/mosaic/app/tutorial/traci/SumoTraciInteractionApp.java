@@ -48,15 +48,7 @@ public class SumoTraciInteractionApp extends AbstractApplication<VehicleOperatin
     /**
      * Convenience container to retrieve info from sumo speed response.
      */
-    static class SpeedResponse {
-        protected final String vehicleId;
-        protected final double speed;
-
-        public SpeedResponse(String vehicleId, double speed) {
-            this.vehicleId = vehicleId;
-            this.speed = speed;
-        }
-    }
+    record SpeedResponse(String vehicleId, double speed) {}
 
     /**
      * The "meat" of this application. Here a byte array is assembled
@@ -107,7 +99,7 @@ public class SumoTraciInteractionApp extends AbstractApplication<VehicleOperatin
             getLog().infoSimTime(
                     this,
                     "Received TraCI message from Sumo. Speed of vehicle {} is {} m/s",
-                    speedResponse.vehicleId,
+                    speedResponse,
                     speedResponse.speed
             );
         }
