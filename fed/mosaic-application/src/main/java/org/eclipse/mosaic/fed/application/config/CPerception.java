@@ -163,16 +163,12 @@ public class CPerception implements Serializable {
                 if (type == null) {
                     return CVehicleIndex.Tree.class;
                 }
-                switch (type.toLowerCase()) {
-                    case "grid":
-                        return CVehicleIndex.Grid.class;
-                    case "sumo":
-                        return CVehicleIndex.Sumo.class;
-                    case "tree":
-                        return CVehicleIndex.Tree.class;
-                    default:
-                        throw new IllegalArgumentException("Unknown index type " + type + ". Known types are: grid, tree, sumo.");
-                }
+                return switch (type.toLowerCase()) {
+                    case "grid" -> CVehicleIndex.Grid.class;
+                    case "sumo" -> CVehicleIndex.Sumo.class;
+                    case "tree" -> CVehicleIndex.Tree.class;
+                    default -> throw new IllegalArgumentException("Unknown index type " + type + ". Known types are: grid, tree, sumo.");
+                };
             }
 
             @Override

@@ -93,20 +93,11 @@ public class CamContent implements ToDataOutput, Serializable {
             this.position = null;
         }
 
-        AwarenessType awarenessType = AwarenessType.fromId(dIn.readByte());
-        switch (awarenessType) {
-            case VEHICLE:
-                this.awarenessData = new VehicleAwarenessData(dIn);
-                break;
-            case RSU:
-                this.awarenessData = new RsuAwarenessData(dIn);
-                break;
-            case TRAFFIC_LIGHT:
-                this.awarenessData = new TrafficLightAwarenessData(dIn);
-                break;
-            default:
-                this.awarenessData = null;
-        }
+        awarenessData = switch (AwarenessType.fromId(dIn.readByte())) {
+            case VEHICLE -> new VehicleAwarenessData(dIn);
+            case RSU -> new RsuAwarenessData(dIn);
+            case TRAFFIC_LIGHT -> new TrafficLightAwarenessData(dIn);
+        };
 
         if (dIn.readBoolean()) {
             this.userTaggedValue = new byte[dIn.readInt()];

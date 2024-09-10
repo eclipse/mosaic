@@ -447,19 +447,12 @@ public class ClientServerChannel {
         writeCommand(CMD.CONF_RADIO);
         ConfigureRadioMessage.Builder configRadio = ConfigureRadioMessage.newBuilder();
         configRadio.setTime(time).setMessageId(msgID).setExternalId(externalId);
-        switch (configuration.getRadioMode()) {
-            case OFF:
-                configRadio.setRadioNumber(ConfigureRadioMessage.RadioNumber.NO_RADIO);
-                break;
-            case SINGLE:
-                configRadio.setRadioNumber(ConfigureRadioMessage.RadioNumber.SINGLE_RADIO);
-                break;
-            case DUAL:
-                configRadio.setRadioNumber(ConfigureRadioMessage.RadioNumber.DUAL_RADIO);
-                break;
-            default:
-                throw new RuntimeException("Illegal number of radios in configuration: " + configuration.getRadioMode().toString());
-        }
+        configRadio.setRadioNumber(switch (configuration.getRadioMode()) {
+            case OFF -> ConfigureRadioMessage.RadioNumber.NO_RADIO;
+            case SINGLE -> ConfigureRadioMessage.RadioNumber.SINGLE_RADIO;
+            case DUAL -> ConfigureRadioMessage.RadioNumber.DUAL_RADIO;
+            default -> throw new RuntimeException("Illegal number of radios in configuration: " + configuration.getRadioMode().toString());
+        });
         if (configuration.getRadioMode() == AdHocConfiguration.RadioMode.SINGLE
                 || configuration.getRadioMode() == AdHocConfiguration.RadioMode.DUAL) {
             ConfigureRadioMessage.RadioConfiguration.Builder radioConfig1 = ConfigureRadioMessage.RadioConfiguration.newBuilder();
@@ -542,69 +535,37 @@ public class ClientServerChannel {
     }
 
     private int protobufCmdToCmd(CommandType protoCmd) {
-        switch (protoCmd) {
-            case INIT:
-                return CMD.INIT;
-            case SHUT_DOWN:
-                return CMD.SHUT_DOWN;
-
-            case UPDATE_NODE:
-                return CMD.UPDATE_NODE;
-            case REMOVE_NODE:
-                return CMD.REMOVE_NODE;
-
-            case ADVANCE_TIME:
-                return CMD.ADVANCE_TIME;
-            case NEXT_EVENT:
-                return CMD.NEXT_EVENT;
-            case MSG_RECV:
-                return CMD.MSG_RECV;
-
-            case MSG_SEND:
-                return CMD.MSG_SEND;
-            case CONF_RADIO:
-                return CMD.CONF_RADIO;
-
-            case END:
-                return CMD.END;
-            case SUCCESS:
-                return CMD.SUCCESS;
-            default:
-                return CMD.UNDEF;
-        }
+        return switch (protoCmd) {
+            case INIT -> CMD.INIT;
+            case SHUT_DOWN -> CMD.SHUT_DOWN;
+            case UPDATE_NODE -> CMD.UPDATE_NODE;
+            case REMOVE_NODE -> CMD.REMOVE_NODE;
+            case ADVANCE_TIME -> CMD.ADVANCE_TIME;
+            case NEXT_EVENT -> CMD.NEXT_EVENT;
+            case MSG_RECV -> CMD.MSG_RECV;
+            case MSG_SEND -> CMD.MSG_SEND;
+            case CONF_RADIO -> CMD.CONF_RADIO;
+            case END -> CMD.END;
+            case SUCCESS -> CMD.SUCCESS;
+            default -> CMD.UNDEF;
+        };
     }
 
     private CommandType cmdToProtobufCmd(int cmd) {
-        switch (cmd) {
-            case CMD.INIT:
-                return CommandType.INIT;
-            case CMD.SHUT_DOWN:
-                return CommandType.SHUT_DOWN;
-
-            case CMD.UPDATE_NODE:
-                return CommandType.UPDATE_NODE;
-            case CMD.REMOVE_NODE:
-                return CommandType.REMOVE_NODE;
-
-            case CMD.ADVANCE_TIME:
-                return CommandType.ADVANCE_TIME;
-            case CMD.NEXT_EVENT:
-                return CommandType.NEXT_EVENT;
-            case CMD.MSG_RECV:
-                return CommandType.MSG_RECV;
-
-            case CMD.MSG_SEND:
-                return CommandType.MSG_SEND;
-            case CMD.CONF_RADIO:
-                return CommandType.CONF_RADIO;
-
-            case CMD.END:
-                return CommandType.END;
-            case CMD.SUCCESS:
-                return CommandType.SUCCESS;
-            default:
-                return CommandType.UNDEF;
-        }
+        return switch (cmd) {
+            case CMD.INIT -> CommandType.INIT;
+            case CMD.SHUT_DOWN -> CommandType.SHUT_DOWN;
+            case CMD.UPDATE_NODE -> CommandType.UPDATE_NODE;
+            case CMD.REMOVE_NODE -> CommandType.REMOVE_NODE;
+            case CMD.ADVANCE_TIME -> CommandType.ADVANCE_TIME;
+            case CMD.NEXT_EVENT -> CommandType.NEXT_EVENT;
+            case CMD.MSG_RECV -> CommandType.MSG_RECV;
+            case CMD.MSG_SEND -> CommandType.MSG_SEND;
+            case CMD.CONF_RADIO -> CommandType.CONF_RADIO;
+            case CMD.END -> CommandType.END;
+            case CMD.SUCCESS -> CommandType.SUCCESS;
+            default -> CommandType.UNDEF;
+        };
     }
 
     /**
@@ -614,24 +575,15 @@ public class ClientServerChannel {
      * @return the protobuf-channel object
      */
     private ClientServerChannelProtos.RadioChannel translateChannel(AdHocChannel channel) {
-        switch (channel) {
-            case SCH1:
-                return ClientServerChannelProtos.RadioChannel.PROTO_SCH1;
-            case SCH2:
-                return ClientServerChannelProtos.RadioChannel.PROTO_SCH2;
-            case SCH3:
-                return ClientServerChannelProtos.RadioChannel.PROTO_SCH3;
-            case CCH:
-                return ClientServerChannelProtos.RadioChannel.PROTO_CCH;
-            case SCH4:
-                return ClientServerChannelProtos.RadioChannel.PROTO_SCH4;
-            case SCH5:
-                return ClientServerChannelProtos.RadioChannel.PROTO_SCH5;
-            case SCH6:
-                return ClientServerChannelProtos.RadioChannel.PROTO_SCH6;
-            default:
-                throw new RuntimeException("Channel " + channel + " does not exist in MOSAIC");
-        }
+        return switch (channel) {
+            case SCH1 -> ClientServerChannelProtos.RadioChannel.PROTO_SCH1;
+            case SCH2 -> ClientServerChannelProtos.RadioChannel.PROTO_SCH2;
+            case SCH3 -> ClientServerChannelProtos.RadioChannel.PROTO_SCH3;
+            case CCH -> ClientServerChannelProtos.RadioChannel.PROTO_CCH;
+            case SCH4 -> ClientServerChannelProtos.RadioChannel.PROTO_SCH4;
+            case SCH5 -> ClientServerChannelProtos.RadioChannel.PROTO_SCH5;
+            case SCH6 -> ClientServerChannelProtos.RadioChannel.PROTO_SCH6;
+        };
     }
 
     public static class NodeDataContainer {

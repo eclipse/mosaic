@@ -71,20 +71,12 @@ public final class DelayUtility {
     }
 
     private static Delay determineDelayType(TransmissionMode mode, CNetworkProperties region) throws InternalFederateException {
-        Delay delay;
-        switch (mode) {
-            case UplinkUnicast:
-                delay = region.uplink.delay;
-                break;
-            case DownlinkUnicast:
-                delay = region.downlink.unicast.delay;
-                break;
-            case DownlinkMulticast:
-                delay = region.downlink.multicast.delay;
-                break;
-            default:
-                throw new InternalFederateException("Unknown TransmissionMode: " + mode);
-        }
+        Delay delay = switch (mode) {
+            case UplinkUnicast -> region.uplink.delay;
+            case DownlinkUnicast -> region.downlink.unicast.delay;
+            case DownlinkMulticast -> region.downlink.multicast.delay;
+            default -> throw new InternalFederateException("Unknown TransmissionMode: " + mode);
+        };
 
         if (delay instanceof GammaSpeedDelay && mode.equals(TransmissionMode.DownlinkMulticast)) {
             throw new InternalFederateException("Impossible delay configuration for " + mode + " in region \"" + region.id + "\"");

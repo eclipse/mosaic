@@ -174,16 +174,14 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         // Switch the communication modules for simulated nodes on or off
         // (SNS only supports configurations with one radio).
         switch (configuration.getRadioMode()) {
-            case OFF:
+            case OFF -> {
                 if (SimulationEntities.INSTANCE.isNodeSimulated(nodeId)) {
                     disableNode(interaction.getTime(), nodeId);
                 } else if (registeredVehicles.remove(nodeId) != null) {
                     log.debug("Disabled Wifi of node, which was enabled before, but not yet moved.");
                 }
-                break;
-            case DUAL:
-                log.warn("SNS only supports single radio configuration. Configure first, while ignoring second, radio for node {}.", nodeId);
-            case SINGLE:
+            }
+            case SINGLE -> {
                 double communicationRadius = this.singlehopRadius;
                 if (configuration.getConf0() != null && configuration.getConf0().getRadius() != null) {
                     communicationRadius = configuration.getConf0().getRadius();
@@ -201,9 +199,10 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 }
                 log.info("Radio configured in mode {} with communication radius {} for node id={} @time={}",
                         configuration.getRadioMode(), communicationRadius, nodeId, TIME.format(interaction.getTime()));
-                break;
-            default:
-                log.warn("Unknown radio mode {} configured for node {}. Ignoring.", configuration.getRadioMode(), nodeId);
+            }
+            case DUAL ->
+                    log.warn("SNS only supports single radio configuration. Configure first, while ignoring second, radio for node {}.", nodeId);
+            default -> log.warn("Unknown radio mode {} configured for node {}. Ignoring.", configuration.getRadioMode(), nodeId);
         }
     }
 

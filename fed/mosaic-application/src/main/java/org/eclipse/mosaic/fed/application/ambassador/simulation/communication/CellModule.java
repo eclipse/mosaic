@@ -114,17 +114,15 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
         }
 
         CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
-        switch (camConfiguration.getAddressingMode()) {
-            case CELL_TOPOCAST:
-                return sendCamViaTopocast(camConfiguration);
-            case CELL_GEOCAST:
-                return sendCamViaGeoBroadcast(camConfiguration);
-            case CELL_GEOCAST_MBMS:
-                return sendCamViaGeoBroadcastMbms(camConfiguration);
-            default:
+        return switch (camConfiguration.getAddressingMode()) {
+            case CELL_TOPOCAST -> sendCamViaTopocast(camConfiguration);
+            case CELL_GEOCAST -> sendCamViaGeoBroadcast(camConfiguration);
+            case CELL_GEOCAST_MBMS -> sendCamViaGeoBroadcastMbms(camConfiguration);
+            default -> {
                 log.warn("sendCam: Unsupported addressing mode {}.", camConfiguration.getAddressingMode());
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     private Integer sendCamViaTopocast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {

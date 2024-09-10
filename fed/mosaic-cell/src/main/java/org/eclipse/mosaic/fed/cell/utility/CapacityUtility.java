@@ -149,19 +149,16 @@ public final class CapacityUtility {
         } else {
             linkLayerHeader = headerLengths.cellularHeader;
         }
-        switch (msg.getRouting().getDestination().getProtocolType()) {
-            case UDP:
-                return linkLayerHeader
-                        + headerLengths.ipHeader
-                        + headerLengths.udpHeader
-                        + msg.getPayload().getEffectiveLength() * DATA.BYTE;
-            case TCP:
-            default:
-                return linkLayerHeader
-                        + headerLengths.ipHeader
-                        + headerLengths.tcpHeader
-                        + msg.getPayload().getEffectiveLength() * DATA.BYTE;
-        }
+        return switch (msg.getRouting().getDestination().getProtocolType()) {
+            case UDP -> linkLayerHeader
+                    + headerLengths.ipHeader
+                    + headerLengths.udpHeader
+                    + msg.getPayload().getEffectiveLength() * DATA.BYTE;
+            case TCP -> linkLayerHeader
+                    + headerLengths.ipHeader
+                    + headerLengths.tcpHeader
+                    + msg.getPayload().getEffectiveLength() * DATA.BYTE;
+        };
     }
 
     /**

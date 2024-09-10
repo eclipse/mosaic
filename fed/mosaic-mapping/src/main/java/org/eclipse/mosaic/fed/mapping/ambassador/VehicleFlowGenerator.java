@@ -119,7 +119,6 @@ public class VehicleFlowGenerator {
      * Constructor for {@link VehicleFlowGenerator} using one vehicle type configuration.
      *
      * @param vehicleConfiguration vehicle spawner configuration
-     *
      * @throws IllegalArgumentException if vehicleConfiguration does not provide any types to select from
      */
     public VehicleFlowGenerator(CVehicle vehicleConfiguration, @Nonnull RandomNumberGenerator randomNumberGenerator, boolean flowNoise, boolean fixedOrder) {
@@ -186,7 +185,6 @@ public class VehicleFlowGenerator {
      * @param vehicleConfiguration  the vehicle configuration containing necessary information to determine the {@link SpawningMode}
      * @param randomNumberGenerator the {@link RandomNumberGenerator} to be used, for example to introduce flowNoise
      * @param flowNoise             whether flow noise should be introduced
-     *
      * @return the created {@link SpawningMode}
      */
     private SpawningMode createSpawningMode(
@@ -203,76 +201,58 @@ public class VehicleFlowGenerator {
             maxTime = vehicleConfiguration.maxTime.longValue() * TIME.SECOND;
         }
         double targetFlow = vehicleConfiguration.targetFlow;
-        SpawningMode newSpawningMode;
-        switch (spawningMode) {
-            case GROW:
-                newSpawningMode = new AbstractSpawningMode.IncreaseLinear(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime
-                );
-                break;
-            case SHRINK:
-                newSpawningMode = new AbstractSpawningMode.DecreaseLinear(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime
-                );
-                break;
-            case GROW_AND_SHRINK:
-                newSpawningMode = new GrowAndShrinkSpawningMode(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime,
-                        false
-                );
-                break;
-            case GROW_EXPONENTIAL:
-                newSpawningMode = new AbstractSpawningMode.IncreaseExponential(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime
-                );
-                break;
-            case SHRINK_EXPONENTIAL:
-                newSpawningMode = new AbstractSpawningMode.DecreaseExponential(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime
-                );
-                break;
-            case GROW_AND_SHRINK_EXPONENTIAL:
-                newSpawningMode = new GrowAndShrinkSpawningMode(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime,
-                        true
-                );
-                break;
-            case POISSON:
-                newSpawningMode = new PoissonSpawningMode(
-                        randomNumberGenerator,
-                        startingTime,
-                        targetFlow,
-                        maxTime
-                );
-                break;
-            case CONSTANT:
-            default:
-                newSpawningMode = new ConstantSpawningMode(
-                        flowNoise ? randomNumberGenerator : null,
-                        startingTime,
-                        targetFlow,
-                        maxTime
-                );
-        }
-        return newSpawningMode;
+        return switch (spawningMode) {
+            case GROW -> new AbstractSpawningMode.IncreaseLinear(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime
+            );
+            case SHRINK -> new AbstractSpawningMode.DecreaseLinear(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime
+            );
+            case GROW_AND_SHRINK -> new GrowAndShrinkSpawningMode(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime,
+                    false
+            );
+            case GROW_EXPONENTIAL -> new AbstractSpawningMode.IncreaseExponential(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime
+            );
+            case SHRINK_EXPONENTIAL -> new AbstractSpawningMode.DecreaseExponential(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime
+            );
+            case GROW_AND_SHRINK_EXPONENTIAL -> new GrowAndShrinkSpawningMode(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime,
+                    true
+            );
+            case POISSON -> new PoissonSpawningMode(
+                    randomNumberGenerator,
+                    startingTime,
+                    targetFlow,
+                    maxTime
+            );
+            case CONSTANT -> new ConstantSpawningMode(
+                    flowNoise ? randomNumberGenerator : null,
+                    startingTime,
+                    targetFlow,
+                    maxTime
+            );
+        };
     }
 
     private WeightedSelector<VehicleTypeSpawner> createSelector(RandomNumberGenerator randomNumberGenerator, boolean fixedOrder) {
@@ -303,16 +283,13 @@ public class VehicleFlowGenerator {
     }
 
     private LaneIndexSelector createLaneSelector(List<Integer> lanes, VehicleDeparture.LaneSelectionMode laneSelectionMode) {
-        switch (laneSelectionMode) {
-            case DEFAULT:
-            case ROUNDROBIN:
-                return new RoundRobinLaneIndexSelector(lanes);
-            case ROUNDROBIN_HIGHWAY:
-                return new HighwaySpecificLaneIndexSelector(lanes);
-            default:
+        return switch (laneSelectionMode) {
+            case DEFAULT, ROUNDROBIN -> new RoundRobinLaneIndexSelector(lanes);
+            case ROUNDROBIN_HIGHWAY -> new HighwaySpecificLaneIndexSelector(lanes);
+            default ->
                 // return invalid lane index -1 and let the traffic simulator decide based on traffic condition
-                return (type) -> -1;
-        }
+                    (type) -> -1;
+        };
     }
 
     void configure(CMappingConfiguration mappingParameterizationConfiguration) {
@@ -355,7 +332,6 @@ public class VehicleFlowGenerator {
      *
      * @param framework the {@link SpawningFramework} handling the time advance
      * @return true if there is no more vehicles to spawn or max time reached, thus the vehicle spawner can be removed
-     *
      * @throws InternalFederateException thrown if time advance couldn't be completed successfully
      */
     boolean timeAdvance(SpawningFramework framework) throws InternalFederateException {

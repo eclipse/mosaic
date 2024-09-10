@@ -90,14 +90,9 @@ public final class DownstreamModule extends AbstractStreamModule {
         log.debug("t={}: Entering processMessage() of module {}",
                 TIME.format(messageStartTime), getModuleName());
         switch (geocasterResult.getDownstreamMode()) {
-            case DownlinkUnicast:
-                doUnicast(geocasterResult, messageStartTime);
-                break;
-            case DownlinkMulticast:
-                doMulticast(geocasterResult, messageStartTime);
-                break;
-            default:
-                throw new RuntimeException("Unsupported transmission mode " + geocasterResult.getDownstreamMode());
+            case DownlinkUnicast -> doUnicast(geocasterResult, messageStartTime);
+            case DownlinkMulticast -> doMulticast(geocasterResult, messageStartTime);
+            default -> throw new RuntimeException("Unsupported transmission mode " + geocasterResult.getDownstreamMode());
         }
     }
 
