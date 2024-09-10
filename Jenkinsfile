@@ -112,7 +112,7 @@ spec:
         stage('Analysis') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn site -T 4'
+                    sh 'mvn site'
                 }
             }
 
