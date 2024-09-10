@@ -26,7 +26,6 @@ import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A spatial index which searches for the closest node to a specified geo location.
@@ -43,7 +42,7 @@ public class NodeFinder {
      */
     public NodeFinder(Database database) {
         List<NodeWrapper> items = database.getNodes().stream()
-                .map(NodeWrapper::new).collect(Collectors.toList());
+                .map(NodeWrapper::new).toList();
 
         nodeIndex = new KdTree<>(new SpatialItemAdapter.PointAdapter<>(), items);
         nodeSearch = new SpatialTreeTraverser.Nearest<>();

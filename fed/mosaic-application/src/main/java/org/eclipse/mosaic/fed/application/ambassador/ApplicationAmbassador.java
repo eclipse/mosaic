@@ -88,7 +88,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -539,11 +538,11 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         for (TrafficManagementCenterUnit tmc : UnitSimulator.UnitSimulator.getTmcs().values()) {
             final List<InductionLoopInfo> relevantInductionLoops = trafficDetectorUpdates.getUpdatedInductionLoops().stream()
                     .filter(i -> tmc.getInductionLoopIds().contains(i.getName()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             final List<LaneAreaDetectorInfo> relevantLaneAreaDetectors = trafficDetectorUpdates.getUpdatedLaneAreaDetectors().stream()
                     .filter(i -> tmc.getLaneAreaIds().contains(i.getName()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (!relevantInductionLoops.isEmpty() || !relevantLaneAreaDetectors.isEmpty()) {
                 // Create new TrafficDetectorUpdates interaction containing only relevant updates

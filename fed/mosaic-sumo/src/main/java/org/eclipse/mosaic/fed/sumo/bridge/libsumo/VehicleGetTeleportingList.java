@@ -19,18 +19,14 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-import com.google.common.collect.Lists;
-import org.eclipse.sumo.libsumo.StringVector;
 import org.eclipse.sumo.libsumo.Vehicle;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class VehicleGetTeleportingList implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleGetTeleportingList {
     @Override
     public List<String> execute(Bridge bridge) throws CommandException, InternalFederateException {
         return Vehicle.getTeleportingIDList().stream()
-                .map(Bridge.VEHICLE_ID_TRANSFORMER::fromExternalId).collect(Collectors.toList());
+                .map(Bridge.VEHICLE_ID_TRANSFORMER::fromExternalId).toList();
     }
 }

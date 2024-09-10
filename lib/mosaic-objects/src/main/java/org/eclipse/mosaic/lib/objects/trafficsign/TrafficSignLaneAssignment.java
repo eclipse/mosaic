@@ -22,7 +22,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Represents a traffic sign that assigns {@link VehicleClass}es to lanes.
@@ -107,7 +106,7 @@ public class TrafficSignLaneAssignment extends TrafficSign<LaneAssignment> {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

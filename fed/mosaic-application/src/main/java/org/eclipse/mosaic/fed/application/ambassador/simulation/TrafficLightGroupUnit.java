@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -174,7 +173,7 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
     public Collection<TrafficLightState> getSignalSequence(String trafficLightProgramId, int trafficLightId) {
         List<TrafficLightProgram> result = getAllPrograms().stream()
                 .filter(program -> program.getProgramId().equals(trafficLightProgramId))
-                .collect(Collectors.toList());
+                .toList();
         if (!result.isEmpty()) {
             return result.get(0).getSignalSequence(trafficLightId);
         }

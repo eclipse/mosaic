@@ -125,7 +125,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -979,7 +978,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             log.info("Change allowed vehicle classes of lane with ID={}", laneId);
 
             List<String> allowedVehicleClasses = lanePropertyChange.getAllowedVehicleClasses().stream()
-                    .map(SumoVehicleClassMapping::toSumo).collect(Collectors.toList());
+                    .map(SumoVehicleClassMapping::toSumo).toList();
             bridge.getSimulationControl().setLaneAllowedVehicles(laneId, allowedVehicleClasses);
         }
 
@@ -990,7 +989,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 bridge.getSimulationControl().setLaneAllowedVehicles(laneId, Lists.newArrayList());
             } else {
                 List<String> disallowedVehicleClasses = lanePropertyChange.getDisallowedVehicleClasses().stream()
-                        .map(SumoVehicleClassMapping::toSumo).collect(Collectors.toList());
+                        .map(SumoVehicleClassMapping::toSumo).toList();
                 bridge.getSimulationControl().setLaneDisallowedVehicles(laneId, disallowedVehicleClasses);
             }
         }
@@ -1346,7 +1345,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
     private List<String> getRouteFileVehicles() throws InternalFederateException {
         return bridge.getSimulationControl().getDepartedVehicles().stream()
                 .filter(v -> !vehiclesAddedViaRti.contains(v)) // all vehicles not added via MOSAIC are added by SUMO
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

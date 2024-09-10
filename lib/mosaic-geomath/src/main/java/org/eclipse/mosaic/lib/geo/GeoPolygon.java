@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
 
@@ -97,7 +96,7 @@ public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
 
     public CartesianPolygon toCartesian() {
         return new CartesianPolygon(
-                getVertices().stream().map(GeoPoint::toCartesian).collect(Collectors.toList())
+                getVertices().stream().map(GeoPoint::toCartesian).toList()
         );
     }
 

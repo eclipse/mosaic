@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SumoPerceptionModule extends AbstractPerceptionModule {
 
@@ -56,7 +55,7 @@ public class SumoPerceptionModule extends AbstractPerceptionModule {
                         .setSpeed(v.getSpeed())
                         .setHeading(v.getHeading())
                         .setDimensions(v.getLength(), v.getWidth(), v.getHeight())
-                ).collect(Collectors.toList());
+                ).toList();
     }
 
     @Override

@@ -21,7 +21,6 @@ import org.eclipse.mosaic.lib.math.Vector3d;
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * This class represents a point cloud based on the {@link Vector3d} coordinate system.
@@ -281,7 +280,7 @@ public final class PointCloud implements Serializable {
             return pointCloud.points.stream()
                     .filter(filter)
                     .map(point -> (Point) pointCloud.orientation.multiply(new Point(point, point.getDistance(), point.getHitType())).add(pointCloud.origin))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         private static List<Point> absoluteToRelative(PointCloud pointCloud, Predicate<Point> filter) {
@@ -289,13 +288,13 @@ public final class PointCloud implements Serializable {
             return pointCloud.points.stream()
                     .filter(filter)
                     .map(point -> (Point) inv.multiply(point.subtract(pointCloud.origin, new Point(point, point.getDistance(), point.getHitType()))))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         private static List<Point> noTransformation(PointCloud pointCloud, Predicate<Point> filter) {
             return filter == POINTS_ALL ? pointCloud.points : pointCloud.points.stream()
                     .filter(filter)
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 }

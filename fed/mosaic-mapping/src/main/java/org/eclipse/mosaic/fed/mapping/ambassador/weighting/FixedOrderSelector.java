@@ -20,7 +20,6 @@ import org.apache.commons.lang3.Validate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Helper class allowing the random and pseudo-random selection of multiple
@@ -77,7 +76,7 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
             item.selections = 0;
             item.priority = objects.size();
             return item;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     /**
@@ -122,7 +121,7 @@ public class FixedOrderSelector<T extends Weighted> implements WeightedSelector<
         // set normalized weights, if no weights have been set, apply same weight to all items
         items.forEach((item) -> item.normalizedWeight = sumWeights > 0 ? (item.object.getWeight() / sumWeights) : (1d / items.size()));
 
-        return items.stream().filter(item -> item.getWeight() > 0).collect(Collectors.toList());
+        return items.stream().filter(item -> item.getWeight() > 0).toList();
     }
 
     private Item<T> selectFirstItem() {

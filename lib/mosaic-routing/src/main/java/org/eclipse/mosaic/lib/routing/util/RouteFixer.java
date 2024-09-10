@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Provides methods to fix routes, e.g. by adding missing connections to unfinished routes.
@@ -161,6 +160,6 @@ public class RouteFixer {
     }
 
     private List<String> convertConnectionsToIds(List<Connection> fixedRoute) {
-        return fixedRoute.stream().map(Connection::getId).collect(Collectors.toList());
+        return fixedRoute.stream().map(Connection::getId).toList();
     }
 }

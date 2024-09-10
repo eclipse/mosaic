@@ -33,7 +33,6 @@ import com.google.common.collect.Lists;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -102,7 +101,7 @@ public class PerceptionApp extends AbstractApplication<VehicleOperatingSystem> i
     private void perceiveVehicles() {
         List<VehicleObject> perceivedVehicles = getOs().getPerceptionModule().getPerceivedVehicles();
         getLog().infoSimTime(this, "Perceived vehicles: {}",
-                perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()));
+                perceivedVehicles.stream().map(VehicleObject::getId).toList());
 
         colorVehicles(perceivedVehicles, previouslyPerceivedVehicles, Color.GREEN); // set color to perceived
         colorVehicles(previouslyPerceivedVehicles, perceivedVehicles, Color.YELLOW); // reset color of no longer perceived

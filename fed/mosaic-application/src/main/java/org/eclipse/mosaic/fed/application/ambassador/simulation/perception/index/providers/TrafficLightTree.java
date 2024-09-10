@@ -23,7 +23,6 @@ import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * {@link TrafficLightIndex} using a KD-Tree to store traffic lights.
@@ -50,7 +49,7 @@ public class TrafficLightTree extends TrafficLightIndex {
         treeTraverser.setup(perceptionModel.getBoundingBox().center,
                 perceptionModel.getBoundingBox().center.distanceSqrTo(perceptionModel.getBoundingBox().min)); // overestimating distance
         treeTraverser.traverse(trafficLightTree);
-        return treeTraverser.getResult().stream().filter(perceptionModel::isInRange).collect(Collectors.toList());
+        return treeTraverser.getResult().stream().filter(perceptionModel::isInRange).toList();
     }
 
     @Override

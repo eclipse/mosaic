@@ -29,7 +29,7 @@ public class TrafficLightStateDecoder {
         }
         return encoded.codePoints()
                 .mapToObj(c -> createStateFromCharacter((char) c))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

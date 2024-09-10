@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Class responsible for configuring Charging Stations to be added to the simulation.
@@ -106,7 +105,7 @@ public class ChargingStationSpawner extends UnitSpawner implements Spawner {
                         chargingSpotConfigurations.stream()
                                 .map(chargingSpot ->
                                         "chargingSpot(" + chargingSpotConfigurations.indexOf(chargingSpot) + ")=" + chargingSpot.toString())
-                                .collect(Collectors.toList())
+                                .toList()
                 )
                 .build();
     }
