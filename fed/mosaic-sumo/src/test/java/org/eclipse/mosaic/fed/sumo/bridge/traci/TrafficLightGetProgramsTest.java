@@ -51,8 +51,8 @@ public class TrafficLightGetProgramsTest extends AbstractTraciCommandTest {
         assertEquals("0", tlProgram.getLogicId());
         assertEquals(1, tlProgram.getCurrentPhase());
         assertEquals(6, tlProgram.getPhases().size());
-        assertEquals(4000, tlProgram.getPhases().get(tlProgram.getCurrentPhase()).getDuration());
-        assertEquals("yyggrrryyyg", tlProgram.getPhases().get(tlProgram.getCurrentPhase()).getPhaseDef());
+        assertEquals(4000, tlProgram.getPhases().get(tlProgram.getCurrentPhase()).durationMs());
+        assertEquals("yyggrrryyyg", tlProgram.getPhases().get(tlProgram.getCurrentPhase()).phaseDef());
     }
 
     @SinceTraci(TraciVersion.API_19)
