@@ -75,7 +75,7 @@ public class EventSendingApp extends AbstractApplication<VehicleOperatingSystem>
 
     @Override
     public void processEvent(Event event) throws Exception {
-        getLog().infoSimTime(this, "Received event: {}", getOs().getSimulationTimeMs(), event.getResourceClassSimpleName());
+        getLog().infoSimTime(this, "Received event: {}", event.getResourceClassSimpleName());
     }
 
     @Override

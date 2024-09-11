@@ -162,7 +162,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
                 type = currentType;
                 // Method which is called to react on new or changed environment events
                 reactOnEnvironmentData(type, strength);
-                return;
+                return; // the early exit discards other possible environmental warnings, ok for this tutorial purpose
             }
         }
 
