@@ -300,7 +300,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          */
         CandidateRoute newRoute = response.getBestRoute();
         if (newRoute != null) {
-            getLog().infoSimTime(this, "Sending Change Route Command at position: {}", denm.getSenderPosition());
+            getLog().infoSimTime(this, "Sending Change Route Command at position: {}", getOs().getPosition());
             navigationModule.switchRoute(newRoute);
         }
     }
