@@ -17,6 +17,7 @@ package org.eclipse.mosaic.lib.geo;
 
 import org.eclipse.mosaic.lib.math.MathUtils;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final List<GeoPoint> vertices;
@@ -39,15 +41,14 @@ public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
      * @param coordinates A list of lists of {@link GeoPoint}s
      */
     public GeoPolygon(List<GeoPoint> coordinates) {
-        final List<GeoPoint> verticesTmp = new ArrayList<>(coordinates);
-        if (!verticesTmp.get(0).equals(verticesTmp.get(verticesTmp.size() - 1))) {
-            verticesTmp.add(verticesTmp.get(0));
+        vertices = new ArrayList<>(coordinates);
+        if (!vertices.get(0).equals(vertices.get(vertices.size() - 1))) {
+            vertices.add(vertices.get(0));
         }
 
-        if (verticesTmp.size() < 3) {
+        if (vertices.size() < 3) {
             throw new IllegalArgumentException("The polygon must consists of two different vertices at least.");
         }
-        vertices = Collections.unmodifiableList(verticesTmp);
     }
 
     private GeoRectangle calcBoundingBox(List<GeoPoint> vertices) {
@@ -65,7 +66,7 @@ public class GeoPolygon implements Polygon<GeoPoint>, GeoArea {
     }
 
     public List<GeoPoint> getVertices() {
-        return vertices;
+        return Collections.unmodifiableList(vertices);
     }
 
     @Override
