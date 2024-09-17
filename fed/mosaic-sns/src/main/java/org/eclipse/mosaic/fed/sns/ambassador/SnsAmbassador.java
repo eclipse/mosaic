@@ -200,9 +200,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
                 log.info("Radio configured in mode {} with communication radius {} for node id={} @time={}",
                         configuration.getRadioMode(), communicationRadius, nodeId, TIME.format(interaction.getTime()));
             }
-            case DUAL ->
-                    log.warn("SNS only supports single radio configuration. Configure first, while ignoring second, radio for node {}.", nodeId);
-            default -> log.warn("Unknown radio mode {} configured for node {}. Ignoring.", configuration.getRadioMode(), nodeId);
+            case DUAL ->log.warn("SNS only supports single radio configuration. Configure first, while ignoring second, radio for node {}.", nodeId);
         }
     }
 
