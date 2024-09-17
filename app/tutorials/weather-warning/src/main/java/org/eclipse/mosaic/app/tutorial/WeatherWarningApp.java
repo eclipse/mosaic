@@ -259,7 +259,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             // Retrieve only the connection id and throw away the edge id
             // NOTE: a route info id has the format connectionId_edgeId
             if (connection.equals(affectedConnectionId)) {
-                getLog().infoSimTime(this, "The Event is on the vehicle's route {} = {}", connection, affectedConnectionId);
+                getLog().infoSimTime(this, "The event occurred on connection with id={}, which is part of vehicle's route with id={}", connection, routeInfo.getId());
 
                 circumnavigateAffectedRoad(denm, affectedConnectionId);
                 routeChanged = true;
