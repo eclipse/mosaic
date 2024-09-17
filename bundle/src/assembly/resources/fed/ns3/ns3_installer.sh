@@ -336,7 +336,7 @@ extract_ns3_federate()
     unzip --qq -o "$arg1"
     # The archive should have contained the folder "ns3-federate-xxx".
     # Rename it to "federate":
-    mv ns3-federate-* federate
+    mv $(basename -s .zip $arg1) federate
 }
 
 extract_premake() {
