@@ -112,7 +112,7 @@
         <version.jsch>0.2.16</version.jsch><!-- 0.2.16 is approved in #8468 -->
         <version.logback>1.5.0</version.logback><!-- 1.5.0 is approved in #13282 and 13283 -->
         <version.mockito>5.6.0</version.mockito><!-- approval not required, we do not ship this library -->
-        <version.protobuf>3.23.2</version.protobuf><!-- 3.8.0 is approved in #8634 -->
+        <version.protobuf>3.25.5</version.protobuf><!-- 3.8.0 is approved in #8634 -->
         <version.slf4j>2.0.12</version.slf4j><!-- 2.0.12 is approved #13344 -->
         <version.sqlite-jdbc>3.42.0.0</version.sqlite-jdbc><!-- 3.42.0.0 is approved in #9089 -->
         <!-- note, when upgrading, the field LibSumoAmbassador#VALID_LIBSUMO_VERSIONS needs to be changed too -->
