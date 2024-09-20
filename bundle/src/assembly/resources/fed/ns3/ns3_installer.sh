@@ -274,10 +274,10 @@ download() {
 
    if [ ! -f "$filename" ]; then
       if has wget; then
-         wget --no-check-certificate -q "$url" || fail "The download URL seems to have changed. File not found: "$url"";
+         wget --no-check-certificate -q "$url" || fail "The server is not reachable or the download URL has changed. File not found: "$url"";
          temporary_files="$temporary_files $filename"
       elif has curl; then
-         curl -s -O "$url" || fail "The download URL seems to have changed. File not found: "$url"";
+         curl -s -O "$url" || fail "The server is not reachable or the download URL has changed. File not found: "$url"";
          temporary_files="$temporary_files $filename"
       else
          fail "Can't download "$url".";
