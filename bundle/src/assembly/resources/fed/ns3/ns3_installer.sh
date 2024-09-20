@@ -111,8 +111,8 @@ get_arguments() {
           -d|--no-deploy)
               arg_deploy=false
               ;;
-          -p|--gen-protobuf)
-              arg_regen_protobuf=true
+          -p|--skip-gen-protobuf)
+              arg_regen_protobuf=false
               ;;
           -f|--federate)
               arg_federate_file="$2"
@@ -376,18 +376,18 @@ build_ns3()
   cd ${current_dir}/federate
   mv src/ClientServerChannel.h .
   mv src/ClientServerChannel.cc .
-  if [ -f src/ClientServerChannelMessages.pb.h ]; then
-    rm src/ClientServerChannelMessages.pb.h
-  fi
-  if [ -f src/ClientServerChannelMessages.pb.cc ]; then
-    rm src/ClientServerChannelMessages.pb.cc
-  fi
 
   # adjust build instruction to cover scrambled files
   sed -i -e "s|/usr/local|.|" premake5.lua
   sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/include\"|" premake5.lua
   sed -i -e "s|\"/usr/lib\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/lib\"|" premake5.lua
   if [ "${arg_regen_protobuf}" == "true" ]; then
+     if [ -f src/ClientServerChannelMessages.pb.h ]; then
+       rm src/ClientServerChannelMessages.pb.h
+     fi
+     if [ -f src/ClientServerChannelMessages.pb.cc ]; then
+       rm src/ClientServerChannelMessages.pb.cc
+     fi
     ./premake5 gmake --generate-protobuf --install
   else
     ./premake5 gmake --install
