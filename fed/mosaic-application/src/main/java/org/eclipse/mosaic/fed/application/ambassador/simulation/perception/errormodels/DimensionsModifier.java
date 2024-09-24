@@ -43,13 +43,26 @@ public class DimensionsModifier implements PerceptionModifier {
     private final RandomNumberGenerator rng;
 
 
-    public DimensionsModifier(RandomNumberGenerator rng,  double lengthDeviation, double widthDeviation, double heightDeviation) {
+    /**
+     * Constructor for {@link DimensionsModifier} given the sigma values for the gaussian distribution applied to different dimensions.
+     *
+     * @param rng             {@link RandomNumberGenerator} used to generate pseudo-random gaussian numbers
+     * @param lengthDeviation sigma value for the length
+     * @param widthDeviation  sigma value for the width
+     * @param heightDeviation sigma value for the height
+     */
+    public DimensionsModifier(RandomNumberGenerator rng, double lengthDeviation, double widthDeviation, double heightDeviation) {
         this.rng = rng;
         this.lengthDeviation = lengthDeviation;
         this.widthDeviation = widthDeviation;
         this.heightDeviation = heightDeviation;
     }
 
+    /**
+     * Constructor for {@link DimensionsModifier} using default values of 0.2 for the sigma value of the dimensions
+     *
+     * @param rng @link RandomNumberGenerator} used to generate pseudo-random gaussian numbers
+     */
     public DimensionsModifier(RandomNumberGenerator rng) {
         this.rng = rng;
         this.lengthDeviation = SIGMA_LENGTH_OFFSET;
@@ -58,7 +71,7 @@ public class DimensionsModifier implements PerceptionModifier {
     }
 
     @Override
-    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+    public <T extends SpatialObject<?>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         spatialObjects.stream()
                 .filter(o -> o instanceof VehicleObject)
                 .forEach(o -> adjustDimensionsOfVehicle((VehicleObject) o));

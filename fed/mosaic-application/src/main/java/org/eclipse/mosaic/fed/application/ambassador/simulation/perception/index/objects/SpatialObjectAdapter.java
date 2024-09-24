@@ -17,7 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.inde
 
 import org.eclipse.mosaic.lib.spatial.SpatialItemAdapter;
 
-public class SpatialObjectAdapter<T extends SpatialObject> implements SpatialItemAdapter<T> {
+public class SpatialObjectAdapter<T extends SpatialObject<?>> implements SpatialItemAdapter<T> {
 
     @Override
     public int getItemHash(T item) {

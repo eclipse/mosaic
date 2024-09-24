@@ -21,6 +21,7 @@ import org.eclipse.mosaic.lib.spatial.Edge;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import java.util.List;
  */
 public class PointBoundingBox implements SpatialObjectBoundingBox {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

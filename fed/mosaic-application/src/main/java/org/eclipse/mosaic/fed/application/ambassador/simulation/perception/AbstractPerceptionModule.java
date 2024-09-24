@@ -96,8 +96,8 @@ public abstract class AbstractPerceptionModule implements PerceptionModule<Simpl
     abstract List<TrafficLightObject> getTrafficLightsInRange();
 
     @Override
-    public List<SpatialObject> getPerceivedObjects() {
-        List<SpatialObject> objectsInRange = getObjectsInRange();
+    public List<SpatialObject<?>> getPerceivedObjects() {
+        List<SpatialObject<?>> objectsInRange = getObjectsInRange();
         objectsInRange = applyPerceptionModifiers(objectsInRange);
         return objectsInRange;
     }
@@ -108,12 +108,13 @@ public abstract class AbstractPerceptionModule implements PerceptionModule<Simpl
      *
      * @return the raw list of objects in range of the ego vehicle
      */
-    abstract List<SpatialObject> getObjectsInRange();
+    abstract List<SpatialObject<?>> getObjectsInRange();
 
-    private <T extends SpatialObject<T>> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
+    @SuppressWarnings("unchecked") // copy-method assures correct typing
+    private <T extends SpatialObject<?>> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
         List<T> filteredList = new ArrayList<>(objectsInRange);
         // create a copy of all perceived objects to avoid interference with modifiers of other perception modules.
-        filteredList.replaceAll(T::copy);
+        filteredList.replaceAll(object -> (T) object.copy());
         for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
             filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
         }

@@ -21,8 +21,11 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
+
 public class TrafficLightObject extends SpatialObject<TrafficLightObject> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

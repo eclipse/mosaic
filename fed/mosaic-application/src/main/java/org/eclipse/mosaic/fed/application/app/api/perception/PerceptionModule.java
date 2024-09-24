@@ -61,7 +61,7 @@ public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration>
      *
      * @return a list of all {@link SpatialObject}s inside the perception range
      */
-    <T extends SpatialObject<T>> List<SpatialObject<T>> getPerceivedObjects();
+    List<SpatialObject<?>> getPerceivedObjects();
 
     /**
      * Call to get surrounding building walls.

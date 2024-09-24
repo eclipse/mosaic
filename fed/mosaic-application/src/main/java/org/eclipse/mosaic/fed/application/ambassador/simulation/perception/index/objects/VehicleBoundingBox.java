@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ import java.util.List;
  */
 public class VehicleBoundingBox implements SpatialObjectBoundingBox {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final List<Vector3d> allCorners;
