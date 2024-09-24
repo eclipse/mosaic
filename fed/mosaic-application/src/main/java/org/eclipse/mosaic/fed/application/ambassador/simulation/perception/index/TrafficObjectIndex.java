@@ -131,7 +131,7 @@ public class TrafficObjectIndex {
     }
 
     /**
-     * Returns the amount of indexed vehicles.
+     * Returns the number of indexed vehicles.
      *
      * @return the number of vehicles
      */
@@ -155,8 +155,8 @@ public class TrafficObjectIndex {
     }
 
     /**
-     * Adds traffic lights to the spatial index, as their positions are static it is sufficient
-     * to store positional information only once.
+     * Adds traffic lights to the spatial index, as their positions are static,
+     * it is enough to store positional information only once.
      *
      * @param trafficLightGroup the registered traffic light group
      */
