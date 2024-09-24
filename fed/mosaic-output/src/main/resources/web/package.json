@@ -17,6 +17,6 @@
     "babelify": "^9.0.0",
     "browserify": "^16.5.2",
     "eslint": "^5.15.3",
-    "uglifyify": "^5.0.2"
+    "uglifyify": "^5.0.0"
   }
 }
