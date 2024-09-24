@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FileOutputLoader extends OutputGeneratorLoader {
 
@@ -108,7 +107,7 @@ public class FileOutputLoader extends OutputGeneratorLoader {
             }
 
             String interactionId = ConfigHelper.getId(interaction);
-            List<String> entries = interaction.getList("entries.entry").stream().map(String::valueOf).collect(Collectors.toList());
+            List<String> entries = interaction.getList("entries.entry").stream().map(String::valueOf).toList();
 
             interactionDefs
                     .computeIfAbsent(interactionId, (k) -> new ArrayList<>())
@@ -140,19 +139,12 @@ public class FileOutputLoader extends OutputGeneratorLoader {
 
         File outputFile = new File(dir + File.separator + fileName);
 
-        switch (write) {
-            case WRITE_BY_LOG:
-                ret = new WriteByLog(outputFile, append);
-                break;
-            case WRITE_BY_FILE:
-                ret = new WriteByFile(outputFile, append);
-                break;
-            case WRITE_BY_FILE_COMPRESS:
-                ret = new WriteByFileCompress(outputFile, append);
-                break;
-            default:
-                throw new IllegalArgumentException("No such write method '" + write + "'");
-        }
+        ret = switch (write) {
+            case WRITE_BY_LOG -> new WriteByLog(outputFile, append);
+            case WRITE_BY_FILE -> new WriteByFile(outputFile, append);
+            case WRITE_BY_FILE_COMPRESS -> new WriteByFileCompress(outputFile, append);
+            default -> throw new IllegalArgumentException("No such write method '" + write + "'");
+        };
         return ret;
     }
 

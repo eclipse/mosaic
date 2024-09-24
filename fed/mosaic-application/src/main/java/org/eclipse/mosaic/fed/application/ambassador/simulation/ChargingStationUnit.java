@@ -84,8 +84,8 @@ public class ChargingStationUnit extends AbstractSimulationUnit implements Charg
             throw new RuntimeException(ErrorRegister.CHARGING_STATION_NoEventResource.toString());
         }
 
-        if (resource instanceof ChargingStationData) {
-            updateChargingStation((ChargingStationData) resource);
+        if (resource instanceof ChargingStationData data) {
+            updateChargingStation(data);
         } else {
             getOsLog().error("Unknown event resource: {}", event);
             throw new RuntimeException(ErrorRegister.CHARGING_STATION_UnknownEvent.toString());

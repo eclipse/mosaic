@@ -399,8 +399,8 @@ public class GraphHopperRouting {
              * (and artificial edges) is created in the QueryGraph. As a consequence, the first
              * and/or last edge of the route might be such virtual edge, which must be converted to its original edge.
              */
-            if (currEdge instanceof VirtualEdgeIteratorState) {
-                currEdge = graph.getEdgeIteratorStateForKey(((VirtualEdgeIteratorState) origEdge).getOriginalEdgeKey());
+            if (currEdge instanceof VirtualEdgeIteratorState virtualEdge) {
+                currEdge = graph.getEdgeIteratorStateForKey(virtualEdge.getOriginalEdgeKey());
             }
 
             Connection con = graphMapper.toConnection(currEdge.getEdge());

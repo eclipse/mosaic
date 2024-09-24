@@ -8,7 +8,7 @@ kind: Pod
 spec:
   containers:
   - name: maven-sumo
-    image: eclipsemosaic/mosaic-ci:jdk11-sumo-1.20.0
+    image: eclipsemosaic/mosaic-ci:jdk17-sumo-1.20.0
     command:
     - cat
     tty: true
@@ -112,7 +112,7 @@ spec:
         stage('Analysis') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn site -T 4'
+                    sh 'mvn site'
                 }
             }
 

@@ -66,9 +66,6 @@ public interface SpatialItemAdapter<T> {
         return result.set(getCenterX(item), getCenterY(item), getCenterZ(item));
     }
 
-    default void setNode(T item, SpatialTree<T>.Node node) {
-    }
-
     class PointAdapter<T extends Vector3d> implements SpatialItemAdapter<T> {
 
         @Override

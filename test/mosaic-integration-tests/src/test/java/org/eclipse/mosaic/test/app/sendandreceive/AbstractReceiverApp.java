@@ -61,8 +61,7 @@ public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUn
     public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
         V2xMessage msg = receivedV2xMessage.getMessage();
 
-        if (msg instanceof Cam) {
-            final Cam cam = (Cam) msg;
+        if (msg instanceof Cam cam) {
             final GeoPoint otherPos = cam.getPosition();
             final GeoPoint myPos = getOs().getPosition();
             double distance = myPos.distanceTo(otherPos);
@@ -70,8 +69,7 @@ public abstract class AbstractReceiverApp extends AbstractApplication<RoadSideUn
 
             getLog().infoSimTime(this, "Received CAM from {}, over a distance of {} m", senderName, distance);
 
-        } else if (msg instanceof TestMessage) {
-            TestMessage testMsg = (TestMessage) msg;
+        } else if (msg instanceof TestMessage testMsg) {
             GeoPoint msgPos = testMsg.getSenderPosition();
             GeoPoint myPos = getOs().getPosition();
 

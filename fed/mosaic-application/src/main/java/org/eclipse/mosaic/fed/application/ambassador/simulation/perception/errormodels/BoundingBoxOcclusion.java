@@ -25,7 +25,6 @@ import org.eclipse.mosaic.lib.spatial.Edge;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BoundingBoxOcclusion implements PerceptionModifier {
 
@@ -82,7 +81,7 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
         // the ego object cannot occlude vision
         List<T> occludingObjects = spatialObjects.stream()
                 .filter(object -> !object.getId().equals(owner.getId()))
-                .collect(Collectors.toList());
+                .toList();
         Vector3d egoPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         for (T objectToEvaluate : spatialObjects) {
             if (objectToEvaluate instanceof TrafficLightObject) { // Traffic Lights are treated to not be occluded

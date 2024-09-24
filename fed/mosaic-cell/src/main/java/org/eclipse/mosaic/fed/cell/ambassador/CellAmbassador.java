@@ -576,9 +576,10 @@ public class CellAmbassador extends AbstractFederateAmbassador {
         if (serverProperties != null) {
             registeredServers.put(serverName, serverProperties);
         } else {
-            log.warn(
-                    "No server properties for server group \"{}\" found in \"{}\" config-file."
-                            + " If you intend to use cell-communication with this unit please add a configuration.",
+            log.warn("""
+                            No server properties for server group "{}" found in "{}" config-file.
+                            If you intend to use cell-communication with this unit please add a configuration.
+                            """,
                     serverGroup, ConfigurationData.INSTANCE.getCellConfig().networkConfigurationFile
             );
         }

@@ -270,16 +270,16 @@ class SQLiteAccess {
      */
     private static String getAsString(Object o) {
 
-        if (o instanceof Integer) {
-            return String.valueOf(o);
-        } else if (o instanceof Long) {
-            return String.valueOf(o);
-        } else if (o instanceof String) {
-            return ((String) o);
-        } else if (o instanceof Float) {
-            return String.valueOf(o);
-        } else if (o instanceof Double) {
-            return String.valueOf(o);
+        if (o instanceof Integer i) {
+            return String.valueOf(i);
+        } else if (o instanceof Long l) {
+            return String.valueOf(l);
+        } else if (o instanceof String s) {
+            return s;
+        } else if (o instanceof Float f) {
+            return String.valueOf(f);
+        } else if (o instanceof Double d) {
+            return String.valueOf(d);
         }
 
         throw new IllegalArgumentException("o unknown instanceof. o.getClass():" + o.getClass());
@@ -292,10 +292,10 @@ class SQLiteAccess {
      * @return Representation of the object as Integer.
      */
     private static Integer getAsInteger(Object o) {
-        if (o instanceof Integer) {
-            return (Integer) o;
-        } else if (o instanceof String) {
-            return Integer.parseInt((String) o);
+        if (o instanceof Integer i) {
+            return i;
+        } else if (o instanceof String s) {
+            return Integer.parseInt(s);
         }
 
         throw new IllegalArgumentException("o unknown instanceof. o.getClass():" + o.getClass());
@@ -308,14 +308,14 @@ class SQLiteAccess {
      * @return Representation of the object as Double.
      */
     private static Double getAsDouble(Object o) {
-        if (o instanceof Float) {
-            return ((Float) o).doubleValue();
-        } else if (o instanceof Double) {
-            return ((Double) o);
-        } else if (o instanceof Integer) {
-            return ((Integer) o).doubleValue();
-        } else if (o instanceof Long) {
-            return ((Long) o).doubleValue();
+        if (o instanceof Float f) {
+            return f.doubleValue();
+        } else if (o instanceof Double d) {
+            return d;
+        } else if (o instanceof Integer i) {
+            return i.doubleValue();
+        } else if (o instanceof Long l) {
+            return l.doubleValue();
         }
 
         throw new IllegalArgumentException("o unknown instanceof. o.getClass():" + o.getClass());
@@ -328,12 +328,12 @@ class SQLiteAccess {
      * @return Representation of the object as Boolean.
      */
     private static Boolean getAsBoolean(Object o) {
-        if (o instanceof Boolean) {
-            return (Boolean) o;
-        } else if (o instanceof Integer) {
-            return (Integer) o >= 1;
-        } else if (o instanceof String) {
-            return ((String) o).toLowerCase().trim().equals("true");
+        if (o instanceof Boolean b) {
+            return b;
+        } else if (o instanceof Integer i) {
+            return i >= 1;
+        } else if (o instanceof String s) {
+            return s.toLowerCase().trim().equals("true");
         } else {
             throw new IllegalArgumentException("o is an instance of o.getClass():" + o.getClass());
         }

@@ -45,8 +45,7 @@ public class SpecificEventProcessingApp extends AbstractApplication<VehicleOpera
     public void processEvent(final Event event) throws Exception {
         getLog().infoSimTime(this, "Event has been triggered and is being processed by the processEvent method that is declared in EventProcessor interface!");
 
-        if (event.getResource() instanceof String) {
-            String message = (String)event.getResource();
+        if (event.getResource() instanceof String message) {
             getLog().infoSimTime(this, "Received message: \"{}\"", message);
         }
     }
@@ -59,8 +58,7 @@ public class SpecificEventProcessingApp extends AbstractApplication<VehicleOpera
     public void mySpecificMethod(Event event) {
         getLog().infoSimTime(this, "Event has been triggered and is being processed by a specific method!");
 
-        if (event.getResource() instanceof String) {
-            String message = (String)event.getResource();
+        if (event.getResource() instanceof String message) {
             getLog().infoSimTime(this, "Received message: \"{}\"", message);
         }
     }

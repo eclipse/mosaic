@@ -21,7 +21,6 @@ import org.eclipse.sumo.libsumo.Simulation;
 import org.eclipse.sumo.libsumo.StringVector;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SimulationGetDepartedVehicleIds implements org.eclipse.mosaic.fed.sumo.bridge.api.SimulationGetDepartedVehicleIds {
 
@@ -30,7 +29,7 @@ public class SimulationGetDepartedVehicleIds implements org.eclipse.mosaic.fed.s
         try {
             return departedIds.stream()
                     .map(Bridge.VEHICLE_ID_TRANSFORMER::fromExternalId)
-                    .collect(Collectors.toList());
+                    .toList();
         } finally {
             departedIds.delete();
         }

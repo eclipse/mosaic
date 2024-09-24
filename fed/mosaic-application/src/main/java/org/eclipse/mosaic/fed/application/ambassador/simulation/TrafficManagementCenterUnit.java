@@ -16,8 +16,6 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.tmc.InductionLoop;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.tmc.LaneAreaDetector;
 import org.eclipse.mosaic.fed.application.app.api.TrafficManagementCenterApplication;
@@ -27,7 +25,6 @@ import org.eclipse.mosaic.interactions.traffic.LaneAreaDetectorSubscription;
 import org.eclipse.mosaic.interactions.traffic.LanePropertyChange;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.mapping.TmcMapping;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.traffic.LaneAreaDetectorInfo;
@@ -140,9 +137,7 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
     }
 
     private boolean handleEventResource(Object resource) {
-        if (resource instanceof TrafficDetectorUpdates) {
-            TrafficDetectorUpdates detectorUpdates = (TrafficDetectorUpdates) resource;
-
+        if (resource instanceof TrafficDetectorUpdates detectorUpdates) {
             final List<InductionLoop> updatedInductionLoops = new ArrayList<>(detectorUpdates.getUpdatedInductionLoops().size());
             for (InductionLoopInfo inductionLoopInfo : detectorUpdates.getUpdatedInductionLoops()) {
                 InductionLoop inductionLoop = getInductionLoop(inductionLoopInfo.getName());

@@ -29,8 +29,7 @@ public class EventProcessingApp extends AbstractApplication<VehicleOperatingSyst
     public void processEvent(Event event) {
         Object resource = event.getResource();
         if (resource != null) {
-            if (resource instanceof IntraVehicleMsg) {
-                final IntraVehicleMsg message = (IntraVehicleMsg) resource;
+            if (resource instanceof IntraVehicleMsg message) {
                 // message was passed from another app on the same vehicle
                 if (message.getOrigin().equals(getOs().getId())) {
                     getLog().infoSimTime(this, "Received message from another application: {}", message.toString());

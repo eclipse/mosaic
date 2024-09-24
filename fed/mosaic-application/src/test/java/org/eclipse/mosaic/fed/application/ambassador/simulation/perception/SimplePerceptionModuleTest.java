@@ -63,7 +63,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
 public class SimplePerceptionModuleTest {
@@ -217,10 +216,10 @@ public class SimplePerceptionModuleTest {
                                 .copyFrom(vehicleData)
                                 .movement(1d, 1d, 1d) // adjust vehicles
                                 .create())
-                .collect(Collectors.toList());
+                .toList();
         trafficObjectIndex.updateVehicles(adjustedVehicles);
         // try to remove vehicles
-        trafficObjectIndex.removeVehicles(addedVehicles.stream().map(VehicleData::getName).collect(Collectors.toList()));
+        trafficObjectIndex.removeVehicles(addedVehicles.stream().map(VehicleData::getName).toList());
         // assert vehicles have been properly removed
         assertEquals(0, trafficObjectIndex.getNumberOfVehicles());
         assertTrue(simplePerceptionModule.getPerceivedVehicles().isEmpty());

@@ -110,13 +110,5 @@ public class InductionLoop {
         return duration > 0 ? total / (duration / (double) TIME.SECOND) * 3600d : 0;
     }
 
-    private static class VehicleCount {
-        private final long time;
-        private final int counts;
-
-        private VehicleCount(long time, int counts) {
-            this.time = time;
-            this.counts = counts;
-        }
-    }
+    private record VehicleCount(long time, int counts) {}
 }

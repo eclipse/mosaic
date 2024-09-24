@@ -57,8 +57,7 @@ public class VehicleConfigurationApp extends ConfigurableApplication<CExample, V
     @Override
     public void processEvent(Event event) throws Exception {
         Object resource = event.getResource();
-        if (resource instanceof String) {
-            String message = (String) resource;
+        if (resource instanceof String message) {
             getLog().infoSimTime(this, "Received message: \"{}\"", message);
         }
         getLog().info("Wanted speed from config equals " + this.config.fooInteger);

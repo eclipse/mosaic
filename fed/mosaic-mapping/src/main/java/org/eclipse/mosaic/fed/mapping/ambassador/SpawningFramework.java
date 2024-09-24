@@ -56,7 +56,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Framework doing the actual work.
@@ -484,7 +483,7 @@ public class SpawningFramework {
 
     private void initTrafficLights(long time, RtiAmbassador rti, RandomNumberGenerator rng) throws InternalFederateException {
         WeightedSelector<TrafficLightSpawner> selector = null;
-        List<TrafficLightSpawner> itemsWithWeight = tls.values().stream().filter(tl -> tl.getWeight() != 0).collect(Collectors.toList());
+        List<TrafficLightSpawner> itemsWithWeight = tls.values().stream().filter(tl -> tl.getWeight() != 0).toList();
         if (!itemsWithWeight.isEmpty()) {
             selector = new StochasticSelector<>(itemsWithWeight, rng);
         }

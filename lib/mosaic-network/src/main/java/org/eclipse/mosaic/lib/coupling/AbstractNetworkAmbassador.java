@@ -319,12 +319,12 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                         ReceiveMessageContainer rcvMsgContainer = this.federateAmbassadorChannel.readMessage(simulatedNodes);
                         // read message body
                         // The receiver may have been removed from the simulation while message was on air
-                        if (rcvMsgContainer.receiverName != null) {
+                        if (rcvMsgContainer.receiverName() != null) {
                             V2xMessageReception msg = new V2xMessageReception(
-                                    rcvMsgContainer.time,
-                                    rcvMsgContainer.receiverName,
-                                    rcvMsgContainer.msgId,
-                                    rcvMsgContainer.receiverInformation
+                                    rcvMsgContainer.time(),
+                                    rcvMsgContainer.receiverName(),
+                                    rcvMsgContainer.msgId(),
+                                    rcvMsgContainer.receiverInformation()
                             );
                             log.debug("Receive V2XMessage : Id({}) on Node {} at Time={}", msg.getMessageId(), msg.getReceiverName(), TIME.format(msg.getTime()));
                             this.rti.triggerInteraction(msg);  // Hand the received message to the RTI and thus the other federates

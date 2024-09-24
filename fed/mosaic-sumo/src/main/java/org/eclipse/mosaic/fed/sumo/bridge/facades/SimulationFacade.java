@@ -447,9 +447,9 @@ public class SimulationFacade {
             final Map<String, TrafficLightGroupInfo> trafficLightGroupInfos = new HashMap<>();
 
             for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
-                if (subscriptionResult instanceof VehicleSubscriptionResult) {
+                if (subscriptionResult instanceof VehicleSubscriptionResult result) {
                     final SumoVehicleState sumoVehicle = processVehicleSubscriptionResult(
-                            time, (VehicleSubscriptionResult) subscriptionResult, vehicleSegmentInfo
+                            time, result, vehicleSegmentInfo
                     );
                     if (sumoVehicle == null) {
                         continue;
@@ -459,28 +459,22 @@ public class SimulationFacade {
                     } else if (sumoVehicle.isUpdated()) {
                         updatedVehicles.add(sumoVehicle.currentVehicleData);
                     }
-                } else if (subscriptionResult instanceof InductionLoopSubscriptionResult) {
-                    final InductionLoopInfo inductionLoopInfo = processInductionLoopSubscriptionResult(
-                            time, (InductionLoopSubscriptionResult) subscriptionResult
-                    );
+                } else if (subscriptionResult instanceof InductionLoopSubscriptionResult result) {
+                    final InductionLoopInfo inductionLoopInfo = processInductionLoopSubscriptionResult(time, result);
                     updatedInductionLoops.add(inductionLoopInfo);
-                } else if (subscriptionResult instanceof LaneAreaSubscriptionResult) {
-                    final LaneAreaDetectorInfo laneAreaDetectorInfo = processLaneAreaSubscriptionResult(
-                            time, (LaneAreaSubscriptionResult) subscriptionResult
-                    );
+                } else if (subscriptionResult instanceof LaneAreaSubscriptionResult result) {
+                    final LaneAreaDetectorInfo laneAreaDetectorInfo = processLaneAreaSubscriptionResult(time, result);
                     updatedLaneAreas.add(laneAreaDetectorInfo);
-                } else if (subscriptionResult instanceof TrafficLightSubscriptionResult) {
-                    final TrafficLightGroupInfo trafficLightGroupInfo = processTrafficLightSubscriptionResult(
-                            (TrafficLightSubscriptionResult) subscriptionResult
-                    );
+                } else if (subscriptionResult instanceof TrafficLightSubscriptionResult result) {
+                    final TrafficLightGroupInfo trafficLightGroupInfo = processTrafficLightSubscriptionResult(result);
                     trafficLightGroupInfos.put(trafficLightGroupInfo.getGroupId(), trafficLightGroupInfo);
                 }
             }
 
             for (AbstractSubscriptionResult subscriptionResult : subscriptions) {
-                if (subscriptionResult instanceof VehicleContextSubscriptionResult) {
+                if (subscriptionResult instanceof VehicleContextSubscriptionResult result) {
                     // needs to be done in a subsequent loop, as previously created VehicleData is updated here
-                    processVehicleContextSubscriptionResult((VehicleContextSubscriptionResult) subscriptionResult);
+                    processVehicleContextSubscriptionResult(result);
                 }
             }
 
@@ -734,10 +728,10 @@ public class SimulationFacade {
     private Map<String, String> calculateVehicleSegmentInfo(List<AbstractSubscriptionResult> subscriptions) {
         Map<String, String> vehicleToSegmentMap = new HashMap<>();
         for (AbstractSubscriptionResult laneAreaDetector : subscriptions) {
-            if (!(laneAreaDetector instanceof LaneAreaSubscriptionResult)) {
+            if (!(laneAreaDetector instanceof LaneAreaSubscriptionResult result)) {
                 continue;
             }
-            for (String vehicle : ((LaneAreaSubscriptionResult) laneAreaDetector).vehicles) {
+            for (String vehicle : result.vehicles) {
                 vehicleToSegmentMap.putIfAbsent(vehicle, laneAreaDetector.id);
             }
         }

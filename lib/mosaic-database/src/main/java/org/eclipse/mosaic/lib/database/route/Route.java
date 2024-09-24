@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -107,7 +106,7 @@ public class Route {
      */
     @Nonnull
     public List<String> getNodeIds() {
-        return Collections.unmodifiableList(getNodes().stream().map(Node::getId).collect(Collectors.toList()));
+        return getNodes().stream().map(Node::getId).toList();
     }
 
     /**
@@ -129,7 +128,7 @@ public class Route {
      */
     @Nonnull
     public List<String> getConnectionIds() {
-        return Collections.unmodifiableList(getConnections().stream().map(Connection::getId).collect(Collectors.toList()));
+        return getConnections().stream().map(Connection::getId).toList();
     }
 
 }

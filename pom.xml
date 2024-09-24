@@ -82,7 +82,7 @@
     <properties>
         <mosaic.version>25.0-SNAPSHOT</mosaic.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceTarget>11</project.build.sourceTarget>
+        <project.build.sourceTarget>17</project.build.sourceTarget>
         <skip.coverage>true</skip.coverage>
         <skip.javadoc>true</skip.javadoc>
         <version.commons-cli>1.6.0</version.commons-cli><!-- 1.6. is approved in #11339 -->
@@ -562,7 +562,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.5.0</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -619,7 +619,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>3.1.12.2</version>
+                <version>4.2.3</version>
                 <configuration>
                     <excludeFilterFile>${parent.dir}/spotbugs-excludes.xml</excludeFilterFile>
                 </configuration>

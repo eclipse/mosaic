@@ -55,9 +55,8 @@ public class MosaicInteractionHandlingApp
 
     @Override
     public void onInteractionReceived(ApplicationInteraction applicationInteraction) {
-        if (applicationInteraction instanceof MyInteraction) {
-            final MyInteraction myMessage = (MyInteraction) applicationInteraction;
-            getLog().infoSimTime(this, "MosaicInteractionHandlingApp received MyInteraction: {}", myMessage.getContent());
+        if (applicationInteraction instanceof MyInteraction myInteraction) {
+            getLog().infoSimTime(this, "MosaicInteractionHandlingApp received MyInteraction: {}", myInteraction.getContent());
         }
     }
 

@@ -207,6 +207,6 @@ public class QuickHull2d {
     public static ArrayList<Vector3d> computeConvexHull(ArrayList<Vector3d> points) {
         QuickHull2d qh = new QuickHull2d(points);
         qh.computeConvexHull();
-        return qh.hullPoints;
+        return new ArrayList<>(qh.hullPoints);
     }
 }
