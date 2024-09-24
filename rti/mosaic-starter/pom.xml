@@ -178,6 +178,22 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <!-- copy mosaic-output/.../web to tools/web -->
+                     <execution>
+                        <id>copy-resources-web-visualizer</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/tools/web</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.basedir}/fed/mosaic-output/src/main/resources/web</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                     <!-- copy runtime.xml, hosts.json, and logback.xml from mosaic-bundle to target/classes/etc/* -->
                     <execution>
                         <id>copy-resources-etc</id>
