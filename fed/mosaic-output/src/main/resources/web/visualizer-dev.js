@@ -108,13 +108,11 @@ const Vehicle = {
   timeStateChange: 0,
   state: {},
 
-  init(name, latitude, longitude) {
+  init(name) {
     this.name = name
-    this.latitude = latitude
-    this.longitude = longitude
     this.marker = new Feature({
       type: 'vehicle',
-      geometry: new Point(fromLonLat([ longitude, latitude ]))
+      geometry: undefined
     })
     this.marker.setProperties(['name', 'unit'])
     this.marker.set('name', name)
@@ -153,7 +151,9 @@ const Vehicle = {
    */
   updateView() {
     // Location
-    this.marker.setGeometry(new Point(fromLonLat([ this.longitude, this.latitude ])))
+    if (this.latitude !== undefined && this.longitude !== undefined) {
+        this.marker.setGeometry(new Point(fromLonLat([ this.longitude, this.latitude ])))
+    }
 
     // Update style
     const style = this.createStyle()
@@ -300,12 +300,6 @@ const map = (function() {
   let vehicles = {}
 
   /**
-   * Stores wheather a vehicle is equipped with an application.
-   * Map<vehicleName: string, isEquipped: boolean>
-   */
-  let equippedVehicles = {}
-
-  /**
    * Stores all RSUs.
    * Map<rsuName: string, rsu: Rsu>
    */
@@ -366,17 +360,12 @@ const map = (function() {
    * @param {number} latitude Latitude value of the geo position
    * @param {number} longitude Longitude value of the geo position
    */
-  function createVehicle(vehicleName, latitude, longitude) {
-    if (!vehicles[vehicleName]) { 
+  function addVehicle(vehicleName, equipped) {
+    if (!vehicles[vehicleName]) {
       vehicles[vehicleName] = Object.assign({}, Vehicle)
-      vehicles[vehicleName].init(vehicleName, latitude, longitude)
-      vehicles[vehicleName].setIsEquipped(equippedVehicles[vehicleName] ? true : false)
+      vehicles[vehicleName].init(vehicleName)
+      vehicles[vehicleName].setIsEquipped(equipped)
       addMarker(vehicles[vehicleName].getMarker())
-      if (isCentered == false){
-        ol_map.getView().setCenter(fromLonLat([ longitude, latitude ]));
-        ol_map.getView().setZoom(18);
-        isCentered = true;
-      }
     }
   }
 
@@ -413,18 +402,6 @@ const map = (function() {
   }
 
   /**
-   * Registers a vehicle.
-   * @param {string}  vehicleName Name of the vehicle
-   * @param {boolean} equipped true if vehicle is equipped with an application
-   */
-  function registerVehicle(vehicleName, equipped) {
-    equippedVehicles[vehicleName] = equipped
-    if (vehicles[vehicleName]) {
-      vehicles[vehicleName].setIsEquipped(equipped)
-    }
-  }
-
-  /**
    * Updates the state of a unit.
    * @param {string} unitName Name of the unit to update
    * @param {string} state Name of the state
@@ -450,7 +427,12 @@ const map = (function() {
     if (vehicles[vehicleName]) {
       vehicles[vehicleName].setLocation(latitude, longitude) 
     } else {
-      createVehicle(vehicleName, latitude, longitude)
+      console.error("Try to set location for non-existing vehicle", vehicleName)
+    }
+    if (isCentered == false){
+      ol_map.getView().setCenter(fromLonLat([ longitude, latitude ]));
+      ol_map.getView().setZoom(18);
+      isCentered = true;
     }
   }
 
@@ -496,7 +478,6 @@ const map = (function() {
    */
   function removeAllUnits() {
     vehicles = {}
-    equippedVehicles = {}
     rsus = {}
     vectorLayer.getSource().clear()
   }
@@ -505,9 +486,9 @@ const map = (function() {
   return {
     setUnitState,
     setVehiclePosition,
+    addVehicle,
     addRsu,
     addTrafficLight,
-    registerVehicle,
     updateViews,
     removeUnit,
     removeAllUnits,
@@ -623,7 +604,7 @@ const WebSocketClient = (function() {
         // determine if vehicle is equipped with an application
         let equipped = data.VehicleRegistration.vehicleMapping.applications.length > 0;
         
-        map.registerVehicle(data.VehicleRegistration.vehicleMapping.name, equipped)
+        map.addVehicle(data.VehicleRegistration.vehicleMapping.name, equipped)
       } else if (data.V2xMessageTransmission) {
         // Mark vehicles that are sending right now
         unitName = data.V2xMessageTransmission.message.routing.source.sourceName
