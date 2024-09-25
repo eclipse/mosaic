@@ -106,9 +106,10 @@ const Vehicle = {
   longitude: 0,
   marker: null,
   timeStateChange: 0,
+  vehicleClass: null,
   state: {},
 
-  init(name) {
+  init(name, vClass) {
     this.name = name
     this.marker = new Feature({
       type: 'vehicle',
@@ -117,6 +118,7 @@ const Vehicle = {
     this.marker.setProperties(['name', 'unit'])
     this.marker.set('name', name)
     this.marker.set('unit', this)
+    this.vehicleClass = vClass
     this.state = {
       equipped: false,
       sending: false,
@@ -172,21 +174,24 @@ const Vehicle = {
    * Creates the style of the vehicle marker based on the vehicles state.
    */
   createStyle() {
-    let style = 'vehicle'
-    if (this.state.equipped) {
-      style = 'vehicle-equipped'
-    }
-    if (this.state.parking) {
-      style = 'vehicle-parking'
-    }
-    if (this.state.charging) {
-      style = 'vehicle-charging'
-    }
-    if (this.state.sending) {
-      style = 'vehicle-sending'
-    }
-    if (this.state.receiving) {
-      style = 'vehicle-receiving'
+    let style = 'unknown'
+    if (this.vehicleClass === 'Car') {
+      style = 'car'
+      if (this.state.equipped) {
+        style = 'car-equipped'
+      }
+      if (this.state.parking) {
+        style = 'car-parking'
+      }
+      if (this.state.charging) {
+        style = 'car-charging'
+      }
+      if (this.state.sending) {
+        style = 'car-sending'
+      }
+      if (this.state.receiving) {
+        style = 'car-receiving'
+      }
     }
     return new Style({
       image: new Icon({
@@ -360,10 +365,10 @@ const map = (function() {
    * @param {number} latitude Latitude value of the geo position
    * @param {number} longitude Longitude value of the geo position
    */
-  function addVehicle(vehicleName, equipped) {
+  function addVehicle(vehicleName, vehicleClass, equipped) {
     if (!vehicles[vehicleName]) {
       vehicles[vehicleName] = Object.assign({}, Vehicle)
-      vehicles[vehicleName].init(vehicleName)
+      vehicles[vehicleName].init(vehicleName, vehicleClass)
       vehicles[vehicleName].setIsEquipped(equipped)
       addMarker(vehicles[vehicleName].getMarker())
     }
@@ -603,8 +608,8 @@ const WebSocketClient = (function() {
       } else if (data.VehicleRegistration) {
         // determine if vehicle is equipped with an application
         let equipped = data.VehicleRegistration.vehicleMapping.applications.length > 0;
-        
-        map.addVehicle(data.VehicleRegistration.vehicleMapping.name, equipped)
+        let vClass = data.VehicleRegistration.vehicleMapping.vehicleType.vehicleClass;
+        map.addVehicle(data.VehicleRegistration.vehicleMapping.name, vClass, equipped)
       } else if (data.V2xMessageTransmission) {
         // Mark vehicles that are sending right now
         unitName = data.V2xMessageTransmission.message.routing.source.sourceName
