@@ -69,7 +69,6 @@ const Rsu = {
       // Clear sending/receiving states
       this.state.sending = false
       this.state.receiving =  false
-      this.timeStateChange = 0
     }
 
   },
@@ -165,7 +164,6 @@ const Vehicle = {
       // Clear sending/receiving states
       this.state.sending = false
       this.state.receiving =  false
-      this.timeStateChange = 0
     }
 
   },
@@ -287,7 +285,6 @@ const TrafficLight = {
       // Clear sending/receiving states
       this.state.sending = false
       this.state.receiving =  false
-      this.timeStateChange = 0
     }
   },
 
