@@ -13,18 +13,6 @@ spec:
     - cat
     tty: true
     volumeMounts:
-    - name: m2-repo
-      mountPath: /home/jenkins/.m2/repository
-    resources:
-      limits:
-        memory: "2Gi"
-        cpu: "1"
-      requests:
-        memory: "2Gi"
-        cpu: "1"    
-  - name: jnlp
-    image: 'eclipsecbijenkins/basic-agent:3107.v665000b_51092'
-    volumeMounts:
     - mountPath: "/home/jenkins/.m2/settings-security.xml"
       name: "settings-security-xml"
       readOnly: true
@@ -44,7 +32,7 @@ spec:
         cpu: "1"
       requests:
         memory: "2Gi"
-        cpu: "1"
+        cpu: "1"    
   volumes:
   - name: "settings-security-xml"
     secret:
@@ -134,17 +122,10 @@ spec:
                 branch 'main'
             }
             steps {
-                container('jnlp') {
+                container('maven-sumo') {
                     // sometimes this fails for unknown reason, so lets try it three times
                     retry(3) {
-                        // it's not possible to deploy from the maven-sumo container, as there's something wrong in
-                        // finding .m2/settings.xml and .m2/repository even if mounted. executing mvn -X prints
-                        // some weird paths:
-                        // > [DEBUG] Reading user settings from ?/.m2/settings.xml
-                        // which makes it impossible to mount the correct settings.xml
-                        // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
-                        // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
-                        sh '/opt/tools/apache-maven/3.6.3/bin/mvn install -DskipTests'
+                        // requires the correct tool finding secrets
                         sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
                     }
                 }
