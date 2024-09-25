@@ -193,6 +193,29 @@ const Vehicle = {
         style = 'car-receiving'
       }
     }
+    else if (this.vehicleClass === 'PublicTransportVehicle') {
+      style = 'bus'
+      if (this.state.equipped) {
+        style = 'bus-equipped'
+      }
+      if (this.state.sending) {
+        style = 'bus-sending'
+      }
+      if (this.state.receiving) {
+        style = 'bus-receiving'
+      }
+    } else if (this.vehicleClass === 'Bicycle') {
+      style = 'bicycle'
+      if (this.state.equipped) {
+        style = 'bicycle-equipped'
+      }
+      if (this.state.sending) {
+        style = 'bicycle-sending'
+      }
+      if (this.state.receiving) {
+        style = 'bicycle-receiving'
+      }
+    }
     return new Style({
       image: new Icon({
         anchor: [0.5, 1],
