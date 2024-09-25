@@ -18,6 +18,8 @@ package org.eclipse.mosaic.fed.application.ambassador;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentSensor;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Sensible;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.communication.V2xMessageRemoval;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
@@ -277,7 +279,7 @@ public enum SimulationKernel {
     /**
      * Registers a new route to the simulation kernel.
      *
-     * @param id the id of the route
+     * @param id    the id of the route
      * @param route the {@link VehicleRoute} to register
      */
     public void registerRoute(String id, VehicleRoute route) {
@@ -348,7 +350,10 @@ public enum SimulationKernel {
         }
         // clean past environment events
         for (AbstractSimulationUnit simulationUnit : UnitSimulator.UnitSimulator.getAllUnits().values()) {
-            simulationUnit.cleanPastEnvironmentEvents();
+            if (simulationUnit instanceof Sensible sensible &&
+                    sensible.getSensorModule().getEnvironmentSensor() instanceof EnvironmentSensor environmentSensor) {
+                environmentSensor.cleanPastEnvironmentEvents();
+            }
         }
 
         // is the garbage collection enabled?

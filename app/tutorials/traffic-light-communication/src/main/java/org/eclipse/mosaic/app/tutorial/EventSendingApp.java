@@ -27,7 +27,6 @@ import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
-import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -56,11 +55,6 @@ public class EventSendingApp extends AbstractApplication<VehicleOperatingSystem>
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
         final List<? extends Application> applications = getOs().getApplications();
         final IntraVehicleMsg message = new IntraVehicleMsg(getOs().getId(), getRandom().nextInt(0, MAX_ID));
-
-        // Example usage for how to detect sensor readings
-        if (getOs().getStateOfEnvironmentSensor(SensorType.OBSTACLE) > 0) {
-            getLog().infoSimTime(this, "Reading sensor");
-        }
 
         for (Application application : applications) {
             final Event event = new Event(getOs().getSimulationTime() + 10, application, message);

@@ -22,10 +22,12 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagemen
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.DefaultSensorModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentSensor;
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficSignAwareApplication;
-import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Sensible;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
@@ -510,11 +512,11 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     /**
      * This function does not directly fire an event, but puts it in a environmentEvents-map (see {@link AbstractSimulationUnit}).
-     * Use {@link OperatingSystem#getStateOfEnvironmentSensor} to determine the state of a Sensor. Keep in mind, that
+     * Use {@link DefaultSensorModule#getEnvironmentSensor()} to to determine the state of a Sensor. Keep in mind, that
      * the map only stores the latest {@link EnvironmentEvent} of a specific type and overwrites old values.
      * <p>Events will not directly be removed from the map, but since events are mapped to their type, there
-     * can't be more members than there are SensorType's. Nonetheless, the map can be cleared using
-     * {@link AbstractSimulationUnit#cleanPastEnvironmentEvents()}, which is also invoked by {@link SimulationKernel#garbageCollection()}.
+     * can't be more members than there are SensorType's. Nonetheless, the map is cleared using
+     * {@link EnvironmentSensor#cleanPastEnvironmentEvents()}, which is invoked by {@link SimulationKernel#garbageCollection()}.
      * </p>
      *
      * @param environmentSensorUpdates the Interaction of type EnvironmentSensorUpdates to be processed
@@ -523,7 +525,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         // store the sensor data immediately, the sensor event hold their intermittent time
         final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(environmentSensorUpdates.getUnitId());
         // we don't simulate vehicles without an application
-        if (simulationUnit == null) {
+        if (!(simulationUnit instanceof Sensible)) {
             return;
         }
         for (EnvironmentEvent event : environmentSensorUpdates.getEvents()) {

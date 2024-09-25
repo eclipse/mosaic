@@ -77,12 +77,7 @@ public interface OperatingSystem {
         return getSimulationTime() / TIME.MILLI_SECOND;
     }
 
-    /**
-     * Returns The state of the supplied sensor.
-     *
-     * @param type The {@link SensorType} type to use.
-     * @return Strength of the measured environment sensor data.
-     */
+    @Deprecated
     int getStateOfEnvironmentSensor(SensorType type);
 
     /**
@@ -98,7 +93,6 @@ public interface OperatingSystem {
      * Send a byte array message to SUMO TraCI.
      *
      * @param command Byte array containing SUMO TraCI message.
-     *
      * @return a identifier which can be used to match incoming TraCI command response
      */
     String sendSumoTraciRequest(byte[] command);

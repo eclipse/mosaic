@@ -26,8 +26,11 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameter
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.DefaultSensorModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentSensor;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.sensor.EnvironmentSensorData;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
@@ -66,6 +69,9 @@ public class WeatherWarningAppTest {
     @Mock
     private AdHocModule adHocModuleMock;
 
+    @Mock
+    private DefaultSensorModule sensorModuleMock;
+
     @Before
     public void setup() {
         when(operatingSystem.getAdHocModule()).thenReturn(adHocModuleMock);
@@ -74,6 +80,11 @@ public class WeatherWarningAppTest {
                 mock(VehicleParameters.VehicleParametersChangeRequest.class);
         when(operatingSystem.requestVehicleParametersUpdate()).thenReturn(vehicleParametersChangeRequestMock);
         when(vehicleParametersChangeRequestMock.changeColor(any())).thenReturn(vehicleParametersChangeRequestMock);
+
+        // everytime a mock returns a mock a unicorn dies. I count 3 dead unicorns.
+        when(operatingSystem.getSensorModule()).thenReturn(sensorModuleMock);
+        when(sensorModuleMock.getEnvironmentSensor()).thenReturn(mock(EnvironmentSensor.class));
+        when(sensorModuleMock.getEnvironmentSensor().getSensorData()).thenReturn(mock(EnvironmentSensorData.class));
     }
 
     @Test
@@ -116,7 +127,7 @@ public class WeatherWarningAppTest {
     }
 
     private void setSensor(SensorType sensorType, int value) {
-        when(operatingSystem.getStateOfEnvironmentSensor(same(sensorType))).thenReturn(value);
+        when(operatingSystem.getSensorModule().getEnvironmentSensor().getSensorData().strengthOf(same(sensorType))).thenReturn(value);
     }
 
     private void setupMessageRouting() {

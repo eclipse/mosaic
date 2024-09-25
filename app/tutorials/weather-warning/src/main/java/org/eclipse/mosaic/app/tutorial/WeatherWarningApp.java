@@ -84,6 +84,8 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             getLog().infoSimTime(this, "Activated AdHoc Module");
         }
 
+        getOs().getSensorModule().getEnvironmentSensor().enable();
+
         getOs().requestVehicleParametersUpdate()
                 .changeColor(Color.RED)
                 .apply();
@@ -137,28 +139,19 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
      * This method is used to request new data from the sensors and, in case of new data, react on it.
      */
     private void detectSensors() {
-        // Enumeration of possible environment sensor types that are available in a vehicle
-        SensorType[] types = SensorType.values();
-
-        // Initialize sensor type
-        SensorType type = null;
-        // Initialize sensor strength
-        int strength = 0;
-
         /*
          * The current strength of each environment sensor is examined here.
          * If one is higher than zero, we reason that we are in a hazardous area with the
          * given hazard.
          */
-        for (SensorType currentType : types) {
+        for (SensorType currentType : SensorType.values()) {
 
             // The strength of a detected sensor
-            strength = getOs().getStateOfEnvironmentSensor(currentType);
+            int strength = getOs().getSensorModule().getEnvironmentSensor().getSensorData().strengthOf(currentType);
 
             if (strength > 0) {
-                type = currentType;
                 // Method which is called to react on new or changed environment events
-                reactOnEnvironmentData(type, strength);
+                reactOnEnvironmentData(currentType, strength);
                 return;
             }
         }

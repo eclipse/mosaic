@@ -23,6 +23,8 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CommunicationModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.DefaultSensorModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentSensor;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassNameParser;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassSubsetIterator;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLoggerImpl;
@@ -31,6 +33,7 @@ import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.sensor.SensorModule;
 import org.eclipse.mosaic.interactions.application.ItefLogging;
 import org.eclipse.mosaic.interactions.application.SumoTraciRequest;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
@@ -57,14 +60,9 @@ import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
@@ -98,17 +96,10 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     private final EventInterceptor eventInterceptor;
 
-    /**
-     * Environment sensor data.
-     */
-    private final Map<SensorType, EnvironmentEvent> environmentEvents = new HashMap<>();
 
     private final AdHocModule adhocModule;
-
-    /**
-     * The {@link AbstractSimulationUnit}s cell module.
-     */
     private final CellModule cellModule;
+    private final SensorModule sensorModule;
 
     /**
      * User defined tagged value for the next CAM.
@@ -131,6 +122,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         AtomicInteger messageSequenceNumberGenerator = new AtomicInteger();
         this.adhocModule = new AdHocModule(this, messageSequenceNumberGenerator, getOsLog());
         this.cellModule = new CellModule(this, messageSequenceNumberGenerator, getOsLog());
+        this.sensorModule = new DefaultSensorModule();
         this.initialPosition = initialPosition;
     }
 
@@ -397,50 +389,15 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     }
 
-    public EnvironmentEvent putEnvironmentEvent(SensorType type, EnvironmentEvent environmentEvent) {
-        return environmentEvents.put(type, environmentEvent);
-    }
-
-    /**
-     * The events are mapped into a map on the type. With multiple events to a
-     * same type, the last event is always taken. However, it should be part of
-     * good form to delete the event you no longer need to save some memory.
-     */
-    public final void cleanPastEnvironmentEvents() {
-        // first, create a set to collect all sensor types, which should be deleted.
-        Set<SensorType> toRemove = new HashSet<>();
-
-        for (Entry<SensorType, EnvironmentEvent> entrySet : environmentEvents.entrySet()) {
-            SensorType type = entrySet.getKey();
-            EnvironmentEvent environmentEvent = entrySet.getValue();
-            // Is the event end time before the current simulation time?
-            if (environmentEvent.until < SimulationKernel.SimulationKernel.getCurrentSimulationTime()) {
-                // yes, mark the type to remove the event
-                toRemove.add(type);
-            }
+    public void putEnvironmentEvent(SensorType type, EnvironmentEvent environmentEvent) {
+        if (sensorModule.getEnvironmentSensor() instanceof EnvironmentSensor environmentSensor) {
+            environmentSensor.addEnvironmentEvent(type, environmentEvent);
         }
-        // all events checked, now remove all the marked events
-        for (SensorType toRemoveType : toRemove) {
-            environmentEvents.remove(toRemoveType);
-        }
-        // the map should be clean now
     }
 
     @Override
     public final int getStateOfEnvironmentSensor(SensorType type) {
-        EnvironmentEvent event = environmentEvents.get(type);
-        // If an event of this type in the map yet?
-        if (event != null) {
-            // Is the event time window available at this simulation time?
-            if (
-                    event.from <= SimulationKernel.SimulationKernel.getCurrentSimulationTime()
-                            && event.until >= SimulationKernel.SimulationKernel.getCurrentSimulationTime()
-            ) {
-                return event.strength;
-            }
-        }
-
-        return 0;
+        return sensorModule.getEnvironmentSensor().getSensorData().strengthOf(type);
     }
 
     @Override
@@ -465,12 +422,16 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         return tmp;
     }
 
-    public AdHocModule getAdHocModule() {
-        return this.adhocModule;
+    public final AdHocModule getAdHocModule() {
+        return adhocModule;
     }
 
     public final CellModule getCellModule() {
-        return this.cellModule;
+        return cellModule;
+    }
+
+    public final SensorModule getSensorModule() {
+        return sensorModule;
     }
 
     void setRequiredOperatingSystem(Class<? extends OperatingSystem> operatingSystemCheck) {
@@ -484,7 +445,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     @Override
     public <A extends Application> Iterable<A> getApplicationsIterator(final Class<A> applicationClass) {
-        return new Iterable<A>() {
+        return new Iterable<>() {
 
             @Nonnull
             @Override

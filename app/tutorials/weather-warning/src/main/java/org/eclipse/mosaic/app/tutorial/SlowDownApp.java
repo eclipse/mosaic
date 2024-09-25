@@ -16,15 +16,11 @@
 package org.eclipse.mosaic.app.tutorial;
 
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
-import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.sensor.EnvironmentSensorData;
 import org.eclipse.mosaic.lib.enums.SensorType;
-import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * This application shall induce vehicles to slow down in hazardous environments.
@@ -35,22 +31,19 @@ import javax.annotation.Nullable;
  * within a specified time frame. After the respective vehicle has left the dangerous
  * zone, its speed will no longer be reduced.
  */
-public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
+public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> {
 
     private final static float SPEED = 25 / 3.6f;
 
     private boolean hazardousArea = false;
 
-    /**
-     * This method is used to request new data from the sensors and in that case
-     * react on the retrieved data.
-     * It is called at each simulation step when the vehicle info has been updated for
-     * the vehicle that has this application equipped.
-     */
     @Override
-    public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
+    public void onStartup() {
+        getOs().getSensorModule().getEnvironmentSensor().enable();
+        getOs().getSensorModule().getEnvironmentSensor().reactOnSensorDataUpdate(this::onEnvironmentSensorUpdate);
+    }
 
-        // Enumeration of possible environment sensor types that are available in a vehicle
+    private void onEnvironmentSensorUpdate(EnvironmentSensorData environmentSensorData) {
         SensorType[] types = SensorType.values();
 
         // Initialize sensor strength
@@ -63,7 +56,7 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
          */
         for (SensorType currentType : types) {
             // The strength of a detected sensor
-            strength = getOs().getStateOfEnvironmentSensor(currentType);
+            strength = environmentSensorData.strengthOf(currentType);
 
             if (strength > 0) {
                 break;
@@ -81,16 +74,10 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
             getOs().resetSpeed();
             hazardousArea = false;
         }
-
     }
 
     @Override
     public void processEvent(Event event) throws Exception {
-
-    }
-
-    @Override
-    public void onStartup() {
 
     }
 

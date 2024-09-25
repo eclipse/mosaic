@@ -109,15 +109,13 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
         final GeoCircle geoCircle = new GeoCircle(HAZARD_LOCATION, 3000.0D);
         final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
 
-        final int strength = getOs().getStateOfEnvironmentSensor(SENSOR_TYPE);
-
         return new Denm(routing,
                 new DenmContent(
                         getOs().getSimulationTime(),
                         null,
                         HAZARD_ROAD,
                         SENSOR_TYPE,
-                        strength,
+                        0,
                         SPEED,
                         0.0f,
                         HAZARD_LOCATION,
