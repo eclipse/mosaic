@@ -652,8 +652,10 @@ const WebSocketClient = (function() {
                 unitName = data.TrafficLightRegistration.trafficLightMapping.name
                 let position = data.TrafficLightRegistration.trafficLightMapping.position
                 let equipped = data.TrafficLightRegistration.trafficLightMapping.applications.length > 0;
-                map.addTrafficLight(unitName, position.latitude, position.longitude, equipped)
-                updatedUnits.push(unitName)
+                if (equipped) {
+                    map.addTrafficLight(unitName, position.latitude, position.longitude, equipped)
+                    updatedUnits.push(unitName)
+                }
             }
 
             // Update markers of updated units
