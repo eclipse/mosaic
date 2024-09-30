@@ -57,7 +57,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
     /**
      * Flag that is set if the route has already been changed.
      */
-    private boolean routeChanged = false;
+    private boolean triedToChangeRoute = false;
 
     /**
      * This is the speed for the DEN message sent for rerouting.
@@ -120,8 +120,8 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
 
         getLog().debug("Handle Environment Warning Message. Processing...");
 
-        if (routeChanged) {
-            getLog().infoSimTime(this, "Route already changed");
+        if (triedToChangeRoute) {
+            getLog().infoSimTime(this, "Route change already tried once.");
         } else {
             reactUponDENMessageChangeRoute(denm);
         }
@@ -262,7 +262,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
                 getLog().infoSimTime(this, "The event occurred on connection with id={}, which is part of vehicle's route with id={}", connection, routeInfo.getId());
 
                 circumnavigateAffectedRoad(denm, affectedConnectionId);
-                routeChanged = true;
+                triedToChangeRoute = true;
                 return;
             }
         }
