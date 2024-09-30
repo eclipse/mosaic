@@ -48,7 +48,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
     /**
      * Save the last received DEN message for relaying.
      */
-    private Denm lastMessage = null;
+    private Denm lastReceivedMessage = null;
 
 
     /**
@@ -86,7 +86,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      * and thus the DENM is sent periodically at this interval.
      */
     private void sample() {
-        if (lastMessage == null) {
+        if (lastReceivedMessage == null) {
             getLog().infoSimTime(this, "No warning present.");
         } else {
             final Denm denm = constructDenm();
@@ -109,20 +109,20 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      * @return The constructed DENM
      */
     private Denm constructDenm() {
-        final GeoCircle geoCircle = new GeoCircle(lastMessage.getEventLocation(), 3000.0D);
+        final GeoCircle geoCircle = new GeoCircle(lastReceivedMessage.getEventLocation(), 3000.0D);
         final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
         return new Denm(routing,
                 new DenmContent(
-                        lastMessage.getTime(),
-                        lastMessage.getSenderPosition(),
-                        lastMessage.getEventRoadId(),
-                        lastMessage.getWarningType(),
-                        lastMessage.getEventStrength(),
-                        lastMessage.getCausedSpeed(),
-                        lastMessage.getSenderDeceleration(),
-                        lastMessage.getEventLocation(),
-                        lastMessage.getEventArea(),
-                        lastMessage.getExtendedContainer()
+                        lastReceivedMessage.getTime(),
+                        lastReceivedMessage.getSenderPosition(),
+                        lastReceivedMessage.getEventRoadId(),
+                        lastReceivedMessage.getWarningType(),
+                        lastReceivedMessage.getEventStrength(),
+                        lastReceivedMessage.getCausedSpeed(),
+                        lastReceivedMessage.getSenderDeceleration(),
+                        lastReceivedMessage.getEventLocation(),
+                        lastReceivedMessage.getEventArea(),
+                        lastReceivedMessage.getExtendedContainer()
                 ),
                 200
         );
@@ -140,11 +140,11 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
             getLog().infoSimTime(this, "Ignoring message of type: {}", msg.getSimpleClassName());
             return;
         }
-        lastMessage = (Denm) msg;
-        getLog().debugSimTime(this, "DENM content: Sensor Type: {}", lastMessage.getWarningType().toString());
-        getLog().debugSimTime(this, "DENM content: Event position: {}", lastMessage.getEventLocation());
-        getLog().debugSimTime(this, "DENM content: Event Strength: {}", lastMessage.getEventStrength());
-        getLog().debugSimTime(this, "DENM content: Road Id of the Sender: {}", lastMessage.getEventRoadId());
+        lastReceivedMessage = (Denm) msg;
+        getLog().debugSimTime(this, "DENM content: Sensor Type: {}", lastReceivedMessage.getWarningType().toString());
+        getLog().debugSimTime(this, "DENM content: Event position: {}", lastReceivedMessage.getEventLocation());
+        getLog().debugSimTime(this, "DENM content: Event Strength: {}", lastReceivedMessage.getEventStrength());
+        getLog().debugSimTime(this, "DENM content: Road Id of the Sender: {}", lastReceivedMessage.getEventRoadId());
     }
 
     @Override
