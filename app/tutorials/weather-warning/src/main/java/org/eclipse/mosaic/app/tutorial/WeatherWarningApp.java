@@ -108,9 +108,12 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             return;
         }
 
-        // Message was received via cell from the WeatherServer
         if (msg.getRouting().getSource().getSourceName().equals("server_0")) {
-            getLog().infoSimTime(this, "Received message from cell from WeatherServer");
+            // Message was received via cell from the WeatherServer
+            getLog().infoSimTime(this, "Received message over cell from WeatherServer");
+        }
+        else {
+            getLog().infoSimTime(this, "Received message from {}", msg.getRouting().getSource().getSourceName());
         }
 
         getLog().infoSimTime(this, "Processing DEN message");
@@ -210,7 +213,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          * with a builder and build a geoBroadCast for the circle area defined in dest.
          */
         if (useCellNetwork()) {
-            mr = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(dest);
+            mr = getOs().getCellModule().createMessageRouting().topoCast("server_0");
         } else {
             mr = getOs().getAdHocModule().createMessageRouting().geoBroadCast(dest);
         }

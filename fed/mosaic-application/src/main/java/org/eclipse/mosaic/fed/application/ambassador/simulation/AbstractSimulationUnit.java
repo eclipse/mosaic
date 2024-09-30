@@ -427,7 +427,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
     }
 
     @Override
-    public final int getStateOfEnvironmentSensor(SensorType type) {
+    public int getStateOfEnvironmentSensor(SensorType type) {
         EnvironmentEvent event = environmentEvents.get(type);
         // If an event of this type in the map yet?
         if (event != null) {
