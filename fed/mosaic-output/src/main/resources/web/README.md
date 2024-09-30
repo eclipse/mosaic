@@ -6,7 +6,7 @@ Only NodeJS (https://nodejs.org/en/download/)
 
 ## Install Development Requirements
 
-Change to the visualizr directory:  
+Change to the visualizer directory:  
 `cd <MOSAIC_SOURCE>/fed/mosaic-output/src/main/resources/web`
 
 Install required modules for development and deployment (defined in package.json):  
@@ -28,16 +28,15 @@ Please use following colors: \
 grey `6d6d6d` \
 black `080808` \
 green `23ff23` \
-red `ff1c1c` \
+red `ff1c1c`
 
 
 ## Building visualizer.js
 
-To deploy your changes you have two possibilites:  
+To deploy your changes you have three possibilities:  
 1. Creating a readable version with `npm run-script build`.
-2. Creating a non-readable version with `npm run-script buildUgly`. This version is loaded faster by the browser.
-
-To debug your changes create `visualizer.js` with the command `npm run-script debug`.
+2. Creating a non-readable version with `npm run-script buildUgly`. This version is loaded faster by the browser. Use this command for the final version of your MR, otherwise the compiled files will be blown-up in size.
+3. To debug your changes create `visualizer.js` with the command `npm run-script debug`.
 This will add debugging information to `visualizer.js` which will be parsed by a modern browser,
 such that you backtrack error to individual javascript files using the browser's developer tools.
 
