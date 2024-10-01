@@ -55,7 +55,7 @@ ns3_version="3.36.1"
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
 premake5_tar="$(basename "$premake5_url")"
 premake5_autoconf_url="https://github.com/Blizzard/premake-autoconf/archive/master.zip"
-premake5_autoconf_zip="$(basename "$premake5_autoconf_url")"
+premake5_autoconf_zip="premake-autoconf-$(basename "$premake5_autoconf_url")"
 ns3_version_affix="ns-allinone-$ns3_version"
 ns3_version_affix_unified="ns-allinone" #deprecated, not used momentarily
 ns3_short_affix="ns-$ns3_version"
@@ -73,7 +73,7 @@ ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/tag
 ns3_url="https://www.nsnam.org/releases/$ns3_version_affix.tar.bz2"
 
 ###### more automatic parameters #########
-ns3_federate_filename="$(basename "$ns3_federate_url")"
+ns3_federate_filename="ns3-federate-$(basename "$ns3_federate_url")"
 ns3_filename="$(basename "$ns3_url")"
 
 temporary_files=""
@@ -261,19 +261,28 @@ ask_dependencies()
 ################### Downloading and installing ##########
 
 download() {
-   if [ ! -f "$(basename "$1")" ]; then
-      basen=$(basename "$1")
+   if [ "$#" -eq 1 ]; then
+      # basename of url and downloaded file have to be identical
+      filename=$(basename "$1")
+      url=$1
+   fi
+   if [ "$#" -eq 2 ]; then
+      filename=$(basename "$1")
+      url=$2
+   fi
+
+   if [ ! -f "$filename" ]; then
       if has wget; then
-         wget --no-check-certificate -q "$1" || fail "The download URL seems to have changed. File not found: "$1"";
-         temporary_files="$temporary_files $basen"
+         wget --no-check-certificate -q "$url" || fail "The download URL seems to have changed. File not found: "$url"";
+         temporary_files="$temporary_files $filename"
       elif has curl; then
-         curl -s -O "$1" || fail "The download URL seems to have changed. File not found: "$1"";
-         temporary_files="$temporary_files $basen"
+         curl -s -O "$url" || fail "The download URL seems to have changed. File not found: "$url"";
+         temporary_files="$temporary_files $filename"
       else
-         fail "Can't download "$1".";
+         fail "Can't download "$url".";
       fi
    else
-      warn "File $(basename "$1") already exists. Skipping download."
+      warn "File $filename already exists. Skipping download."
    fi
 }
 
@@ -281,7 +290,7 @@ download_premake5() {
    log "Downloading premake5 from ${premake5_url}..."
    download "$premake5_url"
    log "Downloading premake-autoconf from ${premake5_autoconf_url}..."
-   download "$premake5_autoconf_url"
+   download "$premake5_autoconf_zip" "$premake5_autoconf_url"
 }
 
 
@@ -300,7 +309,7 @@ download_federate() {
       return
    fi
    log "Downloading federate from "$ns3_federate_url"..."
-   download "$ns3_federate_url"
+   download "$ns3_federate_filename" "$ns3_federate_url"
 }
 
 extract_ns3()
