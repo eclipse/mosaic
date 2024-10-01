@@ -121,7 +121,7 @@ public class VehicleRoute implements Serializable {
 
     @Override
     public String toString() {
-        return "Route{" + "id=" + routeId + ", connetions=" + connectionIds + ", nodes=" + nodeIds + ", length=" + length + '}';
+        return "Route{" + "id=" + routeId + ", connections=" + connectionIds + ", nodes=" + nodeIds + ", length=" + length + '}';
     }
 
     @Override

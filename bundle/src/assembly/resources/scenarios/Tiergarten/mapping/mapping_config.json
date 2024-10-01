@@ -3,6 +3,7 @@
         {
             "name": "Car",
             "applications": [
+                "org.eclipse.mosaic.app.tutorial.MessageReceivingApp",
                 "org.eclipse.mosaic.app.tutorial.EventSendingApp",
                 "org.eclipse.mosaic.app.tutorial.EventProcessingApp"
             ],
