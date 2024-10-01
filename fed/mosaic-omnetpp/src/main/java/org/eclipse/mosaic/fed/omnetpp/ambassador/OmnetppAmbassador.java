@@ -59,10 +59,9 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
             case WINDOWS:
             case UNKNOWN:
             default:
-                log.error("Operating system not supported");
-                break;
+                log.error("Operating system not supported by omnetpp");
+                throw new RuntimeException("Operating system not supported by omnetpp");
         }
-        return new NopFederateExecutor();
     }
 
     @Override
