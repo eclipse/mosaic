@@ -45,7 +45,8 @@ arg_federate_file=""
 arg_integration_testing=false
 arg_make_parallel=""
 
-required_programs=( python3 gcc unzip tar )
+required_programs_display=( python3 gcc unzip tar protobuf-compiler )
+required_programs_test=( python3 gcc unzip tar protoc )
 required_libraries=( "libprotobuf-dev >= 3.7.0" "libxml2-dev" "libsqlite3-dev" )
 
 ####### configurable parameters ##########
@@ -243,7 +244,7 @@ ask_dependencies()
         log "${bold}${cyan} $lib ${restore}"
       done
       log "\n${bold}Programs:${restore}"
-      for prog in "${required_programs[@]}"; do
+      for prog in "${required_programs_display[@]}"; do
         log "${bold}${cyan} $prog ${restore}"
       done
       printf "\n[y/n] "
@@ -482,7 +483,7 @@ print_info
 ask_dependencies
 
 log "Preparing installation..."
-check_required_programs "${required_programs[*]}"
+check_required_programs "${required_programs_test[*]}"
 check_directory
 
 download_ns3
