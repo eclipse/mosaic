@@ -110,7 +110,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
                 belongingUnit.getOsLog().info(
                         "NavigationModule#switchRoute: Switched to route {} [{}]",
                         route.getId(),
-                        StringUtils.join(route.getNodeIds(), ",")
+                        StringUtils.join(route.getConnectionIds(), ",")
                 );
             } else if (route != null) {
                 belongingUnit.getOsLog().info("NavigationModule#switchRoute: Stay on route {}", route.getId());
