@@ -56,7 +56,7 @@ ns3_version="3.36.1"
 premake5_url="https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-linux.tar.gz"
 premake5_tar="$(basename "$premake5_url")"
 premake5_autoconf_url="https://github.com/Blizzard/premake-autoconf/archive/master.zip"
-premake5_autoconf_zip="premake-autoconf-$(basename "$premake5_autoconf_url")"
+premake5_autoconf_zip="$(basename "$premake5_autoconf_url")"
 ns3_version_affix="ns-allinone-$ns3_version"
 ns3_version_affix_unified="ns-allinone" #deprecated, not used momentarily
 ns3_short_affix="ns-$ns3_version"
@@ -291,7 +291,7 @@ download_premake5() {
    log "Downloading premake5 from ${premake5_url}..."
    download "$premake5_url"
    log "Downloading premake-autoconf from ${premake5_autoconf_url}..."
-   download "$premake5_autoconf_zip" "$premake5_autoconf_url"
+   download "$premake5_autoconf_url"
 }
 
 
@@ -310,7 +310,7 @@ download_federate() {
       return
    fi
    log "Downloading federate from "$ns3_federate_url"..."
-   download "$ns3_federate_filename" "$ns3_federate_url"
+   download "$ns3_federate_url"
 }
 
 extract_ns3()
@@ -326,18 +326,16 @@ extract_ns3()
 
 extract_ns3_federate()
 {
-    arg1="$1"
-
     if [ -d "./federate" ]; then
         fail "Directory federate in "." already exists.";
     fi
 
     temporary_files="$temporary_files federate"
 
-    unzip --qq -o "$arg1"
+    unzip --qq -o "$(basename "$ns3_federate_url")"
     # The archive should have contained the folder "ns3-federate-xxx".
     # Rename it to "federate":
-    mv $(basename -s .zip $arg1) federate
+    mv $(basename -s .zip $ns3_federate_filename) federate
 }
 
 extract_premake() {
@@ -495,8 +493,8 @@ download_premake5
 log "Extracting "$ns3_filename"..."
 extract_ns3 "$ns3_filename" .
 
-log "Extracting "$ns3_federate_filename"..."
-extract_ns3_federate "$ns3_federate_filename"
+log "Extracting "$(basename "$ns3_federate_url")"..."
+extract_ns3_federate
 
 extract_premake
 
