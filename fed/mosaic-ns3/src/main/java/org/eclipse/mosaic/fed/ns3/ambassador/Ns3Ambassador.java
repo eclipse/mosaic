@@ -54,10 +54,9 @@ public class Ns3Ambassador extends AbstractNetworkAmbassador {
             case WINDOWS:
             case UNKNOWN:
             default:
-                log.error("Operating system not supported");
-                break;
+                log.error("Operating system not supported by ns3");
+                throw new RuntimeException("Operating system not supported by ns3");
         }
-        return new NopFederateExecutor();
     }
 
     @Override

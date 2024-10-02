@@ -82,6 +82,7 @@
             <subscription id="V2xMessageTransmission" enabled="true"/>
             <subscription id="VehicleRegistration" enabled="true"/>
             <subscription id="RsuRegistration" enabled="true"/>
+            <subscription id="TrafficLightRegistration" enabled="true"/>
         </subscriptions>
     </output>
 

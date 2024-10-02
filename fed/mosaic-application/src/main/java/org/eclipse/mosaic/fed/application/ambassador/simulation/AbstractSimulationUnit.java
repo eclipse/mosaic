@@ -396,7 +396,7 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
     }
 
     @Override
-    public final int getStateOfEnvironmentSensor(SensorType type) {
+    public int getStateOfEnvironmentSensor(SensorType type) {
         return sensorModule.getEnvironmentSensor().getSensorData().strengthOf(type);
     }
 

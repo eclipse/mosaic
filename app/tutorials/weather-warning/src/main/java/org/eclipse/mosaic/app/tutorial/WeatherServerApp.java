@@ -15,12 +15,18 @@
 
 package org.eclipse.mosaic.app.tutorial;
 
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
+import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
+import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
+import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.DenmContent;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
@@ -31,25 +37,18 @@ import org.eclipse.mosaic.rti.TIME;
  * about certain hazards on the road. The hazard is hard-coded for tutorial purposes,
  * in more realistic scenarios the location would've been updated dynamically.
  */
-public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem> {
+public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem> implements CommunicationApplication {
 
     /**
-     * Send hazard location at this interval, in seconds.
+     * Send warning at this interval, in seconds.
      */
     private final static long INTERVAL = 2 * TIME.SECOND;
 
-    /**
-     * Location of the hazard which causes the route change.
-     */
-    private final static GeoPoint HAZARD_LOCATION = GeoPoint.latLon(52.633047, 13.565314);
 
     /**
-     * Road ID where hazard is located.
+     * Save the last received DEN message for relaying.
      */
-    private final static String HAZARD_ROAD = "311964536_1313885442_2879911873";
-
-    private final static SensorType SENSOR_TYPE = SensorType.ICE;
-    private final static float SPEED = 25 / 3.6f;
+    private Denm lastReceivedMessage = null;
 
 
     /**
@@ -87,10 +86,14 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      * and thus the DENM is sent periodically at this interval.
      */
     private void sample() {
-        final Denm denm = constructDenm(); // Construct exemplary DENM
-
-        getOs().getCellModule().sendV2xMessage(denm);
-        getLog().infoSimTime(this, "Sent DENM");
+        if (lastReceivedMessage == null) {
+            getLog().infoSimTime(this, "No warning present.");
+        } else {
+            final Denm denm = constructDenm();
+            getLog().debugSimTime(this, "{}", denm);
+            getOs().getCellModule().sendV2xMessage(denm);
+            getLog().infoSimTime(this, "Relayed last DENM");
+        }
         // Line up new event for periodic sending
         getOs().getEventManager().addEvent(
                 getOs().getSimulationTime() + INTERVAL, this
@@ -106,24 +109,57 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      * @return The constructed DENM
      */
     private Denm constructDenm() {
-        final GeoCircle geoCircle = new GeoCircle(HAZARD_LOCATION, 3000.0D);
+        final GeoCircle geoCircle = new GeoCircle(lastReceivedMessage.getEventLocation(), 3000.0D);
         final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
-
         return new Denm(routing,
                 new DenmContent(
-                        getOs().getSimulationTime(),
-                        null,
-                        HAZARD_ROAD,
-                        SENSOR_TYPE,
-                        0,
-                        SPEED,
-                        0.0f,
-                        HAZARD_LOCATION,
-                        null,
-                        null
+                        lastReceivedMessage.getTime(),
+                        lastReceivedMessage.getSenderPosition(),
+                        lastReceivedMessage.getEventRoadId(),
+                        lastReceivedMessage.getWarningType(),
+                        lastReceivedMessage.getEventStrength(),
+                        lastReceivedMessage.getCausedSpeed(),
+                        lastReceivedMessage.getSenderDeceleration(),
+                        lastReceivedMessage.getEventLocation(),
+                        lastReceivedMessage.getEventArea(),
+                        lastReceivedMessage.getExtendedContainer()
                 ),
                 200
         );
+    }
+
+    @Override
+    public void onMessageReceived(ReceivedV2xMessage receivedV2xMessage) {
+        final V2xMessage msg = receivedV2xMessage.getMessage();
+        getLog().infoSimTime(this, "Received {} from {}.",
+                msg.getSimpleClassName(),
+                msg.getRouting().getSource().getSourceName()
+        );
+        // Only DEN Messages are handled
+        if (!(msg instanceof Denm)) {
+            getLog().infoSimTime(this, "Ignoring message of type: {}", msg.getSimpleClassName());
+            return;
+        }
+        lastReceivedMessage = (Denm) msg;
+        getLog().debugSimTime(this, "DENM content: Sensor Type: {}", lastReceivedMessage.getWarningType().toString());
+        getLog().debugSimTime(this, "DENM content: Event position: {}", lastReceivedMessage.getEventLocation());
+        getLog().debugSimTime(this, "DENM content: Event Strength: {}", lastReceivedMessage.getEventStrength());
+        getLog().debugSimTime(this, "DENM content: Road Id of the Sender: {}", lastReceivedMessage.getEventRoadId());
+    }
+
+    @Override
+    public void onAcknowledgementReceived(ReceivedAcknowledgement acknowledgement) {
+
+    }
+
+    @Override
+    public void onCamBuilding(CamBuilder camBuilder) {
+
+    }
+
+    @Override
+    public void onMessageTransmitted(V2xMessageTransmission v2xMessageTransmission) {
+
     }
 
     /**
@@ -131,7 +167,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      */
     @Override
     public void onShutdown() {
-        getLog().infoSimTime(this, "Shutdown application");
+        getLog().infoSimTime(this, "Shutdown server.");
     }
 
 }
