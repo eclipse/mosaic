@@ -15,12 +15,21 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os.modules;
 
-import org.eclipse.mosaic.fed.application.app.api.sensor.SensorModule;
+import org.eclipse.mosaic.fed.application.app.api.sensor.BasicSensorModule;
+import org.eclipse.mosaic.fed.application.app.api.sensor.LidarSensorModule;
+import org.eclipse.mosaic.lib.enums.SensorType;
 
 public interface Sensible {
 
     /**
-     * Returns a {@link SensorModule} which provides access to different sensors, such as a sensor for environmental events.
+     * Returns a basic sensor module which provides single integer values for given {@link SensorType}s.
+     * Can be used, e.g., to detect preconfigured icy roads, or rainy areas in conjunction with the mosaic-environment simulator.
      */
-    SensorModule getSensorModule();
+    BasicSensorModule getBasicSensorModule();
+
+    /**
+     * Returns a LiDAR sensor module which provides complex 3D {@link org.eclipse.mosaic.lib.spatial.PointCloud} data.
+     * To be able to retrieve such data, a sensor model must be provided by a coupled simulator, such as PHABMACS or Carla.
+     */
+    LidarSensorModule getLidarSensorModule();
 }

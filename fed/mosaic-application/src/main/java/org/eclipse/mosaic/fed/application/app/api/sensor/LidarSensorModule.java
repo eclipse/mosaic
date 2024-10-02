@@ -17,19 +17,16 @@ package org.eclipse.mosaic.fed.application.app.api.sensor;
 
 import org.eclipse.mosaic.lib.spatial.PointCloud;
 
-public interface SensorModule {
+public interface LidarSensorModule {
+
+    void enable(double range);
+
+    boolean isEnabled();
+
+    void disable();
 
     /**
-     * Return a LiDAR sensor which is able to sense {@link PointCloud} objects. LIDAR sensor data
-     * is currently only published by vehicle simulators PHABMACS or CARLA.
+     * Returns the most recent {@link PointCloud} measured by this sensor.
      */
-    Sensor<PointCloud> getLidarSensor();
-
-    /**
-     * Returns a sensor which is able to sense environmental events, such as ice on the road,
-     * or fog. Environmental events are currently published by the environmental simulator bundled
-     * with MOSAIC.
-     */
-    Sensor<EnvironmentSensorData> getEnvironmentSensor();
-
+    PointCloud getPointCloud();
 }

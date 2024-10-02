@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.fed.application.app.api.Application;
-import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -76,9 +75,6 @@ public interface OperatingSystem {
     default long getSimulationTimeMs() {
         return getSimulationTime() / TIME.MILLI_SECOND;
     }
-
-    @Deprecated
-    int getStateOfEnvironmentSensor(SensorType type);
 
     /**
      * Send a log tuple for the ITEF visualizer.

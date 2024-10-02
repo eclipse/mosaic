@@ -23,8 +23,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CommunicationModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.DefaultSensorModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentSensor;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassNameParser;
 import org.eclipse.mosaic.fed.application.ambassador.util.ClassSubsetIterator;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLoggerImpl;
@@ -33,14 +31,11 @@ import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem;
-import org.eclipse.mosaic.fed.application.app.api.sensor.SensorModule;
 import org.eclipse.mosaic.interactions.application.ItefLogging;
 import org.eclipse.mosaic.interactions.application.SumoTraciRequest;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
@@ -99,7 +94,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     private final AdHocModule adhocModule;
     private final CellModule cellModule;
-    private final SensorModule sensorModule;
 
     /**
      * User defined tagged value for the next CAM.
@@ -122,7 +116,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
         AtomicInteger messageSequenceNumberGenerator = new AtomicInteger();
         this.adhocModule = new AdHocModule(this, messageSequenceNumberGenerator, getOsLog());
         this.cellModule = new CellModule(this, messageSequenceNumberGenerator, getOsLog());
-        this.sensorModule = new DefaultSensorModule();
         this.initialPosition = initialPosition;
     }
 
@@ -389,17 +382,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     }
 
-    public void putEnvironmentEvent(SensorType type, EnvironmentEvent environmentEvent) {
-        if (sensorModule.getEnvironmentSensor() instanceof EnvironmentSensor environmentSensor) {
-            environmentSensor.addEnvironmentEvent(type, environmentEvent);
-        }
-    }
-
-    @Override
-    public int getStateOfEnvironmentSensor(SensorType type) {
-        return sensorModule.getEnvironmentSensor().getSensorData().strengthOf(type);
-    }
-
     @Override
     public void triggerOnSendMessage(V2xMessageTransmission messageTransmission) {
         for (CommunicationApplication application : getApplicationsIterator(CommunicationApplication.class)) {
@@ -428,10 +410,6 @@ public abstract class AbstractSimulationUnit implements EventProcessor, Operatin
 
     public final CellModule getCellModule() {
         return cellModule;
-    }
-
-    public final SensorModule getSensorModule() {
-        return sensorModule;
     }
 
     void setRequiredOperatingSystem(Class<? extends OperatingSystem> operatingSystemCheck) {

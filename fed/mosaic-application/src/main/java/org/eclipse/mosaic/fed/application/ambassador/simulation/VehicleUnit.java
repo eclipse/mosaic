@@ -24,10 +24,13 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoadP
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.fed.application.app.api.sensor.BasicSensorModule;
+import org.eclipse.mosaic.fed.application.app.api.sensor.LidarSensorModule;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
@@ -64,6 +67,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     private final PerceptionModule<SimplePerceptionConfiguration> perceptionModule;
 
     @Nonnull
+    private final BasicSensorModule basicSensorModule;
+
+    @Nonnull
     private VehicleParameters vehicleParameters;
 
     /**
@@ -92,6 +98,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
             perceptionModule = new NopPerceptionModule(this, database, getOsLog());
         }
 
+        basicSensorModule = new EnvironmentBasicSensorModule();
     }
 
     @Override
@@ -367,5 +374,15 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     @Override
     public PerceptionModule<SimplePerceptionConfiguration> getPerceptionModule() {
         return perceptionModule;
+    }
+
+    @Override
+    public BasicSensorModule getBasicSensorModule() {
+        return basicSensorModule;
+    }
+
+    @Override
+    public LidarSensorModule getLidarSensorModule() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

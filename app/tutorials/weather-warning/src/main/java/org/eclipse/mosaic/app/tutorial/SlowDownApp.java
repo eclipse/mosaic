@@ -16,11 +16,15 @@
 package org.eclipse.mosaic.app.tutorial;
 
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
+import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.api.sensor.EnvironmentSensorData;
 import org.eclipse.mosaic.lib.enums.SensorType;
+import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This application shall induce vehicles to slow down in hazardous environments.
@@ -31,7 +35,7 @@ import org.eclipse.mosaic.rti.TIME;
  * within a specified time frame. After the respective vehicle has left the dangerous
  * zone, its speed will no longer be reduced.
  */
-public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> {
+public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> implements VehicleApplication {
 
     private final static float SPEED = 25 / 3.6f;
 
@@ -39,11 +43,11 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> {
 
     @Override
     public void onStartup() {
-        getOs().getSensorModule().getEnvironmentSensor().enable();
-        getOs().getSensorModule().getEnvironmentSensor().reactOnSensorDataUpdate(this::onEnvironmentSensorUpdate);
+        getOs().getBasicSensorModule().enable();
     }
 
-    private void onEnvironmentSensorUpdate(EnvironmentSensorData environmentSensorData) {
+    @Override
+    public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
         SensorType[] types = SensorType.values();
 
         // Initialize sensor strength
@@ -56,7 +60,7 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> {
          */
         for (SensorType currentType : types) {
             // The strength of a detected sensor
-            strength = environmentSensorData.strengthOf(currentType);
+            strength = getOs().getBasicSensorModule().getStrengthOf(currentType);
 
             if (strength > 0) {
                 break;

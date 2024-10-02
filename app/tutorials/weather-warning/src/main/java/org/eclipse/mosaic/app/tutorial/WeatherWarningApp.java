@@ -84,7 +84,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             getLog().infoSimTime(this, "Activated AdHoc Module");
         }
 
-        getOs().getSensorModule().getEnvironmentSensor().enable();
+        getOs().getBasicSensorModule().enable();
 
         getOs().requestVehicleParametersUpdate()
                 .changeColor(Color.RED)
@@ -150,7 +150,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         for (SensorType currentType : SensorType.values()) {
 
             // The strength of a detected sensor
-            int strength = getOs().getSensorModule().getEnvironmentSensor().getSensorData().strengthOf(currentType);
+            int strength = getOs().getBasicSensorModule().getStrengthOf(currentType);
 
             if (strength > 0) {
                 // Method which is called to react on new or changed environment events

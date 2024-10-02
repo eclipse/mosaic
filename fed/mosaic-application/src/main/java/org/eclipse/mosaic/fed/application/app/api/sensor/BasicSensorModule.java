@@ -17,7 +17,16 @@ package org.eclipse.mosaic.fed.application.app.api.sensor;
 
 import org.eclipse.mosaic.lib.enums.SensorType;
 
-public interface EnvironmentSensorData {
+/**
+ * A basic sensor module which provides single integer values for a given {@link SensorType}.
+ */
+public interface BasicSensorModule {
+
+    void enable();
+
+    boolean isEnabled();
+
+    void disable();
 
     /**
      * Returns the state (as strength) of the supplied environment {@link SensorType}.
@@ -25,5 +34,5 @@ public interface EnvironmentSensorData {
      * @param sensorType The {@link SensorType} type to use.
      * @return Strength of the measured environment sensor data.
      */
-    int strengthOf(SensorType sensorType);
+    int getStrengthOf(SensorType sensorType);
 }
