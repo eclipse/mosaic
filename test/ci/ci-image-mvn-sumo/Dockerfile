@@ -1,4 +1,4 @@
-FROM maven:3.6.3-adoptopenjdk-11
+FROM maven:3.9.9-eclipse-temurin-17
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER_NAME=jenkins

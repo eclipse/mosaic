@@ -45,7 +45,8 @@ arg_federate_file=""
 arg_integration_testing=false
 arg_make_parallel=""
 
-required_programs=( python3 gcc unzip tar )
+required_programs_display=( python3 gcc unzip tar protobuf-compiler )
+required_programs_test=( python3 gcc unzip tar protoc )
 required_libraries=( "libprotobuf-dev >= 3.7.0" "libxml2-dev" "libsqlite3-dev" )
 
 ####### configurable parameters ##########
@@ -69,11 +70,11 @@ ns3_scratch="${ns3_simulator_folder}/scratch"
 ns3_source="${ns3_simulator_folder}/src"
 
 ####### semi automatic parameters ########
-ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/tags/24.0.zip"
+ns3_federate_url="https://github.com/mosaic-addons/ns3-federate/archive/refs/tags/24.1.zip"
 ns3_url="https://www.nsnam.org/releases/$ns3_version_affix.tar.bz2"
 
 ###### more automatic parameters #########
-ns3_federate_filename="$(basename "$ns3_federate_url")"
+ns3_federate_filename="ns3-federate-$(basename "$ns3_federate_url")"
 ns3_filename="$(basename "$ns3_url")"
 
 temporary_files=""
@@ -111,8 +112,8 @@ get_arguments() {
           -d|--no-deploy)
               arg_deploy=false
               ;;
-          -p|--gen-protobuf)
-              arg_regen_protobuf=true
+          -p|--skip-gen-protobuf)
+              arg_regen_protobuf=false
               ;;
           -f|--federate)
               arg_federate_file="$2"
@@ -243,7 +244,7 @@ ask_dependencies()
         log "${bold}${cyan} $lib ${restore}"
       done
       log "\n${bold}Programs:${restore}"
-      for prog in "${required_programs[@]}"; do
+      for prog in "${required_programs_display[@]}"; do
         log "${bold}${cyan} $prog ${restore}"
       done
       printf "\n[y/n] "
@@ -261,19 +262,28 @@ ask_dependencies()
 ################### Downloading and installing ##########
 
 download() {
-   if [ ! -f "$(basename "$1")" ]; then
-      basen=$(basename "$1")
+   if [ "$#" -eq 1 ]; then
+      # basename of url and downloaded file have to be identical
+      filename=$(basename "$1")
+      url=$1
+   fi
+   if [ "$#" -eq 2 ]; then
+      filename=$(basename "$1")
+      url=$2
+   fi
+
+   if [ ! -f "$filename" ]; then
       if has wget; then
-         wget --no-check-certificate -q "$1" || fail "The download URL seems to have changed. File not found: "$1"";
-         temporary_files="$temporary_files $basen"
+         wget --no-check-certificate -q "$url" || fail "The server is not reachable or the download URL has changed. File not found: "$url"";
+         temporary_files="$temporary_files $filename"
       elif has curl; then
-         curl -s -O "$1" || fail "The download URL seems to have changed. File not found: "$1"";
-         temporary_files="$temporary_files $basen"
+         curl -s -O "$url" || fail "The server is not reachable or the download URL has changed. File not found: "$url"";
+         temporary_files="$temporary_files $filename"
       else
-         fail "Can't download "$1".";
+         fail "Can't download "$url".";
       fi
    else
-      warn "File $(basename "$1") already exists. Skipping download."
+      warn "File $filename already exists. Skipping download."
    fi
 }
 
@@ -316,18 +326,16 @@ extract_ns3()
 
 extract_ns3_federate()
 {
-    arg1="$1"
-
     if [ -d "./federate" ]; then
         fail "Directory federate in "." already exists.";
     fi
 
     temporary_files="$temporary_files federate"
 
-    unzip --qq -o "$arg1"
+    unzip --qq -o "$(basename "$ns3_federate_url")"
     # The archive should have contained the folder "ns3-federate-xxx".
     # Rename it to "federate":
-    mv ns3-federate-* federate
+    mv $(basename -s .zip $ns3_federate_filename) federate
 }
 
 extract_premake() {
@@ -367,18 +375,18 @@ build_ns3()
   cd ${current_dir}/federate
   mv src/ClientServerChannel.h .
   mv src/ClientServerChannel.cc .
-  if [ -f src/ClientServerChannelMessages.pb.h ]; then
-    rm src/ClientServerChannelMessages.pb.h
-  fi
-  if [ -f src/ClientServerChannelMessages.pb.cc ]; then
-    rm src/ClientServerChannelMessages.pb.cc
-  fi
 
   # adjust build instruction to cover scrambled files
   sed -i -e "s|/usr/local|.|" premake5.lua
   sed -i -e "s|\"/usr/include\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/include\"|" premake5.lua
   sed -i -e "s|\"/usr/lib\"|\"../ns-allinone-${ns3_version}/ns-${ns3_version}/build/lib\"|" premake5.lua
   if [ "${arg_regen_protobuf}" == "true" ]; then
+     if [ -f src/ClientServerChannelMessages.pb.h ]; then
+       rm src/ClientServerChannelMessages.pb.h
+     fi
+     if [ -f src/ClientServerChannelMessages.pb.cc ]; then
+       rm src/ClientServerChannelMessages.pb.cc
+     fi
     ./premake5 gmake --generate-protobuf --install
   else
     ./premake5 gmake --install
@@ -473,7 +481,7 @@ print_info
 ask_dependencies
 
 log "Preparing installation..."
-check_required_programs "${required_programs[*]}"
+check_required_programs "${required_programs_test[*]}"
 check_directory
 
 download_ns3
@@ -485,8 +493,8 @@ download_premake5
 log "Extracting "$ns3_filename"..."
 extract_ns3 "$ns3_filename" .
 
-log "Extracting "$ns3_federate_filename"..."
-extract_ns3_federate "$ns3_federate_filename"
+log "Extracting "$(basename "$ns3_federate_url")"..."
+extract_ns3_federate
 
 extract_premake
 

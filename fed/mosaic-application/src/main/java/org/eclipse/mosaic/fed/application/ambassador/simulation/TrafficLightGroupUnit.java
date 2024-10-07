@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -102,8 +101,8 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
             throw new RuntimeException(ErrorRegister.TRAFFIC_LIGHT_NoEventResource.toString());
         }
 
-        if (resource instanceof TrafficLightGroupInfo) {
-            onTrafficLightUpdate((TrafficLightGroupInfo) resource);
+        if (resource instanceof TrafficLightGroupInfo data) {
+            onTrafficLightUpdate(data);
         } else {
             getOsLog().error("Unknown event resource: {}", event);
             throw new RuntimeException(ErrorRegister.TRAFFIC_LIGHT_UnknownEvent.toString());
@@ -174,7 +173,7 @@ public class TrafficLightGroupUnit extends AbstractSimulationUnit implements Tra
     public Collection<TrafficLightState> getSignalSequence(String trafficLightProgramId, int trafficLightId) {
         List<TrafficLightProgram> result = getAllPrograms().stream()
                 .filter(program -> program.getProgramId().equals(trafficLightProgramId))
-                .collect(Collectors.toList());
+                .toList();
         if (!result.isEmpty()) {
             return result.get(0).getSignalSequence(trafficLightId);
         }

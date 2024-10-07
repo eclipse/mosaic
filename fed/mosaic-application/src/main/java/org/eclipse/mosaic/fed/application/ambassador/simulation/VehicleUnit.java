@@ -81,9 +81,8 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         navigationModule.setCurrentPosition(initialPosition);
 
         Database database = null;
-        if (SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting() instanceof DatabaseRouting) {
-            database = ((DatabaseRouting) SimulationKernel.SimulationKernel
-                    .getCentralNavigationComponent().getRouting()).getScenarioDatabase();
+        if (SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting() instanceof DatabaseRouting dbRouting) {
+            database = dbRouting.getScenarioDatabase();
         }
 
         if (SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getTrafficObjectIndex() != null) {
@@ -149,8 +148,8 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     protected boolean handleEventResource(Object resource, long eventType) {
-        if (resource instanceof VehicleData) {
-            updateVehicleInfo((VehicleData) resource);
+        if (resource instanceof VehicleData data) {
+            updateVehicleInfo(data);
             return true;
         }
         if (resource instanceof BatteryData) {

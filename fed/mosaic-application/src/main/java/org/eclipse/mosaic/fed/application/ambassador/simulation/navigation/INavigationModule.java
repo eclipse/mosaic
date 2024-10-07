@@ -164,4 +164,14 @@ public interface INavigationModule {
      * @return the closest {@link IRoadPosition}
      */
     IRoadPosition getClosestRoadPosition(GeoPoint geoPoint);
+
+    /**
+     * Returns the road position, which is closest to the given {@link GeoPoint}.
+     * If two adjacent edges overlap, the heading will be used as a similarity measure.
+     *
+     * @param geoPoint The geographical location to search a road position for.
+     * @param heading  used as a measure of similarity if multiple edges match
+     * @return The road position, which is closest to the given location.
+     */
+    IRoadPosition getClosestRoadPosition(GeoPoint geoPoint, double heading);
 }

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This class is to be extended by all classes, that are supposed to
@@ -56,7 +55,7 @@ abstract class UnitSpawner {
     UnitSpawner(List<String> applications, String prototypeName, String group) {
         if (applications != null) {
             // add all applications, remove the ones that are null
-            this.applications.addAll(applications.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+            this.applications.addAll(applications.stream().filter(Objects::nonNull).toList());
         }
         this.prototypeName = prototypeName;
         this.group = group;
@@ -94,7 +93,7 @@ abstract class UnitSpawner {
 
         if (applications.isEmpty() && prototypeConfiguration.applications != null) {
             // inherit applications from prototype, dismiss all applications set as null
-            applications.addAll(prototypeConfiguration.applications.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+            applications.addAll(prototypeConfiguration.applications.stream().filter(Objects::nonNull).toList());
         }
 
         // No group name given, try to use the CPrototype group name

@@ -21,7 +21,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Represents a traffic speed sign.
@@ -109,7 +108,7 @@ public class TrafficSignSpeed extends TrafficSign<SpeedLimit> {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

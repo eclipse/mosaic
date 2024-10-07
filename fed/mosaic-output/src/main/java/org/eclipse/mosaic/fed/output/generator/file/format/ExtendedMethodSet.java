@@ -40,16 +40,16 @@ public class ExtendedMethodSet {
 
     static public Object getType(V2xMessageTransmission interaction) {
         V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
-        if (message instanceof GenericV2xMessage) {
-            return ((GenericV2xMessage) message).getMessageType();
+        if (message instanceof GenericV2xMessage genericV2xMessage) {
+            return genericV2xMessage.getMessageType();
         }
         return message.getSimpleClassName();
     }
 
     static public Object getType(V2xMessageReception interaction) {
         V2xMessage message = Objects.requireNonNull(V2X_MESSAGES.get(interaction.getMessageId()));
-        if (message instanceof GenericV2xMessage) {
-            return ((GenericV2xMessage) message).getMessageType();
+        if (message instanceof GenericV2xMessage genericV2xMessage) {
+            return genericV2xMessage.getMessageType();
         }
         return message.getSimpleClassName();
     }

@@ -30,7 +30,6 @@ import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser.Nearest;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Provides a spatial index for regions. This enables a fast lookup of all regions which
@@ -52,7 +51,7 @@ public class RegionsIndex {
                 regions.stream()
                         .filter(region -> region.getCapoArea() != null)
                         .map(MobileNetworkPropertiesWrapper::new)
-                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 

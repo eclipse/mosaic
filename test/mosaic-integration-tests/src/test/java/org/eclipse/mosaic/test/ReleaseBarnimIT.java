@@ -53,8 +53,8 @@ public class ReleaseBarnimIT {
         assertEquals(36,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Request to switch to new route for vehicle .*")
         );
-        // 14 adhoc vehicles + 12 cell vehicles
-        assertEquals(26,
+        // 14 adhoc vehicles + 10 cell vehicles
+        assertEquals(24,
                 LogAssert.count(simulationRule, "Navigation.log", ".*Change to route [2-9] for vehicle .*")
         );
     }

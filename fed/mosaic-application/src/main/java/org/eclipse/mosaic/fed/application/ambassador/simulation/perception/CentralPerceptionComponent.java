@@ -25,6 +25,7 @@ import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.routing.Routing;
+import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Iterables;
@@ -94,10 +95,10 @@ public class CentralPerceptionComponent {
             if (configuration.trafficLightIndex != null) {
                 indexBuilder.withTrafficLightIndex(configuration.trafficLightIndex.create());
             }
-            if (routing instanceof Database) {
-                Database dbRouting = (Database) routing;
-                if (!dbRouting.getBuildings().isEmpty() && configuration.wallIndex != null) {
-                    indexBuilder.withWallIndex(configuration.wallIndex.create(), (Database) routing);
+            if (routing instanceof DatabaseRouting dbRouting) {
+                Database database = dbRouting.getScenarioDatabase();
+                if (!database.getBuildings().isEmpty() && configuration.wallIndex != null) {
+                    indexBuilder.withWallIndex(configuration.wallIndex.create(), database);
                 }
             }
             trafficObjectIndex = indexBuilder.build();

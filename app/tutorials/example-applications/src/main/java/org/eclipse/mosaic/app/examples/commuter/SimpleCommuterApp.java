@@ -131,8 +131,8 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
      */
     @Override
     public void processEvent(Event event) {
-        if (event instanceof DriveBackEvent) {
-            driveBack((DriveBackEvent) event);
+        if (event instanceof DriveBackEvent driveBackEvent) {
+            driveBack(driveBackEvent);
         }
     }
 

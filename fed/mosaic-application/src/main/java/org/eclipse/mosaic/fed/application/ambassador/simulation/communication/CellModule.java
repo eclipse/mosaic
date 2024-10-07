@@ -114,17 +114,15 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
         }
 
         CellModuleConfiguration.CellCamConfiguration camConfiguration = configuration.getCamConfiguration();
-        switch (camConfiguration.getAddressingMode()) {
-            case CELL_TOPOCAST:
-                return sendCamViaTopocast(camConfiguration);
-            case CELL_GEOCAST:
-                return sendCamViaGeoBroadcast(camConfiguration);
-            case CELL_GEOCAST_MBMS:
-                return sendCamViaGeoBroadcastMbms(camConfiguration);
-            default:
+        return switch (camConfiguration.getAddressingMode()) {
+            case CELL_TOPOCAST -> sendCamViaTopocast(camConfiguration);
+            case CELL_GEOCAST -> sendCamViaGeoBroadcast(camConfiguration);
+            case CELL_GEOCAST_MBMS -> sendCamViaGeoBroadcastMbms(camConfiguration);
+            default -> {
                 log.warn("sendCam: Unsupported addressing mode {}.", camConfiguration.getAddressingMode());
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     private Integer sendCamViaTopocast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
@@ -132,18 +130,18 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     }
 
     private Integer sendCamViaGeoBroadcast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
-        if (!(getOwner() instanceof Locatable)) {
+        if (!(getOwner() instanceof Locatable locatable)) {
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
-        final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
+        final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
         return super.sendCam(createMessageRouting().geoBroadcastBasedOnUnicast(destination));
     }
 
     private Integer sendCamViaGeoBroadcastMbms(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
-        if (!(getOwner() instanceof Locatable)) {
+        if (!(getOwner() instanceof Locatable locatable)) {
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
-        final GeoCircle destination = new GeoCircle(((Locatable) getOwner()).getPosition(), camConfiguration.getGeoRadius());
+        final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
         return super.sendCam(createMessageRouting().geoBroadcastMbms(destination));
     }
 

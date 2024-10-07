@@ -57,7 +57,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
     /**
      * Flag that is set if the route has already been changed.
      */
-    private boolean routeChanged = false;
+    private boolean triedToChangeRoute = false;
 
     /**
      * This is the speed for the DEN message sent for rerouting.
@@ -103,23 +103,25 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         final V2xMessage msg = receivedV2xMessage.getMessage();
 
         // Only DEN Messages are handled
-        if (!(msg instanceof Denm)) {
+        if (!(msg instanceof Denm denm)) {
             getLog().infoSimTime(this, "Ignoring message of type: {}", msg.getSimpleClassName());
             return;
         }
 
-        // Message was received via cell from the WeatherServer
         if (msg.getRouting().getSource().getSourceName().equals("server_0")) {
-            getLog().infoSimTime(this, "Received message from cell from WeatherServer");
+            // Message was received via cell from the WeatherServer
+            getLog().infoSimTime(this, "Received message over cell from WeatherServer");
+        }
+        else {
+            getLog().infoSimTime(this, "Received message from {}", msg.getRouting().getSource().getSourceName());
         }
 
-        final Denm denm = (Denm) msg;
         getLog().infoSimTime(this, "Processing DEN message");
 
         getLog().debug("Handle Environment Warning Message. Processing...");
 
-        if (routeChanged) {
-            getLog().infoSimTime(this, "Route already changed");
+        if (triedToChangeRoute) {
+            getLog().infoSimTime(this, "Route change already tried once.");
         } else {
             reactUponDENMessageChangeRoute(denm);
         }
@@ -160,7 +162,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
                 type = currentType;
                 // Method which is called to react on new or changed environment events
                 reactOnEnvironmentData(type, strength);
-                return;
+                return; // the early exit discards other possible environmental warnings, ok for this tutorial purpose
             }
         }
 
@@ -211,7 +213,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          * with a builder and build a geoBroadCast for the circle area defined in dest.
          */
         if (useCellNetwork()) {
-            mr = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(dest);
+            mr = getOs().getCellModule().createMessageRouting().topoCast("server_0");
         } else {
             mr = getOs().getAdHocModule().createMessageRouting().geoBroadCast(dest);
         }
@@ -257,10 +259,10 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
             // Retrieve only the connection id and throw away the edge id
             // NOTE: a route info id has the format connectionId_edgeId
             if (connection.equals(affectedConnectionId)) {
-                getLog().infoSimTime(this, "The Event is on the vehicle's route {} = {}", connection, affectedConnectionId);
+                getLog().infoSimTime(this, "The event occurred on connection with id={}, which is part of vehicle's route with id={}", connection, routeInfo.getId());
 
                 circumnavigateAffectedRoad(denm, affectedConnectionId);
-                routeChanged = true;
+                triedToChangeRoute = true;
                 return;
             }
         }
@@ -298,7 +300,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          */
         CandidateRoute newRoute = response.getBestRoute();
         if (newRoute != null) {
-            getLog().infoSimTime(this, "Sending Change Route Command at position: {}", denm.getSenderPosition());
+            getLog().infoSimTime(this, "Sending Change Route Command at position: {}", getOs().getPosition());
             navigationModule.switchRoute(newRoute);
         }
     }

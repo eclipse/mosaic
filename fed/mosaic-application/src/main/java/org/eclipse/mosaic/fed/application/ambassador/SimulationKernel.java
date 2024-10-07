@@ -335,8 +335,7 @@ public enum SimulationKernel {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         for (Logger logger : context.getLoggerList()) {
             Appender<ILoggingEvent> appender = logger.getAppender("ApplicationLog");
-            if (appender instanceof FileAppender) {
-                FileAppender<?> fileAppender = ((FileAppender<?>) appender);
+            if (appender instanceof FileAppender<?> fileAppender) {
                 return new File(fileAppender.getFile()).toPath().getParent();
             }
         }

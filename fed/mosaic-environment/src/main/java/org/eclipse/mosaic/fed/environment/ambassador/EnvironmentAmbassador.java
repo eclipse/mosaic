@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Main class for the environment simulator that emits events to vehicles that lie in their
@@ -165,7 +164,7 @@ public class EnvironmentAmbassador extends AbstractFederateAmbassador {
             final List<EnvironmentEvent> events = config.events.stream()
                     .filter(e -> isValidEvent(e, info))
                     .map(e -> new EnvironmentEvent(e.type.sensorType, e.type.value, startTime, endTime))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (!events.isEmpty()) {
                 try {

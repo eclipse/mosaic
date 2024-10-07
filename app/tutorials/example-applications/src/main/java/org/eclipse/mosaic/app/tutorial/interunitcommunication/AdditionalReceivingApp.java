@@ -30,9 +30,8 @@ public class AdditionalReceivingApp extends AbstractApplication<VehicleOperating
 
     @Override
     public void onInteractionReceived(ApplicationInteraction applicationInteraction) {
-        if (applicationInteraction instanceof MyInteraction) {
-            final MyInteraction myMessage = (MyInteraction) applicationInteraction;
-            getLog().infoSimTime(this, "AdditionalReceivingApp received MyInteraction: {}", myMessage.getContent());
+        if (applicationInteraction instanceof MyInteraction myInteraction) {
+            getLog().infoSimTime(this, "AdditionalReceivingApp received MyInteraction: {}", myInteraction.getContent());
         }
     }
 

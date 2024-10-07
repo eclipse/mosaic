@@ -19,9 +19,9 @@ import org.eclipse.mosaic.lib.math.Matrix3d;
 import org.eclipse.mosaic.lib.math.Vector3d;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * This class represents a point cloud based on the {@link Vector3d} coordinate system.
@@ -59,8 +59,8 @@ public final class PointCloud implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Vector3d origin;
-    private final RotationMatrix orientation;
+    private final Vector3d origin = new Vector3d();
+    private final RotationMatrix orientation = new RotationMatrix();
     private final long creationTime;
 
     private final PointReference pointsReference;
@@ -76,16 +76,16 @@ public final class PointCloud implements Serializable {
      * world coordinates, or relative coordinates compared to the given origin and orientation field. The reference frame of the points
      * in the given {@link Point} list must be declared by using {@link PointReference#ABSOLUTE} or {@link PointReference#RELATIVE}.
      *
-     * @param creationTime the creation time of the point cloud in nanoseconds
-     * @param origin the origin point of the point cloud in world coordinates
-     * @param orientation the orientation of the point cloud
-     * @param points a list of points, containing point coordinates in either absolute or relative format
+     * @param creationTime    the creation time of the point cloud in nanoseconds
+     * @param origin          the origin point of the point cloud in world coordinates
+     * @param orientation     the orientation of the point cloud
+     * @param points          a list of points, containing point coordinates in either absolute or relative format
      * @param pointsReference the reference format of the coordinates of the points (absolute world coordinates, relative coordinates)
      */
     public PointCloud(long creationTime, Vector3d origin, RotationMatrix orientation, List<Point> points, PointReference pointsReference) {
         this.creationTime = creationTime;
-        this.origin = origin;
-        this.orientation = orientation;
+        this.origin.set(origin);
+        this.orientation.set(orientation);
         this.points = points;
         this.pointsReference = pointsReference;
     }
@@ -281,7 +281,7 @@ public final class PointCloud implements Serializable {
             return pointCloud.points.stream()
                     .filter(filter)
                     .map(point -> (Point) pointCloud.orientation.multiply(new Point(point, point.getDistance(), point.getHitType())).add(pointCloud.origin))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         private static List<Point> absoluteToRelative(PointCloud pointCloud, Predicate<Point> filter) {
@@ -289,13 +289,15 @@ public final class PointCloud implements Serializable {
             return pointCloud.points.stream()
                     .filter(filter)
                     .map(point -> (Point) inv.multiply(point.subtract(pointCloud.origin, new Point(point, point.getDistance(), point.getHitType()))))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         private static List<Point> noTransformation(PointCloud pointCloud, Predicate<Point> filter) {
-            return filter == POINTS_ALL ? pointCloud.points : pointCloud.points.stream()
+            return filter == POINTS_ALL
+                    ? Collections.unmodifiableList(pointCloud.points)
+                    : pointCloud.points.stream()
                     .filter(filter)
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 }

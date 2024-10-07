@@ -110,7 +110,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
                 belongingUnit.getOsLog().info(
                         "NavigationModule#switchRoute: Switched to route {} [{}]",
                         route.getId(),
-                        StringUtils.join(route.getNodeIds(), ",")
+                        StringUtils.join(route.getConnectionIds(), ",")
                 );
             } else if (route != null) {
                 belongingUnit.getOsLog().info("NavigationModule#switchRoute: Stay on route {}", route.getId());
@@ -285,5 +285,10 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     @Override
     public IRoadPosition getClosestRoadPosition(GeoPoint geoPoint) {
         return SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().findClosestRoadPosition(geoPoint);
+    }
+
+    @Override
+    public IRoadPosition getClosestRoadPosition(GeoPoint geoPoint, double heading) {
+        return SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting().findClosestRoadPosition(geoPoint, heading);
     }
 }

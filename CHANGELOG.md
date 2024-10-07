@@ -1,3 +1,15 @@
+# Changelog Eclipse MOSAIC 24.1 (September 2024)
+
+* [M+] The file output generator is now able to print fields of the V2X message related to a V2xMessageReception interaction.
+* [M+] Geomath now provides a new class representing point clouds.
+* [A+] V2X messages can be duplicated for re-transmissions.
++ [A-] Searching for road positions is now more accurate for overlapping edges.
+* [S+] Scenario-Convert is now able to export the database to GeoJSON files (removed shapefile export).
+* [T+] Now supports SUMO 1.20.0
+* [X-] Major clean-up of extended bundle and dependencies (Extended).
+* [X-] Improved synchronization of timing between PHABMACS and MOSAIC (Extended).
+* [X+] PHABMACS and MOSAIC 3D Visualizer now use an own 3D model format based on protobuf (Extended).
+
 # Changelog Eclipse MOSAIC 24.0 (March 2024)
 
 * [A-] Renamed API method getPayLoad() to getPayload(). Needs migration of all V2xMessage extensions.

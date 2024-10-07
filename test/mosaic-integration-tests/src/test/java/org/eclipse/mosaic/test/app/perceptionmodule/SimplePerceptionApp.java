@@ -27,7 +27,6 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -91,7 +90,7 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
             long vehiclesWithInvalidDimensions = perceivedVehicles.stream()
                     .filter(v -> v.getLength() == 0 && v.getWidth() == 0 && v.getHeight() == 0).count();
             getLog().infoSimTime(this, "Perceived all vehicles: {}, {} without dimensions.",
-                    perceivedVehicles.stream().map(VehicleObject::getId).collect(Collectors.toList()), vehiclesWithInvalidDimensions);
+                    perceivedVehicles.stream().map(VehicleObject::getId).toList(), vehiclesWithInvalidDimensions);
             perceivedNoVehicles = false;
         }
     }
@@ -104,7 +103,7 @@ public class SimplePerceptionApp extends AbstractApplication<VehicleOperatingSys
         List<TrafficLightObject> perceivedTrafficLights = getOs().getPerceptionModule().getPerceivedTrafficLights();
         // get traffic light controlling lane of ego vehicle
         List<TrafficLightObject> trafficLightsOnLane = perceivedTrafficLights.stream()
-                .filter(trafficLightObject -> trafficLightObject.getIncomingLane().equals(getLaneId())).collect(Collectors.toList());
+                .filter(trafficLightObject -> trafficLightObject.getIncomingLane().equals(getLaneId())).toList();
         if (trafficLightsOnLane.size() != 1) {
             return;
         }

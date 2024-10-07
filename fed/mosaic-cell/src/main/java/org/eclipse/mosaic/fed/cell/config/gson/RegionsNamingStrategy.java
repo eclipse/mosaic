@@ -29,20 +29,13 @@ public class RegionsNamingStrategy implements FieldNamingStrategy {
 
     @Override
     public String translateName(Field field) {
-        switch (field.getName()) {
-            case "a":
-                return "nw";
-            case "b":
-                return "se";
-            case "latitude":
-                return "lat";
-            case "longitude":
-                return "lon";
-            case "vertices":
-                return "coordinates";
-            default:
-                return field.getName();
-        }
-
+        return switch (field.getName()) {
+            case "a" -> "nw";
+            case "b" -> "se";
+            case "latitude" -> "lat";
+            case "longitude" -> "lon";
+            case "vertices" -> "coordinates";
+            default -> field.getName();
+        };
     }
 }

@@ -84,6 +84,11 @@ public class NoRouting implements Routing {
     }
 
     @Override
+    public IRoadPosition findClosestRoadPosition(GeoPoint point, double heading) {
+        return null;
+    }
+
+    @Override
     public INode findClosestNode(GeoPoint point) {
         return null;
     }

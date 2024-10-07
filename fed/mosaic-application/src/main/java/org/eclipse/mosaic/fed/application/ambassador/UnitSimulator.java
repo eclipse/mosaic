@@ -174,18 +174,18 @@ public enum UnitSimulator implements EventProcessor {
         allUnits.put(unit.getId(), unit);
 
         // second, put the simulation unit in the specific map
-        if (unit instanceof ChargingStationUnit) {
-            chargingStations.put(unit.getId(), (ChargingStationUnit) unit);
-        } else if (unit instanceof RoadSideUnit) {
-            roadSideUnits.put(unit.getId(), (RoadSideUnit) unit);
-        } else if (unit instanceof TrafficLightGroupUnit) {
-            trafficLights.put(unit.getId(), (TrafficLightGroupUnit) unit);
-        } else if (unit instanceof TrafficManagementCenterUnit) {
-            tmcs.put(unit.getId(), (TrafficManagementCenterUnit) unit);
-        } else if (unit instanceof ServerUnit) {
-            servers.put(unit.getId(), (ServerUnit) unit);
-        } else if (unit instanceof VehicleUnit) {
-            vehicles.put(unit.getId(), (VehicleUnit) unit);
+        if (unit instanceof ChargingStationUnit chargingStation) {
+            chargingStations.put(unit.getId(), chargingStation);
+        } else if (unit instanceof RoadSideUnit roadSideUnit) {
+            roadSideUnits.put(unit.getId(), roadSideUnit);
+        } else if (unit instanceof TrafficLightGroupUnit trafficLightGroup) {
+            trafficLights.put(unit.getId(), trafficLightGroup);
+        } else if (unit instanceof TrafficManagementCenterUnit tmc) {
+            tmcs.put(unit.getId(), tmc);
+        } else if (unit instanceof ServerUnit server) {
+            servers.put(unit.getId(), server);
+        } else if (unit instanceof VehicleUnit vehicle) {
+            vehicles.put(unit.getId(), vehicle);
         } else {
             throw new RuntimeException(ErrorRegister.UNIT_SIMULATOR_UnknownSimulationUnitToPutInMap.toString());
         }
@@ -459,10 +459,10 @@ public enum UnitSimulator implements EventProcessor {
     public void processEvent(Event event) {
         final Object resource = event.getResource();
 
-        if (resource instanceof RemoveVehicles) {
-            removeVehicles((RemoveVehicles) resource);
-        } else if (resource instanceof StartApplications) {
-            startApplications((StartApplications) resource);
+        if (resource instanceof RemoveVehicles removeVehicles) {
+            removeVehicles(removeVehicles);
+        } else if (resource instanceof StartApplications startApplications) {
+            startApplications(startApplications);
         }
     }
 

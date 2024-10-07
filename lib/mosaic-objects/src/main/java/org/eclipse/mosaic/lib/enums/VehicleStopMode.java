@@ -77,18 +77,13 @@ public enum VehicleStopMode {
      * @return the corresponding int to the stop mode
      */
     public static int toSumoInt(VehicleStopMode stopMode) {
-        switch (stopMode) {
-            case STOP:
-                return 0;
-            case PARK_ON_ROADSIDE:
-                return 1;
-            case BUS_STOP:
-                return 8;
-            case PARK_IN_PARKING_AREA: // these flags are additive (see sumo docs)
-                return 64 + toSumoInt(VehicleStopMode.PARK_ON_ROADSIDE);
-            case NOT_STOPPED:
-            default:
-                return -1;
-        }
+        return switch (stopMode) {
+            case STOP -> 0;
+            case PARK_ON_ROADSIDE -> 1;
+            case BUS_STOP -> 8;
+            case PARK_IN_PARKING_AREA -> // these flags are additive (see sumo docs)
+                    64 + toSumoInt(VehicleStopMode.PARK_ON_ROADSIDE);
+            default -> -1;
+        };
     }
 }

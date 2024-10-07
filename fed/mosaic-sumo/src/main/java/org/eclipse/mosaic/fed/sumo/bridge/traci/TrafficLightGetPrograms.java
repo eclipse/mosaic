@@ -80,8 +80,8 @@ public class TrafficLightGetPrograms
         List<SumoTrafficLightLogic> result = new ArrayList<>();
         for (Object element : intermediateResult) {
             // testing all elements for proper types
-            if (element instanceof SumoTrafficLightLogic) {
-                result.add((SumoTrafficLightLogic) element);
+            if (element instanceof SumoTrafficLightLogic trafficLightLogic) {
+                result.add(trafficLightLogic);
             }
         }
         return result;

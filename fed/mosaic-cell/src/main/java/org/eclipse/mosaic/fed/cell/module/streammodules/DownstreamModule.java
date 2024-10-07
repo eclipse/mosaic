@@ -62,11 +62,11 @@ public final class DownstreamModule extends AbstractStreamModule {
         Object resource = event.getResource();
         if (resource == null) {
             throw new RuntimeException("No input message (event resource) for " + moduleName);
-        } else if (!(resource instanceof CellModuleMessage)) {
+        }
+        if (!(resource instanceof CellModuleMessage resultMessage)) {
             throw new RuntimeException("The resource of the event is not a CellModuleResultMessage");
         }
 
-        CellModuleMessage resultMessage = (CellModuleMessage) resource;
         if (resultMessage.getResource() instanceof GeocasterResult) {
             // handle message transmission
             GeocasterResult geocasterResult = resultMessage.getResource();
@@ -90,14 +90,9 @@ public final class DownstreamModule extends AbstractStreamModule {
         log.debug("t={}: Entering processMessage() of module {}",
                 TIME.format(messageStartTime), getModuleName());
         switch (geocasterResult.getDownstreamMode()) {
-            case DownlinkUnicast:
-                doUnicast(geocasterResult, messageStartTime);
-                break;
-            case DownlinkMulticast:
-                doMulticast(geocasterResult, messageStartTime);
-                break;
-            default:
-                throw new RuntimeException("Unsupported transmission mode " + geocasterResult.getDownstreamMode());
+            case DownlinkUnicast -> doUnicast(geocasterResult, messageStartTime);
+            case DownlinkMulticast -> doMulticast(geocasterResult, messageStartTime);
+            default -> throw new RuntimeException("Unsupported transmission mode " + geocasterResult.getDownstreamMode());
         }
     }
 
@@ -202,12 +197,9 @@ public final class DownstreamModule extends AbstractStreamModule {
         String senderRegion = RegionUtility.getRegionForNode(senderId).id;
         String applicationClass = "*";
 
-        if (cellModuleMessage.getResource() instanceof StreamResult) {
-            StreamResult streamResult = cellModuleMessage.getResource();
-
+        if (cellModuleMessage.getResource() instanceof StreamResult streamResult) {
             long transmissionEndTime = result.getMessageEndTime();
-            if (streamResult.getV2xMessage().getRouting() instanceof MessageStreamRouting) {
-                MessageStreamRouting streamRouting = (MessageStreamRouting) streamResult.getV2xMessage().getRouting();
+            if (streamResult.getV2xMessage().getRouting() instanceof MessageStreamRouting streamRouting) {
                 transmissionEndTime += streamRouting.getStreamingDuration();
             }
             chainManager.notifyStreamListeners(

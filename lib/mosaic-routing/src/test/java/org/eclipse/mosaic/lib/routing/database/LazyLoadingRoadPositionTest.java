@@ -18,7 +18,6 @@ package org.eclipse.mosaic.lib.routing.database;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.lib.database.Database;
@@ -39,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LazyLoadingRoadPositionTest {
@@ -88,13 +86,13 @@ public class LazyLoadingRoadPositionTest {
         assertEquals("4068038_251150126_428788319", refinedRoadPosition.getConnection().getId());
         Collection<IConnection> outgoingConnections = refinedRoadPosition.getConnection().getOutgoingConnections();
         assertFalse(outgoingConnections.isEmpty());
-        List<String> outgoingConnectionsIds = outgoingConnections.stream().map(IConnection::getId).collect(Collectors.toList());
+        List<String> outgoingConnectionsIds = outgoingConnections.stream().map(IConnection::getId).toList();
         assertEquals("36878113_428788319_428788320", outgoingConnectionsIds.get(0));
         assertEquals("4068038_428788319_408194194", outgoingConnectionsIds.get(1));
 
         Collection<IConnection> incomingConnections = refinedRoadPosition.getConnection().getIncomingConnections();
         assertFalse(incomingConnections.isEmpty());
-        List<String> incomingConnectionsIds = incomingConnections.stream().map(IConnection::getId).collect(Collectors.toList());
+        List<String> incomingConnectionsIds = incomingConnections.stream().map(IConnection::getId).toList();
         assertEquals("4068038_21487168_251150126", incomingConnectionsIds.get(0));
         assertEquals("36338285_415838100_251150126", incomingConnectionsIds.get(1));
     }

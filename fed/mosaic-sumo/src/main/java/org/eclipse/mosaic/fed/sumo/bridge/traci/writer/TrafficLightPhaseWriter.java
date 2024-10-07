@@ -31,7 +31,7 @@ public class TrafficLightPhaseWriter extends AbstractTraciParameterWriter<SumoTr
 
     @Override
     public int getVariableLength(SumoTrafficLightLogic.Phase argument) {
-        return getLength() + stringWriter.getVariableLength(argument.getPhaseDef());
+        return getLength() + stringWriter.getVariableLength(argument.phaseDef());
     }
 
     @Override
@@ -45,10 +45,10 @@ public class TrafficLightPhaseWriter extends AbstractTraciParameterWriter<SumoTr
         out.writeInt(6);
 
         out.writeByte(TraciDatatypes.DOUBLE);
-        out.writeDouble(argument.getDuration() / 1000d);
+        out.writeDouble(argument.durationMs() / 1000d);
 
         out.writeByte(TraciDatatypes.STRING);
-        stringWriter.writeVariableArgument(out, argument.getPhaseDef());
+        stringWriter.writeVariableArgument(out, argument.phaseDef());
 
         out.writeByte(TraciDatatypes.DOUBLE);
         out.writeDouble(-1d);

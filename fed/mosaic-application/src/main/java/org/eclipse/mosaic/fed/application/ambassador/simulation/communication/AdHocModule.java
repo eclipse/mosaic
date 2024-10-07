@@ -140,10 +140,10 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
      * @return the created builder for further configuration
      */
     public AdHocMessageRoutingBuilder createMessageRouting() {
-        if (!(getOwner() instanceof Locatable)) {
+        if (!(getOwner() instanceof Locatable locatable)) {
             throw new UnsupportedOperationException("Cannot send message from senders without a location.");
         }
-        GeoPoint position = ((Locatable) getOwner()).getPosition();
+        GeoPoint position = locatable.getPosition();
         return new AdHocMessageRoutingBuilder(getOwner().getId(), position);
     }
 }

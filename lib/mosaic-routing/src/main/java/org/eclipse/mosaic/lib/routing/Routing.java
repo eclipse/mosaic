@@ -90,12 +90,22 @@ public interface Routing {
     CandidateRoute approximateCostsForCandidateRoute(CandidateRoute route, String lastNodeId);
 
     /**
-     * Searches for the closest road position to {@param point}.
+     * Searches for the closest road position to a given {@link GeoPoint}.
      *
      * @param point The closest road position to the given location.
      * @return The closest road position as {@link IRoadPosition}.
      */
     IRoadPosition findClosestRoadPosition(GeoPoint point);
+
+    /**
+     * Searches for the closest road position to a given {@link GeoPoint},
+     * If two adjacent edges overlap, the heading will be used as a similarity measure.
+     *
+     * @param point   The closest road position to the given location.
+     * @param heading used as a measure of similarity if multiple edges match
+     * @return The closest road position as {@link IRoadPosition}.
+     */
+    IRoadPosition findClosestRoadPosition(GeoPoint point, double heading);
 
     /**
      * Searches for the closest node to {@param point}.

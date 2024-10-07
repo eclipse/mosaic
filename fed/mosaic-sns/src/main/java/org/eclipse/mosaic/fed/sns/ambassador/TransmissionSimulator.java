@@ -90,7 +90,6 @@ public class TransmissionSimulator {
         }
 
         DestinationAddressContainer dac = interaction.getMessage().getRouting().getDestination();
-        Map<String, TransmissionResult> transmissionResults = null;
         switch (dac.getType()) {
             case AD_HOC_TOPOCAST:
                 if (log.isDebugEnabled()) {
@@ -99,8 +98,7 @@ public class TransmissionSimulator {
                             interaction.getMessage().getId(), senderName, TIME.format(interaction.getTime())
                     );
                 }
-                transmissionResults = sendMessageAsTopocast(senderName, dac);
-                break;
+                return sendMessageAsTopocast(senderName, dac);
             case AD_HOC_GEOCAST:
                 if (log.isDebugEnabled()) {
                     log.debug(
@@ -108,15 +106,14 @@ public class TransmissionSimulator {
                             interaction.getMessage().getId(), senderName, TIME.format(interaction.getTime())
                     );
                 }
-                transmissionResults = sendMessageAsGeocast(senderName, dac);
-                break;
+                return sendMessageAsGeocast(senderName, dac);
             default:
                 log.debug(
                         "V2XMessage is not an ad hoc message. Skip this message. V2XMessage.id={}",
                         interaction.getMessage().getId()
                 );
+                return null;
         }
-        return transmissionResults;
     }
 
     /**

@@ -17,8 +17,10 @@ package org.eclipse.mosaic.lib.geo;
 
 import org.eclipse.mosaic.lib.math.MathUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea {
 
@@ -89,7 +91,7 @@ public class CartesianPolygon implements Polygon<CartesianPoint>, CartesianArea 
 
     public GeoPolygon toGeo() {
         return new GeoPolygon(
-                getVertices().stream().map(CartesianPoint::toGeo).collect(Collectors.toList())
+                getVertices().stream().map(CartesianPoint::toGeo).toList()
         );
     }
 

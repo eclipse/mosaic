@@ -20,7 +20,14 @@ import org.eclipse.mosaic.fed.cell.config.model.CMobileNetworkProperties;
 import org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties;
 import org.eclipse.mosaic.fed.cell.data.ConfigurationData;
 import org.eclipse.mosaic.fed.cell.data.SimulationData;
-import org.eclipse.mosaic.lib.geo.*;
+import org.eclipse.mosaic.lib.geo.CartesianArea;
+import org.eclipse.mosaic.lib.geo.CartesianCircle;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
+import org.eclipse.mosaic.lib.geo.CartesianPolygon;
+import org.eclipse.mosaic.lib.geo.GeoArea;
+import org.eclipse.mosaic.lib.geo.GeoCircle;
+import org.eclipse.mosaic.lib.geo.GeoPolygon;
+import org.eclipse.mosaic.lib.geo.GeoRectangle;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.lang3.Validate;
@@ -153,15 +160,15 @@ public class RegionUtility {
 
         List<CNetworkProperties> regions = new ArrayList<>();
 
-        if (geoArea instanceof GeoCircle) {
+        if (geoArea instanceof GeoCircle geoCircle) {
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {
-                if (isCircleIntersectingPolygon(((GeoCircle) geoArea).toCartesian(), region.getCapoArea())){
+                if (isCircleIntersectingPolygon(geoCircle.toCartesian(), region.getCapoArea())){
                     regions.add(region);
                 }
             }
         } else {
-            if (geoArea instanceof GeoRectangle) {
-                geoArea = ((GeoRectangle) geoArea).toPolygon();
+            if (geoArea instanceof GeoRectangle geoRectangle) {
+                geoArea = geoRectangle.toPolygon();
             }
             CartesianPolygon destPolygon = ((GeoPolygon) geoArea).toCartesian();
             for (CMobileNetworkProperties region : ConfigurationData.INSTANCE.getRegionConfig().regions) {

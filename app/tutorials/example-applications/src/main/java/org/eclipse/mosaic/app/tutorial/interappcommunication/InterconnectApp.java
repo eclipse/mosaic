@@ -56,8 +56,7 @@ public class InterconnectApp extends AbstractApplication<VehicleOperatingSystem>
     @Override
     public void processEvent(final Event event) {
         Object resource = event.getResource();
-        if (resource instanceof String) {
-            String myMessage = (String) resource;
+        if (resource instanceof String myMessage) {
             getLog().infoSimTime(this, "Received message: \"{}\"", myMessage);
         }
     }

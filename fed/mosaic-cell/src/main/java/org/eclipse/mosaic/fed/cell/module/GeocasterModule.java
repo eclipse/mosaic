@@ -72,8 +72,8 @@ public final class GeocasterModule extends CellModule {
         Object resource = event.getResource();
         if (resource == null) {
             throw new RuntimeException("No input message (event resource) for " + moduleName);
-        } else if (resource instanceof CellModuleMessage) {
-            processMessage((CellModuleMessage) resource, event.getTime());
+        } else if (resource instanceof CellModuleMessage cellModuleMessage) {
+            processMessage(cellModuleMessage, event.getTime());
         } else {
             throw new RuntimeException("Unsupported input message (event resource) for " + moduleName);
         }

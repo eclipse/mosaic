@@ -309,8 +309,8 @@ public class Database {
     public Collection<TrafficLightNode> getTrafficLightNodes() {
         Collection<TrafficLightNode> trafficLightNodes = new ArrayList<>();
         for (Node node : getNodes()) {
-            if (node instanceof TrafficLightNode) {
-                trafficLightNodes.add((TrafficLightNode) node);
+            if (node instanceof TrafficLightNode trafficLightNode) {
+                trafficLightNodes.add(trafficLightNode);
             }
         }
         return trafficLightNodes;

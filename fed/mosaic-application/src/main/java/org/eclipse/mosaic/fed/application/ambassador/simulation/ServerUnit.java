@@ -20,6 +20,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ca
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.IRoutingModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
+import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.mapping.ServerMapping;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 
@@ -53,8 +54,13 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
     }
 
     @Override
-    public CamBuilder assembleCamMessage(CamBuilder camBuilder) {
+    public final CamBuilder assembleCamMessage(CamBuilder camBuilder) {
         throw new UnsupportedOperationException("Servers can't send CAMs.");
+    }
+
+    @Override
+    public final int getStateOfEnvironmentSensor(SensorType type) {
+        throw new UnsupportedOperationException("Servers can't access Environment functionality.");
     }
 
     @Override

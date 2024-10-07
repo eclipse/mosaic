@@ -77,10 +77,9 @@ public class ReleaseBarnimLibsumoIT {
         assertEquals(120, LogAssert.count(simulationRule, "output.csv",
                 ".*VEHICLE_REGISTRATION;.*"
         ));
-//        //FIXME currently, libsumo.TrafficLightGetPrograms returns an empty list in any case
-//        assertEquals(53, LogAssert.count(simulationRule, "output.csv",
-//                ".*TRAFFICLIGHT_REGISTRATION;.*"
-//        ));
+        assertEquals(42, LogAssert.count(simulationRule, "output.csv",
+                ".*TRAFFICLIGHT_REGISTRATION;.*"
+        ));
         LogAssert.contains(simulationRule, "output.csv", "SERVER_REGISTRATION;0;server_0;WeatherServer;\\[.*\\]");
     }
 
