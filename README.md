@@ -93,8 +93,10 @@ After extracting this bundle to an arbitrary path, Eclipse MOSAIC can be execute
 
     mosaic.sh -s HelloWorld
     mosaic.bat -s HelloWorld 
-    
-Besides, the simulation can also be started in your IDE using the main method in `org.eclipse.mosaic.starter.MosaicStarter`.
+
+## IDE Setup
+
+Apart from the aforementioned approach, the simulation can also be started in your IDE using the main method in `org.eclipse.mosaic.starter.MosaicStarter`. Please have a look at the setup page in the documentation [here](https://eclipse.dev/mosaic/docs/extending_mosaic/).
 
 ## License
 
