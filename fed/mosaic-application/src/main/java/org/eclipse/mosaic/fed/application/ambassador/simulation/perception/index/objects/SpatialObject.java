@@ -32,10 +32,6 @@ public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d
         this.id = id;
     }
 
-    public abstract T setPosition(CartesianPoint position);
-
-    public abstract SpatialObjectBoundingBox getBoundingBox();
-
     /**
      * Sets the position of the {@link SpatialObject}.
      *
@@ -47,6 +43,10 @@ public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d
         this.set(x, y, z);
         cartesianPosition.set(this.toCartesian());
     }
+
+    public abstract T setPosition(CartesianPoint position);
+
+    public abstract SpatialObjectBoundingBox getBoundingBox();
 
     /**
      * Returns the unique identifier of this spatial object.
@@ -79,7 +79,7 @@ public abstract class SpatialObject<T extends SpatialObject<T>> extends Vector3d
             return false;
         }
 
-        SpatialObject<T> that = (SpatialObject<T>) o;
+        SpatialObject<?> that = (SpatialObject<?>) o;
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))

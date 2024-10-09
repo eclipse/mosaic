@@ -23,7 +23,7 @@ public interface PerceptionModel {
     /**
      * Checks, if the other spatial object is within this perception range.
      */
-    boolean isInRange(SpatialObject other);
+    boolean isInRange(SpatialObject<?> other);
 
     /**
      * Returns the minimum bounding box around this perception area. This is used for range search queries in the perception index.

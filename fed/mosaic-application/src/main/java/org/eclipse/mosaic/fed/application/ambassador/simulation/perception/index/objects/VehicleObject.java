@@ -20,12 +20,13 @@ import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.io.Serial;
 import javax.annotation.Nullable;
 
 public class VehicleObject extends SpatialObject<VehicleObject> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
-
 
     /**
      * The current speed of the vehicle. [m/s]
