@@ -17,13 +17,32 @@ package org.eclipse.mosaic.fed.application.app.api.sensor;
 
 import org.eclipse.mosaic.lib.spatial.PointCloud;
 
+import java.util.function.Consumer;
+
 public interface LidarSensorModule {
 
+    /**
+     * Enables this LiDAR sensor by giving the sensor range.
+     *
+     * @param range the range of the LiDAR sensor.
+     */
     void enable(double range);
 
+    /**
+     * @return {@code true}, if this module has been enabled.
+     */
     boolean isEnabled();
 
+    /**
+     * Disables this basic sensor module. {@link #getPointCloud()} will always return {@code null}.
+     */
     void disable();
+
+    /**
+     * Registers a {@link Consumer} which is called with the most recent {@link PointCloud} object
+     * as soon as it is published to this {@link LidarSensorModule}.
+     */
+    void reactOnSensorUpdate(Consumer<PointCloud> callback);
 
     /**
      * Returns the most recent {@link PointCloud} measured by this sensor.

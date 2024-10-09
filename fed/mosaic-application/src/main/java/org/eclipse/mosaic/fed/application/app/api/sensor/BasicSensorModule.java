@@ -22,10 +22,19 @@ import org.eclipse.mosaic.lib.enums.SensorType;
  */
 public interface BasicSensorModule {
 
+    /**
+     * Enables this basic sensor module.
+     */
     void enable();
 
+    /**
+     * @return {@code true}, if this module has been enabled.
+     */
     boolean isEnabled();
 
+    /**
+     * Disables this basic sensor module. {@link #getStrengthOf(SensorType)} will always return 0.
+     */
     void disable();
 
     /**

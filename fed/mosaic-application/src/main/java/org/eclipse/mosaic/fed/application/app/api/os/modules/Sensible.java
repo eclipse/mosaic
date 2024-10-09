@@ -19,6 +19,10 @@ import org.eclipse.mosaic.fed.application.app.api.sensor.BasicSensorModule;
 import org.eclipse.mosaic.fed.application.app.api.sensor.LidarSensorModule;
 import org.eclipse.mosaic.lib.enums.SensorType;
 
+/**
+ * Interface to mark an {@link org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem} as
+ * an owner of a {@link BasicSensorModule} and {@link LidarSensorModule} to sense data from the surrounding environment.
+ */
 public interface Sensible {
 
     /**
@@ -32,4 +36,5 @@ public interface Sensible {
      * To be able to retrieve such data, a sensor model must be provided by a coupled simulator, such as PHABMACS or Carla.
      */
     LidarSensorModule getLidarSensorModule();
+
 }
