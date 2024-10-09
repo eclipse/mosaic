@@ -173,7 +173,12 @@ const Vehicle = {
      */
     createStyle() {
         let style = 'unknown'
-        if (this.vehicleClass === 'Car') {
+        if (this.vehicleClass === 'Car'
+            || this.vehicleClass === 'ElectricVehicle'
+            || this.vehicleClass === 'AutomatedVehicle'
+            || this.vehicleClass === 'Taxi'
+            || this.vehicleClass === 'HighOccupancyVehicle'
+        ) {
             style = 'car'
             if (this.state.equipped) {
                 style = 'car-equipped'
@@ -626,6 +631,7 @@ const WebSocketClient = (function() {
             } else if (data.VehiclesRemove) {
                 data.VehiclesRemove.forEach(map.removeUnit)
             } else if (data.VehicleRegistration) {
+                console.log(JSON.stringify(data.VehicleRegistration))
                 // determine if vehicle is equipped with an application
                 let equipped = data.VehicleRegistration.vehicleMapping.applications.length > 0;
                 let vClass = data.VehicleRegistration.vehicleMapping.vehicleType.vehicleClass;
