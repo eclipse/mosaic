@@ -16,7 +16,7 @@
             <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
-            <directory>src/assembly/resources/etc</directory>
+            <directory>${project.build.directory}/classes/etc</directory>
             <outputDirectory>etc</outputDirectory>
             <includes>
                 <include>**</include>

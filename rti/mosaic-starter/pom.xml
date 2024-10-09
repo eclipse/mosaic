@@ -162,22 +162,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>copy-defaults-xml-for-test</id>
-                        <phase>process-test-sources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/target/test-classes/etc</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.parent.basedir}/bundle/src/assembly/resources/etc</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
                     <!-- copy mosaic-output/.../web to tools/web -->
                      <execution>
                         <id>copy-resources-web-visualizer</id>
@@ -190,27 +174,6 @@
                             <resources>
                                 <resource>
                                     <directory>${project.parent.basedir}/fed/mosaic-output/src/main/resources/web</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <!-- copy runtime.xml, hosts.json, and logback.xml from mosaic-bundle to target/classes/etc/* -->
-                    <execution>
-                        <id>copy-resources-etc</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/classes/etc</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.parent.basedir}/bundle/src/assembly/resources/etc</directory>
-                                    <filtering>true</filtering>
-                                    <includes>
-                                        <include>*.xml</include>
-                                        <include>*.json</include>
-                                    </includes>
                                 </resource>
                             </resources>
                         </configuration>

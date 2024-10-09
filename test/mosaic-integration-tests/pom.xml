@@ -107,7 +107,7 @@
                             <outputDirectory>${project.basedir}/target/test-classes</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.basedir}/bundle/src/assembly/resources/etc</directory>
+                                    <directory>${project.parent.basedir}/rti/mosaic-starter/etc</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>

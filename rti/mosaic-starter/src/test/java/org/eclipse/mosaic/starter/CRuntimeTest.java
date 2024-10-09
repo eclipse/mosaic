@@ -25,6 +25,7 @@ import org.eclipse.mosaic.starter.config.CRuntime;
 
 import org.junit.Test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -32,14 +33,14 @@ import java.util.Map;
 public class CRuntimeTest {
 
     /**
-     * Checks if the runtime.xml which is bundled with Eclipse MOSAIC has only valid subscriptions.
+     * Checks if the runtime.json which is bundled with Eclipse MOSAIC has only valid subscriptions.
      * This test requires the maven call {@code mvn process-test-resources} or {@code mvn install} each
      * time the runtime.xml has been changed in the {@code bundle} project.
      */
     @Test
     public void validSubscriptionsInRuntimeConfiguration() throws IOException, InstantiationException {
         CRuntime runtimeConfiguration;
-        try (InputStream resource = getClass().getResourceAsStream("/etc/runtime.json")) {
+        try (InputStream resource = new FileInputStream("etc/runtime.json")) {
             assertNotNull(resource);
             runtimeConfiguration = new ObjectInstantiation<>(CRuntime.class).read(resource);
         }
@@ -59,4 +60,5 @@ public class CRuntimeTest {
             }
         }
     }
+
 }

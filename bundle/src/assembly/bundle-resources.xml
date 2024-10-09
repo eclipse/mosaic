@@ -28,6 +28,9 @@
             <includes>
                 <include>**</include>
             </includes>
+            <excludes>
+                <exclude>etc/**</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 
