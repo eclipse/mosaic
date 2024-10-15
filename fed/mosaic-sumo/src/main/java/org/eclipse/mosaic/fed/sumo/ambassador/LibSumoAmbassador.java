@@ -34,7 +34,7 @@ import java.nio.file.Paths;
  */
 public class LibSumoAmbassador extends SumoAmbassador {
 
-    private static final String VALID_LIBSUMO_VERSIONS = "1\\.(19|20)\\.";
+    private static final String VALID_LIBSUMO_VERSIONS = "1\\.(19|20|21)\\.";
 
     public LibSumoAmbassador(AmbassadorParameter ambassadorParameter) {
         super(ambassadorParameter);
@@ -71,34 +71,30 @@ public class LibSumoAmbassador extends SumoAmbassador {
         }
 
         if (new File(libsumoLibrary).exists()) {
-            // Workaround based on suggestions made in https://github.com/eclipse/sumo/issues/12605
-            if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
-                loadQuiet(getFromSumoHome("iconv-2.dll"));
-                loadQuiet(getFromSumoHome("intl-8.dll"));
-                loadQuiet(getFromSumoHome("proj_9_0.dll"));
+            try {
+                System.load(libsumoLibrary);
+            } catch (UnsatisfiedLinkError e) {
+                throw new InternalFederateException("""
+                        The required libsumojni library could be found, but not loaded due to missing dependencies.
+                        Make sure your PATH variable contains the entry "$SUMO_HOME/bin".
+                        """);
             }
 
-            System.load(libsumoLibrary);
-
             if (incorrectLibSumoVersion()) {
-                throw new InternalFederateException(
-                        "The loaded Libsumo library at " + libsumoLibrary + " is not compatible with this ambassador. "
-                                + "Valid versions are: " + VALID_LIBSUMO_VERSIONS);
+                throw new InternalFederateException("""
+                        The loaded libsumojni library at %s is not compatible with this ambassador. Valid versions are: %s
+                        """.formatted(libsumoLibrary, VALID_LIBSUMO_VERSIONS));
             }
         } else {
             try {
-                // Workaround based on suggestions made in https://github.com/eclipse/sumo/issues/12605
-                if (operatingSystem == CLocalHost.OperatingSystem.WINDOWS) {
-                    loadLibraryQuiet("iconv-2");
-                    loadLibraryQuiet("intl-8");
-                    loadLibraryQuiet("proj_9_0");
-                }
-
                 // if no file found, try to load libsumo it directly from java.library.path
                 System.loadLibrary("libsumojni");
             } catch (Throwable e) {
-                throw new InternalFederateException("The required libsumojni library could not be found in " + libsumoLibrary + ". "
-                        + "Make sure SUMO_HOME is set properly and that your SUMO installation contains the libsumojni library.");
+                throw new InternalFederateException("""
+                        The required libsumojni library could not be found in %s.
+                        Make sure SUMO_HOME is set properly and that your SUMO installation contains the libsumojni library.
+                        Furthermore, your PATH variable should contain the entry $SUMO_HOME/bin.
+                        """.formatted(libsumoLibrary));
             }
         }
 
