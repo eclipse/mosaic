@@ -174,7 +174,6 @@
                             <resources>
                                 <resource>
                                     <directory>${project.parent.basedir}/rti/mosaic-starter/etc</directory>
-                                    <filtering>false</filtering>
                                 </resource>
                             </resources>
                         </configuration>
