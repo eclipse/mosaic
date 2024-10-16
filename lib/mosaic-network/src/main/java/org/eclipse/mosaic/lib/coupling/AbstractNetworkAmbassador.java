@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,6 +62,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -202,6 +204,40 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     }
 
     /**
+     *
+     */
+    private ClientServerChannel waitForClientServerChannel(String host, int port) {
+        InetAddress h;
+        try {
+            h = InetAddress.getByName(host);
+        } catch (UnknownHostException ex) {
+            this.log.error("Unknown host: {}", ex.toString());
+            throw new RuntimeException(ex);
+        }
+        return waitForClientServerChannel(h, port);
+    }
+
+    /**
+     *
+     */
+    private ClientServerChannel waitForClientServerChannel(InetAddress host, int port) {
+        int MAX_TRIES = 50;
+        int WAIT_MS = 100;
+        int tries = 0;
+        RuntimeException lastException = null;
+        while (tries++ < MAX_TRIES) {
+            try {
+                return new ClientServerChannel(host, port, this.log);
+            } catch (IOException ex) {
+                lastException = new RuntimeException(ex);
+            }
+            try {TimeUnit.MILLISECONDS.sleep(WAIT_MS);} catch (InterruptedException e) {}
+        }
+        this.log.error(lastException.toString());
+        throw lastException;
+    }
+
+    /**
      * Connects the incoming channel with the federate, waits for INIT message and a port number,
      * connects the outgoing channel to the received port number.
      * <br>
@@ -212,16 +248,10 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      */
     @Override
     public void connectToFederate(String host, int port) {
-        try {   // Connect to the network federate for reading
-            this.federateAmbassadorChannel = new ClientServerChannel(host, port, log);
-            this.log.info("Connected to {} for reading on port {}", federateName, port);
-        } catch (UnknownHostException ex) {
-            this.log.error("Unknown host: " + ex.toString());
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
-            this.log.error(ex.toString());
-            throw new RuntimeException(ex);
-        }
+        // Connect to the network federate for reading
+        this.federateAmbassadorChannel = this.waitForClientServerChannel(host, port);
+        this.log.info("Connected to {} for reading on port {}", federateName, port);
+
         try { // Read the initial command and the port number to connect incoming channel
             int cmd = this.federateAmbassadorChannel.readCommand();
             if (cmd == CMD.INIT) {
@@ -229,7 +259,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 int remotePort = this.federateAmbassadorChannel.readPortBody();
                 remotePort = getHostPortFromDockerPort(remotePort);
                 // Connect the second channel
-                ambassadorFederateChannel = new ClientServerChannel(federateAmbassadorChannel.socket.getInetAddress(), remotePort, log);
+                this.ambassadorFederateChannel = waitForClientServerChannel(federateAmbassadorChannel.socket.getInetAddress(), remotePort);
                 this.log.info("Connected to {} for commands on port {}", federateName, remotePort);
             } else {
                 throw new RuntimeException("Could not connect to federate. Federate response is " + cmd);
