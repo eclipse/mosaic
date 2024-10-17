@@ -141,6 +141,16 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     protected CAbstractNetworkAmbassador config;
 
     /**
+     * Number of tries to establish a ClientServerConnection
+     */
+    protected final static int MAX_CONNECTION_TRIES = 50;
+
+    /**
+     * Milliseconds to wait between tries when establishing a ClientServerConnection
+     */
+    protected final static int WAIT_BETWEEN_CONNECTION_TRIES = 100;
+
+    /**
      * Creates a new AbstractNetworkAmbassador.
      *
      * @param ambassadorParameter parameters to configure the ambassador
@@ -203,9 +213,6 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         log.trace("{} finished ConnectToFederate", ambassadorName);
     }
 
-    /**
-     *
-     */
     private ClientServerChannel waitForClientServerChannel(String host, int port) {
         InetAddress h;
         try {
@@ -218,21 +225,27 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     }
 
     /**
+     * Tries to establish a Channel _repeatedly_ within some timeout window.
      *
+     * @param host host on which the federate is listening/speaking
+     * @param port port on which the federate is listening/speaking
      */
     private ClientServerChannel waitForClientServerChannel(InetAddress host, int port) {
-        int MAX_TRIES = 50;
-        int WAIT_MS = 100;
         int tries = 0;
         RuntimeException lastException = null;
-        while (tries++ < MAX_TRIES) {
+        while (tries++ < MAX_CONNECTION_TRIES) {
             try {
                 return new ClientServerChannel(host, port, this.log);
             } catch (IOException ex) {
                 lastException = new RuntimeException(ex);
             }
-            try {TimeUnit.MILLISECONDS.sleep(WAIT_MS);} catch (InterruptedException e) {}
+            try {
+                TimeUnit.MILLISECONDS.sleep(WAIT_BETWEEN_CONNECTION_TRIES);
+            } catch (InterruptedException e) {
+                //quiet
+            }
         }
+        this.log.error("Failed to establish a socket connection within the last {}ms.", MAX_CONNECTION_TRIES*WAIT_BETWEEN_CONNECTION_TRIES);
         this.log.error(lastException.toString());
         throw lastException;
     }
@@ -249,17 +262,17 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
     @Override
     public void connectToFederate(String host, int port) {
         // Connect to the network federate for reading
-        this.federateAmbassadorChannel = this.waitForClientServerChannel(host, port);
+        federateAmbassadorChannel = this.waitForClientServerChannel(host, port);
         this.log.info("Connected to {} for reading on port {}", federateName, port);
 
         try { // Read the initial command and the port number to connect incoming channel
-            int cmd = this.federateAmbassadorChannel.readCommand();
+            int cmd = federateAmbassadorChannel.readCommand();
             if (cmd == CMD.INIT) {
                 // This is the port the federate listens on for the second channel
-                int remotePort = this.federateAmbassadorChannel.readPortBody();
+                int remotePort = federateAmbassadorChannel.readPortBody();
                 remotePort = getHostPortFromDockerPort(remotePort);
                 // Connect the second channel
-                this.ambassadorFederateChannel = waitForClientServerChannel(federateAmbassadorChannel.socket.getInetAddress(), remotePort);
+                ambassadorFederateChannel = waitForClientServerChannel(federateAmbassadorChannel.socket.getInetAddress(), remotePort);
                 this.log.info("Connected to {} for commands on port {}", federateName, remotePort);
             } else {
                 throw new RuntimeException("Could not connect to federate. Federate response is " + cmd);
