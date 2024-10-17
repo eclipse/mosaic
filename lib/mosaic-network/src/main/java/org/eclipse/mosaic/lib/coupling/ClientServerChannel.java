@@ -175,22 +175,6 @@ public class ClientServerChannel {
     /**
      * Constructor.
      *
-     * @param host the remote host address as a String
-     * @param port the remote port number
-     * @param log  logger to log on
-     * @throws IOException if the streams cannot be opened.
-     */
-    public ClientServerChannel(String host, int port, Logger log) throws IOException {
-        this.socket = new Socket(host, port);
-        this.socket.setTcpNoDelay(true);
-        this.in = new BufferedInputStream(socket.getInputStream());
-        this.out = new BufferedOutputStream(socket.getOutputStream());
-        this.log = log;
-    }
-
-    /**
-     * Constructor.
-     *
      * @param host the remote host address as an InetAddress
      * @param port the remote port number
      * @param log  logger to log on
