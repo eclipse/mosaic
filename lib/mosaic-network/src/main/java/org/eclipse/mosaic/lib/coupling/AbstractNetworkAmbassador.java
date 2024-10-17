@@ -245,7 +245,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
                 //quiet
             }
         }
-        log.error("Failed to establish a socket connection within the last {}ms.", MAX_CONNECTION_TRIES*WAIT_BETWEEN_CONNECTION_TRIES);
+        log.error("Failed to establish a socket connection within the last {}ms.", MAX_CONNECTION_TRIES * WAIT_BETWEEN_CONNECTION_TRIES);
         log.error(lastException.toString());
         throw lastException;
     }
@@ -288,7 +288,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
      *
      * @param port the container port
      * @return Returns, if a dockerFederateExecutor is set, the host port which is connected to the container port.
-     *         Otherwise, returns the given port.
+     * Otherwise, returns the given port.
      */
     private int getHostPortFromDockerPort(int port) {
         if (dockerFederateExecutor != null && dockerFederateExecutor.getRunningContainer() != null) {
