@@ -52,6 +52,7 @@ public class Ns3Ambassador extends AbstractNetworkAmbassador {
             case LINUX:
                 return new ExecutableFederateExecutor(this.descriptor, "./run.sh", Integer.toString(port));
             case WINDOWS:
+                return new ExecutableFederateExecutor(this.descriptor, "wsl.exe", "./run.sh", Integer.toString(port));
             case UNKNOWN:
             default:
                 log.error("Operating system not supported by ns3");
