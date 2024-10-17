@@ -548,7 +548,7 @@ const WebSocketClient = (function() {
     }
 
     /**
-     * Connection establishment to VSimRTI
+     * Connection establishment to MOSAIC
      */
     function createWebSocket() {
         if (websocketEstablishedConnection) {
@@ -577,7 +577,7 @@ const WebSocketClient = (function() {
             }, 3000)
         } else {
             setStatus('error')
-            alert("ERROR: Stopped trying to connect to VSimRTI due to timeout.")
+            alert("ERROR: Stopped trying to connect to MOSAIC due to timeout.")
         }
     }
 
