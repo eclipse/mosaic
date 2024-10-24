@@ -50,7 +50,8 @@ public abstract class AdhocTransmissionModel {
     }
 
     /**
-     * Method to be implemented by extensions of {@link AdhocTransmissionModel}, calculating transmissions using topocast.
+     * Method to be implemented by extensions of {@link AdhocTransmissionModel}, calculating transmissions using topocast with
+     * only one single hop, either broadcast or unicast.
      *
      * @param senderName            The sender of the transmission.
      * @param receivers             The receivers of the transmission.
@@ -58,8 +59,24 @@ public abstract class AdhocTransmissionModel {
      * @param currentNodes          a reference to all currently online nodes
      * @return Map of the receivers and their transmission results.
      */
-    public abstract Map<String, TransmissionResult> simulateTopocast(
+    public abstract Map<String, TransmissionResult> simulateSinglehop(
             String senderName, Map<String, SimulationNode> receivers,
+            TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes
+    );
+
+    /**
+     * Method to be implemented by extensions of {@link AdhocTransmissionModel}, calculating transmissions using topocast
+     * with multiple hops, only unicast.
+     *
+     * @param senderName            The sender of the transmission.
+     * @param receiverName          The receivers of the unicast transmission.
+     * @param receiver              The receiver node information of the unicast transmission.
+     * @param transmissionParameter Data class holding the maximumTtl, the {@link Delay} and the current map of simulated entities
+     * @param currentNodes          a reference to all currently online nodes
+     * @return The transmission result to the single receiver.
+     */
+    public abstract TransmissionResult simulateTopologicalUnicast(
+            String senderName, String receiverName, SimulationNode receiver,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes
     );
 
