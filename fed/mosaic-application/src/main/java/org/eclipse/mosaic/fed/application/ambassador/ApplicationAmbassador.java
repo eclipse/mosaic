@@ -26,7 +26,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.Environme
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficSignAwareApplication;
-import org.eclipse.mosaic.fed.application.app.api.os.modules.Sensible;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Perceptive;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
@@ -511,7 +511,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     /**
      * This function does not directly fire an event, but puts it in a environmentEvents-map (see {@link AbstractSimulationUnit}).
-     * Use {@link Sensible#getBasicSensorModule()} to determine the state of a Sensor. Keep in mind, that
+     * Use {@link Perceptive#getBasicSensorModule()} to determine the state of a Sensor. Keep in mind, that
      * the map only stores the latest {@link EnvironmentEvent} of a specific type and overwrites old values.
      * <p>Events will not directly be removed from the map, but since events are mapped to their type, there
      * can't be more members than there are SensorType's. Nonetheless, the map is cleared using
@@ -524,7 +524,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         // store the sensor data immediately, the sensor event hold their intermittent time
         final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(environmentSensorUpdates.getUnitId());
         // we don't simulate vehicles without application or correct environment sensor implementation
-        if (!(simulationUnit instanceof Sensible sensible) ||
+        if (!(simulationUnit instanceof Perceptive sensible) ||
                 !(sensible.getBasicSensorModule() instanceof EnvironmentBasicSensorModule sensor)) {
             return;
         }
