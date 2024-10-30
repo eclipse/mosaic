@@ -13,10 +13,10 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.sensor;
+package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
-import org.eclipse.mosaic.fed.application.app.api.sensor.BasicSensorModule;
+import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 

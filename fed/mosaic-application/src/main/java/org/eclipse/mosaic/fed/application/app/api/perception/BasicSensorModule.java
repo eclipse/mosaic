@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.app.api.sensor;
+package org.eclipse.mosaic.fed.application.app.api.perception;
 
 import org.eclipse.mosaic.lib.enums.SensorType;
 

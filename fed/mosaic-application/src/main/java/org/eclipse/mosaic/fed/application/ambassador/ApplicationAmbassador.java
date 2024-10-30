@@ -22,7 +22,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagemen
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentBasicSensorModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficSignAwareApplication;

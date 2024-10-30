@@ -18,7 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.sensor.EnvironmentBasicSensorModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.app.api.os.modules.Perceptive;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.communication.V2xMessageRemoval;

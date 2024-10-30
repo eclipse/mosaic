@@ -16,9 +16,9 @@
 package org.eclipse.mosaic.fed.application.app.api.os.modules;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
+import org.eclipse.mosaic.fed.application.app.api.perception.LidarSensorModule;
 import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
-import org.eclipse.mosaic.fed.application.app.api.sensor.BasicSensorModule;
-import org.eclipse.mosaic.fed.application.app.api.sensor.LidarSensorModule;
 import org.eclipse.mosaic.lib.enums.SensorType;
 
 /**

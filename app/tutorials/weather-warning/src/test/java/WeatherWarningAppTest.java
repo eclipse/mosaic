@@ -28,7 +28,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Re
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
-import org.eclipse.mosaic.fed.application.app.api.sensor.BasicSensorModule;
+import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
