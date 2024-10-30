@@ -91,7 +91,7 @@ print_help() {
     log "   -p --regen-protobuf\ŧ\tRegenerate Protobuf c++ source, when using a different version of protobuf 3."
     log "   -h --help\t\t\t\tPrint this help"
     log "   -j --parallel <n>\t\t\tUse n threads for compilation "
-    log "   -u --uninstall			Remove the ns-3 federate"
+    log "   -u --uninstall       Remove the ns-3 federate"
     log "\n"
 }
 
@@ -226,9 +226,9 @@ check_directory() {
 }
 
 check_nslog() {
-	if [[ ! $NS_LOG =~ .*level.* ]]; then
-		log "Logging probably not correctly initialized"
-	fi
+   if [[ ! $NS_LOG =~ .*level.* ]]; then
+      log "Logging probably not correctly initialized"
+   fi
 }
 
 ask_dependencies()
@@ -446,7 +446,7 @@ clean_up()
    if [ "$arg_integration_testing" = false ]; then
       while  [ true ]; do
          log "Do you want to remove the following files and folders? ${bold}${red} $temporary_files ${restore} \n[y/n] "
-		 if $arg_quiet; then
+       if $arg_quiet; then
             answer=Y
          else
             read answer
@@ -464,7 +464,7 @@ clean_up()
 
 # Workaround for integration testing
 set_nslog() {
-	export NS_LOG="'*=level_all|prefix'"
+   export NS_LOG="'*=level_all|prefix'"
 }
 
 ##################                   #################
