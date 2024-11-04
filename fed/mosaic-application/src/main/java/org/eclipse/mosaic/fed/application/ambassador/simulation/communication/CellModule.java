@@ -126,7 +126,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     }
 
     private Integer sendCamViaTopocast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
-        return super.sendCam(createMessageRouting().destination(camConfiguration.getTopocastReceiver()).topological());
+        return super.sendCam(createMessageRouting().topoCast(camConfiguration.getTopocastReceiver()));
     }
 
     private Integer sendCamViaGeoBroadcast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
@@ -134,7 +134,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
         final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
-        return super.sendCam(createMessageRouting().broadcast().geographical(destination));
+        return super.sendCam(createMessageRouting().geoBroadcastBasedOnUnicast(destination));
     }
 
     private Integer sendCamViaGeoBroadcastMbms(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
@@ -142,7 +142,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
         final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
-        return super.sendCam(createMessageRouting().broadcast().mbms(destination));
+        return super.sendCam(createMessageRouting().geoBroadcastMbms(destination));
     }
 
     /**
