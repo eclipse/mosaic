@@ -135,17 +135,17 @@ public class SnsAmbassadorTest {
 
         //RUN + ASSERT
         AdHocMessageRoutingBuilder adHocMessageRoutingBuilder = new AdHocMessageRoutingBuilder("veh_0", vehToPosition.get("veh_0"));
-        MessageRouting routing1 = adHocMessageRoutingBuilder.viaChannel(AdHocChannel.CCH).topoBroadCast();
+        MessageRouting routing1 = adHocMessageRoutingBuilder.channel(AdHocChannel.CCH).broadcast().topological();
         sendMessage(routing1);
         assertReceivedMessages("veh_1");
 
         adHocMessageRoutingBuilder = new AdHocMessageRoutingBuilder("veh_1", vehToPosition.get("veh_1"));
-        MessageRouting routing2 = adHocMessageRoutingBuilder.viaChannel(AdHocChannel.CCH).topoBroadCast();
+        MessageRouting routing2 = adHocMessageRoutingBuilder.channel(AdHocChannel.CCH).broadcast().topological();
         sendMessage(routing2);
         assertReceivedMessages("veh_0", "veh_2");
 
         adHocMessageRoutingBuilder = new AdHocMessageRoutingBuilder("veh_2", vehToPosition.get("veh_2"));
-        MessageRouting routing3 = adHocMessageRoutingBuilder.viaChannel(AdHocChannel.CCH).topoBroadCast();
+        MessageRouting routing3 = adHocMessageRoutingBuilder.channel(AdHocChannel.CCH).broadcast().topological();
 
         sendMessage(routing3);
         assertReceivedMessages();
@@ -168,8 +168,8 @@ public class SnsAmbassadorTest {
         // RUN + ASSERT
         AdHocMessageRoutingBuilder adHocMessageRoutingBuilder = new AdHocMessageRoutingBuilder("veh_0", vehToPosition.get("veh_0"));
         MessageRouting routing1 = adHocMessageRoutingBuilder
-                .viaChannel(AdHocChannel.CCH)
-                .geoBroadCast(new GeoCircle(vehToPosition.get("veh_2"), 300));
+                .channel(AdHocChannel.CCH)
+                .broadcast().geographical(new GeoCircle(vehToPosition.get("veh_2"), 300));
         sendMessage(routing1);
         assertReceivedMessages("veh_1", "veh_2");
 
