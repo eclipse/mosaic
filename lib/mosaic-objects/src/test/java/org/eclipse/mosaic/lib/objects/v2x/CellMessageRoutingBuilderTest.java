@@ -52,7 +52,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastCircle() {
         // run
-        MessageRouting routing = builder.geoBroadcastBasedOnUnicast(geoCircle);
+        MessageRouting routing = builder.broadcast().geographical(geoCircle);
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST, routing.getDestination().getType());
@@ -64,7 +64,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastRectangle() {
         // run
-        MessageRouting routing = builder.geoBroadcastBasedOnUnicast(geoRectangle);
+        MessageRouting routing = builder.broadcast().geographical(geoRectangle);
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST, routing.getDestination().getType());
@@ -76,7 +76,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastMbmsCircle() {
         // run
-        MessageRouting routing = builder.geoBroadcastMbms(geoCircle);
+        MessageRouting routing = builder.broadcast().mbms(geoCircle);
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST_MBMS, routing.getDestination().getType());
@@ -88,7 +88,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastMbmsRectangle() {
         // run
-        MessageRouting routing = builder.geoBroadcastMbms(geoRectangle);
+        MessageRouting routing = builder.broadcast().mbms(geoRectangle);
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST_MBMS, routing.getDestination().getType());
@@ -100,7 +100,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void topocast() {
         // run
-        MessageRouting routing = builder.topoCast(ipAddress);
+        MessageRouting routing = builder.destination(ipAddress).topological();
 
         // assert
         assertEquals(DestinationType.CELL_TOPOCAST, routing.getDestination().getType());

@@ -19,8 +19,6 @@ import static org.eclipse.mosaic.fed.cell.config.model.CNetworkProperties.GLOBAL
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.cell.chain.ChainManager;
 import org.eclipse.mosaic.fed.cell.chain.SampleV2xMessage;
@@ -34,7 +32,6 @@ import org.eclipse.mosaic.fed.cell.message.CellModuleMessage;
 import org.eclipse.mosaic.fed.cell.message.GeocasterResult;
 import org.eclipse.mosaic.fed.cell.message.StreamResult;
 import org.eclipse.mosaic.fed.cell.utility.RegionUtility;
-import org.eclipse.mosaic.lib.enums.ProtocolType;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoRectangle;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
@@ -44,18 +41,12 @@ import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
 import org.eclipse.mosaic.lib.math.RandomNumberGenerator;
 import org.eclipse.mosaic.lib.objects.addressing.CellMessageRoutingBuilder;
-import org.eclipse.mosaic.lib.objects.addressing.DestinationAddressContainer;
 import org.eclipse.mosaic.lib.objects.addressing.IpResolver;
-import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.communication.CellConfiguration;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
-import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.DATA;
 import org.eclipse.mosaic.rti.TIME;
-import org.eclipse.mosaic.rti.api.IllegalValueException;
-import org.eclipse.mosaic.rti.api.Interaction;
-import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
@@ -65,7 +56,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -141,7 +131,7 @@ public class GeocasterModuleTest {
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_2", cellModuleConfiguration);
         IpResolver.getSingleton().registerHost("veh_2");
 
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 0, 0, 2}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{10, 0, 0, 2}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         StreamResult streamResult =
                 new StreamResult(GLOBAL_NETWORK_ID, 200 * DATA.BIT, TransmissionMode.UplinkUnicast, "rsu_0", sampleV2XMessage);
@@ -175,7 +165,7 @@ public class GeocasterModuleTest {
         GeoPoint nw = GeoPoint.lonLat(13.333625793457031, 52.51563064800963);
         GeoPoint se = GeoPoint.lonLat(13.421859741210938, 52.5053554452214);
         GeoRectangle geoRectangle = new GeoRectangle(nw, se);
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).geoBroadcastBasedOnUnicast(geoRectangle));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).broadcast().geographical(geoRectangle));
         GeoPoint inRectangleKreuzberg = GeoPoint.lonLat(13.404693603515625, 52.50838549553871);
         GeoPoint inRectangleGrosserStern = GeoPoint.lonLat(13.349933624267578, 52.51388868388495);
         GeoPoint offRectangleKreuzberg = GeoPoint.lonLat(13.404006958007812, 52.498111211481216);
@@ -230,7 +220,7 @@ public class GeocasterModuleTest {
         GeoPoint nw = GeoPoint.lonLat(13.333625793457031, 52.51563064800963);
         GeoPoint se = GeoPoint.lonLat(13.421859741210938, 52.5053554452214);
         GeoRectangle geoRectangle = new GeoRectangle(nw, se);
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).geoBroadcastMbms(geoRectangle));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).broadcast().mbms(geoRectangle));
         GeoPoint inRectangleKreuzberg = GeoPoint.lonLat(13.404693603515625, 52.50838549553871);
         GeoPoint inRectangleGrosserStern = GeoPoint.lonLat(13.349933624267578, 52.51388868388495);
         GeoPoint offRectangleKreuzberg = GeoPoint.lonLat(13.404006958007812, 52.498111211481216);

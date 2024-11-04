@@ -162,7 +162,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageMulticast() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         final Multimap<CNetworkProperties, String> receiverMap = ArrayListMultimap.create();
         String[] receivers = {"veh_0", "veh_1", "veh_2"};
@@ -199,7 +199,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageMulticast_NodeLimited() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         final Multimap<CNetworkProperties, String> receiverMap = ArrayListMultimap.create();
         String[] receivers = {"veh_0", "veh_1", "veh_2"};
@@ -236,7 +236,7 @@ public class DownstreamModuleTest {
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1120 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1120 * DATA.BIT;
 
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         final Multimap<CNetworkProperties, String> receiverMap = ArrayListMultimap.create();
         String[] receivers = {"veh_0", "veh_1", "veh_2"};
@@ -277,7 +277,7 @@ public class DownstreamModuleTest {
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = 1120 * DATA.BIT;
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.maxCapacity = 1120 * DATA.BIT;
 
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         final Multimap<CNetworkProperties, String> receiverMap = ArrayListMultimap.create();
         String[] receivers = {"veh_0", "veh_1", "veh_2"};
@@ -335,7 +335,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimited() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
@@ -362,7 +362,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimitedRegionLessLimited() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
@@ -391,7 +391,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimitedRegionMoreLimited() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
@@ -423,7 +423,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         String receiverName = "veh_0";
@@ -452,7 +452,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageNodeUnlimited_plusFreeBandwidth() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
         String receiverName = "veh_0";
@@ -501,7 +501,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_regularMessageNodeUnlimitedRegionLimited() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
         String receiverName = "veh_0";
@@ -538,7 +538,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
@@ -576,7 +576,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_packetLossUdp() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
         String receiverName = "veh_0";
@@ -612,7 +612,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
@@ -644,7 +644,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         String receiverName = "veh_0";
@@ -677,7 +677,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         String receiverName = "veh_0";
@@ -707,7 +707,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         String receiverName = "veh_0";
@@ -741,7 +741,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         String receiverName = "veh_0";
@@ -769,7 +769,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_nodeDeactivatedUdp() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         String receiverName = "veh_0";
         Event event = createEvent(receiverName, sampleV2XMessage);
@@ -792,7 +792,7 @@ public class DownstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{1, 2, 3, 4})
+                        .destination(new byte[]{1, 2, 3, 4}).topological()
         );
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = createEvent("rsu_4", sampleV2XMessage);
@@ -815,7 +815,7 @@ public class DownstreamModuleTest {
     public void testProcessMessage_nodeNotRegisteredUdp() throws Exception {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = createEvent("rsu_4", sampleV2XMessage);
 
@@ -835,7 +835,7 @@ public class DownstreamModuleTest {
         NodeCapacityUtility.consumeCapacityDown(cellConfiguration, 200 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode(receiverName, cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.downlink.capacity = (42000 - 200) * DATA.BIT;
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{1, 2, 3, 4}).topological());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         StreamResult streamResult =
                 new StreamResult(GLOBAL_NETWORK_ID, 200 * DATA.BIT, TransmissionMode.DownlinkUnicast, receiverName, sampleV2XMessage);

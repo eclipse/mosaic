@@ -65,7 +65,7 @@ public class NackReceivingServer extends AbstractApplication<ServerOperatingSyst
     @Override
     public void processEvent(Event event) {
         if (event instanceof SendSimpleMessage sendSimpleMessage) {
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().topoCast(sendSimpleMessage.receiver);
+            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().destination(sendSimpleMessage.receiver).topological();
             getOs().getCellModule().sendV2xMessage(new GenericV2xMessage(routing, 8));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }
