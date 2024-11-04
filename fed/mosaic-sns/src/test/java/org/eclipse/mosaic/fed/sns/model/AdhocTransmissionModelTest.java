@@ -110,7 +110,7 @@ public class AdhocTransmissionModelTest {
 
         // RUN
         // use all entities as receivers
-        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateSinglehop(
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
                 "0", allNodes, transmissionParameter, allNodes
         );
 
@@ -136,7 +136,7 @@ public class AdhocTransmissionModelTest {
         when(allNodes.get("0").getRadius()).thenReturn(300d);
         // only use Receivers in range, this will be enforced by the transmission simulator
         Map<String, SimulationNode> receivers = getAllReceiversInRange("0");
-        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateSinglehop(
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
                 "0", receivers, transmissionParameter, allNodes
         );
 
@@ -315,7 +315,7 @@ public class AdhocTransmissionModelTest {
 
         // RUN
         // use all entities as receivers
-        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateSinglehop(
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
                 "0", allNodes, transmissionParameter, allNodes
         );
 
@@ -336,7 +336,7 @@ public class AdhocTransmissionModelTest {
         receiver.put("1", allNodes.get("1"));
 
         // RUN
-        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateSinglehop(
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
                 "0", receiver, transmissionParameter, allNodes
         );
 
@@ -441,7 +441,7 @@ public class AdhocTransmissionModelTest {
         receiver.put("1", allNodes.get("1"));
         int totalAttempts = 0;
         for (int i = 0; i < iterations; i++) {
-            tr = simpleTransmissionModel.simulateSinglehop("0", receiver, transmissionParameter, allNodes).entrySet().iterator().next().getValue();
+            tr = simpleTransmissionModel.simulateTopologicalSinglehop("0", receiver, transmissionParameter, allNodes).entrySet().iterator().next().getValue();
             totalAttempts += tr.attempts;
 
             assertTrue(tr.success);

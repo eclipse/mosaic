@@ -143,7 +143,7 @@ public class TransmissionSimulator {
         final NetworkAddress destinationAddress = dac.getAddress();
 
         if (destinationAddress.isBroadcast() && dac.getTimeToLive() != SINGLE_HOP_TTL) {
-            log.debug("SNS only supports single hop broadcasts. TTL {} will be dismissed and 1 will be used instead.", dac.getTimeToLive());
+            log.warn("SNS only supports single hop broadcasts. TTL {} will be dismissed and 1 will be used instead.", dac.getTimeToLive());
         }
 
         final TransmissionParameter transmissionParameter = new TransmissionParameter(
@@ -161,7 +161,7 @@ public class TransmissionSimulator {
             allPotentialReceivers.remove(senderName);
             log.debug("Addressed nodes in destination area={}", allPotentialReceivers);
             // transmission via singlehop broadcast
-            return transmissionModel.simulateSinglehop(
+            return transmissionModel.simulateTopologicalSinglehop(
                     senderName, allPotentialReceivers, transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
             );
         } else if (destinationAddress.isUnicast()) {
@@ -170,7 +170,7 @@ public class TransmissionSimulator {
 
             final boolean isInAreaOfSender = isNodeInArea(destination.getPosition(), getTopocastDestinationArea(sender));
             if (isInAreaOfSender) {
-                return transmissionModel.simulateSinglehop(
+                return transmissionModel.simulateTopologicalSinglehop(
                         senderName, Map.of(destinationNodeId, destination), transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
                 );
             } else {
@@ -179,13 +179,13 @@ public class TransmissionSimulator {
                 );
                 return Map.of(destinationNodeId, result);
             }
-        }
-
-        log.warn("""
+        } else {
+            log.warn("""
                 The SNS only supports SingleHop BroadCasts or MultiHop UniCasts when using Topological routing."
                 The given destination address {} is not valid. No message will be send.""", destinationAddress
-        );
-        return Map.of();
+            );
+            return Map.of();
+        }
     }
 
     /**

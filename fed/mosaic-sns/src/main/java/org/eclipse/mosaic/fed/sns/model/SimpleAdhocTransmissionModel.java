@@ -57,10 +57,10 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
      * @return The transmission result to the single receiver.
      */
     @Override
-    public Map<String, TransmissionResult> simulateSinglehop(
+    public Map<String, TransmissionResult> simulateTopologicalSinglehop(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        return calculateTransmissions(
+        return simulateMultipleTransmissions(
                 transmissionParameter.randomNumberGenerator,
                 receivers, transmissionParameter.delay, transmissionParameter.transmission
         );
@@ -81,7 +81,9 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
     public TransmissionResult simulateTopologicalUnicast(
             String senderName, String receiverName, SimulationNode receiver,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        return simulateTransmission(transmissionParameter.randomNumberGenerator, simpleMultihopDelay, simpleMultihopTransmission);
+        return simulateTransmission(
+                transmissionParameter.randomNumberGenerator, simpleMultihopDelay, simpleMultihopTransmission
+        );
     }
 
     /**
@@ -98,14 +100,14 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
     public Map<String, TransmissionResult> simulateGeocast(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        return calculateTransmissions(
+        return simulateMultipleTransmissions(
                 transmissionParameter.randomNumberGenerator, receivers, simpleMultihopDelay, simpleMultihopTransmission
         );
     }
 
     /**
      * This is a helper method to avoid duplicated code, it takes transmission parameters from
-     * the {@link #simulateGeocast} and {@link #simulateTopocast} methods and calculates the
+     * the {@link #simulateGeocast} and {@link #simulateTopologicalSinglehop} methods and calculates the
      * {@link TransmissionResult}s for all receivers.
      *
      * @param rng       {@link RandomNumberGenerator} for the evaluation of delays and transmission success
@@ -113,7 +115,7 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
      * @param delay     the delay specification from the configuration
      * @return a map containing the {@link TransmissionResult}s for all receivers
      */
-    private Map<String, TransmissionResult> calculateTransmissions(
+    private Map<String, TransmissionResult> simulateMultipleTransmissions(
             RandomNumberGenerator rng, Map<String, SimulationNode> receivers, Delay delay, CTransmission transmission) {
         Map<String, TransmissionResult> results = new HashMap<>();
         receivers.forEach((receiverName, receiver) -> results

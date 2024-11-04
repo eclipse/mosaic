@@ -42,8 +42,9 @@ public abstract class AdhocTransmissionModel {
      * @return A {@link TransmissionResult} calculated using the given parameters
      */
     TransmissionResult simulateTransmission(RandomNumberGenerator randomNumberGenerator, Delay delay, CTransmission transmission) {
-        TransmissionResult result =
-                TransmissionModel.simulateTransmission(randomNumberGenerator, transmission.lossProbability, transmission.maxRetries);
+        TransmissionResult result = TransmissionModel.simulateTransmission(
+                randomNumberGenerator, transmission.lossProbability, transmission.maxRetries
+        );
         result.delay = delay.generateDelay(randomNumberGenerator, 0); // speed of node is only relevant for not-supported GammaSpeedDelay
         result.numberOfHops += 1;
         return result;
@@ -59,7 +60,7 @@ public abstract class AdhocTransmissionModel {
      * @param currentNodes          a reference to all currently online nodes
      * @return Map of the receivers and their transmission results.
      */
-    public abstract Map<String, TransmissionResult> simulateSinglehop(
+    public abstract Map<String, TransmissionResult> simulateTopologicalSinglehop(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes
     );
