@@ -35,8 +35,8 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
     private final static Logger log = LoggerFactory.getLogger(SimpleAdhocTransmissionModel.class);
 
     @Override
-    public Map<String, TransmissionResult> simulateTopocast(String senderName, Map<String, SimulationNode> receivers,
-                                                            TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
+    public Map<String, TransmissionResult> simulateTopologicalSinglehop(String senderName, Map<String, SimulationNode> receivers,
+                                                                        TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
         Map<String, TransmissionResult> results = new HashMap<>();
         receivers.forEach((receiverName, receiver) -> results
                 .put(receiverName, simulateTransmission(
@@ -46,44 +46,53 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
     }
 
     @Override
+    public TransmissionResult simulateTopologicalUnicast(
+            String senderName, String receiverName, SimulationNode receiver,
+            TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
+        final Map<String, SimulationNode> receivers = Map.of(receiverName, receiver);
+        final Tuple<String, TransmissionResult> forwardingResult = forwarding(senderName, receivers, transmissionParameter, currentNodes);
+        return forwardingResult != null ? forwardingResult.getB() : new TransmissionResult(false);
+    }
+
+    @Override
     public Map<String, TransmissionResult> simulateGeocast(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        Map<String, TransmissionResult> results;
+
         // sender in destination area or can reach unit in destination area (flooding)
         if (canReachEntityInDestinationArea(senderName, receivers, currentNodes)) {
-            receivers.remove(senderName); // sender should never receive its own message
-            results = flooding(senderName, receivers, transmissionParameter, currentNodes);
-        } else { // sender outside destination area (forwarding than flooding)
-            Tuple<String, TransmissionResult> nodeInsideDestinationArea =
-                    forwarding(senderName, receivers, transmissionParameter, currentNodes);
+            return flooding(senderName, receivers, transmissionParameter, currentNodes);
+        } else { // sender outside destination area (forwarding then flooding)
+            final Tuple<String, TransmissionResult> nodeInsideDestinationArea = forwarding(
+                    senderName, receivers, transmissionParameter, currentNodes
+            );
             if (nodeInsideDestinationArea == null) { // if no node has been reached while forwarding GeoArea, set all results to failed
                 Map<String, TransmissionResult> unsuccessfulForwardAndFlood = new HashMap<>();
                 receivers.forEach((receiverName, receiver) ->
                         unsuccessfulForwardAndFlood.put(receiverName, new TransmissionResult(false)));
-                results = unsuccessfulForwardAndFlood;
                 log.info("Greedy Forwarding to destination area failed");
+                return unsuccessfulForwardAndFlood;
             } else {
-                String newSenderName = nodeInsideDestinationArea.getA(); // get name of node that was reached using greedy forwarding
-                double forwardingDelay = nodeInsideDestinationArea.getB().delay; // get delay from node that was reached
-                int forwardingNumberOfHops = nodeInsideDestinationArea.getB().numberOfHops; // get number of hops of node that was reached
-                transmissionParameter.ttl -= forwardingNumberOfHops; // subtract number of hops from forwarding
-                results = flooding(newSenderName, receivers, transmissionParameter, currentNodes);
+                final String floodingInitiatorName = nodeInsideDestinationArea.getA(); // get name of node that was reached using greedy forwarding
+                final TransmissionResult forwardingTransmission = nodeInsideDestinationArea.getB(); // get hops/delay from node that was reached
+                transmissionParameter.ttl -= forwardingTransmission.numberOfHops; // subtract number of hops from forwarding
+                final Map<String, TransmissionResult> results = flooding(floodingInitiatorName, receivers, transmissionParameter, currentNodes);
                 // add delay that was accumulated during greedy forwarding to all nodes
                 results.forEach((receiverName, transmissionResult) -> {
-                    transmissionResult.delay += forwardingDelay;
-                    transmissionResult.numberOfHops += forwardingNumberOfHops;
+                    transmissionResult.delay += forwardingTransmission.delay;
+                    transmissionResult.numberOfHops += forwardingTransmission.numberOfHops;
                 });
+                // set forwarding delay/hops for flooding initiator in destination area
+                results.put(floodingInitiatorName, forwardingTransmission);
+                return results;
             }
         }
-
-        return results;
     }
 
     /**
      * The Flood Transmission simulates a flooding approach to using multihop messages.
      * A vehicle sends messages to every vehicle in range which in turn relay the message to all vehicles in their range.
-     * This algorithm is result orientated meaning that the the actual transmissions are not simulated.
+     * This algorithm is result orientated meaning that the actual transmissions are not simulated.
      *
      * <pre>
      * The transmission is also instant, the delay for the single steps get added at the end;
@@ -99,15 +108,16 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
     private Map<String, TransmissionResult> flooding(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        Map<String, TransmissionResult> results = new HashMap<>();
-        receivers.forEach((receiverName, receiver) -> results.put(receiverName, new TransmissionResult(false, 0)));
-
         // this map is used to represent all entities, that will be flooding
         Map<String, SimulationNode> floodingEntities = new HashMap<>();
         floodingEntities.put(senderName, currentNodes.get(senderName));
 
         // in the beginning this reflects all receivers except the sender
         Map<String, SimulationNode> receiversUnsatisfied = new HashMap<>(receivers);
+        receiversUnsatisfied.remove(senderName);
+
+        Map<String, TransmissionResult> results = new HashMap<>();
+        receivers.forEach((receiverName, receiver) -> results.put(receiverName, new TransmissionResult(false, 0)));
 
         // this map holds all entities, that can be reached with a single hop
         Map<String, SimulationNode> entitiesInReach;
@@ -116,12 +126,14 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
         while (!receiversUnsatisfied.isEmpty() && currentDepth < transmissionParameter.ttl) {
             ++currentDepth;
 
+            boolean floodingProgressed = false;
+
             // this map reflects all future sender after a flooding step is completed
             Map<String, SimulationNode> foundAndSuccessfulTransmission = new HashMap<>();
 
-            // do this for all of the currently sending entities
+            // do this for all the currently sending entities
             for (Map.Entry<String, SimulationNode> floodingEntityEntry : floodingEntities.entrySet()) {
-                CartesianArea singleHopReachArea = new CartesianCircle(
+                final CartesianArea singleHopReachArea = new CartesianCircle(
                         floodingEntityEntry.getValue().getPosition(),
                         floodingEntityEntry.getValue().getRadius()
                 );
@@ -129,9 +141,9 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
                 entitiesInReach = TransmissionSimulator.getEntitiesInArea(receiversUnsatisfied, singleHopReachArea);
 
                 // simulate transmission for unsatisfied receivers in reach
-
-                Map<String, TransmissionResult> transmissionResults = new HashMap<>();
+                final Map<String, TransmissionResult> transmissionResults = new HashMap<>();
                 for (Map.Entry<String, SimulationNode> entry : entitiesInReach.entrySet()) {
+                    floodingProgressed = true;
                     transmissionResults.put(
                             entry.getKey(),
                             simulateTransmission(
@@ -157,6 +169,11 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
             }
             floodingEntities.clear(); // reset flooding entities
             floodingEntities.putAll(foundAndSuccessfulTransmission); // new entities which will be used as start nodes
+
+            if (!floodingProgressed) {
+                return results;
+            }
+
         }
         return results;
     }
@@ -191,20 +208,19 @@ public class SophisticatedAdhocTransmissionModel extends AdhocTransmissionModel 
                     currentEntity.getPosition(),
                     currentEntity.getRadius()
             );
-            // get all reachable entities within singlehop range and remove sender
-            Map<String, SimulationNode> reachableEntities =
-                    TransmissionSimulator.getEntitiesInArea(currentNodes, singleHopReach);
-            reachableEntities.remove(senderName);
-            // try to find entity to build "pipeline" to destination area
-            String forwardingEntityName = getForwardingEntity(reachableEntities, receivers);
-            if (forwardingEntityName == null) { // if no entity to forward the message to was found, Forwarding fails
+            // get all reachable entities within singlehop range
+            final Map<String, SimulationNode> reachableEntities = TransmissionSimulator.getEntitiesInArea(currentNodes, singleHopReach);
+
+            // try to find next entity to build forwarding-chain towards destination area
+            final String forwardingEntityName = getForwardingEntity(reachableEntities, receivers);
+            if (forwardingEntityName == null || forwardingEntityName.equals(currentEntityName)) {
+                // if no entity to forward the message to was found, or if this entity is already closest, forwarding fails
                 return null;
             }
             // simulate the transmission to the forwarding entity
-            TransmissionResult transmissionResult =
-                    simulateTransmission(transmissionParameter.randomNumberGenerator,
-                            transmissionParameter.delay, transmissionParameter.transmission
-                    );
+            TransmissionResult transmissionResult = simulateTransmission(transmissionParameter.randomNumberGenerator,
+                    transmissionParameter.delay, transmissionParameter.transmission
+            );
             if (!transmissionResult.success) { // whenever the transmission on the way to the destination area fails, everything fails
                 return null;
             }
