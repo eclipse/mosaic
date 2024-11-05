@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,23 +92,20 @@ public class TransmissionSimulator {
         switch (dac.getType()) {
             case AD_HOC_TOPOCAST:
                 if (log.isDebugEnabled()) {
-                    log.debug(
-                            "Send v2xMessage.id={} from node={} as Topocast (singlehop) @time={}",
+                    log.debug("Send v2xMessage.id={} from node={} as Topocast (singlehop) @time={}",
                             interaction.getMessage().getId(), senderName, TIME.format(interaction.getTime())
                     );
                 }
                 return sendMessageAsTopocast(senderName, dac);
             case AD_HOC_GEOCAST:
                 if (log.isDebugEnabled()) {
-                    log.debug(
-                            "Send v2xMessage.id={} from={} as Geocast (geo routing) @time={}",
+                    log.debug( "Send v2xMessage.id={} from={} as Geocast (geo routing) @time={}",
                             interaction.getMessage().getId(), senderName, TIME.format(interaction.getTime())
                     );
                 }
                 return sendMessageAsGeocast(senderName, dac);
             default:
-                log.debug(
-                        "V2XMessage is not an ad hoc message. Skip this message. V2XMessage.id={}",
+                log.debug("V2XMessage is not an ad hoc message. Skip this message. V2XMessage.id={}",
                         interaction.getMessage().getId()
                 );
                 return null;
@@ -137,69 +133,63 @@ public class TransmissionSimulator {
     }
 
     /**
-     * Simulates topolocically-scoped Unicast or Broadcast as direct singlehop transmission.
-     * (NO multi-hops are implemented by now)
-     * <ol>
-     * <li>Verify if configured transmission can be send using the topocast logic
-     * <li>Differentiate between Unicast and Broadcast
-     * <li>Simulate transmission with one hop
-     * </ol>
+     * Simulates topolocically-scoped Unicast (singlehop or multihop transmissions) or Broadcast (only singlehop).
      *
      * @param senderName The Sender of the message.
      * @param dac        {@link DestinationAddressContainer} containing information about the destination for the message.
      * @return a Map containing the summarized transmission results
      */
     protected Map<String, TransmissionResult> sendMessageAsTopocast(String senderName, DestinationAddressContainer dac) {
-        NetworkAddress destinationAddress = dac.getAddress();
-        if (destinationAddress.isAnycast()) { // check for valid destination address
-            log.warn(
-                    "The SNS only supports SingleHopBroadCasts or SingleHopUniCasts when using TopoCasts."
-                            + " The given destination address {} is not valid. No message will be send.",
-                    destinationAddress
-            );
-            return null;
-        }
-        if (dac.getTimeToLive() != SINGLE_HOP_TTL) { // inform about dismissed TTL
-            log.debug("TTL {} will be dismissed and 1 will be used instead. For Topocast, SNS only supports SingleHopBroadCasts.", dac.getTimeToLive());
+        final NetworkAddress destinationAddress = dac.getAddress();
+
+        if (destinationAddress.isBroadcast() && dac.getTimeToLive() != SINGLE_HOP_TTL) {
+            log.warn("SNS only supports single hop broadcasts. TTL {} will be dismissed and 1 will be used instead.", dac.getTimeToLive());
         }
 
-        // accumulate all potential receivers in direct communication range
-        SimulationNode sender = SimulationEntities.INSTANCE.getOnlineNode(senderName);
-        Map<String, SimulationNode> allPotentialReceivers;
-        if (destinationAddress.isBroadcast()) { // SingleHopBroadCast
-            allPotentialReceivers = getPotentialBroadcastReceivers(getTopocastDestinationArea(sender));
-            // remove sender as single radios could not transmit and receive at the same time
-            allPotentialReceivers.remove(senderName);
-        } else { // SingleHopUniCast
-            allPotentialReceivers = getAddressedReceiver(destinationAddress, getTopocastDestinationArea(sender));
-        }
-        log.debug("Addressed nodes in destination area={}", allPotentialReceivers);
-
-        // perform actual transmission
-        TransmissionParameter transmissionParameter = new TransmissionParameter(
+        final TransmissionParameter transmissionParameter = new TransmissionParameter(
                 randomNumberGenerator,
                 config.singlehopDelay,
                 config.singlehopTransmission,
-                SINGLE_HOP_TTL
+                getTtl(dac)
         );
-        return transmissionModel.simulateTopocast(
-                senderName, allPotentialReceivers, transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
-        );
+        // accumulate all potential receivers in direct communication range
+        final SimulationNode sender = SimulationEntities.INSTANCE.getOnlineNode(senderName);
+
+        if (destinationAddress.isBroadcast()) { // SingleHopBroadCast
+            final var allPotentialReceivers = getPotentialBroadcastReceivers(getTopocastDestinationArea(sender));
+            // remove sender as single radios could not transmit and receive at the same time
+            allPotentialReceivers.remove(senderName);
+            log.debug("Addressed nodes in destination area={}", allPotentialReceivers);
+            // transmission via singlehop broadcast
+            return transmissionModel.simulateTopologicalSinglehop(
+                    senderName, allPotentialReceivers, transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
+            );
+        } else if (destinationAddress.isUnicast()) {
+            final String destinationNodeId = IpResolver.getSingleton().reverseLookup(destinationAddress.getIPv4Address());
+            final SimulationNode destination = SimulationEntities.INSTANCE.getOnlineNode(destinationNodeId);
+
+            final boolean isInAreaOfSender = isNodeInArea(destination.getPosition(), getTopocastDestinationArea(sender));
+            if (isInAreaOfSender) {
+                return transmissionModel.simulateTopologicalSinglehop(
+                        senderName, Map.of(destinationNodeId, destination), transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
+                );
+            } else {
+                final TransmissionResult result = transmissionModel.simulateTopologicalUnicast(
+                        senderName, destinationNodeId, destination, transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
+                );
+                return Map.of(destinationNodeId, result);
+            }
+        } else {
+            log.warn("""
+                The SNS only supports SingleHop BroadCasts or MultiHop UniCasts when using Topological routing."
+                The given destination address {} is not valid. No message will be send.""", destinationAddress
+            );
+            return Map.of();
+        }
     }
 
     /**
-     * Simulates geocast routing transmission.
-     * (ONLY Broadcasts are implemented by now)
-     * <ol>
-     * <li>Verify if configured transmission can be send using the topocast logic
-     * <li>determine all potential receiver nodes in the destination area
-     * (including original sender due to re-broadcasting in geocast)</li>
-     * <li>simulate message transmission via
-     * <ol type="a">
-     * <li>simplified Multihop mode (possibly needed hops to reach destination not regarded)
-     * <li>with more elaborated approaching and flooding modes
-     * </ol>
-     * </ol>
+     * Simulates geocast routing transmission, either broadcast or unicast.
      *
      * @param senderName The Sender of the message.
      * @param dac        {@link DestinationAddressContainer} containing information about the destination for the message.
@@ -207,29 +197,49 @@ public class TransmissionSimulator {
      */
     protected Map<String, TransmissionResult> sendMessageAsGeocast(String senderName, DestinationAddressContainer dac) {
         if (dac.getGeoArea() == null) {
-            return Collections.EMPTY_MAP;
+            log.error("No target area given for Geographic routing. No message will be send.");
+            return Map.of();
         }
+        final NetworkAddress destinationAddress = dac.getAddress();
+        final Area<CartesianPoint> destinationArea = dac.getGeoArea().toCartesian();
 
-        Area<CartesianPoint> destinationArea = dac.getGeoArea().toCartesian();
-        Map<String, SimulationNode> allReceivers = getPotentialBroadcastReceivers(destinationArea);
-        log.debug("Addressed nodes in destination area={}", allReceivers);
+        final Map<String, SimulationNode> allReceivers;
+        if (destinationAddress.isUnicast()) {
+            final String destinationNodeId = IpResolver.getSingleton().reverseLookup(destinationAddress.getIPv4Address());
+            if (getPotentialBroadcastReceivers(destinationArea).containsKey(destinationNodeId)) {
+                allReceivers = Map.of(destinationNodeId, SimulationEntities.INSTANCE.getOnlineNode(destinationNodeId));
+            } else {
+                return Map.of();
+            }
+        } else if (destinationAddress.isBroadcast()){
+            allReceivers = getPotentialBroadcastReceivers(destinationArea);
+            log.debug("Addressed nodes in destination area={}", allReceivers);
+        } else {
+            log.warn("""
+                The SNS only supports BroadCasts or UniCasts when using geograpical routing."
+                The given destination address {} is not valid. No message will be send.""", destinationAddress
+            );
+            return Map.of();
+        }
 
         // get ttl value, this will be ignored for the simple transmission model
-        int ttl;
-        if (dac.getTimeToLive() == -1) {
-            ttl = config.maximumTtl; // ttl was null, which is interpreted as maximum
-        } else {
-            ttl = Math.min(dac.getTimeToLive(), config.maximumTtl); // ttl can't be higher than maximumTtl
-        }
-        TransmissionParameter transmissionParameter = new TransmissionParameter(
+        final TransmissionParameter transmissionParameter = new TransmissionParameter(
                 randomNumberGenerator,
                 config.singlehopDelay,
                 config.singlehopTransmission,
-                ttl
+                getTtl(dac)
         );
         return transmissionModel.simulateGeocast(
                 senderName, allReceivers, transmissionParameter, SimulationEntities.INSTANCE.getAllOnlineNodes()
         );
+    }
+
+    private int getTtl(DestinationAddressContainer dac) {
+        if (dac.getTimeToLive() == -1) {
+            return config.maximumTtl;
+        } else {
+            return Math.min(dac.getTimeToLive(), config.maximumTtl);
+        }
     }
 
     private Area<CartesianPoint> getTopocastDestinationArea(SimulationNode nodeData) {
@@ -242,7 +252,7 @@ public class TransmissionSimulator {
      * @param destinationArea destination area for transmission
      * @return a map containing the
      */
-    private Map<String, SimulationNode> getPotentialBroadcastReceivers(Area<CartesianPoint> destinationArea) {
+    private static Map<String, SimulationNode> getPotentialBroadcastReceivers(Area<CartesianPoint> destinationArea) {
         return getEntitiesInArea(SimulationEntities.INSTANCE.getAllOnlineNodes(), destinationArea);
     }
 
@@ -255,35 +265,14 @@ public class TransmissionSimulator {
      *                         It is called "range" because it reflects the communication range
      * @return A map of the given entities, which are in the destination area.
      */
-    public static Map<String, SimulationNode> getEntitiesInArea(
-            Map<String, SimulationNode> relevantEntities, Area<CartesianPoint> range) {
-        Map<String, SimulationNode> results = new HashMap<>();
-
-        for (Map.Entry<String, SimulationNode> entityEntry : relevantEntities.entrySet()) {
+    public static Map<String, SimulationNode> getEntitiesInArea(Map<String, SimulationNode> relevantEntities, Area<CartesianPoint> range) {
+        final Map<String, SimulationNode> results = new HashMap<>();
+        for (var entityEntry : relevantEntities.entrySet()) {
             if (range.contains(entityEntry.getValue().getPosition())) {
                 results.put(entityEntry.getKey(), entityEntry.getValue());
             }
         }
         return results;
-    }
-
-    /**
-     * Returns the addressed receiver, if it is known inside the destination area (more specific check compared to broadcast).
-     * Note: The resulting Map will always contain 0 or 1 elements.
-     *
-     * @param destinationAddress address of the potential receiver
-     * @param reachableArea      area, that can be reached with one hop by the sender
-     * @return if receiver was found single element map, else empty map
-     */
-    private Map<String, SimulationNode> getAddressedReceiver(NetworkAddress destinationAddress, Area<CartesianPoint> reachableArea) {
-        final Map<String, SimulationNode> receiver = new HashMap<>();
-
-        final String destinationNodeId = IpResolver.getSingleton().reverseLookup(destinationAddress.getIPv4Address());
-        SimulationNode entity = SimulationEntities.INSTANCE.getOnlineNode(destinationNodeId);
-        if (entity != null && isNodeInArea(entity.getPosition(), reachableArea)) {
-            receiver.put(destinationNodeId, entity);
-        }
-        return receiver;
     }
 
     private boolean isNodeInArea(CartesianPoint nodePosition, Area<CartesianPoint> destinationArea) {

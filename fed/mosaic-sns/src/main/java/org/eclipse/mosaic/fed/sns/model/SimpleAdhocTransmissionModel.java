@@ -46,23 +46,43 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
      */
     public CTransmission simpleMultihopTransmission = new CTransmission();
 
+
     /**
-     * Simulates a direct transmission between the sender and receivers. Note: If a single addressed receiver is used
-     * the 'receivers' map will only contain one entry as well as the results.
+     * Simulates a direct transmission between the sender and receivers.
      *
      * @param senderName            The sender of the transmission.
-     * @param receivers             The receivers of the transmission.
+     * @param receivers             The receivers of the unicast transmission.
      * @param transmissionParameter Data class holding the maximumTtl, the {@link Delay} and the current map of simulated entities
      * @param currentNodes          a reference to all currently online nodes
-     * @return Map of the receivers and their transmission results.
+     * @return The transmission result to the single receiver.
      */
     @Override
-    public Map<String, TransmissionResult> simulateTopocast(
+    public Map<String, TransmissionResult> simulateTopologicalSinglehop(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        return calculateTransmissions(
+        return simulateMultipleTransmissions(
                 transmissionParameter.randomNumberGenerator,
                 receivers, transmissionParameter.delay, transmissionParameter.transmission
+        );
+    }
+
+    /**
+     * Simulates a multi-hop transmission between the sender and a single receiver. Uses the configured multi-hop delay as a simplification.
+     * No actual multi-hop is simulated (use {@link SophisticatedAdhocTransmissionModel} instead).
+     *
+     * @param senderName            The sender of the transmission.
+     * @param receiverName          The receiver name of the unicast transmission.
+     * @param receiver              The receiver node information of the unicast transmission.
+     * @param transmissionParameter Data class holding the maximumTtl, the {@link Delay} and the current map of simulated entities
+     * @param currentNodes          a reference to all currently online nodes
+     * @return The transmission result to the single receiver.
+     */
+    @Override
+    public TransmissionResult simulateTopologicalUnicast(
+            String senderName, String receiverName, SimulationNode receiver,
+            TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
+        return simulateTransmission(
+                transmissionParameter.randomNumberGenerator, simpleMultihopDelay, simpleMultihopTransmission
         );
     }
 
@@ -80,14 +100,14 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
     public Map<String, TransmissionResult> simulateGeocast(
             String senderName, Map<String, SimulationNode> receivers,
             TransmissionParameter transmissionParameter, Map<String, SimulationNode> currentNodes) {
-        return calculateTransmissions(
+        return simulateMultipleTransmissions(
                 transmissionParameter.randomNumberGenerator, receivers, simpleMultihopDelay, simpleMultihopTransmission
         );
     }
 
     /**
      * This is a helper method to avoid duplicated code, it takes transmission parameters from
-     * the {@link #simulateGeocast} and {@link #simulateTopocast} methods and calculates the
+     * the {@link #simulateGeocast} and {@link #simulateTopologicalSinglehop} methods and calculates the
      * {@link TransmissionResult}s for all receivers.
      *
      * @param rng       {@link RandomNumberGenerator} for the evaluation of delays and transmission success
@@ -95,7 +115,7 @@ public class SimpleAdhocTransmissionModel extends AdhocTransmissionModel {
      * @param delay     the delay specification from the configuration
      * @return a map containing the {@link TransmissionResult}s for all receivers
      */
-    private Map<String, TransmissionResult> calculateTransmissions(
+    private Map<String, TransmissionResult> simulateMultipleTransmissions(
             RandomNumberGenerator rng, Map<String, SimulationNode> receivers, Delay delay, CTransmission transmission) {
         Map<String, TransmissionResult> results = new HashMap<>();
         receivers.forEach((receiverName, receiver) -> results

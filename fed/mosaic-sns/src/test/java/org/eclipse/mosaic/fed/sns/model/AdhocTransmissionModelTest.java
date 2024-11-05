@@ -42,9 +42,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class AdhocTransmissionModelTest {
 
@@ -54,7 +52,6 @@ public class AdhocTransmissionModelTest {
     private final RandomNumberGenerator rng = new DefaultRandomNumberGenerator(82937858189209L);
 
     private final Map<String, SimulationNode> allNodes = new HashMap<>();
-    private final Set<String> nodesInRow = new HashSet<>();
     private final Map<String, SimulationNode> nodesRandomlyDistributed = new HashMap<>();
 
     @Rule
@@ -62,7 +59,6 @@ public class AdhocTransmissionModelTest {
 
     @Before
     public void setup() {
-
         simpleTransmissionModel = new SimpleAdhocTransmissionModel();
         ConstantDelay constantDelay = new ConstantDelay();
         constantDelay.delay = 1; // used to obtain single valued delays
@@ -81,7 +77,6 @@ public class AdhocTransmissionModelTest {
             when(newNode.getPosition()).thenReturn(GeoPoint.latLon(currentLatitude, currentLongitude).toCartesian());
             when(newNode.getRadius()).thenReturn(adhocRadius);
             allNodes.put("" + i, newNode);
-            nodesInRow.add("" + i);
         }
 
         double randomLatitude;
@@ -115,8 +110,9 @@ public class AdhocTransmissionModelTest {
 
         // RUN
         // use all entities as receivers
-        Map<String, TransmissionResult> directTransmissionResults =
-                simpleTransmissionModel.simulateTopocast("0", allNodes, transmissionParameter, allNodes);
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
+                "0", allNodes, transmissionParameter, allNodes
+        );
 
         // ASSERT
         // unit without wifi capabilities can't receive transmission
@@ -133,16 +129,16 @@ public class AdhocTransmissionModelTest {
         CTransmission transmission = new CTransmission();
 
         // Note: ttl parameter doesn't matter for direct transmission, the SNS would log a warning if TTL is != 1
-        TransmissionParameter transmissionParameter = new TransmissionParameter(rng, simpleRandomDelay, transmission, 1
-        );
+        TransmissionParameter transmissionParameter = new TransmissionParameter(rng, simpleRandomDelay, transmission, 1);
 
         // RUN
         // increase range of sender
         when(allNodes.get("0").getRadius()).thenReturn(300d);
         // only use Receivers in range, this will be enforced by the transmission simulator
         Map<String, SimulationNode> receivers = getAllReceiversInRange("0");
-        Map<String, TransmissionResult> directTransmissionResults =
-                simpleTransmissionModel.simulateTopocast("0", receivers, transmissionParameter, allNodes);
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
+                "0", receivers, transmissionParameter, allNodes
+        );
 
         // ASSERT
 
@@ -169,9 +165,9 @@ public class AdhocTransmissionModelTest {
 
         // RUN
         // use all randomly distributed nodes as receiver except sender
-        Map<String, TransmissionResult> floodingTransmissionResults =
-                sophisticatedTransmissionModel
-                        .simulateGeocast("30", getAllRandomlyDistributedEntitiesRemoveSender("30"), transmissionParameter, allNodes);
+        Map<String, TransmissionResult> floodingTransmissionResults = sophisticatedTransmissionModel.simulateGeocast(
+                "30", getAllRandomlyDistributedEntitiesRemoveSender("30"), transmissionParameter, allNodes
+        );
 
         // ASSERT
         // there should be results for every anticipated receiver
@@ -207,9 +203,9 @@ public class AdhocTransmissionModelTest {
         // RUN
 
         // use all randomly distributed nodes as receiver
-        Map<String, TransmissionResult> floodingTransmissionResults =
-                sophisticatedTransmissionModel
-                        .simulateGeocast("30", getAllRandomlyDistributedEntitiesRemoveSender("30"), transmissionParameter, allNodes);
+        Map<String, TransmissionResult> floodingTransmissionResults = sophisticatedTransmissionModel.simulateGeocast(
+                "30", getAllRandomlyDistributedEntitiesRemoveSender("30"), transmissionParameter, allNodes
+        );
 
         // ASSERT
         // there should be results for every anticipated receiver
@@ -243,10 +239,7 @@ public class AdhocTransmissionModelTest {
         // RUN
         // use all randomly distributed nodes as receiver
         Map<String, TransmissionResult> floodingTransmissionResults = sophisticatedTransmissionModel.simulateGeocast(
-                "30",
-                getAllRandomlyDistributedEntitiesRemoveSender("30"),
-                transmissionParameter,
-                allNodes
+                "30", getAllRandomlyDistributedEntitiesRemoveSender("30"), transmissionParameter, allNodes
         );
 
         // ASSERT
@@ -277,8 +270,9 @@ public class AdhocTransmissionModelTest {
 
         // RUN
         try {
-            sophisticatedTransmissionModel
-                    .simulateGeocast("0", getAllRandomlyDistributedEntitiesRemoveSender("0"), transmissionParameter, allNodes);
+            sophisticatedTransmissionModel.simulateGeocast(
+                    "0", getAllRandomlyDistributedEntitiesRemoveSender("0"), transmissionParameter, allNodes
+            );
         } catch (RuntimeException e) {
             assertEquals("Sender has to be in destination area to use flooding as transmission model.", e.getMessage());
         }
@@ -296,10 +290,7 @@ public class AdhocTransmissionModelTest {
         // RUN
         // use randomly distributed entities as receivers
         Map<String, TransmissionResult> transmissionResult = sophisticatedTransmissionModel.simulateGeocast(
-                "0",
-                getAllRandomlyDistributedEntitiesRemoveSender("0"),
-                transmissionParameter,
-                allNodes
+                "0", getAllRandomlyDistributedEntitiesRemoveSender("0"), transmissionParameter, allNodes
         );
         // ASSERT
         assertNotNull(transmissionResult);
@@ -324,8 +315,9 @@ public class AdhocTransmissionModelTest {
 
         // RUN
         // use all entities as receivers
-        Map<String, TransmissionResult> directTransmissionResults =
-                simpleTransmissionModel.simulateTopocast("0", allNodes, transmissionParameter, allNodes);
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
+                "0", allNodes, transmissionParameter, allNodes
+        );
 
         // ASSERT
         // for the entity without wifi module there won't be any transmission attempts
@@ -337,18 +329,63 @@ public class AdhocTransmissionModelTest {
     }
 
     @Test
-    public void simulateTopocast_addressingSingleReceiver() {
+    public void simulateSingleHopUnicast_success() {
         // SETUP
         TransmissionParameter transmissionParameter = generateTransmissionParameter_NoLoss(1);
         Map<String, SimulationNode> receiver = new HashMap<>();
         receiver.put("1", allNodes.get("1"));
 
         // RUN
-        Map<String, TransmissionResult> directTransmissionResults =
-                simpleTransmissionModel.simulateTopocast("0", receiver, transmissionParameter, allNodes);
+        Map<String, TransmissionResult> directTransmissionResults = simpleTransmissionModel.simulateTopologicalSinglehop(
+                "0", receiver, transmissionParameter, allNodes
+        );
 
         // ASSERT
         assertTrue(directTransmissionResults.get("1").success);
+    }
+
+    @Test
+    public void simulateMultiHopTopoUnicast_success() {
+        // SETUP
+        TransmissionParameter transmissionParameter = generateTransmissionParameter_NoLoss(10);
+
+        // RUN
+        TransmissionResult transmissionResult = sophisticatedTransmissionModel.simulateTopologicalUnicast(
+                "0", "5", allNodes.get("5"), transmissionParameter, allNodes
+        );
+
+        // ASSERT
+        assertTrue(transmissionResult.success);
+        assertEquals(5, transmissionResult.numberOfHops);
+    }
+
+    @Test
+    public void simulateMultiHopTopoUnicast_tooManyHopsRequired() {
+        // SETUP
+        TransmissionParameter transmissionParameter = generateTransmissionParameter_NoLoss(4); // max 4 hops, but target is 5 hops away
+
+        // RUN
+        TransmissionResult transmissionResult = sophisticatedTransmissionModel.simulateTopologicalUnicast(
+                "0", "5", allNodes.get("5"), transmissionParameter, allNodes
+        );
+
+        // ASSERT
+        assertFalse(transmissionResult.success);
+    }
+
+    @Test
+    public void simulateGeoUnicast_success() {
+        // SETUP
+        TransmissionParameter transmissionParameter = generateTransmissionParameter_NoLoss(10);
+
+        // RUN
+        Map<String, TransmissionResult> transmissionResult = sophisticatedTransmissionModel.simulateGeocast(
+                "0", Map.of("5", allNodes.get("5")), transmissionParameter, allNodes
+        );
+
+        // ASSERT
+        assertTrue(transmissionResult.get("5").success);
+        assertEquals(5, transmissionResult.get("5").numberOfHops);
     }
 
     @Test
@@ -359,10 +396,7 @@ public class AdhocTransmissionModelTest {
         // RUN
         // use all randomly distributed nodes as receiver
         Map<String, TransmissionResult> floodingTransmissionResults = sophisticatedTransmissionModel.simulateGeocast(
-                "30",
-                getAllRandomlyDistributedEntitiesRemoveSender("30"),
-                transmissionParameter,
-                allNodes
+                "30", getAllRandomlyDistributedEntitiesRemoveSender("30"), transmissionParameter, allNodes
         );
 
         // ASSERT
@@ -407,8 +441,7 @@ public class AdhocTransmissionModelTest {
         receiver.put("1", allNodes.get("1"));
         int totalAttempts = 0;
         for (int i = 0; i < iterations; i++) {
-            tr = simpleTransmissionModel
-                    .simulateTopocast("0", receiver, transmissionParameter, allNodes).entrySet().iterator().next().getValue();
+            tr = simpleTransmissionModel.simulateTopologicalSinglehop("0", receiver, transmissionParameter, allNodes).entrySet().iterator().next().getValue();
             totalAttempts += tr.attempts;
 
             assertTrue(tr.success);
