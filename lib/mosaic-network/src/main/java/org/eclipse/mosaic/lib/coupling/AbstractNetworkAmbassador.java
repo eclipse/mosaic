@@ -168,7 +168,7 @@ public abstract class AbstractNetworkAmbassador extends AbstractFederateAmbassad
         try {
             config = new ObjectInstantiation<>(CAbstractNetworkAmbassador.class).readFile(ambassadorParameter.configuration);
         } catch (InstantiationException | NullPointerException e) {
-            log.warn("Could not read ambassador configuration in '{}'. Using default one instead.", ambassadorParameter.configuration);
+            log.warn("Problem when instantiating ambassador configuration from '{}'. Ignore file and try again with default config.", ambassadorParameter.configuration);
             config = new CAbstractNetworkAmbassador();
         }
     }
