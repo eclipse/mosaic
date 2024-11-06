@@ -55,6 +55,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
     @Override
     public void onStartup() {
         getOs().getAdHocModule().enable();
+        getOs().getBasicSensorModule().enable();
     }
 
     /**
@@ -67,7 +68,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
     @Override
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
 
-        boolean obstacleDetected = getOs().getStateOfEnvironmentSensor(SensorType.OBSTACLE) > 0;
+        boolean obstacleDetected = getOs().getBasicSensorModule().getStrengthOf(SensorType.OBSTACLE) > 0;
 
         // Initiate emergency brake if obstacle is detected
         if (obstacleDetected && !emergencyBrake) {
