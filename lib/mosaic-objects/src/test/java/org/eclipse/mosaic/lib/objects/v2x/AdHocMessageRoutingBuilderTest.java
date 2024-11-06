@@ -62,7 +62,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void testAllTTLValues() {
         for (int i = 1; i <= MAXIMUM_TTL; ++i) {
-            MessageRouting routing = builder.channel(adHocChannel).destination(ipAddress).topological(i).build();
+            MessageRouting routing = builder.channel(adHocChannel).destination(ipAddress).topological().hops(i).build();
             assertEquals(i, routing.getDestination().getTimeToLive());
         }
     }
@@ -72,7 +72,7 @@ public class AdHocMessageRoutingBuilderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testLowerTTL() {
-        builder.channel(adHocChannel).destination(ipAddress).topological(-1);
+        builder.channel(adHocChannel).destination(ipAddress).topological().hops(-1);
     }
 
     /**
@@ -80,7 +80,7 @@ public class AdHocMessageRoutingBuilderTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testHigherTTL() {
-        builder.channel(adHocChannel).destination(ipAddress).topological(256);
+        builder.channel(adHocChannel).destination(ipAddress).topological().hops(256);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void topoBroadcastAdHocChannelHops() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological(hops).build();
+        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological().hops(hops).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_TOPOCAST, routing.getDestination().getType());
