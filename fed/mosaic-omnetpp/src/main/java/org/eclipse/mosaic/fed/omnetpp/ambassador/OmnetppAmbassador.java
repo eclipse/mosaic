@@ -44,11 +44,11 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
     @Nonnull
     @Override
     public FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) {
+        String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini");
+        String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
+        String inetSourceDirectories = "inet:omnetpp-federate/src";
         switch (os) {
             case LINUX:
-                String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini");
-                String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
-                String inetSourceDirectories = "inet:omnetpp-federate/src";
                 return new ExecutableFederateExecutor(this.descriptor, "omnetpp-federate/omnetpp-federate",
                         "-u", "Cmdenv",
                         "-f", omnetppConfigFilePath,
@@ -57,6 +57,13 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
                         "--mosaiceventscheduler-port=" + port
                 );
             case WINDOWS:
+                return new ExecutableFederateExecutor(this.descriptor, "wsl.exe", "omnetpp-federate/omnetpp-federate",
+                        "-u", "Cmdenv",
+                        "-f", omnetppConfigFilePath,
+                        "-n", inetSourceDirectories,
+                        "--mosaiceventscheduler-host=" + host,
+                        "--mosaiceventscheduler-port=" + port
+                );
             case UNKNOWN:
             default:
                 log.error("Operating system not supported by omnetpp");
