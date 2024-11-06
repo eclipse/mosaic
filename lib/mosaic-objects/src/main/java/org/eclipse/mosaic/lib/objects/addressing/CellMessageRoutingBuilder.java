@@ -44,12 +44,15 @@ public class CellMessageRoutingBuilder {
     private DestinationType routing = null;
     private GeoArea targetArea = null;
 
+    private boolean destinationSet = false;
+    private boolean routingSet = false;
+
     /**
      * The {@link ProtocolType} for the {@link MessageRouting}, on default this will be
      * {@link ProtocolType#UDP}.
      */
     private ProtocolType protocolType = ProtocolType.UDP;
-    private boolean protocolChanged = false;
+    private boolean protocolSet = false;
 
     /**
      * Constructor for {@link CellMessageRoutingBuilder} to set required fields.
@@ -71,9 +74,32 @@ public class CellMessageRoutingBuilder {
     }
 
     private MessageRouting build() {
-        return new MessageRouting(new DestinationAddressContainer(
-                routing, destination, null, null, targetArea, protocolType
-        ), sourceAddressContainer);
+        checkNecessaryValues();
+        MessageRouting messageRouting =  new MessageRouting(new DestinationAddressContainer(
+                routing, destination, null, null, targetArea, protocolType),
+                sourceAddressContainer);
+        resetValues();
+        return messageRouting;
+    }
+
+    private MessageRouting build(DestinationAddressContainer dac) {
+        if (streamDuration < 0) {
+            return new MessageRouting(dac, sourceAddressContainer);
+        } else {
+            return new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
+        }
+    }
+
+    /**
+     * Defines stream properties for the message to send.
+     *
+     * @param streamDuration         The duration of the stream in ns.
+     * @param streamBandwidthInBitPs The bandwidth of the stream in bits per second.
+     */
+    public CellMessageRoutingBuilder streaming(long streamDuration, long streamBandwidthInBitPs) {
+        this.streamDuration = streamDuration;
+        this.streamBandwidthInBitPs = streamBandwidthInBitPs;
+        return this;
     }
 
     /**
@@ -84,7 +110,7 @@ public class CellMessageRoutingBuilder {
      */
     public CellMessageRoutingBuilder protocol(ProtocolType type) {
         protocolType = type;
-        protocolChanged = true;
+        protocolSet = true;
         return this;
     }
 
@@ -107,138 +133,72 @@ public class CellMessageRoutingBuilder {
         return protocol(ProtocolType.UDP);
     }
 
-    public RoutingSelector destination(NetworkAddress networkAddress) {
+    public CellMessageRoutingBuilder destination(NetworkAddress networkAddress) {
+        assert !destinationSet : "Destination was already set! Using first setting.";
         this.destination = networkAddress;
-        return new RoutingSelector();
-    }
-
-    public RoutingSelector destination(String receiverName) {
-        return destination(IpResolver.getSingleton().nameToIp(receiverName).getAddress());
-    }
-
-    public RoutingSelector destination(byte[] ipv4Address) {
-        this.destination = new NetworkAddress(ipv4Address);
-        return new RoutingSelector();
-    }
-
-    public RoutingSelector broadcast() {
-        this.destination = new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS);
-        return new RoutingSelector();
-    }
-
-    public DestinationSelector mbms(GeoArea area) {
-        routing = DestinationType.CELL_GEOCAST_MBMS;
-        targetArea = area;
-        return new DestinationSelector();
-    }
-
-    public DestinationSelector topological() {
-        routing = DestinationType.CELL_TOPOCAST;
-        return new DestinationSelector();
-    }
-
-    public DestinationSelector topological(int maxHops) {
-        routing = DestinationType.CELL_TOPOCAST;
-        return new DestinationSelector();
-    }
-
-    public DestinationSelector geographical(GeoArea area) {
-        routing = DestinationType.CELL_GEOCAST;
-        targetArea = area;
-        return new DestinationSelector();
-    }
-
-    public final class RoutingSelector {
-
-        public MessageRouting mbms(GeoArea area) {
-            CellMessageRoutingBuilder.this.mbms(area);
-            return build();
-        }
-
-        public MessageRouting topological() {
-            CellMessageRoutingBuilder.this.topological();
-            return build();
-        }
-
-        public MessageRouting topological(int maxHops) {
-            CellMessageRoutingBuilder.this.topological(maxHops);
-            return build();
-        }
-
-        public MessageRouting geographical(GeoArea area) {
-            CellMessageRoutingBuilder.this.geographical(area);
-            return build();
-        }
-
-        public RoutingSelector protocol(ProtocolType type) {
-            if (protocolChanged) {
-                log.warn("Protocol type has been set twice. First given type has been chosen.");
-                return this;
-            }
-            CellMessageRoutingBuilder.this.protocol(type);
-            return this;
-        }
-
-    }
-
-    public final class DestinationSelector {
-        public MessageRouting destination(String receiverName) {
-            CellMessageRoutingBuilder.this.destination(receiverName);
-            return build();
-        }
-
-        public MessageRouting destination(byte[] ipv4Address) {
-            CellMessageRoutingBuilder.this.destination(ipv4Address);
-            return build();
-        }
-
-        public MessageRouting broadcast() {
-            CellMessageRoutingBuilder.this.broadcast();
-            return build();
-        }
-
-        public DestinationSelector protocol(ProtocolType type) {
-            if (protocolChanged) {
-                log.warn("Protocol type has been set twice. First given type has been chosen.");
-                return this;
-            }
-            CellMessageRoutingBuilder.this.protocol(type);
-            return this;
-        }
-
-    }
-
-    /**
-     * Defines stream properties for the message to send.
-     *
-     * @param streamDuration         The duration of the stream in ns.
-     * @param streamBandwidthInBitPs The bandwidth of the stream in bits per second.
-     */
-    public CellMessageRoutingBuilder streaming(long streamDuration, long streamBandwidthInBitPs) {
-        this.streamDuration = streamDuration;
-        this.streamBandwidthInBitPs = streamBandwidthInBitPs;
+        this.destinationSet = true;
         return this;
     }
 
-    private MessageRouting build(DestinationAddressContainer dac) {
-        if (streamDuration < 0) {
-            return new MessageRouting(dac, sourceAddressContainer);
-        } else {
-            return new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
-        }
+    public CellMessageRoutingBuilder destination(String receiverName) {
+        return destination(IpResolver.getSingleton().nameToIp(receiverName).getAddress());
+    }
+
+    public CellMessageRoutingBuilder destination(byte[] ipv4Address) {
+        return destination(new NetworkAddress(ipv4Address));
+    }
+
+    public CellMessageRoutingBuilder broadcast() {
+        return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
+
+    }
+
+    public CellMessageRoutingBuilder mbms(GeoArea area) {
+
+        routing = DestinationType.CELL_GEOCAST_MBMS;
+        targetArea = area;
+        return this;
+    }
+
+    public CellMessageRoutingBuilder topological() {
+        routing = DestinationType.CELL_TOPOCAST;
+        return this;
+    }
+
+    public CellMessageRoutingBuilder topological(int maxHops) {
+        routing = DestinationType.CELL_TOPOCAST;
+        return this;
+    }
+
+    public CellMessageRoutingBuilder geographical(GeoArea area) {
+        routing = DestinationType.CELL_GEOCAST;
+        targetArea = area;
+        return this;
+    }
+
+    private void checkNecessaryValues() {
+        checkDestination();
+        checkRouting();
     }
 
     private void checkDestination() {
         if (destination == null) {
-            log.warn("Destination address not set. Using broadcast as default.");
-            destination = new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS);
+            throw new IllegalArgumentException("No destination address was given! Aborting.");
         }
     }
 
-    private void checkDestinationType() {
+    private void checkRouting() {
         if (routing == null) {
-            log.info("Destination type not specified. Using unicast.");
-            routing = DestinationType.CELL_GEOCAST;
+            throw new IllegalArgumentException("No routing protocol was given! Aborting.");
         }
+    }
+
+    private void resetValues() {
+        this.destination = null;
+        this.routing = null;
+        this.targetArea = null;
+
+        this.destinationSet = false;
+        this.routingSet = false;
     }
 }
