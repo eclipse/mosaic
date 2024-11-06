@@ -94,7 +94,7 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
         }
 
         try {
-            CSns configuration = new ObjectInstantiation<>(CSns.class).readFile(ambassadorParameter.configuration);
+            CSns configuration = new ObjectInstantiation<>(CSns.class, log).readFile(ambassadorParameter.configuration);
             if (configuration.singlehopDelay instanceof GammaSpeedDelay) {
                 log.info("Detected GammaSpeedDelay for. The SNS is currently ignoring speed of entities in its evaluation of delay values");
             }
