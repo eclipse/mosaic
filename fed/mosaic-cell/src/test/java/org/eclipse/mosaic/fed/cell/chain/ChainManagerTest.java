@@ -127,7 +127,7 @@ public class ChainManagerTest {
     @Test
     public void testStartEvent_adhocRouting() {
         //SETUP
-        routing.set(new AdHocMessageRoutingBuilder("veh_0", null).broadcast().topological());
+        routing.set(new AdHocMessageRoutingBuilder("veh_0", null).broadcast().topological().build());
 
         V2xMessageTransmission sendV2xMsg = new V2xMessageTransmission(12 * TIME.SECOND, v2XMessage);
 
