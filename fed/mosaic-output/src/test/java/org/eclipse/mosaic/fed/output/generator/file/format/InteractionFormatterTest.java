@@ -103,7 +103,7 @@ public class InteractionFormatterTest {
         // ======================================================
 
         AdHocMessageRoutingBuilder adHocMessageRoutingBuilder = new AdHocMessageRoutingBuilder("veh_0", null);
-        MessageRouting messageRouting = adHocMessageRoutingBuilder.channel(AdHocChannel.CCH).broadcast().topological();
+        MessageRouting messageRouting = adHocMessageRoutingBuilder.channel(AdHocChannel.CCH).broadcast().topological().build();
 
         V2xMessage em = new V2xMessage.Empty(messageRouting);
 

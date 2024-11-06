@@ -62,7 +62,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void testAllTTLValues() {
         for (int i = 1; i <= MAXIMUM_TTL; ++i) {
-            MessageRouting routing = builder.channel(adHocChannel).destination(ipAddress).topological(i);
+            MessageRouting routing = builder.channel(adHocChannel).destination(ipAddress).topological(i).build();
             assertEquals(i, routing.getDestination().getTimeToLive());
         }
     }
@@ -86,7 +86,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastCircle() {
         // run
-        MessageRouting routing = builder.broadcast().geographical(geoCircle);
+        MessageRouting routing = builder.broadcast().geographical(geoCircle).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_GEOCAST, routing.getDestination().getType());
@@ -99,7 +99,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastRectangle() {
         // run
-        MessageRouting routing = builder.broadcast().geographical(geoRectangle);
+        MessageRouting routing = builder.broadcast().geographical(geoRectangle).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_GEOCAST, routing.getDestination().getType());
@@ -112,7 +112,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastCircleAdHocChannel() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).broadcast().geographical(geoCircle);
+        MessageRouting routing = builder.channel(adHocChannel).broadcast().geographical(geoCircle).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_GEOCAST, routing.getDestination().getType());
@@ -125,7 +125,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastrectangleAdHocChannel() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).broadcast().geographical(geoRectangle);
+        MessageRouting routing = builder.channel(adHocChannel).broadcast().geographical(geoRectangle).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_GEOCAST, routing.getDestination().getType());
@@ -138,7 +138,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void geocast() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).destination(destinationAddress).geographical(geoCircle);
+        MessageRouting routing = builder.channel(adHocChannel).destination(destinationAddress).geographical(geoCircle).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_GEOCAST, routing.getDestination().getType());
@@ -151,13 +151,13 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void topoBroadcastAdHocChannel() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological();
+        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological().build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_TOPOCAST, routing.getDestination().getType());
         assertFalse(routing.getDestination().isGeocast());
         assertTrue(routing.getDestination().getAddress().isBroadcast());
-        assertEquals(1, routing.getDestination().getTimeToLive());
+        assertEquals(255, routing.getDestination().getTimeToLive()); // TODO Discuss if topologically scoped broadcast should default to 1 or 255 max hops
         assertTrue(routing.getDestination().getAddress().isBroadcast());
         assertEquals(routing.getDestination().getAdhocChannelId(), adHocChannel);
     }
@@ -165,7 +165,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void topoBroadcastAdHocChannelHops() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological(hops);
+        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological(hops).build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_TOPOCAST, routing.getDestination().getType());

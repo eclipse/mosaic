@@ -37,7 +37,7 @@ public class RoadSideUnitApp extends AbstractApplication<RoadSideUnitOperatingSy
 
     private void sendAdHocBroadcast() {
         final MessageRouting routing =
-                getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological();
+                getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological().build();
         final InterVehicleMsg message = new InterVehicleMsg(routing, getOs().getPosition());
         getOs().getAdHocModule().sendV2xMessage(message);
     }

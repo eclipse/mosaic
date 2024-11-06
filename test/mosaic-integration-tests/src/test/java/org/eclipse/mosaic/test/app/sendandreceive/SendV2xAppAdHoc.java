@@ -91,17 +91,17 @@ public class SendV2xAppAdHoc extends AbstractSenderApp {
         switch (sendMode) {
             case geobroad:
                 logInfo = "geobroadcasting message #" + sequenceNbr;
-                routing = getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().geographical(dest);
+                routing = getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().geographical(dest).build();
                 break;
             case geouni:
                 logInfo = "geounicasting message #" + sequenceNbr;
                 routing =
                         getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH)
-                                .destination(new byte[]{0, 0, 0, 1}).geographical(dest);
+                                .destination(new byte[]{0, 0, 0, 1}).geographical(dest).build();
                 break;
             case topo:
                 logInfo = "topocasting message #" + sequenceNbr;
-                routing = getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological();
+                routing = getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological().build();
                 break;
             default:
                 throw new RuntimeException("Unknown sendMode.");

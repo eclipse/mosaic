@@ -215,7 +215,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
         if (useCellNetwork()) {
             mr = getOs().getCellModule().createMessageRouting().destination("server_0").topological();
         } else {
-            mr = getOs().getAdHocModule().createMessageRouting().broadcast().geographical(dest);
+            mr = getOs().getAdHocModule().createMessageRouting().broadcast().geographical(dest).build();
         }
 
         /*

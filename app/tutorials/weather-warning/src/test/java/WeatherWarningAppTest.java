@@ -123,7 +123,7 @@ public class WeatherWarningAppTest {
         AdHocMessageRoutingBuilder adHocMessageRoutingBuilderMock = mock(AdHocMessageRoutingBuilder.class);
         when(adHocModuleMock.createMessageRouting()).thenReturn(adHocMessageRoutingBuilderMock);
         MessageRouting messageRoutingMock = mock(MessageRouting.class);
-        when(adHocMessageRoutingBuilderMock.broadcast().geographical(any())).thenReturn(messageRoutingMock);
+        when(adHocMessageRoutingBuilderMock.broadcast().geographical(any()).build()).thenReturn(messageRoutingMock);
     }
 
     private void setupVehiclePosition() {

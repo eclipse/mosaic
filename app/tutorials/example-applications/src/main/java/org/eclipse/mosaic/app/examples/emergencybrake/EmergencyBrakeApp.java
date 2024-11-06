@@ -135,7 +135,7 @@ public class EmergencyBrakeApp extends ConfigurableApplication<CEmergencyBrakeAp
 
             // Prepare the DENMessage
             MessageRouting routing =
-                    getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological();
+                    getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological().build();
             Denm denm = new Denm(routing, new DenmContent(getOs().getSimulationTime(), vehicleLongLat, roadId,
                     SensorType.SPEED, 1, curSpeed, curDeceleration * 9.81f, null,
                     null, null), 200);

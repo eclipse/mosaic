@@ -33,7 +33,8 @@ public final class VehicleToTrafficLightApp extends AbstractApplication<VehicleO
                 .getAdHocModule()
                 .createMessageRouting()
                 .broadcast()
-                .topological();
+                .topological()
+                .build();
         getOs().getAdHocModule().sendV2xMessage(new GreenWaveMsg(routing, TrafficLightApp.SECRET));
         getLog().infoSimTime(this, "Sent secret passphrase");
     }

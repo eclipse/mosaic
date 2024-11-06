@@ -33,13 +33,25 @@ import java.net.Inet4Address;
  */
 public class AdHocMessageRoutingBuilder {
 
+    /**
+     * The maximum time to live (TTL).
+     */
+    private final static int MAXIMUM_TTL = 255;
+
     private static final Logger log = LoggerFactory.getLogger(AdHocMessageRoutingBuilder.class);
+
     private final SourceAddressContainer sourceAddressContainer;
+
     private AdHocChannel channel = AdHocChannel.CCH;
     private NetworkAddress destination = null;
-    private Integer hops = null;
+    private Integer hops = MAXIMUM_TTL;
     private DestinationType routing = null;
     private GeoArea targetArea = null;
+
+    private boolean channelSet = false;
+    private boolean destinationSet = false;
+    private boolean routingSet = false;
+    private boolean hopsSet = false;
 
     /**
      * The constructor for {@link AdHocMessageRoutingBuilder}.
@@ -60,213 +72,114 @@ public class AdHocMessageRoutingBuilder {
         );
     }
 
-    private MessageRouting build() {
-        return new MessageRouting(new DestinationAddressContainer(
-                routing, destination, channel, hops, targetArea, ProtocolType.UDP
-        ), sourceAddressContainer);
+    public MessageRouting build() {
+        checkNecessaryValues();
+        MessageRouting messageRouting = new MessageRouting(new DestinationAddressContainer(
+                routing, destination, channel, hops, targetArea, ProtocolType.UDP),
+                sourceAddressContainer);
+        resetValues();
+        return messageRouting;
     }
 
-    public AdHocMessageRoutingBuilder channel(AdHocChannel adHocChannel) {
-        this.channel = adHocChannel;
-        return this;
-    }
-
-    public AdHocMessageRoutingBuilder.RoutingSelector destination(NetworkAddress networkAddress) {
-        this.destination = networkAddress;
-        return new RoutingSelector();
-    }
-
-    public RoutingSelector destination(String receiverName) {
-        return destination(IpResolver.getSingleton().nameToIp(receiverName).getAddress());
-    }
-
-    public RoutingSelector destination(byte[] ipv4Address) {
-        this.destination = new NetworkAddress(ipv4Address);
-        return new RoutingSelector();
-    }
-
-    public RoutingSelector broadcast() {
-        this.destination = new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS);
-        return new RoutingSelector();
-    }
-
-    public DestinationSelector singlehop() {
-        routing = DestinationType.AD_HOC_TOPOCAST;
-        hops = 1;
-        return new DestinationSelector();
-    }
-
-    public DestinationSelector topological() {
-        routing = DestinationType.AD_HOC_TOPOCAST;
-        hops = 1;
-        return new DestinationSelector();
-    }
-
-    public DestinationSelector topological(int maxHops) {
-        require8BitTtl(maxHops);
-        routing = DestinationType.AD_HOC_TOPOCAST;
-        hops = maxHops;
-        return new DestinationSelector();
-    }
-
-    public DestinationSelector geographical(GeoArea area) {
-        routing = DestinationType.AD_HOC_GEOCAST;
-        targetArea = area;
-        return new DestinationSelector();
-    }
-
-    public final class RoutingSelector {
-
-        public MessageRouting singlehop() {
-            AdHocMessageRoutingBuilder.this.singlehop();
-            return build();
-        }
-
-        public MessageRouting topological() {
-            AdHocMessageRoutingBuilder.this.topological();
-            return build();
-        }
-
-        public MessageRouting topological(int maxHops) {
-            AdHocMessageRoutingBuilder.this.topological(maxHops);
-            return build();
-        }
-
-        public MessageRouting geographical(GeoArea area) {
-            AdHocMessageRoutingBuilder.this.geographical(area);
-            return build();
-        }
-
-        public RoutingSelector channel(AdHocChannel channel) {
-            AdHocMessageRoutingBuilder.this.channel(channel);
-            return this;
-        }
-    }
-
-    public final class DestinationSelector {
-
-        public MessageRouting destination(NetworkAddress networkAddress) {
-            AdHocMessageRoutingBuilder.this.destination(networkAddress);
-            return build();
-        }
-
-        public MessageRouting destination(String receiverName) {
-            AdHocMessageRoutingBuilder.this.destination(receiverName);
-            return build();
-        }
-
-        public MessageRouting destination(byte[] ipv4Address) {
-            AdHocMessageRoutingBuilder.this.destination(ipv4Address);
-            return build();
-        }
-
-        public MessageRouting broadcast() {
-            AdHocMessageRoutingBuilder.this.broadcast();
-            return build();
-        }
-
-        public DestinationSelector channel(AdHocChannel channel) {
-            AdHocMessageRoutingBuilder.this.channel(channel);
-            return this;
-        }
-    }
-
-
-//    private MessageRouting build(DestinationAddressContainer dac) {
-//        return new MessageRouting(dac, sourceAddressContainer);
-//    }
-//
-//    /**
-//     * Sets a specific {@link AdHocChannel} for the {@link MessageRouting}.
-//     *
-//     * @param adHocChannel specific ad hoc channel {@link AdHocChannel}
-//     * @return this builder
-//     */
-//    public AdHocMessageRoutingBuilder viaChannel(AdHocChannel adHocChannel) {
-//        this.channel = adHocChannel;
-//        return this;
-//    }
-//
-//    public AdHocMessageRoutingBuilder destination(byte[] ipAddress) {
-//        assert destination == null;
-//        this.destination = new NetworkAddress(ipAddress);
-//        return this;
-//    }
-//
-//    public AdHocMessageRoutingBuilder destination(Inet4Address ipAddress) {
-//        assert destination == null;
-//        this.destination = new NetworkAddress(ipAddress);
-//        return this;
-//    }
-//
-//    public AdHocMessageRoutingBuilder destination(NetworkAddress ipAddress) {
-//        assert destination == null;
-//        this.destination = ipAddress;
-//        return this;
-//    }
-//
-//    public AdHocMessageRoutingBuilder destination(String receiverName) {
-//        assert destination == null;
-//        this.destination = new NetworkAddress(IpResolver.getSingleton().nameToIp(receiverName));
-//        return this;
-//    }
-//
-//    public AdHocMessageRoutingBuilder broadcast() {
-//        assert destination == null;
-//        this.destination = new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS);
-//        // TODO Check that destination is only set once
-//        // TODO Create a create method
-//        return this;
-//    }
-//
-//    public MessageRouting topological(int hops) {
-//        checkDestination();
-//        return build(new DestinationAddressContainer(
-//                DestinationType.AD_HOC_TOPOCAST,
-//                destination,
-//                channel,
-//                require8BitTtl(hops),
-//                null,
-//                ProtocolType.UDP
-//        ));
-//    }
-//
-//    public MessageRouting topological() {
-//        return topological(1);
-//    }
-//
-//    public MessageRouting singlehop() {
-//        return topological(1);
-//    }
-//
-//    public MessageRouting geographical(GeoArea area) {
-//        checkDestination();
-//        return build(new DestinationAddressContainer(
-//                DestinationType.AD_HOC_GEOCAST,
-//                destination,
-//                channel,
-//                null,
-//                area,
-//                ProtocolType.UDP
-//        ));
-//    }
-
-    private void checkDestination() {
-        if (destination == null) {
-            log.warn("Destination address not set. Using broadcast as default.");
-            destination = new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS);
-        }
+    public MessageRouting build(DestinationAddressContainer dac) {
+        checkNecessaryValues();
+        MessageRouting messageRouting = new MessageRouting(dac, sourceAddressContainer);
+        resetValues();
+        return messageRouting;
     }
 
     /**
-     * The maximum time to live (TTL).
+     * Sets a specific {@link AdHocChannel} for the {@link MessageRouting}.
+     *
+     * @param adHocChannel specific ad hoc channel {@link AdHocChannel}
+     * @return this builder
      */
-    private final static int MAXIMUM_TTL = 255;
+    public AdHocMessageRoutingBuilder channel(AdHocChannel adHocChannel) {
+        assert !channelSet: "Channel was already set! Using first setting.";
+        this.channel = adHocChannel;
+        this.channelSet = true;
+        return this;
+    }
+
+    public AdHocMessageRoutingBuilder destination(byte[] ipAddress) {
+        return destination(new NetworkAddress(ipAddress));
+    }
+
+    public AdHocMessageRoutingBuilder destination(Inet4Address ipAddress) {
+        return destination(new NetworkAddress(ipAddress));
+    }
+
+    public AdHocMessageRoutingBuilder destination(String receiverName) {
+        return destination(IpResolver.getSingleton().nameToIp(receiverName));
+    }
+
+    public AdHocMessageRoutingBuilder destination(NetworkAddress ipAddress) {
+        assert !destinationSet: "Destination was already set! Using first setting.";
+        this.destination = ipAddress;
+        this.destinationSet = true;
+        return this;
+    }
+
+    public AdHocMessageRoutingBuilder broadcast() {
+        return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
+    }
+
+    public AdHocMessageRoutingBuilder topological(int hops) {
+        this.hops = require8BitTtl(hops);
+        return topological();
+    }
+
+    public AdHocMessageRoutingBuilder topological() {
+        assert !routingSet: "Routing was already set! Using first setting";
+        this.routing = DestinationType.AD_HOC_TOPOCAST;
+        this.routingSet = true;
+        return this;
+    }
+
+    public AdHocMessageRoutingBuilder singlehop() {
+        return topological(1);
+    }
+
+    public AdHocMessageRoutingBuilder geographical(GeoArea area) {
+        this.routing = DestinationType.AD_HOC_GEOCAST;
+        this.targetArea = area;
+        return this;
+    }
+
+    private void checkNecessaryValues() {
+        checkDestination();
+        checkRouting();
+    }
+
+    private void checkDestination() {
+        if (destination == null) {
+            throw new IllegalArgumentException("No destination address was given! Aborting.");
+        }
+    }
+
+    private void checkRouting() {
+        if (routing == null) {
+            throw new IllegalArgumentException("No routing protocol was given! Aborting.");
+        }
+    }
 
     private static int require8BitTtl(final int ttl) {
         if (ttl > MAXIMUM_TTL || ttl <= 0) {
             throw new IllegalArgumentException("Passed time to live shouldn't exceed 8-bit limit!");
         }
         return ttl;
+    }
+
+    private void resetValues() {
+        this.channel = AdHocChannel.CCH;
+        this.destination = null;
+        this.hops = MAXIMUM_TTL;
+        this.routing = null;
+        this.targetArea = null;
+
+        this.channelSet = false;
+        this.destinationSet = false;
+        this.routingSet = false;
+        this.hopsSet = false;
     }
 }
