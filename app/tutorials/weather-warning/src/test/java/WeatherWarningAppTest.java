@@ -28,6 +28,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Re
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoArea;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
@@ -67,14 +68,19 @@ public class WeatherWarningAppTest {
     @Mock
     private AdHocModule adHocModuleMock;
 
+    @Mock
+    private BasicSensorModule sensorModuleMock;
+
     @Before
     public void setup() {
         when(operatingSystem.getAdHocModule()).thenReturn(adHocModuleMock);
+        when(operatingSystem.getBasicSensorModule()).thenReturn(sensorModuleMock);
 
         VehicleParameters.VehicleParametersChangeRequest vehicleParametersChangeRequestMock =
                 mock(VehicleParameters.VehicleParametersChangeRequest.class);
         when(operatingSystem.requestVehicleParametersUpdate()).thenReturn(vehicleParametersChangeRequestMock);
         when(vehicleParametersChangeRequestMock.changeColor(any())).thenReturn(vehicleParametersChangeRequestMock);
+
     }
 
     @Test
@@ -117,7 +123,7 @@ public class WeatherWarningAppTest {
     }
 
     private void setSensor(SensorType sensorType, int value) {
-        when(operatingSystem.getStateOfEnvironmentSensor(same(sensorType))).thenReturn(value);
+        when(operatingSystem.getBasicSensorModule().getStrengthOf(same(sensorType))).thenReturn(value);
     }
 
     private void setupMessageRouting() {
