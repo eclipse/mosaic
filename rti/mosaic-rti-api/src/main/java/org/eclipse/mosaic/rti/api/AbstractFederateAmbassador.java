@@ -24,6 +24,7 @@ import org.eclipse.mosaic.rti.config.CLocalHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.PriorityBlockingQueue;
 import javax.annotation.Nonnull;
@@ -210,7 +211,7 @@ public abstract class AbstractFederateAmbassador implements FederateAmbassador {
      */
     @Nonnull
     @Override
-    public FederateExecutor createFederateExecutor(String host, int port, CLocalHost.OperatingSystem os) {
+    public FederateExecutor createFederateExecutor(String host, int port, CLocalHost.OperatingSystem os) throws FileNotFoundException {
         log.trace("createFederateStarter(String host, int port, CLocalHost.OperatingSystem os); host: {}, port: {}, os: {}", host, port, os);
         return new NopFederateExecutor();
     }

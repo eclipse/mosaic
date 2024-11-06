@@ -374,7 +374,7 @@ public class MosaicSimulation {
         return descriptor;
     }
 
-    private void initializeFederate(CRuntime.CFederate federate, FederateDescriptor descriptor) {
+    private void initializeFederate(CRuntime.CFederate federate, FederateDescriptor descriptor) throws FileNotFoundException {
 
         final FederateAmbassador ambassador = descriptor.getAmbassador();
         final CLocalHost host = descriptor.getHost();
