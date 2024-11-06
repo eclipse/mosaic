@@ -124,11 +124,6 @@ public class AdHocMessageRoutingBuilder {
         return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
     }
 
-    public AdHocMessageRoutingBuilder topological(int hops) {
-        this.hops = require8BitTtl(hops);
-        return topological();
-    }
-
     public AdHocMessageRoutingBuilder topological() {
         assert !routingSet: "Routing was already set! Using first setting";
         this.routing = DestinationType.AD_HOC_TOPOCAST;
@@ -137,12 +132,19 @@ public class AdHocMessageRoutingBuilder {
     }
 
     public AdHocMessageRoutingBuilder singlehop() {
-        return topological(1);
+        hops(1);
+        return topological();
     }
 
     public AdHocMessageRoutingBuilder geographical(GeoArea area) {
         this.routing = DestinationType.AD_HOC_GEOCAST;
         this.targetArea = area;
+        return this;
+    }
+
+    public AdHocMessageRoutingBuilder hops(int hops) {
+        assert !hopsSet: "Number of hops was already set! Using first setting.";
+        this.hops = require8BitTtl(hops);
         return this;
     }
 
