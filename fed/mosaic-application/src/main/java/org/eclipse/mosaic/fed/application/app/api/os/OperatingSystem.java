@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.fed.application.app.api.Application;
-import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.util.scheduling.EventManager;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.Interaction;
@@ -78,14 +77,6 @@ public interface OperatingSystem {
     }
 
     /**
-     * Returns The state of the supplied sensor.
-     *
-     * @param type The {@link SensorType} type to use.
-     * @return Strength of the measured environment sensor data.
-     */
-    int getStateOfEnvironmentSensor(SensorType type);
-
-    /**
      * Send a log tuple for the ITEF visualizer.
      *
      * @param logTupleId log tuple identifier
@@ -98,7 +89,6 @@ public interface OperatingSystem {
      * Send a byte array message to SUMO TraCI.
      *
      * @param command Byte array containing SUMO TraCI message.
-     *
      * @return a identifier which can be used to match incoming TraCI command response
      */
     String sendSumoTraciRequest(byte[] command);

@@ -41,16 +41,13 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
 
     private boolean hazardousArea = false;
 
-    /**
-     * This method is used to request new data from the sensors and in that case
-     * react on the retrieved data.
-     * It is called at each simulation step when the vehicle info has been updated for
-     * the vehicle that has this application equipped.
-     */
+    @Override
+    public void onStartup() {
+        getOs().getBasicSensorModule().enable();
+    }
+
     @Override
     public void onVehicleUpdated(@Nullable VehicleData previousVehicleData, @Nonnull VehicleData updatedVehicleData) {
-
-        // Enumeration of possible environment sensor types that are available in a vehicle
         SensorType[] types = SensorType.values();
 
         // Initialize sensor strength
@@ -63,7 +60,7 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
          */
         for (SensorType currentType : types) {
             // The strength of a detected sensor
-            strength = getOs().getStateOfEnvironmentSensor(currentType);
+            strength = getOs().getBasicSensorModule().getStrengthOf(currentType);
 
             if (strength > 0) {
                 break;
@@ -81,16 +78,10 @@ public class SlowDownApp extends AbstractApplication<VehicleOperatingSystem> imp
             getOs().resetSpeed();
             hazardousArea = false;
         }
-
     }
 
     @Override
     public void processEvent(Event event) throws Exception {
-
-    }
-
-    @Override
-    public void onStartup() {
 
     }
 
