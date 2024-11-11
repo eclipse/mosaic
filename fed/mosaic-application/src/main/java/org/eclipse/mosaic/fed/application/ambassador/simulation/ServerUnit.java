@@ -17,8 +17,8 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.IRoutingModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoutingNavigationModule;
+import org.eclipse.mosaic.fed.application.app.api.navigation.RoutingModule;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.lib.objects.mapping.ServerMapping;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
@@ -28,7 +28,7 @@ import org.eclipse.mosaic.lib.util.scheduling.Event;
  */
 public class ServerUnit extends AbstractSimulationUnit implements ServerOperatingSystem {
 
-    private final IRoutingModule routingModule;
+    private final RoutingModule routingModule;
 
     /**
      * Constructor for {@link ServerUnit}, sets the operating system.
@@ -38,7 +38,7 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
     public ServerUnit(final ServerMapping serverMapping) {
         super(serverMapping.getName(), null);
         setRequiredOperatingSystem(ServerOperatingSystem.class);
-        routingModule = new NavigationModule(this);
+        routingModule = new RoutingNavigationModule(this);
     }
 
     /**
@@ -49,7 +49,7 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
      */
     public ServerUnit(String unitName) {
         super(unitName, null);
-        routingModule = new NavigationModule(this);
+        routingModule = new RoutingNavigationModule(this);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ServerUnit extends AbstractSimulationUnit implements ServerOperatin
     }
 
     @Override
-    public IRoutingModule getRoutingModule() {
+    public RoutingModule getRoutingModule() {
         return routingModule;
     }
 

@@ -19,10 +19,10 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.Ad
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.INavigationModule;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
+import org.eclipse.mosaic.fed.application.app.api.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
@@ -270,7 +270,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          * The vehicle on which this application has been deployed has a navigation module
          * that we need to retrieve in order to switch routes.
          */
-        INavigationModule navigationModule = getOs().getNavigationModule();
+        NavigationModule navigationModule = getOs().getNavigationModule();
 
         /*
          * Routing parameters are used for route calculation. In our case, we want a specific cost function
