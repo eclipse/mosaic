@@ -19,7 +19,6 @@ import org.eclipse.mosaic.lib.coupling.AbstractNetworkAmbassador;
 import org.eclipse.mosaic.rti.api.FederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.DockerFederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.ExecutableFederateExecutor;
-import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
@@ -47,7 +46,7 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
     @Override
     public FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) {
         String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini"); // default // this one is required
-        if(!Files.exists(Paths.get(this.ambassadorParameter.configuration.getParent(), omnetppConfigFileName))) {
+        if (!Files.exists(Paths.get(this.ambassadorParameter.configuration.getParent(), omnetppConfigFileName))) {
             throw new IllegalArgumentException(omnetppConfigFileName + " missing");
         }
         String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
