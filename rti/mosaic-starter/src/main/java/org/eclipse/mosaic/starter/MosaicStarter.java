@@ -213,7 +213,7 @@ public class MosaicStarter {
 
     private <T> T loadJsonConfiguration(Path configurationFile, Class<T> clazz) throws ExecutionException {
         try (InputStream inputStream = loadResource(configurationFile)) {
-            return new ObjectInstantiation<>(clazz, getLogger()).read(inputStream);
+            return new ObjectInstantiation<>(clazz).read(inputStream);
         } catch (IOException | InstantiationException e) {
             printAndLog("Could not load file due to invalid format.", e);
             throw new ExecutionException();
@@ -223,7 +223,7 @@ public class MosaicStarter {
     @SuppressWarnings("unchecked")
     private <T> T loadJsonConfiguration(Path configurationFile, T defaultObject) {
         try (InputStream inputStream = loadResource(configurationFile)) {
-            return new ObjectInstantiation<>((Class<T>) defaultObject.getClass(), getLogger()).read(inputStream);
+            return new ObjectInstantiation<>((Class<T>) defaultObject.getClass()).read(inputStream);
         } catch (IOException | InstantiationException e) {
             getLogger().warn("Could not load file {}. Using default configuration.", configurationFile);
             return defaultObject;
