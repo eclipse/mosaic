@@ -55,7 +55,11 @@ public class ReceiveAndReturnRoundTripMessage extends AbstractApplication<Vehicl
                     receivedV2xMessage.getMessage().getRouting().getDestination().getProtocolType()
             );
             String roundtripReceiver = receivedV2xMessage.getMessage().getRouting().getSource().getSourceName();
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().destination(roundtripReceiver).topological();
+            MessageRouting routing = getOs().getCellModule().createMessageRouting()
+                    .tcp()
+                    .destination(roundtripReceiver)
+                    .topological()
+                    .build();
             getOs().getCellModule().sendV2xMessage(new GenericV2xMessage(routing, 8));
             getLog().infoSimTime(this, "Send V2xMessage to {} at time {}", roundtripReceiver, getOs().getSimulationTime());
         }

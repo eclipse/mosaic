@@ -73,7 +73,7 @@ public final class CAbstractNetworkAmbassador {
             routingType.put(DestinationType.AD_HOC_GEOCAST, false);
             routingType.put(DestinationType.AD_HOC_TOPOCAST, true);
             routingType.put(DestinationType.CELL_GEOCAST, false);
-            routingType.put(DestinationType.CELL_GEOCAST_MBMS, false);
+            routingType.put(DestinationType.CELL_GEOCAST_MBS, false);
             routingType.put(DestinationType.CELL_TOPOCAST, false);
 
             protocolType.put(ProtocolType.UDP, true);

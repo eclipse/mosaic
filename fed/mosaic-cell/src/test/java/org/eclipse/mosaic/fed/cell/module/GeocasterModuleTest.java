@@ -131,7 +131,10 @@ public class GeocasterModuleTest {
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_2", cellModuleConfiguration);
         IpResolver.getSingleton().registerHost("veh_2");
 
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).destination(new byte[]{10, 0, 0, 2}).topological());
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 0, 0, 2})
+                .topological()
+                .build());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         StreamResult streamResult =
                 new StreamResult(GLOBAL_NETWORK_ID, 200 * DATA.BIT, TransmissionMode.UplinkUnicast, "rsu_0", sampleV2XMessage);
@@ -165,7 +168,7 @@ public class GeocasterModuleTest {
         GeoPoint nw = GeoPoint.lonLat(13.333625793457031, 52.51563064800963);
         GeoPoint se = GeoPoint.lonLat(13.421859741210938, 52.5053554452214);
         GeoRectangle geoRectangle = new GeoRectangle(nw, se);
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).broadcast().geographical(geoRectangle));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).broadcast().geographical(geoRectangle).build());
         GeoPoint inRectangleKreuzberg = GeoPoint.lonLat(13.404693603515625, 52.50838549553871);
         GeoPoint inRectangleGrosserStern = GeoPoint.lonLat(13.349933624267578, 52.51388868388495);
         GeoPoint offRectangleKreuzberg = GeoPoint.lonLat(13.404006958007812, 52.498111211481216);
@@ -220,7 +223,7 @@ public class GeocasterModuleTest {
         GeoPoint nw = GeoPoint.lonLat(13.333625793457031, 52.51563064800963);
         GeoPoint se = GeoPoint.lonLat(13.421859741210938, 52.5053554452214);
         GeoRectangle geoRectangle = new GeoRectangle(nw, se);
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).broadcast().mbms(geoRectangle));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null).broadcast().mbs().geographical(geoRectangle).build());
         GeoPoint inRectangleKreuzberg = GeoPoint.lonLat(13.404693603515625, 52.50838549553871);
         GeoPoint inRectangleGrosserStern = GeoPoint.lonLat(13.349933624267578, 52.51388868388495);
         GeoPoint offRectangleKreuzberg = GeoPoint.lonLat(13.404006958007812, 52.498111211481216);

@@ -44,15 +44,16 @@ public class CellMessageRoutingBuilder {
     private DestinationType routing = null;
     private GeoArea targetArea = null;
 
-    private boolean destinationSet = false;
-    private boolean routingSet = false;
+    private boolean destinationChanged = false;
+    private boolean routingChanged = false;
+    private boolean mbsChanged = false;
 
     /**
      * The {@link ProtocolType} for the {@link MessageRouting}, on default this will be
      * {@link ProtocolType#UDP}.
      */
     private ProtocolType protocolType = ProtocolType.UDP;
-    private boolean protocolSet = false;
+    private boolean protocolChanged = false;
 
     /**
      * Constructor for {@link CellMessageRoutingBuilder} to set required fields.
@@ -73,7 +74,7 @@ public class CellMessageRoutingBuilder {
         );
     }
 
-    private MessageRouting build() {
+    public MessageRouting build() {
         checkNecessaryValues();
         MessageRouting messageRouting =  new MessageRouting(new DestinationAddressContainer(
                 routing, destination, null, null, targetArea, protocolType),
@@ -109,8 +110,9 @@ public class CellMessageRoutingBuilder {
      * @return the {@link CellMessageRoutingBuilder}
      */
     public CellMessageRoutingBuilder protocol(ProtocolType type) {
+        assert !protocolChanged : "Protocol was already set! Using first setting.";
         protocolType = type;
-        protocolSet = true;
+        protocolChanged = true;
         return this;
     }
 
@@ -134,9 +136,9 @@ public class CellMessageRoutingBuilder {
     }
 
     public CellMessageRoutingBuilder destination(NetworkAddress networkAddress) {
-        assert !destinationSet : "Destination was already set! Using first setting.";
+        assert !destinationChanged : "Destination was already set! Using first setting.";
         this.destination = networkAddress;
-        this.destinationSet = true;
+        this.destinationChanged = true;
         return this;
     }
 
@@ -150,29 +152,30 @@ public class CellMessageRoutingBuilder {
 
     public CellMessageRoutingBuilder broadcast() {
         return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
-
     }
 
-    public CellMessageRoutingBuilder mbms(GeoArea area) {
-
-        routing = DestinationType.CELL_GEOCAST_MBMS;
-        targetArea = area;
+    public CellMessageRoutingBuilder mbs() {
+        assert !mbsChanged : "MBS was already chosen!";
+        routing = DestinationType.CELL_GEOCAST_MBS;
+        mbsChanged = true;
         return this;
     }
 
     public CellMessageRoutingBuilder topological() {
+        assert !routingChanged : "Routing was already set! Using first setting.";
+        assert !mbsChanged : "MBS can not be enabled for topological routing!";
         routing = DestinationType.CELL_TOPOCAST;
-        return this;
-    }
-
-    public CellMessageRoutingBuilder topological(int maxHops) {
-        routing = DestinationType.CELL_TOPOCAST;
+        routingChanged = true;
         return this;
     }
 
     public CellMessageRoutingBuilder geographical(GeoArea area) {
-        routing = DestinationType.CELL_GEOCAST;
+        assert !routingChanged : "Routing was already set! Using first setting.";
+        if (!mbsChanged) {
+            routing = DestinationType.CELL_GEOCAST;
+        }
         targetArea = area;
+        routingChanged = true;
         return this;
     }
 
@@ -194,11 +197,17 @@ public class CellMessageRoutingBuilder {
     }
 
     private void resetValues() {
+        this.streamDuration = -1;
+        this.streamBandwidthInBitPs = -1;
+
         this.destination = null;
         this.routing = null;
         this.targetArea = null;
+        this.protocolType = null;
 
-        this.destinationSet = false;
-        this.routingSet = false;
+        this.destinationChanged = false;
+        this.routingChanged = false;
+        this.mbsChanged = false;
+        this.protocolChanged = false;
     }
 }

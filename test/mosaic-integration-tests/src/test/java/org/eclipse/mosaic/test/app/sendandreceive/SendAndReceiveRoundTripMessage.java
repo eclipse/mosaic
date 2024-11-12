@@ -101,7 +101,11 @@ public class SendAndReceiveRoundTripMessage extends AbstractApplication<ServerOp
     @Override
     public void processEvent(Event event) {
         if (event instanceof SendRoundTripMessageEvent) {
-            MessageRouting routing = getOs().getCellModule().createMessageRouting().tcp().destination(receiver).topological();
+            MessageRouting routing = getOs().getCellModule().createMessageRouting()
+                    .tcp()
+                    .destination(receiver)
+                    .topological()
+                    .build();
             getOs().getCellModule().sendV2xMessage(new GenericV2xMessage(routing, 8));
             getLog().infoSimTime(this, "Message sent at time {}", getOs().getSimulationTime());
         }

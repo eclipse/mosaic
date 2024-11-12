@@ -109,7 +109,7 @@ public final class GeocasterModule extends CellModule {
         } else if (type.equals(DestinationType.CELL_GEOCAST) && address.isBroadcast() && !protocol.equals(ProtocolType.TCP)) {
             // Geocasts require broadcast, but don't allow tcp (as ack for broadcasts is denied)
             geocasterCellGeoUnicast(time, nextModule, streamResult, isFullMessage);
-        } else if (type.equals(DestinationType.CELL_GEOCAST_MBMS) && address.isBroadcast() && !protocol.equals(ProtocolType.TCP)) {
+        } else if (type.equals(DestinationType.CELL_GEOCAST_MBS) && address.isBroadcast() && !protocol.equals(ProtocolType.TCP)) {
             // Geocasts require broadcast, but don't allow tcp (as ack for broadcasts is denied)
             geocasterCellGeoBroadcast(time, nextModule, streamResult, isFullMessage);
         } else {

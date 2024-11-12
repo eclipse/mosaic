@@ -108,7 +108,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      */
     private Denm constructDenm() {
         final GeoCircle geoCircle = new GeoCircle(lastReceivedMessage.getEventLocation(), 3000.0D);
-        final MessageRouting routing = getOs().getCellModule().createMessageRouting().broadcast().geographical(geoCircle);
+        final MessageRouting routing = getOs().getCellModule().createMessageRouting().broadcast().geographical(geoCircle).build();
         return new Denm(routing,
                 new DenmContent(
                         lastReceivedMessage.getTime(),

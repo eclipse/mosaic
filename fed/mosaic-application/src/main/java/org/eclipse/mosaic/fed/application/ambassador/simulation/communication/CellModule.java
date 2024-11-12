@@ -117,7 +117,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
         return switch (camConfiguration.getAddressingMode()) {
             case CELL_TOPOCAST -> sendCamViaTopocast(camConfiguration);
             case CELL_GEOCAST -> sendCamViaGeoBroadcast(camConfiguration);
-            case CELL_GEOCAST_MBMS -> sendCamViaGeoBroadcastMbms(camConfiguration);
+            case CELL_GEOCAST_MBS -> sendCamViaGeoBroadcastMbms(camConfiguration);
             default -> {
                 log.warn("sendCam: Unsupported addressing mode {}.", camConfiguration.getAddressingMode());
                 yield null;
@@ -126,7 +126,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
     }
 
     private Integer sendCamViaTopocast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
-        return super.sendCam(createMessageRouting().topoCast(camConfiguration.getTopocastReceiver()));
+        return super.sendCam(createMessageRouting().destination(camConfiguration.getTopocastReceiver()).topological().build());
     }
 
     private Integer sendCamViaGeoBroadcast(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
@@ -134,7 +134,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
         final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
-        return super.sendCam(createMessageRouting().geoBroadcastBasedOnUnicast(destination));
+        return super.sendCam(createMessageRouting().broadcast().geographical(destination).build());
     }
 
     private Integer sendCamViaGeoBroadcastMbms(CellModuleConfiguration.CellCamConfiguration camConfiguration) {
@@ -142,7 +142,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
             throw new UnsupportedOperationException("Cannot send CAM for entities without a location.");
         }
         final GeoCircle destination = new GeoCircle(locatable.getPosition(), camConfiguration.getGeoRadius());
-        return super.sendCam(createMessageRouting().geoBroadcastMbms(destination));
+        return super.sendCam(createMessageRouting().broadcast().geographical(destination).mbs().build());
     }
 
     /**

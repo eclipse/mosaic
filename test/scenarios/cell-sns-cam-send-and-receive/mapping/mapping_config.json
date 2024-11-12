@@ -102,7 +102,7 @@
                 {
                     "name": "VEH",
                     "applications": [
-                        "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST_MBMS\", 150d, 300l, 400l)"
+                        "org.eclipse.mosaic.test.app.sendandreceive.SendCamAppCell(150, \"CELL_GEOCAST_MBS\", 150d, 300l, 400l)"
                     ]
                 }
             ]
