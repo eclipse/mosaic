@@ -137,8 +137,10 @@ public class AdHocMessageRoutingBuilder {
     }
 
     public AdHocMessageRoutingBuilder geographical(GeoArea area) {
+        assert !routingSet: "Routing was already set! Using first setting";
         this.routing = DestinationType.AD_HOC_GEOCAST;
         this.targetArea = area;
+        routingSet = true;
         return this;
     }
 
