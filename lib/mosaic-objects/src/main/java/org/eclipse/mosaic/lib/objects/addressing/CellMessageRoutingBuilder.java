@@ -76,18 +76,21 @@ public class CellMessageRoutingBuilder {
 
     public MessageRouting build() {
         checkNecessaryValues();
-        MessageRouting messageRouting =  new MessageRouting(new DestinationAddressContainer(
-                routing, destination, null, null, targetArea, protocolType),
-                sourceAddressContainer);
-        resetValues();
-        return messageRouting;
+        return this.build(new DestinationAddressContainer(
+                routing, destination, null, null, targetArea, protocolType)
+        );
     }
 
     private MessageRouting build(DestinationAddressContainer dac) {
         if (streamDuration < 0) {
-            return new MessageRouting(dac, sourceAddressContainer);
+            MessageRouting messageRouting = new MessageRouting(dac, sourceAddressContainer);
+            resetValues();
+            return messageRouting;
         } else {
-            return new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
+            MessageStreamRouting messageStreamRouting =
+                    new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
+            resetValues();
+            return messageStreamRouting;
         }
     }
 
