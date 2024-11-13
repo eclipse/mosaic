@@ -22,6 +22,7 @@ import org.eclipse.mosaic.lib.geo.GeoArea;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +49,10 @@ public class AdHocMessageRoutingBuilder {
     private DestinationType routing = null;
     private GeoArea targetArea = null;
 
-    private boolean channelSet = false;
-    private boolean destinationSet = false;
-    private boolean routingSet = false;
-    private boolean hopsSet = false;
+    private boolean channelChanged = false;
+    private boolean destinationChanged = false;
+    private boolean routingChanged = false;
+    private boolean hopsChanged = false;
 
     /**
      * The constructor for {@link AdHocMessageRoutingBuilder}.
@@ -72,6 +73,11 @@ public class AdHocMessageRoutingBuilder {
         );
     }
 
+    /**
+     * Build a {@link MessageRouting} object based on the values configured through the AdHocMessageRoutingBuilder.
+     * Needs at least the destination and the routing strategy to have been set.
+     * @return {@link MessageRouting}
+     */
     public MessageRouting build() {
         checkNecessaryValues();
         MessageRouting messageRouting = new MessageRouting(new DestinationAddressContainer(
@@ -81,11 +87,12 @@ public class AdHocMessageRoutingBuilder {
         return messageRouting;
     }
 
+    /**
+     * Build a {@link MessageRouting} object based on the given {@link DestinationAddressContainer}.
+     * @return {@link MessageRouting}
+     */
     public MessageRouting build(DestinationAddressContainer dac) {
-        checkNecessaryValues();
-        MessageRouting messageRouting = new MessageRouting(dac, sourceAddressContainer);
-        resetValues();
-        return messageRouting;
+        return new MessageRouting(dac, sourceAddressContainer);
     }
 
     /**
@@ -95,58 +102,101 @@ public class AdHocMessageRoutingBuilder {
      * @return this builder
      */
     public AdHocMessageRoutingBuilder channel(AdHocChannel adHocChannel) {
-        assert !channelSet: "Channel was already set! Using first setting.";
+        Validate.isTrue(!channelChanged);
         this.channel = adHocChannel;
-        this.channelSet = true;
+        this.channelChanged = true;
         return this;
     }
 
+    /**
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as an array of bytes.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder destination(byte[] ipAddress) {
         return destination(new NetworkAddress(ipAddress));
     }
 
+    /**
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as an {@link Inet4Address}.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder destination(Inet4Address ipAddress) {
         return destination(new NetworkAddress(ipAddress));
     }
 
+    /**
+     * Sets the destination of the message being built.
+     * @param receiverName The string name of the receiving entity.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder destination(String receiverName) {
         return destination(IpResolver.getSingleton().nameToIp(receiverName));
     }
 
+    /**
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as a {@link NetworkAddress}.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder destination(NetworkAddress ipAddress) {
-        assert !destinationSet: "Destination was already set! Using first setting.";
+        Validate.isTrue(!destinationChanged, "Destination has already been set!");
         this.destination = ipAddress;
-        this.destinationSet = true;
+        this.destinationChanged = true;
         return this;
     }
 
+    /**
+     * A convenience method that sets the destination IP address to the broadcast address.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder broadcast() {
         return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
     }
 
+    /**
+     * Configures the message to use a topologically scoped routing strategy.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder topological() {
-        assert !routingSet: "Routing was already set! Using first setting";
+        Validate.isTrue(!routingChanged, "Routing strategy has already been set!");
         this.routing = DestinationType.AD_HOC_TOPOCAST;
-        this.routingSet = true;
+        this.routingChanged = true;
         return this;
     }
 
-    public AdHocMessageRoutingBuilder singlehop() {
-        hops(1);
-        return topological();
-    }
-
+    /**
+     * Configures the message to use a topologically scoped routing strategy.
+     * @param area the area which the message will be transmitted to.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder geographical(GeoArea area) {
-        assert !routingSet: "Routing was already set! Using first setting";
+        Validate.isTrue(!routingChanged, "Routing strategy has already been set!");
         this.routing = DestinationType.AD_HOC_GEOCAST;
         this.targetArea = area;
-        routingSet = true;
+        this.routingChanged = true;
         return this;
     }
 
+    /**
+     * Sets the maximum number of hops in the routing to the given number.
+     * @param hops the maximum number of hops that should be possible in routing.
+     * @return this builder.
+     */
     public AdHocMessageRoutingBuilder hops(int hops) {
-        assert !hopsSet: "Number of hops was already set! Using first setting.";
+        Validate.isTrue(!hopsChanged, "Hops have already been set!");
         this.hops = require8BitTtl(hops);
+        this.hopsChanged = true;
+        return this;
+    }
+
+    /**
+     * A convenience method that sets the maximum number of hops in the routing to one.
+     * @return this builder.
+     */
+    public AdHocMessageRoutingBuilder singlehop() {
+        hops(1);
         return this;
     }
 
@@ -168,7 +218,10 @@ public class AdHocMessageRoutingBuilder {
     }
 
     private static int require8BitTtl(final int ttl) {
-        if (ttl > MAXIMUM_TTL || ttl <= 0) {
+        if (ttl == 0) {
+            throw new IllegalArgumentException("TTL can't be zero!");
+        }
+        if (ttl > MAXIMUM_TTL || ttl < 0) {
             throw new IllegalArgumentException("Passed time to live shouldn't exceed 8-bit limit!");
         }
         return ttl;
@@ -181,9 +234,9 @@ public class AdHocMessageRoutingBuilder {
         this.routing = null;
         this.targetArea = null;
 
-        this.channelSet = false;
-        this.destinationSet = false;
-        this.routingSet = false;
-        this.hopsSet = false;
+        this.channelChanged = false;
+        this.destinationChanged = false;
+        this.routingChanged = false;
+        this.hopsChanged = false;
     }
 }
