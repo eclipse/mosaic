@@ -25,7 +25,6 @@ import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.annotation.Nonnull;
@@ -46,10 +45,10 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
 
     @Nonnull
     @Override
-    public FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) throws FileNotFoundException {
+    public FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) {
         String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini"); // default // this one is required
         if(!Files.exists(Paths.get(this.ambassadorParameter.configuration.getParent(), omnetppConfigFileName))) {
-            throw new FileNotFoundException(omnetppConfigFileName + " missing");
+            throw new IllegalArgumentException(omnetppConfigFileName + " missing");
         }
         String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
         String inetSourceDirectories = "inet:omnetpp-federate/src";

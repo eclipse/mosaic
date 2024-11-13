@@ -20,7 +20,6 @@ import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.FederateDescriptor;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import javax.annotation.Nonnull;
 
@@ -42,7 +41,7 @@ public interface FederateAmbassador extends Comparable<FederateAmbassador> {
      * @return the {@link FederateExecutor} which starts the federate
      */
     @Nonnull
-    FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) throws FileNotFoundException;
+    FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os);
 
     /**
      * If the federate or simulator can be executed as a docker container, this method returns a
