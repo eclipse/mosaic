@@ -80,11 +80,9 @@ public class AdHocMessageRoutingBuilder {
      */
     public MessageRouting build() {
         checkNecessaryValues();
-        MessageRouting messageRouting = new MessageRouting(new DestinationAddressContainer(
+        return new MessageRouting(new DestinationAddressContainer(
                 routing, destination, channel, hops, targetArea, ProtocolType.UDP),
                 sourceAddressContainer);
-        resetValues();
-        return messageRouting;
     }
 
     /**
@@ -225,18 +223,5 @@ public class AdHocMessageRoutingBuilder {
             throw new IllegalArgumentException("Passed time to live shouldn't exceed 8-bit limit!");
         }
         return ttl;
-    }
-
-    private void resetValues() {
-        this.channel = AdHocChannel.CCH;
-        this.destination = null;
-        this.hops = MAXIMUM_TTL;
-        this.routing = null;
-        this.targetArea = null;
-
-        this.channelChanged = false;
-        this.destinationChanged = false;
-        this.routingChanged = false;
-        this.hopsChanged = false;
     }
 }

@@ -62,6 +62,7 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void testAllTTLValues() {
         for (int i = 1; i <= MAXIMUM_TTL; ++i) {
+            builder = new AdHocMessageRoutingBuilder("veh_0", null);
             MessageRouting routing = builder.channel(adHocChannel).destination(ipAddress).topological().hops(i).build();
             assertEquals(i, routing.getDestination().getTimeToLive());
         }
