@@ -116,7 +116,7 @@ public class AdHocModule extends AbstractCommunicationModule<AdHocModuleConfigur
             log.warn("sendCAM: Ad hoc communication disabled (!adhocModule.isEnabled()).");
             return null;
         }
-        return super.sendCam(createMessageRouting().broadcast().topological().build());
+        return super.sendCam(createMessageRouting().singlehop().broadcast().topological().build());
     }
 
     @Override

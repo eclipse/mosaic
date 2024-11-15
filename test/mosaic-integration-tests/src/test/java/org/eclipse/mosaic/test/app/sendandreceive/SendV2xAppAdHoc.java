@@ -101,7 +101,7 @@ public class SendV2xAppAdHoc extends AbstractSenderApp {
                 break;
             case topo:
                 logInfo = "topocasting message #" + sequenceNbr;
-                routing = getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).broadcast().topological().build();
+                routing = getOs().getAdHocModule().createMessageRouting().channel(AdHocChannel.CCH).singlehop().broadcast().topological().build();
                 break;
             default:
                 throw new RuntimeException("Unknown sendMode.");

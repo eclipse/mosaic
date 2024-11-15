@@ -152,13 +152,13 @@ public class AdHocMessageRoutingBuilderTest {
     @Test
     public void topoBroadcastAdHocChannel() {
         // run
-        MessageRouting routing = builder.channel(adHocChannel).broadcast().topological().build();
+        MessageRouting routing = builder.channel(adHocChannel).singlehop().broadcast().topological().build();
 
         // assert
         assertEquals(DestinationType.AD_HOC_TOPOCAST, routing.getDestination().getType());
         assertFalse(routing.getDestination().isGeocast());
         assertTrue(routing.getDestination().getAddress().isBroadcast());
-        assertEquals(255, routing.getDestination().getTimeToLive()); // TODO Discuss if topologically scoped broadcast should default to 1 or 255 max hops
+        assertEquals(1, routing.getDestination().getTimeToLive());
         assertTrue(routing.getDestination().getAddress().isBroadcast());
         assertEquals(routing.getDestination().getAdhocChannelId(), adHocChannel);
     }
