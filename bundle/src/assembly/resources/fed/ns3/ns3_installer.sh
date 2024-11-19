@@ -44,7 +44,7 @@ arg_ns3_file=""
 arg_federate_file=""
 arg_integration_testing=false
 arg_make_parallel=""
-arg_dev=false # set manually // do NOT remove src code after installation
+arg_dev=false
 
 required_programs_display=( python3 gcc unzip tar protobuf-compiler )
 required_programs_test=( python3 gcc unzip tar protoc )
@@ -89,6 +89,7 @@ print_help() {
     log "   -q --quiet\t\t\t\tThe script will not give any output but run silently instead."
     log "   -c --no-clean-on-failure\t\tDo not remove installation files when install fails."
     log "   -d --no-deploy\t\t\tDo not extract binary data from ns3 (useful for development)."
+    log "   -k --keep-src\t\t\tSource code is not removed after installation."
     log "   -p --regen-protobuf\ŧ\tRegenerate Protobuf c++ source, when using a different version of protobuf 3."
     log "   -h --help\t\t\t\tPrint this help"
     log "   -j --parallel <n>\t\t\tUse n threads for compilation "
@@ -119,7 +120,7 @@ get_arguments() {
           -f|--federate)
               arg_federate_file="$2"
               ns3_federate_filename="$2"
-              shift #past argument
+              shift # past argument
               ;;
           -s|--simulator)
               arg_ns3_file="$2"
@@ -129,6 +130,9 @@ get_arguments() {
           -it|--integration_testing)
               arg_integration_testing=true
               arg_quiet=true
+              ;;
+          -k|--keep-src)
+              arg_dev=true
               ;;
           -j|--parallel)
               arg_make_parallel="-j $2"
