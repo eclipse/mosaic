@@ -37,6 +37,7 @@ import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
+import org.eclipse.mosaic.interactions.environment.LidarUpdates;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -62,6 +63,7 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
+import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.lib.util.scheduling.DefaultEventScheduler;
@@ -298,6 +300,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TrafficLightUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
+                this.process((LidarUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
                 this.process((VehicleBatteryUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
@@ -691,6 +695,19 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 vehicleUpdates.getTime(),
                 e -> SimulationKernel.SimulationKernel.garbageCollection());
         addEvent(triggerGarbageCollection);
+    }
+
+    private void process(final LidarUpdates lidarUpdates) {
+        for (LidarData data :lidarUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(data.getName());
+            final Event event = new Event(
+                    data.getTime(),
+                    simulationUnit,
+                    data,
+                    EventNicenessPriorityRegister.LIDAR_UPDATED
+            );
+            addEvent(event);
+        }
     }
 
     private void addVehicleIfNotYetAdded(long time, String unitName) {
