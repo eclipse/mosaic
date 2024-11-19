@@ -23,8 +23,6 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 
 import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 
@@ -38,8 +36,6 @@ public class AdHocMessageRoutingBuilder {
      * The maximum time to live (TTL).
      */
     private final static int MAXIMUM_TTL = 255;
-
-    private static final Logger log = LoggerFactory.getLogger(AdHocMessageRoutingBuilder.class);
 
     private final SourceAddressContainer sourceAddressContainer;
 
@@ -100,7 +96,7 @@ public class AdHocMessageRoutingBuilder {
      * @return this builder
      */
     public AdHocMessageRoutingBuilder channel(AdHocChannel adHocChannel) {
-        Validate.isTrue(!channelChanged);
+        Validate.isTrue(!channelChanged, "Channel has already been set!");
         this.channel = adHocChannel;
         this.channelChanged = true;
         return this;

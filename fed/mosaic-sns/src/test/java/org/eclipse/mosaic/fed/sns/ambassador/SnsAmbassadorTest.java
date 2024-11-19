@@ -169,7 +169,9 @@ public class SnsAmbassadorTest {
         AdHocMessageRoutingBuilder adHocMessageRoutingBuilder = new AdHocMessageRoutingBuilder("veh_0", vehToPosition.get("veh_0"));
         MessageRouting routing1 = adHocMessageRoutingBuilder
                 .channel(AdHocChannel.CCH)
-                .broadcast().geographical(new GeoCircle(vehToPosition.get("veh_2"), 300)).build();
+                .broadcast()
+                .geographical(new GeoCircle(vehToPosition.get("veh_2"), 300))
+                .build();
         sendMessage(routing1);
         assertReceivedMessages("veh_1", "veh_2");
 
