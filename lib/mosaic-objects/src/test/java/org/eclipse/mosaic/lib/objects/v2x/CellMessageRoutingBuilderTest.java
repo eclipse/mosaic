@@ -79,7 +79,7 @@ public class CellMessageRoutingBuilderTest {
         MessageRouting routing = builder.broadcast().mbs().geographical(geoCircle).build();
 
         // assert
-        assertEquals(DestinationType.CELL_GEOCAST_MBS, routing.getDestination().getType());
+        assertEquals(DestinationType.CELL_GEOCAST_MBMS, routing.getDestination().getType());
         assertTrue(routing.getDestination().isGeocast());
         assertTrue(routing.getDestination().getGeoArea() instanceof GeoCircle);
         assertTrue(routing.getDestination().getAddress().isBroadcast());
@@ -91,7 +91,7 @@ public class CellMessageRoutingBuilderTest {
         MessageRouting routing = builder.broadcast().mbs().geographical(geoRectangle).build();
 
         // assert
-        assertEquals(DestinationType.CELL_GEOCAST_MBS, routing.getDestination().getType());
+        assertEquals(DestinationType.CELL_GEOCAST_MBMS, routing.getDestination().getType());
         assertTrue(routing.getDestination().isGeocast());
         assertTrue(routing.getDestination().getGeoArea() instanceof GeoRectangle);
         assertTrue(routing.getDestination().getAddress().isBroadcast());

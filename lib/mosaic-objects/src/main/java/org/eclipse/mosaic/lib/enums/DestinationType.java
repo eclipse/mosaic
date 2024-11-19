@@ -24,7 +24,7 @@ public enum DestinationType {
     AD_HOC_TOPOCAST,
     // cell types
     CELL_GEOCAST,
-    CELL_GEOCAST_MBS,
+    CELL_GEOCAST_MBMS,
     CELL_TOPOCAST;
 
     public boolean isAdHoc() {
@@ -32,7 +32,7 @@ public enum DestinationType {
     }
 
     public boolean isCell() {
-        return this == CELL_GEOCAST || this == CELL_GEOCAST_MBS || this == CELL_TOPOCAST;
+        return this == CELL_GEOCAST || this == CELL_GEOCAST_MBMS || this == CELL_TOPOCAST;
     }
 
 }

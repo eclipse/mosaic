@@ -117,7 +117,7 @@ public class CellModule extends AbstractCommunicationModule<CellModuleConfigurat
         return switch (camConfiguration.getAddressingMode()) {
             case CELL_TOPOCAST -> sendCamViaTopocast(camConfiguration);
             case CELL_GEOCAST -> sendCamViaGeoBroadcast(camConfiguration);
-            case CELL_GEOCAST_MBS -> sendCamViaGeoBroadcastMbms(camConfiguration);
+            case CELL_GEOCAST_MBMS -> sendCamViaGeoBroadcastMbms(camConfiguration);
             default -> {
                 log.warn("sendCam: Unsupported addressing mode {}.", camConfiguration.getAddressingMode());
                 yield null;

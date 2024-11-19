@@ -155,7 +155,7 @@ public class CellMessageRoutingBuilder {
 
     public CellMessageRoutingBuilder mbs() {
         Validate.isTrue(!mbsChanged, "MBS was already chosen!");
-        routing = DestinationType.CELL_GEOCAST_MBS;
+        routing = DestinationType.CELL_GEOCAST_MBMS;
         mbsChanged = true;
         return this;
     }
