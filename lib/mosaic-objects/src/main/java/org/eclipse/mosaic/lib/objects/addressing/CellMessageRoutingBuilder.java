@@ -22,8 +22,7 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.MessageStreamRouting;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.Validate;
 
 import java.net.Inet4Address;
 
@@ -32,8 +31,6 @@ import java.net.Inet4Address;
  * cellular communication.
  */
 public class CellMessageRoutingBuilder {
-
-    private static final Logger log = LoggerFactory.getLogger(CellMessageRoutingBuilder.class);
 
     private final SourceAddressContainer sourceAddressContainer;
 
@@ -83,14 +80,9 @@ public class CellMessageRoutingBuilder {
 
     private MessageRouting build(DestinationAddressContainer dac) {
         if (streamDuration < 0) {
-            MessageRouting messageRouting = new MessageRouting(dac, sourceAddressContainer);
-            resetValues();
-            return messageRouting;
+            return new MessageRouting(dac, sourceAddressContainer);
         } else {
-            MessageStreamRouting messageStreamRouting =
-                    new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
-            resetValues();
-            return messageStreamRouting;
+            return new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
         }
     }
 
@@ -113,7 +105,7 @@ public class CellMessageRoutingBuilder {
      * @return the {@link CellMessageRoutingBuilder}
      */
     public CellMessageRoutingBuilder protocol(ProtocolType type) {
-        assert !protocolChanged : "Protocol was already set! Using first setting.";
+        Validate.isTrue(!protocolChanged, "Protocol was already set!");
         protocolType = type;
         protocolChanged = true;
         return this;
@@ -139,7 +131,7 @@ public class CellMessageRoutingBuilder {
     }
 
     public CellMessageRoutingBuilder destination(NetworkAddress networkAddress) {
-        assert !destinationChanged : "Destination was already set! Using first setting.";
+        Validate.isTrue(!destinationChanged, "Destination was already set!");
         this.destination = networkAddress;
         this.destinationChanged = true;
         return this;
@@ -147,6 +139,10 @@ public class CellMessageRoutingBuilder {
 
     public CellMessageRoutingBuilder destination(String receiverName) {
         return destination(IpResolver.getSingleton().nameToIp(receiverName).getAddress());
+    }
+
+    public CellMessageRoutingBuilder destination(Inet4Address ipAddress) {
+        return destination(new NetworkAddress(ipAddress));
     }
 
     public CellMessageRoutingBuilder destination(byte[] ipv4Address) {
@@ -158,22 +154,22 @@ public class CellMessageRoutingBuilder {
     }
 
     public CellMessageRoutingBuilder mbs() {
-        assert !mbsChanged : "MBS was already chosen!";
+        Validate.isTrue(!mbsChanged, "MBS was already chosen!");
         routing = DestinationType.CELL_GEOCAST_MBS;
         mbsChanged = true;
         return this;
     }
 
     public CellMessageRoutingBuilder topological() {
-        assert !routingChanged : "Routing was already set! Using first setting.";
-        assert !mbsChanged : "MBS can not be enabled for topological routing!";
+        Validate.isTrue(!routingChanged, "Routing was already set!");
+        Validate.isTrue(!mbsChanged, "MBS can not be enabled for topological routing!");
         routing = DestinationType.CELL_TOPOCAST;
         routingChanged = true;
         return this;
     }
 
     public CellMessageRoutingBuilder geographical(GeoArea area) {
-        assert !routingChanged : "Routing was already set! Using first setting.";
+        Validate.isTrue(!routingChanged, "Routing was already set!");
         if (!mbsChanged) {
             routing = DestinationType.CELL_GEOCAST;
         }
@@ -197,20 +193,5 @@ public class CellMessageRoutingBuilder {
         if (routing == null) {
             throw new IllegalArgumentException("No routing protocol was given! Aborting.");
         }
-    }
-
-    private void resetValues() {
-        this.streamDuration = -1;
-        this.streamBandwidthInBitPs = -1;
-
-        this.destination = null;
-        this.routing = null;
-        this.targetArea = null;
-        this.protocolType = null;
-
-        this.destinationChanged = false;
-        this.routingChanged = false;
-        this.mbsChanged = false;
-        this.protocolChanged = false;
     }
 }
