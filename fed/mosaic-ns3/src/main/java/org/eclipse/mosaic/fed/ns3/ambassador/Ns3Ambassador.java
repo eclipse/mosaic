@@ -29,6 +29,8 @@ import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 
 /**
@@ -48,6 +50,9 @@ public class Ns3Ambassador extends AbstractNetworkAmbassador {
     @Nonnull
     @Override
     public FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) {
+        if (!Files.exists(Paths.get(this.ambassadorParameter.configuration.getParent(), "ns3_federate_config.xml"))) {
+            throw new IllegalArgumentException("ns3_federate_config.xml missing");
+        }
         switch (os) {
             case LINUX:
                 return new ExecutableFederateExecutor(this.descriptor, "./run.sh", Integer.toString(port));
