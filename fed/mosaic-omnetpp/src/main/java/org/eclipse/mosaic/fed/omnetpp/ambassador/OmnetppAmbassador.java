@@ -19,12 +19,13 @@ import org.eclipse.mosaic.lib.coupling.AbstractNetworkAmbassador;
 import org.eclipse.mosaic.rti.api.FederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.DockerFederateExecutor;
 import org.eclipse.mosaic.rti.api.federatestarter.ExecutableFederateExecutor;
-import org.eclipse.mosaic.rti.api.federatestarter.NopFederateExecutor;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 import org.eclipse.mosaic.rti.config.CLocalHost.OperatingSystem;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 
 /**
@@ -44,11 +45,14 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
     @Nonnull
     @Override
     public FederateExecutor createFederateExecutor(String host, int port, OperatingSystem os) {
+        String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini"); // default // this one is required
+        if (!Files.exists(Paths.get(this.ambassadorParameter.configuration.getParent(), omnetppConfigFileName))) {
+            throw new IllegalArgumentException(omnetppConfigFileName + " missing");
+        }
+        String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
+        String inetSourceDirectories = "inet:omnetpp-federate/src";
         switch (os) {
             case LINUX:
-                String omnetppConfigFileName = ObjectUtils.defaultIfNull(config.federateConfigurationFile, "omnetpp.ini");
-                String omnetppConfigFilePath = "omnetpp-federate/simulations/" + omnetppConfigFileName;
-                String inetSourceDirectories = "inet:omnetpp-federate/src";
                 return new ExecutableFederateExecutor(this.descriptor, "omnetpp-federate/omnetpp-federate",
                         "-u", "Cmdenv",
                         "-f", omnetppConfigFilePath,
@@ -57,6 +61,13 @@ public class OmnetppAmbassador extends AbstractNetworkAmbassador {
                         "--mosaiceventscheduler-port=" + port
                 );
             case WINDOWS:
+                return new ExecutableFederateExecutor(this.descriptor, "wsl.exe", "omnetpp-federate/omnetpp-federate",
+                        "-u", "Cmdenv",
+                        "-f", omnetppConfigFilePath,
+                        "-n", inetSourceDirectories,
+                        "--mosaiceventscheduler-host=" + host,
+                        "--mosaiceventscheduler-port=" + port
+                );
             case UNKNOWN:
             default:
                 log.error("Operating system not supported by omnetpp");

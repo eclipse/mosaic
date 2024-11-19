@@ -116,7 +116,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         try {
             SimulationKernel.SimulationKernel.setConfigurationPath(ambassadorParameter.configuration.getParentFile());
             // try to read the configuration from the configuration file
-            ambassadorConfig = new ObjectInstantiation<>(CApplicationAmbassador.class).readFile(ambassadorParameter.configuration);
+            ambassadorConfig = new ObjectInstantiation<>(CApplicationAmbassador.class, log).readFile(ambassadorParameter.configuration);
 
             Validate.isTrue(ambassadorConfig.eventSchedulerThreads > 0,
                     "Number of eventSchedulerThreads must be greater than zero."
