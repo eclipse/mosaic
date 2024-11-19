@@ -22,9 +22,7 @@ import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
-import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
-import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
 import org.eclipse.mosaic.lib.objects.v2x.V2xMessage;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.Denm;
@@ -110,7 +108,7 @@ public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem>
      */
     private Denm constructDenm() {
         final GeoCircle geoCircle = new GeoCircle(lastReceivedMessage.getEventLocation(), 3000.0D);
-        final MessageRouting routing = getOs().getCellModule().createMessageRouting().geoBroadcastBasedOnUnicast(geoCircle);
+        final MessageRouting routing = getOs().getCellModule().createMessageRouting().broadcast().geographical(geoCircle).build();
         return new Denm(routing,
                 new DenmContent(
                         lastReceivedMessage.getTime(),
