@@ -155,6 +155,7 @@ public class CellMessageRoutingBuilder {
 
     public CellMessageRoutingBuilder mbs() {
         Validate.isTrue(!mbsChanged, "MBS was already chosen!");
+        Validate.isTrue(!(routing == DestinationType.CELL_TOPOCAST), "MBS can not be enabled for topological routing!");
         routing = DestinationType.CELL_GEOCAST_MBMS;
         mbsChanged = true;
         return this;
@@ -181,6 +182,7 @@ public class CellMessageRoutingBuilder {
     private void checkNecessaryValues() {
         checkDestination();
         checkRouting();
+        checkArea();
     }
 
     private void checkDestination() {
@@ -192,6 +194,14 @@ public class CellMessageRoutingBuilder {
     private void checkRouting() {
         if (routing == null) {
             throw new IllegalArgumentException("No routing protocol was given! Aborting.");
+        }
+    }
+
+    private void checkArea() {
+        if (routing == DestinationType.CELL_GEOCAST || routing == DestinationType.CELL_GEOCAST_MBMS) {
+            if (targetArea == null) {
+                throw new IllegalArgumentException("No target area was given for geographical routing! Aborting.");
+            }
         }
     }
 }
