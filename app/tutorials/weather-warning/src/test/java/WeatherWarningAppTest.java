@@ -30,6 +30,7 @@ import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
 import org.eclipse.mosaic.lib.enums.SensorType;
+import org.eclipse.mosaic.lib.geo.GeoArea;
 import org.eclipse.mosaic.lib.objects.addressing.AdHocMessageRoutingBuilder;
 import org.eclipse.mosaic.lib.objects.addressing.SourceAddressContainer;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
@@ -129,7 +130,9 @@ public class WeatherWarningAppTest {
         AdHocMessageRoutingBuilder adHocMessageRoutingBuilderMock = mock(AdHocMessageRoutingBuilder.class);
         when(adHocModuleMock.createMessageRouting()).thenReturn(adHocMessageRoutingBuilderMock);
         MessageRouting messageRoutingMock = mock(MessageRouting.class);
-        when(adHocMessageRoutingBuilderMock.geoBroadCast(any())).thenReturn(messageRoutingMock);
+        when(adHocMessageRoutingBuilderMock.broadcast()).thenReturn(adHocMessageRoutingBuilderMock);
+        when(adHocMessageRoutingBuilderMock.geographical(any(GeoArea.class))).thenReturn(adHocMessageRoutingBuilderMock);
+        when(adHocMessageRoutingBuilderMock.build()).thenReturn(messageRoutingMock);
     }
 
     private void setupVehiclePosition() {

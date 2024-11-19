@@ -19,10 +19,10 @@ import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.enums.DestinationType;
 import org.eclipse.mosaic.lib.enums.ProtocolType;
 import org.eclipse.mosaic.lib.geo.GeoArea;
-import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.geo.GeoRectangle;
 import org.eclipse.mosaic.lib.objects.v2x.MessageRouting;
+
+import org.apache.commons.lang3.Validate;
 
 import java.net.Inet4Address;
 
@@ -32,8 +32,23 @@ import java.net.Inet4Address;
  */
 public class AdHocMessageRoutingBuilder {
 
+    /**
+     * The maximum time to live (TTL).
+     */
+    private final static int MAXIMUM_TTL = 255;
+
     private final SourceAddressContainer sourceAddressContainer;
+
     private AdHocChannel channel = AdHocChannel.CCH;
+    private NetworkAddress destination = null;
+    private Integer hops = MAXIMUM_TTL;
+    private DestinationType routing = null;
+    private GeoArea targetArea = null;
+
+    private boolean channelChanged = false;
+    private boolean destinationChanged = false;
+    private boolean routingChanged = false;
+    private boolean hopsChanged = false;
 
     /**
      * The constructor for {@link AdHocMessageRoutingBuilder}.
@@ -54,7 +69,23 @@ public class AdHocMessageRoutingBuilder {
         );
     }
 
-    private MessageRouting build(DestinationAddressContainer dac) {
+    /**
+     * Build a {@link MessageRouting} object based on the values configured through the AdHocMessageRoutingBuilder.
+     * Needs at least the destination and the routing strategy to have been set.
+     * @return {@link MessageRouting}
+     */
+    public MessageRouting build() {
+        checkNecessaryValues();
+        return new MessageRouting(new DestinationAddressContainer(
+                routing, destination, channel, hops, targetArea, ProtocolType.UDP),
+                sourceAddressContainer);
+    }
+
+    /**
+     * Build a {@link MessageRouting} object based on the given {@link DestinationAddressContainer}.
+     * @return {@link MessageRouting}
+     */
+    public MessageRouting build(DestinationAddressContainer dac) {
         return new MessageRouting(dac, sourceAddressContainer);
     }
 
@@ -64,106 +95,126 @@ public class AdHocMessageRoutingBuilder {
      * @param adHocChannel specific ad hoc channel {@link AdHocChannel}
      * @return this builder
      */
-    public AdHocMessageRoutingBuilder viaChannel(AdHocChannel adHocChannel) {
+    public AdHocMessageRoutingBuilder channel(AdHocChannel adHocChannel) {
+        Validate.isTrue(!channelChanged, "Channel has already been set!");
         this.channel = adHocChannel;
+        this.channelChanged = true;
         return this;
     }
 
     /**
-     * Creates geo broadcast to destination area.
-     *
-     * @param geoArea destination circle {@link GeoCircle} or destination rectangle {@link GeoRectangle}
-     * @return MessageRouting
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as an array of bytes.
+     * @return this builder.
      */
-    public MessageRouting geoBroadCast(GeoArea geoArea) {
-        return build(new DestinationAddressContainer(
-                DestinationType.AD_HOC_GEOCAST,
-                new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS),
-                channel,
-                null,
-                geoArea,
-                ProtocolType.UDP
-        ));
+    public AdHocMessageRoutingBuilder destination(byte[] ipAddress) {
+        return destination(new NetworkAddress(ipAddress));
     }
 
     /**
-     * Creates geo cast to specific IP address using a specific {@link AdHocChannel}.
-     * Note: the SNS doesn't support explicit addressing when geoCasting
-     *
-     * @param geoArea   destination circle {@link GeoCircle} or destination rectangle {@link GeoRectangle}
-     * @param ipAddress specific ip address in byte array representation
-     * @return MessageRouting
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as an {@link Inet4Address}.
+     * @return this builder.
      */
-    public MessageRouting geoCast(GeoArea geoArea, byte[] ipAddress) {
-        return build(new DestinationAddressContainer(
-                DestinationType.AD_HOC_GEOCAST,
-                new NetworkAddress(ipAddress),
-                channel,
-                null,
-                geoArea,
-                ProtocolType.UDP
-        ));
+    public AdHocMessageRoutingBuilder destination(Inet4Address ipAddress) {
+        return destination(new NetworkAddress(ipAddress));
     }
 
     /**
-     * Creates a topological broadcast using {@link AdHocChannel} SCH1 and single hop.
-     *
-     * @return MessageRouting
+     * Sets the destination of the message being built.
+     * @param receiverName The string name of the receiving entity.
+     * @return this builder.
      */
-    public MessageRouting topoBroadCast() {
-        return topoCast(NetworkAddress.BROADCAST_ADDRESS.getAddress(), 1);
+    public AdHocMessageRoutingBuilder destination(String receiverName) {
+        return destination(IpResolver.getSingleton().nameToIp(receiverName));
     }
 
     /**
-     * Creates a topological broadcast using a specific {@link AdHocChannel} and specific number of hops.
-     * Note: The SNS will dismiss hop value, since it only allows for single-hop TopoCasts
-     *
-     * @param hops number of hops
-     * @return MessageRouting
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as a {@link NetworkAddress}.
+     * @return this builder.
      */
-    public MessageRouting topoBroadCast(int hops) {
-        return topoCast(NetworkAddress.BROADCAST_ADDRESS.getAddress(), hops);
+    public AdHocMessageRoutingBuilder destination(NetworkAddress ipAddress) {
+        Validate.isTrue(!destinationChanged, "Destination has already been set!");
+        this.destination = ipAddress;
+        this.destinationChanged = true;
+        return this;
     }
 
     /**
-     * Creates a topological cast using a specific destination host name, a specific {@link AdHocChannel} and specific number of hops.
-     * Note: The SNS will dismiss hop value, since it only allows for single-hop TopoCasts, so if receiver can't be reached, within
-     * one hop transmission will fail.
-     *
-     * @param receiverName destination host name
-     * @param hops         number of hops
-     * @return MessageRouting
+     * A convenience method that sets the destination IP address to the broadcast address.
+     * @return this builder.
      */
-    public MessageRouting topoCast(String receiverName, int hops) {
-        return topoCast(IpResolver.getSingleton().nameToIp(receiverName).getAddress(), hops);
+    public AdHocMessageRoutingBuilder broadcast() {
+        return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
     }
 
     /**
-     * Creates a topological cast using a specific destination IP address, a specific {@link AdHocChannel} and specific number of hops.
-     * Note: The SNS will dismiss hop value, since it only allows for single-hop TopoCasts, so if receiver can't be reached, within
-     * one hop transmission will fail.
-     *
-     * @param ipAddress destination IP address
-     * @param hops      number of hops
-     * @return MessageRouting
+     * Configures the message to use a topologically scoped routing strategy.
+     * @return this builder.
      */
-    public MessageRouting topoCast(byte[] ipAddress, int hops) {
-        return build(new DestinationAddressContainer(
-                DestinationType.AD_HOC_TOPOCAST,
-                new NetworkAddress(ipAddress),
-                channel,
-                require8BitTtl(hops),
-                null,
-                ProtocolType.UDP
-        ));
+    public AdHocMessageRoutingBuilder topological() {
+        Validate.isTrue(!routingChanged, "Routing strategy has already been set!");
+        this.routing = DestinationType.AD_HOC_TOPOCAST;
+        this.routingChanged = true;
+        return this;
     }
 
     /**
-     * The maximum time to live (TTL).
+     * Configures the message to use a topologically scoped routing strategy.
+     * @param area the area which the message will be transmitted to.
+     * @return this builder.
      */
-    private final static int MAXIMUM_TTL = 255;
+    public AdHocMessageRoutingBuilder geographical(GeoArea area) {
+        Validate.isTrue(!routingChanged, "Routing strategy has already been set!");
+        this.routing = DestinationType.AD_HOC_GEOCAST;
+        this.targetArea = area;
+        this.routingChanged = true;
+        return this;
+    }
+
+    /**
+     * Sets the maximum number of hops in the routing to the given number.
+     * @param hops the maximum number of hops that should be possible in routing.
+     * @return this builder.
+     */
+    public AdHocMessageRoutingBuilder hops(int hops) {
+        Validate.isTrue(!hopsChanged, "Hops have already been set!");
+        this.hops = require8BitTtl(hops);
+        this.hopsChanged = true;
+        return this;
+    }
+
+    /**
+     * A convenience method that sets the maximum number of hops in the routing to one.
+     * @return this builder.
+     */
+    public AdHocMessageRoutingBuilder singlehop() {
+        hops(1);
+        return this;
+    }
+
+    private void checkNecessaryValues() {
+        checkDestination();
+        checkRouting();
+    }
+
+    private void checkDestination() {
+        if (destination == null) {
+            throw new IllegalArgumentException("No destination address was given! Aborting.");
+        }
+    }
+
+    private void checkRouting() {
+        if (routing == null) {
+            throw new IllegalArgumentException("No routing protocol was given! Aborting.");
+        }
+    }
 
     private static int require8BitTtl(final int ttl) {
+        if (ttl == 0) {
+            throw new IllegalArgumentException("TTL can't be zero!");
+        }
         if (ttl > MAXIMUM_TTL || ttl < 0) {
             throw new IllegalArgumentException("Passed time to live shouldn't exceed 8-bit limit!");
         }
