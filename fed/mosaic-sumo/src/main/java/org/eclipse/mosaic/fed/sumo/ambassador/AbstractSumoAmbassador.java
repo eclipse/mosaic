@@ -1043,6 +1043,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
      */
     private void receiveInteraction(VehicleParametersChange vehicleParametersChange) throws InternalFederateException {
         if (externalVehicles.containsKey(vehicleParametersChange.getVehicleId())) {
+            changeExternalParameters(vehicleParametersChange);
             return;
         }
 
@@ -1281,6 +1282,17 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
 
         updates.getUpdated().removeIf(currentVehicle -> externalVehicles.containsKey(currentVehicle.getName()));
         updates.getRemovedNames().removeIf(vehicle -> externalVehicles.remove(vehicle) != null);
+    }
+
+    public void changeExternalParameters(VehicleParametersChange vehicleParametersChange) throws InternalFederateException {
+        final String veh_id = vehicleParametersChange.getVehicleId();
+        for (final VehicleParameter param : vehicleParametersChange.getVehicleParameters()) {
+            // Only color is supported as a parameter for external vehicles so far.
+            if (param.getParameterType() == VehicleParameter.VehicleParameterType.COLOR) {
+                final Color color = param.getValue();
+                bridge.getVehicleControl().setColor(veh_id, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+            }
+        }
     }
 
     /**
