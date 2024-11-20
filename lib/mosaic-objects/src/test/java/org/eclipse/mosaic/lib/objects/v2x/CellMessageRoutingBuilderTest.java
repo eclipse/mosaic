@@ -52,7 +52,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastCircle() {
         // run
-        MessageRouting routing = builder.geoBroadcastBasedOnUnicast(geoCircle);
+        MessageRouting routing = builder.broadcast().geographical(geoCircle).build();
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST, routing.getDestination().getType());
@@ -64,7 +64,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void geoBroadcastRectangle() {
         // run
-        MessageRouting routing = builder.geoBroadcastBasedOnUnicast(geoRectangle);
+        MessageRouting routing = builder.broadcast().geographical(geoRectangle).build();
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST, routing.getDestination().getType());
@@ -74,9 +74,9 @@ public class CellMessageRoutingBuilderTest {
     }
 
     @Test
-    public void geoBroadcastMbmsCircle() {
+    public void geoBroadcastMbsCircle() {
         // run
-        MessageRouting routing = builder.geoBroadcastMbms(geoCircle);
+        MessageRouting routing = builder.broadcast().mbs().geographical(geoCircle).build();
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST_MBMS, routing.getDestination().getType());
@@ -86,9 +86,9 @@ public class CellMessageRoutingBuilderTest {
     }
 
     @Test
-    public void geoBroadcastMbmsRectangle() {
+    public void geoBroadcastMbsRectangle() {
         // run
-        MessageRouting routing = builder.geoBroadcastMbms(geoRectangle);
+        MessageRouting routing = builder.broadcast().mbs().geographical(geoRectangle).build();
 
         // assert
         assertEquals(DestinationType.CELL_GEOCAST_MBMS, routing.getDestination().getType());
@@ -100,7 +100,7 @@ public class CellMessageRoutingBuilderTest {
     @Test
     public void topocast() {
         // run
-        MessageRouting routing = builder.topoCast(ipAddress);
+        MessageRouting routing = builder.destination(ipAddress).topological().build();
 
         // assert
         assertEquals(DestinationType.CELL_TOPOCAST, routing.getDestination().getType());
