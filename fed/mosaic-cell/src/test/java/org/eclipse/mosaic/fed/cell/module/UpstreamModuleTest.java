@@ -163,7 +163,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimited() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
         Event event = new Event(10 * TIME.SECOND, upstreamModule, sampleV2XMessage);
@@ -190,7 +193,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimitedRegionLessLimited() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
@@ -220,7 +226,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_regularMessageNodeLimitedRegionMoreLimited() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 2240 * DATA.BIT, 2240 * DATA.BIT);
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
@@ -253,7 +262,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 10 * DATA.BYTE);
@@ -282,7 +291,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_regularMessageNodeUnlimited_plusFreeBandwidth() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
@@ -326,7 +338,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_regularMessageNodeUnlimitedRegionLimited() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
@@ -366,7 +381,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         long messageLength = 10 * DATA.BYTE;
@@ -404,7 +419,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_packetLossUdp() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         long messageLength = 10 * DATA.BYTE;
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), messageLength);
@@ -441,7 +459,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
@@ -471,7 +489,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0");
@@ -504,7 +522,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
@@ -533,7 +551,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
@@ -566,7 +584,7 @@ public class UpstreamModuleTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
@@ -594,7 +612,10 @@ public class UpstreamModuleTest {
     public void testProcessMessage_nodeDeactivatedUdp() throws InternalFederateException {
         // SETUP
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
@@ -647,7 +668,10 @@ public class UpstreamModuleTest {
         // SETUP
         IpResolver.getSingleton().registerHost("veh_1");
         // UDP
-        routing.set(new CellMessageRoutingBuilder("veh_1", null).topoCast(new byte[]{10, 2, 0, 0}));
+        routing.set(new CellMessageRoutingBuilder("veh_1", null)
+                .destination(new byte[]{10, 2, 0, 0})
+                .topological()
+                .build());
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         Event event = new Event(10 * TIME.NANO_SECOND, upstreamModule, sampleV2XMessage);
@@ -668,7 +692,10 @@ public class UpstreamModuleTest {
         SimulationData.INSTANCE.setCellConfigurationOfNode("veh_0", cellConfiguration);
         ConfigurationData.INSTANCE.getNetworkConfig().globalNetwork.uplink.capacity = (21000 - 200) * DATA.BIT;
 
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{1, 2, 3, 4})
+                .topological()
+                .build());
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5 * DATA.BYTE);
         StreamResult streamResult = new StreamResult(
                 GLOBAL_NETWORK_ID,

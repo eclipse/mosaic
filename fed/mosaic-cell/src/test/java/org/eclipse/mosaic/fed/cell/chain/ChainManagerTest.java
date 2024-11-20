@@ -112,7 +112,10 @@ public class ChainManagerTest {
     @Test
     public void testStartEvent_cellRouting() {
         //SETUP
-        routing.set(new CellMessageRoutingBuilder("veh_0", null).topoCast(new byte[]{1, 2, 3, 4}));
+        routing.set(new CellMessageRoutingBuilder("veh_0", null)
+                .destination(new byte[]{1, 2, 3, 4})
+                .topological()
+                .build());
 
         V2xMessageTransmission sendV2xMsg = new V2xMessageTransmission(12 * TIME.SECOND, v2XMessage);
 
@@ -127,7 +130,7 @@ public class ChainManagerTest {
     @Test
     public void testStartEvent_adhocRouting() {
         //SETUP
-        routing.set(new AdHocMessageRoutingBuilder("veh_0", null).singlehop().broadcast().topological().build());
+        routing.set(new AdHocMessageRoutingBuilder("veh_0", null).broadcast().topological().build());
 
         V2xMessageTransmission sendV2xMsg = new V2xMessageTransmission(12 * TIME.SECOND, v2XMessage);
 

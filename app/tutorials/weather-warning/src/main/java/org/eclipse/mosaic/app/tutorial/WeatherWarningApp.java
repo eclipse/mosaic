@@ -206,7 +206,7 @@ public class WeatherWarningApp extends AbstractApplication<VehicleOperatingSyste
          * with a builder and build a geoBroadCast for the circle area defined in dest.
          */
         if (useCellNetwork()) {
-            mr = getOs().getCellModule().createMessageRouting().topoCast("server_0");
+            mr = getOs().getCellModule().createMessageRouting().destination("server_0").topological().build();
         } else {
             mr = getOs().getAdHocModule().createMessageRouting().broadcast().geographical(dest).build();
         }

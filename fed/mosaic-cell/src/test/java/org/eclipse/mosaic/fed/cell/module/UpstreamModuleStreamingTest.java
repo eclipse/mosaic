@@ -168,7 +168,7 @@ public class UpstreamModuleStreamingTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null)
                 .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                .topoCast(new byte[]{10, 2, 0, 0})
+                .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), MESSAGE_SIZE);
@@ -193,7 +193,7 @@ public class UpstreamModuleStreamingTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null)
                 .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                .topoCast(new byte[]{10, 2, 0, 0})
+                .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400L, 400L);
@@ -220,7 +220,7 @@ public class UpstreamModuleStreamingTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null)
                 .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                .topoCast(new byte[]{10, 2, 0, 0})
+                .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         CellConfiguration cellConfiguration = new CellConfiguration("veh_0", true, 400L, 400L);
@@ -252,7 +252,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 10)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         int smallerStreamSize = 10;
@@ -287,7 +287,8 @@ public class UpstreamModuleStreamingTest {
         // SETUP
         // UDP
         MessageRouting messageRouting = new CellMessageRoutingBuilder("veh_0", null)
-                .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH).topoCast(new byte[]{10, 2, 0, 0});
+                .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
+                .destination(new byte[]{10, 2, 0, 0}).topological().build();
         routing.set(messageRouting);
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), MESSAGE_SIZE);
@@ -331,7 +332,7 @@ public class UpstreamModuleStreamingTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), MESSAGE_SIZE);
@@ -362,7 +363,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 1000)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), MESSAGE_SIZE);
@@ -395,7 +396,7 @@ public class UpstreamModuleStreamingTest {
         routing.set(
                 new CellMessageRoutingBuilder("veh_0", null)
                         .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), MESSAGE_SIZE);
@@ -430,7 +431,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 10)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
@@ -461,7 +462,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 10)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         CellConfiguration cellConfiguration = SimulationData.INSTANCE.getCellConfigurationOfNode("veh_0");
@@ -494,7 +495,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 10)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
@@ -524,7 +525,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 10)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
@@ -558,7 +559,7 @@ public class UpstreamModuleStreamingTest {
                 new CellMessageRoutingBuilder("veh_0", null)
                         .protocol(ProtocolType.TCP)
                         .streaming(EVENT_DURATION, 10)
-                        .topoCast(new byte[]{10, 2, 0, 0})
+                        .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
@@ -588,7 +589,7 @@ public class UpstreamModuleStreamingTest {
         // UDP
         routing.set(new CellMessageRoutingBuilder("veh_0", null)
                 .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                .topoCast(new byte[]{10, 2, 0, 0})
+                .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
@@ -643,7 +644,7 @@ public class UpstreamModuleStreamingTest {
         IpResolver.getSingleton().registerHost("veh_1");
         routing.set(new CellMessageRoutingBuilder("veh_1", null)
                 .streaming(EVENT_DURATION, EXPECTED_BANDWIDTH)
-                .topoCast(new byte[]{10, 2, 0, 0})
+                .destination(new byte[]{10, 2, 0, 0}).topological().build()
         );
 
         SampleV2xMessage sampleV2XMessage = new SampleV2xMessage(routing.get(), 5);
