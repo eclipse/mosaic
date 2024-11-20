@@ -18,6 +18,7 @@ package org.eclipse.mosaic.interactions.environment;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
+import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.rti.api.Interaction;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -40,20 +41,17 @@ public class LidarUpdates extends Interaction {
      */
     private long nextUpdate;
 
-
     /**
-     * List of {@link LidarData} containing LiDAR data from the simulator.
+     * List of {@link PointCloud} containing LiDAR data from the simulator.
      */
-    private final List<LidarData> updated;
+    private final List<PointCloud> updated;
 
-
-
-    public LidarUpdates(long time, List<LidarData> updated) {
+    public LidarUpdates(long time, List<PointCloud> updated) {
         super(time);
         this.updated = updated;
     }
 
-    public List<LidarData> getUpdated() {
+    public List<PointCloud> getUpdated() {
         return this.updated;
     }
 
@@ -88,11 +86,12 @@ public class LidarUpdates extends Interaction {
                 .isEquals();
     }
 
+    //TODO what does this do?
     @Override
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("updated", updated.stream().map(LidarData::getName).collect(Collectors.joining(",")))
+                .append("updated", updated.stream().map(PointCloud::toString).collect(Collectors.joining(",")))
                 .toString();
     }
 
