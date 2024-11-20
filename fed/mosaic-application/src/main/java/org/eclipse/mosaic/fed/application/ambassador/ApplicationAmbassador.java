@@ -64,6 +64,7 @@ import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
+import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.lib.util.scheduling.DefaultEventScheduler;
@@ -698,12 +699,12 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final LidarUpdates lidarUpdates) {
-        for (LidarData data :lidarUpdates.getUpdated()) {
-            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(data.getName());
+        for (PointCloud pointCloud :lidarUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(pointCloud.);
             final Event event = new Event(
-                    data.getTime(),
+                    pointCloud.getCreationTime(),
                     simulationUnit,
-                    data,
+                    pointCloud,
                     EventNicenessPriorityRegister.LIDAR_UPDATED
             );
             addEvent(event);
