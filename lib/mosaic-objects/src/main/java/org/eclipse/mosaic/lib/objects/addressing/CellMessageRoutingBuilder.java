@@ -226,11 +226,9 @@ public class CellMessageRoutingBuilder {
     }
 
     private void checkArea() {
-        if (targetArea == null) {
-            if (routing == DestinationType.CELL_GEOCAST_MBMS) {
-                throw new IllegalArgumentException("No target area was given for geographical routing using mbs!"
-                        + "Have you called .geographical(GeoArea)? Aborting.");
-            }
+        if (routing == DestinationType.CELL_GEOCAST_MBMS && targetArea == null) {
+            throw new IllegalArgumentException("No target area was given for geographical routing using mbs!"
+                    + "Have you called .geographical(GeoArea)? Aborting.");
         }
     }
     private MessageRouting build(DestinationAddressContainer dac) {
