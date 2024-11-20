@@ -150,7 +150,7 @@ public class AdHocMessageRoutingBuilder {
     }
 
     /**
-     * Configures the message to use a topologically scoped routing strategy.
+     * Configures the message to use a topologically-scoped routing strategy.
      * @return this builder.
      */
     public AdHocMessageRoutingBuilder topological() {
@@ -161,7 +161,7 @@ public class AdHocMessageRoutingBuilder {
     }
 
     /**
-     * Configures the message to use a topologically scoped routing strategy.
+     * Configures the message to use a geographically-scoped routing strategy.
      * @param area the area which the message will be transmitted to.
      * @return this builder.
      */

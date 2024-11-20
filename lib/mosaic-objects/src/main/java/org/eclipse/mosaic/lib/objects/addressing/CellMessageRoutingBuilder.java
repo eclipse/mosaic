@@ -71,19 +71,15 @@ public class CellMessageRoutingBuilder {
         );
     }
 
+    /**
+     * Creates the MessageRouting based on the methods called on this builder before.
+     * @return MessageRouting - The desired routing for a message.
+     */
     public MessageRouting build() {
         checkNecessaryValues();
         return this.build(new DestinationAddressContainer(
                 routing, destination, null, null, targetArea, protocolType)
         );
-    }
-
-    private MessageRouting build(DestinationAddressContainer dac) {
-        if (streamDuration < 0) {
-            return new MessageRouting(dac, sourceAddressContainer);
-        } else {
-            return new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
-        }
     }
 
     /**
@@ -137,22 +133,45 @@ public class CellMessageRoutingBuilder {
         return this;
     }
 
+    /**
+     * Sets the destination of the message being built.
+     * @param receiverName The string name of the receiving entity.
+     * @return this builder.
+     */
     public CellMessageRoutingBuilder destination(String receiverName) {
         return destination(IpResolver.getSingleton().nameToIp(receiverName).getAddress());
     }
 
+    /**
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as an {@link Inet4Address}.
+     * @return this builder.
+     */
     public CellMessageRoutingBuilder destination(Inet4Address ipAddress) {
         return destination(new NetworkAddress(ipAddress));
     }
 
-    public CellMessageRoutingBuilder destination(byte[] ipv4Address) {
-        return destination(new NetworkAddress(ipv4Address));
+    /**
+     * Sets the destination of the message being built.
+     * @param ipAddress The IP address of the target destination as an array of bytes.
+     * @return this builder.
+     */
+    public CellMessageRoutingBuilder destination(byte[] ipAddress) {
+        return destination(new NetworkAddress(ipAddress));
     }
 
+    /**
+     * A convenience method that sets the destination IP address to the broadcast address.
+     * @return this builder.
+     */
     public CellMessageRoutingBuilder broadcast() {
         return destination(new NetworkAddress(NetworkAddress.BROADCAST_ADDRESS));
     }
 
+    /**
+     * Configures the message to use a Multicast/Broadcast Service for transmission.
+     * @return this builder.
+     */
     public CellMessageRoutingBuilder mbs() {
         Validate.isTrue(!mbsChanged, "MBS was already chosen!");
         Validate.isTrue(!(routing == DestinationType.CELL_TOPOCAST), "MBS can not be enabled for topological routing!");
@@ -161,6 +180,10 @@ public class CellMessageRoutingBuilder {
         return this;
     }
 
+    /**
+     * Configures the message to use a topologically-scoped routing strategy.
+     * @return this builder.
+     */
     public CellMessageRoutingBuilder topological() {
         Validate.isTrue(!routingChanged, "Routing was already set!");
         Validate.isTrue(!mbsChanged, "MBS can not be enabled for topological routing!");
@@ -169,6 +192,11 @@ public class CellMessageRoutingBuilder {
         return this;
     }
 
+    /**
+     * Configures the message to use a geographically-scoped routing strategy.
+     * @param area the area which the message will be transmitted to.
+     * @return this builder.
+     */
     public CellMessageRoutingBuilder geographical(GeoArea area) {
         Validate.isTrue(!routingChanged, "Routing was already set!");
         if (!mbsChanged) {
@@ -203,6 +231,13 @@ public class CellMessageRoutingBuilder {
                 throw new IllegalArgumentException("No target area was given for geographical routing using mbs!"
                         + "Have you called .geographical(GeoArea)? Aborting.");
             }
+        }
+    }
+    private MessageRouting build(DestinationAddressContainer dac) {
+        if (streamDuration < 0) {
+            return new MessageRouting(dac, sourceAddressContainer);
+        } else {
+            return new MessageStreamRouting(dac, sourceAddressContainer, streamDuration, streamBandwidthInBitPs);
         }
     }
 }
