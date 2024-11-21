@@ -15,18 +15,18 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os.modules;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.IRoutingModule;
+import org.eclipse.mosaic.fed.application.app.api.navigation.RoutingModule;
 
 /**
  * Interface to mark an {@link org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem} as
- * an owner of a {@link IRoutingModule} to calculates routes from A to B, thus making it routable.
+ * an owner of a {@link RoutingModule} to calculates routes from A to B, thus making it routable.
  */
 public interface Routable {
 
     /**
      * Returns a routing module to calculate arbitrary routes from any point to any other.
      *
-     * @return the {@link IRoutingModule} of the unit.
+     * @return the {@link RoutingModule} of the unit.
      */
-    IRoutingModule getRoutingModule();
+    RoutingModule getRoutingModule();
 }

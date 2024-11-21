@@ -18,15 +18,15 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation;
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.INavigationModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoadPositionFactory;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoutingNavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
+import org.eclipse.mosaic.fed.application.app.api.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
 import org.eclipse.mosaic.fed.application.app.api.perception.LidarSensorModule;
@@ -61,7 +61,7 @@ import javax.annotation.Nonnull;
 public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperatingSystem, PerceptionModuleOwner {
 
     @Nonnull
-    private final NavigationModule navigationModule;
+    private final RoutingNavigationModule navigationModule;
 
     @Nonnull
     private final PerceptionModule<SimplePerceptionConfiguration> perceptionModule;
@@ -83,7 +83,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         super(vehicleName, initialPosition);
         setRequiredOperatingSystem(VehicleOperatingSystem.class);
         vehicleParameters = new VehicleParameters(vehicleType);
-        navigationModule = new NavigationModule(this);
+        navigationModule = new RoutingNavigationModule(this);
         navigationModule.setCurrentPosition(initialPosition);
 
         Database database = null;
@@ -356,7 +356,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     @Override
-    public INavigationModule getNavigationModule() {
+    public NavigationModule getNavigationModule() {
         return this.navigationModule;
     }
 

@@ -25,7 +25,7 @@ import org.eclipse.mosaic.app.tutorial.WeatherWarningApp;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleParameters;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoutingNavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.fed.application.app.api.perception.BasicSensorModule;
@@ -63,7 +63,7 @@ public class WeatherWarningAppTest {
     private VehicleData vehicleData;
 
     @Mock
-    private NavigationModule navigationModuleMock;
+    private RoutingNavigationModule navigationModuleMock;
 
     @Mock
     private AdHocModule adHocModuleMock;

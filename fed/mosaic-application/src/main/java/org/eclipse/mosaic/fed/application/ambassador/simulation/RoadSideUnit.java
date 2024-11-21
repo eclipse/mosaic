@@ -17,9 +17,9 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.IRoutingModule;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.NavigationModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoutingNavigationModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
+import org.eclipse.mosaic.fed.application.app.api.navigation.RoutingModule;
 import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
 import org.eclipse.mosaic.lib.enums.RsuType;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  */
 public class RoadSideUnit extends AbstractSimulationUnit implements RoadSideUnitOperatingSystem {
 
-    private final IRoutingModule routingModule;
+    private final RoutingModule routingModule;
 
     /**
      * Creates a new Road Side simulation Unit.
@@ -44,7 +44,7 @@ public class RoadSideUnit extends AbstractSimulationUnit implements RoadSideUnit
     public RoadSideUnit(String rsuName, GeoPoint rsuPosition) {
         super(rsuName, rsuPosition);
         setRequiredOperatingSystem(RoadSideUnitOperatingSystem.class);
-        routingModule = new NavigationModule(this);
+        routingModule = new RoutingNavigationModule(this);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class RoadSideUnit extends AbstractSimulationUnit implements RoadSideUnit
     }
 
     @Override
-    public IRoutingModule getRoutingModule() {
+    public RoutingModule getRoutingModule() {
         return routingModule;
     }
 

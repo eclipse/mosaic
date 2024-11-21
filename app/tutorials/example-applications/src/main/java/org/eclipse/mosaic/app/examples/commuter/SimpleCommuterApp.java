@@ -15,12 +15,12 @@
 
 package org.eclipse.mosaic.app.examples.commuter;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.INavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.util.UnitLogger;
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
 import org.eclipse.mosaic.fed.application.app.api.Application;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
+import org.eclipse.mosaic.fed.application.app.api.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -106,7 +106,7 @@ public class SimpleCommuterApp extends AbstractApplication<VehicleOperatingSyste
      * @param event the event to process
      */
     private void driveBack(DriveBackEvent event) {
-        final INavigationModule navigationModule = getOs().getNavigationModule();
+        final NavigationModule navigationModule = getOs().getNavigationModule();
         final RoutingPosition targetPosition = new RoutingPosition(event.getTargetPosition());
         final RoutingParameters routingParameters =
                 new RoutingParameters().vehicleClass(getOs().getInitialVehicleType().getVehicleClass());
