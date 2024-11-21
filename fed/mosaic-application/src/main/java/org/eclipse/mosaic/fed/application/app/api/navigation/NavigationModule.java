@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.navigation;
+package org.eclipse.mosaic.fed.application.app.api.navigation;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
@@ -26,13 +26,14 @@ import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
 
-import java.util.Collection;
 import javax.annotation.Nullable;
 
 /**
- * Interface to access the central navigation component from vehicle applications.
+ * Interface to access navigational functions of the vehicle.
+ * As one part, it offers methods to calculate routes from the current position of
+ * the vehicle to a provided target location.
  */
-public interface INavigationModule {
+public interface NavigationModule {
 
     /**
      * Calculates one or more routes from the position of the vehicle to the given target location.
@@ -51,22 +52,6 @@ public interface INavigationModule {
      * @return The response including a set of routes towards the target.
      */
     RoutingResponse calculateRoutes(GeoPoint targetGeoPoint, RoutingParameters routingParameters);
-
-    /**
-     * Returns all existing routes that can be taken to target position using {@link RoutingPosition}.
-     *
-     * @param targetPosition The target position to calculate routes for.
-     * @return All valid routes to target position.
-     */
-    Collection<CandidateRoute> retrieveAllValidRoutesToTarget(RoutingPosition targetPosition);
-
-    /**
-     * Returns all existing routes that can be taken to target position using {@link GeoPoint}.
-     *
-     * @param targetGeoPoint The target position to calculate routes for.
-     * @return All valid routes to target position.
-     */
-    Collection<CandidateRoute> retrieveAllValidRoutesToTarget(GeoPoint targetGeoPoint);
 
     /**
      * Switch to a specific route.

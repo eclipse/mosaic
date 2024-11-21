@@ -15,11 +15,11 @@
 
 package org.eclipse.mosaic.fed.application.app.api.os.modules;
 
-import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.INavigationModule;
+import org.eclipse.mosaic.fed.application.app.api.navigation.NavigationModule;
 
 /**
  * Interface to mark an {@link org.eclipse.mosaic.fed.application.app.api.os.OperatingSystem} as
- * an owner of a {@link INavigationModule} to calculate routes from its current position to any target,
+ * an owner of a {@link NavigationModule} to calculate routes from its current position to any target,
  * thus making it navigable.
  */
 public interface Navigable extends Locatable {
@@ -27,7 +27,7 @@ public interface Navigable extends Locatable {
     /**
      * Returns a navigation module to calculate and switch routes to any target.
      *
-     * @return the {@link INavigationModule} of this unit.
+     * @return the {@link NavigationModule} of this unit.
      */
-    INavigationModule getNavigationModule();
+    NavigationModule getNavigationModule();
 }

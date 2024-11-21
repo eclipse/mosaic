@@ -17,6 +17,8 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.navigation;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
+import org.eclipse.mosaic.fed.application.app.api.navigation.NavigationModule;
+import org.eclipse.mosaic.fed.application.app.api.navigation.RoutingModule;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
@@ -33,14 +35,12 @@ import org.eclipse.mosaic.lib.routing.RoutingResponse;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * Implementation of the interface to access the central navigation component.
+ * This class provides implementation for both {@link NavigationModule} and {@link RoutingModule}, as
+ * they are very close related with each other from a functional perspective.
  */
-public class NavigationModule implements INavigationModule, IRoutingModule {
+public class RoutingNavigationModule implements NavigationModule, RoutingModule {
 
     private static final int POSITION_DIFFERENCE_THRESHOLD = 10;
 
@@ -51,7 +51,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     private VehicleRoute currentRoute;
     private GeoPoint currentPosition;
 
-    public NavigationModule(AbstractSimulationUnit owner) {
+    public RoutingNavigationModule(AbstractSimulationUnit owner) {
         this.belongingUnit = owner;
     }
 
@@ -101,7 +101,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
         VehicleRoute route;
         try {
             route = SimulationKernel.SimulationKernel.getCentralNavigationComponent().switchRoute(
-                    this.vehicleData, newRoute, currentRoute, belongingUnit.getSimulationTime()
+                    vehicleData, newRoute, currentRoute, belongingUnit.getSimulationTime()
             );
 
             boolean switched = route != null && (getCurrentRoute() == null || !route.getId().equals(getCurrentRoute().getId()));
@@ -173,7 +173,7 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
     public void refineRoadPosition(IRoadPosition roadPosition) {
         final IRoadPosition newRoadPosition =
                 SimulationKernel.SimulationKernel.getCentralNavigationComponent().refineRoadPosition(roadPosition);
-        if (newRoadPosition != null) {
+        if (newRoadPosition != null && getVehicleData() != null) {
             setVehicleData(
                     new VehicleData.Builder(getVehicleData().getTime(), getVehicleData().getName())
                             .copyFrom(getVehicleData())
@@ -182,36 +182,9 @@ public class NavigationModule implements INavigationModule, IRoutingModule {
         }
     }
 
-    @Override
-    public Collection<CandidateRoute> retrieveAllValidRoutesToTarget(RoutingPosition targetPosition) {
-        return retrieveAllValidExistingRoutesToTargetHelper(targetPosition);
-    }
-
-    @Override
-    public Collection<CandidateRoute> retrieveAllValidRoutesToTarget(GeoPoint targetGeoPoint) {
-        RoutingPosition targetPosition = new RoutingPosition(targetGeoPoint);
-        return retrieveAllValidExistingRoutesToTargetHelper(targetPosition);
-    }
-
-    private Collection<CandidateRoute> retrieveAllValidExistingRoutesToTargetHelper(RoutingPosition targetPosition) {
-        CentralNavigationComponent centNavComp = SimulationKernel.SimulationKernel.getCentralNavigationComponent();
-        ArrayList<CandidateRoute> candidateRoutes = new ArrayList<>();
-        for (Map.Entry<String, VehicleRoute> entry : centNavComp.getAllRoutes().entrySet()) {
-            VehicleRoute route = entry.getValue();
-            if (targetQuery(targetPosition, route, centNavComp.getTargetPositionOfRoute(route.getId())) && onRouteQuery(route)) {
-                // length and time are no valid values at this point
-                candidateRoutes.add(new CandidateRoute(route.getConnectionIds(), 0, 0));
-                belongingUnit.getOsLog().debug(
-                        "NavigationModule#retrieveAllValidExistingRoutesToTarget found valid existing candidate route {} ", route.getId()
-                );
-            }
-        }
-        return candidateRoutes;
-    }
-
     @VisibleForTesting
     boolean onRouteQuery(VehicleRoute route) {
-        return route.getConnectionIds().contains(this.getVehicleData().getRoadPosition().getConnectionId());
+        return route.getConnectionIds().contains(getVehicleData().getRoadPosition().getConnectionId());
     }
 
     @VisibleForTesting

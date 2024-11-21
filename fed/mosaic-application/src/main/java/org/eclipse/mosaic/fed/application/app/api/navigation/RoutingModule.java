@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.fed.application.ambassador.simulation.navigation;
+package org.eclipse.mosaic.fed.application.app.api.navigation;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IConnection;
@@ -24,9 +24,14 @@ import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
 
 /**
- * Interface to access the central navigation component from road side units.
+ * Interface to access road routing functionalities for server or road side units.
+ * The offered methods, for example, provide route calculation from a provided source to
+ * a provided target location.<br>
+ * In contrast to {@link NavigationModule}, a {@link RoutingModule} can only calculate routes,
+ * but is not able to switch to calculated routes. Thus, the {@link RoutingModule} can be used
+ * in server units to emulate central routíng service functionalities.
  */
-public interface IRoutingModule {
+public interface RoutingModule {
 
     /**
      * Calculates one or more routes from the position of the vehicle to the given target location.
