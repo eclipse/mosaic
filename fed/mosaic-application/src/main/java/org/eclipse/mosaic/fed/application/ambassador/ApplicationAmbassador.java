@@ -22,6 +22,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagemen
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
@@ -63,7 +64,6 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
-import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
@@ -699,13 +699,18 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final LidarUpdates lidarUpdates) {
-        for (PointCloud pointCloud :lidarUpdates.getUpdated()) {
-            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(pointCloud.);
+        for (Map.Entry<String,PointCloud> entry :lidarUpdates.getUpdated().entrySet()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(entry.getKey());
+
+            // we don't simulate vehicles without application or correct environment sensor implementation
+            if (!(simulationUnit instanceof Perceptive sensible) ||
+                    !(sensible.getLidarSensorModule() instanceof DefaultLidarSensorModule sensor)) {
+                return;
+            }
+
             final Event event = new Event(
-                    pointCloud.getCreationTime(),
-                    simulationUnit,
-                    pointCloud,
-                    EventNicenessPriorityRegister.LIDAR_UPDATED
+                    lidarUpdates.getTime(),
+                    e -> sensor.addLidarUpdate(entry.getValue())
             );
             addEvent(event);
         }
