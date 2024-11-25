@@ -19,6 +19,7 @@ import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoadPositionFactory;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoutingNavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
@@ -70,6 +71,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     private final BasicSensorModule basicSensorModule;
 
     @Nonnull
+    private final LidarSensorModule defaultLidarSensorModule;
+
+    @Nonnull
     private VehicleParameters vehicleParameters;
 
     /**
@@ -99,6 +103,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
 
         basicSensorModule = new EnvironmentBasicSensorModule();
+        defaultLidarSensorModule = new DefaultLidarSensorModule();
     }
 
     @Override
@@ -383,6 +388,6 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
     @Override
     public LidarSensorModule getLidarSensorModule() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return defaultLidarSensorModule;
     }
 }

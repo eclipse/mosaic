@@ -17,7 +17,6 @@ package org.eclipse.mosaic.interactions.environment;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-import org.eclipse.mosaic.lib.objects.vehicle.sensor.LidarData;
 import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.rti.api.Interaction;
 
@@ -25,8 +24,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LidarUpdates extends Interaction {
     private static final long serialVersionUID = 1L;
@@ -44,14 +43,14 @@ public class LidarUpdates extends Interaction {
     /**
      * List of {@link PointCloud} containing LiDAR data from the simulator.
      */
-    private final List<PointCloud> updated;
+    private Map<String, PointCloud> updated = new HashMap<>();
 
-    public LidarUpdates(long time, List<PointCloud> updated) {
+    public LidarUpdates(long time, Map<String, PointCloud> updated) {
         super(time);
         this.updated = updated;
     }
 
-    public List<PointCloud> getUpdated() {
+    public Map<String,PointCloud> getUpdated() {
         return this.updated;
     }
 
@@ -91,7 +90,7 @@ public class LidarUpdates extends Interaction {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("updated", updated.stream().map(PointCloud::toString).collect(Collectors.joining(",")))
+                .append("updated", this.updated)
                 .toString();
     }
 
