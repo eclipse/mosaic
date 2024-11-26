@@ -7,6 +7,7 @@ set javaMemorySizeXmx=2G
 REM uncomment to activate remote debugging
 REM set javaRemoteDebugging=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=10000
 
+REM check if JAVA_HOME is set and define path to java binary accordingly (variable: java_bin)
 if "%JAVA_HOME%"=="" (
   set java_bin=java
 ) else (
