@@ -1,5 +1,6 @@
 # Eclipse
 bin/
+!/bundle/src/assembly/resources/bin/
 .metadata
 .project
 .classpath
