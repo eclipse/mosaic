@@ -15,29 +15,51 @@
 
 package org.eclipse.mosaic.fed.application.ambassador.simulation.perception;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.app.api.perception.LidarSensorModule;
+import org.eclipse.mosaic.interactions.vehicle.VehicleSensorActivation;
 import org.eclipse.mosaic.lib.spatial.PointCloud;
+import org.eclipse.mosaic.rti.api.IllegalValueException;
+import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import java.util.function.Consumer;
 
 public class DefaultLidarSensorModule implements LidarSensorModule {
 
+    private boolean enabled;
+
     private PointCloud currentPointcloud;
     private Consumer<PointCloud> callback;
 
-    @Override
-    public void enable(double range) {
 
+    @Override
+    public void enable(String unitId, double range) {
+        this.enabled = true;
+
+        // Create a VehicleSensorActivation interaction to be sent to the RTI
+        VehicleSensorActivation interaction = new VehicleSensorActivation(
+                SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
+                unitId,
+                range,
+                VehicleSensorActivation.SensorType.LIDAR
+        );
+
+        // Send the interaction to the RTI, thereby enabling the LiDAR sensor
+        try {
+            SimulationKernel.SimulationKernel.getInteractable().triggerInteraction(interaction);
+        } catch (IllegalValueException | InternalFederateException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 
     @Override
     public void disable() {
-
+        this.enabled = false;
     }
 
     @Override
@@ -47,6 +69,9 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
 
     @Override
     public PointCloud getPointCloud() {
+        if (!enabled) {
+            return null;
+        }
         return this.currentPointcloud;
     }
 

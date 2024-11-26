@@ -702,7 +702,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         for (Map.Entry<String,PointCloud> entry :lidarUpdates.getUpdated().entrySet()) {
             final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(entry.getKey());
 
-            // we don't simulate vehicles without application or correct environment sensor implementation
+            // we don't simulate vehicles without application or correct lidar sensor implementation
             if (!(simulationUnit instanceof Perceptive sensible) ||
                     !(sensible.getLidarSensorModule() instanceof DefaultLidarSensorModule sensor)) {
                 return;
