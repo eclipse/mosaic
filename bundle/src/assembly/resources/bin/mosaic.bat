@@ -32,7 +32,7 @@ if not "!libs!" == "" set libs=!libs!;
 
 set libs=!libs!;
 
-%java_bin% -Xmx%javaMemorySizeXmx% %javaRemoteDebugging% -cp !libs! org.eclipse.mosaic.starter.MosaicStarter %*
+"%java_bin%" -Xmx%javaMemorySizeXmx% %javaRemoteDebugging% -cp !libs! org.eclipse.mosaic.starter.MosaicStarter %*
 
 EndLocal
 
