@@ -7,6 +7,13 @@ set javaMemorySizeXmx=2G
 REM uncomment to activate remote debugging
 REM set javaRemoteDebugging=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=10000
 
+REM check if JAVA_HOME is set and define path to java binary accordingly (variable: java_bin)
+if "%JAVA_HOME%"=="" (
+  set java_bin=java
+) else (
+  set java_bin=%JAVA_HOME%\bin\java
+)
+
 set libs=
 
 rem core components
@@ -25,7 +32,7 @@ if not "!libs!" == "" set libs=!libs!;
 
 set libs=!libs!;
 
-java -Xmx%javaMemorySizeXmx% %javaRemoteDebugging% -cp !libs! org.eclipse.mosaic.starter.MosaicStarter %*
+"%java_bin%" -Xmx%javaMemorySizeXmx% %javaRemoteDebugging% -cp !libs! org.eclipse.mosaic.starter.MosaicStarter %*
 
 EndLocal
 
