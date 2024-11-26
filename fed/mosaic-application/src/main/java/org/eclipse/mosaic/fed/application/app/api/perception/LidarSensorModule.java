@@ -24,10 +24,9 @@ public interface LidarSensorModule {
     /**
      * Enables this LiDAR sensor by giving the sensor range.
      *
-     * @param unitId the id of the unit this LidarSensorModule is placed upon.
      * @param range the range of the LiDAR sensor.
      */
-    void enable(String unitId, double range);
+    void enable(double range);
 
     /**
      * @return {@code true}, if this module has been enabled.

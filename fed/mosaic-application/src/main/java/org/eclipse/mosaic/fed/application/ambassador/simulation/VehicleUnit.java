@@ -103,7 +103,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
 
         basicSensorModule = new EnvironmentBasicSensorModule();
-        defaultLidarSensorModule = new DefaultLidarSensorModule();
+        defaultLidarSensorModule = new DefaultLidarSensorModule(this.getId());
     }
 
     @Override
