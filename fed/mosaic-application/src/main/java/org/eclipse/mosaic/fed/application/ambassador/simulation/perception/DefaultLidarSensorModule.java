@@ -27,13 +27,17 @@ import java.util.function.Consumer;
 public class DefaultLidarSensorModule implements LidarSensorModule {
 
     private boolean enabled;
+    private final String unitId;
 
     private PointCloud currentPointcloud;
     private Consumer<PointCloud> callback;
 
+    public DefaultLidarSensorModule(String unitId) {
+        this.unitId = unitId;
+    }
 
     @Override
-    public void enable(String unitId, double range) {
+    public void enable(double range) {
         this.enabled = true;
 
         // Create a VehicleSensorActivation interaction to be sent to the RTI
