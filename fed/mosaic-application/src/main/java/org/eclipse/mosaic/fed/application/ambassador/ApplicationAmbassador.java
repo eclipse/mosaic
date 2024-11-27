@@ -64,7 +64,6 @@ import org.eclipse.mosaic.lib.objects.v2x.etsi.EtsiPayloadConfiguration;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
-import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.lib.util.FileUtils;
 import org.eclipse.mosaic.lib.util.objects.ObjectInstantiation;
 import org.eclipse.mosaic.lib.util.scheduling.DefaultEventScheduler;
@@ -699,8 +698,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final LidarUpdates lidarUpdates) {
-        for (Map.Entry<String,PointCloud> entry :lidarUpdates.getUpdated().entrySet()) {
-            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(entry.getKey());
+        for (LidarUpdates.LidarUpdate lidarUpdate :lidarUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(lidarUpdate.unitId());
 
             // we don't simulate vehicles without application or correct lidar sensor implementation
             if (!(simulationUnit instanceof Perceptive sensible) ||
@@ -710,7 +709,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
             final Event event = new Event(
                     lidarUpdates.getTime(),
-                    e -> sensor.updatePointCloud(entry.getValue())
+                    e -> sensor.updatePointCloud(lidarUpdate.pointCloud())
             );
             addEvent(event);
         }
