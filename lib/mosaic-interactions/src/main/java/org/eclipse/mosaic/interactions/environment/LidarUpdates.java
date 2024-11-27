@@ -25,7 +25,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LidarUpdates extends Interaction {
     private static final long serialVersionUID = 1L;
@@ -40,17 +42,20 @@ public class LidarUpdates extends Interaction {
      */
     private long nextUpdate;
 
+
+    public record LidarUpdate(String unitId, PointCloud pointCloud) {}
+
     /**
      * List of {@link PointCloud} containing LiDAR data from the simulator.
      */
-    private Map<String, PointCloud> updated = new HashMap<>();
+    List<LidarUpdate> updated;
 
-    public LidarUpdates(long time, Map<String, PointCloud> updated) {
+    public LidarUpdates(long time, List<LidarUpdate> updated) {
         super(time);
         this.updated = updated;
     }
 
-    public Map<String,PointCloud> getUpdated() {
+    public List<LidarUpdate> getUpdated() {
         return this.updated;
     }
 
@@ -85,12 +90,12 @@ public class LidarUpdates extends Interaction {
                 .isEquals();
     }
 
-    //TODO what does this do?
     @Override
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
-                .append("updated", this.updated)
+                .append("updated", "Updated LiDAR data for vehicles ["
+                        + this.updated.stream().map(LidarUpdate::unitId).collect(Collectors.joining(", ")) + "]")
                 .toString();
     }
 
