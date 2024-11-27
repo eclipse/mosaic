@@ -710,7 +710,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
             final Event event = new Event(
                     lidarUpdates.getTime(),
-                    e -> sensor.addLidarUpdate(entry.getValue())
+                    e -> sensor.updatePointCloud(entry.getValue())
             );
             addEvent(event);
         }

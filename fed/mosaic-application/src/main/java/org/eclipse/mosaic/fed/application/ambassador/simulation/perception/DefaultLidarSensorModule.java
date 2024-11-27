@@ -22,6 +22,8 @@ import org.eclipse.mosaic.lib.spatial.PointCloud;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class DefaultLidarSensorModule implements LidarSensorModule {
@@ -30,7 +32,7 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
     private final String unitId;
 
     private PointCloud currentPointcloud;
-    private Consumer<PointCloud> callback;
+    private List<Consumer<PointCloud>> callback = new ArrayList<>();
 
     public DefaultLidarSensorModule(String unitId) {
         this.unitId = unitId;
@@ -64,11 +66,25 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
     @Override
     public void disable() {
         this.enabled = false;
+        // Create a VehicleSensorActivation interaction to be sent to the RTI that disables the LiDAR sensor
+        VehicleSensorActivation interaction = new VehicleSensorActivation(
+                SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
+                unitId,
+                0,
+                VehicleSensorActivation.SensorType.LIDAR
+        );
+
+        // Send the interaction to the RTI, thereby disabling the LiDAR sensor
+        try {
+            SimulationKernel.SimulationKernel.getInteractable().triggerInteraction(interaction);
+        } catch (IllegalValueException | InternalFederateException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public void reactOnSensorUpdate(Consumer<PointCloud> callback) {
-        this.callback = callback;
+        this.callback.add(callback);
     }
 
     @Override
@@ -79,10 +95,10 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
         return this.currentPointcloud;
     }
 
-    public void addLidarUpdate(PointCloud pointCloud) {
+    public void updatePointCloud(PointCloud pointCloud) {
         this.currentPointcloud = pointCloud;
-        if (callback != null) {
-            callback.accept(currentPointcloud);
+        for (Consumer<PointCloud> callback : callback) {
+            callback.accept(pointCloud);
         }
     }
 }
