@@ -143,7 +143,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             // set the CNC (central navigation component)
             CentralNavigationComponent cnc = new CentralNavigationComponent(
                     ambassadorParameter,
-                    ambassadorConfig.navigationConfiguration
+                    ambassadorConfig.navigationConfiguration,
+                    ambassadorConfig.publicTransportConfiguration
             );
             SimulationKernel.SimulationKernel.setCentralNavigationComponent(cnc);
         }
