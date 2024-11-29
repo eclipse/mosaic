@@ -27,7 +27,7 @@ import org.eclipse.mosaic.lib.routing.IllegalRouteException;
 import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Lists;
@@ -44,7 +44,7 @@ import java.util.Map;
 public class NoRouting implements Routing {
 
     @Override
-    public void initialize(CRouting configuration, File configurationLocation) throws InternalFederateException {
+    public void initialize(CVehicleRouting configuration, File configurationLocation) throws InternalFederateException {
         // nop
     }
 

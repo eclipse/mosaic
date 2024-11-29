@@ -48,7 +48,8 @@ import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
@@ -125,7 +126,7 @@ public class CentralNavigationComponentTest {
         cnc.initialize(rtiAmbassadorMock);
 
         //ASSERT
-        verify(routingMock).initialize(isNull(CRouting.class), isA(File.class));
+        verify(routingMock).initialize(isNull(CVehicleRouting.class), isA(File.class));
         verify(rtiAmbassadorMock).triggerInteraction(isA(VehicleRoutesInitialization.class));
     }
 
@@ -246,7 +247,7 @@ public class CentralNavigationComponentTest {
         routingConfig.type = "no-routing";
 
         CentralNavigationComponent centralNavigationComponent
-                = new CentralNavigationComponent(ambassadorParameter,routingConfig );
+                = new CentralNavigationComponent(ambassadorParameter, routingConfig, new CPublicTransportRouting());
         centralNavigationComponent.initialize(rtiAmbassadorMock);
 
         assertNotNull(centralNavigationComponent.getRouting());
@@ -264,7 +265,7 @@ public class CentralNavigationComponentTest {
         routingConfig.type = MyTestRouting.class.getCanonicalName();
 
         CentralNavigationComponent centralNavigationComponent
-                = new CentralNavigationComponent(ambassadorParameter,routingConfig );
+                = new CentralNavigationComponent(ambassadorParameter, routingConfig, new CPublicTransportRouting());
         centralNavigationComponent.initialize(rtiAmbassadorMock);
 
         assertNotNull(centralNavigationComponent.getRouting());
