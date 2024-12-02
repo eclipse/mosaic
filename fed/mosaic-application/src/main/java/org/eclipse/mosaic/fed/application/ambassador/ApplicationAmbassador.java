@@ -698,7 +698,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
     }
 
     private void process(final LidarUpdates lidarUpdates) {
-        for (LidarUpdates.LidarUpdate lidarUpdate :lidarUpdates.getUpdated()) {
+        for (LidarUpdates.LidarUpdate lidarUpdate : lidarUpdates.getUpdated()) {
             final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(lidarUpdate.unitId());
 
             // we don't simulate vehicles without application or correct lidar sensor implementation
