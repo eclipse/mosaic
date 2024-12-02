@@ -17,10 +17,29 @@ package org.eclipse.mosaic.lib.routing.config;
 
 public class CPublicTransportRouting {
 
+    /**
+     * Declares if PT routing is enabled (default=false).
+     */
     public boolean enabled = false;
 
+    /**
+     * The path to the OSM file which is used to calculate walking between PT legs.
+     */
     public String osmFile = "map.osm";
+
+    /**
+     * The path to the GTFS file (ZIP archive) which contains the whole PT schedule.
+     */
     public String gtfsFile = "gtfs.zip";
+
+    /**
+     * The time in ISO format at which the simulation should start.
+     * Example format: 2024-11-27T10:15:30
+     */
     public String scheduleDateTime = "2024-12-03T10:15:30";
+
+    /**
+     * The time zone of the location where the PT system is implemented.
+     */
     public String timeZone = "ECT";
 }
