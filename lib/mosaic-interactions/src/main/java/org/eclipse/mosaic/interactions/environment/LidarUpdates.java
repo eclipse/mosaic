@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LidarUpdates extends Interaction {
+
+    public record LidarUpdate(String unitId, PointCloud pointCloud) {}
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -39,9 +42,6 @@ public class LidarUpdates extends Interaction {
      * Time at which the next sensor update will be sent.
      */
     private long nextUpdate;
-
-
-    public record LidarUpdate(String unitId, PointCloud pointCloud) {}
 
     /**
      * List of {@link PointCloud} containing LiDAR data from the simulator.

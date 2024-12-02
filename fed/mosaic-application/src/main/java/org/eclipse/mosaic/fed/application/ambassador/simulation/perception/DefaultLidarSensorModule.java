@@ -66,6 +66,7 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
     @Override
     public void disable() {
         this.enabled = false;
+
         // Create a VehicleSensorActivation interaction to be sent to the RTI that disables the LiDAR sensor
         VehicleSensorActivation interaction = new VehicleSensorActivation(
                 SimulationKernel.SimulationKernel.getCurrentSimulationTime(),
