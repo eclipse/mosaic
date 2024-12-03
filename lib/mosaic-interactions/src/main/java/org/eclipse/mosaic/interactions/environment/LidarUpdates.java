@@ -24,12 +24,13 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LidarUpdates extends Interaction {
+public class LidarUpdates extends Interaction implements Serializable {
 
-    public record LidarUpdate(String unitId, PointCloud pointCloud) {}
+    public record LidarUpdate(String unitId, PointCloud pointCloud) implements Serializable {}
 
     private static final long serialVersionUID = 1L;
 
@@ -39,14 +40,9 @@ public class LidarUpdates extends Interaction {
     public final static String TYPE_ID = createTypeIdentifier(LidarUpdates.class);
 
     /**
-     * Time at which the next sensor update will be sent.
-     */
-    private long nextUpdate;
-
-    /**
      * List of {@link PointCloud} containing LiDAR data from the simulator.
      */
-    List<LidarUpdate> updated;
+    private List<LidarUpdate> updated;
 
     public LidarUpdates(long time, List<LidarUpdate> updated) {
         super(time);
@@ -57,14 +53,9 @@ public class LidarUpdates extends Interaction {
         return this.updated;
     }
 
-    public void setNextUpdate(long nextUpdate) {
-        this.nextUpdate = nextUpdate;
-    }
-
     @Override
     public int hashCode() {
         return new HashCodeBuilder(5, 17)
-                .append(nextUpdate)
                 .append(updated)
                 .toHashCode();
     }
@@ -83,7 +74,6 @@ public class LidarUpdates extends Interaction {
 
         LidarUpdates other = (LidarUpdates) obj;
         return new EqualsBuilder()
-                .append(this.nextUpdate, other.nextUpdate)
                 .append(this.updated, other.updated)
                 .isEquals();
     }
