@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 public class PtRoutingTest {
-    
+
     @Rule
     public GeoProjectionRule transformationRule = new GeoProjectionRule(GeoPoint.latLon(36.9, -116.7));
 
@@ -72,23 +72,6 @@ public class PtRoutingTest {
     }
 
     @Test
-    public void findRoute_walkOnlyCauseIAmFast() {
-        ptRouting.initialize(routingConfiguration, configDir);
-
-        PtRoutingResponse response = ptRouting.findPtRoute(new PtRoutingRequest(
-                LocalTime.of(8, 50).toNanoOfDay(),
-                GeoPoint.latLon(36.900760, -116.766464),
-                GeoPoint.latLon(36.907353, -116.761829),
-                new PtRoutingParameters().walkingSpeedKmh(5)
-        ));
-
-        // ASSERT
-        MultiModalRoute route = response.getBestRoute();
-        assertEquals(1, route.getLegs().size());
-        assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
-    }
-
-    @Test
     public void findRoute_findPublicTransportRoute() {
         ptRouting.initialize(routingConfiguration, configDir);
 
@@ -105,6 +88,23 @@ public class PtRoutingTest {
         assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
         assertEquals(MultiModalLeg.Type.PUBLIC_TRANSPORT, route.getLegs().get(1).getLegType());
         assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(2).getLegType());
+    }
+
+    @Test
+    public void findRoute_IWalkFasterThanTheBus() {
+        ptRouting.initialize(routingConfiguration, configDir);
+
+        PtRoutingResponse response = ptRouting.findPtRoute(new PtRoutingRequest(
+                LocalTime.of(8, 50).toNanoOfDay(),
+                GeoPoint.latLon(36.900760, -116.766464),
+                GeoPoint.latLon(36.907353, -116.761829),
+                new PtRoutingParameters().walkingSpeedKmh(5)
+        ));
+
+        // ASSERT
+        MultiModalRoute route = response.getBestRoute();
+        assertEquals(1, route.getLegs().size());
+        assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
     }
 
 }
