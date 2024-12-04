@@ -25,20 +25,24 @@ public class MultiModalLeg {
 
     private Type legType;
 
-    //For legs where a vehicle needs to be spawned
+    // For legs where a vehicle needs to be spawned
     private VehicleDeparture vehicleLeg = null;
 
-    //For PTlegs
+    // For PTlegs
     private PtLeg publicTransportationLeg = null;
 
+    // For walk legs
     private WalkLeg walkLeg = null;
 
-    //For legs where a vehicle already exists
-    private String carID = null;
+    // For legs where a vehicle already exists
+    private String sharedVehicleId = null;
 
     public long departureTime;
     public long arrivalTime;
 
+    /**
+     * Creates a new leg in which a new vehicle must be spawned.
+     */
     public MultiModalLeg(VehicleDeparture vehicleLeg, long departureTime, long arrivalTime) {
         this.legType = Type.VEHICLE_PRIVATE;
         this.vehicleLeg = vehicleLeg;
@@ -47,6 +51,9 @@ public class MultiModalLeg {
         this.arrivalTime = arrivalTime;
     }
 
+    /**
+     * Creates a new leg which uses public transport.
+     */
     public MultiModalLeg(PtLeg ptRoute, long departureTime, long arrivalTime) {
         this.legType = Type.PUBLIC_TRANSPORT;
         this.publicTransportationLeg = ptRoute;
@@ -55,6 +62,9 @@ public class MultiModalLeg {
         this.arrivalTime = arrivalTime;
     }
 
+    /**
+     * Creates a new leg which uses walking mode.
+     */
     public MultiModalLeg(WalkLeg walkLeg, long departureTime, long arrivalTime) {
         this.legType = Type.WALKING;
         this.walkLeg = walkLeg;
@@ -63,9 +73,12 @@ public class MultiModalLeg {
         this.arrivalTime = arrivalTime;
     }
 
-    public MultiModalLeg(String carID, long departureTime, long arrivalTime) {
+    /**
+     * Creates a new leg which uses a shared vehicle by a given vehicle ID.
+     */
+    public MultiModalLeg(String vehicleId, long departureTime, long arrivalTime) {
         this.legType = Type.VEHICLE_PRIVATE;
-        this.carID = carID;
+        this.sharedVehicleId = vehicleId;
 
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
@@ -74,7 +87,7 @@ public class MultiModalLeg {
     public Object getLeg() {
         return switch (legType) {
             case VEHICLE_PRIVATE -> vehicleLeg;
-            case VEHICLE_SHARED -> carID;
+            case VEHICLE_SHARED -> sharedVehicleId;
             case PUBLIC_TRANSPORT -> publicTransportationLeg;
             case WALKING -> walkLeg;
         };
