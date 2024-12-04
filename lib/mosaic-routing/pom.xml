@@ -39,6 +39,10 @@
             <artifactId>graphhopper-reader-gtfs</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.mobilitydata.transit</groupId>
             <artifactId>gtfs-realtime-bindings</artifactId>
         </dependency>
@@ -46,7 +50,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.eclipse.mosaic</groupId>
