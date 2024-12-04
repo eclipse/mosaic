@@ -65,12 +65,20 @@ public class PtRouting {
     private LocalDateTime scheduleDateTime;
     private ZoneId timeZone;
 
+    /**
+     * Initializes the pt routing if it is enabled in the provided {@link CPublicTransportRouting}.
+     * All paths defined in the provided config are expcted to be relative to the provided configuration
+     * location.
+     */
     public void initialize(CPublicTransportRouting routingConfiguration, File configurationLocation) {
         if (!routingConfiguration.enabled) {
             return;
         }
 
-        Path baseDirectory = configurationLocation.toPath();
+        scheduleDateTime = LocalDateTime.parse(routingConfiguration.scheduleDateTime, DateTimeFormatter.ISO_DATE_TIME);
+        timeZone = ZoneId.of(ZoneId.SHORT_IDS.get(routingConfiguration.timeZone));
+
+        final Path baseDirectory = configurationLocation.toPath();
 
         GraphHopperConfig ghConfig = new GraphHopperConfig()
                 .putObject("import.osm.ignored_highways", "motorway,trunk,primary")
@@ -78,9 +86,6 @@ public class PtRouting {
                 .putObject("datareader.file", baseDirectory.resolve(routingConfiguration.osmFile).toAbsolutePath().toString())
                 .putObject("gtfs.file", baseDirectory.resolve(routingConfiguration.gtfsFile).toAbsolutePath().toString())
                 .setProfiles(Collections.singletonList(new Profile("foot").setVehicle("foot")));
-
-        scheduleDateTime = LocalDateTime.parse(routingConfiguration.scheduleDateTime, DateTimeFormatter.ISO_DATE_TIME);
-        timeZone = ZoneId.of(ZoneId.SHORT_IDS.get(routingConfiguration.timeZone));
 
         final StopWatch sw = new StopWatch();
         sw.start();
@@ -100,12 +105,17 @@ public class PtRouting {
         ).createWithoutRealtimeFeed();
     }
 
-
-
+    /**
+     * Calculates a public transport route according to the given request.
+     * The request must contain a valid start and target position, as well as valid request time.
+     */
     public PtRoutingResponse findPtRoute(PtRoutingRequest request) {
         if (ptRouter == null) {
             throw new IllegalStateException("PT Routing is not available. Must be enabled in application_config.json.");
         }
+        Validate.notNull(request.getStartingGeoPoint(), "Starting point must not be null.");
+        Validate.notNull(request.getTargetGeoPoint(), "Target point must not be null.");
+        Validate.isTrue(request.getRequestTime() >= 0, "Invalid request time.");
         Validate.isTrue(request.getRoutingParameters().getWalkingSpeedMps() > 0, "Walking speed must be greater than 0.");
 
         Instant departureTime = toScheduleTime(request.getRequestTime());
@@ -116,7 +126,7 @@ public class PtRouting {
                 request.getTargetGeoPoint().getLatitude(),
                 request.getTargetGeoPoint().getLongitude()
         );
-//        ghRequest.setBlockedRouteTypes(request.getRoutingParameters().excludedPtModes);//FIXME generalize this
+        // ghRequest.setBlockedRouteTypes(request.getRoutingParameters().excludedPtModes);//FIXME generalize this
         ghRequest.setEarliestDepartureTime(departureTime);
         ghRequest.setWalkSpeedKmH(request.getRoutingParameters().getWalkingSpeedMps() * 3.6);
 
@@ -146,17 +156,27 @@ public class PtRouting {
             if (leg instanceof Trip.PtLeg ptLeg) {
                 List<PtLeg.PtStop> newStops = new ArrayList<>();
                 for (Trip.Stop stop : ptLeg.stops) {
-                    newStops.add(new PtLeg.PtStop(GeoPoint.lonLat(stop.geometry.getX(), stop.geometry.getY()), fromScheduleTime(stop.departureTime), fromScheduleTime(stop.arrivalTime)));
+                    newStops.add(new PtLeg.PtStop(
+                            GeoPoint.lonLat(stop.geometry.getX(), stop.geometry.getY()),
+                            fromScheduleTime(stop.departureTime),
+                            fromScheduleTime(stop.arrivalTime)
+                    ));
                 }
                 legs.add(new MultiModalLeg(
-                        new PtLeg(newStops), newStops.get(0).departureTime(), Iterables.getLast(newStops).arrivalTime())
-                );
+                        new PtLeg(newStops),
+                        newStops.get(0).departureTime(),
+                        Iterables.getLast(newStops).arrivalTime()
+                ));
             } else if (leg instanceof Trip.WalkLeg walkLeg) {
                 List<GeoPoint> waypoints = new ArrayList<>();
                 for (Coordinate coordinate : walkLeg.geometry.getCoordinates()) {
                     waypoints.add(GeoPoint.lonLat(coordinate.x, coordinate.y));
                 }
-                legs.add(new MultiModalLeg(new WalkLeg(waypoints), fromScheduleTime(leg.getDepartureTime()), fromScheduleTime(leg.getArrivalTime())));
+                legs.add(new MultiModalLeg(
+                        new WalkLeg(waypoints),
+                        fromScheduleTime(leg.getDepartureTime()),
+                        fromScheduleTime(leg.getArrivalTime())
+                ));
             }
         }
         return legs;

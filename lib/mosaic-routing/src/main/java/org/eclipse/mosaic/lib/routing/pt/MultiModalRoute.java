@@ -30,24 +30,4 @@ public class MultiModalRoute {
         return this.legs;
     }
 
-    /**
-     * can be used to check if the route exists and is valid,
-     * if allowTeleportation is set to true it ignores arrival/ departure times
-     *
-     * @return whether or not a valid route exists and is valid
-     */
-    public boolean checkValidity() {
-        if (!legs.isEmpty()) {
-            for (int i = 0; i < legs.size() - 1; i++) {
-                if (legs.get(i).arrivalTime > legs.get(i + 1).departureTime) {
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
-        return true;
-    }
-
-
 }

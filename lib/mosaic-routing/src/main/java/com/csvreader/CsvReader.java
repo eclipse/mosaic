@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package com.csvreader;
 
 import com.opencsv.CSVParserBuilder;
