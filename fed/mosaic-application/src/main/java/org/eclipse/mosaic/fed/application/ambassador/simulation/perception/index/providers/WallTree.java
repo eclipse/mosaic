@@ -53,7 +53,7 @@ public class WallTree extends WallIndex {
                         wall.getToCorner().getCartesianPosition().toVector3d()
                 ));
                 if (wall.length > maxWallLength) {
-                    maxWallLength = wall.length;
+                    maxWallLength = wall.getLength();
                 }
             }
         }
