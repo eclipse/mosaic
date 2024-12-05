@@ -29,7 +29,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class WallTree extends WallIndex {
-
+    /**
+     * The longest wall, relevant for tree setup, so that all walls will be included. [m]
+     */
+    private double maxWallLength = 50;
     private final int bucketSize;
 
     private KdTree<Edge<Vector3d>> wallTree;
@@ -42,22 +45,28 @@ public class WallTree extends WallIndex {
     @Override
     public void initialize() {
         List<Edge<Vector3d>> walls = new ArrayList<>();
+        double maxWallLength = 0;
         for (Building building : super.getDatabase().getBuildings()) {
             for (Wall wall : building.getWalls()) {
                 walls.add(new Edge<>(
                         wall.getFromCorner().getCartesianPosition().toVector3d(),
                         wall.getToCorner().getCartesianPosition().toVector3d()
                 ));
+                if (wall.length > maxWallLength) {
+                    maxWallLength = wall.length;
+                }
             }
         }
+        this.maxWallLength = maxWallLength;
         wallTree = new KdTree<>(new SpatialItemAdapter.EdgeAdapter<>(), walls, bucketSize);
         wallTraverser = new org.eclipse.mosaic.lib.database.spatial.Edge.InRadius<>();
     }
 
     @Override
     public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
+        // overestimating the initial list of walls by extending max bounding box radius with maximal wall length
         wallTraverser.setup(perceptionModel.getBoundingBox().center,
-                perceptionModel.getBoundingBox().center.distanceSqrTo(perceptionModel.getBoundingBox().min)); // overestimating distance
+                perceptionModel.getBoundingBox().center.distanceTo(perceptionModel.getBoundingBox().min) + maxWallLength);
         wallTraverser.traverse(wallTree);
         return wallTraverser.getResult();
     }
