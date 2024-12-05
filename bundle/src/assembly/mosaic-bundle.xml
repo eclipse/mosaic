@@ -151,6 +151,13 @@
                 <include>org.locationtech.jts:jts-core</include>
                 <!-- [END] GraphHopper dependencies -->
 
+                <!-- [START] GraphHopper PT routing dependencies -->
+                <include>com.graphhopper:graphhopper-reader-gtfs</include>
+                <include>io.mobilitydata.transit:gtfs-realtime-bindings</include>
+                <include>org.mapdb:mapdb</include>
+                <include>com.opencsv:opencsv</include>
+                <!-- [END] GraphHopper PT routing dependencies -->
+
                 <include>com.github.mwiede:jsch</include>
                 <include>com.google.protobuf:protobuf-java</include>
                 <include>org.xerial:sqlite-jdbc</include>

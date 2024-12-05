@@ -36,7 +36,7 @@ import org.eclipse.mosaic.lib.routing.IllegalRouteException;
 import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -65,7 +65,7 @@ public class DatabaseRouting implements Routing {
     private GraphHopperRouting routing;
 
     @Override
-    public void initialize(final CRouting configuration, final File baseDirectory) throws InternalFederateException {
+    public void initialize(final CVehicleRouting configuration, final File baseDirectory) throws InternalFederateException {
 
         File dbFile;
         // try to find the database file
