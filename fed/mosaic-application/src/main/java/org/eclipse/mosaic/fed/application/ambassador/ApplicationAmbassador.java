@@ -143,8 +143,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             // set the CNC (central navigation component)
             CentralNavigationComponent cnc = new CentralNavigationComponent(
                     ambassadorParameter,
-                    ambassadorConfig.navigationConfiguration,
-                    ambassadorConfig.publicTransportConfiguration
+                    Validate.notNull(ambassadorConfig.navigationConfiguration, "Field navigationConfiguration must not be null."),
+                    Validate.notNull(ambassadorConfig.publicTransportConfiguration, "Field publicTransportConfiguration must not be null.")
             );
             SimulationKernel.SimulationKernel.setCentralNavigationComponent(cnc);
         }
@@ -229,6 +229,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void shutdownSimulationUnits(Event event) {
         SimulationKernel.SimulationKernel.setCurrentSimulationTime(event.getTime());
+        SimulationKernel.SimulationKernel.getCentralNavigationComponent().close();
 
         log.debug("remaining events: {}", eventScheduler.getAllEvents());
         UnitSimulator.UnitSimulator.removeAllSimulationUnits();

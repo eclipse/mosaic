@@ -23,12 +23,12 @@ public class MultiModalLeg {
         WALKING, VEHICLE_SHARED, VEHICLE_PRIVATE, PUBLIC_TRANSPORT
     }
 
-    private Type legType;
+    private final Type legType;
 
     // For legs where a vehicle needs to be spawned
     private VehicleDeparture vehicleLeg = null;
 
-    // For PTlegs
+    // For public transport legs
     private PtLeg publicTransportationLeg = null;
 
     // For walk legs

@@ -15,7 +15,9 @@
 
 package org.eclipse.mosaic.lib.routing.config;
 
-public class CPublicTransportRouting {
+import java.io.Serializable;
+
+public class CPublicTransportRouting implements Serializable {
 
     /**
      * Declares if PT routing is enabled (default=false).
@@ -33,7 +35,7 @@ public class CPublicTransportRouting {
     public String gtfsFile = "gtfs.zip";
 
     /**
-     * The time in ISO format at which the simulation should start.
+     * The real time in ISO format at which the beginning of the simulation should point at.
      * Example format: 2024-11-27T10:15:30
      */
     public String scheduleDateTime = "2024-12-03T10:15:30";

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -126,7 +125,7 @@ public class CentralNavigationComponentTest {
         cnc.initialize(rtiAmbassadorMock);
 
         //ASSERT
-        verify(routingMock).initialize(isNull(CVehicleRouting.class), isA(File.class));
+        verify(routingMock).initialize(isA(CVehicleRouting.class), isA(File.class));
         verify(rtiAmbassadorMock).triggerInteraction(isA(VehicleRoutesInitialization.class));
     }
 

@@ -64,7 +64,7 @@ public class CApplicationAmbassador implements Serializable {
      * Class containing the information for the configuration of the
      * Routing/Navigation (CentralNavigationComponent).
      */
-    public CRoutingByType navigationConfiguration = null;
+    public CRoutingByType navigationConfiguration = new CRoutingByType();
 
     /**
      * Configuration for the perception backend used in the ApplicationSimulator
@@ -84,7 +84,7 @@ public class CApplicationAmbassador implements Serializable {
          * to use for navigation. Possible values are {@code "database" or "no-routing"},
          * or any full-qualified java class name.
          */
-        public String type = null;
+        public String type = "database";
     }
 
 }
