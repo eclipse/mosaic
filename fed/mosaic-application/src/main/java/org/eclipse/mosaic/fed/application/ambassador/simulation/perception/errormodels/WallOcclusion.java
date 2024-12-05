@@ -19,6 +19,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.Perce
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
 import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
+import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.Edge;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class WallOcclusion implements PerceptionModifier {
                 boolean pointOccluded = false;
                 for (Edge<Vector3d> wall : walls) {
                     // SpatialObjects with PointBoundingBoxes won't occlude anything, as they have no edges defined
-                    if (doIntersect(ownerPosition.x, ownerPosition.z, point.x, point.z, wall.a.x, wall.a.z, wall.b.x, wall.b.z)) {
+                    if (VectorUtils.doesXZIntersect(ownerPosition, point, wall.a, wall.b)) {
                         pointOccluded = true;
                         break;
                     }
@@ -71,48 +72,4 @@ public class WallOcclusion implements PerceptionModifier {
         }
         return result;
     }
-
-    private enum Orientation {
-        COLLINEAR, CLOCKWISE, COUNTERCLOCKWISE
-    }
-
-    // Function to calculate the orientation of the triplet (px, py), (qx, qy), (rx, ry).
-    static Orientation calcOrientation(double px, double py, double qx, double qy, double rx, double ry) {
-        double val = (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
-        if (Math.abs(val) <= MathUtils.EPSILON_D) { // Collinear
-            return Orientation.COLLINEAR;
-        }
-        return (val > 0) ? Orientation.CLOCKWISE : Orientation.COUNTERCLOCKWISE; // Clockwise or Counterclockwise
-    }
-
-    // Function to check if point (qx, qy) lies on segment (px, py) to (rx, ry).
-    static boolean isOnSegment(double px, double py, double qx, double qy, double rx, double ry) {
-        return qx <= Math.max(px, rx)
-                && qx >= Math.min(px, rx)
-                && qy <= Math.max(py, ry)
-                && qy >= Math.min(py, ry);
-    }
-
-    // Function to check if two lines (p1, q1) and (p2, q2) intersect.
-    static boolean doIntersect(double p1x, double p1y, double q1x, double q1y,
-                               double p2x, double p2y, double q2x, double q2y) {
-        Orientation o1 = calcOrientation(p1x, p1y, q1x, q1y, p2x, p2y);
-        Orientation o2 = calcOrientation(p1x, p1y, q1x, q1y, q2x, q2y);
-        Orientation o3 = calcOrientation(p2x, p2y, q2x, q2y, p1x, p1y);
-        Orientation o4 = calcOrientation(p2x, p2y, q2x, q2y, q1x, q1y);
-
-        // General case
-        if (o1 != o2 && o3 != o4) {
-            return true;
-        }
-
-        // Special cases
-        if (o1 == Orientation.COLLINEAR && isOnSegment(p1x, p1y, p2x, p2y, q1x, q1y)) return true;
-        if (o2 == Orientation.COLLINEAR && isOnSegment(p1x, p1y, q2x, q2y, q1x, q1y)) return true;
-        if (o3 == Orientation.COLLINEAR && isOnSegment(p2x, p2y, p1x, p1y, q2x, q2y)) return true;
-        if (o4 == Orientation.COLLINEAR && isOnSegment(p2x, p2y, q1x, q1y, q2x, q2y)) return true;
-
-        return false; // Doesn't fall in any of the above cases
-    }
-
 }
