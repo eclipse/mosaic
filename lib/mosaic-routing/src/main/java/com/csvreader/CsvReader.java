@@ -18,11 +18,10 @@ package com.csvreader;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
-import com.opencsv.validators.LineValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -55,15 +54,20 @@ public class CsvReader {
     public CsvReader(Reader openCsvReader, char delimiter) {
         this.openCsvReader = new CSVReaderBuilder(openCsvReader)
                 .withCSVParser(new CSVParserBuilder().withSeparator(delimiter).build())
-                .withLineValidator(new IgnoreEmptyLines())
                 .build();
     }
 
     public boolean readRecord() {
         try {
-            currenRecord = this.openCsvReader.readNext();
-            return currenRecord != null;
-        } catch (Exception e) {
+            do {
+                currenRecord = this.openCsvReader.readNextSilently();
+                if (currenRecord == null) {
+                    return false;
+                }
+            } while (currenRecord.length == 1 && StringUtils.isEmpty(currenRecord[0]));
+            return true;
+        } catch (IOException e) {
+            currenRecord = null;
             return false;
         }
     }
@@ -90,20 +94,5 @@ public class CsvReader {
         return index != null && index < currenRecord.length
                 ? currenRecord[index]
                 : "";
-    }
-
-    private static class IgnoreEmptyLines implements LineValidator {
-
-        @Override
-        public boolean isValid(String s) {
-            return StringUtils.isNotEmpty(s);
-        }
-
-        @Override
-        public void validate(String s) throws CsvValidationException {
-            if (!isValid(s)) {
-                throw new CsvValidationException();
-            }
-        }
     }
 }
