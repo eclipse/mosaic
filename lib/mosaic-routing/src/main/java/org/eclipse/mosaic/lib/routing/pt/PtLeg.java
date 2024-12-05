@@ -24,14 +24,14 @@ public class PtLeg {
 
     public record PtStop(GeoPoint location, Long departureTime, Long arrivalTime) {}
 
-    private final List<PtStop> legs = new ArrayList<>();
+    private final List<PtStop> stops = new ArrayList<>();
 
-    public PtLeg(List<PtStop> legs) {
-        this.legs.addAll(legs);
+    public PtLeg(List<PtStop> stops) {
+        this.stops.addAll(stops);
     }
 
-    public List<PtStop> getLegs() {
-        return legs;
+    public List<PtStop> getStops() {
+        return stops;
     }
 
 }

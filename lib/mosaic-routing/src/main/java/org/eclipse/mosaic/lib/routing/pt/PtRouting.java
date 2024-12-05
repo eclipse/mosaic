@@ -52,6 +52,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PtRouting {
 
@@ -186,18 +188,20 @@ public class PtRouting {
         return scheduleDateTime.plusNanos(simTime).atZone(timeZone).toInstant();
     }
 
-    private Long fromScheduleTime(Date date) {
+    private Long fromScheduleTime(@Nullable Date date) {
         if (date == null) {
             return null;
         }
         return fromScheduleTime(date.toInstant());
     }
 
-    private long fromScheduleTime(Instant instant) {
+    private long fromScheduleTime(@Nonnull Instant instant) {
         return scheduleDateTime.until(LocalDateTime.ofInstant(instant, timeZone), ChronoUnit.NANOS);
     }
 
     public void close() {
-        graphHopperGtfs.close();
+        if (graphHopperGtfs != null) {
+            graphHopperGtfs.close();
+        }
     }
 }

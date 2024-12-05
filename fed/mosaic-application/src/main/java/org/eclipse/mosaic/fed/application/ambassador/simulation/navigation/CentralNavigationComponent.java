@@ -59,6 +59,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
 
 /**
  * The {@link CentralNavigationComponent} unites functionality concerned with
@@ -114,8 +115,8 @@ public class CentralNavigationComponent {
      */
     public CentralNavigationComponent(
             final AmbassadorParameter ambassadorParameter,
-            CApplicationAmbassador.CRoutingByType navigationConfiguration,
-            CPublicTransportRouting publicTransportConfiguration
+            @Nonnull CApplicationAmbassador.CRoutingByType navigationConfiguration,
+            @Nonnull CPublicTransportRouting publicTransportConfiguration
     ) {
         this.applicationAmbassadorParameter = ambassadorParameter;
         this.configuration = navigationConfiguration;
@@ -138,7 +139,7 @@ public class CentralNavigationComponent {
         try {
             this.log.info("Initializing CNC-Navigation");
 
-            routing = createFromType(this.configuration != null ? this.configuration.type : null);
+            routing = createFromType(configuration.type);
             routing.initialize(configuration, applicationAmbassadorParameter.configuration.getParentFile());
 
             ptRouting = new PtRouting();
@@ -164,6 +165,12 @@ public class CentralNavigationComponent {
             InternalFederateException ex = new InternalFederateException(e);
             log.error("Exception", ex);
             throw ex;
+        }
+    }
+
+    public void close() {
+        if (ptRouting != null) {
+            ptRouting.close();
         }
     }
 

@@ -23,7 +23,7 @@ import java.io.Serializable;
 public class CVehicleRouting implements Serializable {
 
     /**
-     * The source for the route calculation, e.g. the path to the database containing the road network.
+     * The source for the route calculation, e.g., the path to the database containing the road network.
      */
     public String source = null;
 
