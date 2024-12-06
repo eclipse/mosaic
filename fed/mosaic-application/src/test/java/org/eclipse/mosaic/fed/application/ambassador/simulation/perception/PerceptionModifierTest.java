@@ -192,7 +192,7 @@ public class PerceptionModifierTest {
 
         // ASSERT if headings differ from ground truth
         for (VehicleObject realVehicle : getAllVehicles()) {
-            for (VehicleObject perceivedVehicle: perceivedVehicles) {
+            for (VehicleObject perceivedVehicle : perceivedVehicles) {
                 if (realVehicle.getId().equals(perceivedVehicle.getId())) {
                     assertNotEquals(realVehicle.getHeading(), perceivedVehicle.getHeading(), 0.0001);
                     // when adjusting heading the position should change too, since it currently points to the front bumper of the vehicle
@@ -204,7 +204,7 @@ public class PerceptionModifierTest {
 
     @Test
     public void testDimensionsModifier() {
-         DimensionsModifier dimensionsModifier = new DimensionsModifier(rng, 1.0, 0.0, 0.0);
+        DimensionsModifier dimensionsModifier = new DimensionsModifier(rng, 1.0, 0.0, 0.0);
         simplePerceptionModule.enable(
                 new SimplePerceptionConfiguration.Builder(VIEWING_ANGLE, VIEWING_RANGE).addModifier(dimensionsModifier).build()
         );
@@ -217,7 +217,7 @@ public class PerceptionModifierTest {
 
         // ASSERT if headings differ from ground truth
         for (VehicleObject realVehicle : getAllVehicles()) {
-            for (VehicleObject perceivedVehicle: perceivedVehicles) {
+            for (VehicleObject perceivedVehicle : perceivedVehicles) {
                 if (realVehicle.getId().equals(perceivedVehicle.getId())) {
                     assertNotEquals(realVehicle.getLength(), perceivedVehicle.getLength(), 0.0001);
                     // when adjusting length the position should change too, since it currently points to the front bumper of the vehicle
@@ -270,9 +270,7 @@ public class PerceptionModifierTest {
                 .stream().collect(Collectors.toMap(VehicleObject::getId, v -> new Vector3d(v.getPosition())));
 
         // ASSERT that all positions in the index are still the same as before applying modifier
-        allVehiclesInIndexPre.forEach((id, pos) -> {
-            assertTrue(pos.isFuzzyEqual(allVehiclesInIndexPost.get(id)));
-        });
+        allVehiclesInIndexPre.forEach((id, pos) -> assertTrue(pos.isFuzzyEqual(allVehiclesInIndexPost.get(id))));
 
         // ASSERT that all modified positions differ from the positions before (or after) applying the modifier
         for (VehicleObject object : perceivedAndAlteredObjects) {
