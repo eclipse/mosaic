@@ -86,14 +86,14 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
     }
 
     @Override
-    public List<SpatialObject> getObjectsInRange() {
+    public List<SpatialObject<?>> getObjectsInRange() {
         if (perceptionModel == null || owner.getVehicleData() == null) {
             log.warn("No perception model initialized.");
             return Lists.newArrayList();
         }
         perceptionModel.updateOrigin(owner.getVehicleData().getProjectedPosition(), owner.getVehicleData().getHeading());
         SimulationKernel.SimulationKernel.getCentralPerceptionComponent().updateSpatialIndices();
-        List<SpatialObject> objectsInRange = new ArrayList<>();
+        List<SpatialObject<?>> objectsInRange = new ArrayList<>();
         objectsInRange.addAll(SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
                 .getTrafficObjectIndex()
                 .getVehiclesInRange(perceptionModel));
@@ -105,7 +105,8 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
 
     @Override
     public Collection<Edge<Vector3d>> getSurroundingWalls() {
-        return SimulationKernel.SimulationKernel.getCentralPerceptionComponent().getTrafficObjectIndex().getSurroundingWalls(perceptionModel);
+        return SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
+                .getTrafficObjectIndex().getSurroundingWalls(perceptionModel);
     }
 
     /**
@@ -157,7 +158,7 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
         }
 
         @Override
-        public boolean isInRange(SpatialObject other) {
+        public boolean isInRange(SpatialObject<?> other) {
             if (other.getId().equals(this.ownerId)) { // cannot see itself
                 return false;
             }
@@ -167,10 +168,10 @@ public class SimplePerceptionModule extends AbstractPerceptionModule {
                 // we use tmpVector2 as origin from the viewpoint of this object
                 tmpVector2.set(0, 0, 0);
 
-                if (tmpVector1.magnitude() > configuration.getViewingRange()) { // other vehicle is NOT in range
+                if (tmpVector1.magnitude() > configuration.getViewingRange()) { // the other vehicle is NOT in range
                     return false;
                 }
-                if (MathUtils.isFuzzyEqual(configuration.getViewingAngle(), 360d)) { // for 360 degree viewing angle field-of-view check is obsolete
+                if (MathUtils.isFuzzyEqual(configuration.getViewingAngle(), 360d)) { // for 360° viewing angle FOV check is obsolete
                     return true;
                 } else if (configuration.getViewingAngle() < 180d) { // for < 180 degree viewing angle we use left and right vector
                     return isBetweenVectors(tmpVector1, tmpVector2, leftBoundVector, rightBoundVector)

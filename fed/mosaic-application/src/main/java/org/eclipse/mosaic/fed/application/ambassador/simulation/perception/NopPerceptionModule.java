@@ -52,7 +52,7 @@ public class NopPerceptionModule extends AbstractPerceptionModule {
     }
 
     @Override
-    List<SpatialObject> getObjectsInRange() {
+    List<SpatialObject<?>> getObjectsInRange() {
         log.debug("No vehicle index configured, leading to disabled perception.");
         return new ArrayList<>();
     }

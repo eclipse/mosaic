@@ -81,7 +81,7 @@ public class PositionModifier implements PerceptionModifier {
     }
 
     @Override
-    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+    public <T extends SpatialObject<?>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         Vector3d ownerDirection = new Vector3d();
         VectorUtils.getDirectionVectorFromHeading(owner.getVehicleData().getHeading(), ownerDirection);

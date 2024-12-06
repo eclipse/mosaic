@@ -62,13 +62,13 @@ public class SimpleOcclusion implements PerceptionModifier {
     }
 
     @Override
-    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+    public <T extends SpatialObject<?>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         if (spatialObjects.isEmpty()) {
             return spatialObjects;
         }
         Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         // sort by distances
-        List<SpatialObject> sortedByDistance = new ArrayList<>(spatialObjects);
+        List<T> sortedByDistance = new ArrayList<>(spatialObjects);
         sortedByDistance.sort(Comparator.comparingDouble(vehicleObject -> vehicleObject.getPosition().distanceTo(ownerPosition)));
         // fit linear function to (closest distance, min angle) and (furthest distance, max angle)
         double closestPerceivedDistance = ownerPosition.distanceTo(sortedByDistance.get(0).getPosition());
@@ -81,7 +81,7 @@ public class SimpleOcclusion implements PerceptionModifier {
         double m = (maxDetectionAngle - minDetectionAngle) / (furthestPerceivedDistance - closestPerceivedDistance);
         double n = minDetectionAngle - (closestPerceivedDistance * m);
 
-        List<SpatialObject> notOccludedObjects = new ArrayList<>();
+        List<T> notOccludedObjects = new ArrayList<>();
         List<Vector3d> nonOccludedVectors = new ArrayList<>();
         notOccludedObjects.add(sortedByDistance.get(0)); // closest vehicle is always perceived
         nonOccludedVectors.add(getVectorRelativeTo(ownerPosition, sortedByDistance.get(0).getPosition()));

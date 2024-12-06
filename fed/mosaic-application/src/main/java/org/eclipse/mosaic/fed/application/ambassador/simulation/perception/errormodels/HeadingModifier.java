@@ -59,6 +59,13 @@ public class HeadingModifier implements PerceptionModifier {
         this.chanceOfWrongDirection = DEFAULT_CHANCE_WRONG_DIR;
     }
 
+    /**
+     * Constructor for the {@link HeadingModifier} using configured values.
+     *
+     * @param rng                      {@link RandomNumberGenerator} for evaluation of probabilities
+     * @param headingStandardDeviation the sigma value used for the applied heading offset [0, 360]
+     * @param chanceOfWrongDirection   chance for a heading to be rotated by 180° [0, 1]
+     */
     public HeadingModifier(RandomNumberGenerator rng, double headingStandardDeviation, double chanceOfWrongDirection) {
         Validate.inclusiveBetween(0, 360, headingStandardDeviation, "Heading deviation should lie between 0 and 360");
         Validate.inclusiveBetween(0, 1, chanceOfWrongDirection, "Wrong direction probability should lie between 0 and 1");
@@ -69,18 +76,15 @@ public class HeadingModifier implements PerceptionModifier {
     }
 
     @Override
-    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
-        final Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
-
+    public <T extends SpatialObject<?>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         spatialObjects.stream()
                 .filter(o -> o instanceof VehicleObject)
-                .forEach(o -> adjustHeadingOfVehicle(ownerPosition, (VehicleObject) o));
+                .forEach(o -> adjustHeadingOfVehicle((VehicleObject) o));
 
         return spatialObjects;
     }
 
-    private void adjustHeadingOfVehicle(Vector3d ownerPosition, VehicleObject vehicleObject) {
-
+    private void adjustHeadingOfVehicle(VehicleObject vehicleObject) {
         double oldHeading = vehicleObject.getHeading();
 
         if (rng.nextDouble() < chanceOfWrongDirection) {
