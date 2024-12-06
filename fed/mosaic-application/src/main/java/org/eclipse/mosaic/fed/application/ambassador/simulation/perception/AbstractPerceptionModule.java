@@ -110,10 +110,10 @@ public abstract class AbstractPerceptionModule implements PerceptionModule<Simpl
      */
     abstract List<SpatialObject<?>> getObjectsInRange();
 
-    @SuppressWarnings("unchecked") // copy-method assures correct typing
     private <T extends SpatialObject<?>> List<T> applyPerceptionModifiers(List<T> objectsInRange) {
         List<T> filteredList = new ArrayList<>(objectsInRange);
         // create a copy of all perceived objects to avoid interference with modifiers of other perception modules.
+        //noinspection unchecked
         filteredList.replaceAll(object -> (T) object.copy());
         for (PerceptionModifier perceptionModifier : configuration.getPerceptionModifiers()) {
             filteredList = perceptionModifier.apply(owner, filteredList); // apply filters in sequence
