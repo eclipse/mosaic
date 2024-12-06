@@ -77,10 +77,45 @@ public class VectorUtils {
     }
 
     /**
-     * Function to calculate the orientation of the triplet (px, py), (qx, qy), (rx, ry).
+     * Function to check if two line segments (a1, b1) and (a2, b2) intersect.
+     *
+     * @param a1 First point of first line segment
+     * @param b1 Second point of first line segment
+     * @param a2 First point of second line segment
+     * @param b2 Second point of second line segment
+     * @return {@code true} if the two line segments intersect, else {@code false}
      */
-    private static Orientation2d isCollinear(double px, double py, double qx, double qy, double rx, double ry) {
-        double val = (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
+    public static boolean doesXZIntersect(Vector3d a1, Vector3d b1, Vector3d a2, Vector3d b2) {
+        Orientation2d o1 = isCollinear(a1.x, a1.z, b1.x, b1.z, a2.x, a2.z);
+        Orientation2d o2 = isCollinear(a1.x, a1.z, b1.x, b1.z, b2.x, b2.z);
+        Orientation2d o3 = isCollinear(a2.x, a2.z, b2.x, b2.z, a1.x, a1.z);
+        Orientation2d o4 = isCollinear(a2.x, a2.z, b2.x, b2.z, b1.x, b1.z);
+
+        // General case
+        if (o1 != o2 && o3 != o4) {
+            return true;
+        }
+        // Special cases
+        if (o1 == Orientation2d.COLLINEAR && isOnSegment(a1.x, a1.z, a2.x, a2.z, b1.x, b1.z)) {
+            return true;
+        }
+        if (o2 == Orientation2d.COLLINEAR && isOnSegment(a1.x, a1.z, b2.x, b2.z, b1.x, b1.z)) {
+            return true;
+        }
+        if (o3 == Orientation2d.COLLINEAR && isOnSegment(a2.x, a2.z, a1.x, a1.z, b2.x, b2.z)) {
+            return true;
+        }
+        if (o4 == Orientation2d.COLLINEAR && isOnSegment(a2.x, a2.z, b1.x, b1.z, b2.x, b2.z)) {
+            return true;
+        }
+        return false; // Doesn't fall in any of the above cases
+    }
+
+    /**
+     * Function to calculate the orientation of the triplet (ax, ay), (bx,bqy), (rx, ry).
+     */
+    private static Orientation2d isCollinear(double ax, double ay, double bx, double by, double rx, double ry) {
+        double val = (by - ay) * (rx - bx) - (bx - ax) * (ry - by);
         if (Math.abs(val) <= MathUtils.EPSILON_D) { // Collinear
             return Orientation2d.COLLINEAR;
         }
@@ -88,48 +123,13 @@ public class VectorUtils {
     }
 
     /**
-     * Function to check if point (qx, qy) lies on a segment (px, py) to (rx, ry).
+     * Function to check if point (ax, ay) lies on a segment (bx, by) to (rx, ry).
      */
-    private static boolean isOnSegment(double px, double py, double qx, double qy, double rx, double ry) {
-        return qx <= Math.max(px, rx)
-                && qx >= Math.min(px, rx)
-                && qy <= Math.max(py, ry)
-                && qy >= Math.min(py, ry);
-    }
-
-    /**
-     * Function to check if two line segments (p1, q1) and (p2, q2) intersect.
-     *
-     * @param p1 First point of first line segment
-     * @param q1 Second point of first line segment
-     * @param p2 First point of second line segment
-     * @param q2 Second point of second line segment
-     * @return {@code true} if the two line segments intersect, else {@code false}
-     */
-    public static boolean doesXZIntersect(Vector3d p1, Vector3d q1, Vector3d p2, Vector3d q2) {
-        Orientation2d o1 = isCollinear(p1.x, p1.z, q1.x, q1.z, p2.x, p2.z);
-        Orientation2d o2 = isCollinear(p1.x, p1.z, q1.x, q1.z, q2.x, q2.z);
-        Orientation2d o3 = isCollinear(p2.x, p2.z, q2.x, q2.z, p1.x, p1.z);
-        Orientation2d o4 = isCollinear(p2.x, p2.z, q2.x, q2.z, q1.x, q1.z);
-
-        // General case
-        if (o1 != o2 && o3 != o4) {
-            return true;
-        }
-        // Special cases
-        if (o1 == Orientation2d.COLLINEAR && isOnSegment(p1.x, p1.z, p2.x, p2.z, q1.x, q1.z)) {
-            return true;
-        }
-        if (o2 == Orientation2d.COLLINEAR && isOnSegment(p1.x, p1.z, q2.x, q2.z, q1.x, q1.z)) {
-            return true;
-        }
-        if (o3 == Orientation2d.COLLINEAR && isOnSegment(p2.x, p2.z, p1.x, p1.z, q2.x, q2.z)) {
-            return true;
-        }
-        if (o4 == Orientation2d.COLLINEAR && isOnSegment(p2.x, p2.z, q1.x, q1.z, q2.x, q2.z)) {
-            return true;
-        }
-        return false; // Doesn't fall in any of the above cases
+    private static boolean isOnSegment(double ax, double ay, double bx, double by, double rx, double ry) {
+        return bx <= Math.max(ax, rx)
+                && bx >= Math.min(ax, rx)
+                && by <= Math.max(ay, ry)
+                && by >= Math.min(ay, ry);
     }
 
     /**
