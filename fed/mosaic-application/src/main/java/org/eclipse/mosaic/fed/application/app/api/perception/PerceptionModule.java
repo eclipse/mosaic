@@ -55,13 +55,13 @@ public interface PerceptionModule<ConfigT extends PerceptionModuleConfiguration>
     List<TrafficLightObject> getPerceivedTrafficLights();
 
     /**
-     * Call to get all perceived traffic objection within perception range.
+     * Call to get all perceived traffic objects within perception range.
      * Note: That these will all be the type of {@link SpatialObject} and you need to properly
-     * check types using instanceof.
+     * check types using {@code instanceof}.
      *
      * @return a list of all {@link SpatialObject}s inside the perception range
      */
-    <T extends SpatialObject<T>> List<SpatialObject<T>> getPerceivedObjects();
+    List<SpatialObject<?>> getPerceivedObjects();
 
     /**
      * Call to get surrounding building walls.

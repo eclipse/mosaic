@@ -26,6 +26,19 @@ import org.eclipse.mosaic.lib.spatial.Edge;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An occlusion modifier for other vehicles configuration is done using {@link #pointsPerSide} and {@link #detectionThreshold}.
+ * Example for {@code pointsPerSide = 3} (x's are the corners which will be evaluated anyway, o's are the added points):
+ * <pre>
+ *     x-----o-----x
+ *     |           |
+ *     |           |
+ *     o           o
+ *     |           |
+ *     |           |
+ *     x-----o-----x
+ * </pre>
+ */
 public class BoundingBoxOcclusion implements PerceptionModifier {
 
     private final Vector3d intersectionResult = new Vector3d();
@@ -58,7 +71,6 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
      *
      * @param pointsPerSide      the number of points that will be evaluated per object side (corners count towards 2 edges)
      * @param detectionThreshold how many points have to be visible in order for an object to be treated as detected
-     *
      * @throws IllegalArgumentException if pointsPerSide or detectionThreshold is configured wrongly
      */
     public BoundingBoxOcclusion(int pointsPerSide, int detectionThreshold) {
@@ -76,7 +88,7 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
     }
 
     @Override
-    public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
+    public <T extends SpatialObject<?>> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         List<T> newObjects = new ArrayList<>();
         // the ego object cannot occlude vision
         List<T> occludingObjects = spatialObjects.stream()
@@ -115,7 +127,8 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
      * @param occludingObjects all objects that potentially occlude the vehicle
      * @return {@code true} if the point is visible, else {@code false}
      */
-    private <T extends SpatialObject> boolean isVisible(Vector3d egoPosition, Vector3d pointToEvaluate, String objectId, List<T> occludingObjects) {
+    private <T extends SpatialObject<?>> boolean isVisible(Vector3d egoPosition, Vector3d pointToEvaluate,
+                                                           String objectId, List<T> occludingObjects) {
         for (T occludingObject : occludingObjects) {
             if (occludingObject.getId().equals(objectId)) {
                 continue; // cannot be occluded by itself
@@ -146,12 +159,12 @@ public class BoundingBoxOcclusion implements PerceptionModifier {
      *     o           o
      *     |           |
      *     |           |
-     *     x-----o-----y
+     *     x-----o-----x
      * </pre>
      *
      * @param spatialObject a {@link SpatialObject} for which the occlusion should be evaluated
      */
-    private <T extends SpatialObject> List<Vector3d> createPointsToEvaluate(T spatialObject) {
+    private <T extends SpatialObject<?>> List<Vector3d> createPointsToEvaluate(T spatialObject) {
         List<Vector3d> pointsToEvaluate = new ArrayList<>();
         SpatialObjectBoundingBox boundingBox = spatialObject.getBoundingBox();
         // if object has edges and more than 2 points per side are to be evaluated, calculate points that have to be evaluated

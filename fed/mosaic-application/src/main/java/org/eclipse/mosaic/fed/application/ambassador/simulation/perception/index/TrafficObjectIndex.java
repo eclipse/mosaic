@@ -55,39 +55,38 @@ public class TrafficObjectIndex {
         this.vehicleIndex = vehicleIndex;
         this.trafficLightIndex = trafficLightIndex;
         this.wallIndex = wallIndex;
-        if (vehicleIndex != null) {
-            vehicleIndex.initialize();
+        if (vehicleIndexConfigured()) {
+            this.vehicleIndex.initialize();
         }
-        if (trafficLightIndex != null) {
-            trafficLightIndex.initialize();
+        if (trafficLightIndexConfigured()) {
+            this.trafficLightIndex.initialize();
         }
-        if (wallIndex != null) {
-            wallIndex.initialize();
+        if (wallIndexConfigured()) {
+            this.wallIndex.initialize();
         }
     }
 
-    protected TrafficObjectIndex(TrafficObjectIndex parent) {
-        this(parent.log, parent.vehicleIndex, parent.trafficLightIndex, parent.wallIndex);
-    }
-
-    private boolean vehicleIndexProviderConfigured() {
+    private boolean vehicleIndexConfigured() {
         return vehicleIndex != null;
     }
 
-    private boolean trafficLightIndexProviderConfigured() {
+    private boolean trafficLightIndexConfigured() {
         return trafficLightIndex != null;
+    }
+
+    private boolean wallIndexConfigured() {
+        return wallIndex != null;
     }
 
     /**
      * Queries the {@link TrafficObjectIndex} and returns all vehicles inside the {@link PerceptionModel}.
      */
     public List<VehicleObject> getVehiclesInRange(PerceptionModel perceptionModel) {
-        if (vehicleIndexProviderConfigured()) {
-            return vehicleIndex.getVehiclesInRange(perceptionModel);
-        } else {
+        if (!vehicleIndexConfigured()) {
             log.debug("No Traffic Light Index Provider configured. No Vehicles will be in range.");
             return new ArrayList<>();
         }
+        return vehicleIndex.getVehiclesInRange(perceptionModel);
     }
 
     /**
@@ -98,11 +97,11 @@ public class TrafficObjectIndex {
      * @param vehicleType the vehicle type of the vehicle
      */
     public void registerVehicleType(String vehicleId, VehicleType vehicleType) {
-        if (vehicleIndexProviderConfigured()) {
-            vehicleIndex.registerVehicleType(vehicleId, vehicleType);
-        } else {
+        if (!vehicleIndexConfigured()) {
             log.debug("No Vehicle Index Provider configured. Vehicle Type won't be registered.");
+            return;
         }
+        vehicleIndex.registerVehicleType(vehicleId, vehicleType);
     }
 
     /**
@@ -111,11 +110,11 @@ public class TrafficObjectIndex {
      * @param vehiclesToRemove the list of vehicles to remove from the index
      */
     public void removeVehicles(Iterable<String> vehiclesToRemove) {
-        if (vehicleIndexProviderConfigured()) {
-            vehicleIndex.removeVehicles(vehiclesToRemove);
-        } else {
+        if (!vehicleIndexConfigured()) {
             log.debug("No Vehicle Index Provider configured. No Vehicle will be removed.");
+            return;
         }
+        vehicleIndex.removeVehicles(vehiclesToRemove);
     }
 
     /**
@@ -124,51 +123,49 @@ public class TrafficObjectIndex {
      * @param vehiclesToUpdate the list of vehicles to add or update in the index
      */
     public void updateVehicles(Iterable<VehicleData> vehiclesToUpdate) {
-        if (vehicleIndexProviderConfigured()) {
-            vehicleIndex.updateVehicles(vehiclesToUpdate);
-        } else {
+        if (!vehicleIndexConfigured()) {
             log.debug("No Vehicle Index Provider configured. Index won't be updated.");
+            return;
         }
+        vehicleIndex.updateVehicles(vehiclesToUpdate);
     }
 
     /**
-     * Returns the amount of indexed vehicles.
+     * Returns the number of indexed vehicles.
      *
      * @return the number of vehicles
      */
     public int getNumberOfVehicles() {
-        if (vehicleIndexProviderConfigured()) {
-            return vehicleIndex.getNumberOfVehicles();
-        } else {
+        if (!vehicleIndexConfigured()) {
             log.debug("No Vehicle Index Provider configured. There are no indexed Vehicles.");
             return 0;
         }
+        return vehicleIndex.getNumberOfVehicles();
     }
 
     /**
      * Queries the {@link TrafficObjectIndex} and returns all traffic lights inside the {@link PerceptionModel}.
      */
     public List<TrafficLightObject> getTrafficLightsInRange(PerceptionModel perceptionModel) {
-        if (trafficLightIndexProviderConfigured()) {
-            return trafficLightIndex.getTrafficLightsInRange(perceptionModel);
-        } else {
+        if (!trafficLightIndexConfigured()) {
             log.debug("No Traffic Light Index Provider configured. No Traffic Lights will be in range.");
             return new ArrayList<>();
         }
+        return trafficLightIndex.getTrafficLightsInRange(perceptionModel);
     }
 
     /**
-     * Adds traffic lights to the spatial index, as their positions are static it is sufficient
-     * to store positional information only once.
+     * Adds traffic lights to the spatial index, as their positions are static,
+     * it is enough to store positional information only once.
      *
      * @param trafficLightGroup the registered traffic light group
      */
     public void addTrafficLightGroup(TrafficLightGroup trafficLightGroup) {
-        if (trafficLightIndexProviderConfigured()) {
-            trafficLightIndex.addTrafficLight(trafficLightGroup);
-        } else {
+        if (!trafficLightIndexConfigured()) {
             log.debug("No Traffic Light Index Provider configured. Traffic Light won't be added.");
+            return;
         }
+        trafficLightIndex.addTrafficLight(trafficLightGroup);
     }
 
     /**
@@ -178,28 +175,38 @@ public class TrafficObjectIndex {
      * @param trafficLightsToUpdate a list of information packages transmitted by the traffic simulator
      */
     public void updateTrafficLights(Map<String, TrafficLightGroupInfo> trafficLightsToUpdate) {
-        if (trafficLightIndexProviderConfigured()) {
-            trafficLightIndex.updateTrafficLights(trafficLightsToUpdate);
-        } else {
+        if (!trafficLightIndexConfigured()) {
             log.debug("No Traffic Light Index Provider configured. Index won't be updated.");
+            return;
         }
+        trafficLightIndex.updateTrafficLights(trafficLightsToUpdate);
+
     }
 
     public Collection<Edge<Vector3d>> getSurroundingWalls(PerceptionModel perceptionModel) {
-        if (wallIndex == null) {
+        if (!wallIndexConfigured()) {
             log.debug("No Wall Index defined.");
             return new ArrayList<>();
         }
         return wallIndex.getSurroundingWalls(perceptionModel);
     }
 
-    public PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(VehicleUnit vehicleUnit, Database database, Logger osLog) {
-        if (vehicleIndex != null) {
-            return vehicleIndex.createPerceptionModule(vehicleUnit, database, log);
+    /**
+     * Creates the perception module from the configured {@link VehicleIndex}.
+     *
+     * @param unit     unit to create the perception module for
+     * @param database the network database used as a backend for the road network
+     * @param osLog    log of the operating system
+     * @return the created {@link PerceptionModule}
+     */
+    public PerceptionModule<SimplePerceptionConfiguration> createPerceptionModule(VehicleUnit unit, Database database, Logger osLog) {
+        if (!vehicleIndexConfigured()) {
+            return new NopPerceptionModule(unit, database, osLog);
         }
-        return new NopPerceptionModule(vehicleUnit, database, log);
+        return vehicleIndex.createPerceptionModule(unit, database, osLog);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static class Builder {
         private final Logger log;
         private VehicleIndex vehicleIndex = null;
