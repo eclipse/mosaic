@@ -62,7 +62,7 @@ buildNumber.properties
 
 # MOSAIC
 
-tmp/
 *.log
 credentials.cached
 *.lcs
+.tiles
