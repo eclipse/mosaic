@@ -17,7 +17,6 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.perception.erro
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObject;
-import org.eclipse.mosaic.lib.math.MathUtils;
 import org.eclipse.mosaic.lib.math.Vector3d;
 import org.eclipse.mosaic.lib.math.VectorUtils;
 import org.eclipse.mosaic.lib.spatial.Edge;
