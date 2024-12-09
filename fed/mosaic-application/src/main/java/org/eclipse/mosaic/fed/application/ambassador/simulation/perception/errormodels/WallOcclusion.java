@@ -34,8 +34,6 @@ import java.util.List;
  */
 public class WallOcclusion implements PerceptionModifier {
 
-    private final Vector3d intersectionResult = new Vector3d();
-
     @Override
     public <T extends SpatialObject> List<T> apply(PerceptionModuleOwner owner, List<T> spatialObjects) {
         if (spatialObjects.isEmpty()) {
@@ -46,6 +44,7 @@ public class WallOcclusion implements PerceptionModifier {
         if (walls.isEmpty()) {
             return spatialObjects;
         }
+        Vector3d ownerPosition = owner.getVehicleData().getProjectedPosition().toVector3d();
         final List<T> result = new ArrayList<>();
         for (T spatialObject : spatialObjects) {
             List<Vector3d> pointsToEvaluate = spatialObject.getBoundingBox().getAllCorners();
@@ -56,11 +55,7 @@ public class WallOcclusion implements PerceptionModifier {
                 boolean pointOccluded = false;
                 for (Edge<Vector3d> wall : walls) {
                     // SpatialObjects with PointBoundingBoxes won't occlude anything, as they have no edges defined
-                    boolean isOccluded = VectorUtils.computeXZEdgeIntersectionPoint(
-                            owner.getVehicleData().getProjectedPosition().toVector3d(),
-                            point, wall.a, wall.b, intersectionResult
-                    );
-                    if (isOccluded) {
+                    if (VectorUtils.doesXZIntersect(ownerPosition, point, wall.a, wall.b)) {
                         pointOccluded = true;
                         break;
                     }
@@ -76,5 +71,4 @@ public class WallOcclusion implements PerceptionModifier {
         }
         return result;
     }
-
 }
