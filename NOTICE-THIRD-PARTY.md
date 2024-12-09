@@ -101,6 +101,14 @@ GraphHopper Core (8.0)
  * Source: https://github.com/graphhopper/graphhopper/graphhopper-core
 
 
+GraphHopper Reader for Gtfs Data (8.0)
+
+ * License: Apache-2.0
+ * Maven artifact: `com.graphhopper:graphhopper-reader-gtfs:8.0`
+ * Project: https://www.graphhopper.com/graphhopper-reader-gtfs
+ * Source: https://github.com/graphhopper/graphhopper/graphhopper-reader-gtfs
+
+
 GraphHopper Web API (8.0)
 
  * License: Apache-2.0
@@ -115,6 +123,14 @@ Gson (2.10.1)
  * Maven artifact: `com.google.code.gson:gson:2.10.1`
  * Project: https://github.com/google/gson/gson
  * Source: https://github.com/google/gson/gson/
+
+
+gtfs-realtime-bindings (0.0.5)
+
+ * License: Apache-2.0
+ * Maven artifact: `io.mobilitydata.transit:gtfs-realtime-bindings:0.0.5`
+ * Project: https://github.com/MobilityData/gtfs-realtime-bindings
+ * Source: https://github.com/MobilityData/gtfs-realtime-bindings
 
 
 Guava: Google Core Libraries for Java (32.1.1-jre)
@@ -219,6 +235,22 @@ Logback Core Module (1.5.0)
  * Maven artifact: `ch.qos.logback:logback-core:1.5.0`
  * Project: http://logback.qos.ch/logback-core
  * Source: https://github.com/qos-ch/logback/logback-core
+
+
+mapdb (1.0.8)
+
+ * License: Apache-2.0
+ * Maven artifact: `org.mapdb:mapdb:1.0.8`
+ * Project: http://www.mapdb.org
+ * Source: https://github.com/jankotek/MapDB
+
+
+opencsv (5.9)
+
+ * License: Apache-2.0
+ * Maven artifact: `com.opencsv:opencsv:5.9`
+ * Project: http://opencsv.sf.net
+ * Source: https://sourceforge.net/p/opencsv/source/ci/master/tree/
 
 
 org.locationtech.jts:jts-core (1.19.0)

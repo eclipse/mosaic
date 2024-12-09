@@ -32,7 +32,7 @@ import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.apache.commons.io.FileUtils;
@@ -66,7 +66,7 @@ public class DatabaseRoutingTest {
     private final static String dbFile = "/tiergarten.db";
 
     private DatabaseRouting databaseRouting;
-    private CRouting configuration;
+    private CVehicleRouting configuration;
 
     private File cfgDir;
 
@@ -80,7 +80,7 @@ public class DatabaseRoutingTest {
 
         FileUtils.copyInputStreamToFile(getClass().getResourceAsStream(dbFile), dbFileCopy);
 
-        configuration = new CRouting();
+        configuration = new CVehicleRouting();
         databaseRouting = new DatabaseRouting();
 
     }
