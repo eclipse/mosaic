@@ -27,6 +27,10 @@
             "description": "Configuration options for the route calculation.",
             "$ref": "#/definitions/routingByType"
         },
+        "publicTransportConfiguration": {
+            "description": "Configuration options for the public transport route calculation.",
+            "$ref": "#/definitions/ptRouting"
+        },
         "perceptionConfiguration": {
             "description": "Configuration options for perception backend",
             "$ref": "#/definitions/perceptionConfiguration"
@@ -44,6 +48,38 @@
                 },
                 "source": {
                     "description": "The source for the route calculation, e.g. the path to the database containing the road network.",
+                    "type": "string"
+                }
+            }
+        },
+        "ptRouting": {
+            "title": "ptRouting",
+            "description": "Object to define the configuration for the public transport route calculation.",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "Defines, if public transport routing is enabled.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "osmFile": {
+                    "description": "The relative path to the OSM file to load with the GTFS feed.",
+                    "default": "map.osm",
+                    "type": "string"
+                },
+                "gtfsFile": {
+                    "description": "The relative path to the GTFS feed (ZIP archive).",
+                    "default": "gtfs.zip",
+                    "type": "string"
+                },
+                "scheduleDateTime": {
+                    "description": "The real time in ISO format at which the beginning of the simulation should point at. Example format: 2024-11-27T10:15:30",
+                    "default": "2024-12-03T10:15:30",
+                    "type": "string"
+                },
+                "timeZone": {
+                    "description": " The time zone of the location where the PT system is implemented, e.g., \"ECT\".",
+                    "default": "ECT",
                     "type": "string"
                 }
             }

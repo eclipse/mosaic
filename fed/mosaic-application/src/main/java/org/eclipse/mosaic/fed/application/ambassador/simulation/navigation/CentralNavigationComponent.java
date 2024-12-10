@@ -38,8 +38,12 @@ import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
+import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
 import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
+import org.eclipse.mosaic.lib.routing.pt.PtRouting;
+import org.eclipse.mosaic.lib.routing.pt.PtRoutingRequest;
+import org.eclipse.mosaic.lib.routing.pt.PtRoutingResponse;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -55,6 +59,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
 
 /**
  * The {@link CentralNavigationComponent} unites functionality concerned with
@@ -83,10 +88,21 @@ public class CentralNavigationComponent {
      */
     private Routing routing;
 
+
+    /**
+     * Public Transport routing
+     */
+    private PtRouting ptRouting;
+
     /**
      * The configuration for routingAPI.
      */
     private CApplicationAmbassador.CRoutingByType configuration;
+
+    /**
+     * The configuration for public transport routing.
+     */
+    private CPublicTransportRouting ptConfiguration;
 
     /**
      * Constructor for the CentralNavigationComponent.
@@ -99,10 +115,12 @@ public class CentralNavigationComponent {
      */
     public CentralNavigationComponent(
             final AmbassadorParameter ambassadorParameter,
-            CApplicationAmbassador.CRoutingByType navigationConfiguration
+            @Nonnull CApplicationAmbassador.CRoutingByType navigationConfiguration,
+            @Nonnull CPublicTransportRouting publicTransportConfiguration
     ) {
         this.applicationAmbassadorParameter = ambassadorParameter;
         this.configuration = navigationConfiguration;
+        this.ptConfiguration = publicTransportConfiguration;
     }
 
     /**
@@ -121,14 +139,17 @@ public class CentralNavigationComponent {
         try {
             this.log.info("Initializing CNC-Navigation");
 
-            routing = createFromType(this.configuration != null ? this.configuration.type : null);
+            routing = createFromType(configuration.type);
             routing.initialize(configuration, applicationAmbassadorParameter.configuration.getParentFile());
+
+            ptRouting = new PtRouting();
+            ptRouting.initialize(ptConfiguration, applicationAmbassadorParameter.configuration.getParentFile());
 
             this.log.info("CNC - Navigation-System initialized");
 
             try {
                 final Map<String, VehicleRoute> routeMap = routing.getRoutesFromDatabaseForMessage();
-                for (var routeEntry: routeMap.entrySet()) {
+                for (var routeEntry : routeMap.entrySet()) {
                     SimulationKernel.SimulationKernel.registerRoute(routeEntry.getKey(), routeEntry.getValue());
                 }
 
@@ -144,6 +165,12 @@ public class CentralNavigationComponent {
             InternalFederateException ex = new InternalFederateException(e);
             log.error("Exception", ex);
             throw ex;
+        }
+    }
+
+    public void close() {
+        if (ptRouting != null) {
+            ptRouting.close();
         }
     }
 
@@ -287,6 +314,17 @@ public class CentralNavigationComponent {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Find a public transport route from a provided position to a provided target position at a specific request time.
+     *
+     * @param routingRequest A {@link PtRoutingRequest} that contains
+     *                       the origin, the end, the request time, and additional
+     *                       routing parameters to calculate the public transport route.
+     */
+    PtRoutingResponse findPtRoute(PtRoutingRequest routingRequest) {
+        return ptRouting.findPtRoute(routingRequest);
     }
 
     /**

@@ -21,7 +21,7 @@ import org.eclipse.mosaic.lib.objects.road.IConnection;
 import org.eclipse.mosaic.lib.objects.road.INode;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import java.io.File;
@@ -35,7 +35,7 @@ public interface Routing {
     /**
      * Initializes the connection to the belonging database.
      */
-    void initialize(CRouting routingConfiguration, File configurationLocation) throws InternalFederateException;
+    void initialize(CVehicleRouting routingConfiguration, File configurationLocation) throws InternalFederateException;
 
     /**
      * Find a route from your actual position to the target position.
