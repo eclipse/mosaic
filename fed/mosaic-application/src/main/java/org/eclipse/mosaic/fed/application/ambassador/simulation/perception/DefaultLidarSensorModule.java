@@ -32,7 +32,7 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
     private final String unitId;
 
     private PointCloud currentPointcloud;
-    private List<Consumer<PointCloud>> callback = new ArrayList<>();
+    private final List<Consumer<PointCloud>> callbacks = new ArrayList<>();
 
     public DefaultLidarSensorModule(String unitId) {
         this.unitId = unitId;
@@ -85,7 +85,7 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
 
     @Override
     public void reactOnSensorUpdate(Consumer<PointCloud> callback) {
-        this.callback.add(callback);
+        this.callbacks.add(callback);
     }
 
     @Override
@@ -96,9 +96,14 @@ public class DefaultLidarSensorModule implements LidarSensorModule {
         return this.currentPointcloud;
     }
 
+    /**
+     * This method is called by the ApplicationAmbassador when it received new LidarUpdates from the federate.
+     * It sets the most current pointcloud to the one received and triggers the callback for every application that set one.
+     * @param pointCloud The most current pointcloud.
+     */
     public void updatePointCloud(PointCloud pointCloud) {
         this.currentPointcloud = pointCloud;
-        for (Consumer<PointCloud> callback : callback) {
+        for (Consumer<PointCloud> callback : callbacks) {
             callback.accept(pointCloud);
         }
     }

@@ -528,8 +528,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         // store the sensor data immediately, the sensor event hold their intermittent time
         final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(environmentSensorUpdates.getUnitId());
         // we don't simulate vehicles without application or correct environment sensor implementation
-        if (!(simulationUnit instanceof Perceptive sensible) ||
-                !(sensible.getBasicSensorModule() instanceof EnvironmentBasicSensorModule sensor)) {
+        if (!(simulationUnit instanceof Perceptive sensible)
+                || !(sensible.getBasicSensorModule() instanceof EnvironmentBasicSensorModule sensor)) {
             return;
         }
         for (EnvironmentEvent event : environmentSensorUpdates.getEvents()) {
@@ -702,14 +702,16 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(lidarUpdate.unitId());
 
             // we don't simulate vehicles without application or correct lidar sensor implementation
-            if (!(simulationUnit instanceof Perceptive sensible) ||
-                    !(sensible.getLidarSensorModule() instanceof DefaultLidarSensorModule sensor)) {
+            if (!(simulationUnit instanceof Perceptive sensible)
+                    || !(sensible.getLidarSensorModule() instanceof DefaultLidarSensorModule sensor)) {
                 return;
             }
 
             final Event event = new Event(
                     lidarUpdates.getTime(),
-                    e -> sensor.updatePointCloud(lidarUpdate.pointCloud())
+                    e -> sensor.updatePointCloud(lidarUpdate.pointCloud()),
+                    null,
+                    EventNicenessPriorityRegister.LIDAR_UPDATED
             );
             addEvent(event);
         }

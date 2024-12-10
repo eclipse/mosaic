@@ -19,8 +19,8 @@ import org.eclipse.mosaic.fed.application.ambassador.ErrorRegister;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoadPositionFactory;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.RoutingNavigationModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.NopPerceptionModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.PerceptionModuleOwner;
@@ -71,7 +71,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     private final BasicSensorModule basicSensorModule;
 
     @Nonnull
-    private final LidarSensorModule defaultLidarSensorModule;
+    private final LidarSensorModule lidarSensorModule;
 
     @Nonnull
     private VehicleParameters vehicleParameters;
@@ -103,7 +103,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
 
         basicSensorModule = new EnvironmentBasicSensorModule();
-        defaultLidarSensorModule = new DefaultLidarSensorModule(this.getId());
+        lidarSensorModule = new DefaultLidarSensorModule(this.getId());
     }
 
     @Override
@@ -116,7 +116,6 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     private void updateVehicleInfo(final VehicleData currentVehicleData) {
-        VehicleData previousVehicleData = getVehicleData();
         // set the new vehicle info reference
         navigationModule.setVehicleData(currentVehicleData);
         // and don't forget to set the new position from the vehicle info
@@ -126,6 +125,8 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         navigationModule.setCurrentRoute(currentRoute);
 
         refineRoadPosition();
+
+        VehicleData previousVehicleData = getVehicleData();
 
         for (VehicleApplication application : getApplicationsIterator(VehicleApplication.class)) {
             application.onVehicleUpdated(
@@ -388,6 +389,6 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
     @Override
     public LidarSensorModule getLidarSensorModule() {
-        return defaultLidarSensorModule;
+        return lidarSensorModule;
     }
 }
