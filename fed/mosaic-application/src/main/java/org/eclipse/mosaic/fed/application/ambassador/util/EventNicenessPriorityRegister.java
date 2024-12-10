@@ -24,6 +24,7 @@ public class EventNicenessPriorityRegister {
     public final static long VEHICLE_ADDED = -99_999_900;
     public final static long VEHICLE_UPDATED = -99_999_800;
     public final static long VEHICLE_REMOVED = -99_999_700;
+    public final static long LIDAR_UPDATED = -99_999_650;
 
     // update traffic detectors
     public final static long UPDATE_TRAFFIC_DETECTORS = -99_999_600;

@@ -22,6 +22,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagemen
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
 import org.eclipse.mosaic.fed.application.ambassador.util.EventNicenessPriorityRegister;
 import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
@@ -37,6 +38,7 @@ import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
+import org.eclipse.mosaic.interactions.environment.LidarUpdates;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -298,6 +300,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TrafficLightUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
+                this.process((LidarUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
                 this.process((VehicleBatteryUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
@@ -524,8 +528,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         // store the sensor data immediately, the sensor event hold their intermittent time
         final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(environmentSensorUpdates.getUnitId());
         // we don't simulate vehicles without application or correct environment sensor implementation
-        if (!(simulationUnit instanceof Perceptive sensible) ||
-                !(sensible.getBasicSensorModule() instanceof EnvironmentBasicSensorModule sensor)) {
+        if (!(simulationUnit instanceof Perceptive sensible)
+                || !(sensible.getBasicSensorModule() instanceof EnvironmentBasicSensorModule sensor)) {
             return;
         }
         for (EnvironmentEvent event : environmentSensorUpdates.getEvents()) {
@@ -691,6 +695,26 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 vehicleUpdates.getTime(),
                 e -> SimulationKernel.SimulationKernel.garbageCollection());
         addEvent(triggerGarbageCollection);
+    }
+
+    private void process(final LidarUpdates lidarUpdates) {
+        for (LidarUpdates.LidarUpdate lidarUpdate : lidarUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(lidarUpdate.unitId());
+
+            // we don't simulate vehicles without application or correct lidar sensor implementation
+            if (!(simulationUnit instanceof Perceptive sensible)
+                    || !(sensible.getLidarSensorModule() instanceof DefaultLidarSensorModule sensor)) {
+                return;
+            }
+
+            final Event event = new Event(
+                    lidarUpdates.getTime(),
+                    e -> sensor.updatePointCloud(lidarUpdate.pointCloud()),
+                    null,
+                    EventNicenessPriorityRegister.LIDAR_UPDATED
+            );
+            addEvent(event);
+        }
     }
 
     private void addVehicleIfNotYetAdded(long time, String unitName) {
