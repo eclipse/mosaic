@@ -116,17 +116,16 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     }
 
     private void updateVehicleInfo(final VehicleData currentVehicleData) {
+        final VehicleData previousVehicleData = getVehicleData();
         // set the new vehicle info reference
         navigationModule.setVehicleData(currentVehicleData);
-        // and don't forget to set the new position from the vehicle info
+        // and don't forget to set the new position from the vehicle inf
         navigationModule.setCurrentPosition(currentVehicleData.getPosition());
         // update the current route the vehicle is driving on
         VehicleRoute currentRoute = SimulationKernel.SimulationKernel.getRoutes().get(currentVehicleData.getRouteId());
         navigationModule.setCurrentRoute(currentRoute);
 
         refineRoadPosition();
-
-        VehicleData previousVehicleData = getVehicleData();
 
         for (VehicleApplication application : getApplicationsIterator(VehicleApplication.class)) {
             application.onVehicleUpdated(
