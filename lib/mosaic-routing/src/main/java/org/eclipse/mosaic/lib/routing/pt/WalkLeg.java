@@ -20,6 +20,9 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A walking leg contains a linestring of geographical points which form the walking route.
+ */
 public class WalkLeg {
 
     private final List<GeoPoint> waypoints = new ArrayList<>();
@@ -28,7 +31,10 @@ public class WalkLeg {
         this.waypoints.addAll(waypoints);
     }
 
-    public List<GeoPoint> getWaypoints() {
+    /**
+     * Returns the list of geographical positions which form the walking route.
+     */
+    public final List<GeoPoint> getWaypoints() {
         return waypoints;
     }
 }

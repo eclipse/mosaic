@@ -17,28 +17,54 @@ package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 
+/**
+ * A leg of a multi-modal-journey consists of a planned departure and planned arrival time, and
+ * details about the transport mode, such as the walking path or the public transport route.
+ */
 public class MultiModalLeg {
 
     public enum Type {
-        WALKING, VEHICLE_SHARED, VEHICLE_PRIVATE, PUBLIC_TRANSPORT
+        /**
+         * For legs which uses public transport.
+         */
+        PUBLIC_TRANSPORT,
+        /**
+         * For legs which will require foot work.
+         */
+        WALKING,
+        /**
+         * For legs which require to spawn a new vehicle.
+         */
+        VEHICLE_PRIVATE,
+        /**
+         * For legs which uses a shared vehicle which already exists in the simulation.
+         */
+        VEHICLE_SHARED
     }
 
     private final Type legType;
+    private final long departureTime;
+    private final long arrivalTime;
 
-    // For legs where a vehicle needs to be spawned
-    private VehicleDeparture vehicleLeg = null;
-
-    // For public transport legs
+    /**
+     * For legs which uses public transport.
+     */
     private PtLeg publicTransportationLeg = null;
 
-    // For walk legs
+    /**
+     * For legs which will require foot work.
+     */
     private WalkLeg walkLeg = null;
 
-    // For legs where a vehicle already exists
-    private String sharedVehicleId = null;
+    /**
+     * For legs which require to spawn a new vehicle.
+     */
+    private VehicleDeparture vehicleLeg = null;
 
-    public long departureTime;
-    public long arrivalTime;
+    /**
+     * For legs which uses a shared vehicle which already exists in the simulation.
+     */
+    private String sharedVehicleId = null;
 
     /**
      * Creates a new leg in which a new vehicle must be spawned.
@@ -84,6 +110,18 @@ public class MultiModalLeg {
         this.arrivalTime = arrivalTime;
     }
 
+    public long getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public long getDepartureTime() {
+        return departureTime;
+    }
+
+    public Type getLegType() {
+        return legType;
+    }
+
     public Object getLeg() {
         return switch (legType) {
             case VEHICLE_PRIVATE -> vehicleLeg;
@@ -91,9 +129,5 @@ public class MultiModalLeg {
             case PUBLIC_TRANSPORT -> publicTransportationLeg;
             case WALKING -> walkLeg;
         };
-    }
-
-    public Type getLegType() {
-        return legType;
     }
 }

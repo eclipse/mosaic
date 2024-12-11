@@ -25,10 +25,25 @@ public class PtRoutingRequest {
 
     private final PtRoutingParameters routingParameters;
 
+    /**
+     * Constructs a request for calculating a public transport route.
+     *
+     * @param requestTime The earliest time to start the journey.
+     * @param from The geographic location to start the journey.
+     * @param to The geographic location to end the journey.
+     */
     public PtRoutingRequest(long requestTime, GeoPoint from, GeoPoint to) {
         this(requestTime, from, to, new PtRoutingParameters());
     }
 
+    /**
+     * Constructs a request for calculating a public transport route.
+     *
+     * @param requestTime The earliest time to start the journey.
+     * @param from The geographic location to start the journey.
+     * @param to The geographic location to end the journey.
+     * @param additionalParameters Additional parameters, such as walking speed.
+     */
     public PtRoutingRequest(long requestTime, GeoPoint from, GeoPoint to, PtRoutingParameters additionalParameters) {
         this.requestTime = requestTime;
         this.startingGeoPoint = from;

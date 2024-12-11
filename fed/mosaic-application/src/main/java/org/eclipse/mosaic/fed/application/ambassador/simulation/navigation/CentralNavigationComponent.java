@@ -90,7 +90,7 @@ public class CentralNavigationComponent {
 
 
     /**
-     * Public Transport routing
+     * Access to Public Transport routing.
      */
     private PtRouting ptRouting;
 

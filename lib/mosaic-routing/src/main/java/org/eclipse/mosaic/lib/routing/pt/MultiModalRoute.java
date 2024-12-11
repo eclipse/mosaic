@@ -18,6 +18,9 @@ package org.eclipse.mosaic.lib.routing.pt;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A multi-modal route which consists of multiple legs.
+ */
 public class MultiModalRoute {
 
     private final List<MultiModalLeg> legs = new ArrayList<>();
@@ -26,6 +29,9 @@ public class MultiModalRoute {
         this.legs.addAll(legs);
     }
 
+    /**
+     * Returns the individual legs of this multi-modal route.
+     */
     public List<MultiModalLeg> getLegs() {
         return this.legs;
     }

@@ -15,12 +15,14 @@
 
 package org.eclipse.mosaic.lib.routing.pt;
 
+import org.eclipse.mosaic.rti.UNITS;
+
 public class PtRoutingParameters {
 
-    private double walkingSpeedMps = 5 / 3.6;
+    private double walkingSpeedMps = 5 * UNITS.KILOMETER_PER_HOUR;
 
     public PtRoutingParameters walkingSpeedKmh(double kmh) {
-        walkingSpeedMps = kmh / 3.6;
+        walkingSpeedMps = kmh * UNITS.KILOMETER_PER_HOUR;
         return this;
     }
 
