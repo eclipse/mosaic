@@ -15,6 +15,8 @@
 
 package org.eclipse.mosaic.lib.util.gson;
 
+import org.eclipse.mosaic.rti.UNITS;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -133,7 +135,7 @@ public class UnitFieldAdapter extends TypeAdapter<Double> {
     double determineUnitMultiplier(String prefix, String unit) {
         if (unit.startsWith("mile")) {
             //special case
-            return 1609.344;
+            return UNITS.MILE;
         } else if (StringUtils.isNotEmpty(prefix)) {
             return UNIT_MULTIPLIERS.getOrDefault(prefix, 1d);
         }

@@ -17,6 +17,7 @@ package org.eclipse.mosaic.lib.routing.graphhopper.util;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoUtils;
+import org.eclipse.mosaic.rti.UNITS;
 
 import com.graphhopper.routing.util.AccessFilter;
 import com.graphhopper.storage.BaseGraph;
@@ -140,8 +141,8 @@ public class TurnCostAnalyzer {
         double alpha = (bearingViaTo - (bearingFromVia) + 360) % 360;
 
         //get length and max speed of edges
-        double v1 = incomingEdge.get(encoding.speed()) / 3.6;
-        double v2 = outgoingEdge.get(encoding.speed()) / 3.6;
+        double v1 = incomingEdge.get(encoding.speed()) * UNITS.KMH;
+        double v2 = outgoingEdge.get(encoding.speed()) * UNITS.KMH;
         double l1 = incomingEdge.getDistance();
         double l2 = outgoingEdge.getDistance();
 
@@ -176,7 +177,7 @@ public class TurnCostAnalyzer {
         if (WayTypeEncoder.isResidential(incomingWayType) && WayTypeEncoder.isResidential(
                 outgoingWayType)) {
             //decrease max turn speed to 10 km/h, if it is on a junction within a residential area
-            turnVelocity = Math.min(turnVelocity, 10.0 / 3.6);
+            turnVelocity = Math.min(turnVelocity, 10.0 * UNITS.KMH);
         }
 
         // drivers usually do not max out their turn velocity

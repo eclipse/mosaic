@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
+import org.eclipse.mosaic.rti.UNITS;
 
 import com.graphhopper.routing.ev.DecimalEncodedValue;
 import com.graphhopper.routing.util.AccessFilter;
@@ -131,7 +132,7 @@ public class DatabaseGraphLoaderTest {
 
         //assert outgoing edges of node 4
         it = expl.setBaseNode(n4);
-        assertionMap.put(n2, edgeAssertion(n2, con2_4_2, 50, 30 * 3.6 * 0.9, true));
+        assertionMap.put(n2, edgeAssertion(n2, con2_4_2, 50, 30 / UNITS.KMH * 0.9, true));
         assertNextEdge(vehicleEncoding.speed(), wayTypeEnc, it, assertionMap);
         assertTrue(assertionMap.isEmpty());
         assertFalse(it.next());
