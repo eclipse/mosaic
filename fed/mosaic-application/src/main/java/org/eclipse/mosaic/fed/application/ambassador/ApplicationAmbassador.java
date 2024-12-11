@@ -34,6 +34,7 @@ import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.communication.V2xFullMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationDiscoveryResponse;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
@@ -304,6 +305,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((LidarUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
                 this.process((VehicleBatteryUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(ChargingStationDiscoveryResponse.TYPE_ID)) {
+                this.process((ChargingStationDiscoveryResponse) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
                 this.process((VehicleRoutesInitialization) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleTypesInitialization.TYPE_ID)) {
@@ -335,6 +338,20 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         }
     }
 
+
+    private void process(final ChargingStationDiscoveryResponse response) {
+        final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(response.getVehicleId());
+        if (simulationUnit == null) {
+            return;
+        }
+        final Event event = new Event(
+                response.getTime(),
+                simulationUnit,
+                response,
+                EventNicenessPriorityRegister.CHARGING_STATIONS_DISCOVERY
+        );
+        addEvent(event);
+    }
     private void process(final VehicleTypesInitialization vehicleTypesInitialization) {
         SimulationKernel.SimulationKernel.getVehicleTypes().putAll(vehicleTypesInitialization.getTypes());
     }

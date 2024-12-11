@@ -25,6 +25,7 @@ import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSys
 import org.eclipse.mosaic.fed.application.app.empty.ElectricVehicleNoopApp;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
+import org.eclipse.mosaic.interactions.electricity.ChargingStationDiscoveryResponse;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.lib.objects.traffic.SumoTraciResult;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
@@ -106,6 +107,11 @@ public class TestElectricVehicleApplication extends AbstractApplication<Electric
     @Override
     public void onVehicleChargingDenial(VehicleChargingDenial vehicleChargingDenial) {
         thisApplicationSpy.onVehicleChargingDenial(vehicleChargingDenial);
+    }
+
+    @Override
+    public void onChargingStationDiscoveryResponse(ChargingStationDiscoveryResponse response) {
+
     }
 
     @Override

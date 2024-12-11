@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.app.api;
 
+import org.eclipse.mosaic.interactions.electricity.ChargingStationDiscoveryResponse;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 
@@ -42,4 +43,6 @@ public interface ElectricVehicleApplication extends VehicleApplication, Applicat
      * @param vehicleChargingDenial The interaction containing further information about the rejected charging request
      */
     void onVehicleChargingDenial(final VehicleChargingDenial vehicleChargingDenial);
+
+    void onChargingStationDiscoveryResponse(ChargingStationDiscoveryResponse response);
 }
