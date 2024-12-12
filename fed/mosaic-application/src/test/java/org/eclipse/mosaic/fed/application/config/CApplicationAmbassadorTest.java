@@ -18,7 +18,6 @@ package org.eclipse.mosaic.fed.application.config;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -58,8 +57,8 @@ public class CApplicationAmbassadorTest {
         assertNotNull(applicationAmbassadorConfiguration);  // assert that configuration is created
         assertEquals(40 * TIME.SECOND, applicationAmbassadorConfiguration.messageCacheTime);
         assertTrue(applicationAmbassadorConfiguration.encodePayloads);
-        assertNull(applicationAmbassadorConfiguration.navigationConfiguration);
-
+        assertNotNull(applicationAmbassadorConfiguration.navigationConfiguration);
+        assertEquals("database", applicationAmbassadorConfiguration.navigationConfiguration.type);
     }
 
     /**
