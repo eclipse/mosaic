@@ -16,8 +16,8 @@
 package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.math.SpeedUtils;
 import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
-import org.eclipse.mosaic.rti.UNITS;
 
 import com.google.common.collect.Iterables;
 import com.graphhopper.GHResponse;
@@ -131,7 +131,7 @@ public class PtRouting {
         );
         // ghRequest.setBlockedRouteTypes(request.getRoutingParameters().excludedPtModes);//FIXME generalize this
         ghRequest.setEarliestDepartureTime(departureTime);
-        ghRequest.setWalkSpeedKmH(request.getRoutingParameters().getWalkingSpeedMps() / UNITS.KMH);
+        ghRequest.setWalkSpeedKmH(SpeedUtils.ms2kmh(request.getRoutingParameters().getWalkingSpeedMps()));
 
         final Future<GHResponse> responseFuture = routingExecution.submit(() -> ptRouter.route(ghRequest));
         final GHResponse route;
