@@ -27,17 +27,17 @@ public final class TIME {
     }
 
     /**
-     * One nanosecond in simulation time.
+     * One nano-second in simulation time.
      */
     public static final long NANO_SECOND = 1;
 
     /**
-     * One microsecond in simulation time.
+     * One micro-second in simulation time.
      */
     public static final long MICRO_SECOND = 1000 * NANO_SECOND;
 
     /**
-     * One millisecond in simulation time .
+     * One milli-second in simulation time .
      */
     public static final long MILLI_SECOND = 1000 * MICRO_SECOND;
 
@@ -78,6 +78,7 @@ public final class TIME {
         sb.append(" s");
 
         return sb.toString();
+
     }
 
 }

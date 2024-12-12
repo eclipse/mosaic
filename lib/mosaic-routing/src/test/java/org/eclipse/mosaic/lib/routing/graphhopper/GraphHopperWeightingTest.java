@@ -21,7 +21,6 @@ import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.junit.TestGraphRule;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.OptionalTurnCostProvider;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
-import org.eclipse.mosaic.rti.UNITS;
 
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.util.EdgeExplorer;
@@ -49,7 +48,7 @@ public class GraphHopperWeightingTest {
         double weight = w.calcEdgeWeight(it, false);
         double turnWeight = w.calcTurnWeight(1, 0, 0);
 
-        assertEquals(distance / enc.speed().getMaxStorableDecimal() / UNITS.KMH, weight, 0.1d);
+        assertEquals(distance / enc.speed().getMaxStorableDecimal() * 3.6, weight, 0.1d);
         assertEquals(0, turnWeight, 0.1d);
     }
 
@@ -111,7 +110,7 @@ public class GraphHopperWeightingTest {
         double weight = w.calcEdgeWeight(it, false);
         double turnWeight = w.calcTurnWeight(1, 0, 0);
 
-        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal() / UNITS.KMH, weight, 0.1d);
+        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal() * 3.6, weight, 0.1d);
         assertEquals(10, turnWeight, 0.1d);
     }
 
@@ -153,7 +152,7 @@ public class GraphHopperWeightingTest {
         double weight = w.calcEdgeWeight(it, false);
         double turnWeight = w.calcTurnWeight(1, 0, 0);
 
-        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal() / UNITS.KMH, weight, 0.1d);
+        assertEquals(distance / enc.speed().getMaxOrMaxStorableDecimal() * 3.6, weight, 0.1d);
         assertEquals(Double.POSITIVE_INFINITY, turnWeight, 0.1d);
     }
 

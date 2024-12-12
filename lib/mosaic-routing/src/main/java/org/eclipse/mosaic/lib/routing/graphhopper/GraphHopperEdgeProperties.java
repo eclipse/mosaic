@@ -22,7 +22,6 @@ import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
-import org.eclipse.mosaic.rti.UNITS;
 
 import com.google.common.collect.Iterables;
 import com.graphhopper.util.EdgeIteratorState;
@@ -60,8 +59,8 @@ public class GraphHopperEdgeProperties implements EdgeProperties {
     public double getSpeed() {
         Validate.notNull(currentEdgeIterator, "Edge iterator is null");
         return reverseRequests
-                ? currentEdgeIterator.getReverse(encoding.speed()) * UNITS.KMH
-                : currentEdgeIterator.get(encoding.speed())  * UNITS.KMH;
+                ? currentEdgeIterator.getReverse(encoding.speed()) / 3.6
+                : currentEdgeIterator.get(encoding.speed()) / 3.6;
     }
 
     @Override

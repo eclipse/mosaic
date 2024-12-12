@@ -19,7 +19,6 @@ import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.GraphhopperToDatabaseMapper;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.VehicleEncoding;
 import org.eclipse.mosaic.lib.routing.graphhopper.util.WayTypeEncoder;
-import org.eclipse.mosaic.rti.UNITS;
 
 import com.graphhopper.routing.weighting.AbstractWeighting;
 import com.graphhopper.routing.weighting.TurnCostProvider;
@@ -41,7 +40,7 @@ public class GraphHopperWeighting extends AbstractWeighting {
     public GraphHopperWeighting(VehicleEncoding vehicleEncoding, WayTypeEncoder wayTypeEncoder, TurnCostProvider turnCostProvider, GraphhopperToDatabaseMapper graphMapper) {
         super(vehicleEncoding.access(), vehicleEncoding.speed(), turnCostProvider);
         this.edgePropertiesState = new GraphHopperEdgeProperties(vehicleEncoding, wayTypeEncoder, graphMapper);
-        this.maxSpeed = speedEnc.getMaxOrMaxStorableDecimal() * UNITS.KILOMETER_PER_HOUR; // getMaxOrMaxStorableDecimal returns the speed in km/h
+        this.maxSpeed = speedEnc.getMaxOrMaxStorableDecimal() / 3.6; // getMaxOrMaxStorableDecimal returns the speed in km/h
     }
 
     public GraphHopperWeighting setRoutingCostFunction(RoutingCostFunction routingCostFunction) {
