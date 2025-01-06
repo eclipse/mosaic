@@ -53,11 +53,11 @@ public class LaneAreaDetector {
     }
 
     @SuppressWarnings("unused")
-    public int getAmountOfVehiclesOnSegment() {
+    public int getNumberOfVehicles() {
         return lastLaneAreaInfo == null ? 0 : Math.max(0, lastLaneAreaInfo.getVehicleCount());
     }
 
-    public int getAmountOfHaltingVehiclesOnSegment() {
+    public int getNumberOfHaltingVehicles() {
         return lastLaneAreaInfo == null ? 0 : Math.max(0, lastLaneAreaInfo.getHaltingVehicles());
     }
     
