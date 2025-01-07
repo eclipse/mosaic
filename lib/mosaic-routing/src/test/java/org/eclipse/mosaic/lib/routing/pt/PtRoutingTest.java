@@ -83,7 +83,7 @@ public class PtRoutingTest {
         ));
 
         // ASSERT
-        MultiModalRoute route = response.getBestRoute();
+        MultiModalRoute route = response.bestRoute();
         assertEquals(3, route.getLegs().size());
         assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
         assertEquals(MultiModalLeg.Type.PUBLIC_TRANSPORT, route.getLegs().get(1).getLegType());
@@ -102,7 +102,7 @@ public class PtRoutingTest {
         ));
 
         // ASSERT
-        MultiModalRoute route = response.getBestRoute();
+        MultiModalRoute route = response.bestRoute();
         assertEquals(1, route.getLegs().size());
         assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
     }

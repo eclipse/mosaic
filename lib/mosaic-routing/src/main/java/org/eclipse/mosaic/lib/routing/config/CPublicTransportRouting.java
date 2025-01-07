@@ -26,11 +26,13 @@ public class CPublicTransportRouting implements Serializable {
 
     /**
      * The path to the OSM file which is used to calculate walking between PT legs.
+     * The provided path is expected to be relative to the application directory of the scenario.
      */
     public String osmFile = "map.osm";
 
     /**
      * The path to the GTFS file (ZIP archive) which contains the whole PT schedule.
+     * The provided path is expected to be relative to the application directory of the scenario.
      */
     public String gtfsFile = "gtfs.zip";
 

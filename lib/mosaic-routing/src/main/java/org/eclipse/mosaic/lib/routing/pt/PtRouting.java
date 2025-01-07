@@ -56,6 +56,11 @@ import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Implementation of Public Transport Routing based on GraphHopper GTFS.
+ * Uses a GTFS file for public transport schedule and an OSM file for walking paths to get access to public transport stations.
+ *
+ */
 public class PtRouting {
 
     private static final Logger LOG = LoggerFactory.getLogger(PtRouting.class);
@@ -70,7 +75,7 @@ public class PtRouting {
 
     /**
      * Initializes the pt routing if it is enabled in the provided {@link CPublicTransportRouting}.
-     * All paths defined in the provided config are expcted to be relative to the provided configuration
+     * All paths defined in the provided config are expected to be relative to the provided configuration
      * location.
      */
     public void initialize(CPublicTransportRouting routingConfiguration, File configurationLocation) {
@@ -84,8 +89,8 @@ public class PtRouting {
         final Path baseDirectory = configurationLocation.toPath();
 
         GraphHopperConfig ghConfig = new GraphHopperConfig()
-                .putObject("import.osm.ignored_highways", "motorway,trunk,primary")
-                .putObject("graph.location", baseDirectory.resolve("ptgraph").toAbsolutePath().toString())
+                .putObject("import.osm.ignored_highways", "motorway,trunk,primary") // don't use those roads for walking paths
+                .putObject("graph.location", baseDirectory.resolve("ptgraph").toAbsolutePath().toString()) //
                 .putObject("datareader.file", baseDirectory.resolve(routingConfiguration.osmFile).toAbsolutePath().toString())
                 .putObject("gtfs.file", baseDirectory.resolve(routingConfiguration.gtfsFile).toAbsolutePath().toString())
                 .setProfiles(Collections.singletonList(new Profile("foot").setVehicle("foot")));
@@ -96,9 +101,7 @@ public class PtRouting {
         graphHopperGtfs.init(ghConfig);
         graphHopperGtfs.importOrLoad();
         sw.stop();
-        LOG.debug("Took {} ms to load public transport router.", sw.getMillis());
 
-        LOG.info("setting ptRouter");
         ptRouter = new PtRouterImpl.Factory(ghConfig,
                 new TranslationMap().doImport(),
                 graphHopperGtfs.getBaseGraph(),
@@ -106,6 +109,8 @@ public class PtRouting {
                 graphHopperGtfs.getLocationIndex(),
                 graphHopperGtfs.getGtfsStorage()
         ).createWithoutRealtimeFeed();
+
+        LOG.info("Initialized Public Transport Router. Took {} ms.", sw.getMillis());
     }
 
     /**
@@ -116,18 +121,18 @@ public class PtRouting {
         if (ptRouter == null) {
             throw new IllegalStateException("PT Routing is not available. Must be enabled in application_config.json.");
         }
-        Validate.notNull(request.getStartingGeoPoint(), "Starting point must not be null.");
-        Validate.notNull(request.getTargetGeoPoint(), "Target point must not be null.");
+        Validate.notNull(request.getOrigin(), "Starting point must not be null.");
+        Validate.notNull(request.getDestination(), "Target point must not be null.");
         Validate.isTrue(request.getRequestTime() >= 0, "Invalid request time.");
         Validate.isTrue(request.getRoutingParameters().getWalkingSpeedMps() > 0, "Walking speed must be greater than 0.");
 
         Instant departureTime = toScheduleTime(request.getRequestTime());
 
         final Request ghRequest = new Request(
-                request.getStartingGeoPoint().getLatitude(),
-                request.getStartingGeoPoint().getLongitude(),
-                request.getTargetGeoPoint().getLatitude(),
-                request.getTargetGeoPoint().getLongitude()
+                request.getOrigin().getLatitude(),
+                request.getOrigin().getLongitude(),
+                request.getDestination().getLatitude(),
+                request.getDestination().getLongitude()
         );
         // ghRequest.setBlockedRouteTypes(request.getRoutingParameters().excludedPtModes);//FIXME generalize this
         ghRequest.setEarliestDepartureTime(departureTime);
@@ -185,10 +190,16 @@ public class PtRouting {
         return legs;
     }
 
+    /**
+     * Returns a {@link Instant} time object depicting a real timestamp used for requesting the PT schedule.
+     */
     private Instant toScheduleTime(long simTime) {
         return scheduleDateTime.plusNanos(simTime).atZone(timeZone).toInstant();
     }
 
+    /**
+     * Converts the provided {@link Date} object depicting a real timestamp back to the simulation time.
+     */
     private Long fromScheduleTime(@Nullable Date date) {
         if (date == null) {
             return null;

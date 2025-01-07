@@ -28,9 +28,9 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * Interface providing a routing API for applications.
+ * Interface providing a vehicle routing API for applications.
  */
-public interface Routing {
+public interface VehicleRouting {
 
     /**
      * Initializes the connection to the belonging database.

@@ -20,8 +20,8 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 public class PtRoutingRequest {
 
     private final long requestTime;
-    private final GeoPoint startingGeoPoint;
-    private final GeoPoint targetGeoPoint;
+    private final GeoPoint origin;
+    private final GeoPoint destination;
 
     private final PtRoutingParameters routingParameters;
 
@@ -29,25 +29,25 @@ public class PtRoutingRequest {
      * Constructs a request for calculating a public transport route.
      *
      * @param requestTime The earliest time to start the journey.
-     * @param from The geographic location to start the journey.
-     * @param to The geographic location to end the journey.
+     * @param origin The geographic location to start the journey.
+     * @param destination The geographic location to end the journey.
      */
-    public PtRoutingRequest(long requestTime, GeoPoint from, GeoPoint to) {
-        this(requestTime, from, to, new PtRoutingParameters());
+    public PtRoutingRequest(long requestTime, GeoPoint origin, GeoPoint destination) {
+        this(requestTime, origin, destination, new PtRoutingParameters());
     }
 
     /**
      * Constructs a request for calculating a public transport route.
      *
      * @param requestTime The earliest time to start the journey.
-     * @param from The geographic location to start the journey.
-     * @param to The geographic location to end the journey.
+     * @param origin The geographic location to start the journey.
+     * @param destination The geographic location to end the journey.
      * @param additionalParameters Additional parameters, such as walking speed.
      */
-    public PtRoutingRequest(long requestTime, GeoPoint from, GeoPoint to, PtRoutingParameters additionalParameters) {
+    public PtRoutingRequest(long requestTime, GeoPoint origin, GeoPoint destination, PtRoutingParameters additionalParameters) {
         this.requestTime = requestTime;
-        this.startingGeoPoint = from;
-        this.targetGeoPoint = to;
+        this.origin = origin;
+        this.destination = destination;
         this.routingParameters = additionalParameters;
     }
 
@@ -55,12 +55,12 @@ public class PtRoutingRequest {
         return requestTime;
     }
 
-    public GeoPoint getStartingGeoPoint() {
-        return startingGeoPoint;
+    public GeoPoint getOrigin() {
+        return origin;
     }
 
-    public GeoPoint getTargetGeoPoint() {
-        return targetGeoPoint;
+    public GeoPoint getDestination() {
+        return destination;
     }
 
     public PtRoutingParameters getRoutingParameters() {

@@ -35,7 +35,7 @@ import java.util.Map;
  * By excluding javacsv jar and providing this class with the same full qualified name and same API as a supplement
  * we are able to use opencsv instead without touching the code of graphhopper-reader-gtfs.
  * Therefore, even though the IDE thinks this class is unused, it is actually used by graphhopper-reader-gtfs.
- */
+ */ //TODO: remove this once the PR https://github.com/graphhopper/graphhopper/pull/3084 got accepted and we upgrade graphhopper
 public class CsvReader {
 
     private final CSVReader openCsvReader;

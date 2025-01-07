@@ -33,7 +33,7 @@ public class MultiModalRoute {
      * Returns the individual legs of this multi-modal route.
      */
     public List<MultiModalLeg> getLegs() {
-        return this.legs;
+        return legs;
     }
 
 }

@@ -43,10 +43,10 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.IllegalRouteException;
-import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
 import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
 import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
@@ -79,7 +79,7 @@ public class CentralNavigationComponentTest {
 
     private CentralNavigationComponent cnc;
 
-    private Routing routingMock;
+    private VehicleRouting routingMock;
     private RtiAmbassador rtiAmbassadorMock;
 
     private static VehicleRoute createExampleRoute0() {

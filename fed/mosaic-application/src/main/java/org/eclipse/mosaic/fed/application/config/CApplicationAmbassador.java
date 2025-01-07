@@ -74,13 +74,13 @@ public class CApplicationAmbassador implements Serializable {
 
     /**
      * Extends the {@link CVehicleRouting} configuration with a type parameter
-     * allowing to define the actual {@link org.eclipse.mosaic.lib.routing.Routing}
+     * allowing to define the actual {@link org.eclipse.mosaic.lib.routing.VehicleRouting}
      * implementation to use.
      */
     public static class CRoutingByType extends CVehicleRouting implements Serializable {
 
         /**
-         * Defines the {@link org.eclipse.mosaic.lib.routing.Routing} implementation
+         * Defines the {@link org.eclipse.mosaic.lib.routing.VehicleRouting} implementation
          * to use for navigation. Possible values are {@code "database" or "no-routing"},
          * or any full-qualified java class name.
          */

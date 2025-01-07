@@ -19,18 +19,4 @@ package org.eclipse.mosaic.lib.routing.pt;
  * The result of the routing request. Contains the multi-modal route which
  * matches the routing request at best.
  */
-public class PtRoutingResponse {
-
-    private final MultiModalRoute bestRoute;
-
-    public PtRoutingResponse(MultiModalRoute bestRoute) {
-        this.bestRoute = bestRoute;
-    }
-
-    /**
-     * Returns the best multi-modal route of the route calculation.
-     */
-    public final MultiModalRoute getBestRoute() {
-        return bestRoute;
-    }
-}
+public record PtRoutingResponse(MultiModalRoute bestRoute) { }
