@@ -122,6 +122,9 @@ public class MultiModalLeg {
         return legType;
     }
 
+    /**
+     * TODO: we should redesign this class somehow that we don't have to return Object here.
+     */
     public Object getLeg() {
         return switch (legType) {
             case VEHICLE_PRIVATE -> vehicleLeg;
