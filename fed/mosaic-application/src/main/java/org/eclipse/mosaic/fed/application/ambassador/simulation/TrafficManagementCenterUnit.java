@@ -178,17 +178,32 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
         return false;
     }
 
-    private static class ChangeLaneStateImpl implements ChangeLaneState {
+    private static abstract class ChangeLaneStateBaseImpl {
 
-        private final AbstractSimulationUnit unit;
+        final AbstractSimulationUnit unit;
+
+        private ChangeLaneStateBaseImpl(AbstractSimulationUnit unit) {
+            this.unit = unit;
+        }
+
+        void sendInteractionQuietly(Interaction interaction) {
+            try {
+                unit.sendInteractionToRti(interaction);
+            } catch (RuntimeException e) {
+                unit.getOsLog().error("Could not send interaction", e);
+            }
+        }
+    }
+
+    private static class ChangeLaneStateImpl extends ChangeLaneStateBaseImpl implements ChangeLaneState {
 
         private final String edgeId;
         private final int laneIndex;
 
         private ChangeLaneStateImpl(String edgeId, int laneIndex, AbstractSimulationUnit unit) {
+            super(unit);
             this.edgeId = edgeId;
             this.laneIndex = laneIndex;
-            this.unit = unit;
         }
 
         @Override
@@ -218,41 +233,21 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
         }
 
         @Override
-        public ChangeLaneState closeForAll() {
-            return closeOnlyForVehicleClasses(VehicleClass.values());
-        }
-
-        @Override
-        public ChangeLaneState openForAll() {
-            return openOnlyForVehicleClasses(VehicleClass.values());
-        }
-
-        @Override
         public ChangeLaneState setMaxSpeed(double maxSpeedMs) {
             sendInteractionQuietly(new LanePropertyChange(unit.getSimulationTime(), edgeId, laneIndex, null, null, maxSpeedMs));
             return this;
         }
-
-        private void sendInteractionQuietly(Interaction interaction) {
-            try {
-                unit.sendInteractionToRti(interaction);
-            } catch (RuntimeException e) {
-                unit.getOsLog().error("Could not send interaction", e);
-            }
-        }
     }
 
-    private static class ChangeVariableMessageSignStateImpl implements ChangeLaneState {
-
-        private final AbstractSimulationUnit unit;
+    private static class ChangeVariableMessageSignStateImpl extends ChangeLaneStateBaseImpl implements ChangeLaneState {
 
         private final String signId;
         private final int laneIndex;
 
         private ChangeVariableMessageSignStateImpl(String signId, int laneIndex, AbstractSimulationUnit unit) {
+            super(unit);
             this.signId = signId;
             this.laneIndex = laneIndex;
-            this.unit = unit;
         }
 
         @Override
@@ -280,16 +275,6 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
         }
 
         @Override
-        public ChangeLaneState closeForAll() {
-            return closeOnlyForVehicleClasses(VehicleClass.values());
-        }
-
-        @Override
-        public ChangeLaneState openForAll() {
-            return openOnlyForVehicleClasses(VehicleClass.values());
-        }
-
-        @Override
         public ChangeLaneState setMaxSpeed(double maxSpeedMs) {
             if (laneIndex < 0) {
                 sendInteractionQuietly(
@@ -312,12 +297,5 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
             return this;
         }
 
-        private void sendInteractionQuietly(Interaction interaction) {
-            try {
-                unit.sendInteractionToRti(interaction);
-            } catch (RuntimeException e) {
-                unit.getOsLog().error("Could not send interaction", e);
-            }
-        }
     }
 }

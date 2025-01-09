@@ -90,13 +90,17 @@ public interface TrafficManagementCenterOperatingSystem extends ServerOperatingS
          * Closes the lane for all vehicle classes.
          */
         @SuppressWarnings("UnusedReturnValue")
-        ChangeLaneState closeForAll();
+        default ChangeLaneState closeForAll(){
+            return closeOnlyForVehicleClasses(VehicleClass.values());
+        }
 
         /**
          * Opens the lane for all vehicle classes.
          */
         @SuppressWarnings("UnusedReturnValue")
-        ChangeLaneState openForAll();
+        default ChangeLaneState openForAll() {
+            return openOnlyForVehicleClasses(VehicleClass.values());
+        }
 
         /**
          * Sets the maximum allowed speed of the lane to the given value.
