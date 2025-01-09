@@ -66,6 +66,14 @@ public interface TrafficManagementCenterOperatingSystem extends ServerOperatingS
      */
     ChangeLaneState changeLaneState(String edge, int laneIndex);
 
+    /**
+     * Provides a facility to change the lane state of a Variable Message Sign (VMS).
+     *
+     * @param signId    The ID of the sign.
+     * @param laneIndex The index of the lane (0 = right-most lane). For speed assignments a negative lane index is allowed, addressing all lanes.
+     */
+    ChangeLaneState changeVariableMessageSignState(String signId, int laneIndex);
+
     interface ChangeLaneState {
 
         /**
