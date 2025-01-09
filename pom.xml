@@ -96,11 +96,11 @@
         <version.findbugs-annotations>1.3.9-1</version.findbugs-annotations><!-- 1.3.9-1 is approved in CQ15081 -->
         <version.graphhopper>8.0</version.graphhopper><!-- 8.0 approved in #11407 and #11408 -->
         <version.gson>2.10.1</version.gson><!-- 2.10.1 is approved in #6159 -->
+        <version.gtfs-bindings>0.0.5</version.gtfs-bindings><!-- 0.0.5 is approved in #1758 -->
         <version.guava>32.1.1-jre</version.guava><!-- 28.2-jre is approved in #9229 -->
         <version.hppc>0.8.1</version.hppc><!-- 0.8.1 is approved in CQ22339 -->
         <version.jackson>2.16.1</version.jackson><!-- 2.16.1 is approved in #11602, #11605 and #11606  -->
         <version.java-websocket>1.3.9</version.java-websocket><!-- 1.3.9 is approved in CQ19134 -->
-        <version.janino>2.7.5</version.janino><!-- 2.7.5 is approved in CQ10307 -->
         <version.johnzon-core>1.1.13</version.johnzon-core><!-- 1.1.13 is approved in CQ22342 -->
         <version.jsch>0.1.51</version.jsch><!-- 0.1.51 is approved in CQ8378 -->
         <version.json-schema-validator>1.3.1</version.json-schema-validator><!-- 1.3.1 is approved in #13037 -->
@@ -112,6 +112,8 @@
         <version.jsch>0.2.16</version.jsch><!-- 0.2.16 is approved in #8468 -->
         <version.logback>1.5.0</version.logback><!-- 1.5.0 is approved in #13282 and 13283 -->
         <version.mockito>5.6.0</version.mockito><!-- approval not required, we do not ship this library -->
+        <version.mapdb>1.0.8</version.mapdb><!-- 1.0.8 approved in CQ8246 -->
+        <version.opencsv>5.9</version.opencsv><!-- 5.9 is approved in #17586 -->
         <version.protobuf>3.23.2</version.protobuf><!-- 3.8.0 is approved in #8634 -->
         <version.slf4j>2.0.12</version.slf4j><!-- 2.0.12 is approved #13344 -->
         <version.sqlite-jdbc>3.42.0.0</version.sqlite-jdbc><!-- 3.42.0.0 is approved in #9089 -->
@@ -335,10 +337,6 @@
                         <artifactId>osm-legal-default-speeds-jvm</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.codehaus.janino</groupId>
-                        <artifactId>janino</artifactId>
-                    </exclusion>
-                    <exclusion>
                         <groupId>org.apache.xmlgraphics</groupId>
                         <artifactId>xmlgraphics-commons</artifactId>
                     </exclusion>
@@ -351,6 +349,50 @@
                         <artifactId>jackson-dataformat-xml</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: Public Transport Routing -->
+                <groupId>com.graphhopper</groupId>
+                <artifactId>graphhopper-reader-gtfs</artifactId>
+                <version>${version.graphhopper}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>net.sourceforge.javacsv</groupId>
+                        <artifactId>javacsv</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: CSV GTFS reading in graphhopper-reader-gtfs -->
+                <groupId>com.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${version.opencsv}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>commons-beanutils</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-collections4</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: GTFS storage in graphhopper-reader-gtfs -->
+                <groupId>org.mapdb</groupId>
+                <artifactId>mapdb</artifactId>
+                <version>${version.mapdb}</version>
+            </dependency>
+            <dependency>
+                <!-- PURPOSE: GTFS loading in graphhopper-reader-gtfs -->
+                <groupId>io.mobilitydata.transit</groupId>
+                <artifactId>gtfs-realtime-bindings</artifactId>
+                <version>${version.gtfs-bindings}</version>
             </dependency>
             <dependency>
                 <!-- PURPOSE: High performance data types (sets, lists, etc), required by GraphHopper -->

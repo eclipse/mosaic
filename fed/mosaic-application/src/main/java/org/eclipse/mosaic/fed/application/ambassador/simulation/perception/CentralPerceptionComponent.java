@@ -24,7 +24,7 @@ import org.eclipse.mosaic.lib.database.Database;
 import org.eclipse.mosaic.lib.geo.CartesianRectangle;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
-import org.eclipse.mosaic.lib.routing.Routing;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
 import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -83,7 +83,7 @@ public class CentralPerceptionComponent {
      */
     public void initialize() throws InternalFederateException {
         try {
-            Routing routing = SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting();
+            VehicleRouting routing = SimulationKernel.SimulationKernel.getCentralNavigationComponent().getRouting();
             // evaluate bounding box for perception
             scenarioBounds = configuration.perceptionArea == null
                     ? routing.getScenarioBounds() : configuration.perceptionArea.toCartesian();
