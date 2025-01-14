@@ -66,3 +66,4 @@ buildNumber.properties
 credentials.cached
 *.lcs
 .tiles
+/logs/
