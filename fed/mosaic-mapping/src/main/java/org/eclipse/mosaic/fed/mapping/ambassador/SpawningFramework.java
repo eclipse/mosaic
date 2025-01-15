@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.mapping.ambassador;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.AgentSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ChargingStationSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.RoadSideUnitSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ServerSpawner;
@@ -28,6 +29,7 @@ import org.eclipse.mosaic.fed.mapping.ambassador.weighting.WeightedSelector;
 import org.eclipse.mosaic.fed.mapping.config.CMappingAmbassador;
 import org.eclipse.mosaic.fed.mapping.config.CMappingConfiguration;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
+import org.eclipse.mosaic.fed.mapping.config.units.CAgent;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.COriginDestinationMatrixMapper;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
@@ -68,6 +70,7 @@ public class SpawningFramework {
     private final Map<String, List<CPrototype>> typeDistributions = new HashMap<>();
     private final Map<String, TrafficLightSpawner> tls = new HashMap<>();
     private final List<VehicleFlowGenerator> vehicleFlowGenerators = new ArrayList<>();
+    private final List<AgentSpawner> agents = new ArrayList<>();
     private final List<RoadSideUnitSpawner> rsus = new ArrayList<>();
     private final List<TrafficManagementCenterSpawner> tmcs = new ArrayList<>();
     private final List<ServerSpawner> servers = new ArrayList<>();
@@ -131,6 +134,17 @@ public class SpawningFramework {
                 }
             }
         }
+
+        if (mappingConfiguration.agents != null) {
+            for (CAgent agentConfiguration : mappingConfiguration.agents) {
+                if (agentConfiguration != null) {
+                    AgentSpawner agentSpawner = new AgentSpawner(agentConfiguration);
+                    agents.add(agentSpawner);
+                    spawners.add(agentSpawner);
+                }
+            }
+        }
+
         // RSUs
         if (mappingConfiguration.rsus != null) {
             for (CRoadSideUnit roadSideUnitConfiguration : mappingConfiguration.rsus) {
@@ -395,6 +409,14 @@ public class SpawningFramework {
 
         for (VehicleFlowGenerator spawner : vehicleFlowGenerators) {
             spawner.fillInPrototype(this);
+
+            if (config != null) {
+                spawner.configure(config);
+            }
+        }
+
+        for (AgentSpawner spawner : agents) {
+            spawner.fillInPrototype(getPrototypeByName(spawner.getPrototypeName()));
 
             if (config != null) {
                 spawner.configure(config);

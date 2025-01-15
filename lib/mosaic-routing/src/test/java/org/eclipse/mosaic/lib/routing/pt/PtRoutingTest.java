@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.lib.routing.pt;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
@@ -83,11 +84,11 @@ public class PtRoutingTest {
         ));
 
         // ASSERT
-        MultiModalRoute route = response.bestRoute();
+        PtRoute route = response.bestRoute();
         assertEquals(3, route.getLegs().size());
-        assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
-        assertEquals(MultiModalLeg.Type.PUBLIC_TRANSPORT, route.getLegs().get(1).getLegType());
-        assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(2).getLegType());
+        assertTrue(route.getLegs().get(0) instanceof PtRoute.WalkLeg);
+        assertTrue(route.getLegs().get(1) instanceof PtRoute.PtLeg);
+        assertTrue(route.getLegs().get(2) instanceof PtRoute.WalkLeg);
     }
 
     @Test
@@ -102,9 +103,9 @@ public class PtRoutingTest {
         ));
 
         // ASSERT
-        MultiModalRoute route = response.bestRoute();
+        PtRoute route = response.bestRoute();
         assertEquals(1, route.getLegs().size());
-        assertEquals(MultiModalLeg.Type.WALKING, route.getLegs().get(0).getLegType());
+        assertTrue(route.getLegs().get(0) instanceof PtRoute.WalkLeg);
     }
 
 }

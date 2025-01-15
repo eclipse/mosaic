@@ -26,4 +26,5 @@ public class CIpResolver {
     public String csNet      = "13.0.0.0";
     public String serverNet  = "14.0.0.0";
     public String tmcNet     = "15.0.0.0";
+    public String agentNet   = "20.0.0.0";
 }

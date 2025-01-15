@@ -17,21 +17,32 @@ package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.math.SpeedUtils;
 
+import javax.annotation.Nullable;
+
+/**
+ * Additional parameters used when calculating public transport routes.
+ */
 public class PtRoutingParameters {
 
-    private double walkingSpeedMps = SpeedUtils.kmh2ms(5);
+    private Double walkingSpeedMps = null;
 
+    /**
+     * Sets the walking speed in km/h.
+     */
     public PtRoutingParameters walkingSpeedKmh(double kmh) {
         walkingSpeedMps = SpeedUtils.kmh2ms(kmh);
         return this;
     }
 
+    /**
+     * Sets the walking speed in m/s
+     */
     public PtRoutingParameters walkingSpeedMps(double meterPerSecond) {
         walkingSpeedMps = meterPerSecond;
         return this;
     }
 
-    public double getWalkingSpeedMps() {
+    public @Nullable Double getWalkingSpeedMps() {
         return walkingSpeedMps;
     }
 }

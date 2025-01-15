@@ -18,6 +18,7 @@ package org.eclipse.mosaic.lib.objects;
 public enum UnitType {
 
     VEHICLE("veh"),
+    AGENT("agent"),
     ROAD_SIDE_UNIT("rsu"),
     TRAFFIC_MANAGEMENT_CENTER("tmc"),
     TRAFFIC_LIGHT("tl"),

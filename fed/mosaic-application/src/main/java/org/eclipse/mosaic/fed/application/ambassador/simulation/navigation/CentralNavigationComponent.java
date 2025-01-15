@@ -247,20 +247,32 @@ public class CentralNavigationComponent {
                 return requestStaticRouteChange(vehicleData, knownRoute, currentRoute, time);
             } else {
                 // generate a new route
-                VehicleRoute route = vehicleRouting.createRouteForRTI(rawRoute);
+                VehicleRoute route = createAndPropagateRoute(rawRoute, time);
 
-                // propagate the new route
-                try {
-                    log.debug("Propagate unknown route {}.", route.getId());
-                    propagateRoute(route, time);
-                } catch (InternalFederateException e) {
-                    log.error("[CNC.switchRoute]: unable to send propagate a new route.");
+                if (route == null) {
+                    log.error("[CNC.switchRoute]: unable to propagate new route.");
                     return currentRoute;
                 }
-
-                // change route for sumo
                 return requestStaticRouteChange(vehicleData, route, currentRoute, time);
             }
+        }
+    }
+
+    /**
+     * Creates a {@link VehicleRoute} from a {@link CandidateRoute} and propagates it
+     * to all ambassadors by triggering a {@link VehicleRouteRegistration}.
+     *
+     * @param rawRoute The raw route object.
+     * @param time The current simulation time. Used when sending the {@link VehicleRouteRegistration}.
+     */
+    public VehicleRoute createAndPropagateRoute(CandidateRoute rawRoute, long time) throws IllegalRouteException {
+        VehicleRoute route = vehicleRouting.createRouteForRTI(rawRoute);
+        try {
+            log.debug("Propagate unknown route {}.", route.getId());
+            propagateRoute(route, time);
+            return route;
+        } catch (InternalFederateException e) {
+            return null;
         }
     }
 
