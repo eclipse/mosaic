@@ -57,6 +57,8 @@ public final class ChargingStationData extends UnitData {
     }
 
 
+
+
     public List<ChargingSpot> getChargingSpots() {
         return Lists.newArrayList(chargingSpots.values());
     }

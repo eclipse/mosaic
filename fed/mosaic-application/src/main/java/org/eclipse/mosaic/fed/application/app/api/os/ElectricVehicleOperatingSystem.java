@@ -16,8 +16,10 @@
 package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.lib.geo.GeoCircle;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -48,9 +50,9 @@ public interface ElectricVehicleOperatingSystem extends VehicleOperatingSystem {
     void sendChargingStopRequest();
 
     /**
-     * Sends a request to locate all charging stations in the provided area.
+     * Locate all charging stations in the provided area.
      *
-     * @param searchArea The area where the charging stations are search
+     * @param searchArea The area where the charging stations are searched
      */
-    void sendChargingStationDiscoveryRequest(GeoCircle searchArea);
+    List<ChargingStationData> getChargingStationsByArea(GeoCircle searchArea);
 }

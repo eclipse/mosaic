@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.fed.application.ambassador;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers.ChargingStationIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.EnvironmentBasicSensorModule;
@@ -93,6 +94,8 @@ public enum SimulationKernel {
      * The central perception component, containing spatial representation of vehicles.
      */
     transient CentralPerceptionComponent centralPerceptionComponent;
+
+    transient ChargingStationIndex chargingStationIndex;
 
     /**
      * Map containing all the routes with the corresponding edge-id's.
@@ -259,6 +262,21 @@ public enum SimulationKernel {
         this.centralPerceptionComponent = centralPerceptionComponent;
     }
 
+    public void setChargingStationIndex(ChargingStationIndex chargingStationIndex) {
+        if (this.chargingStationIndex != null) {
+            throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_ChargingStationIndexAlreadySet.toString());
+        }
+
+        this.chargingStationIndex = chargingStationIndex;
+    }
+
+    public ChargingStationIndex getChargingStationIndex() {
+        if (this.chargingStationIndex == null) {
+            throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_ChargingStationIndexNotSet.toString());
+        }
+
+        return this.chargingStationIndex;
+    }
     public CentralPerceptionComponent getCentralPerceptionComponent() {
         if (centralPerceptionComponent == null) {
             throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_CentralPerceptionComponentNotSet.toString());

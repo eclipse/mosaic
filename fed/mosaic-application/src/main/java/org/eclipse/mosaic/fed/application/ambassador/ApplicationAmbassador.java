@@ -20,6 +20,8 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulati
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGroupUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers.ChargingStationIndex;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers.ChargingStationTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
@@ -34,7 +36,6 @@ import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.communication.V2xFullMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageAcknowledgement;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
-import org.eclipse.mosaic.interactions.electricity.ChargingStationDiscoveryResponse;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
 import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
@@ -55,6 +56,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.trafficsigns.VehicleSeenTrafficSignsUpdate;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -155,6 +157,12 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                     ambassadorConfig.perceptionConfiguration
             );
             SimulationKernel.SimulationKernel.setCentralPerceptionComponent(centralPerceptionComponent);
+        }
+
+        if (SimulationKernel.SimulationKernel.chargingStationIndex == null) {
+            // use same bucketsize as TrafficLightTree (see: CPercetion.java) (bucketsize := number of direct children per tree node)
+            ChargingStationIndex chargingStationIndex = new ChargingStationTree(20);
+            SimulationKernel.SimulationKernel.setChargingStationIndex(chargingStationIndex);
         }
 
         // add all application jar files
@@ -305,8 +313,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((LidarUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
                 this.process((VehicleBatteryUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationDiscoveryResponse.TYPE_ID)) {
-                this.process((ChargingStationDiscoveryResponse) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
                 this.process((VehicleRoutesInitialization) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleTypesInitialization.TYPE_ID)) {
@@ -338,20 +344,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         }
     }
 
-
-    private void process(final ChargingStationDiscoveryResponse response) {
-        final AbstractSimulationUnit simulationUnit = UnitSimulator.UnitSimulator.getUnitFromId(response.getVehicleId());
-        if (simulationUnit == null) {
-            return;
-        }
-        final Event event = new Event(
-                response.getTime(),
-                simulationUnit,
-                response,
-                EventNicenessPriorityRegister.CHARGING_STATIONS_DISCOVERY
-        );
-        addEvent(event);
-    }
     private void process(final VehicleTypesInitialization vehicleTypesInitialization) {
         SimulationKernel.SimulationKernel.getVehicleTypes().putAll(vehicleTypesInitialization.getTypes());
     }
@@ -380,6 +372,9 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void process(final ChargingStationRegistration chargingStationRegistration) {
         UnitSimulator.UnitSimulator.registerChargingStation(chargingStationRegistration);
+        String id = chargingStationRegistration.getMapping().getName();
+        GeoPoint position = chargingStationRegistration.getMapping().getPosition();
+        SimulationKernel.SimulationKernel.chargingStationIndex.addChargingStation(id, position);
     }
 
     private void process(final TrafficLightRegistration trafficLightRegistration) {
@@ -457,6 +452,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final AbstractSimulationUnit simulationUnit =
                 UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
 
+        SimulationKernel.SimulationKernel.chargingStationIndex.updateChargingStation(chargingStationUpdate.getUpdatedChargingStation());
+
         if (simulationUnit == null) {
             return;
         }
@@ -466,6 +463,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 chargingStationData,
                 EventNicenessPriorityRegister.UPDATE_CHARGING_STATION
         );
+
         addEvent(event);
     }
 
