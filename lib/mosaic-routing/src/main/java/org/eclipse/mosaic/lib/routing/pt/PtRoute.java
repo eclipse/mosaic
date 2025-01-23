@@ -16,30 +16,26 @@
 package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.traffic.PublicTransportStop;
+import org.eclipse.mosaic.lib.objects.pt.PtStop;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * A public transport route which consists of multiple legs, which either
- * use a public transport facility, or walking..
+ * use a public transport facility, or walking.
  */
 public class PtRoute {
 
     private final List<Leg> legs = new ArrayList<>();
-
-    public PtRoute(Leg... legs) {
-        this(Arrays.asList(legs));
-    }
 
     public PtRoute(List<Leg> legs) {
         this.legs.addAll(legs);
     }
 
     /**
-     * Returns the individual legs of this multi-modal route.
+     * Returns the individual legs of this public transport route, which can
+     * either be of type {@link PtLeg} or {@link WalkLeg}.
      */
     public List<Leg> getLegs() {
         return legs;
@@ -66,9 +62,9 @@ public class PtRoute {
 
     public static class PtLeg extends Leg {
 
-        private final List<PublicTransportStop> stops = new ArrayList<>();
+        private final List<PtStop> stops = new ArrayList<>();
 
-        public PtLeg(long departureTime, long arrivalTime, List<PublicTransportStop> stops) {
+        public PtLeg(long departureTime, long arrivalTime, List<PtStop> stops) {
             super(departureTime, arrivalTime);
             this.stops.addAll(stops);
         }
@@ -76,7 +72,7 @@ public class PtRoute {
         /**
          * Returns the list of stops along the public transport route.
          */
-        public List<PublicTransportStop> getStops() {
+        public List<PtStop> getStops() {
             return stops;
         }
 

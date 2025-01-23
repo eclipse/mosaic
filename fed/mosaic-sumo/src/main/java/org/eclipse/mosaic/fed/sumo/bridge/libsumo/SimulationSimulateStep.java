@@ -28,7 +28,7 @@ import org.eclipse.mosaic.fed.sumo.bridge.api.complex.VehicleSubscriptionResult;
 import org.eclipse.mosaic.fed.sumo.config.CSumo;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
-import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
+import org.eclipse.mosaic.lib.objects.pt.PtVehicleData;
 import org.eclipse.mosaic.lib.util.objects.Position;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -174,13 +174,13 @@ public class SimulationSimulateStep implements org.eclipse.mosaic.fed.sumo.bridg
         }
     }
 
-    private List<PublicTransportData.StoppingPlace> getNextStop(TraCINextStopDataVector2 stops) {
+    private List<PtVehicleData.StoppingPlace> getNextStop(TraCINextStopDataVector2 stops) {
         if (stops.isEmpty()) {
             return null;
         }
-        List<PublicTransportData.StoppingPlace> nextStops = new ArrayList<>();
+        List<PtVehicleData.StoppingPlace> nextStops = new ArrayList<>();
         for (TraCINextStopData stopData : stops) {
-            PublicTransportData.StoppingPlace stoppingPlace = new PublicTransportData.StoppingPlace.Builder()
+            PtVehicleData.StoppingPlace stoppingPlace = new PtVehicleData.StoppingPlace.Builder()
                     .stoppingPlaceId(stopData.getStoppingPlaceID())
                     .laneId(stopData.getLane())
                     .startPos(stopData.getStartPos()).endPos(stopData.getEndPos())

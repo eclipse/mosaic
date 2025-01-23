@@ -35,8 +35,8 @@ public interface AgentOperatingSystem
         extends OperatingSystem, CellCommunicative, Routable, PtRoutable {
 
     /**
-     * Changes the next leg of the agent to use a private vehicle. The {@link #getRoutingModule()} should be used
-     * to calculate {@link CandidateRoute}s for such vehicle trip.
+     * Changes the next leg of the agent to use a private vehicle. It will spawn a new vehicle and assigns this
+     * agent to it. The {@link #getRoutingModule()} should be used to calculate {@link CandidateRoute}s for such vehicle trip.
      */
     void usePrivateVehicle(String vehicleType, CandidateRoute route);
 

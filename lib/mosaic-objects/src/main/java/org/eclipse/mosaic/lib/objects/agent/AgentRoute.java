@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.lib.objects.agent;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.traffic.PublicTransportStop;
+import org.eclipse.mosaic.lib.objects.pt.PtStop;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 
 import com.google.common.collect.Lists;
@@ -100,18 +100,18 @@ public class AgentRoute implements Serializable {
         }
     }
 
-    public static class PublicTransportLeg extends Leg {
+    public static class PtLeg extends Leg {
 
         private static final long serialVersionUID = 1L;
 
-        private final List<PublicTransportStop> stops = new ArrayList<>();
+        private final List<PtStop> stops = new ArrayList<>();
 
-        public PublicTransportLeg(long departureTime, List<PublicTransportStop> stops) {
+        public PtLeg(long departureTime, List<PtStop> stops) {
             super(departureTime);
             this.stops.addAll(stops);
         }
 
-        public final List<PublicTransportStop> getStops() {
+        public final List<PtStop> getStops() {
             return stops;
         }
     }

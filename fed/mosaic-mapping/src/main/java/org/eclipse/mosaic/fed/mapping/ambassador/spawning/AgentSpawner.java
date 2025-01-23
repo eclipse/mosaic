@@ -15,12 +15,15 @@
 
 package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.fed.mapping.config.CMappingConfiguration;
 import org.eclipse.mosaic.fed.mapping.config.CPrototype;
 import org.eclipse.mosaic.fed.mapping.config.units.CAgent;
 import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.math.SpeedUtils;
 import org.eclipse.mosaic.lib.objects.UnitNameGenerator;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
@@ -38,11 +41,13 @@ public class AgentSpawner extends UnitSpawner implements Spawner {
 
     private static final Logger LOG = LoggerFactory.getLogger(AgentSpawner.class);
 
+    private static final double DEFAULT_WALKING_SPEED = SpeedUtils.kmh2ms(5);
+
     private final GeoPoint origin;
     private final GeoPoint destination;
 
     private long startingTime;
-    private double walkingSpeed;
+    private Double walkingSpeed;
 
     public AgentSpawner(CAgent agentConfiguration) {
         super(agentConfiguration.applications, agentConfiguration.name, agentConfiguration.group);
@@ -59,8 +64,10 @@ public class AgentSpawner extends UnitSpawner implements Spawner {
     }
 
     public void init(SpawningFramework spawningFramework) throws InternalFederateException {
-        String name = UnitNameGenerator.nextAgentName();
-        AgentRegistration interaction = new AgentRegistration(startingTime, name, group, origin, destination, getApplications(), walkingSpeed);
+        final String name = UnitNameGenerator.nextAgentName();
+        final AgentRegistration interaction = new AgentRegistration(
+                startingTime, name, group, origin, destination, getApplications(), defaultIfNull(walkingSpeed, DEFAULT_WALKING_SPEED)
+        );
         try {
             LOG.info("Creating Agent: {}", this);
             spawningFramework.getRti().triggerInteraction(interaction);
@@ -74,8 +81,8 @@ public class AgentSpawner extends UnitSpawner implements Spawner {
     public void fillInPrototype(CPrototype prototypeConfiguration) {
         super.fillInPrototype(prototypeConfiguration);
 
-        if (prototypeConfiguration != null && prototypeConfiguration.maxSpeed != null) {
-            walkingSpeed = prototypeConfiguration.maxSpeed;
+        if (prototypeConfiguration != null) {
+            walkingSpeed = defaultIfNull(walkingSpeed, prototypeConfiguration.maxSpeed);
         }
     }
 

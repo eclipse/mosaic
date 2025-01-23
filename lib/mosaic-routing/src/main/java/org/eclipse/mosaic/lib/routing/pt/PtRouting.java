@@ -17,7 +17,7 @@ package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.SpeedUtils;
-import org.eclipse.mosaic.lib.objects.traffic.PublicTransportStop;
+import org.eclipse.mosaic.lib.objects.pt.PtStop;
 import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
 
 import com.google.common.collect.Iterables;
@@ -123,10 +123,11 @@ public class PtRouting {
         }
         Validate.notNull(request.getOrigin(), "Starting point must not be null.");
         Validate.notNull(request.getDestination(), "Target point must not be null.");
+        Validate.notNull(request.getRoutingParameters().getWalkingSpeedMps(), "Walking speed must be defined.");
         Validate.isTrue(request.getRequestTime() >= 0, "Invalid request time.");
         Validate.isTrue(request.getRoutingParameters().getWalkingSpeedMps() > 0, "Walking speed must be greater than 0.");
 
-        Instant departureTime = toScheduleTime(request.getRequestTime());
+        final Instant departureTime = toScheduleTime(request.getRequestTime());
 
         final Request ghRequest = new Request(
                 request.getOrigin().getLatitude(),
@@ -134,14 +135,8 @@ public class PtRouting {
                 request.getDestination().getLatitude(),
                 request.getDestination().getLongitude()
         );
-        // ghRequest.setBlockedRouteTypes(request.getRoutingParameters().excludedPtModes);//FIXME generalize this
         ghRequest.setEarliestDepartureTime(departureTime);
-
-        if (request.getRoutingParameters().getWalkingSpeedMps() == null) {
-            ghRequest.setWalkSpeedKmH(5);
-        } else {
-            ghRequest.setWalkSpeedKmH(SpeedUtils.ms2kmh(request.getRoutingParameters().getWalkingSpeedMps()));
-        }
+        ghRequest.setWalkSpeedKmH(SpeedUtils.ms2kmh(request.getRoutingParameters().getWalkingSpeedMps()));
 
         final Future<GHResponse> responseFuture = routingExecution.submit(() -> ptRouter.route(ghRequest));
         final GHResponse route;
@@ -167,9 +162,9 @@ public class PtRouting {
         final List<PtRoute.Leg> legs = new ArrayList<>();
         for (Trip.Leg leg : ghBestRoute.getLegs()) {
             if (leg instanceof Trip.PtLeg ptLeg) {
-                final List<PublicTransportStop> newStops = new ArrayList<>();
+                final List<PtStop> newStops = new ArrayList<>();
                 for (Trip.Stop stop : ptLeg.stops) {
-                    newStops.add(new PublicTransportStop(
+                    newStops.add(new PtStop(
                             GeoPoint.lonLat(stop.geometry.getX(), stop.geometry.getY()),
                             fromScheduleTime(stop.arrivalTime),
                             fromScheduleTime(stop.departureTime)

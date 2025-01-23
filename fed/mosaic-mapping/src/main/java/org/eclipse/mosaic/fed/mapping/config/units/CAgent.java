@@ -16,7 +16,6 @@
 package org.eclipse.mosaic.fed.mapping.config.units;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.math.SpeedUtils;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 import org.eclipse.mosaic.lib.util.gson.UnitFieldAdapter;
 
@@ -60,9 +59,9 @@ public class CAgent {
     public GeoPoint destination;
 
     /**
-     * Walking speed of this agent.
+     * Walking speed of this agent, in m/s.
      */
     @JsonAdapter(UnitFieldAdapter.SpeedMS.class)
-    public double walkingSpeed = SpeedUtils.kmh2ms(5);
+    public Double walkingSpeed;
 
 }

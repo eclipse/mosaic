@@ -99,7 +99,7 @@ public class AgentUnit extends AbstractSimulationUnit implements AgentOperatingS
     public void usePublicTransport(PtRoute publicTransportRoute) {
         final List<AgentRoute.Leg> agentLegs = publicTransportRoute.getLegs().stream().map(leg -> {
             if (leg instanceof PtRoute.PtLeg ptLeg) {
-                return new AgentRoute.PublicTransportLeg(leg.getDepartureTime(), ptLeg.getStops());
+                return new AgentRoute.PtLeg(leg.getDepartureTime(), ptLeg.getStops());
             }
             if (leg instanceof PtRoute.WalkLeg walkLeg) {
                 return new AgentRoute.WalkLeg(leg.getDepartureTime(), walkLeg.getWaypoints());

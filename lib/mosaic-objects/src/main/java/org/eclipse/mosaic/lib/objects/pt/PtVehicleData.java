@@ -13,7 +13,7 @@
  * Contact: mosaic@fokus.fraunhofer.de
  */
 
-package org.eclipse.mosaic.lib.objects.vehicle;
+package org.eclipse.mosaic.lib.objects.pt;
 
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 
@@ -22,7 +22,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import java.io.Serializable;
 import java.util.List;
 
-public class PublicTransportData {
+/**
+ * Additional data holding information about the public transport line of the vehicle associated with this.
+ * The data is generated and filled by SumoAmbassador and can be consumed by any vehicle application
+ * which is mapped onto the public transport vehicle.
+ */
+public class PtVehicleData {
 
     /**
      * The line the train belongs to.
@@ -30,11 +35,11 @@ public class PublicTransportData {
     private final String lineId;
 
     /**
-     * Contains a list of the next stops of a train.
+     * Contains a list of the next stops of the vehicle, e.g., train or bus.
      */
     private final List<StoppingPlace> nextStops;
 
-    private PublicTransportData(String lineId, List<StoppingPlace> nextStops) {
+    private PtVehicleData(String lineId, List<StoppingPlace> nextStops) {
         this.lineId = lineId;
         this.nextStops = nextStops;
     }
@@ -61,8 +66,8 @@ public class PublicTransportData {
             return this;
         }
 
-        public PublicTransportData build() {
-            return new PublicTransportData(lineId, nextStops);
+        public PtVehicleData build() {
+            return new PtVehicleData(lineId, nextStops);
         }
     }
 

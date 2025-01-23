@@ -97,7 +97,7 @@ public class CentralPerceptionComponent {
             }
             if (routing instanceof DatabaseRouting dbRouting) {
                 Database database = dbRouting.getScenarioDatabase();
-                if (!database.getBuildings().isEmpty() && configuration.wallIndex != null) {
+                if (!database.getBuildings().isEmpty() && configuration.wallIndex != null && configuration.wallIndex.enabled) {
                     indexBuilder.withWallIndex(configuration.wallIndex.create(), database);
                 }
             }

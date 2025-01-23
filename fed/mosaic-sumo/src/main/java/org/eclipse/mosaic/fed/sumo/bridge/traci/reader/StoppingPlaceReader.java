@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.fed.sumo.bridge.traci.reader;
 
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
-import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
+import org.eclipse.mosaic.lib.objects.pt.PtVehicleData;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -24,22 +24,22 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class StoppingPlaceReader extends AbstractTraciResultReader<List<PublicTransportData.StoppingPlace>> {
+public class StoppingPlaceReader extends AbstractTraciResultReader<List<PtVehicleData.StoppingPlace>> {
 
     public StoppingPlaceReader() {
         this(null);
     }
 
-    protected StoppingPlaceReader(@Nullable Matcher<List<PublicTransportData.StoppingPlace>> matcher) {
+    protected StoppingPlaceReader(@Nullable Matcher<List<PtVehicleData.StoppingPlace>> matcher) {
         super(matcher);
     }
 
     @Override
-    protected List<PublicTransportData.StoppingPlace> readFromStream(DataInputStream in) throws IOException {
+    protected List<PtVehicleData.StoppingPlace> readFromStream(DataInputStream in) throws IOException {
         int count = readIntWithType(in);
-        List<PublicTransportData.StoppingPlace> stoppingPlaces = new ArrayList<>();
+        List<PtVehicleData.StoppingPlace> stoppingPlaces = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            PublicTransportData.StoppingPlace.Builder stoppingPlaceBuilder = new PublicTransportData.StoppingPlace.Builder();
+            PtVehicleData.StoppingPlace.Builder stoppingPlaceBuilder = new PtVehicleData.StoppingPlace.Builder();
             stoppingPlaceBuilder.laneId(readStringWitType(in));
             stoppingPlaceBuilder.endPos(readDoubleWithType(in));
             stoppingPlaceBuilder.stoppingPlaceId(readStringWitType(in));

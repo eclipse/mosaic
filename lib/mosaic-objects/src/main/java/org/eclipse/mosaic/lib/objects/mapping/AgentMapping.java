@@ -28,13 +28,16 @@ public class AgentMapping extends UnitMapping {
      * @param name name of the unit
      * @param group group that the unit belongs to
      * @param applications a list of applications to be mapped onto the unit
-     * @param walkingSpeed the speed this agent has when walking
+     * @param walkingSpeed the speed this agent has when walking, in m/s
      */
     public AgentMapping(final String name, final String group, final List<String> applications, double walkingSpeed) {
         super(name, group, applications);
         this.walkingSpeed = walkingSpeed;
     }
 
+    /**
+     * Returns the walking speed of the agent in m/s
+     */
     public double getWalkingSpeed() {
         return walkingSpeed;
     }
