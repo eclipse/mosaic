@@ -18,6 +18,7 @@ package org.eclipse.mosaic.lib.objects.pt;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,7 +28,9 @@ import java.util.List;
  * The data is generated and filled by SumoAmbassador and can be consumed by any vehicle application
  * which is mapped onto the public transport vehicle.
  */
-public class PtVehicleData {
+public class PtVehicleData implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * The line the train belongs to.
@@ -50,6 +53,35 @@ public class PtVehicleData {
 
     public List<StoppingPlace> getNextStops() {
         return nextStops;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+
+        PtVehicleData other = (PtVehicleData) obj;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(obj))
+                .append(this.lineId, other.lineId)
+                .append(this.nextStops, other.nextStops)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(3, 89)
+                .appendSuper(super.hashCode())
+                .append(lineId)
+                .append(nextStops)
+                .toHashCode();
     }
 
     public static class Builder {
@@ -75,6 +107,9 @@ public class PtVehicleData {
      * Class representing a vehicle stopping place.
      */
     public static class StoppingPlace implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
         /**
          * Id of the stop.
          */
@@ -166,6 +201,20 @@ public class PtVehicleData {
                     .isEquals();
         }
 
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(3, 89)
+                    .appendSuper(super.hashCode())
+                    .append(stoppingPlaceId)
+                    .append(laneId)
+                    .append(startPos)
+                    .append(endPos)
+                    .append(stopDuration)
+                    .append(stoppedUntil)
+                    .append(stopType)
+                    .toHashCode();
+        }
+
         public static class Builder {
             private String stoppingPlaceId;
             private String laneId;
@@ -212,8 +261,7 @@ public class PtVehicleData {
             }
 
             public StoppingPlace build() {
-                return new StoppingPlace(stoppingPlaceId, laneId, startPos, endPos, stopType, stopDuration, stoppedUntil
-                );
+                return new StoppingPlace(stoppingPlaceId, laneId, startPos, endPos, stopType, stopDuration, stoppedUntil);
             }
         }
     }
