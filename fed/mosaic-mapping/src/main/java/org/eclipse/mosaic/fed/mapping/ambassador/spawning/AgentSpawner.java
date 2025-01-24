@@ -46,12 +46,13 @@ public class AgentSpawner extends UnitSpawner {
     private final GeoPoint origin;
     private final GeoPoint destination;
 
-    private long startingTime;
+    private boolean spawningTimeRequested = false;
+    private long spawningTime;
     private Double walkingSpeed;
 
     public AgentSpawner(CAgent agentConfiguration) {
         super(agentConfiguration.applications, agentConfiguration.name, agentConfiguration.group);
-        this.startingTime = Double.valueOf(agentConfiguration.startingTime * TIME.SECOND).longValue();
+        this.spawningTime = Double.valueOf(agentConfiguration.startingTime * TIME.SECOND).longValue();
         this.origin = agentConfiguration.origin;
         this.destination = agentConfiguration.destination;
         this.walkingSpeed = agentConfiguration.walkingSpeed;
@@ -59,24 +60,40 @@ public class AgentSpawner extends UnitSpawner {
 
     public void configure(CMappingConfiguration mappingParameterizationConfiguration) {
         if (mappingParameterizationConfiguration.start != null) {
-            this.startingTime = Double.valueOf(mappingParameterizationConfiguration.start * TIME.SECOND).longValue();
+            this.spawningTime = Double.valueOf(mappingParameterizationConfiguration.start * TIME.SECOND).longValue();
         }
     }
 
-    public boolean timeAdvance(SpawningFramework spawningFramework) throws InternalFederateException {
-        if (spawningFramework.getTime() < startingTime) {
+    /**
+     * Sends out an {@link AgentRegistration} interaction as soon as the startingTime of the agent
+     * has been reached. If the current time is lower than planned spawning time, the RTI is requested
+     * (once) for a time advance to the provided startingTime of the agent.
+     *
+     * @return <code>true</code>, if the {@link AgentRegistration} was sent, <code>false</code> otherwise.
+     */
+    public boolean timeAdvance(SpawningFramework framework) throws InternalFederateException {
+        if (framework.getTime() < spawningTime) {
+            if (!spawningTimeRequested) {
+                try {
+                    framework.getRti().requestAdvanceTime(spawningTime);
+                    spawningTimeRequested = true;
+                } catch (IllegalValueException e) {
+                    LOG.error("Exception while requesting spawning time for Agent.");
+                    throw new InternalFederateException("Exception while sending Interaction in AgentSpawner.init()", e);
+                }
+            }
             return false;
         }
 
         final String name = UnitNameGenerator.nextAgentName();
         final AgentRegistration interaction = new AgentRegistration(
-                startingTime, name, group, origin, destination, getApplications(), defaultIfNull(walkingSpeed, DEFAULT_WALKING_SPEED)
+                spawningTime, name, group, origin, destination, getApplications(), defaultIfNull(walkingSpeed, DEFAULT_WALKING_SPEED)
         );
         try {
             LOG.info("Creating Agent: {}", this);
-            spawningFramework.getRti().triggerInteraction(interaction);
+            framework.getRti().triggerInteraction(interaction);
         } catch (IllegalValueException e) {
-            LOG.error("Exception while sending Interaction in AgentSpawner.init()");
+            LOG.error("Exception while sending Interaction for Agent.");
             throw new InternalFederateException("Exception while sending Interaction in AgentSpawner.init()", e);
         }
         return true;
@@ -94,7 +111,7 @@ public class AgentSpawner extends UnitSpawner {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("startingTime", startingTime)
+                .append("startingTime", spawningTime)
                 .append("origin", origin)
                 .append("destination", destination)
                 .append("applications", applications)

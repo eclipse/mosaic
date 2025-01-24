@@ -416,11 +416,11 @@ public class SpawningFramework {
             }
         }
 
-        for (AgentSpawner spawner : agentSpawners) {
-            spawner.fillInPrototype(getPrototypeByName(spawner.getPrototypeName()));
+        for (AgentSpawner agentSpawner : agentSpawners) {
+            agentSpawner.fillInPrototype(getPrototypeByName(agentSpawner.getPrototypeName()));
 
             if (config != null) {
-                spawner.configure(config);
+                agentSpawner.configure(config);
             }
         }
     }

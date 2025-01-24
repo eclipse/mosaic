@@ -139,7 +139,8 @@ public class PtVehicleData implements Serializable {
          */
         private final VehicleStopMode stopType;
 
-        private StoppingPlace(String stoppingPlaceId, String laneId, double startPos, double endPos, VehicleStopMode stopType, double stopDuration, double stoppedUntil) {
+        private StoppingPlace(String stoppingPlaceId, String laneId, double startPos, double endPos,
+                              VehicleStopMode stopType, double stopDuration, double stoppedUntil) {
             this.stoppingPlaceId = stoppingPlaceId;
             this.laneId = laneId;
             this.startPos = startPos;

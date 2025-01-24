@@ -25,6 +25,7 @@ public class AgentMapping extends UnitMapping {
 
     /**
      * Contains configuration of an agent.
+     *
      * @param name name of the unit
      * @param group group that the unit belongs to
      * @param applications a list of applications to be mapped onto the unit
@@ -36,7 +37,7 @@ public class AgentMapping extends UnitMapping {
     }
 
     /**
-     * Returns the walking speed of the agent in m/s
+     * Returns the walking speed of the agent in m/s.
      */
     public double getWalkingSpeed() {
         return walkingSpeed;

@@ -31,10 +31,10 @@ public class AgentPtRoutingModule implements PtRoutingModule {
     }
 
     @Override
-    public PtRoutingResponse calculateRoute(long requestTime, GeoPoint origin, GeoPoint destination, PtRoutingParameters routingParameters) {
-        PtRoutingRequest routingRequest = new PtRoutingRequest(requestTime, origin, destination, routingParameters);
-        if (routingParameters.getWalkingSpeedMps() == null) {
-            routingParameters.walkingSpeedMps(defaultWalkingSpeed);
+    public PtRoutingResponse calculateRoute(long requestTime, GeoPoint origin, GeoPoint destination, PtRoutingParameters parameters) {
+        PtRoutingRequest routingRequest = new PtRoutingRequest(requestTime, origin, destination, parameters);
+        if (parameters.getWalkingSpeedMps() == null) {
+            parameters.walkingSpeedMps(defaultWalkingSpeed);
         }
         return SimulationKernel.SimulationKernel.getCentralNavigationComponent().findPtRoute(routingRequest);
     }

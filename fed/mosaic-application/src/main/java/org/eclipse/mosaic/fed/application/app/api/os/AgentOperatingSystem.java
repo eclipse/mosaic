@@ -26,8 +26,8 @@ import org.eclipse.mosaic.lib.routing.pt.PtRoute;
  * An agent represents a person in the simulation which is able to use public transport
  * facilities, can walk, or use private or shared vehicles for transportation. An agent does
  * not move until its mapped application provides instructions, such as using public transport
- * or a private car.<br>
- *
+ * or a private car.<br/>
+ * <br/>
  * This interface extends the basic {@link OperatingSystem} and is implemented
  * by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AgentUnit}.
  */

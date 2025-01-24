@@ -34,7 +34,19 @@ public class AgentRegistration extends Interaction {
     private final GeoPoint destination;
     private final AgentMapping agentMapping;
 
-    public AgentRegistration(long time, String name, String group, GeoPoint origin, GeoPoint destination, final List<String> applications, double walkingSpeed) {
+    /**
+     * A new agent registration.
+     *
+     * @param time         The spawning time of the agent [ns]
+     * @param name         The unit id of the agent, e.g., "agent_0"
+     * @param group        The group identifier of the agent.
+     * @param origin       The origin/starting point of the agent.
+     * @param destination  The destination/target point of the agent.
+     * @param applications The list of applications to map onto the agent.
+     * @param walkingSpeed The preferred walking speed of the agent [m/s]
+     */
+    public AgentRegistration(long time, String name, String group, GeoPoint origin, GeoPoint destination,
+                             final List<String> applications, double walkingSpeed) {
         super(time);
         this.origin = origin;
         this.destination = destination;
