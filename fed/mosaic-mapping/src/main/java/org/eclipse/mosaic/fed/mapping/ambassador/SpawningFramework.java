@@ -21,7 +21,7 @@ import org.eclipse.mosaic.fed.mapping.ambassador.spawning.AgentSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ChargingStationSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.RoadSideUnitSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.ServerSpawner;
-import org.eclipse.mosaic.fed.mapping.ambassador.spawning.Spawner;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.StationaryUnitSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficLightSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.TrafficManagementCenterSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.weighting.StochasticSelector;
@@ -75,7 +75,7 @@ public class SpawningFramework {
     private final List<TrafficManagementCenterSpawner> tmcs = new ArrayList<>();
     private final List<ServerSpawner> servers = new ArrayList<>();
     private final List<ChargingStationSpawner> chargingStations = new ArrayList<>();
-    private final List<Spawner> staticSpawners = new ArrayList<>();
+    private final List<StationaryUnitSpawner> stationarySpawners = new ArrayList<>();
     private final CMappingConfiguration config;
 
     private ScenarioTrafficLightRegistration scenarioTrafficLightRegistration;
@@ -141,7 +141,7 @@ public class SpawningFramework {
                 if (roadSideUnitConfiguration != null) {
                     RoadSideUnitSpawner roadSideUnitSpawner = new RoadSideUnitSpawner(roadSideUnitConfiguration);
                     rsus.add(roadSideUnitSpawner);
-                    staticSpawners.add(roadSideUnitSpawner);
+                    stationarySpawners.add(roadSideUnitSpawner);
                 }
             }
         }
@@ -152,7 +152,7 @@ public class SpawningFramework {
                     TrafficManagementCenterSpawner trafficManagementCenterSpawner =
                             new TrafficManagementCenterSpawner(trafficManagementCenterConfiguration);
                     tmcs.add(trafficManagementCenterSpawner);
-                    staticSpawners.add(trafficManagementCenterSpawner);
+                    stationarySpawners.add(trafficManagementCenterSpawner);
                 }
             }
         }
@@ -162,7 +162,7 @@ public class SpawningFramework {
                 if (serverConfiguration != null) {
                     ServerSpawner serverSpawner = new ServerSpawner(serverConfiguration);
                     servers.add(serverSpawner);
-                    staticSpawners.add(serverSpawner);
+                    stationarySpawners.add(serverSpawner);
                 }
             }
         }
@@ -173,7 +173,7 @@ public class SpawningFramework {
                     ChargingStationSpawner chargingStationSpawner =
                             new ChargingStationSpawner(chargingStationConfiguration);
                     chargingStations.add(chargingStationSpawner);
-                    staticSpawners.add(chargingStationSpawner);
+                    stationarySpawners.add(chargingStationSpawner);
                 }
             }
         }
@@ -491,7 +491,7 @@ public class SpawningFramework {
         }
         // RSU, TMC, Charging Station Initialization
         if (!immobileUnitsInitialized) {
-            initImmobileUnits();
+            initStationaryUnits();
             immobileUnitsInitialized = true;
         }
 
@@ -560,9 +560,9 @@ public class SpawningFramework {
         }
     }
 
-    private void initImmobileUnits() throws InternalFederateException {
+    private void initStationaryUnits() throws InternalFederateException {
         // First time-advance. We need to process RSUs, ChargingStations, TMCs and Servers:
-        for (Spawner spawner : staticSpawners) {
+        for (StationaryUnitSpawner spawner : stationarySpawners) {
             spawner.init(this);
         }
     }
