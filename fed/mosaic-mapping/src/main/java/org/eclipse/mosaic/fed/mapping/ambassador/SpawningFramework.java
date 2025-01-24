@@ -70,12 +70,12 @@ public class SpawningFramework {
     private final Map<String, List<CPrototype>> typeDistributions = new HashMap<>();
     private final Map<String, TrafficLightSpawner> tls = new HashMap<>();
     private final List<VehicleFlowGenerator> vehicleFlowGenerators = new ArrayList<>();
-    private final List<AgentSpawner> agents = new ArrayList<>();
+    private final List<AgentSpawner> agentSpawners = new ArrayList<>();
     private final List<RoadSideUnitSpawner> rsus = new ArrayList<>();
     private final List<TrafficManagementCenterSpawner> tmcs = new ArrayList<>();
     private final List<ServerSpawner> servers = new ArrayList<>();
     private final List<ChargingStationSpawner> chargingStations = new ArrayList<>();
-    private final List<Spawner> spawners = new ArrayList<>();
+    private final List<Spawner> staticSpawners = new ArrayList<>();
     private final CMappingConfiguration config;
 
     private ScenarioTrafficLightRegistration scenarioTrafficLightRegistration;
@@ -135,23 +135,13 @@ public class SpawningFramework {
             }
         }
 
-        if (mappingConfiguration.agents != null) {
-            for (CAgent agentConfiguration : mappingConfiguration.agents) {
-                if (agentConfiguration != null) {
-                    AgentSpawner agentSpawner = new AgentSpawner(agentConfiguration);
-                    agents.add(agentSpawner);
-                    spawners.add(agentSpawner);
-                }
-            }
-        }
-
         // RSUs
         if (mappingConfiguration.rsus != null) {
             for (CRoadSideUnit roadSideUnitConfiguration : mappingConfiguration.rsus) {
                 if (roadSideUnitConfiguration != null) {
                     RoadSideUnitSpawner roadSideUnitSpawner = new RoadSideUnitSpawner(roadSideUnitConfiguration);
                     rsus.add(roadSideUnitSpawner);
-                    spawners.add(roadSideUnitSpawner);
+                    staticSpawners.add(roadSideUnitSpawner);
                 }
             }
         }
@@ -162,7 +152,7 @@ public class SpawningFramework {
                     TrafficManagementCenterSpawner trafficManagementCenterSpawner =
                             new TrafficManagementCenterSpawner(trafficManagementCenterConfiguration);
                     tmcs.add(trafficManagementCenterSpawner);
-                    spawners.add(trafficManagementCenterSpawner);
+                    staticSpawners.add(trafficManagementCenterSpawner);
                 }
             }
         }
@@ -172,7 +162,7 @@ public class SpawningFramework {
                 if (serverConfiguration != null) {
                     ServerSpawner serverSpawner = new ServerSpawner(serverConfiguration);
                     servers.add(serverSpawner);
-                    spawners.add(serverSpawner);
+                    staticSpawners.add(serverSpawner);
                 }
             }
         }
@@ -183,7 +173,7 @@ public class SpawningFramework {
                     ChargingStationSpawner chargingStationSpawner =
                             new ChargingStationSpawner(chargingStationConfiguration);
                     chargingStations.add(chargingStationSpawner);
-                    spawners.add(chargingStationSpawner);
+                    staticSpawners.add(chargingStationSpawner);
                 }
             }
         }
@@ -206,8 +196,14 @@ public class SpawningFramework {
             spawnersExist = generateVehicleFlows(mappingConfiguration.vehicles, mappingConfiguration.config, rng);
         }
 
-        if (mappingConfiguration.vehicles == null || !spawnersExist) {
-            LOG.info("No vehicle spawners defined in mapping config. Only external vehicles will be simulated.");
+        // Agent spawners
+        if (mappingConfiguration.agents != null) {
+            for (CAgent agentConfiguration : mappingConfiguration.agents) {
+                if (agentConfiguration != null) {
+                    agentSpawners.add(new AgentSpawner(agentConfiguration));
+                    spawnersExist = true;
+                }
+            }
         }
 
         // OD-Matrices
@@ -224,6 +220,11 @@ public class SpawningFramework {
         boolean fixedOrder = mappingConfiguration.config != null && mappingConfiguration.config.fixedOrder;
         for (OriginDestinationVehicleFlowGenerator mapper : matrices) {
             mapper.generateVehicleStreams(this, rng, flowNoise, fixedOrder);
+            spawnersExist = true;
+        }
+
+        if (!spawnersExist) {
+            LOG.info("No vehicle spawners defined in mapping config. Only external vehicles will be simulated.");
         }
 
         // Use the prototype configurations to complete the spawner-definitions:
@@ -415,7 +416,7 @@ public class SpawningFramework {
             }
         }
 
-        for (AgentSpawner spawner : agents) {
+        for (AgentSpawner spawner : agentSpawners) {
             spawner.fillInPrototype(getPrototypeByName(spawner.getPrototypeName()));
 
             if (config != null) {
@@ -494,11 +495,19 @@ public class SpawningFramework {
             immobileUnitsInitialized = true;
         }
 
-        Iterator<VehicleFlowGenerator> iterator = vehicleFlowGenerators.iterator();
-        while (iterator.hasNext()) {
-            VehicleFlowGenerator vehicleFlowGenerator = iterator.next();
+        Iterator<VehicleFlowGenerator> vehicleFlowIt = vehicleFlowGenerators.iterator();
+        while (vehicleFlowIt.hasNext()) {
+            VehicleFlowGenerator vehicleFlowGenerator = vehicleFlowIt.next();
             if (vehicleFlowGenerator.timeAdvance(this)) {
-                iterator.remove();
+                vehicleFlowIt.remove();
+            }
+        }
+
+        Iterator<AgentSpawner> agentSpawnerIt = agentSpawners.iterator();
+        while (agentSpawnerIt.hasNext()) {
+            AgentSpawner agentSpawner = agentSpawnerIt.next();
+            if (agentSpawner.timeAdvance(this)) {
+                agentSpawnerIt.remove();
             }
         }
     }
@@ -553,7 +562,7 @@ public class SpawningFramework {
 
     private void initImmobileUnits() throws InternalFederateException {
         // First time-advance. We need to process RSUs, ChargingStations, TMCs and Servers:
-        for (Spawner spawner : spawners) {
+        for (Spawner spawner : staticSpawners) {
             spawner.init(this);
         }
     }

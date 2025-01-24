@@ -16,10 +16,13 @@
 package org.eclipse.mosaic.fed.mapping.ambassador;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioTrafficLightRegistration;
@@ -27,6 +30,8 @@ import org.eclipse.mosaic.interactions.mapping.advanced.ScenarioVehicleRegistrat
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.DefaultRandomNumberGenerator;
+import org.eclipse.mosaic.lib.math.SpeedUtils;
+import org.eclipse.mosaic.lib.objects.mapping.AgentMapping;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
@@ -42,7 +47,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,8 +75,8 @@ public class MappingAmbassadorTest {
         final MappingAmbassador ambassador = createMappingAmbassadorWithMappingFile("mapping_config.json");
         ambassador.initialize(0, 100 * TIME.SECOND);
 
-        Assert.assertNotNull(lastReceivedInteraction);
-        Assert.assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
         lastReceivedInteraction = null;
 
         ambassador.advanceTime(0);
@@ -97,8 +101,8 @@ public class MappingAmbassadorTest {
         final MappingAmbassador ambassador = createMappingAmbassadorWithMappingFile("mapping_config_scale.json");
         ambassador.initialize(0, 100 * TIME.SECOND);
 
-        Assert.assertNotNull(lastReceivedInteraction);
-        Assert.assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
         lastReceivedInteraction = null;
 
         ambassador.advanceTime(0);
@@ -212,8 +216,8 @@ public class MappingAmbassadorTest {
     private Pair<Integer, Integer> countVehicleSpawners(final MappingAmbassador ambassador) throws InternalFederateException {
         ambassador.initialize(0, 100 * TIME.SECOND);
 
-        Assert.assertNotNull(lastReceivedInteraction);
-        Assert.assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
         lastReceivedInteraction = null;
 
         ambassador.advanceTime(0);
@@ -227,7 +231,7 @@ public class MappingAmbassadorTest {
             if (lastReceivedInteraction == null) {
                 continue;
             }
-            Assert.assertTrue(lastReceivedInteraction instanceof VehicleRegistration);
+            assertTrue(lastReceivedInteraction instanceof VehicleRegistration);
 
             if (((VehicleRegistration) lastReceivedInteraction).getMapping().getApplications().get(0).equals("Car1App")) {
                 countCar1App++;
@@ -250,13 +254,13 @@ public class MappingAmbassadorTest {
         final ScenarioTrafficLightRegistration scenarioTrafficLightRegistrationMsg = createScenarioTrafficLightRegistration();
 
         ambassador.processInteraction(scenarioTrafficLightRegistrationMsg);
-        Assert.assertNotNull(lastReceivedInteraction);
-        Assert.assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
         lastReceivedInteraction = null;
 
         ambassador.advanceTime(0);
-        Assert.assertNotNull(lastReceivedInteraction);
-        Assert.assertTrue(lastReceivedInteraction instanceof TrafficLightRegistration);
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof TrafficLightRegistration);
         lastReceivedInteraction = null;
     }
 
@@ -273,8 +277,8 @@ public class MappingAmbassadorTest {
 
 
     private void assertVehicleRegistration(String... applications) {
-        Assert.assertNotNull(lastReceivedInteraction);
-        Assert.assertTrue(lastReceivedInteraction instanceof VehicleRegistration);
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof VehicleRegistration);
         assertEquals(
                 StringUtils.join(Lists.newArrayList(applications)),
                 StringUtils.join(((VehicleRegistration) lastReceivedInteraction).getMapping().getApplications())
@@ -297,7 +301,7 @@ public class MappingAmbassadorTest {
         );
 
         ambassador.processInteraction(new ScenarioVehicleRegistration(0, "veh_0", new VehicleType("UNKNOWN")));
-        Assert.assertNull(lastReceivedInteraction);
+        assertNull(lastReceivedInteraction);
     }
 
     @Test
@@ -319,6 +323,40 @@ public class MappingAmbassadorTest {
         assertVehicleRegistration(
                 "package.appB"
         );
+    }
+
+    @Test
+    public void initializeWithMappingFile_agentRegistration() throws Exception {
+        final MappingAmbassador ambassador = createMappingAmbassadorWithMappingFile("mapping_config_agent.json");
+        ambassador.initialize(0, 100 * TIME.SECOND);
+
+        assertNotNull(lastReceivedInteraction);
+        assertTrue(lastReceivedInteraction instanceof VehicleTypesInitialization);
+        lastReceivedInteraction = null;
+
+        ambassador.advanceTime(0);
+        assertNull(lastReceivedInteraction);
+
+        ambassador.advanceTime(5 * TIME.SECOND);
+        assertAgentRegistration("agent_0", SpeedUtils.kmh2ms(4), "org.eclipse.mosaic.fed.application.app.TestAgentApplication");
+
+        ambassador.advanceTime(7 * TIME.SECOND);
+        assertNull(lastReceivedInteraction);
+
+        ambassador.advanceTime(10 * TIME.SECOND);
+        assertAgentRegistration("agent_1", SpeedUtils.kmh2ms(2), "org.eclipse.mosaic.fed.application.app.SlowAgentApp");
+
+        ambassador.advanceTime(11 * TIME.SECOND);
+        assertNull(lastReceivedInteraction);
+    }
+
+    private void assertAgentRegistration(String name, double walkingSpeed, String application) {
+        assertTrue(lastReceivedInteraction instanceof AgentRegistration);
+        AgentMapping agentMapping = ((AgentRegistration) lastReceivedInteraction).getMapping();
+        assertEquals(name, agentMapping.getName());
+        assertTrue(agentMapping.getApplications().contains(application));
+        assertEquals(walkingSpeed, agentMapping.getWalkingSpeed(), 0.001);
+        lastReceivedInteraction = null;
     }
 
     @Before

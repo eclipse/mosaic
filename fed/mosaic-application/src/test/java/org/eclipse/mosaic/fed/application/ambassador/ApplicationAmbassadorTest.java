@@ -30,6 +30,7 @@ import org.eclipse.mosaic.fed.application.ambassador.eventresources.StartApplica
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
+import org.eclipse.mosaic.fed.application.app.TestAgentApplication;
 import org.eclipse.mosaic.fed.application.app.TestApplicationWithSpy;
 import org.eclipse.mosaic.fed.application.app.TestChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.TestElectricVehicleApplication;
@@ -72,6 +73,7 @@ import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
 import org.eclipse.mosaic.rti.api.parameters.AmbassadorParameter;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Assert;
@@ -309,6 +311,35 @@ public class ApplicationAmbassadorTest {
                 "veh_0",
                 InteractionTestHelper.createVehicleRegistrationInteraction("veh_0", 5, TestElectricVehicleApplication.class)
         );
+    }
+
+    /**
+     * The ApplicationAmbassador receives an AgentRegistration interaction with a AgentApplication.
+     * The application of the agent will be added to the simulator and initialized.
+     * After the simulation has been finished, the application will tear down.
+     */
+    @Test
+    public void processInteraction_AgentRegistration() throws InternalFederateException, IOException {
+        final ApplicationAmbassador ambassador = createAmbassador();
+
+        // init ambassador
+        ambassador.initialize(0L, END_TIME);
+        assertEquals("Time advance should be requested for the end of the simulation", END_TIME, recentAdvanceTime);
+
+        TestAgentApplication app = testAddUnit(
+                ambassador,
+                "agent_0",
+                InteractionTestHelper.createAgentRegistrationInteraction("agent_0", 5, TestAgentApplication.class)
+        );
+
+        // verify that setUp has been called on the application of the unit
+        Mockito.verify(app.getApplicationSpy()).onStartup();
+
+        // tears down all applications
+        ambassador.processTimeAdvanceGrant(recentAdvanceTime);
+        ambassador.processTimeAdvanceGrant(END_TIME);
+        ambassador.finishSimulation();
+        Mockito.verify(app.getApplicationSpy()).onShutdown();
     }
 
 
@@ -953,12 +984,13 @@ public class ApplicationAmbassadorTest {
         Assert.assertEquals(interaction.getTime(), recentAdvanceTime);
         Assert.assertTrue(interactionTimeEquals(interaction.getTime()));
         Assert.assertTrue(countStartApplicationEvents() > 0);
+        Assert.assertNotNull(UnitSimulator.UnitSimulator.getAllUnits().get(unitId));
 
         // should initialize the application
         ambassador.processTimeAdvanceGrant(recentAdvanceTime);
 
         @SuppressWarnings("unchecked")
-        TEST_APP app = (TEST_APP) UnitSimulator.UnitSimulator.getAllUnits().get(unitId).getApplications().get(0);
+        TEST_APP app = (TEST_APP) Iterables.getFirst(UnitSimulator.UnitSimulator.getAllUnits().get(unitId).getApplications(), null);
 
         // assert that the requested advance time of the ambassador did not change
         Assert.assertEquals(interaction.getTime(), recentAdvanceTime);

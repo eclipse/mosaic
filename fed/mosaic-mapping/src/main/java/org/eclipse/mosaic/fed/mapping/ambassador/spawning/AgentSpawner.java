@@ -63,7 +63,11 @@ public class AgentSpawner extends UnitSpawner implements Spawner {
         }
     }
 
-    public void init(SpawningFramework spawningFramework) throws InternalFederateException {
+    public boolean timeAdvance(SpawningFramework spawningFramework) throws InternalFederateException {
+        if (spawningFramework.getTime() < startingTime) {
+            return false;
+        }
+
         final String name = UnitNameGenerator.nextAgentName();
         final AgentRegistration interaction = new AgentRegistration(
                 startingTime, name, group, origin, destination, getApplications(), defaultIfNull(walkingSpeed, DEFAULT_WALKING_SPEED)
@@ -75,6 +79,7 @@ public class AgentSpawner extends UnitSpawner implements Spawner {
             LOG.error("Exception while sending Interaction in AgentSpawner.init()");
             throw new InternalFederateException("Exception while sending Interaction in AgentSpawner.init()", e);
         }
+        return true;
     }
 
     @Override
