@@ -18,7 +18,7 @@ package org.eclipse.mosaic.fed.mapping.ambassador.spawning;
 import org.eclipse.mosaic.fed.mapping.ambassador.SpawningFramework;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
-public interface Spawner {
+public interface StationaryUnitSpawner {
 
     /**
      * Initializes the unit for the simulation.

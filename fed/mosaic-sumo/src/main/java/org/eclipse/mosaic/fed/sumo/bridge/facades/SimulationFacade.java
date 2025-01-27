@@ -52,6 +52,7 @@ import org.eclipse.mosaic.interactions.traffic.TrafficLightUpdates;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.lib.enums.DriveDirection;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
+import org.eclipse.mosaic.lib.objects.pt.PtVehicleData;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.road.SimpleRoadPosition;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -60,7 +61,6 @@ import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroupInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightState;
 import org.eclipse.mosaic.lib.objects.vehicle.Consumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.Emissions;
-import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.objects.vehicle.SurroundingVehicle;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleConsumptions;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
@@ -579,8 +579,8 @@ public class SimulationFacade {
         return sumoVehicle;
     }
 
-    private PublicTransportData extractTrainData(VehicleSubscriptionResult veh) {
-        return new PublicTransportData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
+    private PtVehicleData extractTrainData(VehicleSubscriptionResult veh) {
+        return new PtVehicleData.Builder().withLineId(veh.line).nextStops(veh.nextStops).build();
     }
 
     private List<String> findRemovedVehicles(long time) throws CommandException, InternalFederateException {

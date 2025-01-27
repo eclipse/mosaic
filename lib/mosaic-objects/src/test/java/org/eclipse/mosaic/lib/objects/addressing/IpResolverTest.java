@@ -27,85 +27,95 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
 public class IpResolverTest {
-    
-    private final String testConfig = 
-"       {\n" +
-"			netMask: \"255.255.0.0\",\n" +
-"			vehicleNet: \"10.1.0.0\",\n" +
-"			rsuNet: \"10.2.0.0\",\n" +
-"			tlNet: \"10.3.0.0\",\n" +
-"			csNet: \"10.4.0.0\",\n" +
-"			strictAddressing: true\n" +
-"        }";
-    
+
+    private final String testConfig = """
+            {
+                "netMask": "255.255.0.0",
+                "vehicleNet": "10.1.0.0",
+                "rsuNet": "10.2.0.0",
+                "tlNet": "10.3.0.0",
+                "csNet": "10.4.0.0",
+                "agentNet": "10.10.0.0"
+            }
+            """;
+
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule(testConfig);
-    
+
     @Test
     public void testCorrectSetup() {
         assertEquals(65534, IpResolver.getSingleton().getMaxRange());
     }
-    
+
     @Test
     public void testRoundTripVEHs() {
-        for (int i = 0; i< IpResolver.getSingleton().getMaxRange(); ++i) {
+        for (int i = 0; i < IpResolver.getSingleton().getMaxRange(); ++i) {
             final String name = "veh_" + i;
             Inet4Address nameToIp = IpResolver.getSingleton().nameToIp(name);
             String ipToName = IpResolver.getSingleton().ipToName(nameToIp);
             assertEquals(name, ipToName);
         }
     }
-    
+
     @Test
     public void testRoundTripRSUs() {
-        for (int i = 0; i< IpResolver.getSingleton().getMaxRange(); ++i) {
+        for (int i = 0; i < IpResolver.getSingleton().getMaxRange(); ++i) {
             final String name = "rsu_" + i;
             Inet4Address nameToIp = IpResolver.getSingleton().nameToIp(name);
             String ipToName = IpResolver.getSingleton().ipToName(nameToIp);
             assertEquals(name, ipToName);
         }
     }
-    
+
     @Test
     public void testRoundTripTLs() {
-        for (int i = 0; i< IpResolver.getSingleton().getMaxRange(); ++i) {
+        for (int i = 0; i < IpResolver.getSingleton().getMaxRange(); ++i) {
             final String name = "rsu_" + i;
             Inet4Address nameToIp = IpResolver.getSingleton().nameToIp(name);
             String ipToName = IpResolver.getSingleton().ipToName(nameToIp);
             assertEquals(name, ipToName);
         }
     }
-    
+
     @Test
     public void testRoundTripCSs() {
-        for (int i = 0; i< IpResolver.getSingleton().getMaxRange(); ++i) {
+        for (int i = 0; i < IpResolver.getSingleton().getMaxRange(); ++i) {
             final String name = "cs_" + i;
             Inet4Address nameToIp = IpResolver.getSingleton().nameToIp(name);
             String ipToName = IpResolver.getSingleton().ipToName(nameToIp);
             assertEquals(name, ipToName);
         }
     }
-    
-    @Test(expected=IllegalArgumentException.class)
+
+    @Test
+    public void testRoundTripAgents() {
+        for (int i = 0; i < IpResolver.getSingleton().getMaxRange(); ++i) {
+            final String name = "agent_" + i;
+            Inet4Address nameToIp = IpResolver.getSingleton().nameToIp(name);
+            String ipToName = IpResolver.getSingleton().ipToName(nameToIp);
+            assertEquals(name, ipToName);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testIPv4AddressExhausted() {
-        final String name = "cs_" + IpResolver.getSingleton().getMaxRange()+1;
+        final String name = "cs_" + IpResolver.getSingleton().getMaxRange() + 1;
         // should throw an exception
         IpResolver.getSingleton().nameToIp(name);
     }
-    
+
     @Test
     public void testArrayIntConversion() {
-        try{
-            Inet4Address testAddress = (Inet4Address)Inet4Address.getByName("10.1.0.1");
+        try {
+            Inet4Address testAddress = (Inet4Address) Inet4Address.getByName("10.1.0.1");
             byte testArray[] = testAddress.getAddress();
             assertEquals(167837697, IpResolver.getSingleton().addressArrayToFlat(testArray));
-            
+
             byte testArray2[] = {10, 1, 0, 2};
             Assert.assertArrayEquals(testArray2, IpResolver.getSingleton().addressFlatToArray(167837698));
-        }
-        catch (UnknownHostException ex) {}
+        } catch (UnknownHostException ex) {}
     }
-    
+
     @Test
     public void testAddressAssignment() {
         Inet4Address ad1, ad2, ad3, ad4, ad5, ad6;
@@ -116,25 +126,29 @@ public class IpResolverTest {
         ad5 = IpResolver.getSingleton().registerHost("tl_65534");
         boolean exceptionThrown = false;
         try {
-            ad6 = IpResolver.getSingleton().registerHost("tl_65535");
-        } catch(RuntimeException ex) {
+            IpResolver.getSingleton().registerHost("tl_65535");
+        } catch (RuntimeException ex) {
             exceptionThrown = true;
         }
+        ad6 = IpResolver.getSingleton().registerHost("agent_1337");
+
         Assert.assertTrue(exceptionThrown);
-        byte array1[] = {10,1,0,7};
-        byte array2[] = {10,2,0,0};
-        byte array3[] = {10,3,0,100};
-        byte array4[] = {10,4,3,-24};
-        byte array5[] = {10,3,-1,-2};
+        byte[] array1 = {10, 1, 0, 7};
+        byte[] array2 = {10, 2, 0, 0};
+        byte[] array3 = {10, 3, 0, 100};
+        byte[] array4 = {10, 4, (byte) 3, (byte) 232};
+        byte[] array5 = {10, 3, (byte) 255, (byte) 254};
+        byte[] array6 = {10, 10, (byte) 5, (byte) 57};
         Assert.assertArrayEquals(array1, ad1.getAddress());
         Assert.assertArrayEquals(array2, ad2.getAddress());
         Assert.assertArrayEquals(array3, ad3.getAddress());
         Assert.assertArrayEquals(array4, ad4.getAddress());
         Assert.assertArrayEquals(array5, ad5.getAddress());
-        
+        Assert.assertArrayEquals(array6, ad6.getAddress());
+
         Inet4Address lookedUp = IpResolver.getSingleton().lookup("veh_7");
         assertEquals(ad1, lookedUp);
         lookedUp = IpResolver.getSingleton().lookup("veh_10");
-        Assert.assertNull(lookedUp);        
+        Assert.assertNull(lookedUp);
     }
 }

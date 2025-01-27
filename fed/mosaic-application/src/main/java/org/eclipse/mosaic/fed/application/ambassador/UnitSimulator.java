@@ -18,6 +18,7 @@ package org.eclipse.mosaic.fed.application.ambassador;
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.StartApplications;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.AgentUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.ChargingStationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.ElectricVehicleUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.RoadSideUnit;
@@ -26,6 +27,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGrou
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.VehicleUnit;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorActivation;
+import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -93,6 +95,11 @@ public enum UnitSimulator implements EventProcessor {
     private final Map<String, VehicleUnit> vehicles = new HashMap<>();
 
     /**
+     * Map containing all the ids with the corresponding agent units.
+     */
+    private final Map<String, AgentUnit> agents = new HashMap<>();
+
+    /**
      * Map containing all the ids with the corresponding {@link AbstractSimulationUnit}.
      */
     private final Map<String, AbstractSimulationUnit> allUnits = new HashMap<>();
@@ -131,6 +138,15 @@ public enum UnitSimulator implements EventProcessor {
      */
     public Map<String, VehicleUnit> getVehicles() {
         return vehicles;
+    }
+
+    /**
+     * Returns the map containing all the ids with the corresponding agents.
+     *
+     * @return the map containing all the ids with the corresponding agents.
+     */
+    public Map<String, AgentUnit> getAgents() {
+        return agents;
     }
 
     /**
@@ -186,6 +202,8 @@ public enum UnitSimulator implements EventProcessor {
             servers.put(unit.getId(), server);
         } else if (unit instanceof VehicleUnit vehicle) {
             vehicles.put(unit.getId(), vehicle);
+        } else if (unit instanceof AgentUnit agent) {
+            agents.put(unit.getId(), agent);
         } else {
             throw new RuntimeException(ErrorRegister.UNIT_SIMULATOR_UnknownSimulationUnitToPutInMap.toString());
         }
@@ -213,6 +231,8 @@ public enum UnitSimulator implements EventProcessor {
             servers.remove(unit.getId());
         } else if (unit instanceof VehicleUnit) {
             vehicles.remove(unit.getId());
+        } else if (unit instanceof AgentUnit) {
+            agents.remove(unit.getId());
         } else {
             throw new RuntimeException(ErrorRegister.UNIT_SIMULATOR_UnknownSimulationUnitToRemoveFromMap.toString());
         }
@@ -236,6 +256,7 @@ public enum UnitSimulator implements EventProcessor {
         vehicles.clear();
         tmcs.clear();
         servers.clear();
+        agents.clear();
         allUnits.clear();
     }
 
@@ -453,6 +474,30 @@ public enum UnitSimulator implements EventProcessor {
         // current simulation time lies in the past
         EnvironmentSensorActivation environmentSensorActivation = new EnvironmentSensorActivation(time, id);
         simulationUnit.sendInteractionToRti(environmentSensorActivation);
+    }
+
+
+    /**
+     * Registers an Agent. Unit is only registered if it is equipped with an application
+     *
+     * @param agentRegistration the interaction containing the mapping of the agent
+     */
+    public void registerAgent(AgentRegistration agentRegistration) {
+        if (!agentRegistration.getMapping().hasApplication()) {
+            log.warn("An agent will not move without any application.");
+            return;
+        }
+        final AgentUnit agent = new AgentUnit(agentRegistration.getMapping(), agentRegistration.getOrigin(), agentRegistration.getDestination());
+        agent.setGroup(agentRegistration.getMapping().getGroup());
+
+        addSimulationUnit(agent);
+
+        final Event event = new Event(
+                agentRegistration.getTime(),
+                this, new StartApplications(agent.getId(), agentRegistration.getMapping()),
+                Event.NICE_MAX_PRIORITY
+        );
+        SimulationKernel.SimulationKernel.getEventManager().addEvent(event);
     }
 
     @Override

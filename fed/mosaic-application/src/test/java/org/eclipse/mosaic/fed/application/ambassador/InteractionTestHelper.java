@@ -21,6 +21,7 @@ import org.eclipse.mosaic.fed.application.app.TestRoadSideUnitApplication;
 import org.eclipse.mosaic.fed.application.app.TestServerApplication;
 import org.eclipse.mosaic.fed.application.app.TestTrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.TestTrafficManagementCenterApplication;
+import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -29,6 +30,7 @@ import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.math.SpeedUtils;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLight;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightProgram;
@@ -151,6 +153,31 @@ public class InteractionTestHelper {
     }
 
     /**
+     * Creates a {@link AgentRegistration}-interaction with the given parameters
+     * for an agent.
+     *
+     * @param id                 identifier of the agent
+     * @param startTimeInSeconds time of the interaction
+     * @param testClass          application class
+     * @return the {@link VehicleRegistration}-interaction
+     */
+    public static AgentRegistration createAgentRegistrationInteraction(
+            String id,
+            long startTimeInSeconds,
+            Class<? extends TestApplicationWithSpy<?>> testClass
+    ) {
+        return new AgentRegistration(
+                startTimeInSeconds * TIME.SECOND,
+                id,
+                "group_0",
+                GeoPoint.ORIGO,
+                GeoPoint.ORIGO,
+                getApplications(testClass != null, testClass),
+                SpeedUtils.kmh2ms(3)
+        );
+    }
+
+    /**
      * Creates a {@link VehicleRegistration}-interaction with the given parameters
      * for an electric car.
      *
@@ -246,4 +273,6 @@ public class InteractionTestHelper {
             return Collections.emptyList();
         }
     }
+
+
 }

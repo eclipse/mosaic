@@ -127,9 +127,9 @@ public class CVehicle implements Comparable<CVehicle> {
      * Example configuration file:
      * <pre>
      * {
-     *    "prototypeDeserializers":[
+     *    "prototypes":[
      *        {
-     *           "name":"PKW",
+     *           "name":"Car",
      *           "accel":2.5,
      *           "decel":4.5,
      *           "length":5.0,
@@ -141,9 +141,9 @@ public class CVehicle implements Comparable<CVehicle> {
      *        {
      *            "route":"0",
      *            "types":[
-     *                { "name":"PKW" },
+     *                { "name":"Car" },
      *                {
-     *                    "name":"PKW",
+     *                    "name":"Car",
      *                    "accel":2.0,
      *                    "length":7.0
      *                }

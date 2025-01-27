@@ -1,0 +1,45 @@
+{
+    "prototypes": [
+        {
+            "name": "SlowAgent",
+            "maxSpeed": "2 km/h"
+        },
+        {
+            "name": "AgentWithApp",
+            "applications": [
+                "org.eclipse.mosaic.fed.application.app.TestAgentApplication"
+            ],
+            "maxSpeed": "5 km/h"
+        }
+    ],
+    "agents": [
+        {
+            "startingTime": 5.0,
+            "name": "AgentWithApp",
+            "origin": {
+                "latitude": 0,
+                "longitude": 0
+            },
+            "destination": {
+                "latitude": 0,
+                "longitude": 0
+            },
+            "walkingSpeed": "4 km/h"
+        },
+        {
+            "startingTime": 10.0,
+            "name": "SlowAgent",
+            "origin": {
+                "latitude": 0,
+                "longitude": 0
+            },
+            "destination": {
+                "latitude": 0,
+                "longitude": 0
+            },
+            "applications": [
+                "org.eclipse.mosaic.fed.application.app.SlowAgentApp"
+            ]
+        }
+    ]
+}

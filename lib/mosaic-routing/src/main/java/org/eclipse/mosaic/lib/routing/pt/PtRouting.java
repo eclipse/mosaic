@@ -17,6 +17,7 @@ package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.math.SpeedUtils;
+import org.eclipse.mosaic.lib.objects.pt.PtStop;
 import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
 
 import com.google.common.collect.Iterables;
@@ -59,7 +60,6 @@ import javax.annotation.Nullable;
 /**
  * Implementation of Public Transport Routing based on GraphHopper GTFS.
  * Uses a GTFS file for public transport schedule and an OSM file for walking paths to get access to public transport stations.
- *
  */
 public class PtRouting {
 
@@ -123,10 +123,11 @@ public class PtRouting {
         }
         Validate.notNull(request.getOrigin(), "Starting point must not be null.");
         Validate.notNull(request.getDestination(), "Target point must not be null.");
+        Validate.notNull(request.getRoutingParameters().getWalkingSpeedMps(), "Walking speed must be defined.");
         Validate.isTrue(request.getRequestTime() >= 0, "Invalid request time.");
         Validate.isTrue(request.getRoutingParameters().getWalkingSpeedMps() > 0, "Walking speed must be greater than 0.");
 
-        Instant departureTime = toScheduleTime(request.getRequestTime());
+        final Instant departureTime = toScheduleTime(request.getRequestTime());
 
         final Request ghRequest = new Request(
                 request.getOrigin().getLatitude(),
@@ -134,7 +135,6 @@ public class PtRouting {
                 request.getDestination().getLatitude(),
                 request.getDestination().getLongitude()
         );
-        // ghRequest.setBlockedRouteTypes(request.getRoutingParameters().excludedPtModes);//FIXME generalize this
         ghRequest.setEarliestDepartureTime(departureTime);
         ghRequest.setWalkSpeedKmH(SpeedUtils.ms2kmh(request.getRoutingParameters().getWalkingSpeedMps()));
 
@@ -153,41 +153,41 @@ public class PtRouting {
             throw new RuntimeException("Could not finish route calculation. Exceeded timeout.", e);
         }
 
-        final List<MultiModalLeg> legs = convertToMultiModalLegs(route.getBest());
+        final PtRoute ptRoute = convertToPtRoute(route.getBest());
 
-        return new PtRoutingResponse(new MultiModalRoute(legs));
+        return new PtRoutingResponse(ptRoute);
     }
 
-    private List<MultiModalLeg> convertToMultiModalLegs(ResponsePath ghBestRoute) {
-        List<MultiModalLeg> legs = new ArrayList<>();
+    private PtRoute convertToPtRoute(ResponsePath ghBestRoute) {
+        final List<PtRoute.Leg> legs = new ArrayList<>();
         for (Trip.Leg leg : ghBestRoute.getLegs()) {
             if (leg instanceof Trip.PtLeg ptLeg) {
-                List<PtLeg.PtStop> newStops = new ArrayList<>();
+                final List<PtStop> newStops = new ArrayList<>();
                 for (Trip.Stop stop : ptLeg.stops) {
-                    newStops.add(new PtLeg.PtStop(
+                    newStops.add(new PtStop(
                             GeoPoint.lonLat(stop.geometry.getX(), stop.geometry.getY()),
                             fromScheduleTime(stop.arrivalTime),
                             fromScheduleTime(stop.departureTime)
                     ));
                 }
-                legs.add(new MultiModalLeg(
-                        new PtLeg(newStops),
+                legs.add(new PtRoute.PtLeg(
                         newStops.get(0).departureTime(),
-                        Iterables.getLast(newStops).arrivalTime()
+                        Iterables.getLast(newStops).arrivalTime(),
+                        newStops
                 ));
             } else if (leg instanceof Trip.WalkLeg walkLeg) {
-                List<GeoPoint> waypoints = new ArrayList<>();
+                final List<GeoPoint> waypoints = new ArrayList<>();
                 for (Coordinate coordinate : walkLeg.geometry.getCoordinates()) {
                     waypoints.add(GeoPoint.lonLat(coordinate.x, coordinate.y));
                 }
-                legs.add(new MultiModalLeg(
-                        new WalkLeg(waypoints),
+                legs.add(new PtRoute.WalkLeg(
                         fromScheduleTime(leg.getDepartureTime()),
-                        fromScheduleTime(leg.getArrivalTime())
+                        fromScheduleTime(leg.getArrivalTime()),
+                        waypoints
                 ));
             }
         }
-        return legs;
+        return new PtRoute(legs);
     }
 
     /**

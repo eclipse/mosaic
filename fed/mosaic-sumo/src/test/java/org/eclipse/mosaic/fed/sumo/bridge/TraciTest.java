@@ -45,9 +45,9 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.UtmPoint;
 import org.eclipse.mosaic.lib.geo.UtmZone;
 import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
+import org.eclipse.mosaic.lib.objects.pt.PtVehicleData;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
-import org.eclipse.mosaic.lib.objects.vehicle.PublicTransportData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
 import org.eclipse.mosaic.lib.objects.vehicle.sensor.SensorValue.SensorStatus;
@@ -242,9 +242,9 @@ public class TraciTest {
         // ASSERT
         VehicleData vehData = traci.getSimulationControl().getLastKnownVehicleData("2");
         assertEquals("1_4_3", vehData.getRoadPosition().getConnection().getId());
-        PublicTransportData publicTransportData = (PublicTransportData) vehData.getAdditionalData();
-        assertEquals("bs_0", publicTransportData.getNextStops().get(0).getStoppingPlaceId());
-        assertEquals("testLine", publicTransportData.getLineId());
+        PtVehicleData ptData = (PtVehicleData) vehData.getAdditionalData();
+        assertEquals("bs_0", ptData.getNextStops().get(0).getStoppingPlaceId());
+        assertEquals("testLine", ptData.getLineId());
     }
 
     @Test
