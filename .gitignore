@@ -60,6 +60,9 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 .flattened-pom.xml
 
+# Develocity
+.mvn/.develocity/develocity-workspace-id
+
 # MOSAIC
 
 *.log
