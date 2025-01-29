@@ -80,7 +80,10 @@ public enum ErrorRegister {
     TRAFFIC_MANAGEMENT_CENTER_NoEventResource(0x01000091, "Process event with no resource."),
     // 0x01000100 to 0x0100010F Servers
     SERVER_UnknownEvent(0x01000100, "Process unknown event."),
-    SERVER_NoEventResource(0x0100101, "Process event with no resource.");
+    SERVER_NoEventResource(0x0100101, "Process event with no resource."),
+    // 0x01000110 to 0x0100011F Agents
+    AGENT_UnknownEvent(0x01000110, "Process unknown event."),
+    AGENT_NoEventResource(0x0100111, "Process event with no resource.");
 
     /**
      * The code of the error.

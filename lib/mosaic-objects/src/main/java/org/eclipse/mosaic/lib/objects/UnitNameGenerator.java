@@ -38,6 +38,10 @@ public class UnitNameGenerator {
         return nextUnitName(UnitType.VEHICLE);
     }
 
+    public static String nextAgentName() {
+        return nextUnitName(UnitType.AGENT);
+    }
+
     public static String nextRsuName() {
         return nextUnitName(UnitType.ROAD_SIDE_UNIT);
     }
@@ -60,6 +64,10 @@ public class UnitNameGenerator {
 
     public static boolean isVehicle(String name) {
         return isUnitType(UnitType.VEHICLE, name);
+    }
+
+    public static boolean isAgent(String name) {
+        return isUnitType(UnitType.AGENT, name);
     }
 
     public static boolean isRsu(String name) {

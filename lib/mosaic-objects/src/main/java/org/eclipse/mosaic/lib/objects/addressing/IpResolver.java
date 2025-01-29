@@ -81,6 +81,7 @@ public final class IpResolver implements Serializable {
         Objects.requireNonNull(configuration.tlNet, "Invalid IpResolver configuration: No tlNet given");
         Objects.requireNonNull(configuration.csNet, "Invalid IpResolver configuration: No csNet given");
         Objects.requireNonNull(configuration.serverNet, "Invalid IpResolver configuration: No serverNet given");
+        Objects.requireNonNull(configuration.agentNet, "Invalid IpResolver configuration: No agentNet given");
         try {
             this.netMask = (Inet4Address) Inet4Address.getByName(configuration.netMask);
 
@@ -90,6 +91,7 @@ public final class IpResolver implements Serializable {
             unitNetworks.put(UnitType.TRAFFIC_LIGHT, (Inet4Address) Inet4Address.getByName(configuration.tlNet));
             unitNetworks.put(UnitType.CHARGING_STATION, (Inet4Address) Inet4Address.getByName(configuration.csNet));
             unitNetworks.put(UnitType.SERVER, (Inet4Address) Inet4Address.getByName(configuration.serverNet));
+            unitNetworks.put(UnitType.AGENT, (Inet4Address) Inet4Address.getByName(configuration.agentNet));
 
         } catch (UnknownHostException ex) {
             throw new RuntimeException("Could not parse IP addresses from configuration");

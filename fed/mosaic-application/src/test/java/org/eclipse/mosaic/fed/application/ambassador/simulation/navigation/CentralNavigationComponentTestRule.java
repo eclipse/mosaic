@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
-import org.eclipse.mosaic.lib.routing.Routing;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 import org.eclipse.mosaic.rti.api.RtiAmbassador;
@@ -36,7 +36,7 @@ public class CentralNavigationComponentTestRule extends ExternalResource {
 
     private final static String configFile = "/application_config.json";
     private TemporaryFolder folderRule;
-    private Routing routingMock = mock(Routing.class);
+    private VehicleRouting routingMock = mock(VehicleRouting.class);
     private CentralNavigationComponent centralNavigationComponent;
     private RtiAmbassador rtiAmbassadorMock;
 
@@ -52,7 +52,7 @@ public class CentralNavigationComponentTestRule extends ExternalResource {
         return rtiAmbassadorMock;
     }
 
-    public Routing getRoutingMock() {
+    public VehicleRouting getRoutingMock() {
         return routingMock;
     }
 
@@ -63,9 +63,9 @@ public class CentralNavigationComponentTestRule extends ExternalResource {
 
         CApplicationAmbassador applicationConfig = new CApplicationAmbassador();
         AmbassadorParameter ambassadorParameters = new AmbassadorParameter("test", configCopy.getParentFile());
-        centralNavigationComponent = new CentralNavigationComponent(ambassadorParameters, applicationConfig.navigationConfiguration) {
+        centralNavigationComponent = new CentralNavigationComponent(ambassadorParameters, applicationConfig.navigationConfiguration, applicationConfig.publicTransportConfiguration) {
             @Override
-            Routing createFromType(String type) throws InternalFederateException {
+            VehicleRouting createFromType(String type) throws InternalFederateException {
                 return routingMock;
             }
         };

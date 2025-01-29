@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.mapping.config;
 
+import org.eclipse.mosaic.fed.mapping.config.units.CAgent;
 import org.eclipse.mosaic.fed.mapping.config.units.CChargingStation;
 import org.eclipse.mosaic.fed.mapping.config.units.COriginDestinationMatrixMapper;
 import org.eclipse.mosaic.fed.mapping.config.units.CRoadSideUnit;
@@ -75,6 +76,11 @@ public class CMappingAmbassador {
      * List of vehicle spawners.
      */
     public List<CVehicle> vehicles;
+
+    /**
+     * List of agents.
+     */
+    public List<CAgent> agents;
 
     /**
      * List of additional traffic that will be spawned using OD-matrices.

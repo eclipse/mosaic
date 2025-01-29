@@ -15,7 +15,8 @@
 
 package org.eclipse.mosaic.fed.application.config;
 
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.lib.util.gson.TimeFieldAdapter;
 import org.eclipse.mosaic.lib.util.scheduling.MultiThreadedEventScheduler;
 import org.eclipse.mosaic.rti.TIME;
@@ -54,29 +55,36 @@ public class CApplicationAmbassador implements Serializable {
     public int eventSchedulerThreads = 1;
 
     /**
+     * Configuration options for route calculation via public transport.
+     * Requires paths to OSM and GTFS files.
+     */
+    public CPublicTransportRouting publicTransportConfiguration = new CPublicTransportRouting();
+
+    /**
      * Class containing the information for the configuration of the
      * Routing/Navigation (CentralNavigationComponent).
      */
-    public CRoutingByType navigationConfiguration = null;
-
-    /**
-     * Extends the {@link CRouting} configuration with a type parameter
-     * allowing to define the actual {@link org.eclipse.mosaic.lib.routing.Routing}
-     * implementation to use.
-     */
-    public static class CRoutingByType extends CRouting implements Serializable {
-
-        /**
-         * Defines the {@link org.eclipse.mosaic.lib.routing.Routing} implementation
-         * to use for navigation. Possible values are {@code "database" or "no-routing"},
-         * or any full-qualified java class name.
-         */
-        public String type = null;
-    }
+    public CRoutingByType navigationConfiguration = new CRoutingByType();
 
     /**
      * Configuration for the perception backend used in the ApplicationSimulator
      * to determine surrounding vehicles.
      */
     public CPerception perceptionConfiguration = new CPerception();
+
+    /**
+     * Extends the {@link CVehicleRouting} configuration with a type parameter
+     * allowing to define the actual {@link org.eclipse.mosaic.lib.routing.VehicleRouting}
+     * implementation to use.
+     */
+    public static class CRoutingByType extends CVehicleRouting implements Serializable {
+
+        /**
+         * Defines the {@link org.eclipse.mosaic.lib.routing.VehicleRouting} implementation
+         * to use for navigation. Possible values are {@code "database" or "no-routing"},
+         * or any full-qualified java class name.
+         */
+        public String type = "database";
+    }
+
 }

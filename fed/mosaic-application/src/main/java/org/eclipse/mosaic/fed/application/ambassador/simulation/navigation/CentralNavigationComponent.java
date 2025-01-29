@@ -32,14 +32,18 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.IllegalRouteException;
-import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingCostFunction;
 import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
+import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
 import org.eclipse.mosaic.lib.routing.database.DatabaseRouting;
 import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
+import org.eclipse.mosaic.lib.routing.pt.PtRouting;
+import org.eclipse.mosaic.lib.routing.pt.PtRoutingRequest;
+import org.eclipse.mosaic.lib.routing.pt.PtRoutingResponse;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
 import org.eclipse.mosaic.rti.api.Interaction;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
@@ -55,6 +59,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
 
 /**
  * The {@link CentralNavigationComponent} unites functionality concerned with
@@ -81,12 +86,23 @@ public class CentralNavigationComponent {
     /**
      * The IRoutingApi.
      */
-    private Routing routing;
+    private VehicleRouting vehicleRouting;
+
+
+    /**
+     * Access to Public Transport routing.
+     */
+    private PtRouting ptRouting;
 
     /**
      * The configuration for routingAPI.
      */
     private CApplicationAmbassador.CRoutingByType configuration;
+
+    /**
+     * The configuration for public transport routing.
+     */
+    private CPublicTransportRouting ptConfiguration;
 
     /**
      * Constructor for the CentralNavigationComponent.
@@ -99,20 +115,22 @@ public class CentralNavigationComponent {
      */
     public CentralNavigationComponent(
             final AmbassadorParameter ambassadorParameter,
-            CApplicationAmbassador.CRoutingByType navigationConfiguration
+            @Nonnull CApplicationAmbassador.CRoutingByType navigationConfiguration,
+            @Nonnull CPublicTransportRouting publicTransportConfiguration
     ) {
         this.applicationAmbassadorParameter = ambassadorParameter;
         this.configuration = navigationConfiguration;
+        this.ptConfiguration = publicTransportConfiguration;
     }
 
     /**
      * This method initializes the {@link CentralNavigationComponent}. It is called
      * by the {@link ApplicationAmbassador}.
-     * The {@link #routing} will be created and initialized and other simulators will be informed
+     * The {@link #vehicleRouting} will be created and initialized and other simulators will be informed
      * using a {@link VehicleRoutesInitialization} interaction.
      *
      * @param rtiAmbassador the ambassador of the run time infrastructure
-     * @throws InternalFederateException if the {@link #routing} couldn't be initialized or the
+     * @throws InternalFederateException if the {@link #vehicleRouting} couldn't be initialized or the
      *                                   {@link VehicleRoutesInitialization} interaction couldn't be send to the rti
      */
     public void initialize(RtiAmbassador rtiAmbassador) throws InternalFederateException {
@@ -121,14 +139,17 @@ public class CentralNavigationComponent {
         try {
             this.log.info("Initializing CNC-Navigation");
 
-            routing = createFromType(this.configuration != null ? this.configuration.type : null);
-            routing.initialize(configuration, applicationAmbassadorParameter.configuration.getParentFile());
+            vehicleRouting = createFromType(configuration.type);
+            vehicleRouting.initialize(configuration, applicationAmbassadorParameter.configuration.getParentFile());
+
+            ptRouting = new PtRouting();
+            ptRouting.initialize(ptConfiguration, applicationAmbassadorParameter.configuration.getParentFile());
 
             this.log.info("CNC - Navigation-System initialized");
 
             try {
-                final Map<String, VehicleRoute> routeMap = routing.getRoutesFromDatabaseForMessage();
-                for (var routeEntry: routeMap.entrySet()) {
+                final Map<String, VehicleRoute> routeMap = vehicleRouting.getRoutesFromDatabaseForMessage();
+                for (var routeEntry : routeMap.entrySet()) {
                     SimulationKernel.SimulationKernel.registerRoute(routeEntry.getKey(), routeEntry.getValue());
                 }
 
@@ -147,6 +168,12 @@ public class CentralNavigationComponent {
         }
     }
 
+    public void close() {
+        if (ptRouting != null) {
+            ptRouting.close();
+        }
+    }
+
     /**
      * Returns an unmodifiable view of all routes known to the {@link SimulationKernel}.
      *
@@ -156,7 +183,7 @@ public class CentralNavigationComponent {
         return SimulationKernel.SimulationKernel.getRoutes();
     }
 
-    Routing createFromType(String type) throws InternalFederateException {
+    VehicleRouting createFromType(String type) throws InternalFederateException {
         if (type == null || "database".equalsIgnoreCase(type) || "graphhopper".equalsIgnoreCase(type)) {
             return new DatabaseRouting();
         } else if ("no-routing".equalsIgnoreCase(type)) {
@@ -164,7 +191,7 @@ public class CentralNavigationComponent {
         } else {
             try {
                 Class<?> routingImplClass = Class.forName(type);
-                return (Routing) routingImplClass.getConstructor().newInstance();
+                return (VehicleRouting) routingImplClass.getConstructor().newInstance();
             } catch (Exception e) {
                 String msg = "Could not create Routing instance from type '" + type + "'.";
                 InternalFederateException ex = new InternalFederateException(msg, e);
@@ -183,7 +210,7 @@ public class CentralNavigationComponent {
      *                       for.
      */
     RoutingResponse findRoutes(RoutingRequest routingRequest) {
-        return routing.findRoutes(routingRequest);
+        return vehicleRouting.findRoutes(routingRequest);
     }
 
     /**
@@ -220,20 +247,32 @@ public class CentralNavigationComponent {
                 return requestStaticRouteChange(vehicleData, knownRoute, currentRoute, time);
             } else {
                 // generate a new route
-                VehicleRoute route = routing.createRouteForRTI(rawRoute);
+                VehicleRoute route = createAndPropagateRoute(rawRoute, time);
 
-                // propagate the new route
-                try {
-                    log.debug("Propagate unknown route {}.", route.getId());
-                    propagateRoute(route, time);
-                } catch (InternalFederateException e) {
-                    log.error("[CNC.switchRoute]: unable to send propagate a new route.");
+                if (route == null) {
+                    log.error("[CNC.switchRoute]: unable to propagate new route.");
                     return currentRoute;
                 }
-
-                // change route for sumo
                 return requestStaticRouteChange(vehicleData, route, currentRoute, time);
             }
+        }
+    }
+
+    /**
+     * Creates a {@link VehicleRoute} from a {@link CandidateRoute} and propagates it
+     * to all ambassadors by triggering a {@link VehicleRouteRegistration}.
+     *
+     * @param rawRoute The raw route object.
+     * @param time The current simulation time. Used when sending the {@link VehicleRouteRegistration}.
+     */
+    public VehicleRoute createAndPropagateRoute(CandidateRoute rawRoute, long time) throws IllegalRouteException {
+        VehicleRoute route = vehicleRouting.createRouteForRTI(rawRoute);
+        try {
+            log.debug("Propagate unknown route {}.", route.getId());
+            propagateRoute(route, time);
+            return route;
+        } catch (InternalFederateException e) {
+            return null;
         }
     }
 
@@ -268,7 +307,7 @@ public class CentralNavigationComponent {
     GeoPoint getTargetPositionOfRoute(String routeId) {
         if (getAllRoutes().containsKey(routeId)) {
             String lastConnectionId = Iterables.getLast(getAllRoutes().get(routeId).getConnectionIds(), null);
-            return routing.getConnection(lastConnectionId).getEndNode().getPosition();
+            return vehicleRouting.getConnection(lastConnectionId).getEndNode().getPosition();
         } else {
             return null;
         }
@@ -283,19 +322,30 @@ public class CentralNavigationComponent {
     public GeoPoint getSourcePositionOfRoute(String routeId) {
         if (getAllRoutes().containsKey(routeId)) {
             String firstConnectionId = Iterables.getFirst(getAllRoutes().get(routeId).getConnectionIds(), null);
-            return routing.getConnection(firstConnectionId).getStartNode().getPosition();
+            return vehicleRouting.getConnection(firstConnectionId).getStartNode().getPosition();
         } else {
             return null;
         }
     }
 
     /**
+     * Find a public transport route from a provided position to a provided target position at a specific request time.
+     *
+     * @param routingRequest A {@link PtRoutingRequest} that contains
+     *                       the origin, the end, the request time, and additional
+     *                       routing parameters to calculate the public transport route.
+     */
+    PtRoutingResponse findPtRoute(PtRoutingRequest routingRequest) {
+        return ptRouting.findPtRoute(routingRequest);
+    }
+
+    /**
      * Provides the current routing API implementation.
      *
-     * @return The {@link Routing}.
+     * @return The {@link VehicleRouting}.
      */
-    public Routing getRouting() {
-        return routing;
+    public VehicleRouting getRouting() {
+        return vehicleRouting;
     }
 
     /**
@@ -305,7 +355,7 @@ public class CentralNavigationComponent {
      * @return A {@link GeoPoint} representing the position of the node.
      */
     private GeoPoint getPositionOfNode(String nodeId) {
-        return routing.getNode(nodeId).getPosition();
+        return vehicleRouting.getNode(nodeId).getPosition();
     }
 
     /**
@@ -315,7 +365,7 @@ public class CentralNavigationComponent {
      * @return the length of the connection in [m]
      */
     double getLengthOfConnection(String connectionId) {
-        return routing.getConnection(connectionId).getLength();
+        return vehicleRouting.getConnection(connectionId).getLength();
     }
 
     /**
@@ -386,7 +436,7 @@ public class CentralNavigationComponent {
             final RoutingRequest request = new RoutingRequest(new RoutingPosition(sourcePoint), new RoutingPosition(targetPoint), params);
 
             // find route
-            final RoutingResponse response = routing.findRoutes(request);
+            final RoutingResponse response = vehicleRouting.findRoutes(request);
             // check if best route, matches one of the existing routes and if so choose that existing route
             if (response.getBestRoute() != null) {
                 VehicleRoute route = null;
@@ -398,7 +448,7 @@ public class CentralNavigationComponent {
                 }
                 if (route == null) {
                     try {
-                        route = routing.createRouteForRTI(response.getBestRoute());
+                        route = vehicleRouting.createRouteForRTI(response.getBestRoute());
                         propagateRoute(route, time);
                     } catch (IllegalRouteException e) {
                         log.error("[CNC.createRouteForODInfo]: Could not create route.", e);
@@ -428,7 +478,7 @@ public class CentralNavigationComponent {
 
     /**
      * This method refines the road position depending on the
-     * implementation of the {@link Routing} interface this can have
+     * implementation of the {@link VehicleRouting} interface this can have
      * different levels of complexity.
      *
      * @param roadPosition the {@link IRoadPosition} to be refined
@@ -438,7 +488,7 @@ public class CentralNavigationComponent {
         if (roadPosition == null) {
             return null;
         }
-        return routing.refineRoadPosition(roadPosition);
+        return vehicleRouting.refineRoadPosition(roadPosition);
     }
 
     /**
@@ -500,7 +550,7 @@ public class CentralNavigationComponent {
 
         List<String> nodeList = currentRoute.getNodeIds().subList(indexOfUpcomingNode, currentRoute.getNodeIds().size());
         for (String nodeId : nodeList) {
-            INode node = routing.getNode(nodeId);
+            INode node = vehicleRouting.getNode(nodeId);
             if (nodeCondition.test(node)) {
                 return node;
             }
@@ -520,7 +570,7 @@ public class CentralNavigationComponent {
     public Collection<CandidateRoute> approximateCosts(Collection<CandidateRoute> candidateRoutes, String lastNodeId) {
         List<CandidateRoute> routesWithCosts = new ArrayList<>();
         for (CandidateRoute candidateRoute : candidateRoutes) {
-            routesWithCosts.add(routing.approximateCostsForCandidateRoute(candidateRoute, lastNodeId));
+            routesWithCosts.add(vehicleRouting.approximateCostsForCandidateRoute(candidateRoute, lastNodeId));
         }
         return routesWithCosts;
     }

@@ -33,10 +33,10 @@ import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.IllegalRouteException;
-import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.lib.routing.graphhopper.GraphHopperRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
@@ -50,10 +50,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An implementation of the {@link Routing} interface which provides access to routing functions
+ * An implementation of the {@link VehicleRouting} interface which provides access to routing functions
  * based on data of the scenario-database.
  */
-public class DatabaseRouting implements Routing {
+public class DatabaseRouting implements VehicleRouting {
 
     private final static Logger log = LoggerFactory.getLogger(DatabaseRouting.class);
 
@@ -65,7 +65,7 @@ public class DatabaseRouting implements Routing {
     private GraphHopperRouting routing;
 
     @Override
-    public void initialize(final CRouting configuration, final File baseDirectory) throws InternalFederateException {
+    public void initialize(final CVehicleRouting configuration, final File baseDirectory) throws InternalFederateException {
 
         File dbFile;
         // try to find the database file

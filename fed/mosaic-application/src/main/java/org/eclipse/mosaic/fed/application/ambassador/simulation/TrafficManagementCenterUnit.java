@@ -24,6 +24,8 @@ import org.eclipse.mosaic.interactions.traffic.InductionLoopDetectorSubscription
 import org.eclipse.mosaic.interactions.traffic.LaneAreaDetectorSubscription;
 import org.eclipse.mosaic.interactions.traffic.LanePropertyChange;
 import org.eclipse.mosaic.interactions.traffic.TrafficDetectorUpdates;
+import org.eclipse.mosaic.interactions.trafficsigns.TrafficSignLaneAssignmentChange;
+import org.eclipse.mosaic.interactions.trafficsigns.TrafficSignSpeedLimitChange;
 import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.objects.mapping.TmcMapping;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -113,6 +115,11 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
     }
 
     @Override
+    public ChangeLaneState changeVariableMessageSignState(String signId, int laneIndex) {
+        return new ChangeVariableMessageSignStateImpl(signId, laneIndex, this);
+    }
+
+    @Override
     public void processEvent(Event event) throws Exception {
         // never remove the preProcessEvent call!
         final boolean preProcessed = super.preProcessEvent(event);
@@ -171,22 +178,37 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
         return false;
     }
 
-    private static class ChangeLaneStateImpl implements ChangeLaneState {
+    private static abstract class ChangeLaneStateBaseImpl {
 
-        private final AbstractSimulationUnit unit;
+        final AbstractSimulationUnit unit;
+
+        private ChangeLaneStateBaseImpl(AbstractSimulationUnit unit) {
+            this.unit = unit;
+        }
+
+        void sendInteractionQuietly(Interaction interaction) {
+            try {
+                unit.sendInteractionToRti(interaction);
+            } catch (RuntimeException e) {
+                unit.getOsLog().error("Could not send interaction", e);
+            }
+        }
+    }
+
+    private static class ChangeLaneStateImpl extends ChangeLaneStateBaseImpl implements ChangeLaneState {
 
         private final String edgeId;
         private final int laneIndex;
 
         private ChangeLaneStateImpl(String edgeId, int laneIndex, AbstractSimulationUnit unit) {
+            super(unit);
             this.edgeId = edgeId;
             this.laneIndex = laneIndex;
-            this.unit = unit;
         }
 
         @Override
         public ChangeLaneState openOnlyForVehicleClasses(VehicleClass... allowVehicleClasses) {
-            sendMessageQuietly(new LanePropertyChange(
+            sendInteractionQuietly(new LanePropertyChange(
                     unit.getSimulationTime(),
                     edgeId,
                     laneIndex,
@@ -199,7 +221,7 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
 
         @Override
         public ChangeLaneState closeOnlyForVehicleClasses(VehicleClass... disallowVehicleClasses) {
-            sendMessageQuietly(new LanePropertyChange(
+            sendInteractionQuietly(new LanePropertyChange(
                     unit.getSimulationTime(),
                     edgeId,
                     laneIndex,
@@ -211,27 +233,69 @@ public class TrafficManagementCenterUnit extends ServerUnit implements TrafficMa
         }
 
         @Override
-        public ChangeLaneState closeForAll() {
-            return closeOnlyForVehicleClasses(VehicleClass.values());
+        public ChangeLaneState setMaxSpeed(double maxSpeedMs) {
+            sendInteractionQuietly(new LanePropertyChange(unit.getSimulationTime(), edgeId, laneIndex, null, null, maxSpeedMs));
+            return this;
+        }
+    }
+
+    private static class ChangeVariableMessageSignStateImpl extends ChangeLaneStateBaseImpl implements ChangeLaneState {
+
+        private final String signId;
+        private final int laneIndex;
+
+        private ChangeVariableMessageSignStateImpl(String signId, int laneIndex, AbstractSimulationUnit unit) {
+            super(unit);
+            this.signId = signId;
+            this.laneIndex = laneIndex;
         }
 
         @Override
-        public ChangeLaneState openForAll() {
-            return openOnlyForVehicleClasses(VehicleClass.values());
+        public ChangeLaneState openOnlyForVehicleClasses(VehicleClass... allowVehicleClasses) {
+            if (laneIndex < 0) {
+                throw new IllegalArgumentException("With negative lane index you can only use speed assignments, then addressing all lanes.");
+            }
+            sendInteractionQuietly(new TrafficSignLaneAssignmentChange(
+                            unit.getSimulationTime(),
+                            signId,
+                            laneIndex,
+                            Lists.newArrayList(allowVehicleClasses)
+                    )
+            );
+            return this;
+        }
+
+        @Override
+        public ChangeLaneState closeOnlyForVehicleClasses(VehicleClass... disallowVehicleClasses) {
+            ArrayList<VehicleClass> remaining = Lists.newArrayList(VehicleClass.values());
+            for (VehicleClass removeme : disallowVehicleClasses) {
+                remaining.remove(removeme);
+            }
+            return openOnlyForVehicleClasses(remaining.toArray(new VehicleClass[remaining.size()]));
         }
 
         @Override
         public ChangeLaneState setMaxSpeed(double maxSpeedMs) {
-            sendMessageQuietly(new LanePropertyChange(unit.getSimulationTime(), edgeId, laneIndex, null, null, maxSpeedMs));
+            if (laneIndex < 0) {
+                sendInteractionQuietly(
+                        new TrafficSignSpeedLimitChange(
+                                unit.getSimulationTime(),
+                                signId,
+                                maxSpeedMs
+                        )
+                );
+            } else {
+                sendInteractionQuietly(
+                        new TrafficSignSpeedLimitChange(
+                                unit.getSimulationTime(),
+                                signId,
+                                laneIndex,
+                                maxSpeedMs
+                        )
+                );
+            }
             return this;
         }
 
-        private void sendMessageQuietly(Interaction interaction) {
-            try {
-                unit.sendInteractionToRti(interaction);
-            } catch (RuntimeException e) {
-                unit.getOsLog().error("Could not send interaction", e);
-            }
-        }
     }
 }

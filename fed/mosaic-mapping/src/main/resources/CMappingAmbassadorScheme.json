@@ -18,9 +18,14 @@
             "$ref": "#/definitions/typeDistribution"
         },
         "vehicles": {
-            "description": "Array of vehicles to be spawned in the simulation. This property describes the vehicles populatingthe simulation. It is possible to create a single vehicle (maxNumberVehicles should be '1' in that case) or a streamof one or multiple vehicles. The type(s) are defined in the field types. When more than one type is defined theweights in the prototype can be used to balance them against each other.",
+            "description": "Array of vehicles to be spawned in the simulation. This property describes the vehicles populating the simulation. It is possible to create a single vehicle (maxNumberVehicles should be '1' in that case) or a stream of one or multiple vehicles. The type(s) are defined in the field types. When more than one type is defined the weights in the prototype can be used to balance them against each other.",
             "type": "array",
             "items": { "$ref": "#/definitions/vehicle" }
+        },
+        "agents": {
+            "description": "Array of agents to be spawned in the simulation.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/agent" }
         },
         "matrixMappers": {
             "description": "Array of items to define additional traffic that will be spawned using OD-matrices.",
@@ -387,6 +392,49 @@
                 { "required": [ "types", "origin", "destination" ] },
                 { "required": [ "typeDistribution", "origin", "destination" ] }
             ]
+        },
+        "agent": {
+            "title": "agent",
+            "description": "An agent has an origin and destination point. The trip selection is done via mapped applications.",
+            "type": "object",
+            "properties": {
+                "startingTime": {
+                    "description": "Time in seconds at which the agent will be created.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 0.0 }
+                    ]
+                },
+                "origin": {
+                    "description": "Point at which the agent will be spawned.",
+                    "$ref": "#/definitions/geoPoint"
+                },
+                "destination": {
+                    "description": "Point to which the agent will travel.",
+                    "$ref": "#/definitions/geoPoint"
+                },
+                "name": {
+                    "description": "Used to be matched with a prototype. If a prototype name matches this name, all properties not set in this object will be overwritten by those defined in the prototype.",
+                    "type": "string"
+                },
+                "group": {
+                    "description": "The group name is used for (statistical) evaluation purposes with the StatisticOutput and ITEF. It allows to summarize multiple agent entities.",
+                    "type": "string"
+                },
+                "applications": {
+                    "description": "Array of strings that specifies the applications to be used for this object.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "walkingSpeed": {
+                    "description": "Speed which is used for walking, in m/s.",
+                    "anyOf": [
+                        { "type": "string", "maxLength": 15 },
+                        { "type": "number", "minimum": 0, "default": 1.39 }
+                    ]
+                }
+            },
+            "required": [ "startingTime", "origin", "destination" ]
         },
         "matrixMapper": {
             "title": "matrixMapper",

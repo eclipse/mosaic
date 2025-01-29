@@ -24,10 +24,10 @@ import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.IllegalRouteException;
-import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
 import org.eclipse.mosaic.lib.routing.RoutingResponse;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import com.google.common.collect.Lists;
@@ -37,14 +37,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementation of {@link Routing} if no scenario database
+ * Implementation of {@link VehicleRouting} if no scenario database
  * or any other road traffic map is present. In that case, online-routing
  * during the simulation is disabled.
  */
-public class NoRouting implements Routing {
+public class NoRouting implements VehicleRouting {
 
     @Override
-    public void initialize(CRouting configuration, File configurationLocation) throws InternalFederateException {
+    public void initialize(CVehicleRouting configuration, File configurationLocation) throws InternalFederateException {
         // nop
     }
 

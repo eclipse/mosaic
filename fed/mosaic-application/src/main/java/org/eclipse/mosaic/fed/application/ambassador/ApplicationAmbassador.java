@@ -41,6 +41,7 @@ import org.eclipse.mosaic.interactions.electricity.VehicleBatteryUpdates;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.environment.EnvironmentSensorUpdates;
 import org.eclipse.mosaic.interactions.environment.LidarUpdates;
+import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -146,7 +147,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             // set the CNC (central navigation component)
             CentralNavigationComponent cnc = new CentralNavigationComponent(
                     ambassadorParameter,
-                    ambassadorConfig.navigationConfiguration
+                    Validate.notNull(ambassadorConfig.navigationConfiguration, "Field navigationConfiguration must not be null."),
+                    Validate.notNull(ambassadorConfig.publicTransportConfiguration, "Field publicTransportConfiguration must not be null.")
             );
             SimulationKernel.SimulationKernel.setCentralNavigationComponent(cnc);
         }
@@ -237,6 +239,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void shutdownSimulationUnits(Event event) {
         SimulationKernel.SimulationKernel.setCurrentSimulationTime(event.getTime());
+        SimulationKernel.SimulationKernel.getCentralNavigationComponent().close();
 
         log.debug("remaining events: {}", eventScheduler.getAllEvents());
         UnitSimulator.UnitSimulator.removeAllSimulationUnits();
@@ -273,6 +276,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((RsuRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
                 this.process((ChargingStationRegistration) interaction);
+            } else if (interaction.getTypeId().startsWith(AgentRegistration.TYPE_ID)) {
+                this.process((AgentRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(TrafficLightRegistration.TYPE_ID)) {
                 this.process((TrafficLightRegistration) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleRegistration.TYPE_ID)) {
@@ -381,6 +386,10 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         UnitSimulator.UnitSimulator.registerTrafficLight(trafficLightRegistration);
         SimulationKernel.SimulationKernel.getCentralPerceptionComponent()
                 .addTrafficLightGroup(trafficLightRegistration.getTrafficLightGroup());
+    }
+
+    private void process(final AgentRegistration agentRegistration) {
+        UnitSimulator.UnitSimulator.registerAgent(agentRegistration);
     }
 
     private void process(final VehicleRegistration vehicleRegistration) {

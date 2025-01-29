@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -44,11 +43,12 @@ import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.routing.CandidateRoute;
 import org.eclipse.mosaic.lib.routing.IllegalRouteException;
-import org.eclipse.mosaic.lib.routing.Routing;
 import org.eclipse.mosaic.lib.routing.RoutingParameters;
 import org.eclipse.mosaic.lib.routing.RoutingPosition;
 import org.eclipse.mosaic.lib.routing.RoutingRequest;
-import org.eclipse.mosaic.lib.routing.config.CRouting;
+import org.eclipse.mosaic.lib.routing.VehicleRouting;
+import org.eclipse.mosaic.lib.routing.config.CPublicTransportRouting;
+import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.lib.routing.norouting.NoRouting;
 import org.eclipse.mosaic.rti.TIME;
 import org.eclipse.mosaic.rti.api.IllegalValueException;
@@ -79,7 +79,7 @@ public class CentralNavigationComponentTest {
 
     private CentralNavigationComponent cnc;
 
-    private Routing routingMock;
+    private VehicleRouting routingMock;
     private RtiAmbassador rtiAmbassadorMock;
 
     private static VehicleRoute createExampleRoute0() {
@@ -125,7 +125,7 @@ public class CentralNavigationComponentTest {
         cnc.initialize(rtiAmbassadorMock);
 
         //ASSERT
-        verify(routingMock).initialize(isNull(CRouting.class), isA(File.class));
+        verify(routingMock).initialize(isA(CVehicleRouting.class), isA(File.class));
         verify(rtiAmbassadorMock).triggerInteraction(isA(VehicleRoutesInitialization.class));
     }
 
@@ -246,7 +246,7 @@ public class CentralNavigationComponentTest {
         routingConfig.type = "no-routing";
 
         CentralNavigationComponent centralNavigationComponent
-                = new CentralNavigationComponent(ambassadorParameter,routingConfig );
+                = new CentralNavigationComponent(ambassadorParameter, routingConfig, new CPublicTransportRouting());
         centralNavigationComponent.initialize(rtiAmbassadorMock);
 
         assertNotNull(centralNavigationComponent.getRouting());
@@ -264,7 +264,7 @@ public class CentralNavigationComponentTest {
         routingConfig.type = MyTestRouting.class.getCanonicalName();
 
         CentralNavigationComponent centralNavigationComponent
-                = new CentralNavigationComponent(ambassadorParameter,routingConfig );
+                = new CentralNavigationComponent(ambassadorParameter, routingConfig, new CPublicTransportRouting());
         centralNavigationComponent.initialize(rtiAmbassadorMock);
 
         assertNotNull(centralNavigationComponent.getRouting());
