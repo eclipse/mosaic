@@ -24,23 +24,23 @@ import java.util.Objects;
 
 /**
  * This class is to be used as an {@link Event} resource,
- * it contains a list of vehicle names to be removed.
+ * it contains a list of unit names to be removed.
  */
-public class RemoveVehicles implements Serializable {
+public class RemoveUnits implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * List of vehicle IDs (strings) identifying removed vehicles.
+     * List of unit IDs (strings) identifying removed units, such as vehicles.
      */
     private final List<String> removedNames;
 
     /**
-     * The constructor for {@link RemoveVehicles}.
+     * The constructor for {@link RemoveUnits}.
      *
-     * @param removedNames a list of vehicle names to remove
+     * @param removedNames a list of unit names to remove
      */
-    public RemoveVehicles(List<String> removedNames) {
+    public RemoveUnits(List<String> removedNames) {
         this.removedNames = Collections.unmodifiableList(removedNames);
     }
 
@@ -63,12 +63,12 @@ public class RemoveVehicles implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final RemoveVehicles other = (RemoveVehicles) obj;
+        final RemoveUnits other = (RemoveUnits) obj;
         return Objects.equals(this.removedNames, other.removedNames);
     }
 
     @Override
     public String toString() {
-        return "RemoveVehicles{" + "removedNames=" + removedNames + '}';
+        return "RemoveUnits{" + "removedNames=" + removedNames + '}';
     }
 }

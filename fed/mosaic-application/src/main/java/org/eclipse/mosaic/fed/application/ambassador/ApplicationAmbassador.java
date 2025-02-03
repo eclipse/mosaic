@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador;
 
-import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
+import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveUnits;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGroupUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
@@ -30,6 +30,7 @@ import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficSignAwareApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.modules.Perceptive;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
+import org.eclipse.mosaic.interactions.agent.AgentUpdates;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.communication.V2xFullMessageReception;
@@ -57,6 +58,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.trafficsigns.VehicleSeenTrafficSignsUpdate;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.agent.AgentData;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -312,6 +314,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 this.process((TrafficLightUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
+            } else if (interaction.getTypeId().startsWith(AgentUpdates.TYPE_ID)) {
+                this.process((AgentUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
                 this.process((LidarUpdates) interaction);
             } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
@@ -639,6 +643,33 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         addEvent(event);
     }
 
+    private void process(final AgentUpdates agentUpdates) {
+
+        for (AgentData updatedAgentData : agentUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit =
+                    UnitSimulator.UnitSimulator.getUnitFromId(updatedAgentData.getName());
+            if (simulationUnit == null) {
+                continue;
+            }
+            final Event event = new Event(
+                    agentUpdates.getTime(),
+                    simulationUnit,
+                    updatedAgentData,
+                    EventNicenessPriorityRegister.AGENT_UPDATED
+            );
+            addEvent(event);
+        }
+
+        final RemoveUnits removeUnits = new RemoveUnits(agentUpdates.getRemoved());
+        final Event event = new Event(
+                agentUpdates.getTime(),
+                UnitSimulator.UnitSimulator,
+                removeUnits,
+                EventNicenessPriorityRegister.REMOVE_UNITS
+        );
+        addEvent(event);
+    }
+
     private void process(final TrafficLightUpdates trafficLightUpdates) {
         for (TrafficLightGroupUnit simulationUnit : UnitSimulator.UnitSimulator.getTrafficLights().values()) {
             TrafficLightGroupInfo trafficLightGroupInfo =
@@ -698,12 +729,12 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
          * event occurs only after the simulation. The unit simulator will
          * cleanly terminate the application.
          */
-        final RemoveVehicles removeVehicles = new RemoveVehicles(vehicleUpdates.getRemovedNames());
+        final RemoveUnits removeUnits = new RemoveUnits(vehicleUpdates.getRemovedNames());
         final Event event = new Event(
                 vehicleUpdates.getTime(),
                 UnitSimulator.UnitSimulator,
-                removeVehicles,
-                EventNicenessPriorityRegister.VEHICLE_REMOVED
+                removeUnits,
+                EventNicenessPriorityRegister.REMOVE_UNITS
         );
         addEvent(event);
 
