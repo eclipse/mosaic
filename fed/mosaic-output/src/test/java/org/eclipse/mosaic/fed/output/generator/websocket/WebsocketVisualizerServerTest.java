@@ -75,14 +75,14 @@ public class WebsocketVisualizerServerTest {
 
         // all vehicles to be removed should be sent to the client
         websocketVisualizer.onMessage(socketMock, (String) null);
-        Assert.assertEquals("{\"VehiclesRemove\":[\"veh_0\",\"veh_1\",\"veh_2\"]}", sentString.get());
+        Assert.assertEquals("{\"UnitsRemove\":[\"veh_0\",\"veh_1\",\"veh_2\"]}", sentString.get());
 
         // send another vehicle to be removed -> only this vehicle is expected in the message to be sent
         websocketVisualizer.updateVehicleUpdates(
                 new VehicleUpdates(0, Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList("veh_4"))
         );
         websocketVisualizer.onMessage(socketMock, (String) null);
-        Assert.assertEquals("{\"VehiclesRemove\":[\"veh_4\"]}", sentString.get());
+        Assert.assertEquals("{\"UnitsRemove\":[\"veh_4\"]}", sentString.get());
 
         // send no more removed vehicles -> expect no message to be sent
         sentString.set(null);

@@ -20,11 +20,16 @@ package org.eclipse.mosaic.fed.application.ambassador.util;
  */
 public class EventNicenessPriorityRegister {
     public final static long UNIT_REMOVED = 1;
+
+    public final static long REMOVE_UNITS = -99_999_999;
+
     // vehicle
     public final static long VEHICLE_ADDED = -99_999_900;
     public final static long VEHICLE_UPDATED = -99_999_800;
-    public final static long VEHICLE_REMOVED = -99_999_700;
     public final static long LIDAR_UPDATED = -99_999_650;
+
+    // agents
+    public final static long AGENT_UPDATED = -99_999_625;
 
     // update traffic detectors
     public final static long UPDATE_TRAFFIC_DETECTORS = -99_999_600;

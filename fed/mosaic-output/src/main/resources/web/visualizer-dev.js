@@ -229,6 +229,88 @@ const Vehicle = {
 }
 
 /**
+ * Represents a vehicle.
+ */
+const Agent = {
+    name: 'unnamed_agent',
+    latitude: 0,
+    longitude: 0,
+    marker: null,
+    timeStateChange: 0,
+    agentState: 'WAITING',
+
+    init(name) {
+        this.name = name
+        this.marker = new Feature({
+            type: 'agent',
+            geometry: undefined
+        })
+        this.marker.setProperties(['name', 'unit'])
+        this.marker.set('name', name)
+        this.marker.set('unit', this)
+        this.agentState = 'WAITING'
+    },
+
+    getMarker() {
+        return this.marker
+    },
+
+    setLocation(latitude, longitude) {
+        this.latitude = latitude
+        this.longitude = longitude
+    },
+
+    setAgentState(stateName) {
+        this.agentState = stateName;
+    },
+
+    /**
+     * Updates the marker of the agent.
+     */
+    updateView() {
+        // Location
+        if (this.latitude !== undefined && this.longitude !== undefined) {
+            this.marker.setGeometry(new Point(fromLonLat([ this.longitude, this.latitude ])))
+        }
+
+        // Update style
+        const style = this.createStyle()
+        this.marker.setStyle(style)
+    },
+
+    /**
+     * Creates the style of the vehicle marker based on the vehicles state.
+     */
+    createStyle() {
+        let style = 'agent-waiting'
+        if (this.agentState === "WAITING") {
+            style = 'agent-waiting'
+        }
+        if (this.agentState === "WALKING") {
+            style = 'agent-walking'
+        }
+        if (this.agentState === "IN_SHARED_VEHICLE") {
+            style = 'agent-in-shared-vehicle'
+        }
+        if (this.agentState === "IN_PRIVATE_VEHICLE") {
+            style = 'agent-in-private-vehicle'
+        }
+        if (this.agentState === "IN_PT_VEHICLE") {
+            style = 'agent-in-pt-vehicle'
+        }
+        if (this.agentState === "IN_PT_VEHICLE_AT_STOP") {
+            style = 'agent-in-pt-vehicle-at-stop'
+        }
+        return new Style({
+            image: new Icon({
+                anchor: [0.5, 1],
+                src: `markers/${ style }.png`
+            })
+        })
+    }
+}
+
+/**
  * Represents a traffic light.
  */
 const TrafficLight = {
@@ -330,6 +412,12 @@ const map = (function() {
     let vehicles = {}
 
     /**
+     * Stores all agents.
+     * Map<agentName: string, agent: Agent>
+     */
+    let agents = {}
+
+    /**
      * Stores all RSUs.
      * Map<rsuName: string, rsu: Rsu>
      */
@@ -387,8 +475,8 @@ const map = (function() {
     /**
      * Creates a vehicle and adds its marker to the map.
      * @param {string} vehicleName The name of the vehicle
-     * @param {number} latitude Latitude value of the geo position
-     * @param {number} longitude Longitude value of the geo position
+     * @param {string} vehicleClass the class of the vehicle
+     * @param {boolean} equipped if the vehicle is equipped with an application
      */
     function addVehicle(vehicleName, vehicleClass, equipped) {
         if (!vehicles[vehicleName]) {
@@ -396,6 +484,21 @@ const map = (function() {
             vehicles[vehicleName].init(vehicleName, vehicleClass)
             vehicles[vehicleName].setIsEquipped(equipped)
             addMarker(vehicles[vehicleName].getMarker())
+        }
+    }
+
+    /**
+     * Creates an agents and adds its marker to the map.
+     * @param {string} agentName The name of the agent
+     * @param {number} latitude Latitude value of the start position of the agent
+     * @param {number} longitude Longitude value of the start position of the agent
+     */
+    function addAgent(agentName, latitude, longitude) {
+        if (!agents[agentName]) {
+            agents[agentName] = Object.assign({}, Agent)
+            agents[agentName].init(agentName)
+            agents[agentName].setLocation(latitude, longitude)
+            addMarker(agents[agentName].getMarker())
         }
     }
 
@@ -448,7 +551,7 @@ const map = (function() {
 
     /**
      * Updates the position of a vehicle.
-     * If the vehicle doesn't exist yet, it is created and added to the map.
+     * If the vehicle doesn't exist yet, an error is logged.
      * @param {string} vehicleName Name of the vehicle
      * @param {number} latitude Latitude value of the geo position
      * @param {number} longitude Longitude value of the geo position
@@ -467,6 +570,28 @@ const map = (function() {
     }
 
     /**
+     * Updates the position of an agent.
+     * If the agent doesn't exist yet, an error is logged.
+     * @param {string} agentName Name of the agent
+     * @param {string} agentState Movement state of the agent, e.g., WAITING or WALKING
+     * @param {number} latitude Latitude value of the geo position
+     * @param {number} longitude Longitude value of the geo position
+     */
+    function setAgentPosition(agentName, agentState, latitude, longitude) {
+        if (agents[agentName]) {
+            agents[agentName].setLocation(latitude, longitude)
+            agents[agentName].setAgentState(agentState)
+        } else {
+            console.error("Try to set location for non-existing agent", agentName)
+        }
+        if (isCentered == false){
+            ol_map.getView().setCenter(fromLonLat([ longitude, latitude ]));
+            ol_map.getView().setZoom(18);
+            isCentered = true;
+        }
+    }
+
+    /**
      * Updates all unit markers on the map with the given names.
      * @param {string[]} unitNames Names of units to update.
      */
@@ -474,6 +599,8 @@ const map = (function() {
         for (const unitName of unitNames) {
             if (vehicles[unitName]) {
                 vehicles[unitName].updateView()
+            } else if (agents[unitName]) {
+                agents[unitName].updateView()
             } else if (rsus[unitName]) {
                 rsus[unitName].updateView()
             } else if (trafficLights[unitName]) {
@@ -492,11 +619,15 @@ const map = (function() {
             marker = vehicles[unitName].getMarker()
             vectorLayer.getSource().removeFeature(marker)
             delete vehicles[unitName]
+        } else if (agents[unitName]) {
+            marker = agents[unitName].getMarker()
+            vectorLayer.getSource().removeFeature(marker)
+            delete agents[unitName]
         } else if (rsus[unitName]) {
             marker = rsus[unitName].getMarker()
             vectorLayer.getSource().removeFeature(marker)
             delete rsus[unitName]
-        } else if (trafficLights[unitName]) {
+        }else if (trafficLights[unitName]) {
             marker = trafficLights[unitName].getMarker()
             vectorLayer.getSource().removeFeature(marker)
             delete trafficLights[unitName]
@@ -508,7 +639,9 @@ const map = (function() {
      */
     function removeAllUnits() {
         vehicles = {}
+        agents = {}
         rsus = {}
+        trafficLights = {}
         vectorLayer.getSource().clear()
     }
 
@@ -516,7 +649,9 @@ const map = (function() {
     return {
         setUnitState,
         setVehiclePosition,
+        setAgentPosition,
         addVehicle,
+        addAgent,
         addRsu,
         addTrafficLight,
         updateViews,
@@ -628,15 +763,27 @@ const WebSocketClient = (function() {
                         updatedUnits.push(vehicle.name)
                     })
                 }
-            } else if (data.VehiclesRemove) {
-                data.VehiclesRemove.forEach(map.removeUnit)
+            } else if (data.AgentUpdates) {
+                if (data.AgentUpdates.updated) {
+                    // Update agent locations
+                    data.AgentUpdates.updated.forEach(agent => {
+                        map.setAgentPosition(agent.name, agent.state, agent.position.latitude, agent.position.longitude)
+                        updatedUnits.push(agent.name)
+                    })
+                }
+            } else if (data.UnitsRemove) {
+                data.UnitsRemove.forEach(map.removeUnit)
             } else if (data.VehicleRegistration) {
                 console.log(JSON.stringify(data.VehicleRegistration))
                 // determine if vehicle is equipped with an application
                 let equipped = data.VehicleRegistration.vehicleMapping.applications.length > 0;
                 let vClass = data.VehicleRegistration.vehicleMapping.vehicleType.vehicleClass;
                 map.addVehicle(data.VehicleRegistration.vehicleMapping.name, vClass, equipped)
-            } else if (data.V2xMessageTransmission) {
+            } else if (data.AgentRegistration) {
+                console.log(JSON.stringify(data.AgentRegistration))
+                var agentOrigin = data.AgentRegistration.origin
+                map.addAgent(data.AgentRegistration.agentMapping.name, agentOrigin.latitude, agentOrigin.longitude)
+            }else if (data.V2xMessageTransmission) {
                 // Mark vehicles that are sending right now
                 unitName = data.V2xMessageTransmission.message.routing.source.sourceName
                 map.setUnitState(unitName, 'sending')
