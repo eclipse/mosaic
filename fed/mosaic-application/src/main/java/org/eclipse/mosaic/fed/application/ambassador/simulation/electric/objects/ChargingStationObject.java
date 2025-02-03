@@ -39,7 +39,6 @@ public class ChargingStationObject extends SpatialObject<ChargingStationObject> 
         super(id);
     }
 
-
     public ChargingStationObject setChargingStationData(ChargingStationData chargingStationData) {
         this.chargingStationData = chargingStationData;
         return this;

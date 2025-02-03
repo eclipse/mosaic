@@ -110,7 +110,7 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
         sendInteractionToRti(vehicleChargingStopRequest);
     }
 
-    public List<ChargingStationData> getChargingStationsByArea(GeoCircle searchArea) {
+    public List<ChargingStationData> getChargingStationsInArea(GeoCircle searchArea) {
         return SimulationKernel.SimulationKernel.getChargingStationIndex().getChargingStationsInCircle(searchArea)
                 .stream().map(ChargingStationObject::getChargingStationData)
                 .collect(Collectors.toList());

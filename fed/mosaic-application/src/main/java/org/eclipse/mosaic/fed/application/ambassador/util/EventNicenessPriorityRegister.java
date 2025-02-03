@@ -46,7 +46,4 @@ public class EventNicenessPriorityRegister {
 
     // batteryUpdated
     public final static long BATTERY_UPDATED = -99_998_900;
-
-    // discover charging stations
-    public final static long CHARGING_STATIONS_DISCOVERY = -99_998_900;
 }

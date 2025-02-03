@@ -16,44 +16,72 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers;
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.objects.ChargingStationObject;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObjectAdapter;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
+import org.eclipse.mosaic.lib.spatial.KdTree;
+import org.eclipse.mosaic.lib.spatial.SpatialTreeTraverser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ChargingStationIndex {
+public class ChargingStationIndex {
+
+    private final int bucketSize;
 
     /**
      * Stores {@link ChargingStationObject}s for fast removal and position update.
      */
     final Map<String, ChargingStationObject> indexedChargingStations = new HashMap<>();
 
+    private KdTree<ChargingStationObject> chargingStationTree;
+
+    private SpatialTreeTraverser.InRadius<ChargingStationObject> treeTraverser;
+
+    public ChargingStationIndex(int bucketSize) {
+        this.bucketSize = bucketSize;
+    }
+
     /**
      * Method called to initialize index after configuration has been read.
      */
-    public abstract void initialize();
-
-    /**
-     * Perform action before an update of the {@link ChargingStationIndex} takes place.
-     */
-    public abstract void onChargingStationUpdate();
-
-    public abstract int getNumberOfChargingStations();
-
-    public abstract List<ChargingStationObject> getChargingStationsInCircle(GeoCircle circle);
+    public void initialize() {
+        // initialization at first update
+    }
 
     public void addChargingStation(String id, GeoPoint position) {
         indexedChargingStations.computeIfAbsent(id, ChargingStationObject::new)
                 .setPosition(position.toCartesian());
     }
 
+    /**
+     * Perform action before an update of the {@link ChargingStationIndex} takes place.
+     */
     public void updateChargingStation(ChargingStationData chargingStationData) {
         onChargingStationUpdate();
         indexedChargingStations.get(chargingStationData.getName())
                 .setChargingStationData(chargingStationData);
+    }
+
+    public List<ChargingStationObject>getChargingStationsInCircle(GeoCircle circle) {
+        treeTraverser.setup(circle.getCenter().toVector3d(), circle.getRadius());
+        treeTraverser.traverse(chargingStationTree);
+        return treeTraverser.getResult();
+    }
+
+    public void onChargingStationUpdate() {
+        if (chargingStationTree == null) { // initialize before first update is called
+            List<ChargingStationObject> allChargingStations = new ArrayList<>(indexedChargingStations.values());
+            chargingStationTree = new KdTree<>(new SpatialObjectAdapter<>(), allChargingStations, bucketSize);
+            treeTraverser = new SpatialTreeTraverser.InRadius<>();
+        }
+    }
+
+    public int getNumberOfChargingStations() {
+        return chargingStationTree.getRoot().size();
     }
 
 }

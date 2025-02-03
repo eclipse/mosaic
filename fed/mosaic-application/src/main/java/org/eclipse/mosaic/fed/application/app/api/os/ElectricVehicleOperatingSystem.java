@@ -54,5 +54,5 @@ public interface ElectricVehicleOperatingSystem extends VehicleOperatingSystem {
      *
      * @param searchArea The area where the charging stations are searched
      */
-    List<ChargingStationData> getChargingStationsByArea(GeoCircle searchArea);
+    List<ChargingStationData> getChargingStationsInArea(GeoCircle searchArea);
 }

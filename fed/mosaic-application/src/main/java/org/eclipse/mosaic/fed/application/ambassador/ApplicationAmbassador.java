@@ -21,7 +21,6 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGrou
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers.ChargingStationIndex;
-import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers.ChargingStationTree;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
@@ -163,7 +162,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
         if (SimulationKernel.SimulationKernel.chargingStationIndex == null) {
             // use same bucketsize as TrafficLightTree (see: CPercetion.java) (bucketsize := number of direct children per tree node)
-            ChargingStationIndex chargingStationIndex = new ChargingStationTree(20);
+            ChargingStationIndex chargingStationIndex = new ChargingStationIndex(20);
             SimulationKernel.SimulationKernel.setChargingStationIndex(chargingStationIndex);
         }
 
