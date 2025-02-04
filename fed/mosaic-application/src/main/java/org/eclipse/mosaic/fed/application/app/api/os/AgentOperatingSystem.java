@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.fed.application.app.api.os;
 
 import org.eclipse.mosaic.fed.application.app.api.os.modules.CellCommunicative;
+import org.eclipse.mosaic.fed.application.app.api.os.modules.Locatable;
 import org.eclipse.mosaic.fed.application.app.api.os.modules.PtRoutable;
 import org.eclipse.mosaic.fed.application.app.api.os.modules.Routable;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -32,7 +33,7 @@ import org.eclipse.mosaic.lib.routing.pt.PtRoute;
  * by the {@link org.eclipse.mosaic.fed.application.ambassador.simulation.AgentUnit}.
  */
 public interface AgentOperatingSystem
-        extends OperatingSystem, CellCommunicative, Routable, PtRoutable {
+        extends OperatingSystem, Locatable, CellCommunicative, Routable, PtRoutable {
 
     /**
      * Changes the next leg of the agent to use a private vehicle. It will spawn a new vehicle and assigns this
@@ -53,6 +54,11 @@ public interface AgentOperatingSystem
     void usePublicTransport(PtRoute publicTransportRoute);
 
     /**
+     * Removes this agent from the simulation proactively.
+     */
+    void finishAgent();
+
+    /**
      * Provides the origin position of the agent as defined in the mapping configuration.
      */
     GeoPoint getOriginPosition();
@@ -61,4 +67,5 @@ public interface AgentOperatingSystem
      * Provides the destination position of the agent as defined in the mapping configuration.
      */
     GeoPoint getDestinationPosition();
+
 }

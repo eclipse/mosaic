@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.lib.routing.pt;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.pt.PtStop;
+import org.eclipse.mosaic.lib.objects.pt.PtTrip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,20 +62,16 @@ public class PtRoute {
 
     public static class PtLeg extends Leg {
 
-        private final List<PtStop> stops = new ArrayList<>();
+        private final PtTrip ptTrip;
 
-        public PtLeg(long departureTime, long arrivalTime, List<PtStop> stops) {
+        public PtLeg(long departureTime, long arrivalTime, PtTrip publicTransportTrip) {
             super(departureTime, arrivalTime);
-            this.stops.addAll(stops);
+            this.ptTrip = publicTransportTrip;
         }
 
-        /**
-         * Returns the list of stops along the public transport route.
-         */
-        public List<PtStop> getStops() {
-            return stops;
+        public PtTrip getPtTrip() {
+            return ptTrip;
         }
-
     }
 
     public static class WalkLeg extends Leg {

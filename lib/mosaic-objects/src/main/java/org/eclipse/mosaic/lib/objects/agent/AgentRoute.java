@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.lib.objects.agent;
 
 import org.eclipse.mosaic.lib.geo.GeoPoint;
-import org.eclipse.mosaic.lib.objects.pt.PtStop;
+import org.eclipse.mosaic.lib.objects.pt.PtTrip;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleDeparture;
 
 import com.google.common.collect.Lists;
@@ -104,15 +104,18 @@ public class AgentRoute implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final List<PtStop> stops = new ArrayList<>();
+        private final PtTrip ptTrip;
 
-        public PtLeg(long departureTime, List<PtStop> stops) {
+        public PtLeg(long departureTime, PtTrip publicTransportTrip) {
             super(departureTime);
-            this.stops.addAll(stops);
+            this.ptTrip = publicTransportTrip;
         }
 
-        public final List<PtStop> getStops() {
-            return stops;
+        /**
+         * Returns the {@link PtTrip} object which holds all the information about the public transport trip of this leg.
+         */
+        public PtTrip getTrip() {
+            return ptTrip;
         }
     }
 
@@ -121,14 +124,23 @@ public class AgentRoute implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private final List<GeoPoint> waypoints = new ArrayList<>();
+        private final double walkingSpeed;
 
-        public WalkLeg(long departureTime, List<GeoPoint> waypoints) {
+        public WalkLeg(long departureTime, List<GeoPoint> waypoints, double walkingSpeed) {
             super(departureTime);
             this.waypoints.addAll(waypoints);
+            this.walkingSpeed = walkingSpeed;
         }
 
+        /**
+         * Return all waypoints of this leg.
+         */
         public final List<GeoPoint> getWaypoints() {
             return waypoints;
+        }
+
+        public double getWalkingSpeed() {
+            return walkingSpeed;
         }
     }
 
