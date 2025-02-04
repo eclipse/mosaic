@@ -45,13 +45,6 @@ public class ChargingStationIndex {
         this.bucketSize = bucketSize;
     }
 
-    /**
-     * Method called to initialize index after configuration has been read.
-     */
-    public void initialize() {
-        // initialization at first update
-    }
-
     public void addChargingStation(String id, GeoPoint position) {
         indexedChargingStations.computeIfAbsent(id, ChargingStationObject::new)
                 .setPosition(position.toCartesian());

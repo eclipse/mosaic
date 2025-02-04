@@ -113,6 +113,6 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
     public List<ChargingStationData> getChargingStationsInArea(GeoCircle searchArea) {
         return SimulationKernel.SimulationKernel.getChargingStationIndex().getChargingStationsInCircle(searchArea)
                 .stream().map(ChargingStationObject::getChargingStationData)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

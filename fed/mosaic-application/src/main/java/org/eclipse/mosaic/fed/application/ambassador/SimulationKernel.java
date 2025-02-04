@@ -277,6 +277,7 @@ public enum SimulationKernel {
 
         return this.chargingStationIndex;
     }
+    
     public CentralPerceptionComponent getCentralPerceptionComponent() {
         if (centralPerceptionComponent == null) {
             throw new RuntimeException(ErrorRegister.SIMULATION_KERNEL_CentralPerceptionComponentNotSet.toString());
