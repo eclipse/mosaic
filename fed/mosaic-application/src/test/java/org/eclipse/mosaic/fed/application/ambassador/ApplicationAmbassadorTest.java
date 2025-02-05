@@ -15,6 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador;
 
+import static org.eclipse.mosaic.lib.geo.GeoPoint.latLon;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -64,6 +65,8 @@ import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+import org.eclipse.mosaic.lib.transform.GeoProjection;
+import org.eclipse.mosaic.lib.transform.Wgs84Projection;
 import org.eclipse.mosaic.lib.util.junit.TestUtils;
 import org.eclipse.mosaic.lib.util.scheduling.Event;
 import org.eclipse.mosaic.rti.TIME;
@@ -763,6 +766,10 @@ public class ApplicationAmbassadorTest {
     @Test
     public void processInteraction_ChargingStationRegistration() throws InternalFederateException, IOException {
         final ApplicationAmbassador ambassador = createAmbassador();
+
+        // init geo projection
+        GeoPoint BERLIN = latLon(52.5, 13.4);
+        GeoProjection.initialize(new Wgs84Projection(BERLIN).failIfOutsideWorld());
 
         // init ambassador
         ambassador.initialize(0L, END_TIME);
