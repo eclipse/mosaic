@@ -135,9 +135,10 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
                     continue;
                 }
 
-                if (generatorLoader.putIfAbsent(loader.getId(), loader) == loader) {
+                if (generatorLoader.putIfAbsent(loader.getId(), loader) != null) {
+                    // putIfAbsent returns the _previous_ value
                     log.error("Could not add output generator due to duplicate id={}", loader.getId());
-                    continue;
+                    throw new IllegalArgumentException("Could not add output generator due to duplicate id=" + loader.getId());
                 }
 
                 globalUpdateIntervalInSeconds = MathUtils.gcd(loader.getUpdateIntervalInSeconds(), globalUpdateIntervalInSeconds);
@@ -152,7 +153,7 @@ public class OutputAmbassador extends AbstractFederateAmbassador {
 
             // do not yet create output generators. This is done when the ambassadors initialize method is called
             return generatorLoader.values();
-        } catch (InternalFederateException e) {
+        } catch (InternalFederateException | IllegalArgumentException e) {
             throw new RuntimeException(e);
         } catch (Exception ex) {
             log.error("Error while initializing OutputAmbassador", ex);
