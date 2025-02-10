@@ -54,23 +54,25 @@ public class ChargingStationIndex {
      * Perform action before an update of the {@link ChargingStationIndex} takes place.
      */
     public void updateChargingStation(ChargingStationData chargingStationData) {
-        onChargingStationUpdate();
+        initSearchTree();
         indexedChargingStations.get(chargingStationData.getName())
                 .setChargingStationData(chargingStationData);
     }
 
-    public List<ChargingStationObject>getChargingStationsInCircle(GeoCircle circle) {
+    private void initSearchTree() {
+        if (chargingStationTree != null) {
+            return;
+        }
+
+        List<ChargingStationObject> allChargingStations = new ArrayList<>(indexedChargingStations.values());
+        chargingStationTree = new KdTree<>(new SpatialObjectAdapter<>(), allChargingStations, bucketSize);
+        treeTraverser = new SpatialTreeTraverser.InRadius<>();
+    }
+
+    public List<ChargingStationObject> getChargingStationsInCircle(GeoCircle circle) {
         treeTraverser.setup(circle.getCenter().toVector3d(), circle.getRadius());
         treeTraverser.traverse(chargingStationTree);
         return treeTraverser.getResult();
-    }
-
-    public void onChargingStationUpdate() {
-        if (chargingStationTree == null) { // initialize before first update is called
-            List<ChargingStationObject> allChargingStations = new ArrayList<>(indexedChargingStations.values());
-            chargingStationTree = new KdTree<>(new SpatialObjectAdapter<>(), allChargingStations, bucketSize);
-            treeTraverser = new SpatialTreeTraverser.InRadius<>();
-        }
     }
 
     public int getNumberOfChargingStations() {
