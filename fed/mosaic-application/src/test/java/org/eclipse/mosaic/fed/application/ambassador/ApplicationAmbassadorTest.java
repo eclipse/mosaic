@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.StartApplications;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedAcknowledgement;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.objects.ChargingStationObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestAgentApplication;
@@ -52,8 +53,10 @@ import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
+import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.traffic.LaneAreaDetectorInfo;
 import org.eclipse.mosaic.lib.objects.trafficlight.TrafficLightGroup;
@@ -85,6 +88,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
@@ -774,14 +778,43 @@ public class ApplicationAmbassadorTest {
         // init ambassador
         ambassador.initialize(0L, END_TIME);
 
+        // register charging stations
         TestChargingStationApplication app = testAddUnit(
                 ambassador,
                 "cs_0",
                 InteractionTestHelper.createChargingStationRegistration("cs_0", 5, true)
         );
+        testAddUnit(
+                ambassador,
+                "cs_1",
+                InteractionTestHelper.createChargingStationRegistration("cs_1", 5, true)
+        );
+        testAddUnit(
+                ambassador,
+                "cs_2",
+                InteractionTestHelper.createChargingStationRegistration("cs_2", 5, true)
+        );
+
+        // add initial data to charging stations
+        GeoPoint position = app.getOperatingSystem().getInitialPosition();
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, new ArrayList<>()));
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_1", position, new ArrayList<>()));
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_2", position, new ArrayList<>()));
 
         // verify that setUp has been called on the application of the unit
         Mockito.verify(app.getApplicationSpy()).onStartup();
+
+        // verify that the charging stations were added
+        List<ChargingStationObject> stations = SimulationKernel.SimulationKernel.getChargingStationIndex()
+                .getChargingStationsInCircle(new GeoCircle(position, 10000));
+        int numberOfStations = SimulationKernel.SimulationKernel.getChargingStationIndex().getNumberOfChargingStations();
+
+
+        // assert added stations are present in tree
+        assertEquals(numberOfStations, 3);
+        assertEquals(stations.get(0).getChargingStationData().getName(), "cs_1");
+        assertEquals(stations.get(2).getChargingStationData().getName(), "cs_0");
+        assertEquals(stations.get(1).getChargingStationData().getName(), "cs_2");
 
         // tears down all applications
         ambassador.processTimeAdvanceGrant(recentAdvanceTime);

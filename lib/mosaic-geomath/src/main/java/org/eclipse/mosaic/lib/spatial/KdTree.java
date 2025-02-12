@@ -86,7 +86,17 @@ public class KdTree<T> extends SpatialTree<T> {
 
         @Override
         public int size() {
-            return 0;
+            int nodeSize = root.getItems().size();
+
+            if (children == null) {
+                return nodeSize;
+            }
+
+
+            return nodeSize
+                    + root.getChildren().stream()
+                    .map(Node::size)
+                    .reduce(0, (a, b) -> a+b);
         }
 
         @Override

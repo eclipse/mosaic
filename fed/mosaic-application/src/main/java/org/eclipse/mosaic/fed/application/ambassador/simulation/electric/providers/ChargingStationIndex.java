@@ -1,4 +1,4 @@
-/*
+  /*
  * Copyright (c) 2025 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -28,8 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChargingStationIndex {
-
+  /**
+   * A {@link ChargingStationIndex} holds Charging Stations in a tree structure, sorted by their position.
+   * The tree is initialized and gets updated lazily when a search is performed.
+   */
+  public class ChargingStationIndex {
     private final int bucketSize;
 
     /**
@@ -41,41 +44,59 @@ public class ChargingStationIndex {
 
     private SpatialTreeTraverser.InRadius<ChargingStationObject> treeTraverser;
 
+    private boolean needsTreeUpdate = false;
+
     public ChargingStationIndex(int bucketSize) {
         this.bucketSize = bucketSize;
     }
 
+      /**
+       * Adds a Charging Station to the tree.
+       * Be sure to add {@link ChargingStationData} using updateChargingStation(ChargingStationData chargingStationData).
+       *
+       * The CS is inserted into the tree when it is queried (e.g. getChargingStationsInCircle(...) or getNumberOfChargingStations(...))
+       * @param id
+       * @param position
+       */
     public void addChargingStation(String id, GeoPoint position) {
+        if (chargingStationTree != null) {
+            throw new RuntimeException("ChargingStationTree has already been initialized, "
+                    + "make sure to add all objects before calling updateCharginStation() for the first time. ");
+        }
+
+        needsTreeUpdate = true;
         indexedChargingStations.computeIfAbsent(id, ChargingStationObject::new)
                 .setPosition(position.toCartesian());
     }
 
     /**
-     * Perform action before an update of the {@link ChargingStationIndex} takes place.
+     * Replaces the stations data object.
      */
     public void updateChargingStation(ChargingStationData chargingStationData) {
-        initSearchTree();
         indexedChargingStations.get(chargingStationData.getName())
                 .setChargingStationData(chargingStationData);
     }
 
-    private void initSearchTree() {
-        if (chargingStationTree != null) {
+    private void updateSearchTree() {
+        if (!needsTreeUpdate) {
             return;
         }
 
         List<ChargingStationObject> allChargingStations = new ArrayList<>(indexedChargingStations.values());
         chargingStationTree = new KdTree<>(new SpatialObjectAdapter<>(), allChargingStations, bucketSize);
         treeTraverser = new SpatialTreeTraverser.InRadius<>();
+        needsTreeUpdate = false;
     }
 
     public List<ChargingStationObject> getChargingStationsInCircle(GeoCircle circle) {
+        updateSearchTree();
         treeTraverser.setup(circle.getCenter().toVector3d(), circle.getRadius());
         treeTraverser.traverse(chargingStationTree);
         return treeTraverser.getResult();
     }
 
     public int getNumberOfChargingStations() {
+        updateSearchTree();
         return chargingStationTree.getRoot().size();
     }
 
