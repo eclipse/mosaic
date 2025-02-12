@@ -1,4 +1,4 @@
-  /*
+/*
  * Copyright (c) 2025 Fraunhofer FOKUS and others. All rights reserved.
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -28,10 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-  /**
-   * A {@link ChargingStationIndex} holds Charging Stations in a tree structure, sorted by their position.
-   * The tree is initialized and gets updated lazily when a search is performed.
-   */
+/**
+ * A {@link ChargingStationIndex} holds Charging Stations in a tree structure, sorted by their position.
+ * The tree is initialized and gets updated lazily when a search is performed.
+ */
   public class ChargingStationIndex {
     private final int bucketSize;
 
@@ -50,20 +50,23 @@ import java.util.Map;
         this.bucketSize = bucketSize;
     }
 
-      /**
-       * Adds a Charging Station to the tree.
-       * Be sure to add {@link ChargingStationData} using updateChargingStation(ChargingStationData chargingStationData).
-       *
-       * The CS is inserted into the tree when it is queried (e.g. getChargingStationsInCircle(...) or getNumberOfChargingStations(...))
-       * @param id
-       * @param position
-       */
-    public void addChargingStation(String id, GeoPoint position) {
-        if (chargingStationTree != null) {
-            throw new RuntimeException("ChargingStationTree has already been initialized, "
-                    + "make sure to add all objects before calling updateCharginStation() for the first time. ");
-        }
+    /**
+     * Inits a {@link ChargingStationIndex} with default bucket size of 20.
+     * Bucket size describes the item capacity of one tree node.
+     */
+    public ChargingStationIndex() {
+        this.bucketSize = 20;
+    }
 
+    /**
+     * Adds a Charging Station to the tree.
+     * Be sure to add {@link ChargingStationData} using updateChargingStation(ChargingStationData chargingStationData).
+     *
+     * The CS is inserted into the tree when it is queried (e.g. getChargingStationsInCircle(...) or getNumberOfChargingStations(...))
+     * @param id
+     * @param position
+     */
+    public void addChargingStation(String id, GeoPoint position) {
         needsTreeUpdate = true;
         indexedChargingStations.computeIfAbsent(id, ChargingStationObject::new)
                 .setPosition(position.toCartesian());

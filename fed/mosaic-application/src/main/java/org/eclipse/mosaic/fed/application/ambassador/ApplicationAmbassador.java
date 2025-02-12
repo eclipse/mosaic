@@ -162,7 +162,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
         if (SimulationKernel.SimulationKernel.chargingStationIndex == null) {
             // use same bucketsize as TrafficLightTree (see: CPercetion.java) (bucketsize := number of direct children per tree node)
-            ChargingStationIndex chargingStationIndex = new ChargingStationIndex(20);
+            ChargingStationIndex chargingStationIndex = new ChargingStationIndex();
             SimulationKernel.SimulationKernel.setChargingStationIndex(chargingStationIndex);
         }
 
@@ -378,7 +378,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         UnitSimulator.UnitSimulator.registerChargingStation(chargingStationRegistration);
         String id = chargingStationRegistration.getMapping().getName();
         GeoPoint position = chargingStationRegistration.getMapping().getPosition();
-        SimulationKernel.SimulationKernel.chargingStationIndex.addChargingStation(id, position);
+        SimulationKernel.SimulationKernel.getChargingStationIndex().addChargingStation(id, position);
     }
 
     private void process(final TrafficLightRegistration trafficLightRegistration) {
@@ -460,7 +460,7 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         final AbstractSimulationUnit simulationUnit =
                 UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
 
-        SimulationKernel.SimulationKernel.chargingStationIndex.updateChargingStation(chargingStationUpdate.getUpdatedChargingStation());
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(chargingStationData);
 
         if (simulationUnit == null) {
             return;
@@ -471,7 +471,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                 chargingStationData,
                 EventNicenessPriorityRegister.UPDATE_CHARGING_STATION
         );
-
         addEvent(event);
     }
 
