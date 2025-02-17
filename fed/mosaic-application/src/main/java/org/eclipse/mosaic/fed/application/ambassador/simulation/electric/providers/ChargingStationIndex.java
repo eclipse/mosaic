@@ -17,6 +17,7 @@ package org.eclipse.mosaic.fed.application.ambassador.simulation.electric.provid
 
 import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.objects.ChargingStationObject;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.index.objects.SpatialObjectAdapter;
+import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
@@ -32,7 +33,7 @@ import java.util.Map;
  * A {@link ChargingStationIndex} holds Charging Stations in a tree structure, sorted by their position.
  * The tree is initialized and gets updated lazily when a search is performed.
  */
-  public class ChargingStationIndex {
+public class ChargingStationIndex {
     private final int bucketSize;
 
     /**
@@ -61,23 +62,31 @@ import java.util.Map;
     /**
      * Adds a Charging Station to the tree.
      * Be sure to add {@link ChargingStationData} using updateChargingStation(ChargingStationData chargingStationData).
-     *
+     * <p>
      * The CS is inserted into the tree when it is queried (e.g. getChargingStationsInCircle(...) or getNumberOfChargingStations(...))
+     *
      * @param id
      * @param position
      */
     public void addChargingStation(String id, GeoPoint position) {
         needsTreeUpdate = true;
-        indexedChargingStations.computeIfAbsent(id, ChargingStationObject::new)
-                .setPosition(position.toCartesian());
+        indexedChargingStations.computeIfAbsent(id, ChargingStationObject::new).setPosition(position.toCartesian());
     }
 
     /**
      * Replaces the stations data object.
      */
     public void updateChargingStation(ChargingStationData chargingStationData) {
-        indexedChargingStations.get(chargingStationData.getName())
-                .setChargingStationData(chargingStationData);
+        CartesianPoint newPosition = chargingStationData.getPosition().toCartesian();
+        ChargingStationObject cs = indexedChargingStations.get(chargingStationData.getName());
+
+        if (cs.getPosition().equals(newPosition)) {
+            cs.setChargingStationData(chargingStationData);
+            return;
+        }
+
+        cs.setChargingStationData(chargingStationData).setPosition(newPosition);
+        needsTreeUpdate = true;
     }
 
     private void updateSearchTree() {

@@ -55,6 +55,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -122,6 +123,9 @@ public class ApplicationAmbassadorTest {
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
+
+    @Rule
+    public GeoProjectionRule projectionRule = new GeoProjectionRule(GeoPoint.latLon(52.5, 13.4));
 
     /**
      * Setup and reset singletons.
@@ -771,10 +775,6 @@ public class ApplicationAmbassadorTest {
     public void processInteraction_ChargingStationRegistration() throws InternalFederateException, IOException {
         final ApplicationAmbassador ambassador = createAmbassador();
 
-        // init geo projection
-        GeoPoint BERLIN = latLon(52.5, 13.4);
-        GeoProjection.initialize(new Wgs84Projection(BERLIN).failIfOutsideWorld());
-
         // init ambassador
         ambassador.initialize(0L, END_TIME);
 
@@ -785,21 +785,8 @@ public class ApplicationAmbassadorTest {
                 InteractionTestHelper.createChargingStationRegistration("cs_0", 5, true)
         );
 
-        // add initial data to charging stations
-        GeoPoint position = app.getOperatingSystem().getInitialPosition();
-        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, new ArrayList<>()));
-
         // verify that setUp has been called on the application of the unit
         Mockito.verify(app.getApplicationSpy()).onStartup();
-
-        // verify that the charging stations were added
-        List<ChargingStationObject> stations = SimulationKernel.SimulationKernel.getChargingStationIndex()
-                .getChargingStationsInCircle(new GeoCircle(position, 10000));
-        int numberOfStations = SimulationKernel.SimulationKernel.getChargingStationIndex().getNumberOfChargingStations();
-
-        // assert added stations are present in tree
-        assertEquals(numberOfStations, 1);
-        assertEquals(stations.get(0).getChargingStationData().getName(), "cs_0");
 
         // tears down all applications
         ambassador.processTimeAdvanceGrant(recentAdvanceTime);

@@ -25,6 +25,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class ChargingStationObject extends SpatialObject<ChargingStationObject> {
+    private static final long serialVersionUID = 1L;
     /**
      * The data object that stores all static and dynamic information of the charging station.
      */
