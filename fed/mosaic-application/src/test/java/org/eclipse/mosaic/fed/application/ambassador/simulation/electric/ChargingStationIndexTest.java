@@ -96,7 +96,8 @@ public class ChargingStationIndexTest {
         chargingStationIndex.updateChargingStation(new ChargingStationData(0, "cs_0", position, spots_0));
 
         // query the index to initialize the tree
-        chargingStationIndex.getNumberOfChargingStations();
+        int numberOfChargingStations = chargingStationIndex.getNumberOfChargingStations();
+        assertEquals(1, numberOfChargingStations);
 
         // update state of charging spot of cs_0
         spots_0.get(0).setAvailable(false);
