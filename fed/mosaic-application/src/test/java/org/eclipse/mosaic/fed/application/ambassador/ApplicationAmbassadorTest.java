@@ -784,22 +784,10 @@ public class ApplicationAmbassadorTest {
                 "cs_0",
                 InteractionTestHelper.createChargingStationRegistration("cs_0", 5, true)
         );
-        testAddUnit(
-                ambassador,
-                "cs_1",
-                InteractionTestHelper.createChargingStationRegistration("cs_1", 5, true)
-        );
-        testAddUnit(
-                ambassador,
-                "cs_2",
-                InteractionTestHelper.createChargingStationRegistration("cs_2", 5, true)
-        );
 
         // add initial data to charging stations
         GeoPoint position = app.getOperatingSystem().getInitialPosition();
         SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, new ArrayList<>()));
-        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_1", position, new ArrayList<>()));
-        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_2", position, new ArrayList<>()));
 
         // verify that setUp has been called on the application of the unit
         Mockito.verify(app.getApplicationSpy()).onStartup();
@@ -809,12 +797,9 @@ public class ApplicationAmbassadorTest {
                 .getChargingStationsInCircle(new GeoCircle(position, 10000));
         int numberOfStations = SimulationKernel.SimulationKernel.getChargingStationIndex().getNumberOfChargingStations();
 
-
         // assert added stations are present in tree
-        assertEquals(numberOfStations, 3);
-        assertEquals(stations.get(0).getChargingStationData().getName(), "cs_1");
-        assertEquals(stations.get(2).getChargingStationData().getName(), "cs_0");
-        assertEquals(stations.get(1).getChargingStationData().getName(), "cs_2");
+        assertEquals(numberOfStations, 1);
+        assertEquals(stations.get(0).getChargingStationData().getName(), "cs_0");
 
         // tears down all applications
         ambassador.processTimeAdvanceGrant(recentAdvanceTime);

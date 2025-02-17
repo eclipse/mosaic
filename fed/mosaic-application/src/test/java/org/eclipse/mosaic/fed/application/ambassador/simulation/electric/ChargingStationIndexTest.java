@@ -33,17 +33,16 @@ import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
 import org.eclipse.mosaic.lib.transform.GeoProjection;
 import org.eclipse.mosaic.lib.transform.Wgs84Projection;
-import org.eclipse.mosaic.rti.api.InternalFederateException;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChargingStationIndexTest {
+    GeoPoint position = latLon(52.5, 13.4);
 
     @Rule
     public SimulationKernelRule simulationKernel = new SimulationKernelRule(null, null,
@@ -56,34 +55,38 @@ public class ChargingStationIndexTest {
 
         ChargingStationIndex chargingStationIndex = new ChargingStationIndex();
         SimulationKernel.SimulationKernel.setChargingStationIndex(chargingStationIndex);
+
+        // init geo projection
+        GeoProjection.initialize(new Wgs84Projection(position).failIfOutsideWorld());
+    }
+
+    private void registerChargingStations(int amount) {
+        for (int i = 0; i < amount; i++) {
+            SimulationKernel.SimulationKernel.getChargingStationIndex().addChargingStation("cs_" + i, position);
+        }
+    }
+
+    private List<ChargingSpot> getChargingSpots(int amount, String cs_id) {
+        List<ChargingSpot> spots = new ArrayList<>();
+        // create ChargingSpots
+        for (int i = 0; i < amount; i++) {
+            String spot_id = "charging_spot" + cs_id + "_" + i;
+            ChargingSpot spot = new ChargingSpot(spot_id, ChargingType.DC, 100.0, 100.0);
+            spots.add(spot);
+        }
+
+        return spots;
     }
 
     @Test
-    public void addChargingStation_ChargingStationIndex() throws InternalFederateException, IOException {
-        //final ApplicationAmbassador ambassador = createAmbassador();
-
-        // init geo projection
-        GeoPoint position = latLon(52.5, 13.4);
-        GeoProjection.initialize(new Wgs84Projection(position).failIfOutsideWorld());
-
-        // register charging stations
-        SimulationKernel.SimulationKernel.getChargingStationIndex().addChargingStation("cs_0", position);
-        SimulationKernel.SimulationKernel.getChargingStationIndex().addChargingStation("cs_1", position);
-        SimulationKernel.SimulationKernel.getChargingStationIndex().addChargingStation("cs_2", position);
-
-        // create ChargingSpots
-        ChargingSpot spot = new ChargingSpot("charging_spot", ChargingType.DC, 100.0, 100.0);
-        List<ChargingSpot> spots = new ArrayList<>();
-        spots.add(spot);
+    public void addChargingStation_ChargingStationIndex() {
+        registerChargingStations(3);
 
         // add initial data to charging stations
-        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, spots));
+        List<ChargingSpot> spots_0 = getChargingSpots(3, "cs_0");
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, spots_0));
         SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_1", position, new ArrayList<>()));
         SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_2", position, new ArrayList<>()));
-
-        // update state of charging spot cs_0
-        spot.setAvailable(false);
-        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, spots));
 
         // verify that the charging stations were added
         GeoCircle searchArea = new GeoCircle(position, 10000);
@@ -94,12 +97,26 @@ public class ChargingStationIndexTest {
         // assert added stations are present in tree
         assertEquals(numberOfStations, 3);
         assertEquals(stations.get(0).getChargingStationData().getName(), "cs_1");
-        assertEquals(stations.get(2).getChargingStationData().getName(), "cs_0");
         assertEquals(stations.get(1).getChargingStationData().getName(), "cs_2");
+        assertEquals(stations.get(2).getChargingStationData().getName(), "cs_0");
+    }
 
-        // assert update took place in tree
+    @Test
+    public void update_ChargingStationIndex() {
+        registerChargingStations(1);
+
+        // add initial data to charging stations
+        List<ChargingSpot> spots_0 = getChargingSpots(3, "cs_0");
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, spots_0));
+
+        // update state of charging spot of cs_0
+        spots_0.get(0).setAvailable(false);
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(new ChargingStationData(0, "cs_0", position, spots_0));
+
+        // assert tree was updated
+        GeoCircle searchArea = new GeoCircle(position, 10000);
         boolean isAvailable_cs0 = SimulationKernel.SimulationKernel.getChargingStationIndex().getChargingStationsInCircle(searchArea)
-                .get(2).getChargingStationData().getChargingSpot(spot.getChargingSpotId()).isAvailable();
+                .get(0).getChargingStationData().getChargingSpot(spots_0.get(0).getChargingSpotId()).isAvailable();
         assertEquals(isAvailable_cs0, false);
     }
 }
