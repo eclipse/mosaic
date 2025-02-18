@@ -27,9 +27,7 @@ import org.eclipse.mosaic.lib.objects.electricity.ChargingSpot;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingType;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -37,11 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChargingStationIndexTest {
-    GeoPoint position = latLon(52.5, 13.4);
-    ChargingStationIndex chargingStationIndex;
+    private final GeoPoint position = GeoPoint.latLon(52.5, 13.4);
+    private ChargingStationIndex chargingStationIndex;
 
     @Rule
     public GeoProjectionRule projectionRule = new GeoProjectionRule(GeoPoint.latLon(52.5, 13.4));
+
     @Before
     public void before() {
         chargingStationIndex = new ChargingStationIndex();
@@ -53,11 +52,11 @@ public class ChargingStationIndexTest {
         }
     }
 
-    private List<ChargingSpot> getChargingSpots(int amount, String cs_id) {
+    private List<ChargingSpot> createChargingSpotList(int amount, String chargingStation_id) {
         List<ChargingSpot> spots = new ArrayList<>();
         // create ChargingSpots
         for (int i = 0; i < amount; i++) {
-            String spot_id = "charging_spot" + cs_id + "_" + i;
+            String spot_id = "charging_spot" + chargingStation_id + "_" + i;
             ChargingSpot spot = new ChargingSpot(spot_id, ChargingType.DC, 100.0, 100.0);
             spots.add(spot);
         }
@@ -70,7 +69,7 @@ public class ChargingStationIndexTest {
         registerChargingStations(3);
 
         // add initial data to charging stations
-        List<ChargingSpot> spots_0 = getChargingSpots(3, "cs_0");
+        List<ChargingSpot> spots_0 = createChargingSpotList(3, "cs_0");
         chargingStationIndex.updateChargingStation(new ChargingStationData(0, "cs_0", position, spots_0));
         chargingStationIndex.updateChargingStation(new ChargingStationData(0, "cs_1", position, new ArrayList<>()));
         chargingStationIndex.updateChargingStation(new ChargingStationData(0, "cs_2", position, new ArrayList<>()));
@@ -92,7 +91,7 @@ public class ChargingStationIndexTest {
         registerChargingStations(1);
 
         // add initial data to charging stations
-        List<ChargingSpot> spots_0 = getChargingSpots(3, "cs_0");
+        List<ChargingSpot> spots_0 = createChargingSpotList(3, "cs_0");
         chargingStationIndex.updateChargingStation(new ChargingStationData(0, "cs_0", position, spots_0));
 
         // query the index to initialize the tree

@@ -67,7 +67,7 @@ public class InteractionTestHelper {
                 id,
                 "group_0",
                 getApplications(withApp, TestChargingStationApplication.class),
-                GeoPoint.lonLat(52.520008, 13.404954),
+                GeoPoint.lonLat(0, 0),
                 Collections.emptyList()
         );
     }
