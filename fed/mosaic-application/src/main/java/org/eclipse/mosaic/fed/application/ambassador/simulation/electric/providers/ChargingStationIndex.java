@@ -62,8 +62,7 @@ public class ChargingStationIndex {
     /**
      * Adds a Charging Station to the tree.
      * Be sure to add {@link ChargingStationData} using updateChargingStation(ChargingStationData chargingStationData).
-     * <p>
-     * The CS is inserted into the tree when it is queried (e.g. getChargingStationsInCircle(...) or getNumberOfChargingStations(...))
+     * <p>The CS is inserted into the tree when it is queried (e.g. getChargingStationsInCircle(...) or getNumberOfChargingStations(...))</p>
      *
      * @param id
      * @param position
@@ -80,7 +79,7 @@ public class ChargingStationIndex {
         CartesianPoint newPosition = chargingStationData.getPosition().toCartesian();
         ChargingStationObject cs = indexedChargingStations.get(chargingStationData.getName());
 
-        if (cs.getPosition().equals(newPosition)) {
+        if (cs.getPosition().toCartesian().equals(newPosition)) {
             cs.setChargingStationData(chargingStationData);
             return;
         }
