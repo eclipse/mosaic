@@ -61,7 +61,7 @@ public class ChargingStationIndex {
 
     /**
      * Adds a Charging Station to the tree.
-     * Be sure to add {@link ChargingStationData} using updateChargingStation(ChargingStationData chargingStationData).
+     * Be sure to add {@link ChargingStationData} using {@link ChargingStationIndex#updateChargingStation(ChargingStationData)}.
      * <p>The CS is inserted into the tree when it is queried (e.g. {@link ChargingStationIndex#getChargingStationsInCircle(GeoCircle)}or
      * {@link ChargingStationIndex#getNumberOfChargingStations()}</p>
      *

@@ -161,7 +161,6 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         }
 
         if (SimulationKernel.SimulationKernel.chargingStationIndex == null) {
-            // use same bucketsize as TrafficLightTree (see: CPercetion.java) (bucketsize := number of direct children per tree node)
             ChargingStationIndex chargingStationIndex = new ChargingStationIndex();
             SimulationKernel.SimulationKernel.setChargingStationIndex(chargingStationIndex);
         }
