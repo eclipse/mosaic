@@ -1,3 +1,10 @@
+def secrets = [
+  [path: 'cbi/automotive.mosaic/develocity.eclipse.org', secretValues: [
+    [envVar: 'DEVELOCITY_ACCESS_KEY', vaultKey: 'api-token']
+    ]
+  ]
+]
+
 pipeline {
     agent {
         kubernetes {
@@ -26,6 +33,9 @@ spec:
     - mountPath: "/opt/tools"
       name: "volume-0"
       readOnly: false
+    - mountPath: "/home/jenkins/.m2/.develocity"
+      name: "develocity-storage"
+      readOnly: false
     resources:
       limits:
         memory: "2Gi"
@@ -52,6 +62,9 @@ spec:
     persistentVolumeClaim:
       claimName: "tools-claim-jiro-mosaic"
       readOnly: true
+  - emptyDir:
+      medium: ""
+    name: "develocity-storage"
 """
         }
     }
@@ -64,7 +77,9 @@ spec:
         stage('Build') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn clean install -DskipTests -fae -T 4'
+                    withVault([vaultSecrets: secrets]) {
+                        sh 'mvn clean install -DskipTests -fae -T 4'
+                    }
                 }
             }
         }
@@ -72,7 +87,9 @@ spec:
         stage('Test') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn test -fae -T 4 -P coverage'
+                    withVault([vaultSecrets: secrets]) {
+                        sh 'mvn test -fae -T 4 -P coverage'
+                    }
                 }
             }
 
@@ -86,7 +103,9 @@ spec:
         stage('Integration Tests') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn test -fae -P integration-tests,coverage'
+                    withVault([vaultSecrets: secrets]) {
+                        sh 'mvn test -fae -P integration-tests,coverage'
+                    }
                 }
             }
 
@@ -100,7 +119,9 @@ spec:
         stage('Analysis') {
             steps {
                 container('maven-sumo') {
-                    sh 'mvn site'
+                    withVault([vaultSecrets: secrets]) {
+                        sh 'mvn site'
+                    }
                 }
             }
 
@@ -123,10 +144,12 @@ spec:
             }
             steps {
                 container('maven-sumo') {
-                    // sometimes this fails for unknown reason, so lets try it three times
-                    retry(3) {
-                        // requires the correct tool finding secrets
-                        sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
+                    withVault([vaultSecrets: secrets]) {
+                        // sometimes this fails for unknown reason, so lets try it three times
+                        retry(3) {
+                            // requires the correct tool finding secrets
+                            sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
+                        }
                     }
                 }
             }

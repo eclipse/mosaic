@@ -8,6 +8,7 @@
 ![Size](https://img.shields.io/github/repo-size/eclipse/mosaic.svg) <br>
 [![Build](https://github.com/eclipse/mosaic/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/eclipse/mosaic/actions?query=branch%3Amain+workflow%3A%22Java+CI+with+Maven%22)
 [![Jenkins Build](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.eclipse.org%2Fmosaic%2Fjob%2Fmosaic%2Fjob%2Fmain&label=Jenkins%20build)](https://ci.eclipse.org/mosaic/job/mosaic/)
+[![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://develocity-staging.eclipse.org/)
 
 
 [**Eclipse MOSAIC**](https://eclipse.dev/mosaic) is a multi-scale simulation framework in the field of smart and connected mobility.
