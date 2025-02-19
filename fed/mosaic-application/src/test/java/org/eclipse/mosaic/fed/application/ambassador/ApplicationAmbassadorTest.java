@@ -52,6 +52,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.junit.GeoProjectionRule;
 import org.eclipse.mosaic.lib.junit.IpResolverRule;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
 import org.eclipse.mosaic.lib.objects.traffic.LaneAreaDetectorInfo;
@@ -115,6 +116,9 @@ public class ApplicationAmbassadorTest {
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
+
+    @Rule
+    public GeoProjectionRule projectionRule = new GeoProjectionRule(GeoPoint.latLon(52.5, 13.4));
 
     /**
      * Setup and reset singletons.
@@ -767,6 +771,7 @@ public class ApplicationAmbassadorTest {
         // init ambassador
         ambassador.initialize(0L, END_TIME);
 
+        // register charging stations
         TestChargingStationApplication app = testAddUnit(
                 ambassador,
                 "cs_0",

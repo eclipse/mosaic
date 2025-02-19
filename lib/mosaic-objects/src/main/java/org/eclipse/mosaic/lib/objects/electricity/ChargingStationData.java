@@ -19,6 +19,8 @@ import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.UnitData;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +57,6 @@ public final class ChargingStationData extends UnitData {
         super(time, name, position);
         chargingSpots.forEach(chargingSpot -> this.chargingSpots.put(chargingSpot.getChargingSpotId(), chargingSpot));
     }
-
 
     public List<ChargingSpot> getChargingSpots() {
         return Lists.newArrayList(chargingSpots.values());
@@ -122,6 +123,35 @@ public final class ChargingStationData extends UnitData {
                 + Lists.newArrayList(chargingSpots.values()).subList(0, Math.min(chargingSpots.size(), maxLen))
                 + ", name=" + getName() + ", position="
                 + getPosition() + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ChargingStationData that = (ChargingStationData) o;
+        return new EqualsBuilder()
+                .appendSuper(super.equals(that))
+                .append(getTime(), that.getTime())
+                .append(getPosition(), that.getPosition())
+                .append(getChargingSpots(), that.getChargingSpots())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 11)
+                .appendSuper(super.hashCode())
+                .append(getTime())
+                .append(getPosition())
+                .append(getChargingSpots())
+                .toHashCode();
     }
 
     public static class Builder {

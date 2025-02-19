@@ -20,6 +20,7 @@ import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulati
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGroupUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.ReceivedV2xMessage;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.providers.ChargingStationIndex;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.DefaultLidarSensorModule;
@@ -55,6 +56,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleTypesInitialization;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.trafficsigns.VehicleSeenTrafficSignsUpdate;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
+import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -156,6 +158,11 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
                     ambassadorConfig.perceptionConfiguration
             );
             SimulationKernel.SimulationKernel.setCentralPerceptionComponent(centralPerceptionComponent);
+        }
+
+        if (SimulationKernel.SimulationKernel.chargingStationIndex == null) {
+            ChargingStationIndex chargingStationIndex = new ChargingStationIndex();
+            SimulationKernel.SimulationKernel.setChargingStationIndex(chargingStationIndex);
         }
 
         // add all application jar files
@@ -368,6 +375,9 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
 
     private void process(final ChargingStationRegistration chargingStationRegistration) {
         UnitSimulator.UnitSimulator.registerChargingStation(chargingStationRegistration);
+        String id = chargingStationRegistration.getMapping().getName();
+        GeoPoint position = chargingStationRegistration.getMapping().getPosition();
+        SimulationKernel.SimulationKernel.getChargingStationIndex().addChargingStation(id, position);
     }
 
     private void process(final TrafficLightRegistration trafficLightRegistration) {
@@ -448,6 +458,8 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         ChargingStationData chargingStationData = chargingStationUpdate.getUpdatedChargingStation();
         final AbstractSimulationUnit simulationUnit =
                 UnitSimulator.UnitSimulator.getUnitFromId(chargingStationData.getName());
+
+        SimulationKernel.SimulationKernel.getChargingStationIndex().updateChargingStation(chargingStationData);
 
         if (simulationUnit == null) {
             return;

@@ -16,14 +16,20 @@
 package org.eclipse.mosaic.fed.application.ambassador.simulation;
 
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.electric.objects.ChargingStationObject;
 import org.eclipse.mosaic.fed.application.app.api.ElectricVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.ElectricVehicleOperatingSystem;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingDenial;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingStartRequest;
 import org.eclipse.mosaic.interactions.electricity.VehicleChargingStopRequest;
+import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class represents an electric vehicle in the application simulator. It extends {@link VehicleUnit}
@@ -102,5 +108,11 @@ public class ElectricVehicleUnit extends VehicleUnit implements ElectricVehicleO
                 getId()
         );
         sendInteractionToRti(vehicleChargingStopRequest);
+    }
+
+    public List<ChargingStationData> getChargingStationsInArea(GeoCircle searchArea) {
+        return SimulationKernel.SimulationKernel.getChargingStationIndex().getChargingStationsInCircle(searchArea)
+                .stream().map(ChargingStationObject::getChargingStationData)
+                .toList();
     }
 }
