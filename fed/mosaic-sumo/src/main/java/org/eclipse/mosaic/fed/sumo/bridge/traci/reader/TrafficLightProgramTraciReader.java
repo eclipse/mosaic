@@ -49,7 +49,7 @@ public class TrafficLightProgramTraciReader extends AbstractTraciResultReader<Su
             readDoubleWithType(in); // maxDuration, in case of actuated traffic lights
             int nextCount = readIntWithType(in);
             for (int n = 0; n < nextCount; n++) {
-                readInt(in);
+                readIntWithType(in);
             }
             if (numberOfElements > 5) {
                 readStringWithType(in); // name of the phase

@@ -8,7 +8,7 @@ kind: Pod
 spec:
   containers:
   - name: maven-sumo
-    image: eclipsemosaic/mosaic-ci:jdk17-sumo-1.21.0
+    image: eclipsemosaic/mosaic-ci:jdk17-sumo-1.22.0
     command:
     - cat
     tty: true
