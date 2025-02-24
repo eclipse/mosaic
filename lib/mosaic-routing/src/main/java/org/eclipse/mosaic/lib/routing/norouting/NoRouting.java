@@ -74,6 +74,11 @@ public class NoRouting implements VehicleRouting {
     }
 
     @Override
+    public VehicleRoute refineRoute(VehicleRoute route) {
+        return route;
+    }
+
+    @Override
     public CandidateRoute approximateCostsForCandidateRoute(CandidateRoute route, String lastNodeId) {
         return route;
     }

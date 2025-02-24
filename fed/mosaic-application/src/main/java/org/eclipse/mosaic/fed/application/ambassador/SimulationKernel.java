@@ -302,7 +302,10 @@ public enum SimulationKernel {
      * @param route the {@link VehicleRoute} to register
      */
     public void registerRoute(String id, VehicleRoute route) {
-        routes.put(id, Validate.notNull(route, "The given route must not be null."));
+        VehicleRoute completedRoute = getCentralNavigationComponent().refineRoute(
+                Validate.notNull(route, "The given route must not be null.")
+        );
+        routes.put(id, completedRoute);
     }
 
     /**

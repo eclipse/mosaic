@@ -35,6 +35,7 @@ import org.eclipse.mosaic.lib.routing.RoutingResponse;
 import org.eclipse.mosaic.lib.routing.config.CVehicleRouting;
 import org.eclipse.mosaic.rti.api.InternalFederateException;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -294,6 +295,32 @@ public class DatabaseRoutingTest {
         CandidateRoute approximatedCandidateRoute = spyRSDB.approximateCostsForCandidateRoute(candidateRoute, "1");
         assertEquals(1010, approximatedCandidateRoute.getLength(), 0);
         assertEquals(505, approximatedCandidateRoute.getTime(), 0);
+    }
+
+    @Test
+    public void refineRoute_fillNodeIds() throws InternalFederateException {
+        configuration.source = "tiergarten.db";
+        databaseRouting.initialize(configuration, cfgDir);
+
+        VehicleRoute route = databaseRouting.refineRoute(new VehicleRoute("0",
+                Lists.newArrayList( "4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749"),
+                Lists.newArrayList(), 0));
+
+        assertEquals(Lists.newArrayList("423839224", "26704448", "27537750", "27537749"), route.getNodeIds());
+        assertEquals(85.92, route.getLength(), 0.1);
+    }
+
+    @Test
+    public void refineRoute_fillConnectionIds() throws InternalFederateException {
+        configuration.source = "tiergarten.db";
+        databaseRouting.initialize(configuration, cfgDir);
+
+        VehicleRoute route = databaseRouting.refineRoute(new VehicleRoute("0",
+                Lists.newArrayList(),
+                Lists.newArrayList("423839224", "26704448", "27537750", "27537749"), 0));
+
+        assertEquals(Lists.newArrayList( "4068038_423839224_26704448", "36337928_26704448_27537750", "4609244_27537750_27537749"), route.getConnectionIds());
+        assertEquals(85.92, route.getLength(), 0.1);
     }
 
 }

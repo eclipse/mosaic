@@ -76,6 +76,17 @@ public interface VehicleRouting {
     IRoadPosition refineRoadPosition(IRoadPosition roadPosition);
 
     /**
+     * This method completes a route definition if it is missing either
+     * a list of node ids or connection ids, but provides the other.
+     *
+     * @param route the potentially incomplete {@link VehicleRoute}
+     * @return the completed {@link VehicleRoute} with list of node ids and connection ids
+     *
+     * @throws IllegalStateException if the route contains neither node ids nor connection ids
+     */
+    VehicleRoute refineRoute(VehicleRoute route);
+
+    /**
      * Approximates the costs of a {@link CandidateRoute}. Pass a {@link CandidateRoute}
      * and the ID of the last Node the vehicle passed on to the method and it will return a new
      * Candidate route with the approximated values in its "length" and "time" field.

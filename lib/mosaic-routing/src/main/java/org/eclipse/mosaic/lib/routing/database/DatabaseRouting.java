@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -297,5 +298,59 @@ public class DatabaseRouting implements VehicleRouting {
     @Override
     public CartesianRectangle getScenarioBounds() {
         return scenarioDatabase.getBoundingBox().toCartesian();
+    }
+
+    @Override
+    public VehicleRoute refineRoute(VehicleRoute route) {
+        if (!route.getNodeIds().isEmpty() && !route.getConnectionIds().isEmpty()) {
+            return route;
+        }
+
+        if (route.getConnectionIds().isEmpty() && !route.getNodeIds().isEmpty()) {
+            return createVehicleRouteFromNodeIds(route.getId(), route.getNodeIds());
+        }
+
+        if (route.getNodeIds().isEmpty() && !route.getConnectionIds().isEmpty()) {
+            return createVehicleRouteFromConnectionIds(route.getId(), route.getConnectionIds());
+        }
+
+        throw new IllegalStateException("A route must contain at least a list of connection ids or node ids");
+    }
+
+    private VehicleRoute createVehicleRouteFromNodeIds(String routeId, List<String> nodeIds) {
+        List<String> connectionIds = new ArrayList<>();
+        double length = 0;
+        Node prev = null;
+        for (String nodeId : nodeIds) {
+            Node curr = scenarioDatabase.getNode(nodeId);
+            if (prev == null) {
+                prev = curr;
+                continue;
+            }
+            for (Connection prevOutCon : prev.getOutgoingConnections()) {
+                if (curr.getIncomingConnections().contains(prevOutCon)) {
+                    connectionIds.add(prevOutCon.getId());
+                    length += prevOutCon.getLength();
+                    prev = curr;
+                    break;
+                }
+            }
+        }
+        return new VehicleRoute(routeId, connectionIds, nodeIds, length);
+    }
+
+    private VehicleRoute createVehicleRouteFromConnectionIds(String routeId, List<String> connectionIds) {
+        List<String> nodeIds = new ArrayList<>();
+        double length = 0;
+        for (String connectionId : connectionIds) {
+            Connection con = scenarioDatabase.getConnection(connectionId);
+            for (Node node : con.getNodes()) {
+                if (!node.getId().equals(Iterables.getLast(nodeIds, null))) {
+                    nodeIds.add(node.getId());
+                }
+            }
+            length += con.getLength();
+        }
+        return new VehicleRoute(routeId, connectionIds, nodeIds, length);
     }
 }

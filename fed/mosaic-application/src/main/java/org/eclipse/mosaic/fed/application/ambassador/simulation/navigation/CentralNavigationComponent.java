@@ -492,6 +492,17 @@ public class CentralNavigationComponent {
     }
 
     /**
+     * This method completes a route definition if it is missing either
+     * a list of node ids or connection ids, but provides the other.
+     *
+     * @param route the potentially incomplete {@link VehicleRoute}
+     * @return the completed {@link VehicleRoute} with list of node ids and connection ids
+     */
+    public VehicleRoute refineRoute(VehicleRoute route) {
+        return vehicleRouting.refineRoute(route);
+    }
+
+    /**
      * Calculates the distance to a node given the current position
      * along a given route.<br><br>
      * The {@code upcomingNode} is important, so that the distance from the
