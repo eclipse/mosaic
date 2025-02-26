@@ -517,9 +517,9 @@ public enum UnitSimulator implements EventProcessor {
      * @param removeUnits Units to be removed.
      */
     private void removeUnits(RemoveUnits removeUnits) {
-        for (String vehicleId : removeUnits.getRemovedNames()) {
-            log.trace("remove unit: {}", vehicleId);
-            AbstractSimulationUnit unit = getUnitFromId(vehicleId);
+        for (String unitIt : removeUnits.getUnitsToRemove()) {
+            log.trace("remove unit: {}", unitIt);
+            AbstractSimulationUnit unit = getUnitFromId(unitIt);
             if (unit == null) {
                 continue;
             }

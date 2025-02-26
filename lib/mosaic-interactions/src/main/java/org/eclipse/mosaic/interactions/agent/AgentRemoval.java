@@ -17,19 +17,31 @@ package org.eclipse.mosaic.interactions.agent;
 
 import org.eclipse.mosaic.rti.api.Interaction;
 
-public class AgentRemove extends Interaction {
+/**
+ * Interaction to request the removal of an agent.
+ */
+public class AgentRemoval extends Interaction {
 
     private static final long serialVersionUID = 1L;
 
-    public final static String TYPE_ID = createTypeIdentifier(AgentRemove.class);
+    public final static String TYPE_ID = createTypeIdentifier(AgentRemoval.class);
 
     private final String agentId;
 
-    public AgentRemove(long time, String agentId) {
+    /**
+     * Creates a new request to remove an agent.
+     *
+     * @param time    the time at which the agent should be removed.
+     * @param agentId the id of the agent to be removed.
+     */
+    public AgentRemoval(long time, String agentId) {
         super(time);
         this.agentId = agentId;
     }
 
+    /**
+     * Returns the id of the agent which should be removed.
+     */
     public String getAgentId() {
         return agentId;
     }

@@ -627,7 +627,7 @@ const map = (function() {
             marker = rsus[unitName].getMarker()
             vectorLayer.getSource().removeFeature(marker)
             delete rsus[unitName]
-        }else if (trafficLights[unitName]) {
+        } else if (trafficLights[unitName]) {
             marker = trafficLights[unitName].getMarker()
             vectorLayer.getSource().removeFeature(marker)
             delete trafficLights[unitName]
@@ -783,7 +783,7 @@ const WebSocketClient = (function() {
                 console.log(JSON.stringify(data.AgentRegistration))
                 var agentOrigin = data.AgentRegistration.origin
                 map.addAgent(data.AgentRegistration.agentMapping.name, agentOrigin.latitude, agentOrigin.longitude)
-            }else if (data.V2xMessageTransmission) {
+            } else if (data.V2xMessageTransmission) {
                 // Mark vehicles that are sending right now
                 unitName = data.V2xMessageTransmission.message.routing.source.sourceName
                 map.setUnitState(unitName, 'sending')

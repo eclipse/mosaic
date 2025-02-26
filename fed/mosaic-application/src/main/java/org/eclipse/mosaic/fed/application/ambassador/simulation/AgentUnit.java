@@ -24,7 +24,7 @@ import org.eclipse.mosaic.fed.application.app.api.AgentApplication;
 import org.eclipse.mosaic.fed.application.app.api.navigation.PtRoutingModule;
 import org.eclipse.mosaic.fed.application.app.api.navigation.RoutingModule;
 import org.eclipse.mosaic.fed.application.app.api.os.AgentOperatingSystem;
-import org.eclipse.mosaic.interactions.agent.AgentRemove;
+import org.eclipse.mosaic.interactions.agent.AgentRemoval;
 import org.eclipse.mosaic.interactions.agent.AgentRouteChange;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.geo.GeoUtils;
@@ -109,7 +109,7 @@ public class AgentUnit extends AbstractSimulationUnit implements AgentOperatingS
                 return new AgentRoute.PtLeg(leg.getDepartureTime(), ptLeg.getPtTrip());
             }
             if (leg instanceof PtRoute.WalkLeg walkLeg) {
-                return new AgentRoute.WalkLeg(leg.getDepartureTime(), walkLeg.getWaypoints(), estimateWalkingSpeed(walkLeg));
+                return new AgentRoute.WalkLeg(leg.getDepartureTime(), walkLeg.getWaypoints(), estimateDesiredWalkingSpeed(walkLeg));
             }
             throw new IllegalArgumentException("Unsupported leg type found in public transport route.");
         }).toList();
@@ -117,19 +117,18 @@ public class AgentUnit extends AbstractSimulationUnit implements AgentOperatingS
         if (agentLegs.isEmpty()) {
             return;
         }
-        sendInteractionToRti(new AgentRouteChange(
-                getSimulationTime(), getId(), new AgentRoute(agentLegs)
-        ));
+        sendInteractionToRti(new AgentRouteChange(getSimulationTime(), getId(), new AgentRoute(agentLegs)));
     }
 
     @Override
     public void finishAgent() {
-        sendInteractionToRti(new AgentRemove(
-                getSimulationTime(), getId()
-        ));
+        sendInteractionToRti(new AgentRemoval(getSimulationTime(), getId()));
     }
 
-    private static double estimateWalkingSpeed(PtRoute.WalkLeg walkLeg) {
+    /**
+     * Estimates the walking speed in m/s of a Walk leg based on the departure and arrival time.
+     */
+    private static double estimateDesiredWalkingSpeed(PtRoute.WalkLeg walkLeg) {
         if (walkLeg.getWaypoints().size() < 2) {
             throw new IllegalArgumentException("Invalid walking path. Requires more than two waypoints.");
         }
@@ -196,14 +195,14 @@ public class AgentUnit extends AbstractSimulationUnit implements AgentOperatingS
 
     private void onAgentDataUpdate(AgentData agentData) {
         final AgentData previous = this.agentData;
-        final AgentRoute.Leg previousLeg = previous != null ? previous.getLeg() : null;
+        final AgentRoute.Leg previousLeg = previous != null ? previous.getCurrentLeg() : null;
 
         this.agentData = agentData;
 
         for (AgentApplication application : getApplicationsIterator(AgentApplication.class)) {
             application.onAgentUpdated(previous, agentData);
-            if (previousLeg != agentData.getLeg()) {
-                application.onLegChanged(previousLeg, agentData.getLeg());
+            if (previousLeg != agentData.getCurrentLeg()) {
+                application.onLegChanged(previousLeg, agentData.getCurrentLeg());
             }
         }
     }

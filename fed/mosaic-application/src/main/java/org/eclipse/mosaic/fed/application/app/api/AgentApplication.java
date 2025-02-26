@@ -33,7 +33,10 @@ public interface AgentApplication extends Application {
     void onAgentUpdated(AgentData previousAgentData, AgentData updatedAgentData);
 
     /**
-     * @param finishedLeg the finished leg of the route
+     * Is called after onAgentUpdated, if a new leg has been started and/or the previous leg has been finished
+     *
+     * @param finishedLeg the finished leg of the route, may be {@code null}
+     * @param nextLeg the new leg of the route, may be {@code null}
      */
     void onLegChanged(AgentRoute.Leg finishedLeg, AgentRoute.Leg nextLeg);
 }

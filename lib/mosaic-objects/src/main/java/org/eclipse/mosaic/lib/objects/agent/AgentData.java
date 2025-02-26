@@ -79,7 +79,7 @@ public class AgentData extends UnitData {
      * Returns the current {@link AgentRoute.Leg} of the agent, which determines the route and mode of transport
      * of a part of the agents' journey. Can be null, e.g., if no leg is planned.
      */
-    public AgentRoute.Leg getLeg() {
+    public AgentRoute.Leg getCurrentLeg() {
         return currentLeg;
     }
 
@@ -105,6 +105,7 @@ public class AgentData extends UnitData {
                 .appendSuper(super.equals(o))
                 .append(assignedVehicle, other.assignedVehicle)
                 .append(state, other.state)
+                .append(currentLeg, other.currentLeg)
                 .isEquals();
     }
 
@@ -114,6 +115,7 @@ public class AgentData extends UnitData {
                 .appendSuper(super.hashCode())
                 .append(assignedVehicle)
                 .append(state)
+                .append(currentLeg)
                 .toHashCode();
     }
 
@@ -123,6 +125,7 @@ public class AgentData extends UnitData {
                 .appendSuper(super.toString())
                 .append("assignedVehicle", assignedVehicle)
                 .append("state", state)
+                .append("currentLeg", currentLeg)
                 .toString();
     }
 }

@@ -15,8 +15,11 @@
 
 package org.eclipse.mosaic.lib.objects.pt;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -100,4 +103,12 @@ public class PtTrip implements Serializable {
                 .toHashCode();
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+                .append("line", line)
+                .append("finalStopName", finalStopName)
+                .append("stops", stops)
+                .toString();
+    }
 }

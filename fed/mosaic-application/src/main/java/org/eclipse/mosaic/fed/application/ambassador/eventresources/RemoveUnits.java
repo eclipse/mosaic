@@ -33,25 +33,28 @@ public class RemoveUnits implements Serializable {
     /**
      * List of unit IDs (strings) identifying removed units, such as vehicles.
      */
-    private final List<String> removedNames;
+    private final List<String> unitsToRemove;
 
     /**
      * The constructor for {@link RemoveUnits}.
      *
-     * @param removedNames a list of unit names to remove
+     * @param unitsToRemove a list of unit names to remove
      */
-    public RemoveUnits(List<String> removedNames) {
-        this.removedNames = Collections.unmodifiableList(removedNames);
+    public RemoveUnits(List<String> unitsToRemove) {
+        this.unitsToRemove = Collections.unmodifiableList(unitsToRemove);
     }
 
-    public List<String> getRemovedNames() {
-        return removedNames;
+    /**
+     * Returns the list of units to be removed.
+     */
+    public List<String> getUnitsToRemove() {
+        return unitsToRemove;
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 29 * hash + Objects.hashCode(this.removedNames);
+        hash = 29 * hash + Objects.hashCode(this.unitsToRemove);
         return hash;
     }
 
@@ -64,11 +67,11 @@ public class RemoveUnits implements Serializable {
             return false;
         }
         final RemoveUnits other = (RemoveUnits) obj;
-        return Objects.equals(this.removedNames, other.removedNames);
+        return Objects.equals(this.unitsToRemove, other.unitsToRemove);
     }
 
     @Override
     public String toString() {
-        return "RemoveUnits{" + "removedNames=" + removedNames + '}';
+        return "RemoveUnits{" + "unitsToRemove=" + unitsToRemove + '}';
     }
 }
