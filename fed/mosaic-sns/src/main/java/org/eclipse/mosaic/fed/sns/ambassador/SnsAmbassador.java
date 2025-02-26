@@ -111,15 +111,15 @@ public class SnsAmbassador extends AbstractFederateAmbassador {
     @Override
     protected void processInteraction(Interaction interaction) throws InternalFederateException {
         try {
-            if (interaction.getTypeId().startsWith(RsuRegistration.TYPE_ID)) {
+            if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
                 this.process((RsuRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(TrafficLightRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
                 this.process((TrafficLightRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(ChargingStationRegistration.TYPE_ID)) {
                 this.process((ChargingStationRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(AdHocCommunicationConfiguration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(AdHocCommunicationConfiguration.TYPE_ID)) {
                 this.process((AdHocCommunicationConfiguration) interaction);
             } else if (interaction.getTypeId().equals(V2xMessageTransmission.TYPE_ID)) {
                 this.process((V2xMessageTransmission) interaction);
