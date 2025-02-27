@@ -24,10 +24,11 @@ import java.io.Serializable;
  * This data structure consists of its geolocation and the planned arrival and departure time at the stop.
  *
  * @param location The geographic location of the stop.
+ * @param stopName The name of the stop or station.
  * @param arrivalTime The time when arriving at this stop. {@code null} for the first stop of a leg.
  * @param departureTime The time when leaving this stop. {@code null} for the last stop of a leg.
  */
-public record PtStop(GeoPoint location, Long arrivalTime, Long departureTime) implements Serializable {
+public record PtStop(GeoPoint location, String stopName, Long arrivalTime, Long departureTime) implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

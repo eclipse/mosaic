@@ -17,9 +17,11 @@ package org.eclipse.mosaic.fed.output.generator.websocket;
 
 import org.eclipse.mosaic.fed.output.ambassador.AbstractOutputGenerator;
 import org.eclipse.mosaic.fed.output.ambassador.Handle;
+import org.eclipse.mosaic.interactions.agent.AgentUpdates;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
+import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
@@ -35,6 +37,11 @@ public class WebsocketVisualizer extends AbstractOutputGenerator {
     public WebsocketVisualizer(int port) {
         websocketVisualizerServer = new WebsocketVisualizerServer(new InetSocketAddress(port));
         websocketVisualizerServer.start();
+    }
+
+    @Handle
+    public void visualizeInteraction(AgentUpdates interaction) throws Exception {
+        websocketVisualizerServer.updateAgentUpdates(interaction);
     }
 
     @Handle
@@ -55,6 +62,11 @@ public class WebsocketVisualizer extends AbstractOutputGenerator {
     @Handle
     public void visualizeInteraction(VehicleRegistration interaction) throws Exception {
         websocketVisualizerServer.addVehicle(interaction);
+    }
+
+    @Handle
+    public void visualizeInteraction(AgentRegistration interaction) throws Exception {
+        websocketVisualizerServer.addAgent(interaction);
     }
 
     @Handle

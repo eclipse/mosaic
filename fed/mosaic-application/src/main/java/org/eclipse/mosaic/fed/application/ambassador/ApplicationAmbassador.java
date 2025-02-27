@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador;
 
-import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
+import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveUnits;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficLightGroupUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.TrafficManagementCenterUnit;
@@ -30,6 +30,7 @@ import org.eclipse.mosaic.fed.application.app.api.MosaicApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficSignAwareApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.modules.Perceptive;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
+import org.eclipse.mosaic.interactions.agent.AgentUpdates;
 import org.eclipse.mosaic.interactions.application.ApplicationInteraction;
 import org.eclipse.mosaic.interactions.application.SumoTraciResponse;
 import org.eclipse.mosaic.interactions.communication.V2xFullMessageReception;
@@ -57,6 +58,7 @@ import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
 import org.eclipse.mosaic.interactions.trafficsigns.VehicleSeenTrafficSignsUpdate;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteRegistration;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
+import org.eclipse.mosaic.lib.objects.agent.AgentData;
 import org.eclipse.mosaic.lib.objects.electricity.ChargingStationData;
 import org.eclipse.mosaic.lib.objects.environment.EnvironmentEvent;
 import org.eclipse.mosaic.lib.objects.traffic.InductionLoopInfo;
@@ -270,57 +272,59 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
             );
         }
         try {
-            if (interaction.getTypeId().startsWith(RsuRegistration.TYPE_ID)) {
+            if (interaction.getTypeId().equals(RsuRegistration.TYPE_ID)) {
                 this.process((RsuRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(ChargingStationRegistration.TYPE_ID)) {
                 this.process((ChargingStationRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(AgentRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(AgentRegistration.TYPE_ID)) {
                 this.process((AgentRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(TrafficLightRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(TrafficLightRegistration.TYPE_ID)) {
                 this.process((TrafficLightRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleRegistration.TYPE_ID)) {
                 this.process((VehicleRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ScenarioVehicleRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(ScenarioVehicleRegistration.TYPE_ID)) {
                 this.process((ScenarioVehicleRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(RoutelessVehicleRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(RoutelessVehicleRegistration.TYPE_ID)) {
                 this.process((RoutelessVehicleRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(TmcRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(TmcRegistration.TYPE_ID)) {
                 this.process((TmcRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(ServerRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(ServerRegistration.TYPE_ID)) {
                 this.process((ServerRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleChargingDenial.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleChargingDenial.TYPE_ID)) {
                 this.process((VehicleChargingDenial) interaction);
-            } else if (interaction.getTypeId().startsWith(ChargingStationUpdate.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(ChargingStationUpdate.TYPE_ID)) {
                 this.process((ChargingStationUpdate) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleRouteRegistration.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleRouteRegistration.TYPE_ID)) {
                 this.process((VehicleRouteRegistration) interaction);
-            } else if (interaction.getTypeId().startsWith(V2xMessageReception.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(V2xMessageReception.TYPE_ID)) {
                 this.process((V2xMessageReception) interaction);
-            } else if (interaction.getTypeId().startsWith(V2xFullMessageReception.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(V2xFullMessageReception.TYPE_ID)) {
                 this.process((V2xFullMessageReception) interaction);
-            } else if (interaction.getTypeId().startsWith(EnvironmentSensorUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(EnvironmentSensorUpdates.TYPE_ID)) {
                 this.process((EnvironmentSensorUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(TrafficDetectorUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(TrafficDetectorUpdates.TYPE_ID)) {
                 this.process((TrafficDetectorUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleSeenTrafficSignsUpdate.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleSeenTrafficSignsUpdate.TYPE_ID)) {
                 this.process((VehicleSeenTrafficSignsUpdate) interaction);
-            } else if (interaction.getTypeId().startsWith(SumoTraciResponse.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(SumoTraciResponse.TYPE_ID)) {
                 this.process((SumoTraciResponse) interaction);
-            } else if (interaction.getTypeId().startsWith(V2xMessageAcknowledgement.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(V2xMessageAcknowledgement.TYPE_ID)) {
                 this.process((V2xMessageAcknowledgement) interaction);
-            } else if (interaction.getTypeId().startsWith(TrafficLightUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(TrafficLightUpdates.TYPE_ID)) {
                 this.process((TrafficLightUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleUpdates.TYPE_ID)) {
                 this.process((VehicleUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(LidarUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(AgentUpdates.TYPE_ID)) {
+                this.process((AgentUpdates) interaction);
+            } else if (interaction.getTypeId().equals(LidarUpdates.TYPE_ID)) {
                 this.process((LidarUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleBatteryUpdates.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleBatteryUpdates.TYPE_ID)) {
                 this.process((VehicleBatteryUpdates) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleRoutesInitialization.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleRoutesInitialization.TYPE_ID)) {
                 this.process((VehicleRoutesInitialization) interaction);
-            } else if (interaction.getTypeId().startsWith(VehicleTypesInitialization.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(VehicleTypesInitialization.TYPE_ID)) {
                 this.process((VehicleTypesInitialization) interaction);
-            } else if (interaction.getTypeId().startsWith(ApplicationInteraction.TYPE_ID)) {
+            } else if (interaction.getTypeId().equals(ApplicationInteraction.TYPE_ID)) {
                 this.process((ApplicationInteraction) interaction);
             } else {
                 log.warn("Unknown interaction received with time {} : {}", TIME.format(interaction.getTime()), interaction.getTypeId());
@@ -639,6 +643,33 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
         addEvent(event);
     }
 
+    private void process(final AgentUpdates agentUpdates) {
+
+        for (AgentData updatedAgentData : agentUpdates.getUpdated()) {
+            final AbstractSimulationUnit simulationUnit =
+                    UnitSimulator.UnitSimulator.getUnitFromId(updatedAgentData.getName());
+            if (simulationUnit == null) {
+                continue;
+            }
+            final Event event = new Event(
+                    agentUpdates.getTime(),
+                    simulationUnit,
+                    updatedAgentData,
+                    EventNicenessPriorityRegister.AGENT_UPDATED
+            );
+            addEvent(event);
+        }
+
+        final RemoveUnits removeUnits = new RemoveUnits(agentUpdates.getRemoved());
+        final Event event = new Event(
+                agentUpdates.getTime(),
+                UnitSimulator.UnitSimulator,
+                removeUnits,
+                EventNicenessPriorityRegister.REMOVE_UNITS
+        );
+        addEvent(event);
+    }
+
     private void process(final TrafficLightUpdates trafficLightUpdates) {
         for (TrafficLightGroupUnit simulationUnit : UnitSimulator.UnitSimulator.getTrafficLights().values()) {
             TrafficLightGroupInfo trafficLightGroupInfo =
@@ -698,12 +729,12 @@ public class ApplicationAmbassador extends AbstractFederateAmbassador implements
          * event occurs only after the simulation. The unit simulator will
          * cleanly terminate the application.
          */
-        final RemoveVehicles removeVehicles = new RemoveVehicles(vehicleUpdates.getRemovedNames());
+        final RemoveUnits removeUnits = new RemoveUnits(vehicleUpdates.getRemovedNames());
         final Event event = new Event(
                 vehicleUpdates.getTime(),
                 UnitSimulator.UnitSimulator,
-                removeVehicles,
-                EventNicenessPriorityRegister.VEHICLE_REMOVED
+                removeUnits,
+                EventNicenessPriorityRegister.REMOVE_UNITS
         );
         addEvent(event);
 

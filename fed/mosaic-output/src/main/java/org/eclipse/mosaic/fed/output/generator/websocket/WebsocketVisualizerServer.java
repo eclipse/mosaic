@@ -15,14 +15,17 @@
 
 package org.eclipse.mosaic.fed.output.generator.websocket;
 
+import org.eclipse.mosaic.interactions.agent.AgentUpdates;
 import org.eclipse.mosaic.interactions.communication.V2xMessageReception;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.interactions.electricity.ChargingStationUpdate;
+import org.eclipse.mosaic.interactions.mapping.AgentRegistration;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.TrafficLightRegistration;
 import org.eclipse.mosaic.interactions.mapping.VehicleRegistration;
 import org.eclipse.mosaic.interactions.traffic.VehicleUpdates;
+import org.eclipse.mosaic.lib.objects.agent.AgentData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.rti.api.Interaction;
 
@@ -56,15 +59,18 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
      * Separate message id to transmit removed vehicles without dropping
      * them in VehicleUpdates.
      */
-    private static final String VEHICLES_REMOVE_TYPE_ID = "VehiclesRemove";
+    private static final String UNITS_REMOVE = "UnitsRemove";
 
     private final AtomicReference<VehicleUpdates> vehicleUpdatesReference = new AtomicReference<>();
+    private final AtomicReference<AgentUpdates> agentUpdatesReference = new AtomicReference<>();
     private final Queue<String> vehiclesToRemove = createQueue();
+    private final Queue<String> agentsToRemove = createQueue();
 
     private final Queue<V2xMessageTransmission> sentV2xMessages = createQueue();
     private final Queue<V2xMessageReception> receivedV2xMessages = createQueue();
 
     private final Queue<VehicleRegistration> vehicleRegistrations = createQueue();
+    private final Queue<AgentRegistration> agentRegistrations = createQueue();
     private final Queue<RsuRegistration> rsuRegistrations = createQueue();
     private final Queue<TrafficLightRegistration> trafficLightRegistrations = createQueue();
     private final Queue<ChargingStationRegistration> chargingStationRegistrations = createQueue();
@@ -93,33 +99,19 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
     public synchronized void onMessage(WebSocket socket, String arg1) {
 
         sendInteractions(socket, vehicleRegistrations);
+        sendInteractions(socket, agentRegistrations);
         sendInteractions(socket, rsuRegistrations);
         sendInteractions(socket, trafficLightRegistrations);
         sendInteractions(socket, chargingStationRegistrations);
 
         sendVehicleUpdates(socket);
-        sendVehiclesToBeRemoved(socket);
+        sendAgentUpdates(socket);
+        sendUnitsToBeRemoved(socket);
 
         sendInteractions(socket, sentV2xMessages);
         sendInteractions(socket, receivedV2xMessages);
 
         sendInteractions(socket, chargingStationUpdates);
-    }
-
-    private void sendVehiclesToBeRemoved(WebSocket socket) {
-        if (!vehiclesToRemove.isEmpty()) {
-            // copy (and remove) vehicles from queue to separate list in a thread-safe manner
-            final List<String> toRemove = new ArrayList<>(vehiclesToRemove.size());
-            for (Iterator<String> iterator = vehiclesToRemove.iterator(); iterator.hasNext(); ) {
-                toRemove.add(iterator.next());
-                iterator.remove();
-            }
-
-            JsonElement jsonElement = new Gson().toJsonTree(toRemove);
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add(VEHICLES_REMOVE_TYPE_ID, jsonElement);
-            socket.send(jsonObject.toString());
-        }
     }
 
     private void sendVehicleUpdates(WebSocket socket) {
@@ -140,6 +132,46 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
                     .create());
         }
         return new VehicleUpdates(original.getTime(), Collections.EMPTY_LIST, reducedUpdates, Collections.EMPTY_LIST);
+    }
+
+    private void sendAgentUpdates(WebSocket socket) {
+        if (agentUpdatesReference.get() != null && !agentUpdatesReference.get().getUpdated().isEmpty()) {
+            AgentUpdates reduced = reduceAgentUpdates(agentUpdatesReference.get());
+            JsonElement jsonElement = new Gson().toJsonTree(reduced);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(AgentUpdates.TYPE_ID, jsonElement);
+            socket.send(jsonObject.toString());
+        }
+    }
+
+    private AgentUpdates reduceAgentUpdates(AgentUpdates original) {
+        List<AgentData> reducedUpdates = new ArrayList<>();
+        for (AgentData agent : original.getUpdated()) {
+            reducedUpdates.add(
+                    new AgentData(agent.getTime(), agent.getName(), agent.getPosition(), null, null, agent.getTripStatus())
+            );
+        }
+        return new AgentUpdates(original.getTime(), reducedUpdates, Collections.EMPTY_LIST);
+    }
+
+    private void sendUnitsToBeRemoved(WebSocket socket) {
+        if (!agentsToRemove.isEmpty() || !vehiclesToRemove.isEmpty()) {
+            // copy (and remove) vehicles from queue to separate list in a thread-safe manner
+            final List<String> toRemove = new ArrayList<>(vehiclesToRemove.size() + agentsToRemove.size());
+            for (Iterator<String> iterator = vehiclesToRemove.iterator(); iterator.hasNext(); ) {
+                toRemove.add(iterator.next());
+                iterator.remove();
+            }
+            for (Iterator<String> iterator = agentsToRemove.iterator(); iterator.hasNext(); ) {
+                toRemove.add(iterator.next());
+                iterator.remove();
+            }
+
+            JsonElement jsonElement = new Gson().toJsonTree(toRemove);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add(UNITS_REMOVE, jsonElement);
+            socket.send(jsonObject.toString());
+        }
     }
 
     private <T extends Interaction> void sendInteractions(WebSocket socket, Queue<T> interactionsQueue) {
@@ -168,6 +200,11 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
         vehiclesToRemove.addAll(interaction.getRemovedNames());
     }
 
+    public synchronized void updateAgentUpdates(AgentUpdates interaction) {
+        agentUpdatesReference.set(interaction);
+        agentsToRemove.addAll(interaction.getRemoved());
+    }
+
     public synchronized void sendV2xMessage(V2xMessageTransmission interaction) {
         sentV2xMessages.add(interaction);
     }
@@ -194,6 +231,10 @@ public class WebsocketVisualizerServer extends WebSocketServer implements Runnab
 
     public synchronized void addVehicle(VehicleRegistration interaction) {
         vehicleRegistrations.add(interaction);
+    }
+
+    public synchronized void addAgent(AgentRegistration interaction) {
+        agentRegistrations.add(interaction);
     }
 
     private static <T> Queue<T> createQueue() {
