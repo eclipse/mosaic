@@ -32,40 +32,52 @@ public class AgentData extends UnitData {
 
     private static final long serialVersionUID = 1L;
 
-    public enum State {
-        /** Agent is waiting outside for the next transportation */
+    public enum TripStatus {
+        /**
+         * Agent is waiting outside for the next transportation
+         */
         WAITING,
-        /** Agent is walking */
+        /**
+         * Agent is walking
+         */
         WALKING,
-        /** Agent is inside a shared vehicle, such as ride-sharing vehicle or shuttle bus */
+        /**
+         * Agent is inside a shared vehicle, such as ride-sharing vehicle or shuttle bus
+         */
         IN_SHARED_VEHICLE,
-        /** Agent is inside a private vehicle which was spawned by the agent. */
+        /**
+         * Agent is inside a private vehicle which was spawned by the agent.
+         */
         IN_PRIVATE_VEHICLE,
-        /** Agent is inside a public transport vehicle, such as bus or subway. */
+        /**
+         * Agent is inside a public transport vehicle, such as bus or subway.
+         */
         IN_PT_VEHICLE,
-        /** Agent is inside a public transport vehicle, which is currently waiting at a stop or station. */
+        /**
+         * Agent is inside a public transport vehicle, which is currently waiting at a stop or station.
+         */
         IN_PT_VEHICLE_AT_STOP
     }
 
     private final String assignedVehicle;
     private final AgentRoute.Leg currentLeg;
-    private final State state;
+    private final TripStatus tripStatus;
 
     /**
      * Creates a new agent data object.
      *
-     * @param time The time at which this data object was created.
-     * @param name The name of the agent.
-     * @param position The current geo position of the agent.
+     * @param time            The time at which this data object was created.
+     * @param name            The name of the agent.
+     * @param position        The current geo position of the agent.
      * @param assignedVehicle The currently assigned vehicle of the agent (if any).
-     * @param currentLeg The currently assigned leg of the agent (if any).
-     * @param state The current state of the agent, such as waiting, walking, or inside a vehicle.
+     * @param currentLeg      The currently assigned leg of the agent (if any).
+     * @param status          The current trip status of the agent, such as waiting, walking, or inside a vehicle.
      */
-    public AgentData(long time, String name, GeoPoint position, String assignedVehicle, AgentRoute.Leg currentLeg, State state) {
+    public AgentData(long time, String name, GeoPoint position, String assignedVehicle, AgentRoute.Leg currentLeg, TripStatus status) {
         super(time, name, position);
         this.assignedVehicle = assignedVehicle;
         this.currentLeg = currentLeg;
-        this.state = state;
+        this.tripStatus = status;
     }
 
     /**
@@ -84,10 +96,10 @@ public class AgentData extends UnitData {
     }
 
     /**
-     * Returns the {@link State} of the agent, determining if the agent is waiting, walking, or inside a vehicle.
+     * Returns the {@link TripStatus} of the agent, determining if the agent is waiting, walking, or inside a vehicle.
      */
-    public State getState() {
-        return state;
+    public TripStatus getTripStatus() {
+        return tripStatus;
     }
 
     @Override
@@ -104,7 +116,7 @@ public class AgentData extends UnitData {
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
                 .append(assignedVehicle, other.assignedVehicle)
-                .append(state, other.state)
+                .append(tripStatus, other.tripStatus)
                 .append(currentLeg, other.currentLeg)
                 .isEquals();
     }
@@ -114,7 +126,7 @@ public class AgentData extends UnitData {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode())
                 .append(assignedVehicle)
-                .append(state)
+                .append(tripStatus)
                 .append(currentLeg)
                 .toHashCode();
     }
@@ -124,7 +136,7 @@ public class AgentData extends UnitData {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
                 .appendSuper(super.toString())
                 .append("assignedVehicle", assignedVehicle)
-                .append("state", state)
+                .append("state", tripStatus)
                 .append("currentLeg", currentLeg)
                 .toString();
     }
