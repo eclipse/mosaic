@@ -44,7 +44,8 @@ public class CVehicle implements Comparable<CVehicle> {
     public enum SpawningMode {
         CONSTANT, POISSON,
         GROW, SHRINK, GROW_AND_SHRINK,
-        GROW_EXPONENTIAL, SHRINK_EXPONENTIAL, GROW_AND_SHRINK_EXPONENTIAL
+        GROW_EXPONENTIAL, SHRINK_EXPONENTIAL, GROW_AND_SHRINK_EXPONENTIAL,
+        INSTANT
     }
 
     /**

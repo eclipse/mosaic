@@ -19,6 +19,7 @@ import org.eclipse.mosaic.fed.mapping.ambassador.spawning.VehicleTypeSpawner;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.AbstractSpawningMode;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.ConstantSpawningMode;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.GrowAndShrinkSpawningMode;
+import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.InstantSpawningMode;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.PoissonSpawningMode;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.flow.SpawningMode;
 import org.eclipse.mosaic.fed.mapping.ambassador.spawning.lane.HighwaySpecificLaneIndexSelector;
@@ -252,6 +253,7 @@ public class VehicleFlowGenerator {
                     targetFlow,
                     maxTime
             );
+            case INSTANT -> new InstantSpawningMode(startingTime);
         };
     }
 
