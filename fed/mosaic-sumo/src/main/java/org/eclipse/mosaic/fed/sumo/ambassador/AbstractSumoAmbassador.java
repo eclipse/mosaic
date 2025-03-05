@@ -551,6 +551,13 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             return;
         }
 
+        for (VehicleData addedVehicle : vehicleUpdates.getAdded()) {
+            ExternalVehicleState externalVehicleState = externalVehicles.get(addedVehicle.getName());
+            if (externalVehicleState != null) {
+                externalVehicleState.setLastMovementInfo(addedVehicle);
+            }
+        }
+
         for (VehicleData updatedVehicle : vehicleUpdates.getUpdated()) {
             ExternalVehicleState externalVehicleState = externalVehicles.get(updatedVehicle.getName());
             if (externalVehicleState != null) {
@@ -1254,7 +1261,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("No position data available for external vehicle {}", external.getKey());
                     latestVehicleData = bridge.getSimulationControl().getLastKnownVehicleData(external.getKey());
                 }
-                if (latestVehicleData != null) {
+                if (latestVehicleData != null && latestVehicleData.getTime() == this.lastAdvanceTime) {
                     try {
                         bridge.getVehicleControl().moveToXY(
                                 external.getKey(),
