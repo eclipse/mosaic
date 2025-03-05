@@ -63,7 +63,7 @@ public class CentralPerceptionComponent {
     private TrafficLightUpdates latestTrafficLightUpdates;
 
     /**
-     * If set to true, the traffic light index will be updated when {@code updateSpatialIndices} is called.
+     * If set to true, the vehicle light index will be updated when {@code updateSpatialIndices} is called.
      */
     private boolean updateVehicleIndex = false;
 
@@ -160,6 +160,7 @@ public class CentralPerceptionComponent {
         if (trafficObjectIndex.getNumberOfVehicles() > 0) {
             trafficObjectIndex.removeVehicles(vehicleUpdates.getRemovedNames());
         }
+        updateSpatialIndices();
     }
 
     /**
