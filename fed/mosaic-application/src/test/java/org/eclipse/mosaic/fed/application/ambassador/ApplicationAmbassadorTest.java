@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -143,6 +144,12 @@ public class ApplicationAmbassadorTest {
         Mockito.doAnswer((i) -> recentAdvanceTime).when(rtiAmbassador).getNextEventTimestamp();
 
         recentAdvanceTime = 0;
+    }
+
+    @Before
+    public void setupRouteRefinement() {
+        when(SimulationKernel.SimulationKernel.getCentralNavigationComponent().refineRoute(isA(VehicleRoute.class)))
+                .thenAnswer(c -> c.getArguments()[0]);
     }
 
     @After
