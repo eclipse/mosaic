@@ -303,7 +303,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             // hold the thread for a second to allow sumo to print possible error message to the error stream
             Thread.sleep(1000);
             while (((line = sumoInputReader.readLine()) != null)) {
-                if (line.length() > 0) {
+                if (!line.isEmpty()) {
                     if (log.isDebugEnabled()) {
                         log.debug(line);
                     }
@@ -333,7 +333,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 log.error(myError);
                 BufferedReader sumoErrorReader = new BufferedReader(new InputStreamReader(err, StandardCharsets.UTF_8));
                 while (((line = sumoErrorReader.readLine()) != null)) {
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         log.error(line);
                     }
                 }
@@ -657,7 +657,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                         sumoTraciRequest.getCommand()
                 );
 
-                SumoTraciResult sumoTraciResult = traci.writeByteArrayMessage(sumoTraciRequest.getRequestId(), sumoTraciRequest.getCommand());
+                SumoTraciResult sumoTraciResult =
+                        traci.writeByteArrayMessage(sumoTraciRequest.getRequestId(), sumoTraciRequest.getCommand());
                 rti.triggerInteraction(new SumoTraciResponse(sumoTraciRequest.getTime(), sumoTraciResult));
             } else {
                 log.warn("SumoTraciRequests are not supported.");
@@ -714,13 +715,14 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             }
 
             int targetLaneId;
+            int laneId;
 
             switch (mode) {
                 case BY_INDEX:
                     targetLaneId = vehicleLaneChange.getTargetLaneIndex();
                     break;
                 case TO_LEFT:
-                    int laneId = vehicleLaneChange.getCurrentLaneId();
+                    laneId = vehicleLaneChange.getCurrentLaneId();
                     targetLaneId = laneId + 1;
                     break;
                 case TO_RIGHT:
@@ -737,7 +739,8 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                     log.warn("VehicleLaneChange failed: unsupported lane change mode.");
                     return;
             }
-            bridge.getVehicleControl().changeLane(vehicleLaneChange.getVehicleId(), Math.max(0, targetLaneId), vehicleLaneChange.getDuration());
+            bridge.getVehicleControl()
+                    .changeLane(vehicleLaneChange.getVehicleId(), Math.max(0, targetLaneId), vehicleLaneChange.getDuration());
 
             if (sumoConfig.highlights.contains(CSumo.HIGHLIGHT_CHANGE_LANE)) {
                 VehicleData vehicleData = bridge.getSimulationControl().getLastKnownVehicleData(vehicleLaneChange.getVehicleId());
@@ -1287,6 +1290,12 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         updates.getRemovedNames().removeIf(vehicle -> externalVehicles.remove(vehicle) != null);
     }
 
+    /**
+     * Changes parameters of externally added vehicles.
+     * So far only color change is supported.
+     * @param vehicleParametersChange Stores a list of vehicle parameters that should be changed.
+     * @throws InternalFederateException Throws an IllegalArgumentException if color could not be set correctly.
+     */
     public void changeExternalParameters(VehicleParametersChange vehicleParametersChange) throws InternalFederateException {
         final String veh_id = vehicleParametersChange.getVehicleId();
         for (final VehicleParameter param : vehicleParametersChange.getVehicleParameters()) {
