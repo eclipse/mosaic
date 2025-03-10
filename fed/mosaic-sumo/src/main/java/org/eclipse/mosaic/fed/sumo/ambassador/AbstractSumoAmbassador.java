@@ -551,17 +551,10 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
             return;
         }
 
-        for (VehicleData addedVehicle : vehicleUpdates.getAdded()) {
-            ExternalVehicleState externalVehicleState = externalVehicles.get(addedVehicle.getName());
+        for (VehicleData vehicle : Iterables.concat(vehicleUpdates.getAdded(), vehicleUpdates.getUpdated())) {
+            ExternalVehicleState externalVehicleState = externalVehicles.get(vehicle.getName());
             if (externalVehicleState != null) {
-                externalVehicleState.setLastMovementInfo(addedVehicle);
-            }
-        }
-
-        for (VehicleData updatedVehicle : vehicleUpdates.getUpdated()) {
-            ExternalVehicleState externalVehicleState = externalVehicles.get(updatedVehicle.getName());
-            if (externalVehicleState != null) {
-                externalVehicleState.setLastMovementInfo(updatedVehicle);
+                externalVehicleState.setLastMovementInfo(vehicle);
             }
         }
 
@@ -1228,7 +1221,7 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
                 firstAdvanceTime = false;
             }
 
-            setExternalVehiclesToLatestPositions();
+            setExternalVehiclesToLatestPositions(time);
             TraciSimulationStepResult simulationStepResult = bridge.getSimulationControl().simulateUntil(time);
 
             VehicleUpdates vehicleUpdates = simulationStepResult.getVehicleUpdates();
@@ -1253,22 +1246,25 @@ public abstract class AbstractSumoAmbassador extends AbstractFederateAmbassador 
         }
     }
 
-    private void setExternalVehiclesToLatestPositions() {
+    private void setExternalVehiclesToLatestPositions(long time) {
         for (Map.Entry<String, ExternalVehicleState> external : externalVehicles.entrySet()) {
-            if (external.getValue().isAdded()) {
-                VehicleData latestVehicleData = external.getValue().getLastMovementInfo();
+            final String externalVehicle = external.getKey();
+            final ExternalVehicleState externalState = external.getValue();
+            if (externalState.isAdded() && externalState.isRequireUpdate(time)) {
+                VehicleData latestVehicleData = externalState.getLastMovementInfo();
                 if (latestVehicleData == null) {
-                    log.warn("No position data available for external vehicle {}", external.getKey());
-                    latestVehicleData = bridge.getSimulationControl().getLastKnownVehicleData(external.getKey());
+                    log.warn("No position data available for external vehicle {}", externalVehicle);
+                    latestVehicleData = bridge.getSimulationControl().getLastKnownVehicleData(externalVehicle);
                 }
-                if (latestVehicleData != null && latestVehicleData.getTime() == this.lastAdvanceTime) {
+                if (latestVehicleData != null) {
                     try {
                         bridge.getVehicleControl().moveToXY(
-                                external.getKey(),
+                                externalVehicle,
                                 latestVehicleData.getPosition().toCartesian(),
                                 latestVehicleData.getHeading(),
                                 sumoConfig.moveToXyMode
                         );
+                        externalState.updatedInSumo(time);
                     } catch (InternalFederateException e) {
                         log.warn("Could not set position of vehicle " + external.getKey(), e);
                     }
