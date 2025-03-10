@@ -398,6 +398,94 @@ const TrafficLight = {
     }
 }
 
+/**
+ * Represents a charging station.
+ */
+const ChargingStation = {
+    name: 'unnamed_charging_station',
+    latitude: 0,
+    longitude: 0,
+    marker: null,
+    timeStateChange: 0,
+    state: {},
+
+    init(name, latitude, longitude) {
+        this.name = name
+        this.latitude = latitude
+        this.longitude = longitude
+        this.marker = new Feature({
+            type: 'charging-station',
+            geometry: new Point(fromLonLat([ longitude, latitude ]))
+        })
+        this.marker.setProperties(['name'])
+        this.marker.set('name', name)
+        this.state = {
+            sending: false,
+            receiving: false,
+        };
+    },
+
+    getMarker() {
+        return this.marker
+    },
+
+    setIsEquipped(isEquipped) {
+        this.state.equipped = isEquipped
+    },
+
+    setLocation(latitude, longitude) {
+        this.latitude = latitude
+        this.longitude = longitude
+    },
+
+    setState(stateName) {
+        if (this.state[stateName] !== undefined) {
+            this.state[stateName] = true
+            this.timeStateChange = Date.now();
+        }
+    },
+
+    /**
+     * Updates the marker of the Charging Station.
+     */
+    updateView() {
+        // Location
+        this.marker.setGeometry(new Point(fromLonLat([ this.longitude, this.latitude ])))
+
+        // Update style
+        const style = this.createStyle()
+        this.marker.setStyle(style)
+
+        if ((Date.now() - this.timeStateChange) > 500) {
+            // Clear sending/receiving states
+            this.state.sending = false
+            this.state.receiving =  false
+        }
+    },
+
+    /**
+     * Creates the style of the RSU marker based on the Charging Station's state.
+     */
+    createStyle() {
+        let style = 'charging-station'
+        if (this.state.equipped) {
+            style = 'charging-station-equipped'
+        }
+        if (this.state.sending) {
+            style = 'charging-station-sending'
+        }
+        if (this.state.receiving) {
+            style = 'charging-station-receiving'
+        }
+        return new Style({
+            image: new Icon({
+                anchor: [0.5, 1],
+                src: `markers/${ style }.png`
+            })
+        })
+    }
+}
+
 
 /**
  * Controls the map and its unit markers.
@@ -425,9 +513,15 @@ const map = (function() {
 
     /**
      * Stores all traffic lights (equipped)
-     * Map<name: string, traffic
+     * Map<name: string, traffic-light: TrafficLight>
      */
     let trafficLights = {}
+
+    /**
+     * Stores all charging stations (equipped)
+     * Map<name: string, charging-station: ChargingStation>
+     */
+    let chargingStations = {}
 
     /**
      * An additional layer beside the map itself.
@@ -535,6 +629,22 @@ const map = (function() {
     }
 
     /**
+     * Creates a charging station and adds it to the map.
+     * @param {string} name Name of the charging station
+     * @param {number} latitude Latitude value of the geo position
+     * @param {number} longitude Longitude value of the geo position
+     * @param {boolean} equipped true if charging station is equipped with an application
+     */
+    function addChargingStation(name, latitude, longitude, equipped) {
+        if (!chargingStations[name]) {
+            chargingStations[name] = Object.assign({}, ChargingStation)
+            chargingStations[name].init(name, latitude, longitude)
+            chargingStations[name].setIsEquipped(equipped)
+            addMarker(chargingStations[name].getMarker())
+        }
+    }
+
+    /**
      * Updates the state of a unit.
      * @param {string} unitName Name of the unit to update
      * @param {string} state Name of the state
@@ -546,6 +656,8 @@ const map = (function() {
             rsus[unitName].setState(state)
         } else if (trafficLights[unitName]) {
             trafficLights[unitName].setState(state);
+        } else if (chargingStations[unitName]) {
+            chargingStations[unitName].setState(state);
         }
     }
 
@@ -605,6 +717,8 @@ const map = (function() {
                 rsus[unitName].updateView()
             } else if (trafficLights[unitName]) {
                 trafficLights[unitName].updateView()
+            }  else if (chargingStations[unitName]) {
+                chargingStations[unitName].updateView()
             }
         }
     }
@@ -631,6 +745,10 @@ const map = (function() {
             marker = trafficLights[unitName].getMarker()
             vectorLayer.getSource().removeFeature(marker)
             delete trafficLights[unitName]
+        } else if (chargingStations[unitName]) {
+            marker = chargingStations[unitName].getMarker()
+            vectorLayer.getSource().removeFeature(marker)
+            delete chargingStations[unitName]
         }
     }
 
@@ -642,6 +760,7 @@ const map = (function() {
         agents = {}
         rsus = {}
         trafficLights = {}
+        chargingStations = {}
         vectorLayer.getSource().clear()
     }
 
@@ -654,6 +773,7 @@ const map = (function() {
         addAgent,
         addRsu,
         addTrafficLight,
+        addChargingStation,
         updateViews,
         removeUnit,
         removeAllUnits,
@@ -809,6 +929,13 @@ const WebSocketClient = (function() {
                     map.addTrafficLight(unitName, position.latitude, position.longitude, equipped)
                     updatedUnits.push(unitName)
                 }
+            } else if (data.ChargingStationRegistration) {
+                // Add traffic light to map
+                unitName = data.ChargingStationRegistration.chargingStationMapping.name
+                let position = data.ChargingStationRegistration.chargingStationMapping.position
+                let equipped = data.ChargingStationRegistration.chargingStationMapping.applications.length > 0;
+                map.addChargingStation(unitName, position.latitude, position.longitude, equipped)
+                updatedUnits.push(unitName)
             }
 
             // Update markers of updated units
