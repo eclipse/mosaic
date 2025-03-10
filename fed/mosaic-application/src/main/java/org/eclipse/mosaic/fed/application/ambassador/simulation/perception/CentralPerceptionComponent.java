@@ -33,6 +33,9 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
+
 /**
  * The {@link CentralPerceptionComponent} is responsible for keeping a spatial index of all vehicles,
  * which allows fast querying of nearby vehicles.
@@ -55,7 +58,7 @@ public class CentralPerceptionComponent {
     /**
      * The last {@link VehicleUpdates} interaction which is used to update the vehicleIndex.
      */
-    private VehicleUpdates latestVehicleUpdates;
+    private final HashMap<String, VehicleUpdates> latestVehicleUpdates = new HashMap<>();
 
     /**
      * The last {@link TrafficLightUpdates} interaction which is used to update the vehicleIndex.
@@ -63,7 +66,7 @@ public class CentralPerceptionComponent {
     private TrafficLightUpdates latestTrafficLightUpdates;
 
     /**
-     * If set to true, the traffic light index will be updated when {@code updateSpatialIndices} is called.
+     * If set to true, the vehicle light index will be updated when {@code updateSpatialIndices} is called.
      */
     private boolean updateVehicleIndex = false;
 
@@ -126,8 +129,10 @@ public class CentralPerceptionComponent {
         if (updateVehicleIndex) {
             // do not update index until next VehicleUpdates interaction is received
             updateVehicleIndex = false;
-            // using Iterables.concat allows iterating over both lists subsequently without creating a new list
-            trafficObjectIndex.updateVehicles(Iterables.concat(latestVehicleUpdates.getAdded(), latestVehicleUpdates.getUpdated()));
+            for (VehicleUpdates updates: latestVehicleUpdates.values()) {
+                // using Iterables.concat allows iterating over both lists subsequently without creating a new list
+                trafficObjectIndex.updateVehicles(Iterables.concat(updates.getAdded(), updates.getUpdated()));
+            }
         }
         if (updateTrafficLightIndex) {
             // do not update index until next TrafficLightUpdates interaction is received
@@ -154,7 +159,7 @@ public class CentralPerceptionComponent {
      * @param vehicleUpdates the interaction holding all vehicle updates
      */
     public void updateVehicles(VehicleUpdates vehicleUpdates) {
-        latestVehicleUpdates = vehicleUpdates;
+        latestVehicleUpdates.put(vehicleUpdates.getSenderId(), vehicleUpdates);
         updateVehicleIndex = true;
         // we need to remove arrived vehicles in every simulation step, otherwise we could have dead vehicles in the index
         if (trafficObjectIndex.getNumberOfVehicles() > 0) {

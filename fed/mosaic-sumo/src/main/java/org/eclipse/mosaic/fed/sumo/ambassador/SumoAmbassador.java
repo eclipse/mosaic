@@ -280,7 +280,7 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                 }
                 // TODO: Find better solution. Currently, an arbitrary SUMO route for external vehicles is selected, since a registered
                 //       SUMO route is required when adding a vehicle to SUMO. Using an empty route id "" leads to an error.
-                routeId = Iterables.getFirst(routes.keySet(), null);
+                routeId = Iterables.getFirst(routes.keySet(), "");
                 laneId = "free";
             }
 
@@ -289,13 +289,13 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
                     log.info("Adding new vehicle \"{}\" at simulation time {} ns (type={}, routeId={}, laneId={}, departPos={})",
                             vehicleId, vehicleRegistration.getTime(), vehicleType, routeId, laneId, departPos);
 
-                    if (!routes.containsKey(routeId)) {
+                    if (!routes.containsKey(routeId) && !routeId.isEmpty()) {
                         throw new IllegalArgumentException(
                                 "Unknown route " + routeId + " for vehicle with departure time " + vehicleRegistration.getTime()
                         );
                     }
 
-                    if (departIndex > 0) {
+                    if (departIndex > 0 && !routeId.isEmpty()) {
                         routeId = cutAndAddRoute(routeId, departIndex);
                     }
 
@@ -392,37 +392,46 @@ public class SumoAmbassador extends AbstractSumoAmbassador {
 
     private String extractDepartureSpeed(VehicleRegistration vehicleRegistration) {
         switch (vehicleRegistration.getDeparture().getDepartureSpeedMode()) {
-            case PRECISE:
+            case PRECISE -> {
                 return String.format(Locale.ENGLISH, "%.2f", vehicleRegistration.getDeparture().getDepartureSpeed());
-            case RANDOM:
+            }
+            case RANDOM -> {
                 return "random";
-            case MAXIMUM:
-            default:
+            }
+            default -> {
                 return "max";
+            }
         }
     }
 
     private String extractDepartureLane(VehicleRegistration vehicleRegistration) {
         switch (vehicleRegistration.getDeparture().getLaneSelectionMode()) {
-            case RANDOM:
+            case RANDOM -> {
                 return "random";
-            case FREE:
+            }
+            case FREE -> {
                 return "free";
-            case ALLOWED:
+            }
+            case ALLOWED -> {
                 return "allowed";
-            case BEST:
+            }
+            case BEST -> {
                 return "best";
-            case FIRST:
+            }
+            case FIRST -> {
                 return "first";
-            case HIGHWAY:
+            }
+            case HIGHWAY -> {
                 return isTruckOrTrailer(vehicleRegistration.getMapping().getVehicleType().getVehicleClass())
                         ? "first"
                         : "best";
-            default:
+            }
+            default -> {
                 int extractedLaneId = vehicleRegistration.getDeparture().getDepartureLane();
                 return extractedLaneId >= 0
                         ? Integer.toString(extractedLaneId)
                         : "best";
+            }
         }
     }
 
