@@ -178,23 +178,27 @@ public class MosaicSimulationRule extends TemporaryFolder {
         return runtimeConfiguration;
     }
 
-    public MosaicSimulation.SimulationResult executeTestScenario(String name) {
-        return executeSimulation("..", "scenarios", name);
+    public MosaicSimulation.SimulationResult executeTestScenario(String folder) {
+        return executeSimulation(Paths.get("..", "scenarios", folder));
     }
 
-    public MosaicSimulation.SimulationResult executeReleaseScenario(String name) {
-        return executeSimulation("..", "..", "bundle", "src", "assembly", "resources", "scenarios", name);
+    public MosaicSimulation.SimulationResult executeTestScenario(String folder, String config) {
+        return executeSimulation(Paths.get("..", "scenarios", folder), config);
     }
 
-    public MosaicSimulation.SimulationResult executeSimulation(String first, String... other) {
-        return executeSimulation(Paths.get(first, other));
+    public MosaicSimulation.SimulationResult executeReleaseScenario(String folder) {
+        return executeSimulation(Paths.get("..", "..", "bundle", "src", "assembly", "resources", "scenarios", folder));
     }
 
     public MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory) {
+        return executeSimulation(scenarioDirectory, "scenario_config.json");
+    }
+
+    public MosaicSimulation.SimulationResult executeSimulation(Path scenarioDirectory, String config) {
         try {
             return executeSimulation(scenarioDirectory,
                     new ObjectInstantiation<>(CScenario.class)
-                            .readFile(scenarioDirectory.resolve("scenario_config.json").toFile())
+                            .readFile(scenarioDirectory.resolve(config).toFile())
             );
         } catch (InstantiationException e) {
             LOG.error("", e);

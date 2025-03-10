@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
+import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveUnits;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
@@ -115,7 +115,7 @@ public class UnitSimulatorTest {
         VehicleApplication application = addAndLoadSingleUnit(sim, "veh_0");
 
         // REMOVE SINGLE UNIT
-        sim.processEvent(eventManager.newEvent(0, sim).withResource(new RemoveVehicles(Collections.singletonList("veh_0"))).schedule());
+        sim.processEvent(eventManager.newEvent(0, sim).withResource(new RemoveUnits(Collections.singletonList("veh_0"))).schedule());
 
         // VERIFY CALL OF: tearDown
         verify(application, times(1)).onShutdown();

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.traffic.VehicleRoutesInitialization;
 import org.eclipse.mosaic.interactions.vehicle.VehicleRouteChange;
@@ -61,6 +62,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.TestRule;
+import org.junit.runners.model.Statement;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,9 +76,19 @@ public class CentralNavigationComponentTest {
 
     private final TemporaryFolder folderRule = new TemporaryFolder();
     private final CentralNavigationComponentTestRule navigationRule = new CentralNavigationComponentTestRule(folderRule);
+    private final TestRule lazySimKernelRule = (base, description) -> new Statement() {
+        @Override
+        public void evaluate() {
+            // we must initialize the sim-kernel rule only when navigation rule has been already initialized
+            // therefore we use this wrapping TestRule which inits sim-kernel rule on the fly
+            new SimulationKernelRule(
+                    null, null, navigationRule.getCentralNavigationComponent(), null
+            ).apply(base, description);
+        }
+    };
 
     @Rule // chain both junit rules in a specific order
-    public RuleChain testRules = RuleChain.outerRule(folderRule).around(navigationRule);
+    public RuleChain testRules = RuleChain.outerRule(folderRule).around(navigationRule).around(lazySimKernelRule);
 
     private CentralNavigationComponent cnc;
 
@@ -117,6 +130,8 @@ public class CentralNavigationComponentTest {
         when(routingMock.createRouteForRTI(argThat(
                 argument -> argument.getConnectionIds().equals(exampleRoute2.getConnectionIds())
         ))).thenReturn(exampleRoute2);
+
+        when(routingMock.refineRoute(isA(VehicleRoute.class))).thenAnswer(c -> c.getArguments()[0]);
     }
 
     @Test

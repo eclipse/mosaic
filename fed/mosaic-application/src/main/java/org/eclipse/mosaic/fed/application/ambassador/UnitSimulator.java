@@ -15,7 +15,7 @@
 
 package org.eclipse.mosaic.fed.application.ambassador;
 
-import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
+import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveUnits;
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.StartApplications;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AgentUnit;
@@ -504,22 +504,22 @@ public enum UnitSimulator implements EventProcessor {
     public void processEvent(Event event) {
         final Object resource = event.getResource();
 
-        if (resource instanceof RemoveVehicles removeVehicles) {
-            removeVehicles(removeVehicles);
+        if (resource instanceof RemoveUnits removeUnits) {
+            removeUnits(removeUnits);
         } else if (resource instanceof StartApplications startApplications) {
             startApplications(startApplications);
         }
     }
 
     /**
-     * Remove vehicles from the simulation.
+     * Remove simulation units from the simulation.
      *
-     * @param removeVehicles Vehicles to be removed.
+     * @param removeUnits Units to be removed.
      */
-    private void removeVehicles(RemoveVehicles removeVehicles) {
-        for (String vehicleId : removeVehicles.getRemovedNames()) {
-            log.trace("remove vehicle: {}", vehicleId);
-            AbstractSimulationUnit unit = getUnitFromId(vehicleId);
+    private void removeUnits(RemoveUnits removeUnits) {
+        for (String unitIt : removeUnits.getUnitsToRemove()) {
+            log.trace("remove unit: {}", unitIt);
+            AbstractSimulationUnit unit = getUnitFromId(unitIt);
             if (unit == null) {
                 continue;
             }
