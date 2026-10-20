@@ -27,9 +27,9 @@ import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
@@ -45,7 +45,7 @@ public class ProcessLoggingThread extends Thread {
     private boolean started = false;
     private boolean closed = false;
 
-    private final List<TeeInputStream> tees = new ArrayList<>();
+    private final List<TeeInputStream> tees = new CopyOnWriteArrayList<>();
 
     public ProcessLoggingThread(String processName, InputStream stream, Consumer<String> lineConsumer) {
         this.processName = processName;
