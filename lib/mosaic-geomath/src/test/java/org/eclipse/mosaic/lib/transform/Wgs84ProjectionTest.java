@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.lib.transform;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -210,6 +211,37 @@ public class Wgs84ProjectionTest {
         assertEquals(wgs84.getLatitude(), actualGeoPoint.getLatitude(), 0.0001d);
         assertEquals(wgs84.getLongitude(), actualGeoPoint.getLongitude(), 0.0001d);
         assertEquals(wgs84.getAltitude(), actualGeoPoint.getAltitude(), 0.0001d);
+    }
+
+    @Test
+    public void conversion_acrossEquator_NorthernHemisphere() {
+        testCartesianRoundTrip(
+                GeoPoint.latLon(0.0002, 10.5),
+                CartesianPoint.xy(30, -50)
+        );
+    }
+
+    @Test
+    public void conversion_acrossEquator_SouthernHemisphere() {
+        testCartesianRoundTrip(
+                GeoPoint.latLon(-0.0002, 10.5),
+                CartesianPoint.xy(30, 50)
+        );
+    }
+
+    private void testCartesianRoundTrip(GeoPoint origin, CartesianPoint cartesianPoint) {
+        GeoProjection transform = new Wgs84Projection(origin);
+        transform.setGeoCalculator(new UtmGeoCalculator(transform));
+
+        GeoPoint actualGeoPoint = transform.cartesianToGeographic(cartesianPoint);
+
+        assertTrue(origin.getLatitude() * actualGeoPoint.getLatitude() < 0);
+
+        CartesianPoint actualCartesian = transform.geographicToCartesian(actualGeoPoint);
+
+        assertEquals(cartesianPoint.getX(), actualCartesian.getX(), 1d);
+        assertEquals(cartesianPoint.getY(), actualCartesian.getY(), 1d);
+        assertEquals(cartesianPoint.getZ(), actualCartesian.getZ(), 1d);
     }
 
     @Test

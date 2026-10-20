@@ -42,7 +42,7 @@ public class UtmGeoCalculator implements GeoCalculator {
             geoProjection.geographicToUtm(a, utmA);
             geoProjection.geographicToUtm(b, utmB);
 
-            if (utmA.getZone().number == utmB.getZone().number && utmB.getZone().isNorthernHemisphere() == utmB.getZone().isNorthernHemisphere()) {
+            if (utmA.getZone().number == utmB.getZone().number && utmA.getZone().isNorthernHemisphere() == utmB.getZone().isNorthernHemisphere()) {
                 double dX = utmB.getEasting() - utmA.getEasting();
                 double dY = utmB.getNorthing() - utmA.getNorthing();
                 double dZ = utmB.getAltitude() - utmA.getAltitude();
